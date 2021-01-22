@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -120,7 +121,7 @@ class ReferenceWidget(StringWidget):
         base_query = self.base_query
         if callable(base_query):
             base_query = base_query()
-        if base_query and isinstance(base_query, basestring):
+        if base_query and isinstance(base_query, six.string_types):
             base_query = json.loads(base_query)
 
         # portal_type: use field allowed types

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import six
 import sys
 import threading
 
@@ -431,7 +432,7 @@ def _load_wf_module(module_relative_name):
     """
     if not module_relative_name:
         return None
-    if not isinstance(module_relative_name, basestring):
+    if not isinstance(module_relative_name, six.string_types):
         return None
 
     rootmodname = __name__

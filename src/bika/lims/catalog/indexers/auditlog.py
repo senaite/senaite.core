@@ -20,6 +20,7 @@
 
 import itertools
 import re
+import six
 
 from bika.lims import api
 from bika.lims.api.snapshot import get_last_snapshot
@@ -151,7 +152,7 @@ def listing_searchable_text(instance):
             map(append, value)
         elif isinstance(value, (dict)):
             map(append, value.items())
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             # convert unicode to UTF8
             if isinstance(value, unicode):
                 value = api.safe_unicode(value).encode("utf8")

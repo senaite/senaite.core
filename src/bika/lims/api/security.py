@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
 from AccessControl import getSecurityManager
 from AccessControl.Permission import Permission
 from bika.lims import api
@@ -219,7 +220,7 @@ def grant_local_roles_for(brain_or_object, roles, user=None):
     user_id = get_user_id(user)
     obj = api.get_object(brain_or_object)
 
-    if isinstance(roles, basestring):
+    if isinstance(roles, six.string_types):
         roles = [roles]
 
     obj.manage_addLocalRoles(user_id, roles)
@@ -240,7 +241,7 @@ def revoke_local_roles_for(brain_or_object, roles, user=None):
     valid_roles = get_valid_roles_for(obj)
     to_grant = list(get_local_roles_for(obj))
 
-    if isinstance(roles, basestring):
+    if isinstance(roles, six.string_types):
         roles = [roles]
 
     for role in roles:
@@ -286,7 +287,7 @@ def grant_permission_for(brain_or_object, permission, roles, acquire=0):
     valid_roles = get_valid_roles_for(obj)
     to_grant = list(get_roles_for_permission(permission, obj))
 
-    if isinstance(roles, basestring):
+    if isinstance(roles, six.string_types):
         roles = [roles]
 
     for role in roles:
@@ -313,7 +314,7 @@ def revoke_permission_for(brain_or_object, permission, roles, acquire=0):
     valid_roles = get_valid_roles_for(obj)
     to_grant = list(get_roles_for_permission(permission, obj))
 
-    if isinstance(roles, basestring):
+    if isinstance(roles, six.string_types):
         roles = [roles]
 
     for role in roles:
@@ -338,7 +339,7 @@ def manage_permission_for(brain_or_object, permission, roles, acquire=0):
     """
     obj = api.get_object(brain_or_object)
 
-    if isinstance(roles, basestring):
+    if isinstance(roles, six.string_types):
         roles = [roles]
 
     for item in obj.ac_inherited_permissions(1):

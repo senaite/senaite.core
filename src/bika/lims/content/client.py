@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from Products.ATContentTypes.content import schemata
@@ -254,7 +256,7 @@ class Client(Organisation):
         """
         if ids is None:
             ids = []
-        if isinstance(ids, basestring):
+        if isinstance(ids, six.string_types):
             ids = [ids]
 
         for id in ids:

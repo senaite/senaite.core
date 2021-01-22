@@ -754,7 +754,7 @@ def get_workflows_for(brain_or_object):
     :rtype: tuple
     """
     workflow = ploneapi.portal.get_tool("portal_workflow")
-    if isinstance(brain_or_object, basestring):
+    if isinstance(brain_or_object, six.string_types):
         return workflow.getChainFor(brain_or_object)
     obj = get_object(brain_or_object)
     return workflow.getChainFor(obj)
@@ -861,7 +861,7 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
     if is_object(brain_or_object):
         catalogs = archetype_tool.getCatalogsByType(
             get_portal_type(brain_or_object))
-    if isinstance(brain_or_object, basestring):
+    if isinstance(brain_or_object, six.string_types):
         catalogs = archetype_tool.getCatalogsByType(brain_or_object)
 
     if not catalogs:
@@ -894,7 +894,7 @@ def do_transition_for(brain_or_object, transition):
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: The object where the transtion was performed
     """
-    if not isinstance(transition, basestring):
+    if not isinstance(transition, six.string_types):
         fail("Transition type needs to be string, got '%s'" % type(transition))
     obj = get_object(brain_or_object)
     try:
@@ -1000,7 +1000,7 @@ def get_user(user_or_username):
     user = None
     if isinstance(user_or_username, MemberData):
         user = user_or_username
-    if isinstance(user_or_username, basestring):
+    if isinstance(user_or_username, six.string_types):
         user = get_member_by_login_name(get_portal(), user_or_username, False)
     return user
 
@@ -1149,7 +1149,7 @@ def normalize_id(string):
     :returns: Normalized ID
     :rtype: str
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         fail("Type of argument must be string, found '{}'"
              .format(type(string)))
     # get the id nomalizer utility
@@ -1165,7 +1165,7 @@ def normalize_filename(string):
     :returns: Normalized ID
     :rtype: str
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         fail("Type of argument must be string, found '{}'"
              .format(type(string)))
     # get the file nomalizer utility
@@ -1183,7 +1183,7 @@ def is_uid(uid, validate=False):
     :return: True if a valid uid
     :rtype: bool
     """
-    if not isinstance(uid, basestring):
+    if not isinstance(uid, six.string_types):
         return False
     if uid == '0':
         return True
@@ -1363,14 +1363,14 @@ def to_display_list(pairs, sort_by="key", allow_empty=True):
     """
     dl = DisplayList()
 
-    if isinstance(pairs, basestring):
+    if isinstance(pairs, six.string_types):
         pairs = [pairs, pairs]
     for pair in pairs:
         # pairs is a list of lists -> add each pair
         if isinstance(pair, (tuple, list)):
             dl.add(*pair)
         # pairs is just a single pair -> add it and stop
-        if isinstance(pair, basestring):
+        if isinstance(pair, six.string_types):
             dl.add(*pairs)
             break
 

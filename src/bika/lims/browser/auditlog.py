@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import six
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -170,7 +171,7 @@ class AuditLogView(ListingView):
     def translate_state(self, s):
         """Translate the given state string
         """
-        if not isinstance(s, basestring):
+        if not isinstance(s, six.string_types):
             return s
         s = s.capitalize().replace("_", " ")
         return t(_(s))

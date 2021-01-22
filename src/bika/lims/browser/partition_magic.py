@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from collections import OrderedDict
 from collections import defaultdict
 
@@ -169,7 +171,7 @@ class PartitionMagicView(BrowserView):
         if not uids:
             # check for the `items` parammeter
             uids = self.request.form.get("items", "")
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
         unique_uids = OrderedDict().fromkeys(uids).keys()
         return filter(None, map(self.get_object_by_uid, unique_uids))

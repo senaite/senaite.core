@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
 
 from bika.lims import _
 from bika.lims import api
@@ -393,7 +394,7 @@ def _process_value(value):
     if not value:
         value = _("Not set")
     # handle strings
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
         # XXX: bad data, e.g. in AS Method field
         if value == "None":
             value = _("Not set")
