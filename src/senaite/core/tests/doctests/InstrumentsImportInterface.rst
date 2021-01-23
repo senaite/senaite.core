@@ -31,7 +31,7 @@ Needed imports::
 
     >>> import os
     >>> import transaction
-    >>> import cStringIO
+    >>> from six import StringIO
     >>> from Products.CMFCore.utils import getToolByName
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
@@ -225,7 +225,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     exec('from senaite.core.exportimport.instruments.{} import Import'.format(inter[0]))
     ...     filename = os.path.join(files_path, inter[1])
     ...     data = open(filename, 'r').read()
-    ...     import_file = FileUpload(TestFile(cStringIO.StringIO(data), inter[1]))
+    ...     import_file = FileUpload(TestFile(StringIO(data), inter[1]))
     ...     request = TestRequest(form=dict(
     ...                                submitted=True,
     ...                                artoapply='received_tobeverified',

@@ -23,7 +23,7 @@
 import csv
 import json
 import traceback
-from cStringIO import StringIO
+from six import StringIO
 import xml.etree.ElementTree as ET
 
 import types

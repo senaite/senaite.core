@@ -37,7 +37,7 @@ Test Setup
 Needed imports:
 
     >>> from DateTime import DateTime
-    >>> from StringIO import StringIO
+    >>> from six import StringIO
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for

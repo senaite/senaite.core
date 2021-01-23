@@ -20,11 +20,8 @@
 
 """ GeneXpert
 """
-import csv
 import json
 import traceback
-import types
-from cStringIO import StringIO
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 

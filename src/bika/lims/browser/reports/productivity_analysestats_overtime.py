@@ -18,10 +18,10 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import StringIO
 import csv
 import datetime
 
+from six import StringIO
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -194,7 +194,7 @@ class Report(BrowserView):
             'Date',
             'Turnaround time (h)',
         ]
-        output = StringIO.StringIO()
+        output = StringIO()
         dw = csv.DictWriter(output, extrasaction='ignore',
                             fieldnames=fieldnames)
         dw.writerow(dict((fn, fn) for fn in fieldnames))
