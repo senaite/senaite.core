@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1744 Use six.moves.urllib instead of urllib/urllib2 (p3-compat)
 - #1743 Replace print statement by print() function (py3-compat)
 - #1741 Use six to check text data types (py3-compat)
 - #1742 Use the polyfill for the `cmp` builtin function

@@ -22,9 +22,9 @@ import mimetypes
 import os
 import re
 import tempfile
-import urllib2
 from email import Encoders
 from email.MIMEBase import MIMEBase
+from six.moves.urllib.request import urlopen
 from time import time
 
 from AccessControl import ModuleSecurityInfo
@@ -418,7 +418,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
     if css:
         if css.startswith("http://") or css.startswith("https://"):
             # Download css file in temp dir
-            u = urllib2.urlopen(css)
+            u = urlopen(css)
             _cssfile = tempfile.mktemp(suffix='.css')
             localFile = open(_cssfile, 'w')
             localFile.write(u.read())
