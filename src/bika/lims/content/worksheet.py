@@ -64,6 +64,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.p3compat import cmp
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 

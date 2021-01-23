@@ -25,6 +25,7 @@ from Products.CMFCore.utils import getToolByName
 from senaite.core.locales import COUNTRIES
 from senaite.core.locales import DISTRICTS
 from senaite.core.locales import STATES
+from senaite.core.p3compat import cmp
 
 
 class AddressWidget(TypesWidget):

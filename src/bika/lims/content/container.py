@@ -33,6 +33,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from magnitude import mg
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
