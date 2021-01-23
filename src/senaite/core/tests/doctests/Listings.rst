@@ -25,7 +25,7 @@ Functional Helpers:
     >>> def create_ar(client, **kw):
     ...     values = {}
     ...     services = []
-    ...     for k, v in kw.iteritems():
+    ...     for k, v in kw.items():
     ...         if k == "Services":
     ...             services = map(api.get_uid, v)
     ...         elif api.is_object(v):

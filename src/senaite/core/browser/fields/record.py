@@ -153,7 +153,7 @@ class RecordField(ObjectField):
         value = None
         vocab = self.subfield_vocabularies.get(subfield, None)
         if not vocab:
-            raise AttributeError, 'no vocabulary found for %s' %subfield
+            raise AttributeError("No vocabulary found for {}".format(subfield))
 
         if isinstance(vocab, DisplayList):
             return vocab
@@ -169,10 +169,12 @@ class RecordField(ObjectField):
                     if method and callable(method):
                         value = method()
             if not isinstance(value, DisplayList):
-                raise TypeError, '%s is not a DisplayList %s' %(value, subfield)
+                msg = "{} is not a DisplayList {}".format(value, subfield)
+                raise TypeError(msg)
             return value
 
-        raise TypeError, '%s niether a StringType or a DisplayList for %s' %(vocab, subfield)
+        msg = "{} is not a string or DisplayList for {}".format(vocab, subfield)
+        raise TypeError(msg)
 
     def getViewFor(self, instance, subfield, joinWith=', '):
         """
@@ -302,17 +304,18 @@ class RecordField(ObjectField):
             current_validators = self.subfield_validators.get(subfield, ())
 
             if type(current_validators) is DictType:
-                raise NotImplementedError, 'Please use the new syntax with validation chains'
-            elif providedBy(IValidationChain, current_validators):
+                msg = "Please use the new syntax with validation chains"
+                raise NotImplementedError(msg)
+            elif IValidationChain.providedBy(current_validators):
                 validators = current_validators
-            elif providedBy(IValidator, current_validators):
+            elif IValidator.providedBy(current_validators):
                 validators = ValidationChain(chainname, validators=current_validators)
             elif type(current_validators) in (TupleType, ListType, StringType):
                 if len(current_validators):
                     # got a non empty list or string - create a chain
                     try:
                         validators = ValidationChain(chainname, validators=current_validators)
-                    except (UnknowValidatorError, FalseValidatorError), msg:
+                    except (UnknowValidatorError, FalseValidatorError) as msg:
                         log("WARNING: Disabling validation for %s/%s: %s" % (self.getName(), subfield, msg))
                         validators = ()
                 else:
