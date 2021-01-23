@@ -62,7 +62,7 @@ class EasyQParser(InstrumentResultsFileParser):
                 if value is None:
                     value = ""
                 line.append(str(value))
-            print >>buffer, delimiter.join(line)
+            buffer.write(delimiter.join(line))
         buffer.seek(0)
         return buffer
 
