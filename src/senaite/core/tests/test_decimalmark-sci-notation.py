@@ -133,7 +133,6 @@ class TestDecimalMarkWithSciNotation(DataTestCase):
             self.assertEqual(an.getResult(), m[3])
             self.assertEqual(an.Schema().getField('Result').get(an), m[3])
             fr = an.getFormattedResult(sciformat=m[2],decimalmark=bs.getResultsDecimalMark())
-            # print '%s   %s   %s   %s  =>  \'%s\' ?= \'%s\'' % (m[0],m[1],m[2],m[3],m[4],fr)
             self.assertEqual(fr, m[4])
 
 

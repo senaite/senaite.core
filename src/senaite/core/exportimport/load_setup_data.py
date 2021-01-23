@@ -90,9 +90,9 @@ class LoadSetupData(BrowserView):
                 try:
                     workbook = load_workbook(filename=filename)  # , use_iterators=True)
                 except AttributeError:
-                    print ""
-                    print traceback.format_exc()
-                    print "Error while loading ", path
+                    print("")
+                    print(traceback.format_exc())
+                    print("Error while loading ", path)
 
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']

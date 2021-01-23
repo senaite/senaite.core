@@ -104,10 +104,10 @@ def profileit(path=None):
             prof = cProfile.Profile()
             retval = prof.runcall(func, *args, **kwargs)
             if path is not None:
-                print prof.print_stats()
+                print(prof.print_stats())
                 prof.dump_stats(os.path.expanduser(path))
             else:
-                print prof.print_stats()
+                print(prof.print_stats())
             return retval
         return wrapper
     return inner

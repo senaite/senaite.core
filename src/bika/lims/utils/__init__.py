@@ -643,7 +643,7 @@ def measure_time(func_to_measure):
                                                                                      finish_time - start_time,
                                                                                      start_time,
                                                                                      finish_time)
-        print log
+        print(log)
         return return_value
     return wrap
 

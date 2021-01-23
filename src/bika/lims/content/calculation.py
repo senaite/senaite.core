@@ -350,11 +350,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         result = 'Failure'
 
         try:
-            # print "pre: {}".format(formula)
             formula = formula.format(**mapping)
-            # print "formatted: {}".format(formula)
             result = eval(formula, self._getGlobals())
-            # print "result: {}".format(result)
         except TypeError as e:
             # non-numeric arguments in interim mapping?
             result = "TypeError: {}".format(str(e.args[0]))
