@@ -24,6 +24,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 from bika.lims import api

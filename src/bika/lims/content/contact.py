@@ -37,6 +37,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 ACTIVE_STATES = ["active"]

@@ -28,6 +28,7 @@ from bika.lims.api.security import check_permission
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from senaite.core.p3compat import cmp
 
 
 class AttachAnalyses(BrowserView):

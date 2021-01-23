@@ -60,6 +60,7 @@ from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.locales import COUNTRIES
+from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
 

@@ -29,6 +29,7 @@ from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from pkg_resources import resource_filename
 from plone.resource.utils import iterDirectoriesOfType
+from senaite.core.p3compat import cmp
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary

@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1742 Use the polyfill for the `cmp` builtin function
 - #1741 Use six to check text data types
 - #1739 Migrated samples folder to Dexterity
 - #1738 Resolve attachment images by UID
