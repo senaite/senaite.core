@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1748 Use correct syntax for exceptions (py3-compat)
 - #1745 Use six.iteritems instead of iteritems function (py3-compat)
 - #1747 Use functools.reduce instead of reduce (p3-compat)
 - #1746 Use six.moves.urllib.parse instead of parse (p3-compat)

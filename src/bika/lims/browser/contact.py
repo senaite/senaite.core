@@ -187,7 +187,7 @@ class ContactLoginDetailsView(BrowserView):
                 self.context.setUser(userid)
                 self.add_status_message(
                     _("User linked to this Contact"), "info")
-            except ValueError, e:
+            except ValueError as e:
                 self.add_status_message(e, "error")
         else:
             self.add_status_message(
@@ -263,7 +263,7 @@ class ContactLoginDetailsView(BrowserView):
                                    'username': username,
                                    'email': email,
                                    'fullname': username})
-        except ValueError, msg:
+        except ValueError as msg:
             return error(None, msg)
 
         # set the user to the contact

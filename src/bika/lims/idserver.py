@@ -503,7 +503,7 @@ def generateUniqueId(context, **kw):
     # Interpolate the ID template
     try:
         new_id = id_template.format(**variables)
-    except KeyError, e:
+    except KeyError as e:
         logger.error('KeyError: {} not in id_template {}'.format(
             e, id_template))
         raise

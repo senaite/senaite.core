@@ -265,8 +265,9 @@ class Client(Organisation):
                 # Ignore DeleteObjects permission check
                 continue
             if not _checkPermission(permissions.DeleteObjects, item):
-                raise Unauthorized, (
-                    "Do not have permissions to remove this object")
+                msg = "Do not have permissions to remove this object"
+                raise Unauthorized(msg)
+
         return PortalFolder.manage_delObjects(self, ids, REQUEST=REQUEST)
 
 
