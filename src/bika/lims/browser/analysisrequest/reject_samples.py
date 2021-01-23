@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -126,7 +128,7 @@ class RejectSamplesView(BrowserView):
         """Returns a list of objects coming from the "uids" request parameter
         """
         uids = self.request.form.get("uids", "")
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
 
         uids = list(set(uids))

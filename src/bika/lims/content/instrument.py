@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from datetime import date
 
 from AccessControl import ClassSecurityInfo
@@ -669,7 +671,7 @@ class Instrument(ATFolder):
         # ensure we have strings, otherwise the `getValue` method of
         # Products.Archetypes.utils will raise a TypeError
         def to_string(v):
-            if isinstance(v, basestring):
+            if isinstance(v, six.string_types):
                 return v
             return api.get_title(v)
 

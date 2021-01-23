@@ -25,6 +25,7 @@ from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
 import json
+import six
 import transaction
 
 
@@ -129,7 +130,7 @@ class Update(object):
         if self.request.get('obj_path', '') and not obj:
             obj_path = self.request['obj_path'].split("?")[0]
             site_path = context.portal_url.getPortalObject().getPhysicalPath()
-            if site_path and isinstance(site_path, basestring):
+            if site_path and isinstance(site_path, six.string_types):
                 site_path = site_path if site_path.startswith('/') else '/' + site_path
                 obj = context.restrictedTraverse(site_path + obj_path)
             elif site_path and len(site_path) > 1:

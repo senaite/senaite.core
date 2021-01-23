@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
+
 from datetime import datetime
 from mimetypes import guess_type
 
@@ -182,7 +184,7 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         """
         value = self.get_field_value()
 
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return value
 
         filename = safe_unicode(value.filename) or ""

@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from AccessControl import getSecurityManager
 from bika.lims.api import get_portal
 from bika.lims.api import get_tool
@@ -38,7 +40,7 @@ def get_user(user=None):
     elif isinstance(user, MemberData):
         # MemberData wrapped user -> get the user object
         user = user.getUser()
-    elif isinstance(user, basestring):
+    elif isinstance(user, six.string_types):
         # User ID -> get the user
         user = get_member_by_login_name(get_portal(), user, False)
         if user:
@@ -65,7 +67,7 @@ def get_group(group):
     :returns: Group
     """
     portal_groups = get_tool("portal_groups")
-    if isinstance(group, basestring):
+    if isinstance(group, six.string_types):
         group = portal_groups.getGroupById(group)
     elif isinstance(group, GroupData):
         group = group
@@ -93,7 +95,7 @@ def add_group(group, user=None):
     if user is None:
         raise ValueError("User '{}' not found".format(repr(user)))
 
-    if isinstance(group, basestring):
+    if isinstance(group, six.string_types):
         group = [group]
     elif isinstance(group, GroupData):
         group = [group]
@@ -115,7 +117,7 @@ def del_group(group, user=None):
     if user is None:
         raise ValueError("User '{}' not found".format(repr(user)))
 
-    if isinstance(group, basestring):
+    if isinstance(group, six.string_types):
         group = [group]
     elif isinstance(group, GroupData):
         group = [group]

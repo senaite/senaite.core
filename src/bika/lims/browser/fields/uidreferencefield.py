@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import Field, StringField
 from bika.lims import logger
@@ -209,7 +211,7 @@ class UIDReferenceField(StringField):
         # current set UIDs
         raw = self.getRaw(context) or []
         # handle single reference fields
-        if isinstance(raw, basestring):
+        if isinstance(raw, six.string_types):
             raw = [raw, ]
         cur = set(raw)
         # UIDs to be set

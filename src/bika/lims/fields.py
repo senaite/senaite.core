@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
 from archetypes.schemaextender.interfaces import IExtensionField
 from Products.Archetypes.public import *
 from senaite.core.browser.fields.datetime import DateTimeField
@@ -73,7 +74,7 @@ class ExtensionField(object):
             return self.getAccessor(instance)
         elif name == '_at_edit_accessor':
             return self.getEditAccessor(instance)
-        elif not isinstance(name, basestring):
+        elif not isinstance(name, six.string_types):
             raise ValueError('Bad index accessor value: %r', name)
         else:
             return getattr(instance, name)

@@ -22,6 +22,7 @@
 """
 import json
 import re
+import six
 import traceback
 
 from bika.lims import api
@@ -59,7 +60,7 @@ class MetlerToledoDL55Parser(InstrumentResultsFileParser):
                 continue
 
             # If no keyword is present, this row is skipped.
-            if len(row) < 7 or not isinstance(row[6].value, basestring):
+            if len(row) < 7 or not isinstance(row[6].value, six.string_types):
                 continue
             # keyword is stripped of non-word characters
             keyword = re.sub(r"\W", "", row[6].value)

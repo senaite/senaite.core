@@ -20,7 +20,7 @@
 
 import itertools
 import re
-
+import six
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -295,7 +295,7 @@ def get_variables(context, **kw):
 def split(string, separator="-"):
     """ split a string on the given separator
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         return []
     return string.split(separator)
 

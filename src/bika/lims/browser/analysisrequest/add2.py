@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
+
 from collections import OrderedDict
 from datetime import datetime
 
@@ -762,7 +764,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         value = record.get(key, None)
         if value is None:
             return []
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = value.split(",")
         return filter(lambda uid: uid, value)
 
