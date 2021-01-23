@@ -20,6 +20,7 @@
 
 from bika.lims.browser import BrowserView
 from operator import itemgetter
+from senaite.core.p3compat import cmp
 import json
 import plone
 

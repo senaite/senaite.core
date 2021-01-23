@@ -24,6 +24,7 @@ from bika.lims.browser import BrowserView
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from plone.i18n.normalizer.interfaces import IIDNormalizer
+from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t

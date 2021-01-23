@@ -65,6 +65,7 @@ from Products.ATContentTypes.content import schemata
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((

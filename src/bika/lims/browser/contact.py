@@ -35,6 +35,7 @@ from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.p3compat import cmp
 
 
 class ContactLoginDetailsView(BrowserView):

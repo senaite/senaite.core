@@ -23,6 +23,7 @@ from operator import itemgetter
 
 import plone.protect
 from Products.CMFCore.utils import getToolByName
+from senaite.core.p3compat import cmp
 
 
 class get_sampletypes(object):

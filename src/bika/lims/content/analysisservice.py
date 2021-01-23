@@ -44,6 +44,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 Methods = UIDReferenceField(

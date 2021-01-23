@@ -96,9 +96,9 @@ def load_field_values(instance, include_fields):
         except AttributeError:
             # If this error is raised, make a look to the add-on content
             # expressions used to obtain their data.
-            print "AttributeError:", sys.exc_info()[1]
-            print "Unreachable object. Maybe the object comes from an Add-on"
-            print traceback.format_exc()
+            print("AttributeError:", sys.exc_info()[1])
+            print("Unreachable object. Maybe the object comes from an Add-on")
+            print(traceback.format_exc())
 
         if isinstance(val, RichTextValue):
             val = val.raw

@@ -32,6 +32,7 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import PROJECTNAME, PRESERVATION_CATEGORIES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

@@ -46,6 +46,7 @@ from bika.lims.interfaces import IReferenceSample, IAnalysisService, \
 from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 import sys, time
 

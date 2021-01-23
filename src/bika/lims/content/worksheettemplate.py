@@ -44,6 +44,7 @@ from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
