@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import base64
+import functools
 import re
 import sys
 from decimal import Decimal
@@ -1694,7 +1695,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         billable_profiles = filter(
             lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
         # All services contained in the billable profiles
-        billable_profile_services = reduce(lambda a, b: a+b, map(
+        billable_profile_services = functools.reduce(lambda a, b: a+b, map(
             lambda profile: profile.getService(), billable_profiles), [])
         # Keywords of the contained services
         billable_service_keys = map(
