@@ -35,6 +35,7 @@ from senaite.core.exportimport import instruments
 from senaite.core.exportimport.instruments import \
     get_instrument_import_interfaces
 from senaite.core.exportimport.load_setup_data import LoadSetupData
+from senaite.core.p3compat import cmp
 from zope.component import getAdapters
 from zope.interface import implements
 

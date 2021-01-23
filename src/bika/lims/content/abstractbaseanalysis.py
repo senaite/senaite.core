@@ -54,6 +54,7 @@ from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,

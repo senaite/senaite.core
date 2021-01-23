@@ -35,6 +35,7 @@ from senaite.core.exportimport.instruments.utils import \
      get_instrument_import_ar_allowed_states)
 from senaite.core.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
+from senaite.core.p3compat import cmp
 from bika.lims import bikaMessageFactory as _
 import json
 import traceback

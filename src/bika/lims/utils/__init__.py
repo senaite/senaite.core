@@ -47,6 +47,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.DCWorkflow.events import AfterTransitionEvent
+from senaite.core.p3compat import cmp
 from weasyprint import CSS
 from weasyprint import HTML
 from weasyprint import default_url_fetcher

@@ -6,6 +6,8 @@ Changelog
 
 - #1743 Replace print statement by print() function (py3-compat)
 - #1741 Use six to check text data types (py3-compat)
+- #1742 Use the polyfill for the `cmp` builtin function
+- #1741 Use six to check text data types
 - #1739 Migrated samples folder to Dexterity
 - #1738 Resolve attachment images by UID
 - #1734 Allow to drag&drop images in tinymce

@@ -20,6 +20,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.utils import DisplayList
+from senaite.core.p3compat import cmp
 from bika.lims.browser import BrowserView
 from bika.lims.browser.widgets.serviceswidget import ServicesView
 import json

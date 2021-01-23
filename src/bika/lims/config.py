@@ -20,6 +20,7 @@
 
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.public import DisplayList
+from senaite.core.p3compat import cmp
 from zope.i18n.locales import locales
 
 # Implicit module imports used by others

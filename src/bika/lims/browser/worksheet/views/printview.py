@@ -39,6 +39,7 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
+from senaite.core.p3compat import cmp
 
 
 class PrintView(BrowserView):
@@ -551,7 +552,7 @@ class PrintView(BrowserView):
             data['name'] = to_utf8(client.getName())
         return data
 
-    def _flush_pdf():
+    def _flush_pdf(self):
         """ Generates a PDF using the current layout as the template and
             returns the chunk of bytes.
         """
