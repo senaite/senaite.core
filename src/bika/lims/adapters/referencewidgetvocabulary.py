@@ -118,7 +118,7 @@ class DefaultReferenceWidgetVocabulary(object):
         if isinstance(data, dict):
             return {
                 self.to_utf8(key): self.to_utf8(value)
-                for key, value in data.iteritems()
+                for key, value in six.iteritems(data)
             }
 
         # if it's anything else, return it in its original form

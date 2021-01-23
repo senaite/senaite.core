@@ -1557,7 +1557,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Process valid record
             valid_record = dict()
-            for fieldname, fieldvalue in record.iteritems():
+            for fieldname, fieldvalue in six.iteritems(record):
                 # clean empty
                 if fieldvalue in ['', None]:
                     continue

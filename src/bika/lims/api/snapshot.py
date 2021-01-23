@@ -333,7 +333,7 @@ def compare_snapshots(snapshot_a, snapshot_b, raw=False):
         return {}
 
     diffs = {}
-    for key_a, value_a in snapshot_a.iteritems():
+    for key_a, value_a in six.iteritems(snapshot_a):
         # skip fieds starting with _ or __
         if key_a.startswith("_"):
             continue
