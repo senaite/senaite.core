@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
@@ -123,7 +125,7 @@ class Report(BrowserView):
             entitytype = _(entity.__class__.__name__)
 
             # Workflow states retrieval
-            for workflowid, workflow in entity.workflow_history.iteritems():
+            for workflowid, workflow in six.iteritems(entity.workflow_history):
                 for action in workflow:
                     actiontitle = _('Created')
                     if not action['action'] or (

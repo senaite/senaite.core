@@ -21,6 +21,7 @@
 import mimetypes
 import os
 import re
+import six
 import tempfile
 from email import Encoders
 from email.MIMEBase import MIMEBase
@@ -803,13 +804,14 @@ def get_strings(data):
 
     # if this is a list of values, return list of string values
     if isinstance(data, list):
-        return [get_strings(item) for item in data]
+        return map(get_strings, data)
 
     # if this is a dictionary, return dictionary of string keys and values
     if isinstance(data, dict):
+
         return {
             get_strings(key): get_strings(value)
-            for key, value in data.iteritems()
+            for key, value in six.iteritems(data)
         }
     # if it's anything else, return it in its original form
     return data
@@ -833,7 +835,7 @@ def get_unicode(data):
     if isinstance(data, dict):
         return {
             get_unicode(key): get_unicode(value)
-            for key, value in data.iteritems()
+            for key, value in six.iteritems(data)
         }
     # if it's anything else, return it in its original form
     return data

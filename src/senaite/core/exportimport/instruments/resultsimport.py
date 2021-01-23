@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import codecs
+import six
+
 from datetime import datetime
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -457,7 +459,7 @@ class AnalysisResultsImporter(Logger):
         attachments = {}
         infile = self._parser.getInputFile()
 
-        for objid, results in self._parser.getRawResults().iteritems():
+        for objid, results in six.iteritems(self._parser.getRawResults()):
             # Allowed more than one result for the same sample and analysis.
             # Needed for calibration tests
             for result in results:
@@ -531,7 +533,7 @@ class AnalysisResultsImporter(Logger):
                 capturedate = result.get('DateTime', {}).get('DateTime', None)
                 if capturedate:
                     del result['DateTime']
-                for acode, values in result.iteritems():
+                for acode, values in six.iteritems(result):
                     if acode not in acodes:
                         # Analysis keyword doesn't exist
                         continue
@@ -604,14 +606,14 @@ class AnalysisResultsImporter(Logger):
                                 "it is not assigned to a worksheet (%s)" %
                                 analysis)
 
-        for arid, acodes in importedars.iteritems():
+        for arid, acodes in six.iteritems(importedars):
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
             self.log(
                     "${request_id}: ${analysis_keywords} imported sucessfully",
                     mapping={"request_id": arid,
                              "analysis_keywords": acodesmsg})
 
-        for instid, acodes in importedinsts.iteritems():
+        for instid, acodes in six.iteritems(importedinsts):
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
             msg = "%s: %s %s" % (instid,
                                  ", ".join(acodesmsg),

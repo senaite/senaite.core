@@ -4,12 +4,13 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1745 Use six.iteritems instead of iteritems function (py3-compat)
 - #1747 Use functools.reduce instead of reduce (p3-compat)
 - #1746 Use six.moves.urllib.parse instead of parse (p3-compat)
 - #1744 Use six.moves.urllib instead of urllib/urllib2 (p3-compat)
 - #1743 Replace print statement by print() function (py3-compat)
 - #1741 Use six to check text data types (py3-compat)
-- #1742 Use the polyfill for the `cmp` builtin function
+- #1742 Use the polyfill for the `cmp` builtin function (py3-compat)
 - #1741 Use six to check text data types
 - #1739 Migrated samples folder to Dexterity
 - #1738 Resolve attachment images by UID

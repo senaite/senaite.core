@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+import six
 
 from Acquisition import aq_base
 from bika.lims import api
@@ -439,7 +440,7 @@ def setup_auditlog_catalog(portal):
     catalog_id = auditlog_catalog.CATALOG_AUDITLOG
     catalog = api.get_tool(catalog_id)
 
-    for name, meta_type in auditlog_catalog._indexes.iteritems():
+    for name, meta_type in six.iteritems(auditlog_catalog._indexes):
         indexes = catalog.indexes()
         if name in indexes:
             logger.info("*** Index '%s' already in Catalog [SKIP]" % name)

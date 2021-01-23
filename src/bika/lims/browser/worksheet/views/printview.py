@@ -395,7 +395,7 @@ class PrintView(BrowserView):
             ar['analyses'] = ans
             ars[reqid] = ar
 
-        ars = [a for a in ars.itervalues()]
+        ars = ars.values()
 
         # Sort analysis requests by position
         ars.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))

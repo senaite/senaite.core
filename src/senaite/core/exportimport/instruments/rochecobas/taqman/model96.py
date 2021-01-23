@@ -28,6 +28,7 @@ from senaite.core.exportimport.instruments.resultsimport import \
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 import json
+import six
 import traceback
 
 title = "Roche Cobas - Taqman - 96"
@@ -85,7 +86,7 @@ class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
                 remarks = "".join([result, " on Order Number,", resid])
 
             rawdict = {}
-            for k, v in row.iteritems():
+            for k, v in six.iteritems(row):
                 rawdict[k] = self.parse_field(k, v)
 
             rawdict['DefaultResult'] = 'Result'

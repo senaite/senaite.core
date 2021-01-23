@@ -24,6 +24,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from . import WinescanImporter, WinescanCSVParser
 import json
+import six
 import traceback
 
 title = "FOSS - Winescan FT120"
@@ -166,7 +167,7 @@ class WinescanFT120CSVParser(WinescanCSVParser):
             # Add the results of Standard Deviation. For each acode, add
             # the Standard Result
             del values['Rep #']
-            for key, value in values.iteritems():
+            for key, value in six.iteritems(values):
                 row['Sd-%s' % key] = value
         elif is_mean:
             # Remove the # item and override with new values
