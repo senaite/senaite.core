@@ -24,6 +24,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
+from six import StringIO
 from zope.interface import implements
 
 
@@ -185,7 +186,7 @@ class Report(BrowserView):
                 'Performed',
                 'Published',
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
                                 fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

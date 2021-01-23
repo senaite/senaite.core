@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from collections import defaultdict
-from StringIO import StringIO
+from six import StringIO
 
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG

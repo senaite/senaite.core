@@ -34,9 +34,7 @@ from email.Utils import formataddr
 from email.Utils import parseaddr
 from smtplib import SMTPException
 from string import Template
-from StringIO import StringIO
-
-import six
+from six import StringIO
 
 from bika.lims import api
 from bika.lims import logger

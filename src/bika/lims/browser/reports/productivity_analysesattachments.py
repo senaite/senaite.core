@@ -146,7 +146,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
@@ -157,7 +157,7 @@ class Report(BrowserView):
                 _('Size'),
                 _('Loaded'),
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:

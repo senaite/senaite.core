@@ -29,7 +29,7 @@ from zope.component import getUtility
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from . import FOSSFIAStarCSVParser, FOSSFIAStarImporter
-from cStringIO import StringIO
+from six import StringIO
 import json
 import traceback
 import csv
