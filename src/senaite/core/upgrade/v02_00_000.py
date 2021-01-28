@@ -844,6 +844,7 @@ def migrate_resultsinterpretations_inline_images(portal):
         obj = api.get_object(brain)
         if num and num % 1000 == 0:
             logger.info("Processed {}/{}".format(num, count))
+            transaction.commit()
         rid = obj.getResultsInterpretationDepts()
         for ri in rid:
             html = ri.get("richtext")
@@ -864,6 +865,7 @@ def migrate_resultsinterpretations_inline_images(portal):
                     .format(obj.getId(), src, link))
                 obj._p_changed = True
             ri["richtext"] = html
+        obj._p_deactivate()
 
     transaction.commit()
     logger.info("Migrating results interpretation image links ... [DONE]")
