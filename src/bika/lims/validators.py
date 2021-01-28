@@ -27,6 +27,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
@@ -489,21 +490,19 @@ class FormulaValidator:
     def __call__(self, value, *args, **kwargs):
         if not value:
             return True
-        instance = kwargs['instance']
-        # fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
+        instance = kwargs["instance"]
+        request = api.get_request()
         form = request.form
-        interim_fields = form.get('InterimFields')
-
+        interim_fields = form.get("InterimFields")
         translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        interim_keywords = interim_fields and \
-            [f['keyword'] for f in interim_fields] or []
+        catalog = api.get_tool(SETUP_CATALOG)
+        interim_keywords = filter(None, map(
+            lambda i: i.get("keyword"), interim_fields))
         keywords = re.compile(r"\[([^\.^\]]+)\]").findall(value)
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = bsc(getKeyword=keyword, is_active=True)
+            dep_service = catalog(getKeyword=keyword, is_active=True)
             if not dep_service and keyword not in interim_keywords:
                 msg = _(
                     "Validation failed: Keyword '${keyword}' is invalid",
@@ -512,19 +511,17 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Wildcards
-        # LIMS-1769 Allow to use LDL and UDL in calculations
-        # https://jira.bikalabs.com/browse/LIMS-1769
-        allowedwds = ['LDL', 'UDL', 'BELOWLDL', 'ABOVEUDL']
+        # Allow to use Wildcards, LDL and UDL values in calculations
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL"]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
-        keysandwildcards = [k for k in keysandwildcards if '.' in k]
-        keysandwildcards = [k.split('.', 1) for k in keysandwildcards]
+        keysandwildcards = [k for k in keysandwildcards if "." in k]
+        keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
         errwilds = [k[1] for k in keysandwildcards if k[0] not in keywords]
         if len(errwilds) > 0:
             msg = _(
                 "Wildcards for interims are not allowed: ${wildcards}",
                 mapping={
-                    'wildcards': safe_unicode(', '.join(errwilds))
+                    "wildcards": safe_unicode(", ".join(errwilds))
                 })
             return to_utf8(translate(msg))
 
@@ -534,7 +531,7 @@ class FormulaValidator:
             msg = _(
                 "Invalid wildcards found: ${wildcards}",
                 mapping={
-                    'wildcards': safe_unicode(', '.join(wildcards))
+                    "wildcards": safe_unicode(", ".join(wildcards))
                 })
             return to_utf8(translate(msg))
 
