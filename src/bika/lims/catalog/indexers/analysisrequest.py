@@ -18,17 +18,12 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import six
-
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.indexers import get_metadata_for
-from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.catalog.indexers import get_searchable_text_tokens
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
-from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
-from zope.component import getAdapters
 
 
 @indexer(IAnalysisRequest)
@@ -66,7 +61,7 @@ def listing_searchable_text(instance):
         tokens = get_searchable_text_tokens(descendant, catalog)
         entries.update(tokens)
 
-    return u" ".join(tokens)
+    return u" ".join(list(entries))
 
 
 @indexer(IAnalysisRequest)
