@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1751 Fix typos and naming in import template
+- #1750 Auto logout timeout
 - #1748 Use six.StringIO instead of StringIO or cStringIO (py3-compat)
 - #1748 Use correct syntax for exceptions (py3-compat)
 - #1745 Use six.iteritems instead of iteritems function (py3-compat)

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
@@ -785,7 +786,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Formatting Configuration"),
             allowDelete=True,
             description=_(
-                " <p>The Bika LIMS ID Server provides unique sequential IDs "
+                " <p>The ID Server provides unique sequential IDs "
                 "for objects such as Samples and Worksheets etc, based on a "
                 "format specified for each content type.</p>"
                 "<p>The format is constructed similarly to the Python format"
@@ -878,6 +879,27 @@ class BikaSetup(folder.ATFolder):
 
     schema = schema
     security = ClassSecurityInfo()
+
+    def setAutoLogOff(self, value):
+        """set session lifetime
+        """
+        value = int(value)
+        if value < 0:
+            value = 0
+        value = value * 60
+        acl = api.get_tool("acl_users")
+        session = acl.get("session")
+        if session:
+            session.timeout = value
+
+    def getAutoLogOff(self):
+        """get session lifetime
+        """
+        acl = api.get_tool("acl_users")
+        session = acl.get("session")
+        if not session:
+            return 0
+        return session.timeout // 60
 
     def getStickerTemplates(self):
         """Get the sticker templates

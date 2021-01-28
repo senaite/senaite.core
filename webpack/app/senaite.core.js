@@ -35,24 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "el": "sidebar",
   });
 
-  // Auto LogOff
-  var logoff = document.body.dataset.autoLogoff || 0;
-  var logged = document.body.classList.contains("userrole-authenticated");
-  // Max value for setTimeout is a 32 bit integer
-  const max_timeout = 2**31 - 1;
-  if (logoff > 0 && logged) {
-    var logoff_ms = logoff * 60 * 1000;
-    if (logoff_ms > max_timeout) {
-      console.warn(`Setting logoff_ms to max value ${max_timeout}ms`);
-      logoff_ms = max_timeout;
-    }
-    setTimeout(function() {
-      location.href = window.portal_url + "/logout";
-    }, logoff_ms);
-  }
-  // /Auto LogOff
-
-
   // Ajax Edit Form Handler
   var form = new EditForm({
     form_selectors: ["form[name='edit_form']"],
