@@ -35,7 +35,7 @@
                class="nav-link active"
                role="tab"
                i18n:translate="">
-              Instrument Inport
+              Instrument Import
             </a>
           </li>
           <li class="nav-item"
@@ -96,7 +96,7 @@
                class="tab-pane fade"
                role="tabpanel">
             <span class="form-text text-muted" i18n:translate="">
-              Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.
+              Submit a valid Open XML (.XLSX) file containing setup records to continue.
             </span>
 
             <div class="row">
