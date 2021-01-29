@@ -82,9 +82,15 @@ def get_metadata_for(instance, catalog):
     try:
         return catalog.getMetadataForUID(path)
     except KeyError:
-        logger.warn("Cannot get metadata from {}. Path not found: {}"
-                    .format(catalog.id, path))
-        return {}
+        logger.info("Generating catalog metadata for '{}' manually"
+                    .format(path))
+        metadata = {}
+        for key in catalog.schema():
+            attr = getattr(instance, key, None)
+            if callable(attr):
+                attr = attr()
+            metadata[key] = attr
+        return metadata
 
 
 def get_searchable_text_tokens(instance, catalog_name,
