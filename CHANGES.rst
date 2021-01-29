@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1754 Fix KeyError in calculation validator
+- #1753 Fixed indexing of partitions and missing metadata generation
 - #1751 Fix typos and naming in import template
 - #1750 Auto logout timeout
 - #1748 Use six.StringIO instead of StringIO or cStringIO (py3-compat)
