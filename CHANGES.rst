@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1754 Fix KeyError in calculation validator
 - #1753 Fixed indexing of partitions and missing metadata generation
 - #1751 Fix typos and naming in import template
 - #1750 Auto logout timeout
