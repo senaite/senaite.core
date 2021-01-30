@@ -37,6 +37,7 @@ from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
+from senaite.core.setuphandlers import setup_markup_schema
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import catalog_object
@@ -245,6 +246,9 @@ def upgrade(tool):
 
     # Resolve attachment image URLs in results interpretations by UID
     migrate_resultsinterpretations_inline_images(portal)
+
+    # Setup markup default and allowed schemas
+    setup_markup_schema(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

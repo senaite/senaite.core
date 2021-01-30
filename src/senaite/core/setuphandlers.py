@@ -26,15 +26,19 @@ from bika.lims.setuphandlers import setup_catalog_mappings
 from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
+from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import get_installer
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
+from zope.component import getUtility
 from zope.interface import implementer
 
 try:
+    from Products.CMFPlone.interfaces import IMarkupSchema
     from Products.CMFPlone.interfaces import INonInstallable
 except ImportError:
     from zope.interface import Interface
+    IMarkupSchema = None
 
     class INonInstallable(Interface):
         pass
@@ -116,6 +120,9 @@ def install(context):
     # Set CMF Form actions
     setup_form_controller_actions(portal)
     setup_form_controller_more_action(portal)
+
+    # Setup markup default and allowed schemas
+    setup_markup_schema(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -201,3 +208,15 @@ def post_install(portal_setup):
     _run_import_step(portal, "skins", profile=profile_id)
 
     logger.info("SENAITE CORE post install handler [DONE]")
+
+
+def setup_markup_schema(portal):
+    """Sets the default and allowed markup schemas for RichText widgets
+    """
+    if not IMarkupSchema:
+        return
+
+    registry = getUtility(IRegistry, context=portal)
+    settings = registry.forInterface(IMarkupSchema, prefix='plone')
+    settings.default_type = u"text/html"
+    settings.allowed_types = ("text/html", )
