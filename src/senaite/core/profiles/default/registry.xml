@@ -138,4 +138,21 @@
     </value>
   </record>
 
+  <record name="plone.allowed_types" interface="Products.CMFPlone.interfaces.controlpanel.IMarkupSchema" field="allowed_types">
+    <field type="plone.registry.field.Tuple">
+      <default>
+        <element>text/html</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer.</description>
+      <missing_value/>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Alternative formats</title>
+      <value_type type="plone.registry.field.Choice">
+        <vocabulary>plone.app.vocabularies.AllowableContentTypes</vocabulary>
+      </value_type>
+    </field>
+    <value>
+      <element>text/html</element>
+    </value>
+  </record>
+
 </registry>
