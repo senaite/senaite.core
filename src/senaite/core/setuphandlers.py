@@ -27,18 +27,18 @@ from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
 from plone.registry.interfaces import IRegistry
-from Products.CMFPlone.interfaces import IMarkupSchema
 from Products.CMFPlone.utils import get_installer
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
 from zope.interface import implementer
-from zope.interface.interfaces import ComponentLookupError
 
 try:
+    from Products.CMFPlone.interfaces import IMarkupSchema
     from Products.CMFPlone.interfaces import INonInstallable
 except ImportError:
     from zope.interface import Interface
+    IMarkupSchema = None
 
     class INonInstallable(Interface):
         pass
@@ -213,10 +213,10 @@ def post_install(portal_setup):
 def setup_markup_schema(portal):
     """Sets the default and allowed markup schemas for RichText widgets
     """
-    try:
-        registry = getUtility(IRegistry, context=portal)
-        settings = registry.forInterface(IMarkupSchema, prefix='plone')
-        settings.default_type = u"text/html"
-        settings.allowed_types = ("text/html", )
-    except (KeyError, ComponentLookupError):
-        pass
+    if not IMarkupSchema:
+        return
+
+    registry = getUtility(IRegistry, context=portal)
+    settings = registry.forInterface(IMarkupSchema, prefix='plone')
+    settings.default_type = u"text/html"
+    settings.allowed_types = ("text/html", )
