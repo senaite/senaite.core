@@ -54,6 +54,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1629
     fix_published_results_permission(portal)
 
+    # 'View' tab not displayed after saving the batch
+    fix_batch_view_action(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -88,4 +91,14 @@ def fix_published_results_permission(portal):
     for action in ti.listActions():
         if action.id == "published_results":
             action.permissions = ("View", )
+            break
+
+
+def fix_batch_view_action(portal):
+    """Sets the 'View' action to visible for batches
+    """
+    ti = portal.portal_types.getTypeInfo("Batch")
+    for action in ti.listActions():
+        if action.id == "view":
+            action.visible = True
             break
