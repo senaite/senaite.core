@@ -55,6 +55,7 @@ from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from zope.component import getAdapters
@@ -295,6 +296,10 @@ class AnalysesView(ListingView):
         if not self.context_active:
             # The current context must be active. We cannot edit analyses from
             # inside a deactivated Analysis Request, for instance
+            return False
+
+        if not self.has_permission(ModifyPortalContent, obj=self.context):
+            # skip any further checks if the sample can not be modified
             return False
 
         analysis_obj = self.get_object(analysis_brain)
