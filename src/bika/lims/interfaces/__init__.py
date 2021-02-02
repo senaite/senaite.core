@@ -313,8 +313,18 @@ class IDepartments(Interface):
     """
 
 
+class IContainer(Interface):
+    """Marker interface for Container
+    """
+
+
 class IContainers(Interface):
     """Marker interface for Containers
+    """
+
+
+class IContainerType(Interface):
+    """Marker interface for Container Type
     """
 
 

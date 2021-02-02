@@ -29,6 +29,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IContainer
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -94,7 +95,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Container(BaseContent):
-    implements(IDeactivable)
+    implements(IContainer, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

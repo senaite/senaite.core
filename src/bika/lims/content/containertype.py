@@ -23,6 +23,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IContainerType
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
@@ -33,7 +34,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class ContainerType(BaseContent):
-    implements(IDeactivable)
+    implements(IContainerType, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
