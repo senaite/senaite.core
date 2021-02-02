@@ -385,7 +385,10 @@ class DashboardView(BrowserView):
         # elements by
         query = self._update_criteria_with_filters(query, 'analysisrequests')
 
-        # Active Samples (All)
+        # Active Samples (All but published)
+        query['review_state'] =\
+            ['to_be_sampled', 'to_be_preserved', 'scheduled_sampling', 'sample_due',
+             'attachment_due', 'sample_received', 'to_be_verified', 'verified']
         total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
@@ -440,15 +443,10 @@ class DashboardView(BrowserView):
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Samples published
-        name = _('Samples published')
-        desc = _("Published")
-        purl = 'analysisrequests?analysisrequests_review_state=published'
-        query['review_state'] = ['published', ]
-        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
-
         # Samples to be printed
         if self.context.bika_setup.getPrintingWorkflowEnabled():
+            query['review_state'] = ['published']
+            total = self.search_count(query, catalog.id)
             name = _('Samples to be printed')
             desc = _("To be printed")
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
@@ -484,7 +482,8 @@ class DashboardView(BrowserView):
         # elements by
         query = self._update_criteria_with_filters(query, 'worksheets')
 
-        # Active Worksheets (all)
+        # Active Worksheets (all but verified)
+        query['review_state'] = ['open', 'attachment_due', 'to_be_verified']
         total = self.search_count(query, bc.id)
 
         # Open worksheets
@@ -499,13 +498,6 @@ class DashboardView(BrowserView):
         desc = _('To be verified')
         purl = 'worksheets?list_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
-
-        # Worksheets verified
-        name = _('Verified')
-        desc = _('Verified')
-        purl = 'worksheets?list_review_state=verified'
-        query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of WSs over a period, grouped by
@@ -534,7 +526,9 @@ class DashboardView(BrowserView):
         # Check if dashboard_cookie contains any values to query elements by
         query = self._update_criteria_with_filters(query, 'analyses')
 
-        # Active Analyses (All)
+        # Active Analyses (All but final states such as published, rejected, etc)
+        query['review_state'] =\
+            ['unassigned', 'assigned', 'to_be_verified', 'verified']
         total = self.search_count(query, bc.id)
 
         # Analyses to be assigned
