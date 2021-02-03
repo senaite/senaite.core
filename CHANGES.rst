@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1768 Added api for measurements with physical quantities
 - #1767 Disallow results entry when sample modification is not allowed
 - #1755 Set markup schema to `html/text` as default for RichText fields
 - #1754 Fix KeyError in calculation validator
