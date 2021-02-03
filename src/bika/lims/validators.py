@@ -493,8 +493,8 @@ class FormulaValidator:
         instance = kwargs["instance"]
         request = api.get_request()
         form = request.form
-        interim_fields = form.get("InterimFields")
-        translate = getToolByName(instance, 'translation_service').translate
+        interim_fields = form.get("InterimFields", [])
+        translate = getToolByName(instance, "translation_service").translate
         catalog = api.get_tool(SETUP_CATALOG)
         interim_keywords = filter(None, map(
             lambda i: i.get("keyword"), interim_fields))
