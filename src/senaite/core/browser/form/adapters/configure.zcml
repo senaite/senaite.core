@@ -17,4 +17,9 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".method.EditForm"/>
 
+  <adapter
+      for="bika.lims.interfaces.ISampleType
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".sampletype.EditForm"/>
+
 </configure>

@@ -31,7 +31,6 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.vocabularies import getStickerTemplates
-from magnitude import mg
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
@@ -147,11 +146,14 @@ schema = BikaSchema.copy() + Schema((
             description=_("Prefixes can not contain spaces."),
         ),
     ),
-    StringField('MinimumVolume',
-        required = 1,
-        widget = StringWidget(
-            label=_("Minimum Volume"),
-            description=_("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
+    StringField(
+        "MinimumVolume",
+        required=1,
+        widget=StringWidget(
+            label=_("Minimum volume or weight"),
+            description=_(
+                "Sample volume or weight required (e.g '10 ml', '1 kg')"
+            ),
         ),
     ),
     ReferenceField('ContainerType',
@@ -230,26 +232,6 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
     def Title(self):
         return safe_unicode(self.getField('title').get(self)).encode('utf-8')
-
-    def getJSMinimumVolume(self, **kw):
-        """Try convert the MinimumVolume to 'ml' or 'g' so that JS has an
-        easier time working with it.  If conversion fails, return raw value.
-        """
-        default = self.Schema()['MinimumVolume'].get(self)
-        try:
-            mgdefault = default.split(' ', 1)
-            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
-        except:
-            mgdefault = mg(0, 'ml')
-        try:
-            return str(mgdefault.ounit('ml'))
-        except:
-            pass
-        try:
-            return str(mgdefault.ounit('g'))
-        except:
-            pass
-        return str(default)
 
     def getDefaultLifetime(self):
         """ get the default retention period """
