@@ -5,6 +5,7 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/API_analysis.rst
 .. include:: ../src/senaite/core/tests/doctests/API_analysisservice.rst
 .. include:: ../src/senaite/core/tests/doctests/API_mail.rst
+.. include:: ../src/senaite/core/tests/doctests/API_measure.rst
 .. include:: ../src/senaite/core/tests/doctests/API_security.rst
 .. include:: ../src/senaite/core/tests/doctests/API_snapshot.rst
 .. include:: ../src/senaite/core/tests/doctests/API_user.rst
