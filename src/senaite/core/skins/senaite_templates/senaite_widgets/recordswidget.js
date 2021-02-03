@@ -25,7 +25,7 @@ function recordswidget_lookups(elements){
             if ($(this).attr('name').split(".").length > 1) {
             	key = $(this).attr('name').split(".")[1].split(":")[0];
             }
-            row_nr = parseInt(this.id.split("-")[2]);
+            var row_nr = parseInt(this.id.split("-").slice(-1)[0]);
             $(this).val(ui.item[key]);
             // Set values if colModel matches recordswidget subfield name
             var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;
@@ -63,7 +63,7 @@ function recordswidget_loadEventHandlers(elements) {
                 key = $(this).attr('name').split(".")[1].split(":")[0];
             }
             var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;
-            row_nr = parseInt(this.id.split("-")[2]);
+            var row_nr = parseInt(this.id.split("-").slice(-1)[0]);
             for (var i = colModel.length - 1; i >= 0; i--) {
                 var colname = colModel[i]['columnName'];
                 if (colname != key) {
