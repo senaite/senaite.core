@@ -19,11 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
+
 import six
 from bika.lims import APIError
-from bika.lims import api
 from bika.lims.api import fail
-
 from magnitude import Magnitude
 from magnitude import MagnitudeError
 from magnitude import mg
@@ -44,6 +43,7 @@ def is_magnitude(value):
 
 def get_magnitude(value, default=_marker):
     """Returns the Magnitude object that represents the value
+
     :param value: a string that representing a number and unit (e.g. 10 mL)
     :param default: default value to convert to a magnitude object
     :type value: str or Magnitude
@@ -102,6 +102,7 @@ def get_quantity(value, unit=None, num_digits=16):
 
 def is_volume(value):
     """Returns whether the value passed in represents a valid volume
+
     :param value: the value to check
     :type value: str or Magnitude
     :return: True if the value passed in represents a volume
@@ -117,6 +118,7 @@ def is_volume(value):
 
 def is_weight(value):
     """Returns whether the value passed in represents a valid weight
+
     :param value: the value to check
     :type value: str or Magnitude
     :return: True if the value passed in represents a weight
