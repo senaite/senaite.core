@@ -264,4 +264,14 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       permission="zope2.View" />
 
+  <!-- Sample dispatched viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ssample_dispatched"
+      class=".sample_dispatched.SampleDispatchedViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_dispatched_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
 </configure>
