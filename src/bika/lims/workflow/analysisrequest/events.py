@@ -33,6 +33,7 @@ from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
+from Products.CMFCore.WorkflowCore import WorkflowException
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -214,11 +215,24 @@ def after_dispatch(sample):
     """
     primary = sample.getParentAnalysisRequest()
 
+    def get_last_wf_comment(obj):
+        entry = api.get_review_history(obj)[0]
+        return entry.get("comments", "")
+
+    def dispatch(obj, comment=""):
+        wf = api.get_tool("portal_workflow")
+        try:
+            wf.doActionFor(obj, "dispatch", comment=comment)
+            return True
+        except WorkflowException:
+            return False
+
     if not primary:
         # propagate to transitions
         partitions = sample.getDescendants(all_descendants=False)
         for partition in partitions:
-            do_action_for(partition, "dispatch")
+            comment = get_last_wf_comment(sample)
+            dispatch(partition, comment)
         return
 
     # Return when primary sample is already dispatched
@@ -232,7 +246,8 @@ def after_dispatch(sample):
     parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
     if len(parts) == 0:
         # There are no partitions left, transition the primary
-        do_action_for(primary, "dispatch")
+        comment = get_last_wf_comment(sample)
+        dispatch(primary, comment)
 
 
 def after_restore(sample):

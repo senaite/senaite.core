@@ -6,6 +6,7 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.workflow import isTransitionAllowed
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
@@ -60,6 +61,25 @@ class DispatchSamplesView(BrowserView):
         except WorkflowException:
             return False
 
+    def uniquify_items(self, items):
+        """Uniquify the items with sort order
+        """
+        unique = []
+        for item in items:
+            if item in unique:
+                continue
+            unique.append(item)
+        return unique
+
+    def get_partitions(self, sample):
+        """Return dispatchable sample partitions
+        """
+        if not IAnalysisRequest.providedBy(sample):
+            return []
+        partitions = sample.getDescendants(all_descendants=False)
+        return filter(
+            lambda part: isTransitionAllowed(part, "dispatch"), partitions)
+
     def get_samples(self):
         """Extract the samples from the request UIDs
 
@@ -70,17 +90,19 @@ class DispatchSamplesView(BrowserView):
         objs = self.get_objects_from_request()
 
         samples = []
+
         for obj in objs:
             # when coming from the samples listing
             if IAnalysisRequest.providedBy(obj):
                 samples.append(obj)
-
-        if samples:
-            return list(set(samples))
+                samples.extend(self.get_partitions(obj))
 
         # when coming from the WF menu inside a sample
         if IAnalysisRequest.providedBy(self.context):
-            return [self.context]
+            samples.append(self.context)
+            samples.extend(self.get_partitions(self.context))
+
+        return self.uniquify_items(samples)
 
     def get_title(self, obj):
         """Return the object title as unicode
