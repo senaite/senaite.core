@@ -1130,7 +1130,6 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
-    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->

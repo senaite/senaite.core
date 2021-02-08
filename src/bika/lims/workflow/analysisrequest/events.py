@@ -212,13 +212,17 @@ def after_detach(analysis_request):
 def after_dispatch(sample):
     """Event triggered after "dispatch" transition takes place for a given sample
     """
-
     primary = sample.getParentAnalysisRequest()
+
     if not primary:
+        # propagate to transitions
+        partitions = sample.getDescendants(all_descendants=False)
+        for partition in partitions:
+            do_action_for(partition, "dispatch")
         return
 
     # Return when primary sample is already dispatched
-    if api.get_workflow_status_of(primary) != "dispatched":
+    if api.get_workflow_status_of(primary) == "dispatched":
         return
 
     # Dipsatch primary sample when all partitions are dispatched
@@ -228,7 +232,7 @@ def after_dispatch(sample):
     parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
     if len(parts) == 0:
         # There are no partitions left, transition the primary
-        do_action_for(primary, "book_out")
+        do_action_for(primary, "dispatch")
 
 
 def after_restore(sample):
@@ -250,6 +254,10 @@ def after_restore(sample):
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
     if not primary:
+        # propagate to transitions
+        partitions = sample.getDescendants(all_descendants=False)
+        for partition in partitions:
+            do_action_for(partition, "restore")
         return
 
     # Return when primary sample is not dispatched

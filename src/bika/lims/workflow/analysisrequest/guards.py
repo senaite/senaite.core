@@ -231,3 +231,20 @@ def guard_detach(analysis_request):
     """
     # Detach transition can only be done to partitions
     return analysis_request.isPartition()
+
+
+def guard_dispatch(sample):
+    """Checks if the dispatch transition is allowed
+
+    We prevent dispatching when one analysis is assigned to a worksheet.
+    """
+    for analysis in sample.getAnalyses():
+        if api.get_workflow_status_of(analysis) == "assigned":
+            return False
+    return True
+
+
+def guard_restore(sample):
+    """Checks if the restore transition is allowed
+    """
+    return True
