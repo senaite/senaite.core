@@ -781,6 +781,30 @@ def get_workflow_status_of(brain_or_object, state_var="review_state"):
     return workflow.getInfoFor(ob=obj, name=state_var, default='')
 
 
+def get_previous_worfklow_status_of(brain_or_object, skip=None, default=None):
+    """Get the previous workflow status of the object
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :param skip: Workflow states to skip
+    :type skip: tuple/list
+    :returns: status
+    :rtype: str
+    """
+
+    skip = isinstance(skip, (list, tuple)) and skip or []
+    history = get_review_history(brain_or_object)
+    for num, item in enumerate(history):
+        # skip the current history entry
+        if num == 0:
+            continue
+        status = item.get("review_state")
+        if status in skip:
+            continue
+        return status
+    return default
+
+
 def get_creation_date(brain_or_object):
     """Get the creation date of the brain or object
 
