@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.mail import send_email
-from bika.lims.api.mail import to_email_attachment
+from bika.lims.api.snapshot import pause_snapshots_for
+from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IReceived
@@ -207,3 +207,57 @@ def after_detach(analysis_request):
     # will return all them, so no need to do the same with the detached
     analyses = parent.getAnalyses(full_objects=True)
     map(lambda an: an.reindexObject(), analyses)
+
+
+def after_dispatch(sample):
+    """Event triggered after "dispatch" transition takes place for a given sample
+    """
+
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        return
+
+    # Return when primary sample is already dispatched
+    if api.get_workflow_status_of(primary) != "dispatched":
+        return
+
+    # Dipsatch primary sample when all partitions are dispatched
+    parts = primary.getDescendants()
+    # Partitions in some statuses won't be considered
+    skip = ["dispatched", "cancelled", "retracted", "rejected"]
+    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
+    if len(parts) == 0:
+        # There are no partitions left, transition the primary
+        do_action_for(primary, "book_out")
+
+
+def after_restore(sample):
+    """Event triggered after "restore" transition takes place for a sample
+    """
+
+    # Transition the sample to the state before it was stored
+    previous_state = api.get_previous_worfklow_status_of(
+        sample, skip=["dispatched"], default="sample_due")
+
+    # Note: we pause the snapshots here because events are fired next
+    pause_snapshots_for(sample)
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
+    resume_snapshots_for(sample)
+
+    # Reindex the sample
+    sample.reindexObject()
+
+    # If the sample is a partition, try to promote to the primary
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        return
+
+    # Return when primary sample is not dispatched
+    if api.get_workflow_status_of(primary) != "dispatched":
+        return
+
+    # Restore primary sample if all its partitions have been restored
+    parts = primary.getDescendants()
+    states = map(api.get_workflow_status_of, parts)
+    if "dispatched" not in states:
+        do_action_for(primary, "restore")

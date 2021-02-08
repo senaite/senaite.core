@@ -30,6 +30,8 @@
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Sample Sample</permission>
   <permission>senaite.core: Transition: Schedule Sampling</permission>
+  <permission>senaite.core: Transition: Dispatch Sample</permission>
+  <permission>senaite.core: Transition: Restore Sample</permission>
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Edit Field Results</permission>
@@ -501,6 +503,7 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="create_partitions" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -590,6 +593,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -687,6 +691,7 @@
     <exit-transition transition_id="preserve"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -774,6 +779,7 @@
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -867,13 +873,14 @@
   <!-- /State: verified -->
 
 
-  <!-- /State: published -->
+  <!-- State: published -->
   <state state_id="published" title="Published" i18n:attributes="title">
     <description>Results published and sent to the client</description>
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False"/>
@@ -959,7 +966,7 @@
     <description>Sample was rejected</description>
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id="" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1038,7 +1045,7 @@
     <description>Published results were invalidated</description>
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id=""/>
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1123,6 +1130,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
+    <exit-transition transition_id="dispatch" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1194,6 +1202,84 @@
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: cancelled -->
+
+  <!-- State: dispatched -->
+  <state state_id="dispatched" title="Dispatched" i18n:attributes="title">
+    <description>Sample is dispatched</description>
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="restore" />
+    <!-- /TRANSITIONS -->
+
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False"/>
+    <permission-map name="Modify portal content" acquired="False"/>
+
+    <!-- MANAGED PERMISSIONS (partially readonly) -->
+    <!-- Permissions for Transitions (must match with exit transitions) -->
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <!-- Hide the 'Manage Analyses' tab -->
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <!-- Hide the 'Manage Results' tab -->
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
+    <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
+    <!-- Field Permissions (all readonly) -->
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
+    <!-- /MANAGED PERMISSIONS -->
+  </state>
+  <!-- /State: dispatched -->
 
 
   <!-- *** TRANSITIONS *** -->
@@ -1456,6 +1542,31 @@
       <guard-permission>senaite.core: Transition: Detach Sample Partition</guard-permission>
     </guard>
   </transition>
+
+  <!-- Transition: Dispatch
+       This transition applies to all received samples in all states.
+  -->
+  <transition transition_id="dispatch" title="Dispatch" new_state="dispatched" trigger="USER"
+              before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Dispatch</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("dispatch")</guard-expression>
+      <guard-permission>senaite.core: Transition: Dispatch Sample</guard-permission>
+    </guard>
+  </transition>
+
+  <!-- Transition: Restore
+       This transition applies to dispatched samples and restores the sample to the previous state.
+  -->
+  <transition transition_id="restore" title="Restore" new_state="" trigger="USER"
+              before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Restore</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("restore")</guard-expression>
+      <guard-permission>senaite.core: Transition: Restore Sample</guard-permission>
+    </guard>
+  </transition>
+
 
   <!-- *** VARIABLES *** -->
 
