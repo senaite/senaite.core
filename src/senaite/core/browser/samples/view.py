@@ -323,6 +323,18 @@ class SamplesView(ListingView):
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
+                "id": "dispatched",
+                "title": _("Dispatched"),
+                "flat_listing": True,
+                "confirm_transitions": ["restore"],
+                "contentFilter": {
+                    "review_state": ("dispatched"),
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
@@ -442,6 +454,10 @@ class SamplesView(ListingView):
                 "level": 0}
             # No need to display the Client column
             self.remove_column('Client')
+
+        # remove query filter for root samples when listing is flat
+        if self.flat_listing:
+            self.contentFilter.pop("isRootAncestor", None)
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item
@@ -613,11 +629,9 @@ class SamplesView(ListingView):
         item["getPreserver"] = ""
         item["getDatePreserved"] = ""
 
-        # Assign the parent sample of this partition
-        item["parent"] = obj.getRawParentAnalysisRequest
-
-        # Assign the partitions of this sample
+        # Assign parent and children partitions of this sample
         if self.show_partitions:
+            item["parent"] = obj.getRawParentAnalysisRequest
             item["children"] = obj.getDescendantsUIDs or []
 
         return item
@@ -694,7 +708,13 @@ class SamplesView(ListingView):
 
     @property
     def show_partitions(self):
+        if self.flat_listing:
+            return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
             return api.get_setup().getShowPartitions()
         return True
+
+    @property
+    def flat_listing(self):
+        return self.review_state.get("flat_listing", False)
