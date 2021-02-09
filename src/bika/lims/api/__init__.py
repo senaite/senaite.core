@@ -22,6 +22,7 @@ import re
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from itertools import groupby
 
 import six
 
@@ -794,6 +795,11 @@ def get_previous_worfklow_status_of(brain_or_object, skip=None, default=None):
 
     skip = isinstance(skip, (list, tuple)) and skip or []
     history = get_review_history(brain_or_object)
+
+    # Remove consecutive duplicates, some transitions might happen more than
+    # once consecutively (e.g. publish)
+    history = map(lambda i: i[0], groupby(history))
+
     for num, item in enumerate(history):
         # skip the current history entry
         if num == 0:
