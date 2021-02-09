@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import six
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
@@ -134,7 +135,7 @@ class DispatchSamplesView(BrowserView):
         """Return a list of uids from the request
         """
         uids = self.request.form.get("uids", "")
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
         unique_uids = collections.OrderedDict().fromkeys(uids).keys()
         return filter(api.is_uid, unique_uids)
