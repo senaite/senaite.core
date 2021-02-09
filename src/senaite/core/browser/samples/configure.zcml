@@ -16,7 +16,7 @@
       for="*"
       name="dispatch_samples"
       class=".dispatch_samples.DispatchSamplesView"
-      permission="senaite.core.permissions.TransitionDispatchSample"
+      permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>
