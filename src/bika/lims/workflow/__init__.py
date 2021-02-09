@@ -35,7 +35,6 @@ from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState  # noqa
 from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
-from itertools import groupby
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -267,23 +266,6 @@ def get_review_history_statuses(instance, reverse=False):
     """
     review_history = getReviewHistory(instance, reverse=reverse)
     return map(lambda event: event["review_state"], review_history)
-
-
-def get_prev_status_from_history(instance, status=None):
-    """Returns the previous status of the object. If status is set, returns the
-    previous status before the object reached the status passed in.
-    If instance has reached the status passed in more than once, only the last
-    one is considered.
-    """
-    target = status or api.get_workflow_status_of(instance)
-    history = getReviewHistory(instance, reverse=True)
-    history = map(lambda event: event["review_state"], history)
-    # Remove consecutive duplicates
-    history = map(lambda i: i[0], groupby(history))
-
-    if target not in history or history.index(target) == len(history)-1:
-        return None
-    return history[history.index(target)+1]
 
 
 def getReviewHistory(instance, reverse=True):

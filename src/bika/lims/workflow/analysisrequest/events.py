@@ -28,7 +28,6 @@ from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor as do_action_for
-from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
@@ -143,8 +142,9 @@ def after_reinstate(analysis_request):
     do_action_to_analyses(analysis_request, "reinstate")
 
     # Force the transition to previous state before the request was cancelled
-    prev_status = get_prev_status_from_history(analysis_request, "cancelled")
-    changeWorkflowState(analysis_request, SAMPLE_WORKFLOW, prev_status,
+    skip = ["cancelled"]
+    prev = api.get_previous_worfklow_status_of(analysis_request, skip=skip)
+    changeWorkflowState(analysis_request, SAMPLE_WORKFLOW, prev,
                         action="reinstate")
     analysis_request.reindexObject()
 
