@@ -478,6 +478,14 @@
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
     </permission>
+    <permission name="senaite.core: Transition: Dispatch Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Restore Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
 
     <!-- Transition permissions (Worksheet) -->
     <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">

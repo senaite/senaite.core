@@ -112,6 +112,8 @@ TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
 TransitionRejectSample = "senaite.core: Transition: Reject Sample"
 TransitionSampleSample = "senaite.core: Transition: Sample Sample"
 TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
+TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
+TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
 
 # Transition permissions (Worksheet)
 TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"

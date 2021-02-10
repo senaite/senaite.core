@@ -732,6 +732,29 @@ Reactivate the client::
     'active'
 
 
+Getting the previous Workflow Status of an Object
+........................................
+
+
+This function gives the last worflow state of an object:
+
+    >>> api.get_workflow_status_of(client)
+    'active'
+
+    >>> api.get_previous_worfklow_status_of(client)
+    'inactive'
+
+Specific states can be skipped:
+
+    >>> api.get_previous_worfklow_status_of(client, skip=['inactive'])
+    'active'
+
+A default value can be set in case no previous state was found:
+
+    >>> api.get_previous_worfklow_status_of(client, skip=['active' ,'inactive'], default='notfound')
+    'notfound'
+
+
 Getting the available transitions for an object
 ...............................................
 

@@ -84,6 +84,8 @@
   <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
   <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
   <permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
+  <permission id="senaite.core.permissions.TransitionDispatchSample" title="senaite.core: Transition: Dispatch Sample"/>
+  <permission id="senaite.core.permissions.TransitionRestoreSample" title="senaite.core: Transition: Restore Sample"/>
 
   # Transition Permissions (Worksheet)
   <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>

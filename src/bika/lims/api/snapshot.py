@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+
 import six
 
 from bika.lims import _
@@ -35,6 +36,7 @@ from senaite.app.supermodel import SuperModel
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
@@ -318,6 +320,18 @@ def take_snapshot(obj, store=True, **kw):
     alsoProvides(obj, IAuditable)
 
     return snapshot
+
+
+def pause_snapshots_for(obj):
+    """Pause snapshots for the given object
+    """
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+
+def resume_snapshots_for(obj):
+    """Resume snapshots for the given object
+    """
+    noLongerProvides(obj, IDoNotSupportSnapshots)
 
 
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
