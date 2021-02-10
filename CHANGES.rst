@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1773 Integrated upgrade step notification events
 - #1772 Sample dispatch workflow
 - #1771 Fix RecordsWidget does not store hidden fields in Add form
 - #1768 Added api for measurements with physical quantities
