@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from Products.CMFCore.utils import getToolByName
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -56,6 +56,9 @@ def upgrade(tool):
 
     # 'View' tab not displayed after saving the batch
     fix_batch_view_action(portal)
+
+    # LabClerk cannot modify setup content
+    update_setup_workflow_permissions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -102,3 +105,23 @@ def fix_batch_view_action(portal):
         if action.id == "view":
             action.visible = True
             break
+
+
+def update_setup_workflow_permissions(portal):
+    """
+    Removes "Modify portal content" permission to lab clerks in SetUp
+    :param portal: Portal object
+    :return: None
+    """
+    wf_tool = getToolByName(portal, 'portal_workflow')
+    logger.info("Updating bika_setup permissions...")
+    workflow = wf_tool.getWorkflowById("senaite_setup_workflow")
+    permission_id = "Modify portal content"
+    roles = ["Manager", "LabManager"]
+    for state_id, state in workflow.states.items():
+        if state_id == "active":
+            state.setPermission(permission_id, False, roles)
+    bikasetup = portal.bika_setup
+    workflow.updateRoleMappingsFor(bikasetup)
+    bikasetup.reindexObject()
+    logger.info("bika_setup permissions were updated.")
