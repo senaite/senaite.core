@@ -38,7 +38,6 @@
       <permission-role>Authenticated</permission-role>
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
-      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
