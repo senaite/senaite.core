@@ -34,6 +34,8 @@ from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales
 
+DETACHED_STATES = ["cancelled", "rejected", "retracted"]
+
 
 class AnalysisRequestAnalysesView(BikaListingView):
     """AR Manage Analyses View
@@ -62,7 +64,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.show_search = True
 
         self.categories = []
-        self.selected = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.show_categories = True
@@ -124,7 +125,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         super(AnalysisRequestAnalysesView, self).update()
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
-        self.selected = self.analyses.keys()
 
     @view.memoize
     def show_prices(self):
@@ -218,14 +218,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         if uid in self.analyses:
             analysis = self.analyses[uid]
-            # Might differ from the service keyword
-            keyword = analysis.getKeyword()
-            # Mark the row as disabled if the analysis has been submitted
-            item["disabled"] = ISubmitted.providedBy(analysis)
-            # get the hidden status of the analysis
-            hidden = analysis.getHidden()
-            # get the price of the analysis
-            price = analysis.getPrice()
+            review_state = api.get_review_status(analysis)
+            if review_state not in DETACHED_STATES:
+                # Might differ from the service keyword
+                keyword = analysis.getKeyword()
+                # Mark the row as disabled if the analysis has been submitted
+                item["disabled"] = ISubmitted.providedBy(analysis)
+                # get the hidden status of the analysis
+                hidden = analysis.getHidden()
+                # get the price of the analysis
+                price = analysis.getPrice()
+                item["selected"] = True
 
         # get the specification of this object
         rr = self.get_results_range()
@@ -236,7 +239,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()
         item["allow_edit"] = self.get_editable_columns(obj)
-        item["selected"] = uid in self.selected
         item["min"] = str(spec.get("min", ""))
         item["max"] = str(spec.get("max", ""))
         item["warn_min"] = str(spec.get("warn_min", ""))
