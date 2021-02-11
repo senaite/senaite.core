@@ -278,7 +278,7 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", labcontacts)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", labcontact)
     ['LabClerk', 'LabManager', 'Manager']
@@ -620,10 +620,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", instruments)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", instrument)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
@@ -733,10 +733,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", methods)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", method)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
@@ -843,10 +843,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", analysisservices)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", analysisservice)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
