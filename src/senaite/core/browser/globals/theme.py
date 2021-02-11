@@ -45,11 +45,10 @@ from .interfaces import ISenaiteTheme
 IMG_TAG = Template("""<img src="$src" $attr />""")
 
 ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
-ICON_CACHE_TIME = time.time() // 86400  # 1 day
 
 
 def icon_cache_key(method, instance):
-    return ICON_CACHE_TIME
+    return time.time() // 86400  # 1 day
 
 
 @implementer(ITraversable)
