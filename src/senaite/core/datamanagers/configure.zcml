@@ -2,6 +2,9 @@
            i18n_domain="senaite.core">
 
   <!-- Data Manager for Analyses -->
+  <adapter factory=".sample.SampleDataManager" />
+
+  <!-- Data Manager for Analyses -->
   <adapter factory=".analysis.RoutineAnalysisDataManager" />
 
 </configure>
