@@ -114,10 +114,10 @@ Get the data manager:
 Getting the value of a named attribute:
 
     >>> cu_dm.get("Keyword")
-    u'Cu'
+    'Cu'
 
     >>> cu_dm.get("Result")
-    u''
+    ''
 
     >>> cu_dm.get("NOTEXISTS")
     Traceback (most recent call last):
@@ -127,10 +127,10 @@ Getting the value of a named attribute:
 Query a value allows to define a default value:
 
     >>> cu_dm.query("Keyword", default=False)
-    u'Cu'
+    'Cu'
 
     >>> cu_dm.query("Result", default=False)
-    u''
+    ''
 
     >>> cu_dm.query("NOTEXISTS", default=False)
     False
@@ -141,7 +141,7 @@ Seting a value returns a list of updated objects (important when it comes to dep
     [<Analysis at /plone/clients/client-1/W-0001/Cu>]
 
     >>> cu_dm.get("Result")
-    u'123'
+    '123'
 
 
 Permission check
@@ -220,4 +220,4 @@ Set the results:
 Check if the result was updated:
 
     >>> drl_dm.get("Result")
-    u'20.0'
+    '20.0'

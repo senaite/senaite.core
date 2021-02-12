@@ -28,14 +28,6 @@ class SampleDataManager(DataManager):
         """
         return field.checkPermission("set", self.context)
 
-    def query(self, name, default=None):
-        """Query sample field
-        """
-        try:
-            return self.get(name)
-        except AttributeError:
-            return default
-
     def get(self, name):
         """Get sample field
         """

@@ -17,22 +17,16 @@ class DataManager(object):
         self.context = context
 
     def get(self, name):
-        if not self.can_access():
-            raise Unauthorized("You are not allowed to access {}".format(
-                api.get_id(self.context)))
-        return getattr(self.context, name)
+        raise NotImplementedError("Must be implemented by subclass")
 
     def query(self, name, default=None):
-        if not self.can_access():
-            raise Unauthorized("You are not allowed to access {}".format(
-                api.get_id(self.context)))
-        return getattr(self.context, name, default)
+        try:
+            return self.get(name)
+        except AttributeError:
+            return default
 
     def set(self, name, value):
-        if not self.can_access():
-            raise Unauthorized("You are not allowed to modify {}".format(
-                api.get_id(self.context)))
-        return setattr(self.context, name, value)
+        raise NotImplementedError("Must be implemented by subclass")
 
     def can_access(self):
         return check_permission(View, self.context)
