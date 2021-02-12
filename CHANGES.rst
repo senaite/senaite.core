@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1778 Added Datamanager Adapters for Analysis and Sample
 - #1773 Integrated upgrade step notification events
 - #1772 Sample dispatch workflow
 - #1771 Fix RecordsWidget does not store hidden fields in Add form
