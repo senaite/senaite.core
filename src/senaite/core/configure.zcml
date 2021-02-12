@@ -13,6 +13,7 @@
   <!-- package includes -->
   <include package=".adapters" />
   <include package=".browser" />
+  <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".locales" />
   <include package=".upgrade" />
