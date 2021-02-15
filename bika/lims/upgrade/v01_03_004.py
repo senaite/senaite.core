@@ -35,10 +35,9 @@ from bika.lims.upgrade.utils import UpgradeUtils
 version = "1.3.4"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
-
 INDEXES_TO_ADD = [
-    # Replaces getSampleTypeUIDs
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "is_published", "BooleanIndex"),
+    # List of tuples (catalog_name, index_name, index meta type)
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "modified", "DateIndex"),
 ]
 
 
@@ -74,9 +73,6 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1579
     remove_object_workflow_states_metadata(portal)
 
-    # Add new indexes
-    add_new_indexes(portal)
-
     # Added "senaite.core: Transition: Retest" permission for analyses
     # Added transition "retest" in analysis workflow
     # https://github.com/senaite/senaite.core/pull/1580
@@ -92,6 +88,9 @@ def upgrade(tool):
     update_workflow_mappings_contacts(portal)
     update_workflow_mappings_labcontacts(portal)
     update_workflow_mappings_samples(portal)
+
+    # Add new indexes
+    add_new_indexes(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -214,9 +213,10 @@ def update_dynamic_analysisspecs(portal):
 
         # Unset/set the specification
         logger.info("Updating specification '{}' of smaple '{}'".format(
-            spec.Title(), sample.getId()))
-        sample.setAnalysisSpec(None)
-        sample.setAnalysisSpec(spec)
+            spec.Title(), obj.getId()))
+
+        obj.setSpecification(None)
+        obj.setSpecification(spec)
 
     logger.info("Updating specifications with dynamic results ranges [DONE]")
 

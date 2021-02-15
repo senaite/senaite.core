@@ -21,8 +21,10 @@
 import collections
 
 from bika.lims import _
+from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.permissions import AddAnalysisSpec
+from bika.lims.utils import get_link
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.listing import ListingView
@@ -75,7 +77,7 @@ class DynamicAnalysisSpecsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Title"),
-                "replace_url": "absolute_url",
+                "replace_url": "getURL",
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _("Description"),
@@ -123,6 +125,8 @@ class DynamicAnalysisSpecsView(ListingView):
             the template
         :index: current index of the item
         """
+        item["replace"]["Title"] = get_link(
+            api.get_url(obj), value=api.get_title(obj))
         return item
 
 

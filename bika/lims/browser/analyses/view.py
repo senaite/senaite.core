@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from copy import copy
+from copy import deepcopy
 
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -630,6 +631,7 @@ class AnalysesView(BikaListingView):
                     "ajax": True,
                 }
 
+
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
@@ -808,6 +810,9 @@ class AnalysesView(BikaListingView):
         # of interims the analysis has already assigned.
         interim_fields = analysis_brain.getInterimFields or list()
 
+        # Copy to prevent to avoid persistent changes
+        interim_fields = deepcopy(interim_fields)
+
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
@@ -831,6 +836,24 @@ class AnalysesView(BikaListingView):
             if not interim_hidden:
                 interim_title = interim_field.get('title')
                 self.interim_columns[interim_keyword] = interim_title
+
+            # Does interim's results list needs to be rendered?
+            choices = interim_field.get("choices")
+            if choices:
+                # Get the {value:text} dict
+                choices = choices.split("|")
+                choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+
+                # Generate the display list
+                # [{"ResultValue": value, "ResultText": text},]
+                headers = ["ResultValue", "ResultText"]
+                d_list = map(lambda it: dict(zip(headers, it)), choices.items())
+                item.setdefault("choices", {})[interim_keyword] = d_list
+
+                # Display the text instead of the value
+                val = choices.get(interim_value, "")
+                interim_field["value"] = val
+                item[interim_keyword] = interim_field
 
         item['interimfields'] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields

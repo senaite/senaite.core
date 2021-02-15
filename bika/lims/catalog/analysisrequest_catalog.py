@@ -56,6 +56,7 @@ _indexes_dict = {
     "listing_searchable_text": "TextIndexNG3",
     "isRootAncestor": "BooleanIndex",
     "is_received": "BooleanIndex",
+    "modified": "DateIndex",
     "is_published": "BooleanIndex",
 }
 # Defining the columns for this catalog

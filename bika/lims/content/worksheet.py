@@ -814,6 +814,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             slots.append(slot)
         return slots
 
+    def get_containers_slots(self):
+        """Returns a list of tuple (container_uid, slot)
+        """
+        layout = self.getLayout()
+        return map(lambda l: (l["container_uid"], int(l["position"])), layout)
+
     def _apply_worksheet_template_routine_analyses(self, wst):
         """Add routine analyses to worksheet according to the worksheet template
         layout passed in w/o overwriting slots that are already filled.
@@ -827,116 +833,114 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :param wst: worksheet template used as the layout
         :returns: None
         """
-        bac = api.get_tool("bika_analysis_catalog")
-        services = wst.getService()
-        wst_service_uids = [s.UID() for s in services]
+        # Get the services from the Worksheet Template
+        service_uids = wst.getRawService()
+        if not service_uids:
+            # No service uids assigned to this Worksheet Template, skip
+            logger.warn("Worksheet Template {} has no services assigned"
+                        .format(api.get_path(wst)))
+            return
+
+        # Search for unassigned analyses
         query = {
             "portal_type": "Analysis",
-            "getServiceUID": wst_service_uids,
+            "getServiceUID": service_uids,
             "review_state": "unassigned",
             "isSampleReceived": True,
             "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
-        # Filter analyses their Analysis Requests have been received
-        analyses = bac(query)
-
-        # No analyses, nothing to do
+        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
         if not analyses:
             return
 
-        # Available slots for routine analyses. Sort reverse, cause we need a
-        # stack for sequential assignment of slots
+        # Available slots for routine analyses
         available_slots = self.resolve_available_slots(wst, 'a')
         available_slots.sort(reverse=True)
 
         # If there is an instrument assigned to this Worksheet Template, take
         # only the analyses that allow this instrument into consideration.
-        instrument = wst.getInstrument()
+        instrument = wst.getRawInstrument()
 
         # If there is method assigned to the Worksheet Template, take only the
         # analyses that allow this method into consideration.
-        method = wst.getRestrictToMethod()
+        method = wst.getRawRestrictToMethod()
 
-        # This worksheet is empty?
-        num_routine_analyses = len(self.getRegularAnalyses())
+        # Map existing sample uids with slots
+        samples_slots = dict(self.get_containers_slots())
 
-        # Group Analyses by Analysis Requests
-        ar_analyses = dict()
-        ar_slots = dict()
-        ar_fixed_slots = dict()
+        # Keep track of the UIDs of pre-existing Samples
+        existing = samples_slots.keys()
 
-        for brain in analyses:
-            obj = api.get_object(brain)
-            arid = obj.getRequestID()
+        new_analyses = []
 
-            if instrument and not obj.isInstrumentAllowed(instrument):
-                # Exclude those analyses for which the worksheet's template
-                # instrument is not allowed
+        for analysis in analyses:
+            analysis = api.get_object(analysis)
+
+            if analysis.getWorksheet():
+                # TODO duplicate record or bad value for review_state?
                 continue
 
-            if method and not obj.isMethodAllowed(method):
-                # Exclude those analyses for which the worksheet's template
-                # method is not allowed
+            if instrument and not analysis.isInstrumentAllowed(instrument):
+                # Template's Instrument does not support this analysis
                 continue
 
-            slot = ar_slots.get(arid, None)
+            if method and not analysis.isMethodAllowed(method):
+                # Template's method does not support this analysis
+                continue
+
+            # Get the slot where analyses from this sample are located
+            sample = analysis.getRequest()
+            sample_uid = api.get_uid(sample)
+            slot = samples_slots.get(sample_uid)
             if not slot:
-                # We haven't processed other analyses that belong to the same
-                # Analysis Request as the current one.
-                if len(available_slots) == 0 and num_routine_analyses == 0:
-                    # No more slots available for this worksheet/template, so
-                    # we cannot add more analyses to this WS. Also, there is no
-                    # chance to process a new analysis with an available slot.
-                    break
+                if len(available_slots) == 0:
+                    # Maybe next analysis is from a sample with a slot assigned
+                    continue
 
-                if num_routine_analyses == 0:
-                    # This worksheet is empty, but there are slots still
-                    # available, assign the next available slot to this analysis
-                    slot = available_slots.pop()
-                else:
-                    # This worksheet is not empty and there are slots still
-                    # available.
-                    slot = self.get_slot_position(obj.getRequest())
-                    if slot:
-                        # Prefixed slot position
-                        ar_fixed_slots[arid] = slot
-                        if arid not in ar_analyses:
-                            ar_analyses[arid] = list()
-                        ar_analyses[arid].append(obj)
-                        continue
+                # Pop next available slot
+                slot = available_slots.pop()
 
-                    # This worksheet does not contain any other analysis
-                    # belonging to the same Analysis Request as the current
-                    if len(available_slots) == 0:
-                        # There is the chance to process a new analysis that
-                        # belongs to an Analysis Request that is already
-                        # in this worksheet.
-                        continue
+            # Keep track of the slot where analyses from this sample must live
+            samples_slots[sample_uid] = slot
 
-                    # Assign the next available slot
-                    slot = available_slots.pop()
+            # Keep track of the analyses to add
+            analysis_info = {
+                "analysis": analysis,
+                "sample_uid": sample_uid,
+                "sample_id": api.get_id(sample),
+                "slot": slot,
+            }
+            new_analyses.append(analysis_info)
 
-            ar_slots[arid] = slot
-            if arid not in ar_analyses:
-                ar_analyses[arid] = list()
-            ar_analyses[arid].append(obj)
+        if not new_analyses:
+            # No analyses to add
+            return
 
-        # Sort the analysis requests by sortable_title, so the ARs will appear
-        # sorted in natural order. Since we will add the analysis with the
-        # exact slot where they have to be displayed, we need to sort the slots
-        # too and assign them to each group of analyses in natural order
-        sorted_ar_ids = sorted(ar_analyses.keys())
-        slots = sorted(ar_slots.values(), reverse=True)
+        # No need to sort slots for analyses with a pre-existing sample/slot
+        with_samp = filter(lambda a: a["sample_uid"] in existing, new_analyses)
+        analyses_slots = map(lambda s: (s["analysis"], s["slot"]), with_samp)
 
-        # Add regular analyses
-        for ar_id in sorted_ar_ids:
-            slot = ar_fixed_slots.get(ar_id, None)
-            if not slot:
-                slot = slots.pop()
-            ar_ans = ar_analyses[ar_id]
-            for ar_an in ar_ans:
-                self.addAnalysis(ar_an, slot)
+        # Re-sort slots for analyses without a pre-existing sample/slot
+        # Analyses retrieved from database are sorted by priority, but we want
+        # them to be displayed in natural order in the worksheet
+        without_samp = filter(lambda a: a not in with_samp, new_analyses)
+        # Sort the items by sample id
+        without_samp.sort(key=lambda a: a["sample_id"])
+        # Extract the list of analyses (sorted by sample id)
+        without_samp_analyses = map(lambda a: a["analysis"], without_samp)
+        # Extract the list of assigned slots and sort them in natural order
+        without_samp_slots = sorted(map(lambda a: a["slot"], without_samp))
+        # Generate the tuple (analysis, slot)
+        without_samp_slots = zip(without_samp_analyses, without_samp_slots)
+        # Append to those non sorted because of pre-existing slots
+        analyses_slots.extend(without_samp_slots)
+
+        # Add the analyses to the worksheet
+        map(lambda a: self.addAnalysis(a[0], a[1]), analyses_slots)
+
+        # Reindex the worksheet to update the WorksheetTemplate meta column
+        self.reindexObject()
 
     def _apply_worksheet_template_duplicate_analyses(self, wst):
         """Add duplicate analyses to worksheet according to the worksheet template
@@ -1265,6 +1269,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     an.setMethod(meth)
 
             an.setInstrument(instrument)
+            an.reindexObject()
             total += 1
 
         self.getField('Instrument').set(self, instrument)

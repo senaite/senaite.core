@@ -1,12 +1,35 @@
 Changelog
 =========
 
-1.3.4 (unreleased)
+1.3.5 (unreleased)
+------------------
+
+- #1756 Fix:'View' tab not displayed after saving the batch
+- #1737 Fix: formatDateQuery does not add the timezone for queries
+- #1707 Fix sporadic persistent changes with interims
+- #1704 Add "User name" and "User groups" columns in Lab Contacts list
+- #1704 Fix Cannot override behavior of LabContacts folder on `before_render`
+- #1680 Fix Selected instrument is not assigned to analyses in Worksheet
+- #1673 Fix Samples not sorted in natural order when Worksheet Template is used
+- #1656 Fix Maximum length of Choices subfield (interim) is set to 40
+- #1651 Fix Error when invalidating a sample with contained retests
+- #1633 Fix report section displays date pickers in Chinese
+- #1639 Fix very rare AttributeError on Worksheet Template assignment
+- #1629 Fix Published results tab is not displayed to Client contacts
+- #1628 Fix instrument import for analyses with result options
+- #1625 Fix assignment of analyses via worksheet template when Worksheet is full
+- #1617 Fix writing methods on read when reindexing services
+
+
+1.3.4 (2020-08-11)
 ------------------
 
 **Added**
 
 - #1763 Remove final states from dashboard
+- #1612 Add Client sample ID to worksheet template printview
+- #1609 Support result options entry for interim values
+- #1598 Added "modified" index in Sample's (AnalysisRequest) catalog
 - #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
 - #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
 - #1586 Allow to configure the variables for IDServer with an Adapter
@@ -17,6 +40,7 @@ Changelog
 
 **Changed**
 
+- #1607 Allow to set instruments from method edit view
 - #1588 Dynamic Analysis Specs: Hide compliance viewlets
 - #1579 Remove classic mode in folderitems
 - #1577 Do not force available workflow transitions in batches listing
@@ -24,6 +48,11 @@ Changelog
 
 **Fixed**
 
+- #1606 Fix Traceback on Dynamic Analysis Specs Edit
+- #1605 Fix Retests are not displayed in Worksheet's print view
+- #1604 Fix Analyses from partitions do not show up when using Worksheet Template
+- #1602 Fix Report "Analysis per Service" is always creating the same PDF file
+- #1601 Fix Wrong url in client's sample templates listing
 - #1594 Fix System does not validate values from Results Options to be different
 - #1596 Fix Reports page shows the Display/State/Add menu
 - #1595 Fix Wrong url in client's analyses profiles listing

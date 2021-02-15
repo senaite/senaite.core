@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-02-16 19:07+0000\n"
+"POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -27,7 +27,6 @@ msgstr "AR Template"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "AR Templates"
 msgstr "Modelos de RA"
 
@@ -240,6 +239,10 @@ msgstr ""
 msgid "Current"
 msgstr "Atual"
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Dashboard"
+msgstr ""
+
 msgid "Deactivate"
 msgstr "Desativar"
 
@@ -408,6 +411,10 @@ msgstr "Método"
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr "Métodos"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "My organization"
+msgstr ""
 
 msgid "No preservation required"
 msgstr "Não é necessária preservação"
@@ -644,20 +651,8 @@ msgstr "Desvio de Amostragem"
 msgid "Sampling Deviations"
 msgstr "Desvios de Amostragens"
 
-#: bika/lims/profiles/default/types/SRTemplate.xml
-msgid "Sampling Round Template"
-msgstr "Modelo da rodada de amostragem "
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/Client.xml
-#: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
 msgstr "Modelos de amostragem redundantes"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Sampling Rounds"
-msgstr "Rodadas de amostragem"
 
 msgid "Sampling workflow"
 msgstr "Processo de amostragem"

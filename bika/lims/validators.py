@@ -433,8 +433,48 @@ class InterimFieldsValidator:
                 instance.REQUEST[key] = to_utf8(translate(msg))
                 return instance.REQUEST[key]
 
+        # Check if choices subfield is valid
+        for interim in interim_fields:
+            message = self.validate_choices(interim)
+            if message:
+                # Not a valid choice
+                instance.REQUEST[key] = message
+                return message
+
         instance.REQUEST[key] = True
         return True
+
+    def validate_choices(self, interim):
+        """Checks whether the choices are valid for the given interim
+        """
+        choices = interim.get("choices")
+        if not choices:
+            # No choices set, nothing to do
+            return
+
+        # Choices are expressed like "value0:text0|value1:text1|..|valuen:textn"
+        choices = choices.split("|") or []
+        try:
+            choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+        except ValueError:
+            return _t(_(
+                "No valid format in choices field. Supported format is: "
+                "<value-0>:<text>|<value-1>:<text>|<value-n>:<text>"))
+
+        # Empty keys (that match with the result value) are not allowed
+        keys = map(lambda k: k.strip(), choices.keys())
+        empties = filter(None, keys)
+        if len(empties) != len(keys):
+            return _t(_("Empty keys are not supported"))
+
+        # No duplicate keys allowed
+        unique_keys = list(set(keys))
+        if len(unique_keys) != len(keys):
+            return _t(_("Duplicate keys in choices field"))
+
+        # We need at least 2 choices
+        if len(keys) < 2:
+            return _t(_("At least, two options for choices field are required"))
 
 
 validation.register(InterimFieldsValidator())

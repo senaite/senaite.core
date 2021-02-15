@@ -22,31 +22,27 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IMethod
-from bika.lims.utils import t
 from plone.app.blob.field import FileField as BlobFileField
+from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import LinesField
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
-from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
-
 
 schema = BikaSchema.copy() + Schema((
 
@@ -84,66 +80,36 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    # The instruments linked to this method. Don't use this
-    # method, use getInstrumentUIDs() or getInstruments() instead
     LinesField(
-        "_Instruments",
-        vocabulary="getInstrumentsDisplayList",
-        widget=MultiSelectionWidget(
-            modes=("edit"),
+        "Instruments",
+        vocabulary="availableInstrumentsVocabulary",
+        accessor="getInstrumentUIDs",
+        widget=InAndOutWidget(
+            visible=True,
             label=_("Instruments"),
             description=_(
-                "The selected instruments have support for this method. "
-                "Use the Instrument edit view to assign "
-                "the method to a specific instrument"),
-        ),
-    ),
-
-    # All the instruments available in the system. Don't use this
-    # method to retrieve the instruments linked to this method, use
-    # getInstruments() or getInstrumentUIDs() instead.
-    LinesField(
-        "_AvailableInstruments",
-        vocabulary="_getAvailableInstrumentsDisplayList",
-        widget=MultiSelectionWidget(
-            modes=("edit"),
+                "Select the supported Instruments for this Method."),
         )
     ),
 
-    # If no instrument selected, always True. Otherwise, the user will
-    # be able to set or unset the value. The behavior for this field
-    # is controlled with javascript.
+    # If no instrument selected, always True.
     BooleanField(
         "ManualEntryOfResults",
-        default=False,
+        schemata="default",
+        default=True,
         widget=BooleanWidget(
             label=_("Manual entry of results"),
             description=_("The results for the Analysis Services that use "
                           "this method can be set manually"),
-            modes=("edit"),
         )
-    ),
-
-    # Only shown in readonly view. Not in edit view
-    ComputedField(
-        "ManualEntryOfResultsViewField",
-        expression="context.isManualEntryOfResults()",
-        widget=BooleanWidget(
-            label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that use "
-                          "this method can be set manually"),
-            modes=("view"),
-        ),
     ),
 
     # Calculations associated to this method. The analyses services
     # with this method assigned will use the calculation selected here.
     UIDReferenceField(
         "Calculation",
-        vocabulary="_getCalculations",
-        allowed_types=("Calculation",),
-        accessor="getCalculationUID",
-        widget=SelectionWidget(
+        allowed_types=("Calculation", ),
+        widget=ReferenceWidget(
             visible={"edit": "visible", "view": "visible"},
             format="select",
             checkbox_bound=0,
@@ -152,8 +118,13 @@ schema = BikaSchema.copy() + Schema((
                 "If required, select a calculation for the The analysis "
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
+            showOn=True,
             catalog_name="bika_setup_catalog",
-            base_query={"is_active": True},
+            base_query={
+                "sort_on": "sortable_title",
+                "is_active": True,
+                "sort_limit": 50,
+            },
         )
     ),
     BooleanField(
@@ -188,50 +159,6 @@ class Method(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    @security.public
-    def getCalculation(self):
-        """Returns the assigned calculation
-
-        :returns: Calculation object
-        """
-        return self.getField("Calculation").get(self)
-
-    @security.public
-    def getCalculationUID(self):
-        """Returns the UID of the assigned calculation
-
-        NOTE: This is the default accessor of the `Calculation` schema field
-        and needed for the selection widget to render the selected value
-        properly in _view_ mode.
-
-        :returns: Calculation UID
-        """
-        calculation = self.getCalculation()
-        if not calculation:
-            return None
-        return api.get_uid(calculation)
-
-    def isManualEntryOfResults(self):
-        """Indicates if manual entry of results is allowed.
-
-        If no instrument is selected for this method, returns True. Otherwise,
-        returns False by default, but its value can be modified using the
-        ManualEntryOfResults Boolean Field
-        """
-        instruments = self.getInstruments()
-        return len(instruments) == 0 or self.getManualEntryOfResults()
-
-    def _getCalculations(self):
-        """Available Calculations registered in Setup
-        """
-        bsc = getToolByName(self, "bika_setup_catalog")
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type="Calculation",
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ("", t(_("None"))))
-        return DisplayList(items)
-
     def getInstrument(self):
         """Instruments capable to perform this method.
         Required by IHaveInstrument
@@ -243,28 +170,72 @@ class Method(BaseFolder):
         """
         return self.getBackReferences("InstrumentMethods")
 
+    def getRawInstruments(self):
+        """List of Instrument UIDs capable to perform this method
+        """
+        return map(api.get_uid, self.getInstruments())
+
+    def setInstruments(self, value):
+        """Set the method on the selected instruments
+        """
+        # filter out empty value
+        value = filter(lambda uid: uid, value)
+
+        # handle removed instruments
+        existing = self.getInstrumentUIDs()
+        to_remove = filter(lambda uid: uid not in value, existing)
+
+        # handle all Instruments flushed
+        if not value:
+            self.setManualEntryOfResults(True)
+
+        # remove method from removed instruments
+        for uid in to_remove:
+            instrument = api.get_object_by_uid(uid)
+            methods = instrument.getMethods()
+            methods.remove(self)
+            instrument.setMethods(methods)
+
+        # add method to new added instruments
+        for uid in value:
+            instrument = api.get_object_by_uid(uid)
+            methods = instrument.getMethods()
+            if self in methods:
+                continue
+            methods.append(self)
+            instrument.setMethods(methods)
+
     def getInstrumentUIDs(self):
         """UIDs of the instruments capable to perform this method
         """
         return map(api.get_uid, self.getInstruments())
 
-    def getInstrumentsDisplayList(self):
-        """Instruments capable to perform this method
+    def setManualEntryOfResults(self, value):
+        """Allow manual entry of results
         """
-        items = [(i.UID(), i.Title()) for i in self.getInstruments()]
-        return DisplayList(list(items))
+        field = self.getField("ManualEntryOfResults")
+        if not self.getInstruments():
+            # Always true if no instrument is selected
+            field.set(self, True)
+        else:
+            field.set(self, value)
 
-    def _getAvailableInstrumentsDisplayList(self):
+    def availableInstrumentsVocabulary(self):
         """Available instruments registered in the system
-
-        Only instruments with state=active will be fetched
         """
-        bsc = getToolByName(self, "bika_setup_catalog")
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type="Instrument",
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
+        bsc = api.get_tool("bika_setup_catalog")
+        query = {
+            "portal_type": "Instrument",
+            "sort_on": "sortable_title",
+            "is_active": True,
+        }
+        items = [(i.UID, i.Title) for i in bsc(query)]
         return DisplayList(list(items))
+
+    def isManualEntryOfResults(self):
+        """BBB
+        """
+        return self.getManualEntryOfResults()
 
 
 registerType(Method, PROJECTNAME)

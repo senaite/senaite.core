@@ -55,6 +55,7 @@ from zope.i18n.locales import locales
 
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
+from bika.lims.api import to_date as api_to_date
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -161,11 +162,18 @@ def formatDateQuery(context, date_id):
         into a date query construct
     """
     from_date = context.REQUEST.get('%s_fromdate' % date_id, None)
-    if from_date:
-        from_date = from_date + ' 00:00'
     to_date = context.REQUEST.get('%s_todate' % date_id, None)
+
+    current_timezone = DateTime().localZone()
+    if from_date:
+        from_date = ' '.join([from_date, current_timezone])
+        from_date = api_to_date(from_date)
+        from_date = from_date.earliestTime()
+
     if to_date:
-        to_date = to_date + ' 23:59'
+        to_date = ' '.join([to_date, current_timezone])
+        to_date = api_to_date(to_date)
+        to_date = to_date.latestTime()
 
     date_query = {}
     if from_date and to_date:

@@ -947,11 +947,21 @@ class AnalysisResultsImporter(Logger):
         # Set result if present.
         res = values.get(defresultkey, '')
         if res or res == 0 or self._override[1] == True:
-            # self.log("${object_id} result for '${analysis_keyword}': '${result}'",
-            #          mapping={"obect_id": obid,
-            #                   "analysis_keyword": acode,
-            #                   "result": str(res)})
-            # TODO incorporar per veure detall d'importacio
+
+            # handle non-floating values in result options
+            result_options = analysis.getResultOptions()
+            if result_options:
+                # Get result values as strings
+                result_values = map(
+                    lambda r: str(r.get("ResultValue")), result_options)
+
+                # If result is floatable, only uses the int part
+                if api.is_floatable(res):
+                    res = "{:.0f}".format(api.to_float(res))
+
+                if res in result_values:
+                    res = int(res)
+
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)

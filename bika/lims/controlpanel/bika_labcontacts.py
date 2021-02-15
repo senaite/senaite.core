@@ -22,17 +22,19 @@ import collections
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from zope.interface.declarations import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import user as api_user
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
 from bika.lims.permissions import AddLabContact
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from zope.interface.declarations import implements
 
 
 # TODO: Separate content and view into own modules!
@@ -89,6 +91,12 @@ class LabContactsView(BikaListingView):
             ("EmailAddress", {
                 "title": _("Email Address"),
                 "toggle": True}),
+            ("Username", {
+                "title": _("User name"),
+                "toggle": True}),
+            ("Groups", {
+                "title": _("User groups"),
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -112,9 +120,11 @@ class LabContactsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
+    def update(self):
         """Before template render hook
         """
+        super(LabContactsView, self).update()
+
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
@@ -159,8 +169,23 @@ class LabContactsView(BikaListingView):
         item["BusinessPhone"] = obj.getBusinessPhone()
         item["Fax"] = obj.getBusinessFax()
         item["MobilePhone"] = obj.getMobilePhone()
+        item["Username"] = obj.getUsername()
 
+        # Display the groups the user belongs to, if any
+        groups = self.get_user_groups(obj)
+        item["Groups"] = ", ".join(groups)
         return item
+
+    def get_user_groups(self, contact):
+        """Returns the groups from the contact passed-in
+        """
+        username = contact.getUsername()
+        if not username:
+            return []
+
+        skip = ["AuthenticatedUsers"]
+        groups = api_user.get_groups(username)
+        return filter(lambda g: g not in skip, sorted(groups))
 
 
 schema = ATFolderSchema.copy()

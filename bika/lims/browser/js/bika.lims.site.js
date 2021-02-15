@@ -15,8 +15,6 @@
       this.on_at_float_field_keyup = bind(this.on_at_float_field_keyup, this);
       this.on_at_integer_field_keyup = bind(this.on_at_integer_field_keyup, this);
       this.on_autocomplete_keydown = bind(this.on_autocomplete_keydown, this);
-      this.on_date_range_end_change = bind(this.on_date_range_end_change, this);
-      this.on_date_range_start_change = bind(this.on_date_range_start_change, this);
       this.notify_in_panel = bind(this.notify_in_panel, this);
       this.notificationPanel = bind(this.notificationPanel, this);
       this.set_cookie = bind(this.set_cookie, this);
@@ -62,8 +60,6 @@
       $("body").on("keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
       $("body").on("keyup", "input[name*='\\:float\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
       $("body").on("keydown", "input.autocomplete", this.on_autocomplete_keydown);
-      $("body").on("change", ".date_range_start", this.on_date_range_start_change);
-      $("body").on("change", ".date_range_end", this.on_date_range_end_change);
       $("body").on("click", "a.service_info", this.on_service_info_click);
       return $(document).on({
         ajaxStart: function() {
@@ -83,9 +79,9 @@
       /*
        * Initialize date pickers
        *
-       * XXX Where are these event handlers used?
+       * This is used for date pickers not bound to a DateTime widget
        */
-      var curDate, dateFormat, limitString, y;
+      var config, curDate, dateFormat, lang, limitString, y;
       console.debug("SiteView::init_datepickers");
       curDate = new Date;
       y = curDate.getFullYear();
@@ -94,82 +90,22 @@
       if (dateFormat === 'date_format_short_datepicker') {
         dateFormat = 'yy-mm-dd';
       }
-      $('input.datepicker_range').datepicker({
-
-        /**
-        This function defines a datepicker for a date range. Both input
-        elements should be siblings and have the class 'date_range_start' and
-        'date_range_end'.
-         */
+      lang = jarn.i18n.currentLanguage;
+      config = $.datepicker.regional[lang] || $.datepicker.regional[''];
+      $("input[class*='datepicker']").datepicker(Object.assign(config, {
         showOn: 'focus',
         showAnim: '',
         changeMonth: true,
         changeYear: true,
         dateFormat: dateFormat,
+        numberOfMonths: 1,
         yearRange: limitString
-      });
-      $('input.datepicker').on('click', function() {
-        console.warn("SiteView::datepicker.click: Refactor this event handler!");
-        $(this).datepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      $('input.datepicker_nofuture').on('click', function() {
-        console.warn("SiteView::datetimepicker_nofuture.click: Refactor this event handler!");
-        $(this).datepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: curDate,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      $('input.datepicker_2months').on('click', function() {
-        console.warn("SiteView::datetimepicker_2months.click: Refactor this event handler!");
-        $(this).datepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: '+0d',
-          numberOfMonths: 2,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      return $('input.datetimepicker_nofuture').on('click', function() {
-        console.warn("SiteView::datetimepicker_nofuture.click: Refactor this event handler!");
-        $(this).datetimepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: curDate,
-          dateFormat: dateFormat,
-          yearRange: limitString,
-          timeFormat: 'HH:mm',
-          beforeShow: function() {
-            setTimeout((function() {
-              $('.ui-datepicker').css('z-index', 99999999999999);
-            }), 0);
-          }
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
+      }));
+      $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2);
+      $('input.datepicker_2months').datepicker("option", "maxDate", "+0d");
+      $('input.datepicker_nofuture').datepicker("option", "maxDate", curDate);
+      $('input.datetimepicker_nofuture').datepicker("option", "maxDate", curDate);
+      return $('input.datetimepicker_nofuture').datepicker("option", "timeFormat", "HH:mm");
     };
 
     SiteView.prototype.init_referencedefinition = function() {
@@ -320,40 +256,6 @@
 
 
     /* EVENT HANDLER */
-
-    SiteView.prototype.on_date_range_start_change = function(event) {
-
-      /*
-       * Eventhandler for Date Range Filtering
-       *
-       * 1. Go to Setup and enable advanced filter bar
-       * 2. Set the start date of adv. filter bar, e.g. in AR listing
-       */
-      var $el, brother, date_element, el;
-      console.debug("°°° SiteView::on_date_range_start_change °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      date_element = $el.datepicker('getDate');
-      brother = $el.siblings('.date_range_end');
-      return $(brother).datepicker('option', 'minDate', date_element);
-    };
-
-    SiteView.prototype.on_date_range_end_change = function(event) {
-
-      /*
-       * Eventhandler for Date Range Filtering
-       *
-       * 1. Go to Setup and enable advanced filter bar
-       * 2. Set the start date of adv. filter bar, e.g. in AR listing
-       */
-      var $el, brother, date_element, el;
-      console.debug("°°° SiteView::on_date_range_end_change °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      date_element = $el.datepicker('getDate');
-      brother = $el.siblings('.date_range_start');
-      return $(brother).datepicker('option', 'maxDate', date_element);
-    };
 
     SiteView.prototype.on_autocomplete_keydown = function(event) {
 
