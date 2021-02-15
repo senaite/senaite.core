@@ -274,6 +274,7 @@
       <role name="Manager"/>
     </permission>
     <permission name="senaite.core: Add ReferenceDefinition" acquire="False">
+      <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
