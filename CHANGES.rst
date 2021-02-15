@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1776 Move time calculation into cache key function
 - #1775 Sample add form tal:expressions refactored
 - #1773 Integrated upgrade step notification events
 - #1772 Sample dispatch workflow
