@@ -50,6 +50,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    # Fix Lab clerk can edit items from setup folder
+    # https://github.com/senaite/senaite.core/pull/1774
+    setup.runImportStepFromProfile(profile, "rolemap")
 
     # Add new indexes
     add_new_indexes(portal)
@@ -64,6 +67,9 @@ def upgrade(tool):
 
     # 'View' tab not displayed after saving the batch
     fix_batch_view_action(portal)
+
+    # LabClerk cannot modify setup content
+    update_setup_workflow_permissions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -128,3 +134,23 @@ def add_index(catalog_id, index_name, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
+
+
+def update_setup_workflow_permissions(portal):
+    """
+    Removes "Modify portal content" permission to lab clerks in SetUp
+    :param portal: Portal object
+    :return: None
+    """
+    logger.info("Updating setup permissions...")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_setup_workflow")
+    permission_id = "Modify portal content"
+    roles = ["Manager", "LabManager"]
+    for state_id, state in workflow.states.items():
+        if state_id == "active":
+            state.setPermission(permission_id, False, roles)
+    bikasetup = portal.bika_setup
+    workflow.updateRoleMappingsFor(bikasetup)
+    bikasetup.reindexObject()
+    logger.info("Updating setup permissions [DONE]")

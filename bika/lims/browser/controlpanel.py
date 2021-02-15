@@ -24,9 +24,11 @@ from bika.lims.utils import t
 from plone.app.controlpanel.overview import OverviewControlPanel
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import store_on_context
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
+from bika.lims.api.security import check_permission
 
 
 def modified_cache_key(method, self, brain_or_object):
@@ -66,6 +68,11 @@ class SetupView(BrowserView):
         """Returns the Senaite Setup Object
         """
         return api.get_setup()
+
+    def can_edit_setup(self):
+        """Checks if the current user has manager rights for Setup view
+        """
+        return check_permission(ModifyPortalContent, self.setup)
 
     @cache(modified_cache_key, store_on_context)
     def get_icon_url(self, brain):

@@ -29,7 +29,8 @@
       <div class="row">
 
         <!-- The setup item -->
-        <tal:setup tal:define="setup python:view.setup">
+        <tal:setup tal:define="setup python:view.setup"
+                   tal:condition="python:view.can_edit_setup()">
           <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
             <a class="tile setup text-capitalized"
                tal:attributes="href setup/absolute_url">
