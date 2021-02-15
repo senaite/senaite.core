@@ -57,7 +57,6 @@ def upgrade(tool):
     # Add new indexes
     add_new_indexes(portal)
 
-
     # Fix writing methods on read when reindexing services
     # https://github.com/senaite/senaite.core/pull/1617
     remove_duplicate_methods_in_services(portal)
