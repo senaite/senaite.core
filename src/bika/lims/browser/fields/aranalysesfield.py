@@ -38,6 +38,8 @@ from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from zope.interface import implements
 
+DETACHED_STATES = ["cancelled", "retracted", "rejected"]
+
 
 """Field to manage Analyses on ARs
 
@@ -231,19 +233,21 @@ class ARAnalysesField(ObjectField):
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
         analyses = self.resolve_analyses(instance, service)
+
+        # Filter out analyses in detached states
+        # This allows to re-add an analysis that was retracted or cancelled
+        analyses = filter(
+            lambda an: api.get_workflow_status_of(an) not in DETACHED_STATES,
+            analyses)
+
         if not analyses:
             # Create the analysis
-            keyword = service.getKeyword()
-            logger.info("Creating new analysis '{}'".format(keyword))
-            analysis = create_analysis(instance, service)
+            new_id = self.generate_analysis_id(instance, service)
+            logger.info("Creating new analysis '{}'".format(new_id))
+            analysis = create_analysis(instance, service, id=new_id)
             analyses.append(analysis)
 
-        skip = ["cancelled", "retracted", "rejected"]
         for analysis in analyses:
-            # Skip analyses to better not modify
-            if api.get_review_status(analysis) in skip:
-                continue
-
             # Set the hidden status
             analysis.setHidden(hidden)
 
@@ -259,6 +263,17 @@ class ARAnalysesField(ObjectField):
             analysis.setResultsRange(analysis_rr)
             analysis.reindexObject()
 
+    def generate_analysis_id(self, instance, service):
+        """Generate a new analysis ID
+        """
+        count = 1
+        keyword = service.getKeyword()
+        new_id = keyword
+        while new_id in instance.objectIds():
+            new_id = "{}-{}".format(keyword, count)
+            count += 1
+        return new_id
+
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance
         """
@@ -271,6 +286,12 @@ class ARAnalysesField(ObjectField):
         worksheet = analysis.getWorksheet()
         if worksheet:
             worksheet.removeAnalysis(analysis)
+
+        # handle retest source deleted
+        retest = analysis.getRetest()
+        if retest:
+            # unset reference link
+            retest.setRetestOf(None)
 
         # Remove the analysis
         # Note the analysis might belong to a partition
@@ -294,6 +315,7 @@ class ARAnalysesField(ObjectField):
 
         # Does the analysis exists in this instance already?
         instance_analyses = self.get_from_instance(instance, service)
+
         if instance_analyses:
             analyses.extend(instance_analyses)
 
@@ -311,6 +333,7 @@ class ARAnalysesField(ObjectField):
         # Does the analysis exists in descendants?
         from_descendant = self.get_from_descendant(instance, service)
         analyses.extend(from_descendant)
+
         return analyses
 
     def get_analyses_from_descendants(self, instance):
