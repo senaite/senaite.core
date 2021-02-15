@@ -6,6 +6,8 @@ Changelog
 
 - #1777 Allow to re-add cancelled/rejected/retracted analyses to a sample
 - #1777 Fix APIError when a retest analysis source was removed from a sample
+- #1776 Move time calculation into cache key function
+- #1775 Sample add form tal:expressions refactored
 - #1773 Integrated upgrade step notification events
 - #1772 Sample dispatch workflow
 - #1771 Fix RecordsWidget does not store hidden fields in Add form
