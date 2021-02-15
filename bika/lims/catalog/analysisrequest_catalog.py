@@ -57,6 +57,7 @@ _indexes_dict = {
     "isRootAncestor": "BooleanIndex",
     "is_received": "BooleanIndex",
     "modified": "DateIndex",
+    "is_published": "BooleanIndex",
 }
 # Defining the columns for this catalog
 _columns_list = [

@@ -41,6 +41,7 @@
   <adapter name="assigned_state" factory=".analysisrequest.assigned_state"/>
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
   <adapter name="is_received" factory=".analysisrequest.is_received"/>
+  <adapter name="is_published" factory=".analysisrequest.is_published"/>
   <adapter name="listing_searchable_text" factory=".analysisrequest.listing_searchable_text"/>
 
   <!-- ARReport Index Adapters -->

@@ -73,3 +73,12 @@ def is_received(instance):
     if instance.getDateReceived():
         return True
     return False
+
+
+@indexer(IAnalysisRequest)
+def is_published(instance):
+    """Returns whether the Analysis Request has been published
+    """
+    if instance.getDatePublished():
+        return True
+    return False

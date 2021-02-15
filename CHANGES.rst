@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1763 Remove final states from dashboard
 - #1756 Fix:'View' tab not displayed after saving the batch
 - #1737 Fix: formatDateQuery does not add the timezone for queries
 - #1707 Fix sporadic persistent changes with interims

@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims import logger
-from Products.CMFCore.utils import getToolByName
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -28,6 +28,11 @@ from bika.lims.upgrade.utils import UpgradeUtils
 
 version = "1.3.5"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+INDEXES_TO_ADD = [
+    # Replaces getSampleTypeUIDs
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "is_published", "BooleanIndex"),
+]
 
 
 @upgradestep(product, version)
@@ -45,6 +50,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # Add new indexes
+    add_new_indexes(portal)
 
     # Fix writing methods on read when reindexing services
     # https://github.com/senaite/senaite.core/pull/1617
@@ -106,6 +114,24 @@ def fix_batch_view_action(portal):
             action.visible = True
             break
 
+def add_new_indexes(portal):
+    logger.info("Adding new indexes ...")
+    for catalog_id, index_name, index_metatype in INDEXES_TO_ADD:
+        add_index(catalog_id, index_name, index_metatype)
+    logger.info("Adding new indexes ... [DONE]")
+
+
+def add_index(catalog_id, index_name, index_metatype):
+    logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name in catalog.indexes():
+        logger.info("Index '{}' already in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.addIndex(index_name, index_metatype)
+    logger.info("Indexing new index '{}' ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)
+
 
 def update_setup_workflow_permissions(portal):
     """
@@ -113,8 +139,8 @@ def update_setup_workflow_permissions(portal):
     :param portal: Portal object
     :return: None
     """
-    wf_tool = getToolByName(portal, 'portal_workflow')
-    logger.info("Updating bika_setup permissions...")
+    logger.info("Updating setup permissions...")
+    wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById("senaite_setup_workflow")
     permission_id = "Modify portal content"
     roles = ["Manager", "LabManager"]
@@ -124,4 +150,4 @@ def update_setup_workflow_permissions(portal):
     bikasetup = portal.bika_setup
     workflow.updateRoleMappingsFor(bikasetup)
     bikasetup.reindexObject()
-    logger.info("bika_setup permissions were updated.")
+    logger.info("Updating setup permissions [DONE]")
