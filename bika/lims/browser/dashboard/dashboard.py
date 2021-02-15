@@ -31,15 +31,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.api import get_tool
-from bika.lims.api import search
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
-from plone import api
+from plone import api as ploneapi
 from plone import protect
 from plone.api.exc import InvalidParameterError
 from plone.memoize import ram
@@ -63,7 +62,7 @@ def get_dashboard_registry_record():
     :return: A dictionary or None
     """
     try:
-        registry = api.portal.get_registry_record(
+        registry = ploneapi.portal.get_registry_record(
             'bika.lims.dashboard_panels_visibility')
         return registry
     except InvalidParameterError:
@@ -84,7 +83,7 @@ def set_dashboard_registry_record(registry_info):
     :return: A dictionary or None
     """
     try:
-        api.portal.set_registry_record(
+        ploneapi.portal.set_registry_record(
             'bika.lims.dashboard_panels_visibility', registry_info)
     except InvalidParameterError:
         # No entry in the registry for dashboard panels roles.
@@ -105,7 +104,7 @@ def setup_dashboard_panels_visibility_registry(section_name):
     role_permissions_list = []
     # Getting roles defined in the system
     roles = []
-    acl_users = get_tool("acl_users")
+    acl_users = api.get_tool("acl_users")
     roles_tree = acl_users.portal_role_manager.listRoleIds()
     for role in roles_tree:
         roles.append(role)
@@ -245,7 +244,7 @@ class DashboardView(BrowserView):
         Checks if the user is the admin or a SiteAdmin user.
         :return: Boolean
         """
-        user = api.user.get_current()
+        user = ploneapi.user.get_current()
         roles = user.getRoles()
         return "LabManager" in roles or "Manager" in roles
 
@@ -331,7 +330,7 @@ class DashboardView(BrowserView):
                 'panels': <array of panels>}
         """
         sections = []
-        user = api.user.get_current()
+        user = ploneapi.user.get_current()
         if is_panel_visible_for_user('analyses', user):
             sections.append(self.get_analyses_section())
         if is_panel_visible_for_user('analysisrequests', user):
@@ -351,23 +350,33 @@ class DashboardView(BrowserView):
         ))
         return dash_opt
 
-    def _getStatistics(self, name, description, url, catalog, criterias, total):
+    def translate_review_state(self, state, portal_type):
+        """Translates the review state to the current set language
+
+        :param state: Review state title
+        :type state: basestring
+        :returns: Translated review state title
+        """
+        ts = api.get_tool("translation_service")
+        wf = api.get_tool("portal_workflow")
+        state_title = wf.getTitleForStateOnType(state, portal_type)
+        return ts.translate(_(state_title or state), context=self.request)
+
+    def get_statistics(self, name, num, total, url=None):
+        url = url or "#"
         out = {'type':        'simple-panel',
-               'name':        name,
+               'name':        name.capitalize(),
                'class':       'informative',
-               'description': description,
+               #'description': name,
                'total':       total,
                'link':        self.portal_url + '/' + url}
 
-        results = 0
         ratio = 0
         if total > 0:
-            results = self.search_count(criterias, catalog.id)
-            results = results if total >= results else total
-            ratio = (float(results)/float(total))*100 if results > 0 else 0
+            ratio = (float(num) / float(total)) * 100
         ratio = str("%%.%sf" % 1) % ratio
         out['legend'] = _('of') + " " + str(total) + ' (' + ratio + '%)'
-        out['number'] = results
+        out['number'] = num
         out['percentage'] = float(ratio)
         return out
 
@@ -377,92 +386,72 @@ class DashboardView(BrowserView):
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
-        catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
-        query = {'portal_type': "AnalysisRequest",
-                 'is_active': True}
 
-        # Check if dashboard_cookie contains any values to query
-        # elements by
-        query = self._update_criteria_with_filters(query, 'analysisrequests')
+        # Display a box for each status, but published
+        query = {"portal_type": "AnalysisRequest",
+                 "is_active": True,
+                 "is_published": False}
 
-        # Active Samples (All but published)
-        query['review_state'] =\
-            ['to_be_sampled', 'to_be_preserved', 'scheduled_sampling', 'sample_due',
-             'attachment_due', 'sample_received', 'to_be_verified', 'verified']
-        total = self.search_count(query, catalog.id)
+        # Check if dashboard_cookie contains additional query values
+        query = self._update_criteria_with_filters(query, "analysisrequests")
 
-        # Sampling workflow enabled?
-        if self.context.bika_setup.getSamplingWorkflowEnabled():
-            # Samples awaiting to be sampled or scheduled
-            name = _('Samples to be sampled')
-            desc = _("To be sampled")
-            purl = 'samples?samples_review_state=to_be_sampled'
-            query['review_state'] = ['to_be_sampled', ]
-            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
+        # Do the search and group by status
+        total = 0
+        groups = {}
+        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        for brain in brains:
+            status = api.get_review_status(brain)
+            groups.update({status: groups.get(status, 0) + 1})
+            total += 1
 
-            # Samples awaiting to be preserved
-            name = _('Samples to be preserved')
-            desc = _("To be preserved")
-            purl = 'samples?samples_review_state=to_be_preserved'
-            query['review_state'] = ['to_be_preserved', ]
-            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
+        def sort_state(a, b):
+            # Sort them. Status not present here are added at the end
+            sort_order = [
+                "to_be_sampled",
+                "to_be_preserved",
+                "scheduled_sampling",
+                "sample_due",
+                "attachment_due",
+                "sample_received",
+                "to_be_verified",
+                "verified",
+            ]
+            a = a in sort_order and sort_order.index(a) or 98
+            b = b in sort_order and sort_order.index(b) or 99
+            return (a > b) - (a < b)
 
-            # Samples scheduled for Sampling
-            name = _('Samples scheduled for sampling')
-            desc = _("Sampling scheduled")
-            purl = 'samples?samples_review_state=scheduled_sampling'
-            query['review_state'] = ['scheduled_sampling', ]
-            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples awaiting for reception
-        name = _('Samples to be received')
-        desc = _("Reception pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_due'
-        query['review_state'] = ['sample_due', ]
-        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples under way
-        name = _('Samples with results pending')
-        desc = _("Results pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_received'
-        query['review_state'] = ['attachment_due',
-                                 'sample_received', ]
-        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples to be verified
-        name = _('Samples to be verified')
-        desc = _("To be verified")
-        purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
-        query['review_state'] = ['to_be_verified', ]
-        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples verified (to be published)
-        name = _('Samples verified')
-        desc = _("Verified")
-        purl = 'analysisrequests?analysisrequests_review_state=verified'
-        query['review_state'] = ['verified', ]
-        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
+        statuses = sorted(groups.keys(), cmp=sort_state)
+        for status in statuses:
+            num = groups[status]
+            name = self.translate_review_state(status, "AnalysisRequest")
+            url = "analysisrequests?analysisrequests_review_state={}"
+            url = url.format(status)
+            stats = self.get_statistics(name, num, total, url)
+            out.append(stats)
 
         # Samples to be printed
         if self.context.bika_setup.getPrintingWorkflowEnabled():
-            query['review_state'] = ['published']
-            total = self.search_count(query, catalog.id)
-            name = _('Samples to be printed')
-            desc = _("To be printed")
-            purl = 'analysisrequests?analysisrequests_getPrinted=0'
-            query['getPrinted'] = '0'
-            query['review_state'] = ['published', ]
-            out.append(
-                self._getStatistics(name, desc, purl, catalog, query, total))
+            not_printed = {
+                "is_published": True,
+                "getPrinted": "0",
+            }
+            brains = api.search(not_printed, CATALOG_ANALYSIS_REQUEST_LISTING)
+            total = len(brains)
+            name = _("To be printed")
+            url = 'analysisrequests?analysisrequests_getPrinted=0'
+            stats = self.get_statistics(name, total, total, url)
+            out.append(stats)
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        outevo = self.fill_dates_evo(catalog, query)
+        query = {"portal_type": "AnalysisRequest"}
+        catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+        out_evo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Samples'),
                     'class':        'informative',
                     'description':  _('Evolution of Samples'),
-                    'data':         json.dumps(outevo),
+                    'data':         json.dumps(out_evo),
                     'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'analysisrequests',
@@ -475,39 +464,39 @@ class DashboardView(BrowserView):
             WS to be verified, WS with results pending, etc.)
         """
         out = []
-        bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
-        query = {'portal_type': "Worksheet", }
+        statuses = ["open", "attachment_due", "to_be_verified"]
+        query = {"portal_type": "Worksheet",
+                 "review_state": statuses}
 
-        # Check if dashboard_cookie contains any values to query
-        # elements by
-        query = self._update_criteria_with_filters(query, 'worksheets')
+        # Check if dashboard_cookie contains additional query values
+        query = self._update_criteria_with_filters(query, "worksheets")
 
-        # Active Worksheets (all but verified)
-        query['review_state'] = ['open', 'attachment_due', 'to_be_verified']
-        total = self.search_count(query, bc.id)
+        # Do the search
+        total = 0
+        groups = {}
+        brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+        for brain in brains:
+            status = api.get_review_status(brain)
+            groups.update({status: groups.get(status, 0) + 1})
+            total += 1
 
-        # Open worksheets
-        name = _('Results pending')
-        desc = _('Results pending')
-        purl = 'worksheets?list_review_state=open'
-        query['review_state'] = ['open', 'attachment_due']
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
-
-        # Worksheets to be verified
-        name = _('To be verified')
-        desc = _('To be verified')
-        purl = 'worksheets?list_review_state=to_be_verified'
-        query['review_state'] = ['to_be_verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        statuses = filter(lambda s: s in groups.keys(), statuses)
+        for status in statuses:
+            num = groups[status]
+            name = self.translate_review_state(status, "Worksheet")
+            url = "worksheets?list_review_state={}".format(status)
+            stats = self.get_statistics(name, num, total, url)
+            out.append(stats)
 
         # Chart with the evolution of WSs over a period, grouped by
-        # periodicity
-        outevo = self.fill_dates_evo(bc, query)
+        query = {"portal_type": "Worksheet"}
+        catalog = api.get_tool(CATALOG_WORKSHEET_LISTING)
+        out_evo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
                     'description':  _('Evolution of Worksheets'),
-                    'data':         json.dumps(outevo),
+                    'data':         json.dumps(out_evo),
                     'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'worksheets',
@@ -520,48 +509,34 @@ class DashboardView(BrowserView):
             analyses assigned, etc.)
         """
         out = []
-        bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
-        query = {'portal_type': "Analysis", 'is_active': True}
+        statuses = ["unassigned", "assigned", "to_be_verified", "verified"]
+        query = {"portal_type": "Analysis",
+                 "review_state": statuses}
 
-        # Check if dashboard_cookie contains any values to query elements by
-        query = self._update_criteria_with_filters(query, 'analyses')
+        # Check if dashboard_cookie contains additional query values
+        query = self._update_criteria_with_filters(query, "analyses")
 
-        # Active Analyses (All but final states such as published, rejected, etc)
-        query['review_state'] =\
-            ['unassigned', 'assigned', 'to_be_verified', 'verified']
-        total = self.search_count(query, bc.id)
+        # Do the search
+        total = 0
+        groups = {}
+        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        for brain in brains:
+            status = api.get_review_status(brain)
+            groups.update({status: groups.get(status, 0) + 1})
+            total += 1
 
-        # Analyses to be assigned
-        name = _('Assignment pending')
-        desc = _('Assignment pending')
-        purl = '#'
-        query['review_state'] = ['unassigned']
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
-
-        # Analyses pending
-        name = _('Results pending')
-        desc = _('Results pending')
-        purl = '#'
-        query['review_state'] = ['unassigned', 'assigned', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
-
-        # Analyses to be verified
-        name = _('To be verified')
-        desc = _('To be verified')
-        purl = '#'
-        query['review_state'] = ['to_be_verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
-
-        # Analyses verified
-        name = _('Verified')
-        desc = _('Verified')
-        purl = '#'
-        query['review_state'] = ['verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        statuses = filter(lambda s: s in groups.keys(), statuses)
+        for status in statuses:
+            num = groups[status]
+            name = self.translate_review_state(status, "Worksheet")
+            stats = self.get_statistics(name, num, total)
+            out.append(stats)
 
         # Chart with the evolution of Analyses over a period, grouped by
         # periodicity
-        outevo = self.fill_dates_evo(bc, query)
+        query = {"portal_type": "Analysis"}
+        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        outevo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
@@ -639,6 +614,9 @@ class DashboardView(BrowserView):
 
             'published':                    '#83AF9B',
             _('Published'):                 '#83AF9B',
+
+            _('Other status'):              '#CDCDCD',
+
         }
 
     def _getDateStr(self, period, created):
@@ -727,12 +705,10 @@ class DashboardView(BrowserView):
                 outevoidx[currstr] = len(outevo)-1
             curr = curr + datetime.timedelta(days=days)
 
-        brains = search(query, catalog_name)
+        brains = api.search(query, catalog_name)
         for brain in brains:
             created = brain.created
             state = brain.review_state
-            if state not in statesmap:
-                logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
             created = self._getDateStr(periodicity, created)
             statscount[state] += 1
@@ -769,7 +745,7 @@ class DashboardView(BrowserView):
     @viewcache.memoize
     def _search_count(self, query_json, catalog_name):
         query = json.loads(query_json)
-        brains = search(query, catalog_name)
+        brains = api.search(query, catalog_name)
         return len(brains)
 
     def _update_criteria_with_filters(self, query, section_name):
