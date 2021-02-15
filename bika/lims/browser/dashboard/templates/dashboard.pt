@@ -588,7 +588,7 @@
                     </div>
                     <div tal:content="panel/number" class='dashboard-info-panel-number'></div>
                     <div tal:content="panel/legend" class='dashboard-info-panel-total' tal:condition="python:panel.get('legend','')"></div>
-                    <div tal:content="panel/description" class='dashboard-info-panel-description'></div>
+                    <div tal:content="panel/name" class='dashboard-info-panel-description'></div>
                 </div>
             </a>
         </div>
