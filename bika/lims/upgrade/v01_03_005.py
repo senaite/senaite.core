@@ -50,9 +50,13 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    # Fix Lab clerk can edit items from setup folder
+    # https://github.com/senaite/senaite.core/pull/1774
+    setup.runImportStepFromProfile(profile, "rolemap")
 
     # Add new indexes
     add_new_indexes(portal)
+
 
     # Fix writing methods on read when reindexing services
     # https://github.com/senaite/senaite.core/pull/1617
