@@ -432,7 +432,7 @@ class DashboardView(BrowserView):
         # Samples to be printed
         if self.context.bika_setup.getPrintingWorkflowEnabled():
             not_printed = {
-                "is_published": True,
+                "review_state": "published",
                 "getPrinted": "0",
             }
             brains = api.search(not_printed, CATALOG_ANALYSIS_REQUEST_LISTING)

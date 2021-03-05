@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1780 Exclude invalid samples from dashboard's not-printed indicator
 - #1774 Fix Lab clerk can edit items from setup folder
 - #1763 Remove final states from dashboard
 - #1756 Fix 'View' tab not displayed after saving the batch
