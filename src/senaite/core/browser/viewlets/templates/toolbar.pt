@@ -9,7 +9,7 @@
 
   <!-- Navbar Brand Icon -->
   <a class="navbar-brand" href="#" tal:attributes="href portal_state/portal_url">
-    <img alt="SENAITE" height="15px" tal:attributes="src view/get_toolbar_logo" />
+    <img tal:attributes="src python:view.get_toolbar_logo();style python:view.get_toolbar_styles()" />
   </a>
 
   <!-- Navbar Toggle Button -->
