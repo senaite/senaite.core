@@ -22,6 +22,19 @@
     <value>/++plone++senaite.core.static/images/senaite.svg</value>
   </record>
 
+  <!-- Toolbar CSS Styles -->
+  <record name="senaite.toolbar_logo_styles" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="toolbar_logo_styles">
+    <field type="plone.registry.field.Dict">
+      <title>Toolbar CSS</title>
+      <description>CSS styles for the toolbar logo</description>
+      <key_type type="plone.registry.field.ASCIILine" />
+      <value_type type="plone.registry.field.ASCIILine" />
+    </field>
+    <value>
+      <element key="height">15px</element>
+    </value>
+  </record>
+
   <!-- Types to display in navigation -->
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
