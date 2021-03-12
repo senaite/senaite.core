@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1784 Dashboard fixtures: Links, colors, visibility
 - #1782 Allow to set toolbar logo CSS styles via registry
 - #1778 Added Datamanager Adapters for Analysis and Sample
 - #1777 Allow to re-add cancelled/rejected/retracted analyses to a sample
