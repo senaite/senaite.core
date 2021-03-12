@@ -414,35 +414,35 @@ class DashboardView(BrowserView):
         # Samples awaiting for reception
         name = _('Samples to be received')
         desc = _("Reception pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_due'
+        purl = 'samples?samples_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples under way
         name = _('Samples with results pending')
         desc = _("Results pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_received'
+        purl = 'samples?samples_review_state=sample_received'
         query['review_state'] = ['sample_received', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples to be verified
         name = _('Samples to be verified')
         desc = _("To be verified")
-        purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
+        purl = 'samples?samples_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples verified (to be published)
         name = _('Samples verified')
         desc = _("Verified")
-        purl = 'analysisrequests?analysisrequests_review_state=verified'
+        purl = 'samples?samples_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples published
         name = _('Samples published')
         desc = _("Published")
-        purl = 'analysisrequests?analysisrequests_review_state=published'
+        purl = 'samples?samples_review_state=published'
         query['review_state'] = ['published', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -450,7 +450,7 @@ class DashboardView(BrowserView):
         if self.context.bika_setup.getPrintingWorkflowEnabled():
             name = _('Samples to be printed')
             desc = _("To be printed")
-            purl = 'analysisrequests?analysisrequests_getPrinted=0'
+            purl = 'samples?samples_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
             out.append(
