@@ -2,7 +2,6 @@
 
 from bika.lims import api
 from bika.lims.permissions import AddAnalysisRequest
-from bika.lims.utils import get_client
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize.instance import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -31,10 +30,6 @@ class AddSamplesViewlet(ViewletBase):
     def get_add_url(self):
         """Return the sample add URL
         """
-        url = "{}/ar_add"
-        client = get_client(self.context)
-        if client:
-            return url.format(api.get_url(client))
         return "{}/ar_add".format(api.get_url(self.context))
 
     @property
