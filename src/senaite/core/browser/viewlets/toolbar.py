@@ -81,7 +81,7 @@ class ToolbarViewletManager(OrderedViewletManager):
         portal_url = self.portal_state.portal_url()
         try:
             logo = registry["senaite.toolbar_logo"]
-        except AttributeError:
+        except (AttributeError, KeyError):
             logo = LOGO
         if not logo:
             logo = LOGO
@@ -91,7 +91,7 @@ class ToolbarViewletManager(OrderedViewletManager):
         registry = getUtility(IRegistry)
         try:
             styles = registry["senaite.toolbar_logo_styles"]
-        except AttributeError:
+        except (AttributeError, KeyError):
             return "height:15px;"
         css = map(lambda style: "{}:{};".format(*style), styles.items())
         return " ".join(css)
