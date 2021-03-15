@@ -32,15 +32,15 @@ from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.listing import ListingView
+from senaite.core.interfaces import ISamplesView
+from zope.interface import implementer
 
 
+@implementer(ISamplesView)
 class SamplesView(ListingView):
     """Listing View for Samples (AnalysisRequest content type) in the System
     """
-
-    template = ViewPageTemplateFile("templates/samples.pt")
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
@@ -58,6 +58,8 @@ class SamplesView(ListingView):
         self.show_select_column = True
         self.form_id = "samples"
         self.context_actions = {}
+        self.icon = "{}{}".format(
+            self.portal_url, "/senaite_theme/icon/sample")
 
         self.url = api.get_url(self.context)
 

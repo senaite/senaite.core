@@ -87,6 +87,12 @@ class ListingTableTitleViewlet(ViewletBase):
             return get_image(last, **kw)
         return self.theme_view.icon_tag(icon, **kw)
 
+
+class ListingTableActionsViewlet(ViewletBase):
+    """This viewlet inserts the title and context actions
+    """
+    index = ViewPageTemplateFile("templates/listingactions.pt")
+
     def get_context_actions(self, **kw):
         """Get the defined ccontex actions of the listing view
         """
