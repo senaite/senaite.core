@@ -414,35 +414,35 @@ class DashboardView(BrowserView):
         # Samples awaiting for reception
         name = _('Samples to be received')
         desc = _("Reception pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_due'
+        purl = 'samples?samples_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples under way
         name = _('Samples with results pending')
         desc = _("Results pending")
-        purl = 'analysisrequests?analysisrequests_review_state=sample_received'
+        purl = 'samples?samples_review_state=sample_received'
         query['review_state'] = ['sample_received', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples to be verified
         name = _('Samples to be verified')
         desc = _("To be verified")
-        purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
+        purl = 'samples?samples_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples verified (to be published)
         name = _('Samples verified')
         desc = _("Verified")
-        purl = 'analysisrequests?analysisrequests_review_state=verified'
+        purl = 'samples?samples_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples published
         name = _('Samples published')
         desc = _("Published")
-        purl = 'analysisrequests?analysisrequests_review_state=published'
+        purl = 'samples?samples_review_state=published'
         query['review_state'] = ['published', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -450,7 +450,7 @@ class DashboardView(BrowserView):
         if self.context.bika_setup.getPrintingWorkflowEnabled():
             name = _('Samples to be printed')
             desc = _("To be printed")
-            purl = 'analysisrequests?analysisrequests_getPrinted=0'
+            purl = 'samples?samples_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
             out.append(
@@ -614,33 +614,33 @@ class DashboardView(BrowserView):
             'scheduled_sampling':           '#F38630',
             _('Sampling scheduled'):        '#F38630',
 
-            'sample_due':                   '#FA6900',
-            _('Reception pending'):         '#FA6900',
+            'sample_due':                   '#ffff8d',
+            _('Reception pending'):         '#ffff8d',
 
-            'sample_received':              '#E0E4CC',
-            _('Assignment pending'):        '#E0E4CC',
-            _('Sample received'):           '#E0E4CC',
+            'sample_received':              '#a1887f',
+            _('Assignment pending'):        '#a1887f',
+            _('Sample received'):           '#a1887f',
 
-            'assigned':                     '#dcdcdc',
-            'open':                         '#dcdcdc',
-            _('Results pending'):           '#dcdcdc',
+            'assigned':                     '#ddd',
+            'open':                         '#ddd',
+            _('Results pending'):           '#ddd',
 
-            'rejected':                     '#FF6B6B',
-            'retracted':                    '#FF6B6B',
-            _('Rejected'):                  '#FF6B6B',
-            _('Retracted'):                 '#FF6B6B',
+            'rejected':                     '#abc',
+            'retracted':                    '#abc',
+            _('Rejected'):                  '#abc',
+            _('Retracted'):                 '#abc',
 
-            'invalid':                      '#C44D58',
-            _('Invalid'):                   '#C44D58',
+            'invalid':                      '#e65100',
+            _('Invalid'):                   '#e65100',
 
-            'to_be_verified':               '#A7DBD8',
-            _('To be verified'):            '#A7DBD8',
+            'to_be_verified':               '#18ffff',
+            _('To be verified'):            '#18ffff',
 
-            'verified':                     '#69D2E7',
-            _('Verified'):                  '#69D2E7',
+            'verified':                     '#0091ea',
+            _('Verified'):                  '#0091ea',
 
-            'published':                    '#83AF9B',
-            _('Published'):                 '#83AF9B',
+            'published':                    '#00c853',
+            _('Published'):                 '#00c853',
         }
 
     def _getDateStr(self, period, created):

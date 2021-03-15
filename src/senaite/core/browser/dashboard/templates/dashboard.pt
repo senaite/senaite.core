@@ -468,7 +468,8 @@
       <div class='dashboard-section' tal:define="section_id section/id">
         <div class='dashboard-section-head'>
           <h2 tal:content="section/title" class='dashboard-section-title'></h2>
-          <div class="actions">
+          <div class="actions" tal:condition="python:False">
+            <!-- Disabled, because dysfunctional -->
 
             <!-- View permissions section -->
             <tal:roles_visibility_settings condition="python:view.is_admin_user()">
