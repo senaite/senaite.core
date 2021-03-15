@@ -36,6 +36,7 @@ Changelog
 - #1733 Allow results interpretation in sample received state
 - #1732 Readonly Transactions
 - #1731 Remove `notifyModified` method from analyses
+- #1787 Added support for DateTime fields is listings
 
 
 2.0.0rc3 (2021-01-08)
