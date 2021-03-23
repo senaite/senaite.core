@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1791 Uncatalog object before renaming
 - #1785 Moved listing context actions to separate viewlets
 - #1784 Dashboard fixtures: Links, colors, visibility
 - #1782 Allow to set toolbar logo CSS styles via registry
