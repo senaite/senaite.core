@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import re
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
@@ -88,6 +87,18 @@ class ReportsListingView(BikaListingView):
             "help": help_publish_text,
         }
 
+        help_download_reports_text = _(
+            "Download selected reports")
+
+        self.download_reports_transition = {
+            "id": "download_reports",
+            "title": _("Download"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=download_reports",
+            "css_class": "btn-outline-secondary",
+            "help": help_download_reports_text,
+        }
+
         self.columns = collections.OrderedDict((
             ("Info", {
                 "title": "",
@@ -118,6 +129,7 @@ class ReportsListingView(BikaListingView):
                 "custom_transitions": [
                     self.send_email_transition,
                     self.publish_samples_transition,
+                    self.download_reports_transition,
                 ]
             },
         ]
