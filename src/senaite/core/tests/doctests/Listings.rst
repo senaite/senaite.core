@@ -11,15 +11,11 @@ Test Setup
 
 Imports:
 
+    >>> from operator import methodcaller
+    >>> from DateTime import DateTime
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
-    >>> from plone.app.testing import TEST_USER_ID
-    >>> from plone.app.testing import TEST_USER_PASSWORD
-    >>> from plone.app.testing import setRoles
-    >>> from operator import methodcaller
-    >>> import transaction
 
 Functional Helpers:
 
@@ -38,25 +34,18 @@ Functional Helpers:
     ...             values[k] = v
     ...     return create_analysisrequest(client, self.request, values, services)
 
-    >>> def login(user=TEST_USER_ID, password=TEST_USER_PASSWORD):
-    ...     browser.open(portal_url + "/login_form")
-    ...     browser.getControl(name='__ac_name').value = user
-    ...     browser.getControl(name='__ac_password').value = password
-    ...     browser.getControl(name='buttons.login').click()
-    ...     assert("__ac_password" not in browser.contents)
-    ...     return ploneapi.user.get_current()
-
 Variables::
 
     >>> date_now = timestamp()
     >>> portal = self.portal
-    >>> portal_url = portal.absolute_url()
     >>> request = self.request
     >>> setup = portal.bika_setup
 
 Test User:
 
-    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager', 'Sampler'])
 
 
 Prepare Test Environment
@@ -69,6 +58,7 @@ Setupitems:
     >>> samplepoints = setup.bika_samplepoints
     >>> analysiscategories = setup.bika_analysiscategories
     >>> analysisservices = setup.bika_analysisservices
+    >>> setup.setSamplingWorkflowEnabled(True)
 
 Create Clients:
 
@@ -162,16 +152,21 @@ Searching for a value should work:
     >>> map(lambda x: x.getObject().getClient(), results)
     [<Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>]
 
+Create SampleView:
 
-And start a browser:
-
-    >>> transaction.commit()
-    >>> browser = self.getBrowser()
-    >>> user = login(TEST_USER_ID, TEST_USER_PASSWORD)
-    >>> transaction.commit()
-    >>> 'Manager' in ploneapi.user.get_roles(user=user)
+    >>> from senaite.core.browser.samples.view import SamplesView
+    >>> samples_view = SamplesView(context, request)
+    >>> samples_view
+    <senaite.core.browser.samples.view.SamplesView object at 0x...>
+    >>> samples_view.roles = ['Manager',]
+    >>> samples_view.member = ploneapi.user.get_current()
+    >>> items = samples_view.folderitems()
+    >>> len(items)
+    9
+    >>> 'getDateSampled' in items[0]
     True
-
-    >>> browser.open(listing.context.absolute_url() + '/view')
-    >>> 's3-0001' in browser.contents
+    >>> 'getDateSampled' in items[0]['allow_edit']
     True
+    >>> samples_view.columns['getDateSampled']['type']
+    'datetime'
+
