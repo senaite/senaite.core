@@ -123,11 +123,21 @@ class AnalysesView(BaseView):
                 "type": "remarks"
             }
 
+        self.set_analysis_remarks_modal = {
+            "id": "modal_set_analysis_remarks",
+            "title": _("Set remarks"),
+            "url": "{}/set_analysis_remarks_modal".format(
+                api.get_url(self.context)),
+            "css_class": "btn btn-outline-secondary",
+            "help": _("Set remarks for selected analyses")
+        }
+
         self.review_states = [
             {
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
+                "custom_transitions": [self.set_analysis_remarks_modal],
                 "columns": self.columns.keys(),
             },
         ]

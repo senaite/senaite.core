@@ -28,6 +28,7 @@
   <include package=".install"/>
   <include package=".login"/>
   <include package=".main_template"/>
+  <include package=".modals"/>
   <include package=".portlets"/>
   <include package=".samples"/>
   <include package=".viewlets"/>
