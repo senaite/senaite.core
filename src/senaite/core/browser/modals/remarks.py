@@ -3,9 +3,11 @@
 from bika.lims import api
 from bika.lims.api.security import check_permission
 from bika.lims.permissions import FieldEditAnalysisRemarks
-from senaite.core import logger
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
 from senaite.core.browser.modals import Modal
+from zope import event
 
 
 class SetAnalysisRemarksModal(Modal):
@@ -39,4 +41,5 @@ class SetAnalysisRemarksModal(Modal):
             remarks = "{}\n{}".format(analysis.getRemarks(), remarks)
         analysis.setRemarks(api.safe_unicode(remarks))
         analysis.reindexObject()
+        event.notify(ObjectEditedEvent(analysis))
         return True
