@@ -3,7 +3,7 @@
 from bika.lims import api
 from bika.lims.api.security import check_permission
 from bika.lims.permissions import FieldEditAnalysisRemarks
-from pologgb.lims import logger
+from senaite.core import logger
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.modals import Modal
 
