@@ -4,7 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
- #1792 Allow to set worksheet analysis remarks in a modal popup
+- #1792 Allow to set worksheet analysis remarks in a modal popup
 - #1790 Allow multi PDF report downloads
 - #1791 Uncatalog object before renaming
 - #1785 Moved listing context actions to separate viewlets
