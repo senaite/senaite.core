@@ -24,15 +24,17 @@ from operator import itemgetter
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser.analyses import AnalysesView as BaseView
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.permissions import FieldEditAnalysisRemarks
 from bika.lims.utils import get_image
 from bika.lims.utils import t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.interfaces import IDuplicateAnalysis
 
 
 class AnalysesView(BaseView):
@@ -123,14 +125,41 @@ class AnalysesView(BaseView):
                 "type": "remarks"
             }
 
+        self.set_analysis_remarks_modal = {
+            "id": "modal_set_analysis_remarks",
+            "title": _("Set remarks"),
+            "url": "{}/set_analysis_remarks_modal".format(
+                api.get_url(self.context)),
+            "css_class": "btn btn-outline-secondary",
+            "help": _("Set remarks for selected analyses")
+        }
+
         self.review_states = [
             {
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
+                "custom_transitions": [],
                 "columns": self.columns.keys(),
             },
         ]
+
+    def before_render(self):
+        super(AnalysesView, self).before_render()
+
+        if self.show_analysis_remarks_transition():
+            for state in self.review_states:
+                state["custom_transitions"] = [self.set_analysis_remarks_modal]
+
+    def show_analysis_remarks_transition(self):
+        """Check if the analysis remarks transitions should be rendered
+
+        XXX: Convert maybe better to a real WF transition with a guard
+        """
+        for analysis in self.context.getAnalyses():
+            if check_permission(FieldEditAnalysisRemarks, analysis):
+                return True
+        return False
 
     @view.memoize
     def is_analysis_remarks_enabled(self):
