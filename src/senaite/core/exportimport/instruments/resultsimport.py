@@ -609,9 +609,8 @@ class AnalysisResultsImporter(Logger):
         for arid, acodes in six.iteritems(importedars):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
             self.log(
-                    "${request_id}: ${analysis_keywords} imported sucessfully",
-                    mapping={"request_id": arid,
-                             "analysis_keywords": acodesmsg})
+                "${request_id}: ${analysis_keywords} imported sucessfully",
+                mapping={"request_id": arid, "analysis_keywords": acodesmsg})
 
         for instid, acodes in six.iteritems(importedinsts):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
