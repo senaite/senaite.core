@@ -693,8 +693,8 @@ class AnalysisResultsImporter(Logger):
             analysis.setAttachment([att.UID() for att in an_atts])
             analysis.reindexObject()
         else:
-            self.warn("Attachment %s was already linked to analysis %s" %
-                      (filename, api.get_id(analysis)))
+            self.log("Attachment %s was already linked to analysis %s" %
+                     (filename, api.get_id(analysis)))
 
     def get_attachment_filenames(self, ws):
         fn_attachments = {}
