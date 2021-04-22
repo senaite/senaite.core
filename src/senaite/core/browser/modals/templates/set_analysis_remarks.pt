@@ -16,7 +16,7 @@
         <div class="form-group">
           <textarea name="remarks" class="w-100 form-control"></textarea>
           <div class="form-check text-align-left">
-            <input name="overwrite" class="form-check-input" type="checkbox" value="1" checked="checked" id="overwrite-remarks">
+            <input name="overwrite" class="form-check-input" type="checkbox" value="1" id="overwrite-remarks">
             <label class="form-check-label" for="overwrite-remarks" i18n:translate="">
               Overwrite existing remarks
             </label>
