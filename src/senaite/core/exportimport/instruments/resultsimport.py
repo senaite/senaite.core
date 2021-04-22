@@ -19,20 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 import codecs
+from datetime import datetime
+
 import six
 
-from datetime import datetime
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from senaite.core.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
+from senaite.core.exportimport.instruments.logger import Logger
 
 
 class InstrumentResultsFileParser(Logger):
