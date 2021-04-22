@@ -176,7 +176,7 @@ Check the rest of the importer logs to verify that the values were correctly imp
     ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
      'Allowed Sample states: sample_received, to_be_verified',
      'Allowed analysis states: unassigned, assigned, to_be_verified',
-     "H2O-0001: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
+     'H2O-0001: Analysis HCT, RBC, WBC, HGB imported sucessfully',
      'Import finished successfully: 1 Samples and 4 results updated']
 
 And finally check if indeed the analysis has the imported results::
