@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1795 Do not overwrite worksheet remarks per default
+- #1794 Generate proper IDs for analysis attachments on instrument results import
 - #1792 Allow to set worksheet analysis remarks in a modal popup
 - #1790 Allow multi PDF report downloads
 - #1791 Uncatalog object before renaming
