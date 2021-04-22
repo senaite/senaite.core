@@ -607,17 +607,15 @@ class AnalysisResultsImporter(Logger):
                                 analysis)
 
         for arid, acodes in six.iteritems(importedars):
-            acodesmsg = ["Analysis %s" % acod for acod in acodes]
+            acodesmsg = "Analysis %s" % ', '.join(acodes)
             self.log(
                     "${request_id}: ${analysis_keywords} imported sucessfully",
                     mapping={"request_id": arid,
                              "analysis_keywords": acodesmsg})
 
         for instid, acodes in six.iteritems(importedinsts):
-            acodesmsg = ["Analysis %s" % acod for acod in acodes]
-            msg = "%s: %s %s" % (instid,
-                                 ", ".join(acodesmsg),
-                                 "imported sucessfully")
+            acodesmsg = "Analysis %s" % ', '.join(acodes)
+            msg = "%s: %s %s" % (instid, acodesmsg, "imported sucessfully")
             self.log(msg)
 
         if self.instrument_uid:
