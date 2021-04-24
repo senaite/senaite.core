@@ -55,7 +55,7 @@ class AutoImportLogsView(ListingView):
                 "title": _("Interface"),
                 "sortable": False,
             }),
-            ("ImportFileName", {
+            ("ImportFilename", {
                 "title": _("Imported Filename"),
                 "sortable": False,
             }),
