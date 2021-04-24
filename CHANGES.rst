@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1797 Fix Auto Import Log View and ID generation
 - #1795 Do not overwrite worksheet remarks per default
 - #1794 Generate proper IDs for analysis attachments on instrument results import
 - #1792 Allow to set worksheet analysis remarks in a modal popup
