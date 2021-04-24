@@ -55,8 +55,8 @@ class AutoImportLogsView(ListingView):
                 "title": _("Interface"),
                 "sortable": False,
             }),
-            ("ImportFilename", {
-                "title": _("Imported Filename"),
+            ("ImportFile", {
+                "title": _("Imported File"),
                 "sortable": False,
             }),
             ("Results", {
@@ -92,7 +92,7 @@ class AutoImportLogsView(ListingView):
             item["replace"]["Results"] = "<code>{}</code>".format(
                 messages.replace("\n", "<br/>"))
 
-        item["ImportFilename"] = obj.getImportFilename()
+        item["ImportFile"] = obj.getImportFile()
         item["Interface"] = obj.getInterface()
 
         return item

@@ -93,9 +93,6 @@ class AutoImportLog(BaseContent):
             return self.getInstrument().absolute_url_path()
         return None
 
-    def getImportFilename(self):
-        return self.getImportFile()
-
 
 # Activating the content type in Archetypes' internal types registry
 atapi.registerType(AutoImportLog, config.PROJECTNAME)
