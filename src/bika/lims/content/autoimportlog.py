@@ -35,7 +35,7 @@ schema = BikaSchema.copy() + atapi.Schema((
 
     # Results File that system wanted to import
     StringField(
-        "ImportedFile",
+        "ImportFile",
         default="",
     ),
 
@@ -94,7 +94,7 @@ class AutoImportLog(BaseContent):
         return None
 
     def getImportFilename(self):
-        return self.getImportedFile()
+        return self.getImportFile()
 
 
 # Activating the content type in Archetypes' internal types registry
