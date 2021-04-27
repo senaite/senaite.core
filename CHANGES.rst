@@ -43,6 +43,7 @@ Changelog
 - #1733 Allow results interpretation in sample received state
 - #1732 Readonly Transactions
 - #1731 Remove `notifyModified` method from analyses
+- #1798 Reindex AnalysisServices in an AnalysisCategory after that AC is modified
 
 
 2.0.0rc3 (2021-01-08)
