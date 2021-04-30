@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from AccessControl import Unauthorized
-from bika.lims import api
 from bika.lims.api.security import check_permission
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View

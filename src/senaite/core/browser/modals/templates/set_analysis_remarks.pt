@@ -1,0 +1,42 @@
+<div class="set-analysis-remarks-modal modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" i18n:translate="">Set remarks</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form name="set-analysis-remarks-form"
+            class="form"
+            method="POST"
+            enctype="multipart/form-data"
+            tal:attributes="action string:${here/absolute_url}/set_analysis_remarks_modal">
+
+        <div class="form-group">
+          <textarea name="remarks" class="w-100 form-control"></textarea>
+          <div class="form-check text-align-left">
+            <input name="overwrite" class="form-check-input" type="checkbox" value="1" id="overwrite-remarks">
+            <label class="form-check-label" for="overwrite-remarks" i18n:translate="">
+              Overwrite existing remarks
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group mt-2">
+          <input class="btn btn-sm btn-primary"
+                type="submit"
+                name="set_remarks"
+                i18n:attributes="value"
+                value="Set Remarks" />
+        </div>
+
+        <!-- hidden fields -->
+        <input type="hidden" name="submitted" value="1" />
+        <input tal:replace="structure context/@@authenticator/authenticator"/>
+        <input type="hidden" name="uids" value="" tal:attributes="value request/uids" />
+
+      </form>
+    </div>
+  </div>
+</div>

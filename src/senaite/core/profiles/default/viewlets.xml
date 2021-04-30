@@ -23,6 +23,13 @@
     <viewlet name="senaite.core.samplesection.qc_analyses" />
   </order>
 
+  <!-- Viewlets in listing title -->
+  <order manager="senaite.listingtabletitle" skinname="*">
+    <viewlet name="senaite.core.listings.title" />
+    <viewlet name="senaite.core.listings.actions" />
+    <viewlet name="senaite.core.listings.add_samples" />
+  </order>
+
   <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>

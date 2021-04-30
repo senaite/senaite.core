@@ -4,6 +4,13 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1795 Do not overwrite worksheet remarks per default
+- #1794 Generate proper IDs for analysis attachments on instrument results import
+- #1792 Allow to set worksheet analysis remarks in a modal popup
+- #1790 Allow multi PDF report downloads
+- #1791 Uncatalog object before renaming
+- #1785 Moved listing context actions to separate viewlets
+- #1784 Dashboard fixtures: Links, colors, visibility
 - #1782 Allow to set toolbar logo CSS styles via registry
 - #1778 Added Datamanager Adapters for Analysis and Sample
 - #1777 Allow to re-add cancelled/rejected/retracted analyses to a sample
@@ -37,6 +44,7 @@ Changelog
 - #1732 Readonly Transactions
 - #1731 Remove `notifyModified` method from analyses
 - #1787 Added support for DateTime fields is listings
+- #1798 Reindex AnalysisServices in an AnalysisCategory after that AC is modified
 
 
 2.0.0rc3 (2021-01-08)

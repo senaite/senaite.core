@@ -1,0 +1,28 @@
+<div class="add-samples-viewlet d-inline-block align-middle"
+     tal:condition="python:view.available()"
+     i18n:domain="senaite.core">
+
+  <form method="GET"
+        class="form-inline"
+        action="ar_add"
+        tal:attributes="action python:view.get_add_url()">
+    <span class="input-group">
+      <input type="number"
+             name="ar_count"
+             min="1"
+             max="99"
+             class="form-control form-control-sm"
+             tal:attributes="value python:view.get_sample_add_number()"/>
+      <span class="input-group-append">
+        <button type="submit"
+                class="btn btn-outline-secondary btn-sm">
+          <img src="#"
+               style="height:16px;"
+               tal:attributes="src view/theme_view/icon_url/plus"/>
+          <span tal:omit-tag="python:1" i18n:translate="">Add Samples</span>
+        </button>
+      </span>
+    </span>
+  </form>
+
+</div>
