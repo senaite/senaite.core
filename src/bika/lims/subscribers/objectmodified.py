@@ -22,6 +22,7 @@ from Products.CMFCore.utils import getToolByName
 
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_SETUP
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -39,8 +40,7 @@ def ObjectModifiedEventHandler(obj, event):
         backrefs = obj.getBackReferences('MethodCalculation')
         for i, target in enumerate(backrefs):
             target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" %
-                (version_id + 1,))
+            pr.save(obj=target, comment="Calculation updated to version %s" % (version_id + 1,))
             reference_versions = getattr(target, 'reference_versions', {})
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
@@ -62,9 +62,17 @@ def ObjectModifiedEventHandler(obj, event):
     elif obj.portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
+
+        # re-index all analysis services
+        query = dict(getCategoryUID=obj.UID())
+        brains = api.search(query, CATALOG_SETUP)
+        for brain in brains:
+            obj = api.get_object(brain)
+            obj.reindexObject(idxs=['getCategoryTitle'])
+
+        # re-index analyses
         query = dict(getCategoryUID=obj.UID())
         brains = api.search(query, CATALOG_ANALYSIS_LISTING)
         for brain in brains:
             obj = api.get_object(brain)
             obj.reindexObject(idxs=['getCategoryTitle'])
-
