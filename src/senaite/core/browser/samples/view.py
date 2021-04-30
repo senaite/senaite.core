@@ -101,12 +101,12 @@ class SamplesView(ListingView):
             ("getDateSampled", {
                 "title": _("Date Sampled"),
                 "toggle": True,
-                "input_class": "datetimepicker_nofuture",
+                "type": "datetime",
                 "input_width": "10"}),
             ("getDatePreserved", {
                 "title": _("Date Preserved"),
                 "toggle": False,
-                "input_class": "datetimepicker_nofuture",
+                "type": "datetime",
                 "input_width": "10",
                 "sortable": False}),  # no datesort without index
             ("getDateReceived", {
@@ -429,7 +429,6 @@ class SamplesView(ListingView):
         """
         super(SamplesView, self).update()
 
-        setup = api.get_setup()
         self.workflow = api.get_tool("portal_workflow")
         self.member = self.mtool.getAuthenticatedMember()
         self.roles = self.member.getRoles()
@@ -612,8 +611,7 @@ class SamplesView(ListingView):
                         "ResultValue": u,
                         "ResultText": samplers.getValue(u)}) for u in samplers]
                     item['choices'] = {'getSampler': users}
-                    Sampler = sampler and sampler or \
-                              (username in samplers.keys() and username) or ''
+                    Sampler = sampler and sampler or (username in samplers.keys() and username) or ''
                     sampler = Sampler
                 else:
                     datesampled = self.ulocalized_time(obj.getDateSampled,
