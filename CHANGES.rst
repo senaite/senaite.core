@@ -22,6 +22,7 @@ Changelog
 - #1628 Fix instrument import for analyses with result options
 - #1625 Fix assignment of analyses via worksheet template when Worksheet is full
 - #1617 Fix writing methods on read when reindexing services
+- #1798 Fix reindexing of AnalysisServices after AnalysisCategories modified 
 
 
 1.3.4 (2020-08-11)
