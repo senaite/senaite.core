@@ -18,35 +18,51 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
+from bika.lims import config
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAutoImportLog
+from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
-from bika.lims.content.bikaschema import BikaSchema
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
-from bika.lims import bikaMessageFactory as _
-from bika.lims import config
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-
+from zope.interface import implements
 
 schema = BikaSchema.copy() + atapi.Schema((
+
     # Results File that system wanted to import
-    atapi.StringField('ImportedFile', default=''),
+    StringField(
+        "ImportFile",
+        default="",
+    ),
 
-    atapi.ReferenceField('Instrument',
-                         allowed_types=('Instrument',),
-                         referenceClass=HoldingReference,
-                         relationship='InstrumentImportLogs',
-                         ),
+    ReferenceField(
+        "Instrument",
+        allowed_types=("Instrument",),
+        referenceClass=HoldingReference,
+        relationship="InstrumentImportLogs",
+    ),
 
-    atapi.StringField('Interface', default=''),
+    StringField(
+        "Interface",
+        default="",
+    ),
 
-    atapi.StringField('Results', default=''),
+    TextField(
+        "Results",
+        default="",
+    ),
 
-    atapi.DateTimeField('LogTime', default=DateTime()),
+    DateTimeField(
+        "LogTime",
+        default=DateTime(),
+    ),
 ))
 
-schema['title'].widget.visible = False
+schema["title"].widget.visible = False
 
 
 class AutoImportLog(BaseContent):
@@ -54,7 +70,13 @@ class AutoImportLog(BaseContent):
     This object will have some information/log about auto-import process
     once they are done(failed).
     """
+    implements(IAutoImportLog)
     schema = schema
+    _at_rename_after_creation = True
+
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
 
     def getInstrumentUID(self):
         if self.getInstrument():
