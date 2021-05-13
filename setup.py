@@ -92,6 +92,8 @@ setup(
         "senaite.lims",
         # openpyxl >= 3.0.0 does not support Python 2.x anymore
         "openpyxl<3.0.0",
+        # Werkzeug >= 2.0.0 does not support Python 2.x anymore
+        "Werkzeug<2.0.0",
     ],
     extras_require={
         "test": [
