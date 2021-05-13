@@ -1343,6 +1343,9 @@ class window.AnalysisRequestAdd
     # get the right base url
     base_url = me.get_base_url()
 
+    # the poral url
+    portal_url = me.get_portal_url()
+
     # remove all errors
     $("div.error").removeClass("error")
     $("div.fieldErrorBox").text("")
@@ -1382,6 +1385,19 @@ class window.AnalysisRequestAdd
         stickertemplate = data['stickertemplate']
         q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',')
         window.location.replace destination + q
+
+      else if data['confirmation']
+        dialog = me.template_dialog "confirm-template", data.confirmation
+        dialog.on "yes", ->
+          destination = data.confirmation["destination"]
+          if destination
+            # Redirect user
+            window.location.replace portal_url + '/' + destination
+          else
+            # Re-submit
+            $("input[name=confirmed]").val "1"
+            $("input[name=save_button]").trigger "click"
+
       else
         window.location.replace base_url
 
