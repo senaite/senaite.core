@@ -1315,11 +1315,12 @@
        * Eventhandler for the form submit button.
        * Extracts and submits all form data asynchronous.
        */
-      var base_url, me;
+      var base_url, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
       me = this;
       base_url = me.get_base_url();
+      portal_url = me.get_portal_url();
       $("div.error").removeClass("error");
       $("div.fieldErrorBox").text("");
       return this.ajax_post_form("submit").done(function(data) {
@@ -1332,7 +1333,7 @@
          *   This includes GET params for printing labels, so that we do not
          *   have to care about this here.
          */
-        var ars, destination, errorbox, field, fieldname, message, msg, parent, q, stickertemplate;
+        var ars, destination, dialog, errorbox, field, fieldname, message, msg, parent, q, stickertemplate;
         if (data['errors']) {
           msg = data.errors.message;
           if (msg !== "") {
@@ -1357,6 +1358,17 @@
           stickertemplate = data['stickertemplate'];
           q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',');
           return window.location.replace(destination + q);
+        } else if (data['confirmation']) {
+          dialog = me.template_dialog("confirm-template", data.confirmation);
+          return dialog.on("yes", function() {
+            destination = data.confirmation["destination"];
+            if (destination) {
+              return window.location.replace(portal_url + '/' + destination);
+            } else {
+              $("input[name=confirmed]").val("1");
+              return $("input[name=save_button]").trigger("click");
+            }
+          });
         } else {
           return window.location.replace(base_url);
         }

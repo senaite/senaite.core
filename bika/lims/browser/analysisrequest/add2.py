@@ -45,6 +45,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
@@ -1564,9 +1565,29 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return prices
 
+    def check_confirmation(self):
+        """Returns a dict when user confirmation is required for the creation of
+        samples. Returns None otherwise
+        """
+        if self.request.form.get("confirmed") == "1":
+            # User pressed the "yes" button in the confirmation pane already
+            return None
+
+        # Find out if there is a confirmation adapter available
+        adapter = queryAdapter(self.request, IAddSampleConfirmation)
+        if not adapter:
+            return None
+
+        # Extract records from the request and call the adapter
+        records = self.get_records()
+        return adapter.check_confirmation(records)
+
     def ajax_submit(self):
         """Submit & create the ARs
         """
+        confirmation = self.check_confirmation()
+        if confirmation:
+            return {"confirmation": confirmation}
 
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
