@@ -1569,7 +1569,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns a dict when user confirmation is required for the creation of
         samples. Returns None otherwise
         """
-        import pdb;pdb.set_trace()
         if self.request.form.get("confirmed") == "1":
             # User pressed the "yes" button in the confirmation pane already
             return None
