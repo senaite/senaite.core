@@ -24,7 +24,7 @@ from StringIO import StringIO
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG
 from openpyxl.reader.excel import load_workbook
-from openpyxl.shared.exc import InvalidFileException
+from openpyxl.utils.exceptions import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
@@ -101,10 +101,15 @@ class DynamicAnalysisSpec(Item):
         return sheets[0]
 
     def get_header(self):
+        header = []
         ps = self.get_primary_sheet()
         if ps is None:
-            return []
-        return map(lambda cell: cell.value, ps.rows[0])
+            return header
+        for num, row in enumerate(ps.rows):
+            if num > 0:
+                break
+            header = [cell.value for cell in row]
+        return header
 
     def get_specs(self):
         ps = self.get_primary_sheet()

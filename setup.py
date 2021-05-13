@@ -60,7 +60,6 @@ setup(
         'collective.monkeypatcher',
         'collective.js.jqueryui',
         'plone.app.z3cform',
-        'openpyxl==1.5.8',
         'plone.app.iterate',
         'magnitude',
         'jarn.jsi18n',
@@ -99,6 +98,10 @@ setup(
         'soupsieve<2.0.0',
         # dependency for jsonapi
         'simplejson',
+        # openpyxl >= 3.0.0 does not support Python 2.x anymore
+        "openpyxl==2.6.4",
+        # Werkzeug >= 2.0.0 does not support Python 2.x anymore
+        "Werkzeug<2.0.0",
     ],
     extras_require={
         'test': [
