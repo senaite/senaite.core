@@ -91,7 +91,7 @@ setup(
         # SENAITE
         "senaite.lims",
         # openpyxl >= 3.0.0 does not support Python 2.x anymore
-        "openpyxl<3.0.0",
+        "openpyxl==2.6.4",
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
     ],
