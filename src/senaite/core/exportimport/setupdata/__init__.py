@@ -101,7 +101,10 @@ class WorksheetImporter:
         self.context = lsd.context
         self.workbook = workbook
         self.sheetname = self.__class__.__name__.replace("_", " ")
-        self.worksheet = workbook.get_sheet_by_name(self.sheetname)
+        try:
+            self.worksheet = workbook[self.sheetname]
+        except KeyError:
+            self.worksheet = None
         self.dataset_project = dataset_project
         self.dataset_name = dataset_name
         if self.worksheet:
@@ -470,7 +473,7 @@ class Lab_Contacts(WorksheetImporter):
 
         # Now we have the lab contacts registered, try to assign the managers
         # to each department if required
-        sheet = self.workbook.get_sheet_by_name("Lab Departments")
+        sheet = self.workbook["Lab Departments"]
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, sheet):
             if row['title'] and row['LabContact_Username']:
@@ -1355,7 +1358,7 @@ class Calculations(WorksheetImporter):
     def get_interim_fields(self):
         # preload Calculation Interim Fields sheet
         sheetname = 'Calculation Interim Fields'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.interim_fields = {}
@@ -1407,7 +1410,7 @@ class Calculations(WorksheetImporter):
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods
-        sheet = self.workbook.get_sheet_by_name("Methods")
+        sheet = self.workbook["Methods"]
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, sheet):
             if row.get('title', '') and row.get('Calculation_title', ''):
@@ -1424,7 +1427,7 @@ class Analysis_Services(WorksheetImporter):
     def load_interim_fields(self):
         # preload AnalysisService InterimFields sheet
         sheetname = 'AnalysisService InterimFields'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.service_interims = {}
@@ -1443,7 +1446,7 @@ class Analysis_Services(WorksheetImporter):
     def load_result_options(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         sheetname = 'AnalysisService ResultOptions'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
@@ -1458,8 +1461,8 @@ class Analysis_Services(WorksheetImporter):
 
     def load_service_uncertainties(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        sheetname = 'AnalysisService Uncertainties'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        sheetname = 'Analysis Service Uncertainties'
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
 
@@ -1523,7 +1526,7 @@ class Analysis_Services(WorksheetImporter):
         """
         out_objects = [default_obj] if default_obj else []
         cat = getToolByName(self.context, catalog_name)
-        worksheet = self.workbook.get_sheet_by_name(sheet_name)
+        worksheet = self.workbook[sheet_name]
         if not worksheet:
             return out_objects
         for row in self.get_rows(3, worksheet=worksheet):
@@ -1737,7 +1740,7 @@ class Analysis_Profiles(WorksheetImporter):
 
     def load_analysis_profile_services(self):
         sheetname = 'Analysis Profile Services'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.profile_services = {}
         if not worksheet:
             return
@@ -1779,7 +1782,7 @@ class AR_Templates(WorksheetImporter):
 
     def load_artemplate_analyses(self):
         sheetname = 'AR Template Analyses'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.artemplate_analyses = {}
         if not worksheet:
             return
@@ -1798,7 +1801,7 @@ class AR_Templates(WorksheetImporter):
 
     def load_artemplate_partitions(self):
         sheetname = 'AR Template Partitions'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.artemplate_partitions = {}
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         if not worksheet:
@@ -1864,10 +1867,10 @@ class Reference_Definitions(WorksheetImporter):
 
     def load_reference_definition_results(self):
         sheetname = 'Reference Definition Results'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             sheetname = 'Reference Definition Values'
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
         self.results = {}
@@ -1908,7 +1911,7 @@ class Worksheet_Templates(WorksheetImporter):
 
     def load_wst_layouts(self):
         sheetname = 'Worksheet Template Layouts'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.wst_layouts = {}
         if not worksheet:
             return
@@ -1927,7 +1930,7 @@ class Worksheet_Templates(WorksheetImporter):
 
     def load_wst_services(self):
         sheetname = 'Worksheet Template Services'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.wst_services = {}
         if not worksheet:
             return
@@ -2096,7 +2099,7 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_sample_results(self, sample):
         sheetname = 'Reference Sample Results'
         if not hasattr(self, 'results_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.results_worksheet = worksheet
@@ -2121,7 +2124,7 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_analyses(self, sample):
         sheetname = 'Reference Analyses'
         if not hasattr(self, 'analyses_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.analyses_worksheet = worksheet
@@ -2151,7 +2154,7 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_analysis_interims(self, analysis):
         sheetname = 'Reference Analysis Interims'
         if not hasattr(self, 'interim_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.interim_worksheet = worksheet
@@ -2206,7 +2209,7 @@ class Analysis_Requests(WorksheetImporter):
     def load_analyses(self, sample):
         sheetname = 'Analyses'
         if not hasattr(self, 'analyses_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.analyses_worksheet = worksheet
@@ -2242,11 +2245,10 @@ class Analysis_Requests(WorksheetImporter):
     def load_analysis_interims(self, analysis):
         sheetname = 'Reference Analysis Interims'
         if not hasattr(self, 'interim_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.interim_worksheet = worksheet
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         interims = []
         for row in self.get_rows(3, worksheet=self.interim_worksheet):
             if row['ReferenceAnalysis_id'] != analysis.getId():
