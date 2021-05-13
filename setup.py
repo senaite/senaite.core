@@ -53,7 +53,6 @@ setup(
     install_requires=[
         "collective.monkeypatcher",
         "magnitude",
-        "openpyxl==1.5.8",
         "plone.api",
         "plone.app.dexterity",
         "plone.app.iterate",
@@ -91,6 +90,8 @@ setup(
         "archetypes.schemaextender",
         # SENAITE
         "senaite.lims",
+        # openpyxl >= 3.0.0 does not support Python 2.x anymore
+        "openpyxl<3.0.0",
     ],
     extras_require={
         "test": [

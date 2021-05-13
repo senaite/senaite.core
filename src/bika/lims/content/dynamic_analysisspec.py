@@ -24,7 +24,7 @@ from six import StringIO
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG
 from openpyxl.reader.excel import load_workbook
-from openpyxl.shared.exc import InvalidFileException
+from openpyxl.utils.exceptions import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
