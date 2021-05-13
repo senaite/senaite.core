@@ -22,7 +22,9 @@ from collections import OrderedDict
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
+from bika.lims import api
 
 
 class AutoImportLogsView(ListingView):
@@ -48,23 +50,18 @@ class AutoImportLogsView(ListingView):
             ("Instrument", {
                 "title": _("Instrument"),
                 "sortable": False,
-                "attr": "getInstrumentTitle",
-                "replace_url": "getInstrumentUrl"
             }),
             ("Interface", {
                 "title": _("Interface"),
                 "sortable": False,
-                "attr": "getInterface",
             }),
             ("ImportFile", {
                 "title": _("Imported File"),
                 "sortable": False,
-                "attr": "getImportedFile",
             }),
             ("Results", {
                 "title": _("Results"),
                 "sortable": False,
-                "attr": "getResults"
             })
         ))
 
@@ -78,5 +75,24 @@ class AutoImportLogsView(ListingView):
         ]
 
     def folderitem(self, obj, item, index):
-        item["ImportTime"] = obj.getLogTime.strftime("%Y-%m-%d H:%M:%S")
+        obj = api.get_object(obj)
+
+        logtime = obj.getLogTime()
+        if logtime:
+            item["ImportTime"] = self.ulocalized_time(logtime, long_format=1)
+
+        instrument = obj.getInstrument()
+        if instrument:
+            item["Instrument"] = instrument.Title()
+            item["replace"]["Instrument"] = get_link_for(instrument)
+
+        messages = obj.getResults()
+        if messages:
+            item["Results"] = messages
+            item["replace"]["Results"] = "<code>{}</code>".format(
+                messages.replace("\n", "<br/>"))
+
+        item["ImportFile"] = obj.getImportFile()
+        item["Interface"] = obj.getInterface()
+
         return item

@@ -86,6 +86,11 @@ class IHaveNoBreadCrumbs(Interface):
     """
 
 
+class IAutoImportLog(Interface):
+    """Auto Import Log
+    """
+
+
 class IClientFolder(Interface):
     """Client folder
     """
@@ -462,9 +467,11 @@ class ILabProducts(Interface):
     """Marker interface for Lab Products
     """
 
+
 class ILabProduct(Interface):
     """Marker interface for a LabProduct
     """
+
 
 class ISamplePoint(Interface):
     """Marker interface for a Sample Point
@@ -540,9 +547,11 @@ class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """
 
+
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
     """
+
 
 class IBikaCatalog(Interface):
     """Marker interface for bika_catalog
