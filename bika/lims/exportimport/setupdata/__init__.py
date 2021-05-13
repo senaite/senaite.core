@@ -1463,7 +1463,7 @@ class Analysis_Services(WorksheetImporter):
 
     def load_service_uncertainties(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        sheetname = 'AnalysisService Uncertainties'
+        sheetname = 'Analysis Service Uncertainties'
         worksheet = self.workbook[sheetname]
         if not worksheet:
             return
