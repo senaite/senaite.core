@@ -113,13 +113,13 @@ And the result ranges:
 
     >>> rr = ds.get_specs()
     >>> map(lambda r: [r.get(k) for k in header], rr)
-    [[u'Ca', u'Method A', 1, 2], [u'Ca', u'Method B', 3, 4], [u'Mg', u'Method A', 5, 6], [u'Mg', u'Method B', 7, 8]]
+    [[u'Ca', u'Method A', u'1', u'2'], [u'Ca', u'Method B', u'3', u'4'], [u'Mg', u'Method A', u'5', u'6'], [u'Mg', u'Method B', u'7', u'8']]
 
 We can also get the specs by Keyword:
 
     >>> mg_rr = ds.get_by_keyword()["Mg"]
     >>> map(lambda r: [r.get(k) for k in header], mg_rr)
-    [[u'Mg', u'Method A', 5, 6], [u'Mg', u'Method B', 7, 8]]
+    [[u'Mg', u'Method A', u'5', u'6'], [u'Mg', u'Method B', u'7', u'8']]
 
 
 Hooking in a Dynamic Analysis Specification
@@ -178,7 +178,7 @@ The specification of the `Ca` Analysis with the Method `Method A`:
 
     >>> ca_spec = ca.getResultsRange()
     >>> ca_spec["min"], ca_spec["max"]
-    (1, 2)
+    ('1', '2')
 
 Now let's change the `Ca` Analysis Method to `Method B`:
 
@@ -193,13 +193,13 @@ And get the results range again:
 
     >>> ca_spec = ca.getResultsRange()
     >>> ca_spec["min"], ca_spec["max"]
-    (3, 4)
+    ('3', '4')
 
 The same now with the `Mg` Analysis in one run:
 
     >>> mg_spec = mg.getResultsRange()
     >>> mg_spec["min"], mg_spec["max"]
-    (5, 6)
+    ('5', '6')
 
     >>> mg.setMethod(method_b)
 
@@ -210,4 +210,4 @@ Unset and set the specification again:
 
     >>> mg_spec = mg.getResultsRange()
     >>> mg_spec["min"], mg_spec["max"]
-    (7, 8)
+    ('7', '8')

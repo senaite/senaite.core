@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1803 Updated openpyxl to latest Python 2.x compatible version
 - #1802 Adapter for Add sample form confirmation
 - #1781 Exclude invalid samples from dashboard's not-printed indicator
 - #1774 Fix Lab clerk can edit items from setup folder
