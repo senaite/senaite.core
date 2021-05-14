@@ -214,6 +214,18 @@
         </table>
       </script>
 
+      <!-- Confirmation Template -->
+      <script id="confirm-template" type="text/x-handlebars-template">
+        <div title="Confirm" i18n:attributes="title">
+          <p i18n:translate="">
+            {{message}}
+          </p>
+          <p i18n:translate="">
+            Do you want to continue?
+          </p>
+        </div>
+      </script>
+
     </metal:block>
   </head>
 
@@ -570,6 +582,9 @@
                name="save_button"
                i18n:attributes="value"
                value="Save"/>
+
+        <input type="hidden" id="confirmed" name="confirmed" value="0"/>
+
       </form>
       <!-- /ADD Form -->
 
