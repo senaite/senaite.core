@@ -1000,6 +1000,17 @@ class IAddSampleObjectInfo(Interface):
         """
 
 
+class IAddSampleConfirmation(Interface):
+    """Marker interface for confirmation Add Sample form confirmation
+    """
+
+    def check_confirmation(self, records):
+        """Returns a dict when user confirmation is required for the creation
+        of samples when the Save button from Add Sample form is pressed. Returns
+        None otherwise
+        """
+
+
 class IClientAwareMixin(Interface):
     """Marker interface for objects that can be bound to a Client, either
     because they can be added inside a Client folder or because it can be
