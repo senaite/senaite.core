@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="senaite.core">
+
+  <include package="z3c.form" />
+  <include package="z3c.form" file="meta.zcml" />
+
+  <!-- include custom widgets -->
+  <include package=".widgets" />
+
+  <!-- z3c.form data managers (called on edit form save) -->
+  <adapter factory=".datamanager.AttributeDataManager" />
+  <adapter factory=".datamanager.DictionaryDataManager" />
+
+</configure>
