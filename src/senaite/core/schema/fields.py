@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from collective.z3cform.datagridfield import DictRow
 from senaite.core.schema.interfaces import IBaseField
+from senaite.core.schema.interfaces import IDataGridField
+from senaite.core.schema.interfaces import IDataGridRow
 from senaite.core.schema.interfaces import IIntField
 from zope.interface import implementer
 from zope.schema import Field
 from zope.schema import Int
+from zope.schema import List
 from zope.schema._bootstrapfields import _NotGiven
 
 
@@ -57,3 +61,15 @@ class IntField(Int, BaseField):
     """
     def _validate(self, value):
         super(IntField, self)._validate(value)
+
+
+@implementer(IDataGridField)
+class DataGridField(List, BaseField):
+    """A field that stores a list of dictionaries
+    """
+
+
+@implementer(IDataGridRow)
+class DataGridRow(DictRow, BaseField):
+    """A field that stores a data grid row
+    """

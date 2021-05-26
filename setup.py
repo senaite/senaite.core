@@ -94,6 +94,7 @@ setup(
         "openpyxl==2.6.4",
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
+        "collective.z3cform.datagridfield",
     ],
     extras_require={
         "test": [

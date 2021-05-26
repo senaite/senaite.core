@@ -4,5 +4,6 @@
     i18n_domain="senaite.core">
 
   <include file="number.zcml" />
+  <include file="datagrid.zcml" />
 
 </configure>
