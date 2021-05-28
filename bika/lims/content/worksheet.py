@@ -222,16 +222,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         doActionFor(self, "rollback_to_open")
 
         # Reindex Analysis
-        push_reindex_to_actions_pool(analysis, idxs=["getWorksheetUID"])
+        push_reindex_to_actions_pool(analysis)
 
         # Reindex Worksheet
-        idxs = ["getAnalysesUIDs"]
-        push_reindex_to_actions_pool(self, idxs=idxs)
+        push_reindex_to_actions_pool(self)
 
         # Reindex Analysis Request, if any
         if IRequestAnalysis.providedBy(analysis):
-            idxs = ['assigned_state', 'getDueDate']
-            push_reindex_to_actions_pool(analysis.getRequest(), idxs=idxs)
+            push_reindex_to_actions_pool(analysis.getRequest())
 
         # Resume the actions pool
         actions_pool.resume()
