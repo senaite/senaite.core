@@ -238,12 +238,10 @@ def reindex_request(analysis, idxs=None):
         # Analysis not directly bound to an Analysis Request. Do nothing
         return
 
-    n_idxs = ['assigned_state', 'getDueDate']
-    n_idxs = idxs and list(set(idxs + n_idxs)) or n_idxs
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        push_reindex_to_actions_pool(ancestor, n_idxs)
+        push_reindex_to_actions_pool(ancestor)
 
 
 def remove_analysis_from_worksheet(analysis):
@@ -267,8 +265,7 @@ def remove_analysis_from_worksheet(analysis):
         doActionFor(worksheet, "rollback_to_open")
 
     # Reindex the Worksheet
-    idxs = ["getAnalysesUIDs"]
-    push_reindex_to_actions_pool(worksheet, idxs=idxs)
+    push_reindex_to_actions_pool(worksheet)
 
 
 def cascade_to_dependents(analysis, transition_id):
