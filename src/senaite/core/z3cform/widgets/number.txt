@@ -1,0 +1,85 @@
+=============
+Number Widget
+=============
+
+The widget can render a input field for a number:
+
+    >>> from zope.interface.verify import verifyClass
+    >>> from z3c.form import interfaces
+    >>> from senaite.core.z3cform.widgets import number
+
+The NumberWidget is a widget:
+
+    >>> verifyClass(interfaces.IWidget, number.NumberWidget)
+    True
+
+The widget can render a input field only by adapting a request:
+
+    >>> from z3c.form.testing import TestRequest
+    >>> request = TestRequest()
+    >>> widget = number.NumberWidget(request)
+
+Such a field provides IWidget:
+
+    >>> interfaces.IWidget.providedBy(widget)
+    True
+
+We also need to register the template for at least the widget and request:
+
+    >>> import os.path
+    >>> import zope.interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.pagetemplate.interfaces import IPageTemplate
+    >>> import senaite.core.z3cform.widgets
+    >>> import z3c.form.widget
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__),
+    ...     'number_input.pt')
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='input')
+
+If we render the widget we get the HTML:
+
+    >>> print(widget.render())
+    <input type="number" class="number-widget" value="" />
+
+Adding some more attributes to the widget will make it display more:
+
+    >>> widget.id = 'id'
+    >>> widget.name = 'name'
+    >>> widget.value = u'value'
+    >>> widget.style = u'color: blue'
+    >>> widget.placeholder = u'Number'
+
+    >>> print(widget.render())
+    <input class="number-widget" id="id" name="name" placeholder="Number" style="color: blue" type="number" value="value">
+
+Check DISPLAY_MODE:
+
+  >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__),
+  ...     'number_display.pt')
+  >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+  >>> zope.component.provideAdapter(factory,
+  ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+  ...     IPageTemplate, name='display')
+
+  >>> widget.value = 123
+  >>> widget.style = None
+  >>> widget.mode = interfaces.DISPLAY_MODE
+  >>> print(widget.render())
+  <span id="id" class="number-widget">123</span>
+
+Check HIDDEN_MODE:
+
+  >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__),
+  ...     'number_hidden.pt')
+  >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+  >>> zope.component.provideAdapter(factory,
+  ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+  ...     IPageTemplate, name='hidden')
+
+  >>> widget.value = 321
+  >>> widget.mode = interfaces.HIDDEN_MODE
+  >>> print(widget.render())
+  <input id="id" name="name" value="321" class="hidden-widget" type="hidden" />

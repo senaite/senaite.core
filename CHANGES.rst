@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1806 Added base structure to implement custom dexterity fields and widgets
 - #1807 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
 - #1804 Adapter hook for confirmation when creating a Sample
 - #1801 Updated openpyxl to latest Python 2.x compatible version
