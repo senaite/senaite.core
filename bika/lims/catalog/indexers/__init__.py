@@ -47,6 +47,13 @@ def sortable_title(instance):
     return title.lower()
 
 
+@indexer(IContentish)
+def modified(instance):
+    """Returns the date when the instance was modified
+    """
+    return instance.modified()
+
+
 def sortable_sortkey_title(instance):
     """Returns a sortable title as a mxin of sortkey + lowercase sortable_title
     """

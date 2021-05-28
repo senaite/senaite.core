@@ -10,6 +10,7 @@
   <adapter name="is_active" factory=".is_active"/>
   <adapter name="listing_searchable_text" factory=".listing_searchable_text"/>
   <adapter name="sortable_title" factory=".sortable_title"/>
+  <adapter name="modified" factory=".modified"/>
 
   <!-- bika_setup Catalog Index adapters -->
   <adapter name="category_uid" factory=".bikasetup.category_uid"/>
