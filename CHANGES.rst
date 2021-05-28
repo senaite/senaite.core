@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1809 Fix `modified` index is not reindexed when the object gets updated
+- #1808 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
 - #1803 Updated openpyxl to latest Python 2.x compatible version
 - #1802 Adapter for Add sample form confirmation
 - #1781 Exclude invalid samples from dashboard's not-printed indicator
