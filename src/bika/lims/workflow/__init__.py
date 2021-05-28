@@ -34,7 +34,6 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState  # noqa
 from bika.lims.utils import t
-from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -74,14 +73,11 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, idxs=None):
+def doActionFor(instance, action_id):
     """Tries to perform the transition to the instance.
     Object is reindexed after the transition takes place, but only if succeeds.
-    If idxs is set, only these indexes will be reindexed. Otherwise, will try
-    to use the indexes defined in ACTIONS_TO_INDEX mapping if any.
     :param instance: Object to be transitioned
     :param action_id: transition id
-    :param idxs: indexes to be reindexed after the transition
     :returns: True if the transition has been performed, together with message
     :rtype: tuple (bool,str)
     """
@@ -100,8 +96,7 @@ def doActionFor(instance, action_id, idxs=None):
                 .format(instance, action_id)
             )
 
-        return doActionFor(
-            instance=instance[0], action_id=action_id, idxs=idxs)
+        return doActionFor(instance=instance[0], action_id=action_id)
 
     # Since a given transition can cascade or promote to other objects, we want
     # to reindex all objects for which the transition succeed at once, at the
@@ -136,15 +131,8 @@ def doActionFor(instance, action_id, idxs=None):
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
 
-    # If no indexes to reindex have been defined, try to use those defined in
-    # the ACTIONS_TO_INDEXES mapping. Reindexing only those indexes that might
-    # be affected by the transition boosts the overall performance!.
-    if idxs is None:
-        portal_type = instance.portal_type
-        idxs = ACTIONS_TO_INDEXES.get(portal_type, {}).get(action_id, [])
-
     # Add the current object to the pool and resume
-    pool.push(instance, action_id, succeed, idxs=idxs)
+    pool.push(instance, action_id, succeed)
     pool.resume()
 
     return succeed, message
@@ -541,7 +529,7 @@ class ActionHandlerPool(object):
         self.num_calls += 1
 
     @synchronized(max_connections=1)
-    def push(self, instance, action, success, idxs=_marker):
+    def push(self, instance, action, success):
         """Adds an instance into the pool, to be reindexed on resume
         """
         if self.request is None:
@@ -551,8 +539,7 @@ class ActionHandlerPool(object):
 
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
-        idx = [] if idxs is _marker else idxs
-        info[action] = {"success": success, "idxs": idx}
+        info[action] = {"success": success}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
@@ -581,51 +568,20 @@ class ActionHandlerPool(object):
         logger.info("Resume actions for {} objects".format(count))
 
         # Fetch the objects from the pool
-        processed = list()
-        for brain in api.search(dict(UID=self.objects.keys()), UID_CATALOG):
-            uid = api.get_uid(brain)
-            if uid in processed:
-                # This object has been processed already, do nothing
-                continue
-
+        query = {"UID": self.objects.keys()}
+        brains = api.search(query, UID_CATALOG)
+        for brain in api.search(query, UID_CATALOG):
             # Reindex the object
             obj = api.get_object(brain)
-            idxs = self.get_indexes(uid)
-            idxs_str = idxs and ", ".join(idxs) or "-- All indexes --"
-            logger.info("Reindexing {}: {}".format(obj.getId(), idxs_str))
-            obj.reindexObject(idxs=idxs)
-            processed.append(uid)
+            obj.reindexObject()
 
         # Cleanup the pool
-        logger.info("Objects processed: {}".format(len(processed)))
+        logger.info("Objects processed: {}".format(len(brains)))
         self.flush()
 
-    def get_indexes(self, uid):
-        """Returns the names of the indexes to be reindexed for the object with
-        the uid passed in. If no indexes for this object have been specified
-        within the action pool job, returns an empty list (reindex all).
-        Otherwise, return all the indexes that have been specified for the
-        object within the action pool job.
-        """
-        idxs = []
-        info = self.objects.get(uid, {})
-        for action_id, value in info.items():
-            obj_idxs = value.get('idxs', None)
-            if obj_idxs is None:
-                # Don't reindex!
-                continue
-            elif len(obj_idxs) == 0:
-                # Reindex all indexes!
-                return []
-            idxs.extend(obj_idxs)
-        # Always reindex review_state and is_active
-        idxs.extend(["review_state", "is_active"])
-        return list(set(idxs))
 
-
-def push_reindex_to_actions_pool(obj, idxs=None):
+def push_reindex_to_actions_pool(obj):
     """Push a reindex job to the actions handler pool
     """
-    indexes = idxs and idxs or []
     pool = ActionHandlerPool.get_instance()
-    pool.push(obj, "reindex", success=True, idxs=indexes)
+    pool.push(obj, "reindex", success=True)
