@@ -30,6 +30,8 @@ class ISenaiteCore(Interface):
 
 class ISenaiteFormLayer(IPloneFormLayer):
     """Used to override plone.app.z3cform forms
+
+    Inherits from `z3c.form.interfaces.IFormLayer`
     """
 
 

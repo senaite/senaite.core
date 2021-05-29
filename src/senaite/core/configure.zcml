@@ -16,7 +16,9 @@
   <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".locales" />
+  <include package=".schema" />
   <include package=".upgrade" />
+  <include package=".z3cform" />
 
   <!-- portal skins -->
   <cmf:registerDirectory
