@@ -67,6 +67,8 @@ class IntField(Int, BaseField):
 class DataGridField(List, BaseField):
     """A field that stores a list of dictionaries
     """
+    def set(self, object, value):
+        super(DataGridField, self).set(object, value)
 
 
 @implementer(IDataGridRow)
