@@ -4,36 +4,6 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:omit-tag="">
 
-  <style type="text/css" media="screen">
-   /* Cannot move up out of the grid */
-   .datagridfield-first-filled-row > .datagridwidget-manipulator.move-up a {
-     display: none !important;
-   }
-   /* Cannot move below auto-append row */
-   .datagridfield-last-filled-row > .datagridwidget-manipulator.move-down a {
-     display: none !important;
-   }
-   .datagridwidget-empty-row {
-	   /* Hidden row with default selection widget values */
-	   display: none;
-   }
-   /* Error message is displayed above the field */
-   .datagridwidget-cell {
-	   vertical-align: bottom;
-	   padding: 1px;
-   }
-   .datagridwidget-hidden-data {
-	   display: none;
-   }
-   /* You cannot delete the auto-append row */
-   .auto-append  > .datagridwidget-manipulator.delete-row a,
-   .auto-append  > .datagridwidget-manipulator.move-up a,
-   .auto-append  > .datagridwidget-manipulator.move-down a,
-   .auto-append  > .datagridwidget-manipulator.insert-row a {
-     display: none;
-   }
-  </style>
-
   <table class="table table-hover table-responsive table-sm table-borderless datagridwidget-table-view"
          data-mode="row"
          tal:attributes="data-extra view/extra; id view/id_prefix">
@@ -69,6 +39,8 @@
       </tal:block>
     </tbody>
   </table>
-  <!-- <script type="text/javascript" src="" tal:attributes="src string:${view/portal_url}/++resource++collective.z3cform.datagridfield/init_field.js"></script> -->
   <input type="hidden" tal:replace="structure view/counterMarker" />
+  <!-- static resources -->
+  <script type="text/javascript" src="" tal:attributes="src string:${view/portal_url}/++resource++senaite.core.z3cform.static/datagrid.js"></script>
+  <link rel="stylesheet" href="" type="text/css" media="screen"  tal:attributes="href string:${view/portal_url}/++resource++senaite.core.z3cform.static/datagrid.css"/>
 </html>
