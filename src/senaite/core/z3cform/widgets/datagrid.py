@@ -19,6 +19,7 @@ from zope.schema.interfaces import IObject
 class DataGridWidget(DataGridField):
     """Senaite DataGrid Widget
     """
+    display_table_css_class = "datagridwidget-table-view"
 
     def createObjectWidget(self, idx):
         """Create row widget
