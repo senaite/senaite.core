@@ -1389,14 +1389,15 @@ class window.AnalysisRequestAdd
       else if data['confirmation']
         dialog = me.template_dialog "confirm-template", data.confirmation
         dialog.on "yes", ->
+          # Re-submit
+          $("input[name=confirmed]").val "1"
+          $("input[name=save_button]").trigger "click"
+
+        dialog.on "no", ->
+          # Don't submit and redirect user if required
           destination = data.confirmation["destination"]
           if destination
-            # Redirect user
             window.location.replace portal_url + '/' + destination
-          else
-            # Re-submit
-            $("input[name=confirmed]").val "1"
-            $("input[name=save_button]").trigger "click"
 
       else
         window.location.replace base_url
