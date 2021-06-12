@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1812 Support html messages on Add sample custom confirmation dialog
 - #1809 Fix `modified` index is not reindexed when the object gets updated
 - #1808 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
 - #1803 Updated openpyxl to latest Python 2.x compatible version
