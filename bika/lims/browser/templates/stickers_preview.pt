@@ -219,6 +219,9 @@
          pdfwindow.document.forms.topdf.submit();
        }
 
+       // Force the barcode to be rendered when page gets loaded first time
+       $("select#template").trigger("change");
+
        // If autoprint=1, render the pdf automatically
        if (location.href.indexOf("autoprint=1") != -1) {
          printPdf();
