@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:omit-tag="">
+
+  <!-- Data rows -->
+  <tal:block tal:repeat="widget view/subform/widgets/values">
+    <td tal:attributes="class python:('cell-%d ' % repeat['widget'].number()) + ('datagridwidget-hidden-data' if widget.mode == 'hidden' else 'datagridwidget-cell')">
+      <div tal:replace="structure widget/render" />
+      <div tal:condition="widget/error" class="small text-danger">
+        <div tal:replace="structure widget/error/render">error</div>
+      </div>
+    </td>
+  </tal:block>
+
+  <!-- Empty marker -->
+  <td class="datagridwidget-hidden-data">
+    <input name="field-empty-marker" type="hidden" value="1"
+           tal:attributes="name string:${view/name}-empty-marker" />
+  </td>
+
+  <!-- Add row -->
+  <td class="datagridwidget-manipulator insert-row"
+      tal:condition="view/isInsertEnabled">
+    <button
+      class="btn btn-sm btn-outline-secondary dgf--row-add"
+      title="Add row"
+      i18n:attributes="title">
+      <i class="fas fa-plus" />
+    </button>
+  </td>
+
+  <!-- Delete row -->
+  <td class="datagridwidget-manipulator delete-row"
+      tal:condition="view/isDeleteEnabled">
+    <button href=""
+       class="btn btn-sm btn-outline-secondary dgf--row-delete"
+       title="Delete row"
+       i18n:attributes="title">
+      <i class="fas fa-trash" />
+    </button>
+  </td>
+
+  <!-- Move up -->
+  <td class="datagridwidget-manipulator dgf--row-moveup"
+      tal:condition="view/isReorderEnabled">
+    <button
+       class="btn btn-sm btn-outline-secondary dgf--row-moveup"
+       title="Move up"
+       i18n:attributes="title">
+      <i class="fas fa-arrow-up" />
+    </button>
+  </td>
+
+  <!-- Move down -->
+  <td class="datagridwidget-manipulator dgf--row-movedown"
+      tal:condition="view/isReorderEnabled">
+    <button
+       class="btn btn-sm btn-outline-secondary dgf--row-movedown"
+       title="Move down"
+       i18n:attributes="title">
+      <i class="fas fa-arrow-down" />
+    </button>
+  </td>
+
+</html>

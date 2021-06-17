@@ -16,4 +16,10 @@
   <adapter factory=".datamanager.AttributeDataManager" />
   <adapter factory=".datamanager.DictionaryDataManager" />
 
+  <!-- static resources -->
+  <browser:resourceDirectory
+      name="senaite.core.z3cform.static"
+      directory="static"
+      />
+
 </configure>

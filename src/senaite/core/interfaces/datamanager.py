@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from zope import interface
-
-
-class NO_VALUE(object):
-    def __repr__(self):
-        return "<NO_VALUE>"
-
-
-NO_VALUE = NO_VALUE()
+from z3c.form.interfaces import NO_VALUE
 
 
 class IDataManager(interface.Interface):

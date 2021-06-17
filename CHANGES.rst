@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1811 Datagrid field and widget for Dexterity types
 - #1810 Revert changes of PR #1767
 - #1806 Added base structure to implement custom dexterity fields and widgets
 - #1807 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity

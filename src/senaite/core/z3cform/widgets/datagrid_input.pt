@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:omit-tag="">
+
+  <table class="table table-hover table-responsive table-sm table-borderless datagridwidget-table-view"
+         data-mode="row"
+         tal:attributes="data-extra view/extra; id view/id_prefix">
+    <thead>
+      <tr>
+        <tal:block repeat="column view/columns">
+          <th class="header"
+              tal:define="cssclass string:header cell-${repeat/column/number};
+                     cssclass python: cssclass + (column['mode'] == 'hidden' and ' datagridwidget-hidden-data' or '')"
+              tal:attributes="class cssclass">
+            <span i18n:translate=""
+                  tal:content="column/label">title</span>
+            <span class="required"
+                  tal:condition="column/required" title="Required" i18n:domain="plone" i18n:attributes="title title_required">&nbsp;</span>
+            <span class="formHelp" tal:condition="column/description" tal:content="column/description">Description</span>
+          </th>
+        </tal:block>
+        <th class="header" tal:condition="view/allow_insert"></th>
+        <th class="header" tal:condition="view/allow_delete"></th>
+        <th class="header" tal:condition="view/allow_reorder"></th>
+        <th class="header" tal:condition="view/allow_reorder"></th>
+      </tr>
+    </thead>
+    <tbody class="datagridwidget-body" tal:attributes="data-name_prefix view/name_prefix; data-id_prefix view/id_prefix">
+      <tal:block repeat="widget view/widgets">
+        <tr tal:attributes="class python:'%s row-%d%s' % (widget.klass, repeat['widget'].number(), widget.mode=='hidden' and ' hidden' or '');
+                            data-index python:widget.name.split('.')[-1];"
+            tal:condition="python:view._includeRow(widget.name)">
+          <metal:block define-macro="widget-row">
+            <div tal:replace="structure widget/render"></div>
+          </metal:block>
+        </tr>
+      </tal:block>
+    </tbody>
+  </table>
+  <input type="hidden" tal:replace="structure view/counterMarker" />
+  <!-- static resources -->
+  <script type="text/javascript" src="" tal:attributes="src string:${view/portal_url}/++resource++senaite.core.z3cform.static/datagrid.js"></script>
+  <link rel="stylesheet" href="" type="text/css" media="screen"  tal:attributes="href string:${view/portal_url}/++resource++senaite.core.z3cform.static/datagrid.css"/>
+</html>
