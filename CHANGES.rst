@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1813 Fix barcode is not rendered when stickers preview is called directly
 - #1812 Support html messages on Add sample custom confirmation dialog
 - #1809 Fix `modified` index is not reindexed when the object gets updated
 - #1808 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
