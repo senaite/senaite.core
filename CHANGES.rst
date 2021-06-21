@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1815 Hide unit display after fields in manage analyses listing
 - #1811 Datagrid field and widget for Dexterity types
 - #1810 Revert changes of PR #1767
 - #1806 Added base structure to implement custom dexterity fields and widgets

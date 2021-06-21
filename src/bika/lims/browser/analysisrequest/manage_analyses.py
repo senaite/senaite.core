@@ -74,7 +74,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
-            ("Unit", {
+            ("ResultUnit", {
                 "title": _("Unit"),
                 "sortable": False}),
             ("Hidden", {
@@ -235,7 +235,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         spec = rr.get(keyword, ResultsRangeDict())
 
         item["Title"] = obj.Title()
-        item["Unit"] = obj.getUnit()
+        item["ResultUnit"] = obj.getUnit()
         item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()
         item["allow_edit"] = self.get_editable_columns(obj)
