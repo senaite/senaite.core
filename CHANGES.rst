@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1819 Fix rejection report is attached as a ".bin" file in notification email
 - #1817 Fix duplicated rejection reasons in rejection viewlet (sample view)
 - #1815 Hide unit display after fields in manage analyses listing
 - #1811 Datagrid field and widget for Dexterity types
