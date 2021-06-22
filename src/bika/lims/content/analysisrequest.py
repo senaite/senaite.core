@@ -2333,7 +2333,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         reasons = self.getRejectionReasons()
         if not reasons:
             return []
-        return reasons[0].get("selected", [])
+
+        # Return a copy of the list to avoid accidental writes
+        reasons = reasons[0].get("selected", [])[:]
+        return filter(None, reasons)
 
     def getOtherRejectionReasons(self):
         """Returns other rejection reasons custom text, if any
@@ -2341,7 +2344,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         reasons = self.getRejectionReasons()
         if not reasons:
             return ""
-        return reasons[0].get("other", "")
+        return reasons[0].get("other", "").strip()
 
     def createAttachment(self, filedata, filename="", **kw):
         """Add a new attachment to the sample
