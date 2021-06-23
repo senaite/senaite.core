@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1818 Fix rejection report is attached as a ".bin" file in notification email
 - #1816 Fix duplicated rejection reasons in rejection viewlet (sample view)
 - #1814 Fix inconsistent behavior of Add sample form confirmation actions
 - #1813 Fix barcode is not rendered when stickers preview is called directly

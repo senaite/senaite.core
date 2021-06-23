@@ -491,7 +491,8 @@ def do_rejection(sample, notify=None):
 
     # Attach the PDF to the sample
     filename = "{}-rejected.pdf".format(sample_id)
-    sample.createAttachment(pdf, filename=filename)
+    attachment = sample.createAttachment(pdf, filename=filename)
+    pdf_file = attachment.getAttachmentFile()
 
     # Do we need to send a notification email?
     if notify is None:
@@ -500,7 +501,7 @@ def do_rejection(sample, notify=None):
 
     if notify:
         # Compose and send the email
-        mime_msg = get_rejection_mail(sample, pdf)
+        mime_msg = get_rejection_mail(sample, pdf_file)
         if mime_msg:
             # Send the email
             send_email(mime_msg)
