@@ -38,6 +38,7 @@ from six import StringIO
 
 from bika.lims import api
 from bika.lims import logger
+from plone.app.blob.field import BlobWrapper
 from Products.CMFPlone.utils import safe_unicode
 
 try:
@@ -124,6 +125,7 @@ def to_email_attachment(filedata, filename="", **kw):
     data = ""
     maintype = "application"
     subtype = "octet-stream"
+    mime_type = kw.pop("mime_type", None)
 
     def is_file(s):
         try:
@@ -147,9 +149,14 @@ def to_email_attachment(filedata, filename="", **kw):
     # Handle raw filedata
     elif isinstance(filedata, six.string_types):
         data = filedata
+    # Handle wrapper for zodb blob
+    elif isinstance(filedata, BlobWrapper):
+        filename = filename or filedata.getFilename()
+        mime_type = mime_type or filedata.getContentType()
+        data = filedata.data
 
     # Set MIME type from keyword arguments or guess it from the filename
-    mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
+    mime_type = mime_type or mimetypes.guess_type(filename)[0]
     if mime_type is not None:
         maintype, subtype = mime_type.split("/")
 
