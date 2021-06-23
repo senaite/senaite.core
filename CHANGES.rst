@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1820 Fix dynamic analysis specification listing error for empty excel columns
 - #1817 Fix duplicated rejection reasons in rejection viewlet (sample view)
 - #1815 Hide unit display after fields in manage analyses listing
 - #1811 Datagrid field and widget for Dexterity types
