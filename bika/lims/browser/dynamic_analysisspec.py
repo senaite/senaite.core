@@ -20,6 +20,8 @@
 
 import collections
 
+import six
+
 from bika.lims import _
 from bika.lims import api
 from senaite.core.listing.view import ListingView
@@ -68,7 +70,7 @@ class DynamicAnalysisSpecView(ListingView):
     def before_render(self):
         super(DynamicAnalysisSpecView, self).before_render()
 
-    def make_empty_item(self, **kw):
+    def make_empty_item(self, record):
         """Create a new empty item
         """
         item = {
@@ -80,11 +82,18 @@ class DynamicAnalysisSpecView(ListingView):
             "disabled": False,
             "state_class": "state-active",
         }
-        item.update(**kw)
+        for k, v in record.items():
+            # ensure keyword dictionary keys contains only strings
+            if not self.is_string(k):
+                continue
+            item[k] = v
         return item
+
+    def is_string(self, value):
+        return isinstance(value, six.string_types)
 
     def folderitems(self):
         items = []
         for record in self.specs:
-            items.append(self.make_empty_item(**record))
+            items.append(self.make_empty_item(record))
         return items
