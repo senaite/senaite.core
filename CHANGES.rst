@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1824 Support html messages on Add sample custom confirmation dialog
+- #1826 Fix TypeError when creating Dynamic Analysis Specifications
 - #1821 API support for supermodel objects
 - #1820 Fix dynamic analysis specification listing error for empty excel columns
 - #1819 Fix rejection report is attached as a ".bin" file in notification email
