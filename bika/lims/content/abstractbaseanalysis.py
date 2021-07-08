@@ -435,8 +435,13 @@ Category = UIDReferenceField(
         checkbox_bound=0,
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        showOn=True,
+        catalog_name=SETUP_CATALOG,
+        base_query={
+            'is_active': True,
+            'sort_on': 'sortable_title',
+            'sort_order': 'ascending',
+        },
     )
 )
 

@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1827 Fix categories don't show up automatically on Analysis Service creation
 - #1822 API support for supermodel objects
 - #1818 Fix rejection report is attached as a ".bin" file in notification email
 - #1816 Fix duplicated rejection reasons in rejection viewlet (sample view)
