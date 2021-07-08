@@ -30,6 +30,8 @@ so here we will assume the role of Lab Manager.
     >>> from plone.app.testing import setRoles
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
+    >>> from senaite.app.supermodel import SuperModel
+
 
 Getting the Portal
 ..................
@@ -134,6 +136,11 @@ The function also accepts a UID:
     >>> api.get_object(api.get_uid(brain))
     <Client at /plone/clients/client-1>
 
+And also accepts `SuperModel` objects:
+
+    >>> api.get_object(SuperModel(brain))
+    <Client at /plone/clients/client-1>
+
 And returns the portal object when UID=="0"
 
     >>> api.get_object("0")
@@ -167,6 +174,9 @@ Portal object, we can use the `is_object` function::
     True
 
     >>> api.is_object(api.get_portal())
+    True
+
+    >>> api.is_object(SuperModel(client))
     True
 
     >>> api.is_object(None)

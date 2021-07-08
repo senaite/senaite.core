@@ -41,6 +41,7 @@ class BaseLayer(PloneSandboxLayer):
         import senaite.core
         import senaite.app.listing
         import senaite.app.spotlight
+        import senaite.app.supermodel
         import senaite.impress
         import senaite.lims
         import Products.TextIndexNG3
@@ -49,6 +50,7 @@ class BaseLayer(PloneSandboxLayer):
         self.loadZCML(package=senaite.core)
         self.loadZCML(package=senaite.app.listing)
         self.loadZCML(package=senaite.app.spotlight)
+        self.loadZCML(package=senaite.app.supermodel)
         self.loadZCML(package=senaite.impress)
         self.loadZCML(package=senaite.lims)
         self.loadZCML(package=Products.TextIndexNG3)
@@ -58,6 +60,7 @@ class BaseLayer(PloneSandboxLayer):
         zope.installProduct(app, "senaite.core")
         zope.installProduct(app, "senaite.app.listing")
         zope.installProduct(app, "senaite.app.spotlight")
+        zope.installProduct(app, "senaite.app.supermodel")
         zope.installProduct(app, "senaite.impress")
         zope.installProduct(app, "senaite.lims")
         zope.installProduct(app, "Products.TextIndexNG3")
