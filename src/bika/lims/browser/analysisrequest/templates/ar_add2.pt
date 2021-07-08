@@ -217,9 +217,14 @@
       <!-- Confirmation Template -->
       <script id="confirm-template" type="text/x-handlebars-template">
         <div title="Confirm" i18n:attributes="title">
+          {{#if message}}
           <p i18n:translate="">
             {{message}}
           </p>
+          {{/if}}
+          {{#if html_message}}
+          {{{html_message}}}
+          {{/if}}
           <p i18n:translate="">
             Do you want to continue?
           </p>
