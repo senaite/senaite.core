@@ -135,6 +135,12 @@ The function also accepts a UID:
     >>> api.get_object(api.get_uid(brain))
     <Client at /plone/clients/client-1>
 
+And also accepts `SuperModel` objects:
+
+    >>> from senaite.core.supermodel import SuperModel
+    >>> api.get_object(SuperModel(brain))
+    <Client at /plone/clients/client-1>
+
 And returns the portal object when UID=="0"
 
     >>> api.get_object("0")

@@ -216,6 +216,8 @@ def is_object(brain_or_object):
     """
     if is_portal(brain_or_object):
         return True
+    if is_supermodel(brain_or_object):
+        return True
     if is_at_content(brain_or_object):
         return True
     if is_dexterity_content(brain_or_object):
@@ -235,6 +237,8 @@ def get_object(brain_object_uid, default=_marker):
     """
     if is_uid(brain_object_uid):
         return get_object_by_uid(brain_object_uid)
+    elif is_supermodel(brain_object_uid):
+        return brain_object_uid.instance
     if not is_object(brain_object_uid):
         if default is _marker:
             fail("{} is not supported.".format(repr(brain_object_uid)))
@@ -264,6 +268,18 @@ def is_brain(brain_or_object):
     :rtype: bool
     """
     return ICatalogBrain.providedBy(brain_or_object)
+
+
+def is_supermodel(brain_or_object):
+    """Checks if the passed in object is a supermodel
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :returns: True if the object is a catalog brain
+    :rtype: bool
+    """
+    # avoid circular imports
+    from senaite.core.supermodel.interfaces import ISuperModel
+    return ISuperModel.providedBy(brain_or_object)
 
 
 def is_dexterity_content(brain_or_object):
