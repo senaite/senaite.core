@@ -65,9 +65,11 @@ class IDynamicAnalysisSpec(model.Schema):
                 "Please upload an Excel spreadsheet with at least "
                 "the following columns defined: '{}'"
                 .format(", ".join(REQUIRED_COLUMNS))))
+
         try:
-            header = map(lambda c: c.value, xls.worksheets[0].rows[0])
-        except IndexError:
+            header_row = xls.worksheets[0].rows.next()
+            header = map(lambda c: c.value, header_row)
+        except (IndexError, AttributeError):
             raise Invalid(
                 _("First sheet does not contain a valid column definition"))
         for col in REQUIRED_COLUMNS:
