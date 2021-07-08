@@ -1,11 +1,12 @@
 version: ~> 1.0
 language: python
-sudo: false
+os: linux
+dist: xenial
 cache:
   pip: true
   directories:
     - eggs
-matrix:
+jobs:
   fast_finish: true
   include:
     - python: "2.7"
