@@ -1311,13 +1311,14 @@
           return window.location.replace(destination + q);
         } else if (data['confirmation']) {
           dialog = me.template_dialog("confirm-template", data.confirmation);
-          return dialog.on("yes", function() {
+          dialog.on("yes", function() {
+            $("input[name=confirmed]").val("1");
+            return $("input[name=save_button]").trigger("click");
+          });
+          return dialog.on("no", function() {
             destination = data.confirmation["destination"];
             if (destination) {
               return window.location.replace(portal_url + '/' + destination);
-            } else {
-              $("input[name=confirmed]").val("1");
-              return $("input[name=save_button]").trigger("click");
             }
           });
         } else {
