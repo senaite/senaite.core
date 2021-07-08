@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1821 API support for supermodel objects
 - #1820 Fix dynamic analysis specification listing error for empty excel columns
 - #1819 Fix rejection report is attached as a ".bin" file in notification email
 - #1817 Fix duplicated rejection reasons in rejection viewlet (sample view)
