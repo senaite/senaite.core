@@ -13,7 +13,7 @@
     :target: https://travis-ci.com/senaite/senaite.core
 
 .. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/1.3.x.svg?style=flat-square
-    :target: https://scrutinizer-ci.com/g/senaite/senaite.core/
+    :target: https://scrutinizer-ci.com/g/senaite/senaite.core/?branch=1.3.x
 
 .. image:: https://img.shields.io/github/issues-pr/senaite/senaite.core.svg?style=flat-square
     :target: https://github.com/senaite/senaite.core/pulls
