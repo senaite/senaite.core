@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1823 Fix inconsistent behavior of Add sample form confirmation actions
 - #1824 Support html messages on Add sample custom confirmation dialog
 - #1826 Fix TypeError when creating Dynamic Analysis Specifications
 - #1821 API support for supermodel objects
