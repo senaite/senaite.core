@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1827 Fix categories don't show up automatically on Analysis Service creation
 - #1825 Fix TypeError when creating Dynamic Analysis Specifications
 - #1825 Fix dynamic analysis specification listing error for empty excel columns
 - #1822 API support for supermodel objects
