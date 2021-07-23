@@ -1,14 +1,14 @@
 #
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021\n"
 "Language-Team: Spanish (Latin America) (https://www.transifex.com/senaite/teams/87045/es_419/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -220,7 +220,7 @@ msgstr "Activado"
 #: bika/lims/browser/client/views/analysisprofiles.py:64
 #: bika/lims/browser/client/views/artemplates.py:61
 msgid "Active"
-msgstr "Activos"
+msgstr "Activo"
 
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
@@ -231,7 +231,7 @@ msgstr "Actor"
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:36
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:242
 msgid "Add"
-msgstr "Nuevo..."
+msgstr "Añadir"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 msgid "Add Analyses"
@@ -730,13 +730,13 @@ msgstr "Base"
 #: bika/lims/content/analysisrequest.py:306
 #: bika/lims/vocabularies/__init__.py:137
 msgid "Batch"
-msgstr "Lote"
+msgstr "Caso"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:137
 #: bika/lims/browser/batchfolder.py:69
 #: bika/lims/browser/templates/batch_publish.pt:52
 msgid "Batch ID"
-msgstr "ID Lote"
+msgstr "ID del caso"
 
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:45
@@ -749,7 +749,7 @@ msgstr "Subgrupo de lote"
 
 #: bika/lims/browser/batchfolder.py:56
 msgid "Batches"
-msgstr "Lotes"
+msgstr "Casos"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:19
 msgid "Be aware that the ranges provided in the spreadsheet file from the dynamic specification might override the ranges defined in the Specifications list below."
@@ -806,7 +806,7 @@ msgstr "Precio con descuento por volumen (sin IVA)"
 #: bika/lims/browser/client/views/contacts.py:72
 #: bika/lims/browser/supplier.py:116
 msgid "Business Phone"
-msgstr "Teléfono del negocio"
+msgstr "Teléfono del trabajo"
 
 #: bika/lims/browser/reports/__init__.py:139
 msgid "By"
@@ -1043,7 +1043,7 @@ msgstr "Haga clic para alternar la visibilidad o arrastre y suelte para cambiar 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:76
 #: bika/lims/browser/batchfolder.py:77
 msgid "Client"
-msgstr "Cliente"
+msgstr "Institución de referencia"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -1054,7 +1054,7 @@ msgstr "ID Lote de Cliente"
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:80
 #: bika/lims/browser/batchfolder.py:80
 msgid "Client ID"
-msgstr "ID del cliente"
+msgstr "ID de Institución de Referencia"
 
 #: bika/lims/profiles/default/registry.xml
 msgid "Client Landing Page"
@@ -1090,7 +1090,7 @@ msgstr "Identificador de la muestra asignado por el cliente"
 
 #: bika/lims/browser/clientfolder.py:49
 msgid "Clients"
-msgstr "Clientes"
+msgstr "Instituciones de referencia"
 
 #: bika/lims/profiles/default/workflows/senaite_batch_workflow/definition.xml
 msgid "Close"
@@ -1739,7 +1739,7 @@ msgstr "Eliminados"
 #: bika/lims/browser/clientfolder.py:92
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:89
 msgid "District"
-msgstr "Región"
+msgstr "Distrito"
 
 #: bika/lims/browser/instrument.py:652
 #: bika/lims/content/multifile.py:47
@@ -1749,22 +1749,22 @@ msgstr "Documento"
 #: bika/lims/browser/instrument.py:797
 #: bika/lims/content/multifile.py:39
 msgid "Document ID"
-msgstr "ID de documento"
+msgstr "Identificación del Documento"
 
 #: bika/lims/browser/instrument.py:801
 #: bika/lims/content/multifile.py:63
 msgid "Document Location"
-msgstr "Localización del documento"
+msgstr "Ubicación del Documento"
 
 #: bika/lims/browser/instrument.py:803
 #: bika/lims/content/multifile.py:73
 msgid "Document Type"
-msgstr "Tipo de documento"
+msgstr "Tipo de Documento"
 
 #: bika/lims/browser/instrument.py:799
 #: bika/lims/content/multifile.py:55
 msgid "Document Version"
-msgstr "Versión del documento"
+msgstr "Versión del Documento"
 
 #: bika/lims/config.py:130
 msgid "Dot (.)"
@@ -2101,7 +2101,7 @@ msgstr "Título del campo"
 #: bika/lims/browser/instrument.py:805
 #: bika/lims/browser/reports/productivity_analysesattachments.py:82
 msgid "File"
-msgstr "Archivo"
+msgstr "Fichero"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:193
 msgid "File Deleted"
@@ -4100,7 +4100,7 @@ msgstr "El flujo de trabajo de rechazo no está activado"
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:66
 #: bika/lims/browser/worksheet/templates/results.pt:213
 msgid "Remarks"
-msgstr "Comentarios"
+msgstr "Observaciones"
 
 #: bika/lims/content/analysisrequest.py:1058
 msgid "Remarks and comments for this request"
@@ -5840,7 +5840,7 @@ msgstr "Usuario"
 #: bika/lims/browser/client/views/contacts.py:68
 #: bika/lims/browser/templates/login_details.pt:71
 msgid "User Name"
-msgstr "Nombre de usuario"
+msgstr "Nombre de Usuario"
 
 #: bika/lims/browser/reports/templates/administration.pt:131
 msgid "User history"
@@ -5913,7 +5913,7 @@ msgstr "Error de validación: '${title}': título duplicado"
 
 #: bika/lims/validators.py:203
 msgid "Validation failed: '${value}' is not unique"
-msgstr "Error de validación: '${value}' no es único"
+msgstr "Validación fallida: '${value}' no es único"
 
 #: bika/lims/validators.py:630
 msgid "Validation failed: Bearing must be E/W"

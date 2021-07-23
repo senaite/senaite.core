@@ -7,13 +7,14 @@
 # prosper wang <prosperwang@163.com>, 2020
 # Raymond Yu <cl_yu@hotmail.com>, 2020
 # xuhaida76 <xuhaida@gmail.com>, 2020
+# Kevin Xu <139526780@qq.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: xuhaida76 <xuhaida@gmail.com>, 2020\n"
+"Last-Translator: Kevin Xu <139526780@qq.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/senaite/teams/87045/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -594,7 +595,7 @@ msgstr "任务待定"
 
 #: bika/lims/validators.py:477
 msgid "At least, two options for choices field are required"
-msgstr ""
+msgstr "至少选中两个选项"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
@@ -1010,7 +1011,7 @@ msgstr "勾选本框以确认本次检验服务需使用单独的样品容器"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:44
 msgid "Choices"
-msgstr ""
+msgstr "选项"
 
 #: bika/lims/content/analysisrequest.py:656
 msgid "Choose default Sample specification values"

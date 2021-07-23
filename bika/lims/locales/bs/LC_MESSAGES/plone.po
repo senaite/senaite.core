@@ -1,12 +1,15 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Bakir Helic <bakirh@gmail.com>, 2021
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Bakir Helic <bakirh@gmail.com>, 2021\n"
 "Language-Team: Bosnian (https://www.transifex.com/senaite/teams/87045/bs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,16 +23,16 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
-msgstr ""
+msgstr "AR šablon"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 msgid "AR Templates"
-msgstr ""
+msgstr "AR šabloni"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
-msgstr ""
+msgstr "AR izvještaj"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -37,225 +40,225 @@ msgstr ""
 # in the action menu of Plone.
 # Please don't remove
 msgid "Activate"
-msgstr ""
+msgstr "Aktiviraj"
 
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
-msgstr ""
+msgstr "Dodaj analizu"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Dodaj praznu referencu"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Dodaj kontrolnu referencu"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Dodaj duplikat"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
-msgstr ""
+msgstr "Administracija"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Analyses"
-msgstr ""
+msgstr "Analize"
 
 #: bika/lims/profiles/default/types/Analysis.xml
 msgid "Analysis"
-msgstr ""
+msgstr "Analiza"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Kategorije analiza"
 
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr ""
+msgstr "Kategorija analize"
 
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr ""
+msgstr "Profil analize"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Profili analiza"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
-msgstr ""
+msgstr "Analiza"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
-msgstr ""
+msgstr "Analize"
 
 #: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Specifikacija analize"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisSpecs.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Specifikacije analiza"
 
 msgid "Assign"
-msgstr ""
+msgstr "Dodijeli"
 
 msgid "Assigned"
-msgstr ""
+msgstr "Dodijeljeno"
 
 msgid "Attach"
-msgstr ""
+msgstr "Ddaj"
 
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
-msgstr ""
+msgstr "Dodatak"
 
 #: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
-msgstr ""
+msgstr "Vrsta dodatka"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr ""
+msgstr "Vrste dodataka"
 
 msgid "Attachment due"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
-msgstr ""
+msgstr "Dodaci"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Audit Log"
-msgstr ""
+msgstr "Log provjere"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
+msgstr "Auto-uvezi logove"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
-msgstr ""
+msgstr "Serija"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
-msgstr ""
+msgstr "Knjiga serije"
 
 #: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
-msgstr ""
+msgstr "Oznaka serije"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
-msgstr ""
+msgstr "Naljepnice serije"
 
 #: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr ""
+msgstr "Serije"
 
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
-msgstr ""
+msgstr "Kalkulacija"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
-msgstr ""
+msgstr "Kalkulacije"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certifikati kalibracija"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
+msgstr "Kalibracije"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Otkaži"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
-msgstr ""
+msgstr "Klijent"
 
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr ""
+msgstr "Klijenti"
 
 msgid "Close"
-msgstr ""
+msgstr "Zatvori"
 
 msgid "Complete"
-msgstr ""
+msgstr "Završeno"
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/SupplierContact.xml
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Contacts"
-msgstr ""
+msgstr "Kontakti"
 
 #: bika/lims/profiles/default/types/Container.xml
 msgid "Container"
-msgstr ""
+msgstr "Kontejner"
 
 #: bika/lims/profiles/default/types/ContainerType.xml
 msgid "Container Type"
-msgstr ""
+msgstr "Vrsta kontejnera"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
-msgstr ""
+msgstr "Vrste kontejnera"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
-msgstr ""
+msgstr "Kontejneri"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice PDF"
-msgstr ""
+msgstr "Kreiraj PDF račun"
 
 msgid "Current"
-msgstr ""
+msgstr "Trenutno"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktiviraj"
 
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
-msgstr ""
+msgstr "Odjeljenje"
 
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "Odjeljenja"
 
 msgid "Dispatch"
-msgstr ""
+msgstr "Pošalji"
 
 msgid "Dispatched"
-msgstr ""
+msgstr "Poslano"
 
 msgid "Dispose"
 msgstr ""
@@ -265,7 +268,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "Dokumenti"
 
 msgid "Dormant"
 msgstr ""
@@ -276,142 +279,142 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Dynamic Analysis Specifications"
-msgstr ""
+msgstr "Dinamička specifikacija analiza"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
-msgstr ""
+msgstr "Izmjeni"
 
 msgid "Expire"
-msgstr ""
+msgstr "Ističe"
 
 msgid "Expired"
-msgstr ""
+msgstr "Isteklo"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
+msgstr "Izvezi"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
+msgstr "Istorija"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Import"
-msgstr ""
+msgstr "Uvezi"
 
 msgid "Imported"
-msgstr ""
+msgstr "Uvezeno"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Neaktivno"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Lokacije instrumenata"
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "Vrsta instrumenta"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "Vrste instrumenata"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentType.xml
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
-msgstr ""
+msgstr "Instrumenti"
 
 msgid "Invalid"
-msgstr ""
+msgstr "Odbačeno"
 
 msgid "Invalidate"
-msgstr ""
+msgstr "Odbaci"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
-msgstr ""
+msgstr "Račun"
 
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "Kontakt laboratorije"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Department.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
-msgstr ""
+msgstr "Kontakti laboratorije"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
-msgstr ""
+msgstr "Odjeljenja laboratorije"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
-msgstr ""
+msgstr "Proizvodi laboratorije"
 
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "Laboratorija"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
+msgstr "Informacije o laboratoriji"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Large Sticker"
-msgstr ""
+msgstr "Velika naljepnica"
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr ""
+msgstr "Detalji za login"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
+msgstr "Održavanje"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
-msgstr ""
+msgstr "Upravljanje analizama"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
-msgstr ""
+msgstr "Upravljanje rezultatima"
 
 #: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
-msgstr ""
+msgstr "Proizvođač"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
+msgstr "Proizvođači"
 
 #: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
-msgstr ""
+msgstr "Metod"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
-msgstr ""
+msgstr "Metode"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "My organization"
-msgstr ""
+msgstr "Moja organizacija"
 
 msgid "No preservation required"
 msgstr ""
@@ -423,106 +426,106 @@ msgid "Not requested"
 msgstr ""
 
 msgid "Open"
-msgstr ""
+msgstr "Otvori"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr ""
+msgstr "Narudžbe"
 
 msgid "Pending"
-msgstr ""
+msgstr "Na čekanju"
 
 msgid "Prepublish"
-msgstr ""
+msgstr "Priprema za objavu"
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
-msgstr ""
+msgstr "Čuvanje"
 
 msgid "Preservation required"
-msgstr ""
+msgstr "Čuvanje neophodno"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
-msgstr ""
+msgstr "Sačuvano"
 
 msgid "Preserve"
-msgstr ""
+msgstr "Sačuvaj"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
+msgstr "Cjenovnik"
 
 #: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
-msgstr ""
+msgstr "Cjenovnici"
 
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
-msgstr ""
+msgstr "Štampaj"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Print Invoice"
-msgstr ""
+msgstr "Štampaj račun"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
-msgstr ""
+msgstr "Štampaj cjenovnik"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
+msgstr "Produktivnost"
 
 msgid "Publish"
-msgstr ""
+msgstr "Objavi"
 
 msgid "Published"
-msgstr ""
+msgstr "Objavljeno"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
-msgstr ""
+msgstr "Objavljeni rezultati"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "QC rezultati"
 
 msgid "Receive"
-msgstr ""
+msgstr "Prijem"
 
 msgid "Receive sample"
-msgstr ""
+msgstr "Prijem uzorka"
 
 msgid "Received"
-msgstr ""
+msgstr "Primljeno"
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
-msgstr ""
+msgstr "Referentne analize"
 
 #: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
-msgstr ""
+msgstr "Definicija reference"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
-msgstr ""
+msgstr "Definicije referenci"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
-msgstr ""
+msgstr "Uzorak reference"
 
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr ""
+msgstr "Uzorci referenci"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
-msgstr ""
+msgstr "Referentne vrijednosti"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
@@ -543,51 +546,51 @@ msgid "Reinstate"
 msgstr ""
 
 msgid "Reject"
-msgstr ""
+msgstr "Odbaci"
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Odbaci analizu"
 
 msgid "Rejected"
-msgstr ""
+msgstr "Odbačeno"
 
 msgid "Remove"
-msgstr ""
+msgstr "Ukloni"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
-msgstr ""
+msgstr "Izvještaj"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
-msgstr ""
+msgstr "Izvještaji"
 
 msgid "Republish"
-msgstr ""
+msgstr "Ponovo objavi"
 
 msgid "Retract"
-msgstr ""
+msgstr "Povuci"
 
 msgid "Retracted"
-msgstr ""
+msgstr "Povučeno"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Sample"
-msgstr ""
+msgstr "Uzorak"
 
 #: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
-msgstr ""
+msgstr "Stanje uzorka"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
-msgstr ""
+msgstr "Stanja uzorka"
 
 msgid "Sample Imports"
-msgstr ""
+msgstr "Uvozi uzoraka"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -614,30 +617,30 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
-msgstr ""
+msgstr "Vrsta uzorka"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
-msgstr ""
+msgstr "Vrste uzorka"
 
 msgid "Sample due"
-msgstr ""
+msgstr "Uzorak se čeka"
 
 msgid "Sample received"
-msgstr ""
+msgstr "Uzorak primljen"
 
 msgid "Sample registered"
-msgstr ""
+msgstr "Uzorak registrovan"
 
 msgid "Sampled"
-msgstr ""
+msgstr "Uzorkovano"
 
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
-msgstr ""
+msgstr "Uzorci"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -666,7 +669,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Search"
-msgstr ""
+msgstr "Traži"
 
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
@@ -711,19 +714,19 @@ msgid "Sub-groups"
 msgstr ""
 
 msgid "Submit"
-msgstr ""
+msgstr "Pošalji"
 
 msgid "Submit for verification"
-msgstr ""
+msgstr "Pošalji na verifikaciju"
 
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
-msgstr ""
+msgstr "Dobavljač"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
-msgstr ""
+msgstr "Dobavljač"
 
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
@@ -734,41 +737,41 @@ msgid "Supply Orders"
 msgstr ""
 
 msgid "To be preserved"
-msgstr ""
+msgstr "Za čuvanje"
 
 msgid "To be sampled"
-msgstr ""
+msgstr "Za uzimanje uzorka"
 
 msgid "To be verified"
-msgstr ""
+msgstr "Za verifikaciju"
 
 msgid "Unpublished"
-msgstr ""
+msgstr "Povučeno iz objave"
 
 msgid "Unsassign"
 msgstr ""
 
 msgid "Valid"
-msgstr ""
+msgstr "Validno"
 
 msgid "Validate"
-msgstr ""
+msgstr "Validiraj"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
-msgstr ""
+msgstr "Verifikacije"
 
 msgid "Verified"
-msgstr ""
+msgstr "Verificirano"
 
 msgid "Verify"
-msgstr ""
+msgstr "Verificiraj"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "View"
-msgstr ""
+msgstr "Pregled"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"

@@ -3,13 +3,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# Ludwig Muster <ludwig.muster@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Last-Translator: Ludwig Muster <ludwig.muster@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/senaite/teams/87045/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -571,7 +572,7 @@ msgid "Republish"
 msgstr ""
 
 msgid "Retract"
-msgstr ""
+msgstr "Retirer"
 
 msgid "Retracted"
 msgstr ""
@@ -613,7 +614,7 @@ msgstr "Points d'échantillonnage"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr ""
+msgstr "Modèles d'échantillon"
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -625,7 +626,7 @@ msgid "Sample Types"
 msgstr "Types d'échantillon"
 
 msgid "Sample due"
-msgstr ""
+msgstr "Échantillon dû"
 
 msgid "Sample received"
 msgstr ""
@@ -737,7 +738,7 @@ msgid "Supply Orders"
 msgstr "Commandes de réapprovisionnement"
 
 msgid "To be preserved"
-msgstr ""
+msgstr "A conserver"
 
 msgid "To be sampled"
 msgstr ""

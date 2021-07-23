@@ -1,13 +1,14 @@
 #
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# roozbeh karimi <information.spnco@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Last-Translator: roozbeh karimi <information.spnco@gmail.com>, 2021\n"
 "Language-Team: Persian (https://www.transifex.com/senaite/teams/87045/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,46 +26,46 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
-msgstr ""
+msgstr "تعداد ${amount}  پیوست با اندازه کلی ${total_size}"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:26
 #: bika/lims/browser/templates/partition_magic.pt:29
 msgid "${back_link}"
-msgstr ""
+msgstr "${back_link}"
 
 #: bika/lims/browser/templates/login_details.pt:32
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
-msgstr ""
+msgstr "${contact_fullname} می تواند با نام کاربری ${contact_username} وارد سیستم LIMS شود. پسورد مشتری ها باید توسط خوشان تغییر یابد. در صورت فراموشی پسورد، مشتری می تواند از طریق صفحه ورود درخواست پسورد جدید دهد."
 
 #: bika/lims/controlpanel/bika_analysisservices.py:148
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} با موفقیت ایجاد شد."
 
 #: bika/lims/controlpanel/bika_analysisservices.py:153
 msgid "${item} was successfully created."
-msgstr ""
+msgstr "${item} با موفقیت ایجاد شد."
 
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:36
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:99
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:99
 msgid "% Performed"
-msgstr ""
+msgstr "% انجام شده"
 
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:101
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:101
 msgid "% Published"
-msgstr ""
+msgstr "% منتشر شده"
 
 #: bika/lims/utils/analysisrequest.py:567
 msgid "%s has been rejected"
-msgstr ""
+msgstr "%s رد شده است"
 
 #: bika/lims/exportimport/setupdata/__init__.py:58
 msgid "%s has no '%s' column."
-msgstr ""
+msgstr "%s ستون '%s' را ندارد"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:26
 #: bika/lims/browser/templates/partition_magic.pt:29
@@ -77,12 +78,12 @@ msgstr ""
 
 #: bika/lims/content/analysisspec.py:83
 msgid "'Min' and 'Max' values indicate a valid results range. Any result outside this results range will raise an alert. 'Min warn' and 'Max warn' values indicate a shoulder range. Any result outside the results range but within the shoulder range will raise a less severe alert. If the result is out of range, the value set for '< Min' or '< Max' will be displayed in lists and results reports instead of the real result."
-msgstr ""
+msgstr "مقادیر \"حداقل\" و \"حداکثر\" یک دامنه نتایج معتبر را نشان می دهد. هر نتیجه ای خارج از این محدوده نتایج ، هشدار را ایجاد می کند. مقادیر \"حداقل هشدار\" و \"حداکثر هشدار\" نشان دهنده دامنه شانه است. هر نتیجه ای در خارج از محدوده نتایج ، اما در محدوده شانه ، هشدار کمتری را ایجاد می کند. اگر نتیجه خارج از محدوده باشد ، مقدار تعیین شده برای \"<Min\" یا \"<Max\" به جای نتیجه واقعی در لیست ها و گزارشات نتایج نمایش داده می شود."
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:249
 #: bika/lims/content/referencesample.py:201
 msgid "(Blank)"
-msgstr ""
+msgstr "(خالی)"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:256
 msgid "(Control)"
@@ -102,59 +103,59 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:25
 msgid "*** This is an automatically generated email, please do not reply to this message. ***"
-msgstr ""
+msgstr "*** این یک ایمیل به صورت خودکار تولید می شود ، لطفا به این پیام پاسخ ندهید. ***"
 
 #: bika/lims/browser/analyses/view.py:150
 #: bika/lims/browser/referencesample.py:175
 #: bika/lims/browser/worksheet/views/analyses.py:104
 msgid "+-"
-msgstr ""
+msgstr "+-"
 
 #: bika/lims/browser/fields/resultrangefield.py:41
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:111
 msgid "< Min"
-msgstr ""
+msgstr "< Min"
 
 #: bika/lims/browser/templates/senaite-frontpage.pt:15
 msgid "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to SENAITE"
-msgstr ""
+msgstr "<img src=\"${DYNAMIC_CONTENT}\" /> به Senaite خوش آمدید"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionwidget.pt:59
 msgid "<input type=\"checkbox\" class=\"rejectionwidget-checkbox-other rejectionwidget-field\" name=\"${DYNAMIC_CONTENT}\" id=\"${DYNAMIC_CONTENT}\" /> Other"
-msgstr ""
+msgstr "<input type=\"checkbox\" class=\"rejectionwidget-checkbox-other rejectionwidget-field\" name=\"${DYNAMIC_CONTENT}\" id=\"${DYNAMIC_CONTENT}\" /> بقیه"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:505
 msgid "<max"
-msgstr ""
+msgstr "<max"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:492
 msgid "<min"
-msgstr ""
+msgstr "<min"
 
 #: bika/lims/content/calculation.py:120
 msgid "<p>The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.</p><p>To enter a Calculation, use standard maths operators,  + - * / ( ), and all keywords available, both from other Analysis Services and the Interim Fields specified here, as variables. Enclose them in square brackets [ ].</p><p>E.g, the calculation for Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG are the keywords for those two Analysis Services.</p>"
-msgstr ""
+msgstr "<p> فرمولی که در اینجا تایپ می کنید ، هنگام نمایش تجزیه و تحلیل با استفاده از این محاسبه ، به صورت پویا محاسبه می شود. </ p> <p> برای ورود به محاسبه ، از عملگرهای استاندارد ریاضی ، + - * / () و همه کلمات کلیدی موجود استفاده کنید ، هم از سایر خدمات تجزیه و تحلیل و هم از زمینه های موقت مشخص شده در اینجا ، به عنوان متغیرها. آنها را در براکت های مربع محصور کنید []. </ p> <p> به عنوان مثال ، محاسبه سختی کل ، کل یون های کلسیم (ppm) و منیزیم (ppm) در آب به صورت [Ca] + [Mg] وارد می شود ، جایی که Ca و MG کلمات کلیدی آن دو سرویس تجزیه و تحلیل هستند. </ p>"
 
 #: bika/lims/browser/viewlets/templates/setupbutton.pt:9
 msgid "<span class=\"glyphicon glyphicon-cog\" aria-hidden=\"true\"></span>"
-msgstr ""
+msgstr "<span class=\"glyphicon glyphicon-cog\" aria-hidden=\"true\"></span>"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "<span>x</span> <span class=\"formHelp\">x</span>"
-msgstr ""
+msgstr "<span>x</span> <span class=\"formHelp\">x</span>"
 
 #: bika/lims/browser/fields/resultrangefield.py:42
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:114
 msgid "> Max"
-msgstr ""
+msgstr "> Max"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:512
 msgid ">max"
-msgstr ""
+msgstr ">حداکثر"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:498
 msgid ">min"
-msgstr ""
+msgstr ">حداقل"
 
 #: bika/lims/content/organisation.py:130
 msgid "Account Name"
@@ -183,21 +184,21 @@ msgstr ""
 
 #: bika/lims/content/laboratory.py:154
 msgid "Accreditation Logo"
-msgstr "لوگو سازمان همکار"
+msgstr "آرم اعتبار سنجی "
 
 #: bika/lims/content/laboratory.py:144
 msgid "Accreditation Reference"
-msgstr ""
+msgstr "مرجع اعتبار سنجی "
 
 #: bika/lims/content/laboratory.py:167
 msgid "Accreditation page header"
-msgstr ""
+msgstr "عنوان صفحه اعتبار سنجی "
 
 #: bika/lims/browser/analyses/view.py:1236
 #: bika/lims/browser/analysisrequest/manage_analyses.py:257
 #: bika/lims/browser/referencesample.py:357
 msgid "Accredited"
-msgstr "اکردیته شده"
+msgstr "اکردیته شدهمعتبر"
 
 #: bika/lims/browser/auditlog.py:91
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:74
@@ -207,13 +208,13 @@ msgstr "انجام"
 
 #: bika/lims/browser/reports/templates/administration.pt:133
 msgid "Actions performed by users (or specific user) between a period of time"
-msgstr ""
+msgstr "اقدامات انجام شده توسط کاربران (یا کاربر خاص) بین یک بازه زمانی"
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/senaite_client_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/senaite_clientcontact_workflow/definition.xml
 msgid "Activate"
-msgstr ""
+msgstr "فعال کردن"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:240
 #: bika/lims/browser/client/views/analysisprofiles.py:64
@@ -224,7 +225,7 @@ msgstr "فعال"
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
 msgid "Actor"
-msgstr ""
+msgstr "بازیگر"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:474
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:36
@@ -238,7 +239,7 @@ msgstr "افزودن آزمونها"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:302
 msgid "Add Attachment"
-msgstr ""
+msgstr "پیوست را اضافه کنید"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 msgid "Add Blank Reference"
@@ -255,66 +256,66 @@ msgstr "همانند سازی"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:87
 msgid "Add Reflex rule"
-msgstr ""
+msgstr "قانون Reflex را اضافه کنید"
 
 #: bika/lims/content/bikasetup.py:340
 msgid "Add a remarks field to all analyses"
-msgstr ""
+msgstr "به تمام تجزیه و تحلیل ها ، یک بخش اظهارات اضافه کنید"
 
 #: bika/lims/content/artemplate.py:250
 msgid "Add analyses from the selected profile to the template"
-msgstr ""
+msgstr "تجزیه و تحلیل از نمایه انتخاب شده به الگو اضافه کنید"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:195
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:37
 msgid "Add new Attachment"
-msgstr ""
+msgstr "پیوست جدید اضافه کنید"
 
 #: bika/lims/content/analysisrequest.py:995
 msgid "Add one or more attachments to describe the sample in this sample, or to specify your request."
-msgstr ""
+msgstr "برای توصیف نمونه در این نمونه یا مشخص کردن درخواست خود ، یک یا چند پیوست اضافه کنید."
 
 #: bika/lims/skins/bika/bika_widgets/remarkswidget.pt:45
 msgid "Add remarks"
-msgstr ""
+msgstr "اظهارات اضافه کنید"
 
 #: bika/lims/content/calculation.py:98
 msgid "Additional Python Libraries"
-msgstr ""
+msgstr "کتابخانه های اضافی پایتون"
 
 #: bika/lims/content/analysisservice.py:387
 msgid "Additional Values"
-msgstr ""
+msgstr "مقادیر اضافی"
 
 #: bika/lims/content/analysisrequest.py:219
 msgid "Additional email addresses to be notified"
-msgstr ""
+msgstr "آدرس های ایمیل اضافی برای اطلاع رسانی"
 
 #: bika/lims/content/storagelocation.py:93
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:137
 msgid "Address"
-msgstr ""
+msgstr "آدرس"
 
 #: bika/lims/browser/reports/templates/administration.pt:80
 msgid "Administrative Reports"
-msgstr ""
+msgstr "گزارش های اداری"
 
 #: bika/lims/content/sampletype.py:208
 msgid "Admitted sticker templates"
-msgstr ""
+msgstr "الگوهای برچسب پذیرفته شده"
 
 #: bika/lims/content/sampletype.py:181
 msgid "Admitted stickers for the sample type"
-msgstr ""
+msgstr "برچسب های پذیرفته شده برای نوع نمونه"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:359
 msgid "After ${end_date}"
-msgstr ""
+msgstr "بعد از ${end_date}"
 
 #: bika/lims/browser/instrument.py:648
 #: bika/lims/content/instrumentcertification.py:98
 msgid "Agency"
-msgstr ""
+msgstr "آژانس"
 
 #: bika/lims/browser/accreditation.py:83
 #: bika/lims/browser/analyses/view.py:219
@@ -324,55 +325,55 @@ msgstr "همه"
 
 #: bika/lims/browser/accreditation.py:75
 msgid "All Accredited analysis services are listed here."
-msgstr ""
+msgstr "همه خدمات تجزیه و تحلیل معتبر در اینجا ذکر شده است."
 
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:40
 msgid "All Analyses of Service"
-msgstr ""
+msgstr "تمام تجزیه و تحلیل خدمات"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:617
 msgid "All analyses assigned"
-msgstr "همه آزمونهای اختصاصی"
+msgstr "همه تجزیه و تحلیل اختصاص داده شده است"
 
 #: bika/lims/content/abstractbaseanalysis.py:220
 msgid "Allow Manual Detection Limit input"
-msgstr ""
+msgstr "اجازه دستیابی دستی محدود کردن ورودی"
 
 #: bika/lims/content/bikasetup.py:180
 msgid "Allow access to worksheets only to assigned analysts"
-msgstr ""
+msgstr "دسترسی به کاربرگها فقط برای تحلیل گران اختصاص داده شده مجاز است"
 
 #: bika/lims/content/abstractbaseanalysis.py:569
 msgid "Allow manual uncertainty value input"
-msgstr ""
+msgstr "اجازه دهید مقدار عدم اطمینان دستی وارد شود"
 
 #: bika/lims/config.py:145
 msgid "Allow same user to verify multiple times"
-msgstr ""
+msgstr "به همان کاربر اجازه دهید چندین بار تأیید کند"
 
 #: bika/lims/config.py:146
 msgid "Allow same user to verify multiple times, but not consecutively"
-msgstr ""
+msgstr "به همان کاربر اجازه دهید چندین بار تأیید کند ، اما نه به صورت متوالی"
 
 #: bika/lims/content/bikasetup.py:352
 msgid "Allow self-verification of results"
-msgstr ""
+msgstr "اجاره دهید تایید نتایج توسط خود شخص فعال شود."
 
 #: bika/lims/content/abstractbaseanalysis.py:221
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
-msgstr ""
+msgstr "به تجزیه و تحلیلگر اجازه دهید تا به صورت دستی محدودیت های تشخیص پیش فرض (LDL و UDL) را در نمای ورودی نتایج جایگزین کند"
 
 #: bika/lims/content/abstractbaseanalysis.py:570
 msgid "Allow the analyst to manually replace the default uncertainty value."
-msgstr ""
+msgstr "به تحلیلگر اجازه دهید تا به طور دستی مقدار عدم قطعیت پیش فرض را جایگزین کند."
 
 #: bika/lims/content/bikasetup.py:189
 msgid "Allow to submit results for unassigned analyses or for analyses assigned to others"
-msgstr ""
+msgstr "اجازه دهید نتایج را برای تجزیه و تحلیل غیر اختصاص داده شده یا برای تجزیه و تحلیل اختصاص داده شده به دیگران ارسال کنید"
 
 #: bika/lims/content/client.py:100
 msgid "Always expand the selected categories in client views"
-msgstr ""
+msgstr "همیشه دسته های انتخاب شده را در نماهای مشتری گسترش دهید"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:83
 msgid "Amount"
@@ -381,7 +382,7 @@ msgstr "مقدار"
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:58
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:58
 msgid "Analysed by"
-msgstr ""
+msgstr "تحلیل شده توسط"
 
 #: bika/lims/browser/dashboard/dashboard.py:578
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:95
@@ -391,7 +392,7 @@ msgstr "آزمونها"
 
 #: bika/lims/browser/reports/productivity_analysesperservice.py:49
 msgid "Analyses per analysis service"
-msgstr ""
+msgstr "تجزیه و تحلیل در هر سرویس تجزیه و تحلیل"
 
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:49
 #: bika/lims/browser/reports/templates/productivity.pt:203
@@ -405,26 +406,26 @@ msgstr "آزمونهای مربوط به خدمات"
 #: bika/lims/browser/reports/templates/productivity.pt:387
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:77
 msgid "Analyses performed and published as % of total"
-msgstr ""
+msgstr "درصد کل آزمون‌های انجام شده و منتشر شده"
 
 #: bika/lims/browser/reports/productivity_analysesperformedpertotal.py:210
 msgid "Analyses performed as % of total"
-msgstr ""
+msgstr "درصد کل آزمون‌های انجام شده"
 
 #: bika/lims/browser/reports/templates/administration.pt:91
 #: bika/lims/browser/reports/templates/productivity.pt:160
 msgid "Analyses related reports"
-msgstr ""
+msgstr "گزارش آزمون‌های مرتبط"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:115
 msgid "Analyses requested"
-msgstr ""
+msgstr "درخواست آزمون"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:219
 #: bika/lims/browser/reports/templates/productivity.pt:350
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:77
 msgid "Analyses summary per department"
-msgstr ""
+msgstr "گزارش آزمون‌ها بر اساس بخش"
 
 #: bika/lims/browser/analyses/view.py:112
 #: bika/lims/browser/reports/productivity_analysestats.py:134
@@ -451,26 +452,26 @@ msgstr "کلید واژه آزمون"
 #: bika/lims/content/analysisrequest.py:404
 #: bika/lims/content/artemplate.py:249
 msgid "Analysis Profile"
-msgstr "پروفایل آزمون"
+msgstr "پروفایل‌ آزمون"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:77
 #: bika/lims/browser/client/views/analysisprofiles.py:50
 #: bika/lims/content/analysisrequest.py:428
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "پروفایل‌های آزمون"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:22
 msgid "Analysis Report"
-msgstr ""
+msgstr "گزارش آزمون‌"
 
 #: bika/lims/browser/publish/reports_listing.py:53
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Reports"
-msgstr ""
+msgstr "گزارش آزمون‌‌ها"
 
 #: bika/lims/browser/publish/emailview.py:289
 msgid "Analysis Results for {}"
-msgstr ""
+msgstr "نتیجه آزمون {}"
 
 #: bika/lims/browser/fields/referenceresultsfield.py:41
 #: bika/lims/browser/fields/resultrangefield.py:34
@@ -486,15 +487,15 @@ msgstr "مجموعه خدمات آزمون"
 #: bika/lims/content/analysisrequest.py:655
 #: bika/lims/controlpanel/bika_analysisspecs.py:75
 msgid "Analysis Specification"
-msgstr ""
+msgstr "مشخصه آزمون"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:63
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "مشخصات آزمون"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:59
 msgid "Analysis State"
-msgstr ""
+msgstr "وضعیت آزمون"
 
 #: bika/lims/content/worksheettemplate.py:60
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:66
@@ -503,20 +504,20 @@ msgstr "نوع آزمون"
 
 #: bika/lims/browser/reports/selection_macros/select_analysiscategory.pt:2
 msgid "Analysis category"
-msgstr ""
+msgstr "دسته‌بندی آزمون"
 
 #: bika/lims/content/analysisrequest.py:405
 msgid "Analysis profiles apply a certain set of analyses"
-msgstr ""
+msgstr "پروفایل آزمون گروهی از آزمایش‌ها را اعمال می‌نماید"
 
 #: bika/lims/browser/reports/productivity_analysesperservice.py:93
 #: bika/lims/browser/reports/selection_macros/select_analysisservice.pt:3
 msgid "Analysis service"
-msgstr ""
+msgstr "خدمات آزمون"
 
 #: bika/lims/content/bikasetup.py:316
 msgid "Analysis specifications which are edited directly on the Sample."
-msgstr ""
+msgstr "مشخصات آزمون که مستقیماً بر روی نمونه اعمال می شوند. "
 
 #: bika/lims/browser/reports/templates/productivity.pt:283
 msgid "Analysis turnaround time"
@@ -538,11 +539,11 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:152
 #: bika/lims/browser/reports/selection_macros/select_analyst.pt:4
 msgid "Analyst"
-msgstr "آنالیست"
+msgstr "آزمونگر"
 
 #: bika/lims/browser/worksheet/views/add_worksheet.py:45
 msgid "Analyst must be specified."
-msgstr ""
+msgstr "باید آزمونگر مشخص شود."
 
 #: bika/lims/content/analysisservice.py:74
 msgid "Any"
@@ -550,19 +551,19 @@ msgstr "هر"
 
 #: bika/lims/browser/worksheet/templates/results.pt:183
 msgid "Apply"
-msgstr ""
+msgstr "اعمال"
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:43
 msgid "Apply template"
-msgstr "بکار بردن الگو"
+msgstr "اعمال الگو"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:48
 msgid "Apply wide"
-msgstr ""
+msgstr "اعمال کلی"
 
 #: bika/lims/content/instrumentcertification.py:176
 msgid "Approved by"
-msgstr ""
+msgstr "تایید شده توسط"
 
 #: bika/lims/content/instrument.py:280
 msgid "Asset Number"
@@ -570,25 +571,25 @@ msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Assign"
-msgstr ""
+msgstr "تخصیص دادن"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:386
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "Assigned"
-msgstr ""
+msgstr "تخصیص داده شده"
 
 #: bika/lims/browser/analyses/view.py:1211
 msgid "Assigned to: ${worksheet_id}"
-msgstr ""
+msgstr "تخصیص داده شده به : ${worksheet_id}"
 
 #: bika/lims/browser/dashboard/dashboard.py:541
 msgid "Assignment pending"
-msgstr ""
+msgstr "وظیفه در حال انتظار"
 
 #: bika/lims/validators.py:477
 msgid "At least, two options for choices field are required"
-msgstr ""
+msgstr "حداقل 2 گزینه از مجموعه گزینه‌ها باید انتخاب شود"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
@@ -642,7 +643,7 @@ msgstr "پیوست الزامیست"
 
 #: bika/lims/browser/reports/productivity_analysesattachments.py:83
 msgid "Attachment type"
-msgstr ""
+msgstr "نوع پیوست"
 
 #: bika/lims/browser/analyses/view.py:158
 #: bika/lims/browser/client/views/attachments.py:45
@@ -662,7 +663,7 @@ msgstr ""
 
 #: bika/lims/exportimport/import.pt:89
 msgid "Auto Import Instrument Results"
-msgstr ""
+msgstr "درونریزی خودکار نتایج دستگاهی"
 
 #: bika/lims/browser/instrument.py:747
 msgid "Auto Import Logs of %s"
@@ -678,11 +679,11 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:522
 msgid "Auto-receive samples"
-msgstr ""
+msgstr "دریافت نمونه خودکار"
 
 #: bika/lims/browser/worksheet/templates/results.pt:132
 msgid "Autofill"
-msgstr ""
+msgstr "پرکردن خودکار"
 
 #: bika/lims/content/bikasetup.py:169
 msgid "Automatic log-off"
@@ -690,7 +691,7 @@ msgstr "خروج خودکار"
 
 #: bika/lims/content/bikasetup.py:676
 msgid "Automatic sticker printing"
-msgstr ""
+msgstr "پرینت خودکار برچسب"
 
 #: bika/lims/content/artemplate.py:236
 msgid "Automatically redirect the user to the partitions creation view when Sample is received."
@@ -698,7 +699,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/templates/print.pt:121
 msgid "Available templates"
-msgstr ""
+msgstr "قالب‌های آماده"
 
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:131
 msgid "Average TAT"
@@ -706,11 +707,11 @@ msgstr ""
 
 #: bika/lims/browser/reports/productivity_analysestats.py:140
 msgid "Average early"
-msgstr ""
+msgstr "میانگین تعجیل"
 
 #: bika/lims/browser/reports/productivity_analysestats.py:138
 msgid "Average late"
-msgstr ""
+msgstr "میانگین تاخیر"
 
 #: bika/lims/content/organisation.py:154
 msgid "Bank branch"
@@ -748,7 +749,7 @@ msgstr ""
 
 #: bika/lims/browser/batchfolder.py:56
 msgid "Batches"
-msgstr ""
+msgstr "دسته‌ها"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:19
 msgid "Be aware that the ranges provided in the spreadsheet file from the dynamic specification might override the ranges defined in the Specifications list below."
@@ -764,11 +765,11 @@ msgstr ""
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:356
 msgid "Before ${start_date}"
-msgstr ""
+msgstr "قبل از ${start_date}"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:562
 msgid "Biannual"
-msgstr ""
+msgstr "دوسالانه"
 
 #: bika/lims/config.py:99
 #: bika/lims/content/organisation.py:109
@@ -779,11 +780,11 @@ msgstr "آدرس صورتحساب"
 #: bika/lims/browser/templates/referencesample_view.pt:21
 #: bika/lims/browser/worksheet/views/analyses.py:490
 msgid "Blank"
-msgstr "شاهد"
+msgstr "نمونه شاهد"
 
 #: bika/lims/config.py:104
 msgid "Blank QC analyses"
-msgstr ""
+msgstr "آزمایش‌های کنترل کیفیت نمونه شاهد"
 
 #: bika/lims/controlpanel/bika_instruments.py:80
 msgid "Brand"
@@ -791,12 +792,12 @@ msgstr "نام تجاری"
 
 #: bika/lims/browser/clientfolder.py:103
 msgid "Bulk Discount"
-msgstr ""
+msgstr "تخفیف عمده"
 
 #: bika/lims/content/client.py:64
 #: bika/lims/content/pricelist.py:59
 msgid "Bulk discount applies"
-msgstr ""
+msgstr "تخفیف عمده اعمال شده"
 
 #: bika/lims/content/abstractbaseanalysis.py:459
 msgid "Bulk price (excluding VAT)"
@@ -809,11 +810,11 @@ msgstr "تلفن محل کار"
 
 #: bika/lims/browser/reports/__init__.py:139
 msgid "By"
-msgstr ""
+msgstr "توسط"
 
 #: bika/lims/browser/department/labcontacts.py:39
 msgid "By selecting/unselecting the checboxes, the user will be able to assign \"Lab Contacts\" to the department."
-msgstr ""
+msgstr "با انتخاب/عدم انتخاب چک باکس، کاربر می‌تواند به بخش مشخصات تماس اضافه نماید"
 
 #: bika/lims/content/analysisrequest.py:325
 msgid "CBID"
@@ -826,11 +827,11 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:218
 #: bika/lims/content/client.py:81
 msgid "CC Emails"
-msgstr "کپی ایمیلها"
+msgstr "رونوشت ایمیلها"
 
 #: bika/lims/content/abstractbaseanalysis.py:547
 msgid "Calculate Precision from Uncertainties"
-msgstr ""
+msgstr "محاسبه دقت از عدم قطعیت ها "
 
 #: bika/lims/browser/methodfolder.py:71
 #: bika/lims/browser/templates/analysisservice_info.pt:152
@@ -849,7 +850,7 @@ msgstr "فیلدهای حین محاسباتی"
 
 #: bika/lims/content/analysisservice.py:372
 msgid "Calculation to be assigned to this content."
-msgstr ""
+msgstr "محاسبه اختصاص داده شده به این محتوا. "
 
 #: bika/lims/controlpanel/bika_calculations.py:59
 msgid "Calculations"
@@ -857,41 +858,41 @@ msgstr "محاسبات"
 
 #: bika/lims/content/instrumentscheduledtask.py:114
 msgid "Calibration"
-msgstr ""
+msgstr "کالیبراسون"
 
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/browser/templates/instrument_certifications.pt:40
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "تاییدیه کالیبراسون"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
-msgstr ""
+msgstr "تاریخ گزارش کالیبراسیون"
 
 #: bika/lims/browser/instrument.py:218
 #: bika/lims/content/instrumentcalibration.py:107
 msgid "Calibrator"
-msgstr ""
+msgstr "کالیبره گر"
 
 #: bika/lims/browser/analyses/view.py:1159
 msgid "Can verify, but submitted by current user"
-msgstr ""
+msgstr "می‌تواند تایید شود، ولی توسط کاربر کنونی ثبت شده"
 
 #: bika/lims/browser/analyses/view.py:1183
 msgid "Can verify, but was already verified by current user"
-msgstr ""
+msgstr "می‌تواند تایید شود، ولی قبلا توسط کاربر کنونی تایید شده"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:124
 #: bika/lims/browser/publish/templates/email.pt:205
 #: bika/lims/browser/templates/partition_magic.pt:249
 msgid "Cancel"
-msgstr ""
+msgstr "لغو"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:341
 #: bika/lims/browser/batchfolder.py:109
 #: bika/lims/browser/instrument.py:104
 msgid "Cancelled"
-msgstr "کنسل شده"
+msgstr "لغو شده"
 
 #: bika/lims/content/calculation.py:449
 msgid "Cannot activate calculation, because the following service dependencies are inactive: ${inactive_services}"
@@ -1199,17 +1200,17 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:552
 #: bika/lims/content/analysisservice.py:135
 msgid "Container"
-msgstr "گنجانه"
+msgstr "نگهدارنده"
 
 #: bika/lims/content/analysisservice.py:102
 #: bika/lims/content/container.py:48
 #: bika/lims/controlpanel/bika_containers.py:60
 msgid "Container Type"
-msgstr "نوع گنجانه"
+msgstr "نوع نگهدارنده"
 
 #: bika/lims/controlpanel/bika_containertypes.py:45
 msgid "Container Types"
-msgstr "انواع گنجانه"
+msgstr "انواع نگهدارنده"
 
 #: bika/lims/controlpanel/bika_containers.py:46
 msgid "Containers"
@@ -2845,7 +2846,7 @@ msgstr "جزئیات ورود به سیستم"
 
 #: bika/lims/skins/bika/logged_in.cpy:25
 msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
-msgstr "ورود ناموفق. آدرس ایمیل و رمز ورود به بزرگی و کوچکی حروف حساس است، کلید کپس لاک را کنترل کنید"
+msgstr "ورود ناموفق. آدرس ایمیل و رمز ورود به بزرگی و کوچکی حروف حساس است، کلید کپس لاک را کنترل کنید."
 
 #: bika/lims/skins/bika/logged_in.cpy:27
 msgid "Login failed. Both login name and password are case sensitive, check that caps lock is not enabled."
@@ -4966,7 +4967,7 @@ msgstr ""
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:545
 msgid "Show/hide timeline summary"
-msgstr ""
+msgstr "نشان دادن/مخفی کردن خلاصه خط زمان"
 
 #: bika/lims/content/labcontact.py:50
 msgid "Signature"
@@ -5852,7 +5853,7 @@ msgstr ""
 #: bika/lims/browser/reports/administration_usershistory.py:201
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:56
 msgid "Users history"
-msgstr ""
+msgstr "تاریخچه کاربر"
 
 #: bika/lims/content/bikasetup.py:295
 msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
@@ -5880,7 +5881,7 @@ msgstr "شماره مالیات ارزش افزوده"
 
 #: bika/lims/browser/analyses/view.py:192
 msgid "Valid"
-msgstr ""
+msgstr "معتبر"
 
 #: bika/lims/browser/instrument.py:650
 msgid "Valid from"
@@ -5888,11 +5889,11 @@ msgstr "معتبر از"
 
 #: bika/lims/browser/instrument.py:651
 msgid "Valid to"
-msgstr ""
+msgstr "معتبر به"
 
 #: bika/lims/content/instrumentscheduledtask.py:118
 msgid "Validation"
-msgstr ""
+msgstr "اعتبارسنجی"
 
 #: bika/lims/validators.py:367
 msgid "Validation failed: '${keyword}': duplicate keyword"
@@ -5960,106 +5961,106 @@ msgstr ""
 
 #: bika/lims/validators.py:734
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: برای انتخاب باید دسته های زیر انتخاب شود: ${categories}"
 
 #: bika/lims/validators.py:1014
 msgid "Validation failed: Values must be numbers"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: مقادیر باید عدد باشند"
 
 #: bika/lims/validators.py:414
 msgid "Validation failed: column title '${title}' must have keyword '${keyword}'"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: عنوان ستون'${title}' باید دارای کلمه کلیدی '${keyword}' باشد"
 
 #: bika/lims/validators.py:621
 msgid "Validation failed: degrees is 180; minutes must be zero"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه 180 است دقیقه باید صفر باشد"
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: degrees is 180; seconds must be zero"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه 180 است ثانیه باید صفر باشند"
 
 #: bika/lims/validators.py:602
 msgid "Validation failed: degrees is 90; minutes must be zero"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه 90 است دقیقه باید صفر باشد"
 
 #: bika/lims/validators.py:607
 msgid "Validation failed: degrees is 90; seconds must be zero"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه 90 است ثانیه باید صفر باشد"
 
 #: bika/lims/validators.py:616
 msgid "Validation failed: degrees must be 0 - 180"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه باید 0 - 180 باشد"
 
 #: bika/lims/validators.py:597
 msgid "Validation failed: degrees must be 0 - 90"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه باید 0 - 90 باشد"
 
 #: bika/lims/validators.py:570
 msgid "Validation failed: degrees must be numeric"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: درجه باید عدد باشد"
 
 #: bika/lims/validators.py:426
 msgid "Validation failed: keyword '${keyword}' must have column title '${title}'"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: کلمه کلیدی \"$ {keyword}\" باید عنوان ستون \"$ {title}\" را داشته باشد"
 
 #: bika/lims/validators.py:261
 msgid "Validation failed: keyword contains invalid characters"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: کلمه کلیدی حاوی کاراکترهای نامعتبر است"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:138
 #: bika/lims/validators.py:345
 msgid "Validation failed: keyword is required"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: کلمه کلیدی لازم است"
 
 #: bika/lims/validators.py:586
 msgid "Validation failed: minutes must be 0 - 59"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: دقیقه باید 0 - 59 باشد"
 
 #: bika/lims/validators.py:576
 msgid "Validation failed: minutes must be numeric"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: دقیقه باید عددی باشد"
 
 #: bika/lims/validators.py:1100
 msgid "Validation failed: percent values must be between 0 and 100"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: مقادیر درصد باید بین 0 تا 100 باشد"
 
 #: bika/lims/validators.py:1096
 msgid "Validation failed: percent values must be numbers"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: مقادیر درصد باید عدد باشد"
 
 #: bika/lims/validators.py:590
 msgid "Validation failed: seconds must be 0 - 59"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: ثانیه باید 0 - 59 باشد"
 
 #: bika/lims/validators.py:582
 msgid "Validation failed: seconds must be numeric"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: ثانیه باید عددی باشد"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:131
 #: bika/lims/validators.py:341
 msgid "Validation failed: title is required"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: عنوان لازم است"
 
 #: bika/lims/validators.py:1326
 msgid "Validation failed: value must be between 0 and 1000"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: مقدار باید بین 0 تا 1000 باشد"
 
 #: bika/lims/validators.py:1322
 msgid "Validation failed: value must be float"
-msgstr ""
+msgstr "اعتبار سنجی انجام نشد: مقدار باید اعشاری باشد"
 
 #: bika/lims/validators.py:1041
 msgid "Validation for '{}' failed"
-msgstr ""
+msgstr "اعتبار سنجی برای '{}' انجام نشد"
 
 #: bika/lims/content/instrumentvalidation.py:61
 msgid "Validation report date"
-msgstr ""
+msgstr "تاریخ اعتبار سنجی گزارش"
 
 #: bika/lims/browser/instrument.py:315
 #: bika/lims/content/instrumentvalidation.py:88
 msgid "Validator"
-msgstr ""
+msgstr "اعتبارسنج"
 
 #: bika/lims/browser/worksheet/templates/results.pt:172
 #: bika/lims/content/calculation.py:138
@@ -6070,7 +6071,7 @@ msgstr "ارزش"
 #: bika/lims/content/abstractanalysis.py:146
 #: bika/lims/content/analysisservice.py:388
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
-msgstr ""
+msgstr "مقادیری را می توان در اینجا وارد کرد که پیش فرض های مشخص شده در فیلدهای موقت محاسبه را لغو کند"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:321
 #: bika/lims/browser/dashboard/dashboard.py:438
@@ -6080,36 +6081,36 @@ msgstr "تایید شده"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:117
 msgid "Verified By"
-msgstr ""
+msgstr "تایید شده توسط"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "Verify"
-msgstr ""
+msgstr "تایید"
 
 #: bika/lims/browser/auditlog.py:79
 #: bika/lims/browser/templates/analysisservice_info.pt:174
 #: bika/lims/controlpanel/auditlog.py:69
 msgid "Version"
-msgstr "ویرایش"
+msgstr "نسخه"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:500
 msgid "Visibility"
-msgstr ""
+msgstr "قابلیت مشاهده"
 
 #: bika/lims/browser/widgets/reflexrulewidget.py:456
 msgid "Visibility (default)"
-msgstr ""
+msgstr "قابلیت مشاهده (پیش فرض)"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:24
 #: bika/lims/browser/viewlets/templates/sample_dynamic_specs_viewlet.pt:24
 msgid "Visit the Dynamic Specification for additional information:"
-msgstr ""
+msgstr "برای اطلاعات بیشتر به مشخصات پویا مراجعه کنید:"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:28
 msgid "Visit the Specification's changes history for additional information:"
-msgstr ""
+msgstr "مشاهده تاریخچه تغییرات مشخصات برای اطلاعات بیشتر:"
 
 #: bika/lims/browser/templates/supplyorder_content.pt:21
 #: bika/lims/browser/templates/supplyorder_edit.pt:38
@@ -6119,35 +6120,35 @@ msgstr "حجم"
 
 #: bika/lims/browser/viewlets/templates/invalid_ar_viewlet.pt:13
 msgid "Warning"
-msgstr ""
+msgstr "اخطار"
 
 #: bika/lims/content/laboratory.py:124
 msgid "Web address for the accreditation body"
-msgstr ""
+msgstr "آدرس وب برای سازمان تأیید اعتبار"
 
 #: bika/lims/content/supplier.py:52
 msgid "Website."
-msgstr ""
+msgstr "وبسایت"
 
 #: bika/lims/config.py:112
 msgid "Wednesday"
-msgstr ""
+msgstr "چهارشنبه"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:559
 msgid "Weekly"
-msgstr ""
+msgstr "هفتگی"
 
 #: bika/lims/controlpanel/bika_instruments.py:91
 msgid "Weeks To Expire"
-msgstr ""
+msgstr "هفته تا پایان اعتبار"
 
 #: bika/lims/content/analysisprofile.py:108
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
-msgstr ""
+msgstr "وقتی فعال شود ، سیستم از قیمت پروفایل تجزیه و تحلیل استفاده می کند و مالیات بر ارزش افزوده سیستم با مالیات بر ارزش افزوده مشخص شده در پروفیل جایگزین می گردد."
 
 #: bika/lims/content/abstractbaseanalysis.py:384
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
-msgstr ""
+msgstr "هنگامی که نتایج تجزیه و تحلیل تکراری در صفحه های کاری ، که بر روی همان نمونه انجام شده است ، با بیش از این درصد متفاوت باشد ، اخطار داده می شود."
 
 #: bika/lims/validators.py:524
 msgid "Wildcards for interims are not allowed: ${wildcards}"
@@ -6155,22 +6156,22 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:20
 msgid "With best regards"
-msgstr ""
+msgstr "با احترام"
 
 #: bika/lims/content/instrumentcalibration.py:129
 #: bika/lims/content/instrumentmaintenancetask.py:104
 #: bika/lims/content/instrumentvalidation.py:110
 msgid "Work Performed"
-msgstr ""
+msgstr "کار انجام شده"
 
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:73
 msgid "Workflow"
-msgstr ""
+msgstr "گردش کار"
 
 #: bika/lims/browser/auditlog.py:93
 #: bika/lims/controlpanel/auditlog.py:96
 msgid "Workflow State"
-msgstr ""
+msgstr "وضعیت گردش کار"
 
 #: bika/lims/browser/analyses/qc.py:51
 #: bika/lims/browser/referencesample.py:155
@@ -6197,21 +6198,21 @@ msgstr ""
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:563
 msgid "Yearly"
-msgstr ""
+msgstr "سالیانه"
 
 #: bika/lims/browser/clientfolder.py:182
 #: bika/lims/browser/header_table.py:125
 #: bika/lims/content/abstractbaseanalysis.py:897
 msgid "Yes"
-msgstr ""
+msgstr "بلی"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:295
 msgid "You can use the browse button to select and upload a new attachment."
-msgstr ""
+msgstr "برای انتخاب و بارگذاری پیوست جدید می توانید از دکمه انتخاب استفاده کنید."
 
 #: bika/lims/browser/worksheet/tools.py:37
 msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
-msgstr ""
+msgstr "شما مجوز مشاهده کاربرگ ${worksheet_title} را ندارید."
 
 #: bika/lims/browser/worksheet/views/export.py:36
 msgid "You must select an instrument"
@@ -6219,32 +6220,32 @@ msgstr "انتخاب دستگاه الزامیست"
 
 #: bika/lims/exportimport/instruments/sysmex/xs/i500.py:77
 msgid "You should introduce a default result key."
-msgstr ""
+msgstr "شما باید یک کلید نتیجه پیش فرض معرفی کنید"
 
 #: bika/lims/browser/reports/administration_usershistory.py:133
 msgid "action"
-msgstr ""
+msgstr "اقدام"
 
 #: bika/lims/browser/templates/referencesample_view.pt:130
 msgid "activate"
-msgstr ""
+msgstr "فعال کردن"
 
 #: bika/lims/content/instrumentcertification.py:261
 msgid "biannually"
-msgstr ""
+msgstr "دوسالانه"
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:46
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:46
 msgid "by"
-msgstr ""
+msgstr "بوسیله"
 
 #: bika/lims/browser/reports/administration_usershistory.py:160
 msgid "comment"
-msgstr ""
+msgstr "نظر"
 
 #: bika/lims/content/instrumentcertification.py:257
 msgid "daily"
-msgstr ""
+msgstr "روزانه"
 
 #. Default: "${Y}-${m}-${d} ${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6276,11 +6277,11 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "days"
-msgstr ""
+msgstr "روز"
 
 #: bika/lims/browser/templates/referencesample_view.pt:123
 msgid "deactivate"
-msgstr ""
+msgstr "غیرفعال"
 
 #. Default: "${copyright} 2017-${current_year} ${senaitelims}"
 #: bika/lims/browser/viewlets/templates/plone.app.layout.viewlets.footer.pt:12
@@ -6289,15 +6290,15 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "hours"
-msgstr ""
+msgstr "ساعت"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:160
 msgid "hours: {} minutes: {} days: {}"
-msgstr ""
+msgstr "ساعت: {} دقیقه: {} روز: {}"
 
 #: bika/lims/browser/publish/templates/email.pt:180
 msgid "in"
-msgstr ""
+msgstr "در"
 
 #. Default: "Add to the following groups:"
 #: bika/lims/browser/templates/login_details.pt:266
@@ -6326,31 +6327,31 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "minutes"
-msgstr ""
+msgstr "دقیقه"
 
 #: bika/lims/content/instrumentcertification.py:259
 msgid "monthly"
-msgstr ""
+msgstr "ماهانه"
 
 #: bika/lims/browser/dashboard/dashboard.py:369
 msgid "of"
-msgstr ""
+msgstr "از"
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
-msgstr ""
+msgstr "بررسی اجمالی"
 
 #: bika/lims/content/instrumentcertification.py:260
 msgid "quarterly"
-msgstr ""
+msgstr "سه ماه یکبار"
 
 #: bika/lims/content/instrumentscheduledtask.py:133
 msgid "repeating every"
-msgstr ""
+msgstr "تکرار در هر"
 
 #: bika/lims/content/instrumentscheduledtask.py:134
 msgid "repeatperiod"
-msgstr ""
+msgstr "دوره تکرار"
 
 #. Default: "${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6387,24 +6388,24 @@ msgstr "به"
 
 #: bika/lims/content/instrumentscheduledtask.py:136
 msgid "until"
-msgstr ""
+msgstr "تا زمان"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:555
 msgid "updated every 2 hours"
-msgstr ""
+msgstr "به روز رسانی هر 2 ساعت"
 
 #: bika/lims/browser/analyses/view.py:1133
 msgid "verification(s) pending"
-msgstr ""
+msgstr "درحال انتظار جهت تایید"
 
 #: bika/lims/content/instrumentcertification.py:258
 msgid "weekly"
-msgstr ""
+msgstr "هفتگی"
 
 #: bika/lims/content/instrumentcertification.py:262
 msgid "yearly"
-msgstr ""
+msgstr "سالیانه"
 
 #: bika/lims/controlpanel/bika_instruments.py:180
 msgid "{} weeks and {} day(s)"
-msgstr ""
+msgstr "{} هفته و  {} روز"

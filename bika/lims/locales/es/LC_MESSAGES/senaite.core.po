@@ -222,7 +222,7 @@ msgstr "Activado"
 #: bika/lims/browser/client/views/analysisprofiles.py:64
 #: bika/lims/browser/client/views/artemplates.py:61
 msgid "Active"
-msgstr "Activos"
+msgstr "Activas"
 
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
@@ -587,7 +587,7 @@ msgstr "Asignado a: ${worksheet_id}"
 
 #: bika/lims/browser/dashboard/dashboard.py:541
 msgid "Assignment pending"
-msgstr "Pendiente de asignación"
+msgstr "Pendientes de asignar"
 
 #: bika/lims/validators.py:477
 msgid "At least, two options for choices field are required"
@@ -681,7 +681,7 @@ msgstr "Partición automática en la recepción"
 
 #: bika/lims/content/bikasetup.py:522
 msgid "Auto-receive samples"
-msgstr "Auto-recibir muestras"
+msgstr "Recepción automática de muestras"
 
 #: bika/lims/browser/worksheet/templates/results.pt:132
 msgid "Autofill"
@@ -894,7 +894,7 @@ msgstr "Cancelar"
 #: bika/lims/browser/batchfolder.py:109
 #: bika/lims/browser/instrument.py:104
 msgid "Cancelled"
-msgstr "Cancelado"
+msgstr "Cancelados"
 
 #: bika/lims/content/calculation.py:449
 msgid "Cannot activate calculation, because the following service dependencies are inactive: ${inactive_services}"
@@ -1196,7 +1196,7 @@ msgstr "Contactos a CC"
 #: bika/lims/browser/templates/analysisreport_info.pt:72
 #: bika/lims/content/arreport.py:54
 msgid "Contained Samples"
-msgstr "Muestras Contenidas"
+msgstr "Muestras incluídas"
 
 #: bika/lims/browser/templates/partition_magic.pt:163
 #: bika/lims/content/analysisrequest.py:552
@@ -1899,7 +1899,7 @@ msgstr "Activar el uso de múltiples equipos analíticos en hojas de trabajo."
 
 #: bika/lims/content/bikasetup.py:535
 msgid "Enable Sample Partitioning"
-msgstr "Activar el particionado de muestras"
+msgstr "Activar la funcionalidad de particionado de muestras"
 
 #: bika/lims/content/bikasetup.py:547
 msgid "Enable Sample Preservation"
@@ -1907,7 +1907,7 @@ msgstr "Activar la funcionalidad de protocolos de conservación de muestras"
 
 #: bika/lims/content/bikasetup.py:315
 msgid "Enable Sample Specifications"
-msgstr "Activar las especificaciones para muestras"
+msgstr "Activar las funcionalidad de especificaciones para muestras"
 
 #: bika/lims/content/bikasetup.py:501
 msgid "Enable Sampling"
@@ -2585,7 +2585,7 @@ msgstr "Intervalo"
 #: bika/lims/browser/analysisrequest/analysisrequests.py:351
 #: bika/lims/browser/dashboard/dashboard.py:596
 msgid "Invalid"
-msgstr "Inválido"
+msgstr "Invalidadas"
 
 #: bika/lims/utils/analysis.py:483
 msgid "Invalid instruments are not displayed: %s"
@@ -2597,7 +2597,7 @@ msgstr "Archivo de especificaciones no válido detectado. Por favor, cargue una 
 
 #: bika/lims/validators.py:1428
 msgid "Invalid value: Please enter a value without spaces."
-msgstr "Valor inválido: ingrese un valor sin espacios."
+msgstr "Valor incorrecto: introduzca un valor sin espacios."
 
 #: bika/lims/validators.py:534
 msgid "Invalid wildcards found: ${wildcards}"
@@ -2784,7 +2784,7 @@ msgstr "Linka un usuario existente"
 
 #: bika/lims/browser/reports/templates/productivity.pt:102
 msgid "Lists all samples received for a date range"
-msgstr "Listar todas las muestras recibidas para un rango de fecha"
+msgstr "Listar todas las muestras recepcionadas para un rango de fecha"
 
 #: bika/lims/exportimport/import.pt:57
 msgid "Load Setup Data"
@@ -3885,7 +3885,7 @@ msgstr "Publicar"
 #: bika/lims/browser/dashboard/dashboard.py:445
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:65
 msgid "Published"
-msgstr "Publicado"
+msgstr "Publicadas"
 
 #: bika/lims/browser/publish/reports_listing.py:107
 msgid "Published By"
@@ -3972,7 +3972,7 @@ msgstr "Recibir"
 #: bika/lims/browser/reports/productivity_analysestats.py:76
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:172
 msgid "Received"
-msgstr "Recibida"
+msgstr "Recepcionadas"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:89
 msgid "Recept. Lag"
@@ -3980,7 +3980,7 @@ msgstr "Retraso Recepción."
 
 #: bika/lims/browser/dashboard/dashboard.py:416
 msgid "Reception pending"
-msgstr "Pendiente de recepción"
+msgstr "Pendientes de recibir"
 
 #: bika/lims/browser/publish/reports_listing.py:109
 #: bika/lims/browser/publish/templates/email.pt:56
@@ -4198,7 +4198,7 @@ msgstr "Reportar tablas para un período de tiempo con el número de análisis p
 
 #: bika/lims/browser/reports/templates/productivity.pt:132
 msgid "Report tables between a period of time the number of samples received and results reported for them with differences between the two"
-msgstr "Reportar tablas para un período de tiempo del número de muestras recibidas y resultados reportados para estas con diferencias entre sí"
+msgstr "Reportar tablas para un período de tiempo del número de muestras recepcionadas y resultados reportados para estas con diferencias entre sí"
 
 #: bika/lims/browser/reports/templates/productivity.pt:457
 msgid "Report tables of Samples and totals submitted between a period of time"
@@ -4511,7 +4511,7 @@ msgstr "Condiciones de la muestra"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Sample due"
-msgstr "Muestra pendiente de recepción"
+msgstr "Pendiente de recibir"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:81
 msgid "Sample point"
@@ -4527,7 +4527,7 @@ msgstr "Muestra registrada"
 
 #: bika/lims/browser/reports/templates/productivity.pt:95
 msgid "Sample related reports"
-msgstr "Reportes de muestras relacionadas"
+msgstr "Informes relacionados con muestras"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:100
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:80
@@ -4594,11 +4594,11 @@ msgstr "Muestras publicadas"
 #: bika/lims/browser/reports/productivity_samplereceivedvsreported.py:144
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:18
 msgid "Samples received vs. reported"
-msgstr "Muestras recibidas vs. reportadas"
+msgstr "Muestras recibidas vs. publicadas"
 
 #: bika/lims/browser/reports/templates/productivity.pt:129
 msgid "Samples received vs. samples reported"
-msgstr "Muestras recibidas vs. muestras reportadas"
+msgstr "Muestras recibidas vs. muestras publicadas"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:70
 msgid "Samples rejection reporting form"
@@ -4610,7 +4610,7 @@ msgstr "Muestras programadas para muestreo"
 
 #: bika/lims/browser/dashboard/dashboard.py:401
 msgid "Samples to be preserved"
-msgstr "Muestras a conservar"
+msgstr "Muestras pendientes de conservar"
 
 #: bika/lims/browser/dashboard/dashboard.py:452
 msgid "Samples to be printed"
@@ -4618,15 +4618,15 @@ msgstr "Muestras pendientes de imprimir"
 
 #: bika/lims/browser/dashboard/dashboard.py:415
 msgid "Samples to be received"
-msgstr "Muestras a recepcionar"
+msgstr "Muestras pendientes de recibir"
 
 #: bika/lims/browser/dashboard/dashboard.py:394
 msgid "Samples to be sampled"
-msgstr "Muestras pendientes de recogida"
+msgstr "Muestras pendientes de recoger"
 
 #: bika/lims/browser/dashboard/dashboard.py:430
 msgid "Samples to be verified"
-msgstr "Muestras a verificar"
+msgstr "Muestras pendientes de verificar"
 
 #: bika/lims/browser/dashboard/dashboard.py:437
 msgid "Samples verified"
@@ -4835,7 +4835,7 @@ msgstr "Seleccione para permitir que un Coordinador de Muestreo programe un mues
 
 #: bika/lims/content/bikasetup.py:490
 msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
-msgstr "Seleccione para permitir establecer un estado 'Impreso' adicional para aquellas Solicitudes de Análisis que se han Publicado. Desactivado por defecto."
+msgstr "Añadir una transición 'Imprimir' adicional solo aplicable a muestras publicadas. Desactivado por defecto."
 
 #: bika/lims/content/bikasetup.py:536
 msgid "Select to enable the partitioning module. An additional transition 'Create Partitions' will be available for samples in received status"
@@ -5658,7 +5658,7 @@ msgstr "Por preservar"
 
 #: bika/lims/browser/dashboard/dashboard.py:453
 msgid "To be printed"
-msgstr "Pendiente de impresión"
+msgstr "Pendientes de imprimir"
 
 #: bika/lims/browser/dashboard/dashboard.py:395
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -5669,7 +5669,7 @@ msgstr "Por muestrear"
 #: bika/lims/browser/dashboard/dashboard.py:431
 #: bika/lims/browser/worksheet/views/folder.py:147
 msgid "To be verified"
-msgstr "Pendiente de verificación"
+msgstr "Pendientes de verificar"
 
 #: bika/lims/content/calculation.py:144
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
@@ -5883,7 +5883,7 @@ msgstr "CIF"
 
 #: bika/lims/browser/analyses/view.py:192
 msgid "Valid"
-msgstr "Válido"
+msgstr "Válidas"
 
 #: bika/lims/browser/instrument.py:650
 msgid "Valid from"
@@ -6399,7 +6399,7 @@ msgstr "actualizado cada 2 horas"
 
 #: bika/lims/browser/analyses/view.py:1133
 msgid "verification(s) pending"
-msgstr "Verificación(es) pendiente(s)"
+msgstr "verificación(es) pendiente(s)"
 
 #: bika/lims/content/instrumentcertification.py:258
 msgid "weekly"

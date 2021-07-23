@@ -1,10 +1,13 @@
 #
+# Translators:
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021\n"
 "Language-Team: Spanish (Argentina) (https://www.transifex.com/senaite/teams/87045/es_AR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -216,7 +219,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:64
 #: bika/lims/browser/client/views/artemplates.py:61
 msgid "Active"
-msgstr ""
+msgstr "Activo"
 
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
@@ -227,7 +230,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:36
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:242
 msgid "Add"
-msgstr ""
+msgstr "Añadir"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 msgid "Add Analyses"
@@ -317,7 +320,7 @@ msgstr ""
 #: bika/lims/browser/analyses/view.py:219
 #: bika/lims/browser/analysisrequest/analysisrequests.py:361
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: bika/lims/browser/accreditation.py:75
 msgid "All Accredited analysis services are listed here."
@@ -726,13 +729,13 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:306
 #: bika/lims/vocabularies/__init__.py:137
 msgid "Batch"
-msgstr ""
+msgstr "Lote"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:137
 #: bika/lims/browser/batchfolder.py:69
 #: bika/lims/browser/templates/batch_publish.pt:52
 msgid "Batch ID"
-msgstr ""
+msgstr "Identificador de Lote"
 
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:45
@@ -745,7 +748,7 @@ msgstr ""
 
 #: bika/lims/browser/batchfolder.py:56
 msgid "Batches"
-msgstr ""
+msgstr "Lotes"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:19
 msgid "Be aware that the ranges provided in the spreadsheet file from the dynamic specification might override the ranges defined in the Specifications list below."
@@ -802,7 +805,7 @@ msgstr ""
 #: bika/lims/browser/client/views/contacts.py:72
 #: bika/lims/browser/supplier.py:116
 msgid "Business Phone"
-msgstr ""
+msgstr "Teléfono Empresarial"
 
 #: bika/lims/browser/reports/__init__.py:139
 msgid "By"
@@ -942,7 +945,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_info.pt:59
 #: bika/lims/browser/worksheet/views/add_analyses.py:92
 msgid "Category"
-msgstr ""
+msgstr "Categoría"
 
 #: bika/lims/content/analysiscategory.py:114
 msgid "Category cannot be deactivated because it contains Analysis Services"
@@ -969,7 +972,7 @@ msgstr ""
 #: bika/lims/browser/workflow/__init__.py:194
 #: bika/lims/browser/worksheet/views/add_analyses.py:132
 msgid "Changes saved."
-msgstr ""
+msgstr "Cambios guardados."
 
 #: bika/lims/browser/templates/header_table.pt:41
 msgid "Changes will be propagated to partitions"
@@ -1039,7 +1042,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:76
 #: bika/lims/browser/batchfolder.py:77
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -1050,7 +1053,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:80
 #: bika/lims/browser/batchfolder.py:80
 msgid "Client ID"
-msgstr ""
+msgstr "Identificador de Cliente"
 
 #: bika/lims/profiles/default/registry.xml
 msgid "Client Landing Page"
@@ -1086,7 +1089,7 @@ msgstr ""
 
 #: bika/lims/browser/clientfolder.py:49
 msgid "Clients"
-msgstr ""
+msgstr "Clientes"
 
 #: bika/lims/profiles/default/workflows/senaite_batch_workflow/definition.xml
 msgid "Close"
@@ -1266,7 +1269,7 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:238
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:33
 msgid "Country"
-msgstr ""
+msgstr "País"
 
 #: bika/lims/browser/templates/partition_magic.pt:243
 msgid "Create Partitions"
@@ -1363,7 +1366,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:649
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:50
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #: bika/lims/browser/analyses/view.py:109
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:53
@@ -1646,7 +1649,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:57
 #: bika/lims/browser/client/views/artemplates.py:56
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: bika/lims/content/instrumentcalibration.py:130
 msgid "Description of the actions made during the calibration"
@@ -1735,7 +1738,7 @@ msgstr ""
 #: bika/lims/browser/clientfolder.py:92
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:89
 msgid "District"
-msgstr ""
+msgstr "Distrito"
 
 #: bika/lims/browser/instrument.py:652
 #: bika/lims/content/multifile.py:47
@@ -1745,22 +1748,22 @@ msgstr ""
 #: bika/lims/browser/instrument.py:797
 #: bika/lims/content/multifile.py:39
 msgid "Document ID"
-msgstr ""
+msgstr "Identificador de Documento"
 
 #: bika/lims/browser/instrument.py:801
 #: bika/lims/content/multifile.py:63
 msgid "Document Location"
-msgstr ""
+msgstr "Localización de Documento"
 
 #: bika/lims/browser/instrument.py:803
 #: bika/lims/content/multifile.py:73
 msgid "Document Type"
-msgstr ""
+msgstr "Tipo de Documento"
 
 #: bika/lims/browser/instrument.py:799
 #: bika/lims/content/multifile.py:55
 msgid "Document Version"
-msgstr ""
+msgstr "Versión del Documento"
 
 #: bika/lims/config.py:130
 msgid "Dot (.)"
@@ -1847,13 +1850,13 @@ msgstr ""
 #: bika/lims/browser/templates/login_details.pt:87
 #: bika/lims/controlpanel/bika_suppliers.py:77
 msgid "Email"
-msgstr ""
+msgstr "Correo electrónico"
 
 #: bika/lims/browser/client/views/contacts.py:70
 #: bika/lims/browser/clientfolder.py:79
 #: bika/lims/browser/department/labcontacts.py:54
 msgid "Email Address"
-msgstr ""
+msgstr "Dirección de correo electrónico"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:96
 msgid "Email Log"
@@ -2059,7 +2062,7 @@ msgstr ""
 #: bika/lims/browser/supplier.py:120
 #: bika/lims/content/organisation.py:66
 msgid "Fax"
-msgstr ""
+msgstr "Fax"
 
 #: bika/lims/content/person.py:119
 msgid "Fax (business)"
@@ -2067,7 +2070,7 @@ msgstr ""
 
 #: bika/lims/config.py:93
 msgid "Female"
-msgstr ""
+msgstr "Femenino"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:157
@@ -2097,7 +2100,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:805
 #: bika/lims/browser/reports/productivity_analysesattachments.py:82
 msgid "File"
-msgstr ""
+msgstr "Archivo"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:193
 msgid "File Deleted"
@@ -2163,7 +2166,7 @@ msgstr ""
 #: bika/lims/browser/templates/login_details.pt:63
 #: bika/lims/content/person.py:85
 msgid "Full Name"
-msgstr ""
+msgstr "Nombre completo"
 
 #: bika/lims/browser/supplier.py:112
 msgid "FullName"
@@ -2172,7 +2175,7 @@ msgstr ""
 #: bika/lims/browser/auditlog.py:85
 #: bika/lims/controlpanel/auditlog.py:81
 msgid "Fullname"
-msgstr ""
+msgstr "Nombre completo"
 
 #: bika/lims/content/calculation.py:87
 msgid "Function"
@@ -2370,7 +2373,7 @@ msgstr ""
 #: bika/lims/browser/client/views/artemplates.py:66
 #: bika/lims/browser/client/views/contacts.py:84
 msgid "Inactive"
-msgstr ""
+msgstr "Inactivo"
 
 #: bika/lims/content/bikasetup.py:216
 msgid "Include and display pricing information"
@@ -2894,7 +2897,7 @@ msgstr ""
 
 #: bika/lims/config.py:92
 msgid "Male"
-msgstr ""
+msgstr "Masculino"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt:14
 msgid "Manage Analyses"
@@ -3101,11 +3104,11 @@ msgstr ""
 #: bika/lims/browser/supplier.py:118
 #: bika/lims/controlpanel/bika_labcontacts.py:87
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Teléfono Celular"
 
 #: bika/lims/browser/client/views/contacts.py:74
 msgid "MobilePhone"
-msgstr ""
+msgstr "Teléfono Celular"
 
 #: bika/lims/content/instrument.py:131
 #: bika/lims/controlpanel/bika_instruments.py:84
@@ -3156,7 +3159,7 @@ msgstr ""
 #: bika/lims/browser/department/labcontacts.py:49
 #: bika/lims/browser/templates/analysisservice_info.pt:33
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:23
 msgid "New ranges won't be applied to neither new nor current analyses. Re-assign the Specification if you want to apply latest changes."
@@ -3588,7 +3591,7 @@ msgstr ""
 #: bika/lims/browser/department/labcontacts.py:52
 #: bika/lims/browser/templates/batch_publish.pt:68
 msgid "Phone"
-msgstr ""
+msgstr "Número de Teléfono"
 
 #: bika/lims/content/person.py:111
 msgid "Phone (business)"
@@ -3859,7 +3862,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:154
 #: bika/lims/browser/clientfolder.py:88
 msgid "Province"
-msgstr ""
+msgstr "Provincia"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:90
 msgid "Public. Lag"
@@ -4096,7 +4099,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:66
 #: bika/lims/browser/worksheet/templates/results.pt:213
 msgid "Remarks"
-msgstr ""
+msgstr "Observaciones"
 
 #: bika/lims/content/analysisrequest.py:1058
 msgid "Remarks and comments for this request"
@@ -5108,7 +5111,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:182
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:122
 msgid "Subtotal"
-msgstr ""
+msgstr "Subtotal"
 
 #: bika/lims/config.py:116
 msgid "Sunday"
@@ -5609,7 +5612,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:54
 #: bika/lims/browser/client/views/artemplates.py:53
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: bika/lims/content/storagelocation.py:53
 msgid "Title of location"
@@ -5673,7 +5676,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:210
 #: bika/lims/browser/reports/productivity_analysesattachments.py:129
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:91
 msgid "Total Lag"
@@ -5836,7 +5839,7 @@ msgstr ""
 #: bika/lims/browser/client/views/contacts.py:68
 #: bika/lims/browser/templates/login_details.pt:71
 msgid "User Name"
-msgstr ""
+msgstr "Nombre de Usuario"
 
 #: bika/lims/browser/reports/templates/administration.pt:131
 msgid "User history"
@@ -5859,7 +5862,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:151
 #: bika/lims/browser/templates/supplyorder_content.pt:24
 msgid "VAT"
-msgstr ""
+msgstr "IVA"
 
 #: bika/lims/content/abstractbaseanalysis.py:473
 #: bika/lims/content/analysisprofile.py:128
@@ -5909,7 +5912,7 @@ msgstr ""
 
 #: bika/lims/validators.py:203
 msgid "Validation failed: '${value}' is not unique"
-msgstr ""
+msgstr "Validación fallida: '${value}' no es único"
 
 #: bika/lims/validators.py:630
 msgid "Validation failed: Bearing must be E/W"

@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.5 (unreleased)
+1.3.5 (2021-07-23)
 ------------------
 
 - #1829 Fix API create for Dexterity types
@@ -18,6 +18,7 @@ Changelog
 - #1808 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
 - #1803 Updated openpyxl to latest Python 2.x compatible version
 - #1802 Adapter for Add sample form confirmation
+- #1798 Fix reindexing of AnalysisServices after AnalysisCategories modified
 - #1781 Exclude invalid samples from dashboard's not-printed indicator
 - #1774 Fix Lab clerk can edit items from setup folder
 - #1763 Remove final states from dashboard
@@ -36,7 +37,6 @@ Changelog
 - #1628 Fix instrument import for analyses with result options
 - #1625 Fix assignment of analyses via worksheet template when Worksheet is full
 - #1617 Fix writing methods on read when reindexing services
-- #1798 Fix reindexing of AnalysisServices after AnalysisCategories modified 
 
 
 1.3.4 (2020-08-11)

@@ -1,12 +1,15 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021\n"
 "Language-Team: Spanish (Argentina) (https://www.transifex.com/senaite/teams/87045/es_AR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -147,7 +150,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
-msgstr ""
+msgstr "Case"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
