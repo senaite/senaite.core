@@ -130,41 +130,36 @@ def create(container, portal_type, *args, **kwargs):
     :returns: The new created object
     """
     from bika.lims.utils import tmpID
-    if kwargs.get("title") is None:
-        kwargs["title"] = "New {}".format(portal_type)
 
-    # generate a temporary ID
-    tmp_id = tmpID()
+    id = kwargs.pop("id", tmpID())
+    title = kwargs.pop("title", "New {}".format(portal_type))
 
     # get the fti
     types_tool = get_tool("portal_types")
     fti = types_tool.getTypeInfo(portal_type)
 
     if fti.product:
-        obj = _createObjectByType(portal_type, container, tmp_id)
+        obj = _createObjectByType(portal_type, container, id)
+        obj.processForm()
+        obj.edit(title=title, **kwargs)
+        modified(obj)
     else:
         # newstyle factory
         factory = getUtility(IFactory, fti.factory)
-        obj = factory(tmp_id, *args, **kwargs)
+        obj = factory(id, *args, **kwargs)
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
+        # set the title
+        obj.title = safe_unicode(title)
+        # notify that the object was created
         notify(ObjectCreatedEvent(obj))
         # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
         # ContainerModifiedEvent
-        container._setObject(tmp_id, obj)
+        container._setObject(id, obj)
         # we get the object here with the current object id, as it might be
         # renamed already by an event handler
         obj = container._getOb(obj.getId())
 
-    # handle AT Content
-    if is_at_content(obj):
-        obj.processForm()
-
-    # Edit after processForm; processForm does AT unmarkCreationFlag.
-    obj.edit(**kwargs)
-
-    # explicit notification
-    modified(obj)
     return obj
 
 
