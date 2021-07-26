@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0 (unreleased)
+2.0.0 (2021-07-26)
 ------------------
 
 - #1828 Fix categories don't show up automatically on Analysis Service creation
