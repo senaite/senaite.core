@@ -63,7 +63,10 @@ def get_date(context, value):
         request = api.get_request()
         format = translate(
             key, domain="senaite.core", mapping={}, context=request)
-        # TODO: Is this replacement below strictly necessary?
+        # The variables at locales .po files (e.g. "date_format_short") take
+        # into consideration the translation service tool and therefore, their
+        # format is like "${d}/${m}/${Y}". We need to "convert" this format
+        # to %-like.
         return format.replace(r"${", '%').replace('}', '')
 
     # Try with prioritized formats
