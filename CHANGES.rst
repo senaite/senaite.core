@@ -4,7 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
-- #1830 Fix datepicker's dateformat cannot be overwritten via locales
+- #1830 Allow to override datepicker's dateformat via locales
 
 2.0.0 (2021-07-26)
 ------------------
