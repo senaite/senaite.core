@@ -14,14 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
   var dt_fmt = _t(dt_fmt_string);
 
   if (dt_fmt != dt_fmt_string) {
-    dt_fmt = dt_fmt.replaceAll(/[${}]/gi, "");
+    date_format = dt_fmt.replaceAll(/[${}]/gi, "");
   }
 
   var config = Object.assign(dt_config, tp_config);
 
   $('[datepicker="1"]').datepicker(
     Object.assign(config, {
-      dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,
       yearRange: "-150:+150",
