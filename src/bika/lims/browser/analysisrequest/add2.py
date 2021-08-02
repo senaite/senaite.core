@@ -33,6 +33,7 @@ from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
+from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
@@ -1592,6 +1593,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if fielderrors:
             errors["fielderrors"] = fielderrors
             return {'errors': errors}
+
+        # do a custom validation of records. For instance, we may want to rise
+        # an error if a value set to a given field is not consistent with a
+        # value set to another field
+        validators = getAdapters((self.request, ), IAddSampleRecordsValidator)
+        for name, validator in validators:
+            validation_err = validator.validate(valid_records)
+            if validation_err:
+                # Not valid, return immediately with an error response
+                return {"errors": validation_err}
 
         # Process Form
         actions = ActionHandlerPool.get_instance()

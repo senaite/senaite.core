@@ -1011,6 +1011,18 @@ class IAddSampleConfirmation(Interface):
         """
 
 
+class IAddSampleRecordsValidator(Interface):
+    """Marker interface for Add Sample Records validators
+    """
+
+    def validate(self, records):
+        """Returns None if all records are valid. Returns an error dict like
+        follows otherwise, so the error messages it contains is displayed at
+        the top of the Add Sample form view.
+            {"message": "", "fielderrors": {}}
+        """
+
+
 class IClientAwareMixin(Interface):
     """Marker interface for objects that can be bound to a Client, either
     because they can be added inside a Client folder or because it can be

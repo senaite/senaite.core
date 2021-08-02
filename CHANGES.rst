@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1831 Added adapter for custom validation of records in Sample Add form
 - #1830 Allow to override datepicker's dateformat via locales
 
 2.0.0 (2021-07-26)
