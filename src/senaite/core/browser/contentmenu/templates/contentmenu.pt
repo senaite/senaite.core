@@ -1,7 +1,7 @@
 <tal:contentactionmenus
   condition="view/available"
   define="menu view/menu;"
-  i18n:domain="plone">
+  i18n:domain="senaite.core">
 
   <tal:menus repeat="menuItem menu">
 

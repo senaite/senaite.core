@@ -79,8 +79,6 @@ echo "Processing domain: plone"
 echo -n "" > $LOCALES/en/LC_MESSAGES/plone.po
 # Re-scan the source code for new strings and create a temporary plone-tmp.pot
 $I18N rebuild-pot --pot $LOCALES/plone-tmp.pot --exclude "$EXCLUDE" --create plone src
-# Merge the manual translations of plone-manual.pot into the temporary plone-tmp.pot
-$I18N merge --pot $LOCALES/plone-tmp.pot --merge $LOCALES/plone-manual.pot
 # Remove those resources that already exists in senaite.core domain
 # We need this because in Python files, i18ndude simply looks for text within an
 # underscore method: _("...") without known the domain. Therefore, resources

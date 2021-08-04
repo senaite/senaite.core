@@ -2,7 +2,7 @@
 <object name="ClientFolder"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone"
+        i18n:domain="senaite.core"
         purge="True">
 
  <property name="title" i18n:translate="">Clients</property>
@@ -31,7 +31,7 @@
          condition_expr=""
          url_expr="string:${object_url}"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="False">
    <permission value="View"/>
  </action>
@@ -42,7 +42,7 @@
          condition_expr=""
          url_expr="string:${object_url}/base_view"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="False">
    <permission value="Modify portal content"/>
  </action>

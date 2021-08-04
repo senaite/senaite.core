@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-08-04 20:29+0000\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Kevin Xu <139526780@qq.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -26,30 +26,6 @@ msgstr ""
 "Domain: plone\n"
 "Language: zh_CN\n"
 
-#: senaite/core/browser/viewlets/templates/languageselector.pt:11
-msgid "<i class=\"fas fa-globe\"></i>"
-msgstr ""
-
-#: senaite/core/browser/viewlets/templates/sections.pt:15
-msgid "<i class=\"fas fa-th\"></i>"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "分析请求模板"
-
-#: bika/lims/profiles/default/types/ARTemplates.xml
-msgid "AR Templates"
-msgstr "分析请求模板集"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr "分析请求报告"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Administration"
-msgstr "管理"
-
 #: senaite/core/profiles/default/registry.xml
 msgid "Alternative formats"
 msgstr ""
@@ -57,31 +33,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
 msgstr ""
-
-msgid "Attach"
-msgstr "附加"
-
-msgid "Attachment due"
-msgstr "应有附件"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Auto-Import Logs"
-msgstr "自动导入日志"
-
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Batch Book"
-msgstr "批处理薄"
-
-#: bika/lims/profiles/default/types/BatchLabel.xml
-msgid "Batch Label"
-msgstr "批次标签"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Calibrations"
-msgstr "校准"
-
-msgid "Complete"
-msgstr "完成"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:256
 msgid "Configure rule"
@@ -91,10 +42,6 @@ msgstr ""
 msgid "Content rule settings updated."
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice PDF"
-msgstr "创建PDF票据"
-
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
 msgstr ""
@@ -102,23 +49,6 @@ msgstr ""
 #: senaite/core/profiles/default/registry.xml
 msgid "Displayed content types"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Documents"
-msgstr "文档"
-
-msgid "Dormant"
-msgstr "不活动"
-
-#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
-msgid "Duplicate Analysis"
-msgstr "复制分析"
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-#: bika/lims/profiles/default/types/AnalysisCategory.xml
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-msgid "Edit"
-msgstr "编辑"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
@@ -128,10 +58,6 @@ msgstr ""
 #: senaite/core/browser/login/templates/login.pt:17
 msgid "Error"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Export"
-msgstr "导出"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:78
 msgid "Filter:"
@@ -149,28 +75,9 @@ msgstr ""
 msgid "Go to the upgrade page"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "History"
-msgstr "历史"
-
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
 msgstr ""
-
-msgid "Imported"
-msgstr "已导入"
-
-#: bika/lims/profiles/default/types/InstrumentType.xml
-msgid "Instrument Type"
-msgstr "仪器类型"
-
-#: bika/lims/profiles/default/types/LabContact.xml
-msgid "Lab Contact"
-msgstr "实验室联系人"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Large Sticker"
-msgstr "大标签"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
@@ -180,14 +87,6 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Maintenance"
-msgstr "维护"
-
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Manage Results"
-msgstr "管理结果"
-
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
 msgstr ""
@@ -195,16 +94,6 @@ msgstr ""
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:67
 msgid "Move up"
 msgstr ""
-
-#: senaite/core/profiles/default/actions.xml
-msgid "My organization"
-msgstr "我的组织"
-
-msgid "No preservation required"
-msgstr "无需保存"
-
-msgid "Not requested"
-msgstr "没有要求"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
@@ -214,73 +103,9 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-msgid "Pending"
-msgstr "待定"
-
-msgid "Preservation required"
-msgstr "保存请求"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Pricelist"
-msgstr "价目表"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Print Invoice"
-msgstr "打印票据"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Print pricelist"
-msgstr "打印价目表"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Productivity"
-msgstr "生产率"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Published results"
-msgstr "已发布结果"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "QC Results"
-msgstr "质控结果"
-
-msgid "Receive sample"
-msgstr "接收样品"
-
-#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
-msgid "Reference Analysis"
-msgstr "参考样品分析"
-
-#: bika/lims/profiles/default/types/RejectAnalysis.xml
-msgid "Reject Analysis"
-msgstr "剔除分析"
-
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
 msgstr ""
-
-#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:41
-msgid "Repeat every"
-msgstr ""
-
-msgid "Sample Imports"
-msgstr "样本导入"
-
-msgid "Sample registered"
-msgstr "样品已注册"
-
-msgid "Sampled"
-msgstr "取样"
-
-msgid "Sampling Round Templates"
-msgstr "采样周期模板"
-
-msgid "Sampling workflow"
-msgstr "采样工作流"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Schedule"
-msgstr "计划/日程表"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Search"
@@ -294,10 +119,6 @@ msgstr ""
 msgid "Server:"
 msgstr ""
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Setup"
-msgstr "配置"
-
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:15
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/profiles/default/actions.xml
@@ -307,29 +128,6 @@ msgstr ""
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
 msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Small Sticker"
-msgstr "小标签"
-
-#: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Sticker"
-msgstr "标签"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/ReferenceSample.xml
-msgid "Stickers preview"
-msgstr "标签预览"
-
-#: bika/lims/profiles/default/types/SubGroup.xml
-msgid "Sub-group"
-msgstr "子组"
-
-msgid "Submit for verification"
-msgstr "提交验证"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
@@ -371,26 +169,6 @@ msgstr ""
 msgid "Toggle sidebar visibility"
 msgstr ""
 
-msgid "Unsassign"
-msgstr "未分配"
-
-#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:63
-msgid "Until"
-msgstr ""
-
-msgid "Validate"
-msgstr "生效"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Validations"
-msgstr "验证"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-#: bika/lims/profiles/default/types/ARTemplate.xml
-#: bika/lims/profiles/default/types/Analysis.xml
-msgid "View"
-msgstr "示图"
-
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
 msgstr ""
@@ -398,10 +176,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
 msgstr ""
-
-#: bika/lims/profiles/default/types/WorksheetTemplate.xml
-msgid "Worksheet Template"
-msgstr "工作表模板"
 
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
@@ -697,97 +471,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
 msgid "label_save"
 msgstr ""
-
-msgid "label_schema_Accounting"
-msgstr "会计/账务"
-
-msgid "label_schema_Address"
-msgstr "地址"
-
-msgid "label_schema_Analyses"
-msgstr "分析"
-
-msgid "label_schema_Analysis Templates"
-msgstr "分析模板"
-
-msgid "label_schema_Appearance"
-msgstr "外观"
-
-msgid "label_schema_Bank details"
-msgstr "银行详情"
-
-msgid "label_schema_Calculation"
-msgstr "计算"
-
-msgid "label_schema_Container and Preservation"
-msgstr "容器与保存"
-
-msgid "label_schema_Dates"
-msgstr "日期"
-
-msgid "label_schema_Description"
-msgstr "描述"
-
-msgid "label_schema_Email Telephone Fax"
-msgstr "电邮电话及传真"
-
-msgid "label_schema_ID Server"
-msgstr "ID 服务器"
-
-msgid "label_schema_Labels"
-msgstr "标签"
-
-msgid "label_schema_Layout"
-msgstr "布局"
-
-msgid "label_schema_Location"
-msgstr "位置/地点"
-
-msgid "label_schema_Method"
-msgstr "方法/原理"
-
-msgid "label_schema_Notifications"
-msgstr "通知"
-
-msgid "label_schema_Preferences"
-msgstr "个人喜好"
-
-msgid "label_schema_Publication preference"
-msgstr "发布喜好"
-
-msgid "label_schema_Reference Values"
-msgstr "参考值"
-
-msgid "label_schema_Reflex Rule Folder"
-msgstr "反射规则文件夹"
-
-msgid "label_schema_Result Options"
-msgstr "结果选项"
-
-msgid "label_schema_Results Reports"
-msgstr "结果报告"
-
-msgid "label_schema_SR Templates"
-msgstr "SR 模板"
-
-msgid "label_schema_Sample Partitions"
-msgstr "样品分切"
-
-msgid "label_schema_Sample Templates"
-msgstr "采样模板"
-
-msgid "label_schema_Sampling"
-msgstr "采样"
-
-# Setup Schemata
-msgid "label_schema_Security"
-msgstr "安全"
-
-msgid "label_schema_Sticker"
-msgstr "标签"
-
-msgid "label_schema_Uncertainties"
-msgstr "不确定性"
 
 #. Default: "Show"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:91

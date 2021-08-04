@@ -2,7 +2,7 @@
 <object name="Calculation"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone"
+        i18n:domain="senaite.core"
         purge="True">
 
  <property name="title" i18n:translate="">Calculation</property>
@@ -29,7 +29,7 @@
          condition_expr=""
          url_expr="string:${object_url}"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="True">
   <permission value="View"/>
  </action>
@@ -40,7 +40,7 @@
          condition_expr=""
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="True">
   <permission value="Modify portal content"/>
  </action>

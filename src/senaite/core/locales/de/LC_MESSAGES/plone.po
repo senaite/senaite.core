@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-08-04 20:29+0000\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Stefan Gruber <s.gruber@liscon.de>, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -22,30 +22,6 @@ msgstr ""
 "Domain: plone\n"
 "Language: de\n"
 
-#: senaite/core/browser/viewlets/templates/languageselector.pt:11
-msgid "<i class=\"fas fa-globe\"></i>"
-msgstr ""
-
-#: senaite/core/browser/viewlets/templates/sections.pt:15
-msgid "<i class=\"fas fa-th\"></i>"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "Analyseauftragsvorlage"
-
-#: bika/lims/profiles/default/types/ARTemplates.xml
-msgid "AR Templates"
-msgstr "Analyseauftragvorlagen"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr "Bericht über Analyseaufträge"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Administration"
-msgstr "Verwaltung"
-
 #: senaite/core/profiles/default/registry.xml
 msgid "Alternative formats"
 msgstr ""
@@ -53,31 +29,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
 msgstr ""
-
-msgid "Attach"
-msgstr "Anfügen"
-
-msgid "Attachment due"
-msgstr "Anhang ausstehend"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Auto-Import Logs"
-msgstr "Auto-Import Logs"
-
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Batch Book"
-msgstr "Batch Laborbuch"
-
-#: bika/lims/profiles/default/types/BatchLabel.xml
-msgid "Batch Label"
-msgstr "Batch Etikett"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Calibrations"
-msgstr "Kalibrierungen"
-
-msgid "Complete"
-msgstr "Vollständig"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:256
 msgid "Configure rule"
@@ -87,10 +38,6 @@ msgstr ""
 msgid "Content rule settings updated."
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice PDF"
-msgstr "Erzeuge PDF-Rechnung"
-
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
 msgstr ""
@@ -98,23 +45,6 @@ msgstr ""
 #: senaite/core/profiles/default/registry.xml
 msgid "Displayed content types"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Documents"
-msgstr "Dokumente"
-
-msgid "Dormant"
-msgstr "Inaktiv"
-
-#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
-msgid "Duplicate Analysis"
-msgstr "Doppelbestimmung"
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-#: bika/lims/profiles/default/types/AnalysisCategory.xml
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-msgid "Edit"
-msgstr "Bearbeiten"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
@@ -124,10 +54,6 @@ msgstr ""
 #: senaite/core/browser/login/templates/login.pt:17
 msgid "Error"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Export"
-msgstr "Export"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:78
 msgid "Filter:"
@@ -145,28 +71,9 @@ msgstr ""
 msgid "Go to the upgrade page"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "History"
-msgstr "Historie"
-
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
 msgstr ""
-
-msgid "Imported"
-msgstr "Importiert"
-
-#: bika/lims/profiles/default/types/InstrumentType.xml
-msgid "Instrument Type"
-msgstr "Gerätetyp"
-
-#: bika/lims/profiles/default/types/LabContact.xml
-msgid "Lab Contact"
-msgstr "Laborkontakt"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Large Sticker"
-msgstr "Großer Aufkleber"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
@@ -176,14 +83,6 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Maintenance"
-msgstr "Wartung"
-
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Manage Results"
-msgstr "Ergebnisse verwalten"
-
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
 msgstr ""
@@ -191,16 +90,6 @@ msgstr ""
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:67
 msgid "Move up"
 msgstr ""
-
-#: senaite/core/profiles/default/actions.xml
-msgid "My organization"
-msgstr ""
-
-msgid "No preservation required"
-msgstr "Keine Konservierung erforderlich"
-
-msgid "Not requested"
-msgstr "Nicht angefragt"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
@@ -210,73 +99,9 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-msgid "Pending"
-msgstr "Ausstehend"
-
-msgid "Preservation required"
-msgstr "Konservierung erforderlich"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Pricelist"
-msgstr "Preisliste"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Print Invoice"
-msgstr "Drucke Rechnung"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Print pricelist"
-msgstr "Preisliste drucken"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Productivity"
-msgstr "Produktivität"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Published results"
-msgstr "Veröffentlichte Ergebnisse"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "QC Results"
-msgstr "QC Ergebnisse"
-
-msgid "Receive sample"
-msgstr "Probe empfangen"
-
-#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
-msgid "Reference Analysis"
-msgstr "Referenzanalyse"
-
-#: bika/lims/profiles/default/types/RejectAnalysis.xml
-msgid "Reject Analysis"
-msgstr "Analyse ablehnen"
-
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
 msgstr ""
-
-#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:41
-msgid "Repeat every"
-msgstr ""
-
-msgid "Sample Imports"
-msgstr "Proben Importe"
-
-msgid "Sample registered"
-msgstr "Probe registriert"
-
-msgid "Sampled"
-msgstr "Probe entnommen"
-
-msgid "Sampling Round Templates"
-msgstr "Probenahmerundenvorlagen"
-
-msgid "Sampling workflow"
-msgstr "Probenahme Workflow"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Schedule"
-msgstr "Zeitplan"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Search"
@@ -290,10 +115,6 @@ msgstr ""
 msgid "Server:"
 msgstr ""
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Setup"
-msgstr ""
-
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:15
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/profiles/default/actions.xml
@@ -303,29 +124,6 @@ msgstr ""
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
 msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Small Sticker"
-msgstr "Kleiner Aufkleber"
-
-#: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Worksheet.xml
-msgid "Sticker"
-msgstr "Aufkleber"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/ReferenceSample.xml
-msgid "Stickers preview"
-msgstr "Etikettenvorschau"
-
-#: bika/lims/profiles/default/types/SubGroup.xml
-msgid "Sub-group"
-msgstr "Untergruppe"
-
-msgid "Submit for verification"
-msgstr "Zur Überprüfung einreichen"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
@@ -367,26 +165,6 @@ msgstr ""
 msgid "Toggle sidebar visibility"
 msgstr ""
 
-msgid "Unsassign"
-msgstr "Zuordnung aufheben"
-
-#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:63
-msgid "Until"
-msgstr ""
-
-msgid "Validate"
-msgstr "Validieren"
-
-#: bika/lims/profiles/default/types/Instrument.xml
-msgid "Validations"
-msgstr "Validierungen"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-#: bika/lims/profiles/default/types/ARTemplate.xml
-#: bika/lims/profiles/default/types/Analysis.xml
-msgid "View"
-msgstr "Anzeigen"
-
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
 msgstr ""
@@ -394,10 +172,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
 msgstr ""
-
-#: bika/lims/profiles/default/types/WorksheetTemplate.xml
-msgid "Worksheet Template"
-msgstr "Arbeitsblattvorlage"
 
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
@@ -693,97 +467,6 @@ msgstr ""
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
 msgid "label_save"
 msgstr ""
-
-msgid "label_schema_Accounting"
-msgstr "Abrechnung"
-
-msgid "label_schema_Address"
-msgstr "Adresse"
-
-msgid "label_schema_Analyses"
-msgstr "Analysen"
-
-msgid "label_schema_Analysis Templates"
-msgstr ""
-
-msgid "label_schema_Appearance"
-msgstr ""
-
-msgid "label_schema_Bank details"
-msgstr "Bankverbindung"
-
-msgid "label_schema_Calculation"
-msgstr "Berechnung"
-
-msgid "label_schema_Container and Preservation"
-msgstr "Behälter und Konservierung"
-
-msgid "label_schema_Dates"
-msgstr "Daten"
-
-msgid "label_schema_Description"
-msgstr "Beschreibung"
-
-msgid "label_schema_Email Telephone Fax"
-msgstr "E-Mail Telefon Fax"
-
-msgid "label_schema_ID Server"
-msgstr "ID Server"
-
-msgid "label_schema_Labels"
-msgstr "Etiketten"
-
-msgid "label_schema_Layout"
-msgstr "Layout"
-
-msgid "label_schema_Location"
-msgstr "Standort"
-
-msgid "label_schema_Method"
-msgstr "Methode"
-
-msgid "label_schema_Notifications"
-msgstr ""
-
-msgid "label_schema_Preferences"
-msgstr "Voreinstellungen"
-
-msgid "label_schema_Publication preference"
-msgstr "bevorzugte Veröffentlichung"
-
-msgid "label_schema_Reference Values"
-msgstr "Referenzwerte"
-
-msgid "label_schema_Reflex Rule Folder"
-msgstr ""
-
-msgid "label_schema_Result Options"
-msgstr "Ergebnis-Optionen"
-
-msgid "label_schema_Results Reports"
-msgstr "Ergebnisberichte"
-
-msgid "label_schema_SR Templates"
-msgstr "SR Vorlagen"
-
-msgid "label_schema_Sample Partitions"
-msgstr "Teilproben"
-
-msgid "label_schema_Sample Templates"
-msgstr "label_schema_Sample Templates"
-
-msgid "label_schema_Sampling"
-msgstr ""
-
-# Setup Schemata
-msgid "label_schema_Security"
-msgstr "Sicherheit"
-
-msgid "label_schema_Sticker"
-msgstr ""
-
-msgid "label_schema_Uncertainties"
-msgstr "Unsicherheiten"
 
 #. Default: "Show"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:91

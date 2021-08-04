@@ -2,7 +2,7 @@
 <object name="Report"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone"
+        i18n:domain="senaite.core"
         purge="True">
 
  <property name="title" i18n:translate="">Report</property>
@@ -33,7 +33,7 @@
          link_target=""
          url_expr="string:${object_url}/report_edit"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="True">
     <permission value="senaite.core: Edit Results"/>
  </action>
@@ -46,7 +46,7 @@
          link_target=""
          url_expr="string:${object_url}/report_view"
          i18n:attributes="title"
-         i18n:domain="plone"
+         i18n:domain="senaite.core"
          visible="True">
     <permission value="View"/>
  </action>

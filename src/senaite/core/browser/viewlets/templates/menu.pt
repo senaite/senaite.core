@@ -1,6 +1,6 @@
 <tal:contentviews tal:define="ploneview context/@@plone;"
                   tal:condition="ploneview/showToolbar"
-                  i18n:domain="plone">
+                  i18n:domain="senaite.core">
 
   <tal:actions tal:repeat="action options/actions">
 

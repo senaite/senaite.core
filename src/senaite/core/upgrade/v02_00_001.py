@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
@@ -42,6 +43,21 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, "actions")
+
+    fix_types_i18n_domain(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def fix_types_i18n_domain(portal):
+    """Walks through portal types and assigns the 'senaite.core` domain to
+    those types from senaite
+    """
+    products = ["bika.lims", "senaite.core"]
+    pt = api.get_tool("portal_types")
+    for fti in pt.listTypeInfo():
+        if fti.product in products:
+            if fti.i18n_domain != "senaite.core":
+                fti.i18n_domain = "senaite.core"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-08-04 20:29+0000\n"
+"POT-Creation-Date: 2021-08-04 22:51+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: trendspotter, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
@@ -139,6 +139,18 @@ msgstr "> Max"
 msgid "A short title for the site. This will be shown in the title of the browser window on each page."
 msgstr ""
 
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "AR Šablona"
+
+#: bika/lims/profiles/default/types/ARTemplates.xml
+msgid "AR Templates"
+msgstr "AR šablony"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "AR Zpráva"
+
 #: bika/lims/content/organisation.py:130
 msgid "Account Name"
 msgstr "Jméno účtu"
@@ -216,6 +228,7 @@ msgid "Add"
 msgstr "Vložit"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
 msgstr "Vlož analýzu"
 
@@ -224,15 +237,18 @@ msgid "Add Attachment"
 msgstr "Přidat přílohu"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
 msgstr "Vlož prázdný vzorek"
 
 #: bika/lims/browser/worksheet/views/add_control.py:42
 #: bika/lims/browser/worksheet/views/referencesamples.py:54
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
 msgstr "Vlož kontrolní vzorek"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:54
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
 msgstr "Vlož duplicitní vzorek"
 
@@ -281,6 +297,10 @@ msgstr ""
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:137
 msgid "Address"
 msgstr "Adresa"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Administration"
+msgstr "Správa"
 
 #: bika/lims/browser/reports/templates/administration.pt:80
 msgid "Administrative Reports"
@@ -428,10 +448,12 @@ msgid "Analysis"
 msgstr "Analýzy"
 
 #: bika/lims/controlpanel/bika_analysiscategories.py:64
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
 msgstr "Kategorie analýz"
 
 #: bika/lims/content/abstractbaseanalysis.py:391
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
 msgstr "Kategorie analýzy"
 
@@ -441,6 +463,7 @@ msgstr "Klíčové slovo analýzy"
 
 #: bika/lims/content/analysisrequest.py:405
 #: bika/lims/content/artemplate.py:248
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
 msgstr "Profil analýzy"
 
@@ -471,15 +494,19 @@ msgstr "Analytická služba"
 
 #: bika/lims/config.py:61
 #: bika/lims/controlpanel/bika_analysisservices.py:193
+#: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
 msgstr "Analytické služby"
 
 #: bika/lims/content/analysisrequest.py:656
 #: bika/lims/controlpanel/bika_analysisspecs.py:76
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
 msgstr "Specifikace analýzy"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:64
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
 msgstr "Specifikace analýz"
 
@@ -602,6 +629,7 @@ msgid "Attachment Type"
 msgstr "Typ přílohy"
 
 #: bika/lims/controlpanel/bika_attachmenttypes.py:61
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr "Typy příloh"
 
@@ -666,6 +694,10 @@ msgstr "Protokoly automatického importu %s"
 #: bika/lims/configure.zcml:40
 msgid "Auto-Generate ID Beahvior for Dexterity Contents"
 msgstr "Automatické generování ID Beahvior for Dexterity Contents"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Auto-Import Logs"
+msgstr "Protokoly automatického importu"
 
 #: bika/lims/content/artemplate.py:234
 msgid "Auto-partition on receive"
@@ -742,9 +774,13 @@ msgstr "Základ"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:92
 #: bika/lims/content/analysisrequest.py:307
-#: bika/lims/vocabularies/__init__.py:137
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
 msgstr "Dávka"
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch Book"
+msgstr "Kniha dávek"
 
 #: bika/lims/browser/batchfolder.py:69
 #: bika/lims/browser/templates/batch_publish.pt:52
@@ -752,8 +788,13 @@ msgstr "Dávka"
 msgid "Batch ID"
 msgstr "ID Dávky"
 
+#: bika/lims/profiles/default/types/BatchLabel.xml
+msgid "Batch Label"
+msgstr "Štítek dávky"
+
 #: bika/lims/content/batch.py:111
 #: bika/lims/controlpanel/bika_batchlabels.py:55
+#: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
 msgstr "Dávkové štítky"
 
@@ -762,6 +803,8 @@ msgid "Batch Sub-group"
 msgstr "Podskupina Dávky"
 
 #: bika/lims/browser/batchfolder.py:56
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
 msgstr "Dávky"
 
@@ -882,12 +925,17 @@ msgstr "Kalibrace"
 
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/browser/templates/instrument_certifications.pt:40
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
 msgstr "Kalibrační certifikáty"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
 msgstr "Datum kalibrační Zprávy"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibrations"
+msgstr "Kalibrace"
 
 #: bika/lims/browser/instrument.py:218
 #: bika/lims/content/instrumentcalibration.py:107
@@ -1109,6 +1157,7 @@ msgid "Client Sample ID"
 msgstr "ID vzorku klienta"
 
 #: bika/lims/browser/clientfolder.py:49
+#: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Klienti"
 
@@ -1190,7 +1239,7 @@ msgstr "K úvaze"
 
 #: bika/lims/browser/reports/selection_macros/select_contact.pt:4
 #: bika/lims/content/analysisrequest.py:149
-#: senaite/core/browser/samples/view.py:163
+#: bika/lims/profiles/default/types/Contact.xml
 msgid "Contact"
 msgstr "Kontakt"
 
@@ -1204,6 +1253,7 @@ msgstr "Kontakt je deaktivován. Uživatel nemůže být odpojen."
 
 #: bika/lims/browser/client/views/contacts.py:59
 #: bika/lims/browser/supplier.py:101
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Contacts"
 msgstr "Kontakty"
 
@@ -1229,10 +1279,12 @@ msgid "Container Type"
 msgstr "Typ kontejneru"
 
 #: bika/lims/controlpanel/bika_containertypes.py:57
+#: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
 msgstr "Typy kontejnerů"
 
 #: bika/lims/controlpanel/bika_containers.py:58
+#: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
 msgstr "Kontejnery"
 
@@ -1299,6 +1351,10 @@ msgstr "Počet"
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:33
 msgid "Country"
 msgstr "Země"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Create Invoice PDF"
+msgstr "Vytvořit PDF fakturu "
 
 #: bika/lims/browser/templates/partition_magic.pt:243
 msgid "Create Partitions"
@@ -1682,6 +1738,7 @@ msgstr ""
 
 #: bika/lims/content/labcontact.py:69
 #: bika/lims/controlpanel/bika_labcontacts.py:80
+#: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
 msgstr "Oddělení"
 
@@ -1819,6 +1876,10 @@ msgstr "Typ dokumentu"
 msgid "Document Version"
 msgstr "Verze dokumentu"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Documents"
+msgstr "Dokumenty"
+
 #: bika/lims/config.py:118
 msgid "Dot (.)"
 msgstr "Bod (.)"
@@ -1863,6 +1924,10 @@ msgstr "Dup Var"
 msgid "Duplicate"
 msgstr "Duplikát"
 
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr "Duplikát analýzy"
+
 #: bika/lims/content/worksheettemplate.py:63
 msgid "Duplicate Of"
 msgstr "Duplikát"
@@ -1903,6 +1968,12 @@ msgstr "Např. značky SANAS, APLAC atd."
 #: bika/lims/browser/reports/productivity_analysestats.py:139
 msgid "Early"
 msgstr "Časně"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+msgid "Edit"
+msgstr "Upravit"
 
 #: bika/lims/content/samplepoint.py:74
 msgid "Elevation"
@@ -2113,6 +2184,10 @@ msgstr "Přesnost exponenciálního formátu"
 msgid "Exponential format threshold"
 msgstr "Exponenciální prahová hodnota formátu"
 
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr "Exportovat"
+
 #: bika/lims/browser/stickers.py:256
 msgid "Failed to load sticker"
 msgstr "Štítek se nepodařilo načíst"
@@ -2310,6 +2385,10 @@ msgstr "Vysoký"
 msgid "Highest"
 msgstr "Nejvyšší"
 
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr "Historie"
+
 #: bika/lims/browser/fields/durationfield.py:37
 msgid "Hours"
 msgstr "Hodin"
@@ -2413,6 +2492,7 @@ msgid "Ignore in Report"
 msgstr "Ignorovat ve Zprávě"
 
 #: senaite/core/exportimport/import.pt:14
+#: senaite/core/profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
@@ -2536,7 +2616,12 @@ msgstr "Údržba přístroje"
 msgid "Instrument Scheduled Tasks"
 msgstr "Úlohy plánovaných přístrojů"
 
+#: bika/lims/profiles/default/types/InstrumentType.xml
+msgid "Instrument Type"
+msgstr "Typ přístroje"
+
 #: bika/lims/controlpanel/bika_instrumenttypes.py:57
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
 msgstr "Typy přístrojů"
 
@@ -2676,6 +2761,8 @@ msgid "Invalidate"
 msgstr "Zneplatnit"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:18
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
 msgstr "Faktura"
 
@@ -2760,7 +2847,13 @@ msgstr "Laboratoř"
 msgid "Lab Analyses"
 msgstr "Laboratorní analýzy"
 
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr "Laboratorní kontakt"
+
 #: bika/lims/controlpanel/bika_labcontacts.py:62
+#: bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr "Kontakty laboratoře"
 
@@ -2774,6 +2867,7 @@ msgstr "Laboratorní uchování"
 
 #: bika/lims/config.py:62
 #: bika/lims/controlpanel/bika_labproducts.py:57
+#: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
 msgstr "Laboratorní produkty"
 
@@ -2786,6 +2880,7 @@ msgid "Label"
 msgstr "Štítek"
 
 #: bika/lims/content/laboratory.py:199
+#: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
 msgstr "Laboratoř"
 
@@ -2804,6 +2899,10 @@ msgstr "Vstupní stránka"
 #: senaite/core/browser/install/templates/senaite-addsite.pt:74
 msgid "Language"
 msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Large Sticker"
+msgstr "Velký štítek"
 
 #: bika/lims/content/bikasetup.py:705
 msgid "Large sticker"
@@ -2928,6 +3027,8 @@ msgid "Log"
 msgstr "Protokol"
 
 #: bika/lims/browser/templates/login_details.pt:11
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr "Přihlašovací detaily"
 
@@ -2978,6 +3079,10 @@ msgstr "Poštovní adresa"
 msgid "Maintainer"
 msgstr "Správce"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr "Údržba"
+
 #. Default: "Type"
 #: bika/lims/content/instrumentmaintenancetask.py:56
 msgid "Maintenance type"
@@ -2992,6 +3097,7 @@ msgid "Male"
 msgstr "Samec"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt:14
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr "Spravovat analýzy"
 
@@ -3006,6 +3112,10 @@ msgstr "Správa číselného generátoru"
 #: bika/lims/browser/templates/partition_magic.pt:21
 msgid "Manage Partitions"
 msgstr "Správa Oddělků"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr "Správa výsledků"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:33
 msgid "Manage Sample Form Fields"
@@ -3052,6 +3162,7 @@ msgid "Manufacturer"
 msgstr "Výrobce"
 
 #: bika/lims/controlpanel/bika_manufacturers.py:57
+#: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
 msgstr "Výrobci"
 
@@ -3247,6 +3358,10 @@ msgstr ""
 #: bika/lims/content/abstractbaseanalysis.py:566
 msgid "Multiple selection (with duplicates)"
 msgstr ""
+
+#: senaite/core/profiles/default/actions.xml
+msgid "My organization"
+msgstr "Moje organizace"
 
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
@@ -3845,6 +3960,7 @@ msgid "Preservation per sample type"
 msgstr ""
 
 #: bika/lims/controlpanel/bika_preservations.py:57
+#: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr "Uchování"
 
@@ -3889,11 +4005,16 @@ msgstr "Cena (bez DPH)"
 msgid "Price excluding VAT"
 msgstr "Cena bez DPH"
 
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr "Ceník"
+
 #: bika/lims/content/pricelist.py:51
 msgid "Pricelist for"
 msgstr "Ceník pro"
 
 #: bika/lims/browser/pricelist.py:50
+#: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
 msgstr "Ceníky"
 
@@ -3909,10 +4030,18 @@ msgstr "Primární vzorek"
 msgid "Print"
 msgstr "Tisk"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr "Tisk faktury"
+
 #: bika/lims/browser/reports/templates/report_frame.pt:29
 #: bika/lims/browser/templates/batch_publish.pt:124
 msgid "Print date:"
 msgstr "Datum tisku:"
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr "Tisk ceníku"
 
 #: senaite/core/browser/samples/view.py:222
 msgid "Print stickers"
@@ -3931,6 +4060,10 @@ msgstr "Vytištěno na"
 #: bika/lims/content/analysisrequest.py:876
 msgid "Priority"
 msgstr "Priorita"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Productivity"
+msgstr "Produktivita"
 
 #: bika/lims/browser/reports/templates/productivity.pt:85
 msgid "Productivity Reports"
@@ -4001,6 +4134,10 @@ msgstr "Datum vydání"
 msgid "Published Samples which have not been invoiced"
 msgstr "Zveřejněné vzorky, které nebyly fakturovány"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Published results"
+msgstr "Publikované výsledky"
+
 #: bika/lims/browser/workflow/client.py:120
 msgid "Published {}, "
 msgstr "Publikováno {},"
@@ -4009,6 +4146,10 @@ msgstr "Publikováno {},"
 #: senaite/core/browser/viewlets/sampleanalyses.py:70
 msgid "QC Analyses"
 msgstr "QC Analýzy"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "QC Results"
+msgstr "Výsledky QC"
 
 #: bika/lims/browser/analyses/qc.py:55
 #: bika/lims/browser/instrument.py:550
@@ -4094,6 +4235,10 @@ msgstr "Reference"
 msgid "Reference Analyses"
 msgstr "Referenční analýzy"
 
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr "Referenční analýza"
+
 #: bika/lims/browser/referencesample.py:411
 #: bika/lims/browser/templates/referencesample_view.pt:63
 #: bika/lims/content/referencesample.py:62
@@ -4101,6 +4246,7 @@ msgid "Reference Definition"
 msgstr "Definice Reference"
 
 #: bika/lims/controlpanel/bika_referencedefinitions.py:62
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
 msgstr "Definice referencí"
 
@@ -4111,6 +4257,8 @@ msgid "Reference Sample"
 msgstr "Referenční vzorek"
 
 #: bika/lims/browser/referencesample.py:384
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
 msgstr "Referenční vzorky"
 
@@ -4120,6 +4268,7 @@ msgstr "Dodavatel reference"
 
 #: bika/lims/browser/referencesample.py:256
 #: bika/lims/content/referencedefinition.py:45
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr "Referenční hodnoty"
 
@@ -4152,6 +4301,10 @@ msgstr "Obnovit"
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Reject"
 msgstr "Odmítnout"
+
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr "Odmítnout Analýzu"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:13
 msgid "Reject samples"
@@ -4241,8 +4394,13 @@ msgstr "Vykreslit ve Zprávě"
 msgid "Repair"
 msgstr "Opravit"
 
+#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:41
+msgid "Repeat every"
+msgstr ""
+
 #: bika/lims/browser/fields/interimfieldsfield.py:48
 #: bika/lims/content/report.py:38
+#: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
 msgstr "Zpráva"
 
@@ -4298,6 +4456,8 @@ msgid "Report upload"
 msgstr "Nahrát Zprávu"
 
 #: bika/lims/browser/reports/__init__.py:117
+#: bika/lims/profiles/default/types/ReportFolder.xml
+#: senaite/core/profiles/default/actions.xml
 msgid "Reports"
 msgstr "Zprávy"
 
@@ -4523,10 +4683,12 @@ msgid "Sample ${AR} was successfully created."
 msgstr "Vzorek ${AR} byl úspěšně vytvořen."
 
 #: bika/lims/controlpanel/bika_sampleconditions.py:72
+#: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
 msgstr "Ukázkový stav"
 
 #: bika/lims/controlpanel/bika_sampleconditions.py:60
+#: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Vzorové podmínky"
 
@@ -4537,11 +4699,13 @@ msgid "Sample ID"
 msgstr "ID vzorku"
 
 #: bika/lims/controlpanel/bika_samplematrices.py:55
+#: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
 msgstr "Matrice vzorků"
 
 #: bika/lims/content/sampletype.py:139
 #: bika/lims/controlpanel/bika_samplematrices.py:68
+#: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "Matice vzorků"
 
@@ -4557,6 +4721,7 @@ msgstr "Vzorkovací bod"
 
 #: bika/lims/controlpanel/bika_samplepoints.py:64
 #: bika/lims/controlpanel/bika_sampletypes.py:103
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Points"
 msgstr "Body vzorků"
 
@@ -4570,6 +4735,7 @@ msgstr "Šablona vzorku"
 
 #: bika/lims/browser/client/views/artemplates.py:49
 #: bika/lims/controlpanel/bika_artemplates.py:63
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
 msgstr "Šablony vzorku"
 
@@ -4642,8 +4808,8 @@ msgid "Sampler for scheduled sampling"
 msgstr "Vzorkovač pro plánovaný odběr vzorků"
 
 #: bika/lims/browser/worksheet/views/folder.py:102
-#: senaite/core/browser/dashboard/dashboard.py:470
-#: senaite/core/browser/samples/view.py:55
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Vzorky"
 
@@ -4726,11 +4892,12 @@ msgstr "Datum vzorkování"
 
 #: bika/lims/content/analysisrequest.py:828
 #: bika/lims/controlpanel/bika_samplingdeviations.py:68
-#: senaite/core/browser/samples/view.py:182
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
 msgstr "Odchylka odběru vzorků"
 
 #: bika/lims/controlpanel/bika_samplingdeviations.py:56
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
 msgstr "Odchylky odběru vzorků"
 
@@ -4755,6 +4922,10 @@ msgstr "Uložit"
 #: bika/lims/browser/workflow/__init__.py:199
 msgid "Saved items: {}"
 msgstr "Uložené položky: {}"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Schedule"
+msgstr "Plán"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Schedule sampling"
@@ -5017,6 +5188,10 @@ msgstr "Pokud je aktivována možnost „Oznámení e-mailem o odmítnutí vzork
 msgid "Set the text for the body of the email to be sent, , if option 'Email notification on Sample 'invalidation' enabled,  to the Sample's client contact. You can use reserved keywords: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
 msgstr "Nastavte text pro tělo e-mailu, který má být odeslán, pokud je povolena možnost „Oznámení e-mailem o neplatnosti vzorku“, kontaktu klienta s ukázkou. Můžete použít vyhrazená klíčová slova: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
 
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr "Nastavení"
+
 #: bika/lims/content/storagelocation.py:82
 #: bika/lims/controlpanel/bika_storagelocations.py:94
 msgid "Shelf Code"
@@ -5083,6 +5258,10 @@ msgstr "Název webu"
 msgid "Size"
 msgstr "Velikost"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Small Sticker"
+msgstr "Malý štítek"
+
 #: bika/lims/content/bikasetup.py:694
 msgid "Small sticker"
 msgstr "Malý štítek"
@@ -5146,17 +5325,30 @@ msgstr "Stav"
 msgid "Status"
 msgstr "Stav"
 
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Sticker"
+msgstr "Štítek"
+
 #: bika/lims/content/bikasetup.py:683
 msgid "Sticker templates"
 msgstr "Šablony nálepek"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Stickers preview"
+msgstr "Náhled štítků"
+
 #: bika/lims/content/analysisrequest.py:755
 #: bika/lims/controlpanel/bika_storagelocations.py:72
-#: senaite/core/browser/samples/view.py:177
+#: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
 msgstr "Umístění úložiště"
 
 #: bika/lims/controlpanel/bika_storagelocations.py:59
+#: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
 msgstr "Umístění úložiště"
 
@@ -5164,7 +5356,12 @@ msgstr "Umístění úložiště"
 msgid "String result"
 msgstr "Výsledek řetězce"
 
+#: bika/lims/profiles/default/types/SubGroup.xml
+msgid "Sub-group"
+msgstr "Podskupina"
+
 #: bika/lims/controlpanel/bika_subgroups.py:58
+#: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
 msgstr "Podskupiny"
 
@@ -5220,6 +5417,7 @@ msgid "Supplier"
 msgstr "Dodavatel"
 
 #: bika/lims/controlpanel/bika_suppliers.py:61
+#: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
 msgstr "Dodavatelé"
 
@@ -5903,6 +6101,10 @@ msgstr "Nerozpoznaný formát souboru ${format}"
 msgid "Unsassigned"
 msgstr "Nepřiřazeno"
 
+#: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:63
+msgid "Until"
+msgstr ""
+
 #: senaite/core/browser/viewlets/templates/attachments.pt:180
 msgid "Update Attachments"
 msgstr "Aktualizovat přílohy"
@@ -6165,6 +6367,10 @@ msgstr "Ověření pro '{}' se nezdařilo"
 msgid "Validation report date"
 msgstr "Datum Zprávy o ověření"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Validations"
+msgstr "Ověřování"
+
 #: bika/lims/browser/instrument.py:315
 #: bika/lims/content/instrumentvalidation.py:88
 msgid "Validator"
@@ -6201,6 +6407,12 @@ msgstr "Ověřit"
 #: bika/lims/controlpanel/auditlog.py:71
 msgid "Version"
 msgstr "Verze"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/Analysis.xml
+msgid "View"
+msgstr "Zobrazit"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:52
 msgid "View your SENAITE site"
@@ -6301,11 +6513,17 @@ msgstr "Pracovní list"
 msgid "Worksheet Layout"
 msgstr "Rozložení pracovního listu"
 
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr "Šablona pracovního listu"
+
 #: bika/lims/controlpanel/bika_worksheettemplates.py:62
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
 msgstr "Šablony pracovního listu"
 
 #: bika/lims/browser/worksheet/views/folder.py:54
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
 #: senaite/core/browser/dashboard/dashboard.py:521
 msgid "Worksheets"
 msgstr "Pracovní listy"
@@ -6405,7 +6623,7 @@ msgstr "date_format_short"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "mm/dd/yy"
+#. Default: "yy-mm-dd"
 #, fuzzy
 msgid "date_format_short_datepicker"
 msgstr "date_format_short_datepicker"
