@@ -9,13 +9,13 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <p class="title">
-        <strong i18n:translate="">
-          This sample has been dispatched by <span tal:replace="info/actor"/> on
-          <span tal:replace="info/date"/>
+        <strong i18n:translate="this_sample_has_been_dispatched_by">
+          This sample has been dispatched by <span i18n:name="actor" tal:replace="info/actor"/> on
+          <span i18n:name="date" tal:replace="info/date"/>
         </strong>
       </p>
       <p class="description">
-        <div tal:content="structure info/comments"></div>
+        <span tal:replace="structure info/comments"/>
       </p>
     </div>
   </div>
