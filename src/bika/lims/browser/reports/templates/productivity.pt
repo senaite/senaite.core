@@ -501,8 +501,9 @@
               <div tal:attributes="id rpt_data/id" style="display:none"
                    class="criteria">
                 <form action="createreport"
-                      tal:attributes="action string:${here/absolute_url}/createreport"
-                      method="post" tal:attributes="name string:productivity_${rpt_data/id}">
+                      tal:attributes="action string:${here/absolute_url}/createreport;
+                                      name string:productivity_${rpt_data/id}"
+                      method="post">
                   <input type="hidden"
                          name="report_id" tal:attributes="value string:productivity_${rpt_data/id}" />
                   <input type="hidden"
