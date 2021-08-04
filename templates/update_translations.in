@@ -63,7 +63,7 @@ echo "Processing Domain $DOMAIN"
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude $EXCLUDE --create $DOMAIN src/senaite src/bika
+$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "$EXCLUDE" --create $DOMAIN src
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
 $I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
 # Overwrite the existing $DOMAIN.pot
@@ -79,7 +79,7 @@ echo "Processing Domain $DOMAIN"
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude $EXCLUDE --create $DOMAIN src/senaite src/bika
+$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "$EXCLUDE" --create $DOMAIN src
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
 $I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
 # Overwrite the existing $DOMAIN.pot
