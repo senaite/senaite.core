@@ -52,7 +52,7 @@
                          class="form-control"
                          tal:attributes="value request/site_id|nothing" />
                   <div class="form-text small text-muted" i18n:translate="">
-                    The ID of the site. This ends up as part of the URL.<br />
+                    The ID of the site. This ends up as part of the URL.
                     No special characters or spaces are allowed.
                   </div>
                 </div>

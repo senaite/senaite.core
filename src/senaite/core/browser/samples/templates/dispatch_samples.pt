@@ -52,10 +52,10 @@
               <li class="list-item">
                 <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
                 <div class="list-group-item-heading">
-                  <a href="#"
-                     tal:attributes="href sample/url">
-                  <span tal:content="sample/title"/>
-                  <small>(<span tal:replace="sample/sample_type">)</small>
+                  <a href="#" tal:attributes="href sample/url">
+                    <span tal:content="sample/title"/>
+                    <small>(<span tal:replace="sample/sample_type"/>)</small>
+                  </a>
                 </div>
               </li>
             </ul>

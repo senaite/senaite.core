@@ -55,14 +55,12 @@
                 </div>
                 <div class="options-set-other">
                     <!-- Other Checkbox -->
-                    <label i18n:translate="">
                         <input type="checkbox"
                             tal:attributes="
                                 name string:${fieldName}.checkbox.other:records;
                                 id string:${fieldName}.checkbox.other;"
                             class="rejectionwidget-checkbox-other rejectionwidget-field"/>
-                        Other
-                    </label>
+                    <label i18n:translate="">Other reasons</label>
                     <div class="other-text">
                         <input type="text"
                             tal:attributes="
