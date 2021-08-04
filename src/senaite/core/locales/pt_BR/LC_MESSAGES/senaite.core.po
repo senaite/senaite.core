@@ -5538,7 +5538,7 @@ msgstr ""
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "Os instrumentos selecionados têm suporte para este método. Use a visualização de editar instrumento para designar o método para um instrumento específico"
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -6021,11 +6021,11 @@ msgstr "Validação falhou: recipientes pré-preservados devem ter uma preserva�
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Validação falhou: texto de resultado não pode estar em branco"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Validação falhou: Valores Resultantes devem ser números"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

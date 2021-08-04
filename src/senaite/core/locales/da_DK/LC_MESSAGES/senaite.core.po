@@ -6026,7 +6026,7 @@ msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Validering mislykkedes: Søgningen Værdier skal være tal"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

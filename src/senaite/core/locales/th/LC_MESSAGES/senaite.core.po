@@ -21,7 +21,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:800
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr " <p>ระบบบริหารจัดการห้องปฏิบัติการนี้ สร้างขึ้นจาก Bika LIMS แต่ละรายการจะมีหมายเลขกำกับ เช่น ตัวอย่าง ใบงาน และสิ่งอื่น ๆ โดยอ้างจากฟอร์แมตของชนิดนั้น ๆ </p><p>ฟอร์แมตดังกล่าว อ้างอิงจากภาษาไพธอน ซึ่งจะกำหนดหมายเลขเรียงกัน เช่น 03d หมายถึง หมายเลขกำกับ 001 ถึง 999</p><p>สำหรับสารบัญแบบผสม คือ มีตัวอักษรสลับกับตัวเลข ตัวอย่างเช่น ใบงานที่ขึ้นต้นด้วย WS จะใช้ว่า WS-{seq:03d} ระบบจะทำการสร้างหมายเลขใบงาน WS-001, WS-002, WS-003 เรียงกันไป</p><p>สำหรับการสร้างสารบัญผสมแบบอัตโนมัติ ที่ใช้ลำดับอักษร คำสั่งฟอร์แมต {alpha} สามารถใช้แทนอักษรนั้นได้ เช่น WS-{alpha:2a3d} จะสร้าง WS-AA001, WS-AA002, WS-AB034 เรียงกันไป A ไปเป็น B C D เรื่อย ๆ</p><p>ตัวแปรต่าง ๆ สามารถนำมาใช้ร่วมด้วย เช่น<table><tr><th style='width:150px'>ชนิด</th><th>ตัวแปร</th></tr><tr><td>ผู้ติดต่อ</td><td>{client}</td></tr><tr><td>ปี</td><td>{year}</td></tr><tr><td>หมายเลขตัวอย่าง</td><td>{sampleId}</td></tr><tr><td>ชนิดตัวอย่าง</td><td>{sampleType}</td></tr><tr><td>วันรับตัวอย่าง</td><td>{samplingDate}</td></tr><tr><td>วันเก็บตัวอย่าง</td><td>{dateSampled}</td></tr></table></p><p>การตั้งค่า:<ul><li>ฟอร์แมต:<ul><li>สำหรับภาษาไพธอนแล้ว หากใช้ตัวแปรเหล่านี้ในการสร้างฟอร์แมต ได้แก่ sampleId, client, sampleType</li><li>ต้องใส่ตัวแปรพิเศษ 'seq' หลังฟอร์แมตนั้น ๆ </li></ul></li><li>สำหรับตัวแปร: [generated|counter]</li><li>การใช้: หากรายการใด ๆ ในผังงานเกิดการนับรอบ เช่น </li><li>การนับว่า backreference ทำไปกี่รอบ จะใช้ว่า: [backreference|contained]</li><li>อ้างอิงการนับรอบ: หากมีการนับรอบขึ้น ต้องใส่พารามิเตอร์การนับด้วย</li><li>อักษรนำหน้า: หากไม่ใส่อักษรนำหน้า ระบบจะนำฟอร์แมตหลักมาใช้</li><li>การแยกตามความยาวอักษร: หากอักษรนำหน้ายาวเกินไป ระบบจะตัดบางส่วนมาใช้</li></ul></p>"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -1750,7 +1750,7 @@ msgstr "Display a Detection Limit selector"
 
 #: bika/lims/content/bikasetup.py:540
 msgid "Display sample partitions to clients"
-msgstr "Display sample partitions to clients"
+msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Dispose"
@@ -4871,7 +4871,7 @@ msgstr "Select to receive the samples automatically when created by lab personne
 
 #: bika/lims/content/bikasetup.py:541
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-msgstr "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
+msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:88
 msgid "Select which Analyses should be included on the Worksheet"
@@ -5538,7 +5538,7 @@ msgstr "The sample is a mix of sub samples"
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -6021,11 +6021,11 @@ msgstr "Validation failed: PrePreserved containers must have a preservation sele
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Validation failed: Result Text cannot be blank"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Validation failed: Result Values must be numbers"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

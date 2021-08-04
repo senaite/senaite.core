@@ -1,14 +1,14 @@
 #
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021\n"
 "Language-Team: Spanish (Latin America) (https://www.transifex.com/senaite/teams/87045/es_419/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:800
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr " <p>El servidor de Identificadores (IDs) de Senaite LIMS proporciona identificadores secuenciales únicos para objetos como muestras, hojas de trabajo, peticiones de análisis, etc., en función del formato especificado para cada tipo de contenido.</p><p>La sintaxis es similar a la de Python, utilizando variables predefinidas por tipo de contenido y avanzando los IDs a partir de un número de secuencia 'seq' para definir el número de dígitos a utilizar. Por ejemplo: '03d' para una secuencia de IDs de 001 a 999.</p><p>Los prefijos alfanuméricos para IDs se incluirán como se haya definido en el formato, p. WS para Hoja de trabajo en WS- {seq: 03d} produce identificadores para las hojas de trabajo de forma secuencial: WS-001, WS-002, WS-003, etc.</p><p>Las variables que se pueden usar son:<table><tr><th style='width:150px'>Tipo de contenido (Content Type)</th><th>Variables</th></tr><tr><td>Cliente</td><td>{client}</td></tr><tr><td>Año</td><td>{year}</td></tr><tr><td>Identificador de muestra</td><td>{sampleId}</td></tr><tr><td>Tipo de muestra</td><td>{sampleType}</td></tr><tr><td>Fecha de muestreo (futuro)</td><td>{samplingDate}</td></tr><tr><td>Fecha en que se ha realizado el muestreo (pasado)</td><td>{dateSampled}</td></tr></table></p><p>Elementos de configuración:<ul><li>Formato:<ul><li>una cadena en formato Python construida a partir de variables predefinidas como sampleId, client, sampleType.</li><li>La variable especial 'seq' debe colocarse en último lugar de la cadena que define el formato</li></ul></li><li>Tipo de secuéncia: [Generada|Contador]</li><li>Contexto: si el tipo de secuéncia es 'Contador', proporciona el contexto para la función contador</li><li>Tipo de cuenta: [retroreferencia|contenida]</li><li>Referencia para cuenta: un parámetro para la función de conteo</li><li>Prefijo: prefijo predeterminado si no se proporciona el formato en cadena</li><li>Longitud de la división: la cantidad de partes que se incluirán en el prefijo</li></ul></p>"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -227,7 +227,7 @@ msgstr "Activado"
 #: bika/lims/browser/client/views/analysisprofiles.py:64
 #: bika/lims/browser/client/views/artemplates.py:61
 msgid "Active"
-msgstr "Activos"
+msgstr "Activo"
 
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
@@ -238,7 +238,7 @@ msgstr "Actor"
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:45
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:253
 msgid "Add"
-msgstr "Nuevo..."
+msgstr "Añadir"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 msgid "Add Analyses"
@@ -753,13 +753,13 @@ msgstr "Base"
 #: bika/lims/content/analysisrequest.py:306
 #: bika/lims/vocabularies/__init__.py:137
 msgid "Batch"
-msgstr "Lote"
+msgstr "Caso"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:138
 #: bika/lims/browser/batchfolder.py:69
 #: bika/lims/browser/templates/batch_publish.pt:52
 msgid "Batch ID"
-msgstr "ID Lote"
+msgstr "ID del caso"
 
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:45
@@ -772,7 +772,7 @@ msgstr "Subgrupo de lote"
 
 #: bika/lims/browser/batchfolder.py:56
 msgid "Batches"
-msgstr "Lotes"
+msgstr "Casos"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:19
 msgid "Be aware that the ranges provided in the spreadsheet file from the dynamic specification might override the ranges defined in the Specifications list below."
@@ -829,7 +829,7 @@ msgstr "Precio con descuento por volumen (sin IVA)"
 #: bika/lims/browser/client/views/contacts.py:72
 #: bika/lims/browser/supplier.py:116
 msgid "Business Phone"
-msgstr "Teléfono del negocio"
+msgstr "Teléfono del trabajo"
 
 #: bika/lims/browser/reports/__init__.py:139
 msgid "By"
@@ -1062,7 +1062,7 @@ msgstr "Haga clic para alternar la visibilidad o arrastre y suelte para cambiar 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:76
 #: bika/lims/browser/batchfolder.py:77
 msgid "Client"
-msgstr "Cliente"
+msgstr "Institución de referencia"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -1073,7 +1073,7 @@ msgstr "ID Lote de Cliente"
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:80
 #: bika/lims/browser/batchfolder.py:80
 msgid "Client ID"
-msgstr "ID del cliente"
+msgstr "ID de Institución de Referencia"
 
 #: bika/lims/profiles/default/registry.xml
 msgid "Client Landing Page"
@@ -1109,7 +1109,7 @@ msgstr "Identificador de la muestra asignado por el cliente"
 
 #: bika/lims/browser/clientfolder.py:49
 msgid "Clients"
-msgstr "Clientes"
+msgstr "Instituciones de referencia"
 
 #: bika/lims/profiles/default/workflows/senaite_batch_workflow/definition.xml
 msgid "Close"
@@ -1751,7 +1751,7 @@ msgstr "Mostrar el selector de límites de detección"
 
 #: bika/lims/content/bikasetup.py:540
 msgid "Display sample partitions to clients"
-msgstr "Mostrar particiones de muestra a los clientes"
+msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Dispose"
@@ -1766,7 +1766,7 @@ msgstr "Eliminados"
 #: bika/lims/browser/clientfolder.py:92
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:89
 msgid "District"
-msgstr "Región"
+msgstr "Distrito"
 
 #: bika/lims/browser/instrument.py:652
 #: bika/lims/content/multifile.py:47
@@ -1776,22 +1776,22 @@ msgstr "Documento"
 #: bika/lims/browser/instrument.py:797
 #: bika/lims/content/multifile.py:39
 msgid "Document ID"
-msgstr "ID de documento"
+msgstr "Identificación del Documento"
 
 #: bika/lims/browser/instrument.py:801
 #: bika/lims/content/multifile.py:63
 msgid "Document Location"
-msgstr "Localización del documento"
+msgstr "Ubicación del Documento"
 
 #: bika/lims/browser/instrument.py:803
 #: bika/lims/content/multifile.py:73
 msgid "Document Type"
-msgstr "Tipo de documento"
+msgstr "Tipo de Documento"
 
 #: bika/lims/browser/instrument.py:799
 #: bika/lims/content/multifile.py:55
 msgid "Document Version"
-msgstr "Versión del documento"
+msgstr "Versión del Documento"
 
 #: bika/lims/config.py:130
 msgid "Dot (.)"
@@ -2120,7 +2120,7 @@ msgstr "Título del campo"
 #: bika/lims/browser/instrument.py:805
 #: bika/lims/browser/reports/productivity_analysesattachments.py:82
 msgid "File"
-msgstr "Archivo"
+msgstr "Fichero"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:193
 msgid "File Deleted"
@@ -4130,7 +4130,7 @@ msgstr "El flujo de trabajo de rechazo no está activado"
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:64
 #: bika/lims/browser/worksheet/templates/results.pt:215
 msgid "Remarks"
-msgstr "Comentarios"
+msgstr "Observaciones"
 
 #: bika/lims/content/analysisrequest.py:1058
 msgid "Remarks and comments for this request"
@@ -4872,7 +4872,7 @@ msgstr "Seleccione recibir las muestras automáticamente cuando sea creado por e
 
 #: bika/lims/content/bikasetup.py:541
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-msgstr "Seleccione para mostrar particiones de muestra a los contactos del cliente. Si se desactiva, las particiones no se incluirán en los listados y no se mostrará ningún mensaje de información con enlaces a la muestra principal a los contactos del cliente."
+msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:88
 msgid "Select which Analyses should be included on the Worksheet"
@@ -5539,7 +5539,7 @@ msgstr "La muestra es un conjunto de sub-muestras"
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "El instrumento seleccionado puede ser usado para este método. Utilice la vista de edición de instrumento para asignar el método a un instrumento específico."
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -5901,7 +5901,7 @@ msgstr "Usuario"
 #: bika/lims/browser/client/views/contacts.py:68
 #: bika/lims/browser/templates/login_details.pt:71
 msgid "User Name"
-msgstr "Nombre de usuario"
+msgstr "Nombre de Usuario"
 
 #: bika/lims/browser/reports/templates/administration.pt:131
 msgid "User history"
@@ -5974,7 +5974,7 @@ msgstr "Error de validación: '${title}': título duplicado"
 
 #: bika/lims/validators.py:202
 msgid "Validation failed: '${value}' is not unique"
-msgstr "Error de validación: '${value}' no es único"
+msgstr "Validación fallida: '${value}' no es único"
 
 #: bika/lims/validators.py:589
 msgid "Validation failed: Bearing must be E/W"
@@ -6022,11 +6022,11 @@ msgstr "Error de validación: debe indicar el método de conservación."
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Error de validación: el texto del resultado no puede estar vacío"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Error de validación: los resultados tienen que ser de tipo numérico"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

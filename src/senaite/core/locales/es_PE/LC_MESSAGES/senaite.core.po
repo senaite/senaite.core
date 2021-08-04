@@ -6026,7 +6026,7 @@ msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Ha fallado la validación: los resultados tienen que ser de tipo numérico"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

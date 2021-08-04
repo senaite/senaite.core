@@ -6022,11 +6022,11 @@ msgstr "Validasie het gefaal: Vooraf preserveerde houers moet 'n preservering re
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Validasie het gefaal: Leë waardes is ongeldig"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Validasie Misluk: Resultaatwaardes moet tuseen -180 en 180 wees"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

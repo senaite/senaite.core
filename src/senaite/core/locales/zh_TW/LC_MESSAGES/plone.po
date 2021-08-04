@@ -4,13 +4,14 @@
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2019
+# Wei Chung Sim <wchung.mardi@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
+"Last-Translator: Wei Chung Sim <wchung.mardi@gmail.com>, 2021\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/senaite/teams/87045/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -84,16 +85,16 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
-msgstr ""
+msgstr "分析請求樣板"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 msgid "AR Templates"
-msgstr "分析请求模板"
+msgstr "分析請求樣板"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
-msgstr ""
+msgstr "分析請求樣板"
 
 #: bika/lims/content/organisation.py:130
 msgid "Account Name"
@@ -153,13 +154,13 @@ msgstr ""
 # in the action menu of Plone.
 # Please don't remove
 msgid "Activate"
-msgstr ""
+msgstr "激活"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:241
 #: bika/lims/browser/client/views/analysisprofiles.py:64
 #: bika/lims/browser/client/views/artemplates.py:61
 msgid "Active"
-msgstr ""
+msgstr "運作中"
 
 #: bika/lims/browser/auditlog.py:83
 #: bika/lims/controlpanel/auditlog.py:77
@@ -180,18 +181,18 @@ msgstr "添加分析"
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr "添加空白参考"
+msgstr "添加空白參考"
 
 #: bika/lims/browser/worksheet/views/add_control.py:42
 #: bika/lims/browser/worksheet/views/referencesamples.py:54
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
-msgstr "添加对照参考"
+msgstr "添加對照參考"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:54
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr "添加重复样"
+msgstr "添加重複樣"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:87
 msgid "Add Reflex rule"
@@ -235,7 +236,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
-msgstr ""
+msgstr "管理"
 
 #: bika/lims/content/sampletype.py:208
 msgid "Admitted sticker templates"
@@ -348,12 +349,12 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr "多个分析类别"
+msgstr "分析類別"
 
 #: bika/lims/content/abstractbaseanalysis.py:436
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr "单个分析类别"
+msgstr "分析類別"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Analysis Keyword"
@@ -363,13 +364,13 @@ msgstr ""
 #: bika/lims/content/artemplate.py:249
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr "分析属性"
+msgstr "分析數據圖表"
 
 #: bika/lims/browser/client/views/analysisprofiles.py:50
 #: bika/lims/content/analysisrequest.py:428
 #: bika/lims/controlpanel/bika_analysisprofiles.py:62
 msgid "Analysis Profiles"
-msgstr "分析多個數據圖表"
+msgstr "分析數據圖表"
 
 #: bika/lims/browser/publish/reports_listing.py:53
 msgid "Analysis Reports"
@@ -383,13 +384,13 @@ msgstr ""
 #: bika/lims/browser/fields/resultrangefield.py:34
 #: bika/lims/browser/referencesample.py:276
 msgid "Analysis Service"
-msgstr "单个分析服务"
+msgstr "分析服務"
 
 #: bika/lims/config.py:68
 #: bika/lims/controlpanel/bika_analysisservices.py:192
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Analysis Services"
-msgstr "多个分析服务"
+msgstr "分析服務"
 
 #: bika/lims/content/analysisrequest.py:655
 #: bika/lims/controlpanel/bika_analysisspecs.py:75
@@ -401,7 +402,7 @@ msgstr "分析規格"
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisSpecs.xml
 msgid "Analysis Specifications"
-msgstr "分析祥述"
+msgstr "分析規格"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:59
 msgid "Analysis State"
@@ -462,11 +463,11 @@ msgid "Asset Number"
 msgstr ""
 
 msgid "Assign"
-msgstr ""
+msgstr "分派"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:387
 msgid "Assigned"
-msgstr ""
+msgstr "已分派"
 
 #: bika/lims/browser/analyses/view.py:1186
 msgid "Assigned to: ${worksheet_id}"
@@ -477,7 +478,7 @@ msgid "Assignment pending"
 msgstr ""
 
 msgid "Attach"
-msgstr ""
+msgstr "附上"
 
 #: bika/lims/content/analysisrequest.py:994
 #: bika/lims/content/attachment.py:51
@@ -497,13 +498,13 @@ msgstr ""
 #: bika/lims/content/attachment.py:61
 #: bika/lims/controlpanel/bika_attachmenttypes.py:72
 msgid "Attachment Type"
-msgstr "单一附件类型"
+msgstr "附件類型"
 
 #: bika/lims/controlpanel/bika_attachmenttypes.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr "多个附件类型"
+msgstr "附件類型"
 
 msgid "Attachment due"
 msgstr ""
@@ -528,12 +529,12 @@ msgstr ""
 #: bika/lims/browser/client/views/attachments.py:45
 #: bika/lims/browser/reports/productivity_analysesattachments.py:47
 msgid "Attachments"
-msgstr "多个附件"
+msgstr "附件"
 
 #: bika/lims/controlpanel/auditlog.py:55
 #: senaite/core/profiles/default/actions.xml
 msgid "Audit Log"
-msgstr ""
+msgstr "稽查記錄"
 
 #: bika/lims/browser/instrument.py:747
 msgid "Auto Import Logs of %s"
@@ -541,7 +542,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
+msgstr "自動導入記錄"
 
 #: bika/lims/content/artemplate.py:235
 msgid "Auto-partition on receive"
@@ -591,7 +592,7 @@ msgstr "批"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
-msgstr ""
+msgstr "批量簿"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:138
 #: bika/lims/browser/batchfolder.py:69
@@ -601,7 +602,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
-msgstr ""
+msgstr "批量標籤"
 
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:45
@@ -617,7 +618,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr "多批"
+msgstr "批"
 
 #: bika/lims/browser/fields/coordinatefield.py:44
 msgid "Bearing"
@@ -693,7 +694,7 @@ msgstr ""
 #: bika/lims/browser/widgets/serviceswidget.py:86
 #: bika/lims/content/analysisservice.py:371
 msgid "Calculation"
-msgstr "计算"
+msgstr "計算"
 
 #: bika/lims/content/calculation.py:119
 msgid "Calculation Formula"
@@ -712,7 +713,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
-msgstr "多个计算"
+msgstr "計算"
 
 #: bika/lims/content/instrumentscheduledtask.py:114
 msgid "Calibration"
@@ -721,7 +722,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "校準證"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
@@ -729,7 +730,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
+msgstr "校準"
 
 #: bika/lims/browser/instrument.py:218
 #: bika/lims/content/instrumentcalibration.py:107
@@ -745,7 +746,7 @@ msgid "Can verify, but was already verified by current user"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:342
 #: bika/lims/browser/batchfolder.py:109
@@ -868,7 +869,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:77
 #: bika/lims/browser/reports/__init__.py:161
 msgid "Client"
-msgstr "客户"
+msgstr "客戶"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -910,10 +911,10 @@ msgstr ""
 #: bika/lims/browser/clientfolder.py:49
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr "多个客户"
+msgstr "客戶"
 
 msgid "Close"
-msgstr ""
+msgstr "關閉"
 
 #: bika/lims/browser/batchfolder.py:104
 #: bika/lims/content/instrumentmaintenancetask.py:128
@@ -954,7 +955,7 @@ msgid "Commercial ID"
 msgstr ""
 
 msgid "Complete"
-msgstr ""
+msgstr "完成"
 
 #: bika/lims/content/analysisrequest.py:929
 #: bika/lims/content/samplepoint.py:111
@@ -988,13 +989,13 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:148
 #: bika/lims/profiles/default/types/Contact.xml
 msgid "Contact"
-msgstr ""
+msgstr "聯絡"
 
 #: bika/lims/browser/client/views/contacts.py:59
 #: bika/lims/browser/supplier.py:98
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Contacts"
-msgstr "多个联系方式"
+msgstr "聯絡"
 
 #: bika/lims/content/contact.py:54
 msgid "Contacts to CC"
@@ -1014,19 +1015,19 @@ msgstr "容器"
 #: bika/lims/content/container.py:48
 #: bika/lims/controlpanel/bika_containers.py:60
 msgid "Container Type"
-msgstr "容器类型"
+msgstr "容器類型"
 
 #: bika/lims/controlpanel/bika_containertypes.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
-msgstr "多个容器类型"
+msgstr "容器類型"
 
 #: bika/lims/controlpanel/bika_containers.py:46
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
-msgstr "多个容器"
+msgstr "容器"
 
 #: bika/lims/browser/client/views/attachments.py:52
 msgid "Content Type"
@@ -1073,7 +1074,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice PDF"
-msgstr ""
+msgstr "創建PDF發票"
 
 #: bika/lims/content/artemplate.py:92
 msgid "Create a new sample of this type"
@@ -1108,7 +1109,7 @@ msgstr ""
 
 #: bika/lims/browser/referencesample.py:441
 msgid "Current"
-msgstr ""
+msgstr "當前"
 
 #: bika/lims/content/client.py:150
 msgid "Custom decimal mark"
@@ -1257,7 +1258,7 @@ msgid "De-activate until next calibration test"
 msgstr ""
 
 msgid "Deactivate"
-msgstr ""
+msgstr "關閉"
 
 #: bika/lims/content/client.py:151
 msgid "Decimal mark to use in the reports from this Client."
@@ -1393,7 +1394,7 @@ msgstr "系"
 #: bika/lims/controlpanel/bika_labcontacts.py:78
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "系"
 
 #: bika/lims/content/calculation.py:79
 msgid "Dependent Analyses"
@@ -1450,11 +1451,11 @@ msgid "Discount %"
 msgstr ""
 
 msgid "Dispatch"
-msgstr ""
+msgstr "分發"
 
 #: bika/lims/browser/supplyorderfolder.py:79
 msgid "Dispatched"
-msgstr ""
+msgstr "分發"
 
 #: bika/lims/content/abstractbaseanalysis.py:587
 msgid "Display Value"
@@ -1473,11 +1474,11 @@ msgid "Displayed content types"
 msgstr ""
 
 msgid "Dispose"
-msgstr ""
+msgstr "處置"
 
 #: bika/lims/browser/referencesample.py:451
 msgid "Disposed"
-msgstr ""
+msgstr "已處置"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:161
 #: bika/lims/browser/clientfolder.py:92
@@ -1511,10 +1512,10 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "檔案"
 
 msgid "Dormant"
-msgstr ""
+msgstr "閒置"
 
 #: bika/lims/config.py:130
 msgid "Dot (.)"
@@ -1554,7 +1555,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
-msgstr ""
+msgstr "重複樣分析"
 
 #: bika/lims/content/worksheettemplate.py:63
 msgid "Duplicate Of"
@@ -1574,7 +1575,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Dynamic Analysis Specifications"
-msgstr ""
+msgstr "動態分析規格"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:81
 msgid "Dynamic Specification"
@@ -1592,7 +1593,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
-msgstr ""
+msgstr "編輯"
 
 #: bika/lims/content/samplepoint.py:74
 msgid "Elevation"
@@ -1751,11 +1752,11 @@ msgid "Expected Values"
 msgstr ""
 
 msgid "Expire"
-msgstr ""
+msgstr "過期"
 
 #: bika/lims/browser/referencesample.py:446
 msgid "Expired"
-msgstr ""
+msgstr "已過期"
 
 #: bika/lims/browser/referencesample.py:430
 #: bika/lims/content/referencesample.py:134
@@ -1773,7 +1774,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
+msgstr "導出"
 
 #: bika/lims/browser/stickers.py:256
 msgid "Failed to load sticker"
@@ -1947,7 +1948,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
+msgstr "歷史記錄"
 
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
@@ -2059,14 +2060,14 @@ msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Import"
-msgstr ""
+msgstr "導入"
 
 #: bika/lims/content/instrument.py:223
 msgid "Import Data Interface"
 msgstr ""
 
 msgid "Imported"
-msgstr ""
+msgstr "已導入"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:56
 msgid "Imported File"
@@ -2080,7 +2081,7 @@ msgstr ""
 #: bika/lims/browser/client/views/artemplates.py:66
 #: bika/lims/browser/client/views/contacts.py:84
 msgid "Inactive"
-msgstr ""
+msgstr "停用中"
 
 #: bika/lims/content/bikasetup.py:215
 msgid "Include and display pricing information"
@@ -2138,7 +2139,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:67
 #: bika/lims/browser/referencesample.py:163
 msgid "Instrument"
-msgstr "仪器"
+msgstr "儀器"
 
 #: bika/lims/browser/instrument.py:190
 msgid "Instrument Calibrations"
@@ -2155,7 +2156,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instrumentlocations.py:51
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "儀器位置"
 
 #: bika/lims/browser/instrument.py:62
 msgid "Instrument Maintenance"
@@ -2167,7 +2168,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "儀器類型"
 
 #: bika/lims/controlpanel/bika_instrumenttypes.py:45
 #: bika/lims/profiles/default/controlpanel.xml
@@ -2207,7 +2208,7 @@ msgstr ""
 #: bika/lims/content/method.py:94
 #: bika/lims/controlpanel/bika_instruments.py:59
 msgid "Instruments"
-msgstr "多个仪器"
+msgstr "儀器"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:53
 msgid "Interface"
@@ -2238,7 +2239,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:352
 #: senaite/core/browser/dashboard/dashboard.py:596
 msgid "Invalid"
-msgstr ""
+msgstr "無效"
 
 #: bika/lims/utils/analysis.py:483
 msgid "Invalid instruments are not displayed: %s"
@@ -2257,7 +2258,7 @@ msgid "Invalid wildcards found: ${wildcards}"
 msgstr ""
 
 msgid "Invalidate"
-msgstr ""
+msgstr "否定"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -2324,18 +2325,18 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "實驗室聯絡人"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Lab Contacts"
-msgstr "实验室联系方式"
+msgstr "實驗室聯絡人"
 
 #: bika/lims/controlpanel/bika_departments.py:62
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
-msgstr "实验室科系"
+msgstr "實驗室科系"
 
 #: bika/lims/config.py:64
 msgid "Lab Preservation"
@@ -2345,7 +2346,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_labproducts.py:46
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Products"
-msgstr "实验室产品"
+msgstr "實驗室產品"
 
 #: bika/lims/content/laboratory.py:64
 msgid "Lab URL"
@@ -2358,7 +2359,7 @@ msgstr ""
 #: bika/lims/content/laboratory.py:198
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr "实验室"
+msgstr "實驗室"
 
 #: bika/lims/content/laboratory.py:103
 msgid "Laboratory Accredited"
@@ -2366,7 +2367,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
+msgstr "實驗室資料"
 
 #: bika/lims/content/bikasetup.py:565
 msgid "Laboratory Workdays"
@@ -2378,7 +2379,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Large Sticker"
-msgstr ""
+msgstr "大號貼紙"
 
 #: bika/lims/content/bikasetup.py:717
 msgid "Large sticker"
@@ -2453,7 +2454,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr "登录详情"
+msgstr "登入詳情"
 
 #: bika/lims/skins/bika/logged_in.cpy:25
 msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
@@ -2502,7 +2503,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
+msgstr "維護"
 
 #. Default: "Type"
 #: bika/lims/content/instrumentmaintenancetask.py:56
@@ -2515,12 +2516,12 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
-msgstr ""
+msgstr "管理分析"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
-msgstr ""
+msgstr "管理結果"
 
 #: bika/lims/content/department.py:44
 #: bika/lims/controlpanel/bika_departments.py:81
@@ -2559,13 +2560,13 @@ msgstr ""
 #: bika/lims/content/instrument.py:100
 #: bika/lims/content/referencesample.py:88
 msgid "Manufacturer"
-msgstr "制造商"
+msgstr "製造商"
 
 #: bika/lims/controlpanel/bika_manufacturers.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr "多個製造商"
+msgstr "製造商"
 
 #: bika/lims/content/analysisrequest.py:1347
 msgid "Mark the sample for internal use only. This means it is only accessible to lab personnel and not to clients."
@@ -2647,7 +2648,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:79
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:85
 msgid "Methods"
-msgstr "多个方法"
+msgstr "方法"
 
 #: bika/lims/content/person.py:60
 msgid "Middle initial"
@@ -2738,7 +2739,7 @@ msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "My organization"
-msgstr ""
+msgstr "我的機構"
 
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
@@ -2858,7 +2859,7 @@ msgid "No partitions were created"
 msgstr ""
 
 msgid "No preservation required"
-msgstr ""
+msgstr "無需防腐"
 
 #: bika/lims/browser/reports/__init__.py:214
 msgid "No report specified in request"
@@ -2877,7 +2878,7 @@ msgid "No samples were rejected"
 msgstr ""
 
 msgid "No sampling workflow"
-msgstr ""
+msgstr "無採樣流程"
 
 #: bika/lims/utils/analysis.py:485
 msgid "No valid instruments available: %s "
@@ -2902,7 +2903,7 @@ msgid "Not printed yet"
 msgstr ""
 
 msgid "Not requested"
-msgstr ""
+msgstr "未請求"
 
 #: bika/lims/api/snapshot.py:394
 #: bika/lims/content/instrumentcertification.py:256
@@ -2993,7 +2994,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:92
 #: bika/lims/browser/worksheet/views/folder.py:131
 msgid "Open"
-msgstr ""
+msgstr "打開"
 
 #: bika/lims/browser/publish/reports_listing.py:66
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
@@ -3016,7 +3017,7 @@ msgstr ""
 #: bika/lims/browser/supplyorderfolder.py:49
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr "多个订单"
+msgstr "訂單"
 
 #: bika/lims/content/instrumentcertification.py:99
 msgid "Organization responsible of granting the calibration certificate"
@@ -3046,7 +3047,7 @@ msgstr ""
 
 #: bika/lims/browser/supplyorderfolder.py:74
 msgid "Pending"
-msgstr ""
+msgstr "處理中"
 
 #: bika/lims/content/instrumentcalibration.py:141
 #: bika/lims/content/instrumentvalidation.py:122
@@ -3188,29 +3189,29 @@ msgid "Prepared by"
 msgstr ""
 
 msgid "Prepublish"
-msgstr ""
+msgstr "預發佈"
 
 #: bika/lims/content/analysisrequest.py:573
 #: bika/lims/content/analysisservice.py:134
 #: bika/lims/content/artemplate.py:142
 msgid "Preservation"
-msgstr "储藏"
+msgstr "防腐"
 
 #: bika/lims/content/preservation.py:43
 msgid "Preservation Category"
 msgstr ""
 
 msgid "Preservation required"
-msgstr ""
+msgstr "需防腐"
 
 #: bika/lims/controlpanel/bika_preservations.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
-msgstr "保留的样品"
+msgstr "防腐"
 
 msgid "Preserve"
-msgstr ""
+msgstr "防腐"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:202
 #: bika/lims/content/analysisrequest.py:610
@@ -3243,7 +3244,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
+msgstr "價格表"
 
 #: bika/lims/content/pricelist.py:51
 msgid "Pricelist for"
@@ -3263,15 +3264,15 @@ msgstr ""
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
-msgstr "打印"
+msgstr "列印"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Print Invoice"
-msgstr ""
+msgstr "列印發票"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
-msgstr ""
+msgstr "列印價格表"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:234
 msgid "Print stickers"
@@ -3288,7 +3289,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
+msgstr "生產力"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:206
 #: bika/lims/controlpanel/bika_analysisprofiles.py:74
@@ -3329,13 +3330,13 @@ msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:84
 msgid "Publish"
-msgstr ""
+msgstr "發佈"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:332
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:65
 #: bika/lims/browser/reports/productivity_analysesperservice.py:81
 msgid "Published"
-msgstr ""
+msgstr "已發佈"
 
 #: bika/lims/browser/publish/reports_listing.py:107
 msgid "Published By"
@@ -3363,7 +3364,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "QC 結果"
 
 #: bika/lims/browser/analyses/qc.py:55
 #: bika/lims/browser/instrument.py:550
@@ -3397,16 +3398,16 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:147
 msgid "Receive"
-msgstr ""
+msgstr "接收"
 
 msgid "Receive sample"
-msgstr ""
+msgstr "接收樣本"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:302
 #: bika/lims/browser/reports/productivity_analysestats.py:76
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:172
 msgid "Received"
-msgstr ""
+msgstr "已接收"
 
 #: senaite/core/browser/dashboard/dashboard.py:416
 msgid "Reception pending"
@@ -3426,37 +3427,37 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
-msgstr ""
+msgstr "參考分析"
 
 #: bika/lims/browser/referencesample.py:414
 #: bika/lims/content/referencesample.py:61
 #: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
-msgstr "参考定义"
+msgstr "參考定義"
 
 #: bika/lims/controlpanel/bika_referencedefinitions.py:61
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
-msgstr "参考多项定义"
+msgstr "參考定義"
 
 #: bika/lims/browser/instrument.py:554
 #: bika/lims/browser/worksheet/views/referencesamples.py:72
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
-msgstr "参考样品"
+msgstr "參考樣品"
 
 #: bika/lims/browser/referencesample.py:387
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr "参考样品"
+msgstr "參考樣品"
 
 #: bika/lims/browser/referencesample.py:256
 #: bika/lims/content/referencedefinition.py:45
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
-msgstr "Reference Values"
+msgstr "參考值"
 
 #: bika/lims/content/referencedefinition.py:63
 #: bika/lims/content/referencesample.py:69
@@ -3473,11 +3474,11 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
-msgstr ""
+msgstr "反射規則"
 
 #: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
-msgstr ""
+msgstr "反射規則資料夾"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:55
 msgid "Reflex rules folder"
@@ -3485,24 +3486,24 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
-msgstr ""
+msgstr "反射規則"
 
 #: bika/lims/content/bikasetup.py:146
 msgid "Register"
 msgstr ""
 
 msgid "Registered"
-msgstr ""
+msgstr "已註冊"
 
 msgid "Reinstate"
-msgstr ""
+msgstr "複述"
 
 msgid "Reject"
-msgstr ""
+msgstr "拒絕"
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
+msgstr "拒絕分析"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:371
 #: senaite/core/browser/dashboard/dashboard.py:586
@@ -4395,13 +4396,13 @@ msgstr ""
 #: bika/lims/controlpanel/bika_subgroups.py:60
 #: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
-msgstr "分組"
+msgstr "子組"
 
 #: bika/lims/controlpanel/bika_subgroups.py:52
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
-msgstr "多個分組"
+msgstr "子組"
 
 #: bika/lims/content/subgroup.py:34
 msgid "Subgroups are sorted with this key in group views"

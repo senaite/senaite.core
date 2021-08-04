@@ -1,14 +1,14 @@
 #
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# trendspotter <j.podhorecky@volny.cz>, 2020
+# trendspotter, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: trendspotter <j.podhorecky@volny.cz>, 2020\n"
+"Last-Translator: trendspotter, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:800
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr " <p>Server Bika LIMS ID poskytuje jedinečná sekvenční ID pro objekty, jako jsou ukázky a pracovní listy atd., na základě formátu určeného pro každý typ obsahu.</p><p>Formát je konstruován podobně jako syntaxe formátu Python, používá předdefinované proměnné podle typu obsahu a postupuje ID prostřednictvím sekvenčního čísla, „seq“ a jeho vycpávky jako počtu číslic, např. '03d' pro posloupnost ID od 001 do 999.</p><p>Alfanumerické předpony pro ID jsou zahrnuty tak, jak jsou ve formátech, např. WS pro list ve WS- {seq: 03d} vytváří sekvenční ID listů: WS-001, WS-002, WS-003 atd.</p><p>Pro dynamické generování alfanumerických a sekvenčních ID lze použít zástupný znak {alfa}. Například WS- {alfa: 2a3d} produkuje WS-AA001, WS-AA002, WS-AB034 atd.</p><p>Proměnné, které lze použít, zahrnují:<table><tr><th style='width:150px'>Typ Obsahu</th><th>Proměnná</th></tr><tr><td>Klient</td><td>{client}</td></tr><tr><td>Rok</td><td>{year}</td></tr><tr><td>ID Vzorku</td><td>{sampleId}</td></tr><tr><td>Typ Vzorku</td><td>{sampleType}</td></tr><tr><td>Datum odebrání vzorku</td><td>{samplingDate}</td></tr><tr><td>Datum vzorku</td><td>{dateSampled}</td></tr></table></p><p>Nastavení konfigurace:<ul><li>formát:<ul><li>řetězec formátu python vytvořený z předdefinovaných proměnných, jako je sampleId, client, sampleType.</li><li>speciální proměnná 'seq' musí být umístěna jako poslední v řetězci</li></ul></li><li>sequence type: [generated|counter]</li><li>context: pokud čítač typů, poskytuje kontext funkci počítání</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: výchozí prefix, pokud není uveden v řetězci formátu</li><li>split length: počet částí, které mají být zahrnuty do předpony</li></ul></p>"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -1751,7 +1751,7 @@ msgstr "Zobrazit selekční limit detekce"
 
 #: bika/lims/content/bikasetup.py:540
 msgid "Display sample partitions to clients"
-msgstr "Zobrazit oddělky vzorků klientům"
+msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Dispose"
@@ -1892,7 +1892,7 @@ msgstr "Tělo e-mailu pro oznámení o zneplatnění vzorku"
 
 #: bika/lims/content/bikasetup.py:614
 msgid "Email body for Sample Rejection notifications"
-msgstr ""
+msgstr "Tělo e-mailu pro oznámení o odmítnutí vzorku"
 
 #: bika/lims/browser/publish/emailview.py:156
 msgid "Email cancelled"
@@ -4363,7 +4363,7 @@ msgstr "Retenční období"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Retest"
-msgstr ""
+msgstr "Opakovaně testovat"
 
 #: bika/lims/browser/analyses/view.py:154
 #: bika/lims/browser/referencesample.py:183
@@ -4872,7 +4872,7 @@ msgstr "Zvolte, chcete-li vzorky automaticky přijímat, když jsou vytvořeny p
 
 #: bika/lims/content/bikasetup.py:541
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-msgstr "Vyberte, chcete-li ukázat oddělky vzorků kontaktům klientů. Pokud je deaktivováno, oddělky nebudou zahrnuty do výpisů a klientským kontaktům nebude zobrazena žádná informační zpráva s odkazy na primární vzorek."
+msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:88
 msgid "Select which Analyses should be included on the Worksheet"
@@ -4962,7 +4962,7 @@ msgstr "Nastavit specifikaci, která bude použita před publikováním vzorku."
 
 #: bika/lims/content/bikasetup.py:623
 msgid "Set the text for the body of the email to be sent to the Sample's client contact if the option 'Email notification on Sample rejection' is enabled. You can use reserved keywords: $sample_id, $sample_link, $reasons, $lab_address"
-msgstr ""
+msgstr "Pokud je aktivována možnost „Oznámení e-mailem o odmítnutí vzorku“, nastavte text pro e-mail, který má být zaslán klientskému kontaktu vzorku. Můžete použít vyhrazená klíčová slova: $sample_id, $sample_link, $reasons, $lab_address"
 
 #: bika/lims/content/bikasetup.py:664
 msgid "Set the text for the body of the email to be sent, , if option 'Email notification on Sample 'invalidation' enabled,  to the Sample's client contact. You can use reserved keywords: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
@@ -5539,7 +5539,7 @@ msgstr "Vzorek je směsí dílčích vzorků"
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "Vybrané přístroje tuto metodu podporují. Pomocí zobrazení úprav přístroje můžete metodu přiřadit konkrétnímu přístroji"
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -6022,11 +6022,11 @@ msgstr "Ověření se nezdařilo: U předem uchovaných kontejnerů musí být v
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Ověření se nezdařilo: Výsledný Text nemůže být prázdný"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Ověření se nezdařilo: Výsledek Hodnoty musí být čísla"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

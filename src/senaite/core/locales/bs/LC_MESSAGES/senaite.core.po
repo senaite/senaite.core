@@ -1,13 +1,13 @@
 #
 # Translators:
-# Bakir Helic <bakirh@gmail.com>, 2020
+# Bakir Helic <bakirh@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Bakir Helic <bakirh@gmail.com>, 2020\n"
+"Last-Translator: Bakir Helic <bakirh@gmail.com>, 2021\n"
 "Language-Team: Bosnian (https://www.transifex.com/senaite/teams/87045/bs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:800
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr " <p>Bika LIMS ID Server obezbjeđuje jedinstveni sekvencijalni ID za objekte kao što su Uzorci i Radni listovi itd, bazirano na formatu za svaku vrstu sadržaja.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -237,7 +237,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:45
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:253
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 msgid "Add Analyses"
@@ -246,20 +246,20 @@ msgstr "Dodaj analize"
 #: bika/lims/browser/viewlets/templates/attachments.pt:302
 #: senaite/core/browser/viewlets/templates/attachments.pt:300
 msgid "Add Attachment"
-msgstr ""
+msgstr "Dodaj dodatak"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Dodaj praznu referencu"
 
 #: bika/lims/browser/worksheet/views/add_control.py:42
 #: bika/lims/browser/worksheet/views/referencesamples.py:54
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Dodaj kontrolnu referencu"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:54
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Dodaj duplikat"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:87
 msgid "Add Reflex rule"
@@ -271,13 +271,13 @@ msgstr ""
 
 #: bika/lims/content/artemplate.py:250
 msgid "Add analyses from the selected profile to the template"
-msgstr ""
+msgstr "Dodaj analize iz izabranog profila u šablon"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:195
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:37
 #: senaite/core/browser/viewlets/templates/attachments.pt:193
 msgid "Add new Attachment"
-msgstr ""
+msgstr "Dodaj novi dodatak"
 
 #: bika/lims/content/analysisrequest.py:995
 msgid "Add one or more attachments to describe the sample in this sample, or to specify your request."
@@ -285,7 +285,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/remarkswidget.pt:45
 msgid "Add remarks"
-msgstr ""
+msgstr "Dodaj primjedbu"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:163
 msgid "Add-ons"
@@ -297,11 +297,11 @@ msgstr ""
 
 #: bika/lims/content/analysisservice.py:387
 msgid "Additional Values"
-msgstr ""
+msgstr "Dodatne vrijednosti"
 
 #: bika/lims/content/analysisrequest.py:219
 msgid "Additional email addresses to be notified"
-msgstr ""
+msgstr "Dodatne email adrese za notifikaciju"
 
 #: bika/lims/content/storagelocation.py:93
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:137
@@ -310,7 +310,7 @@ msgstr "Adresa"
 
 #: bika/lims/browser/reports/templates/administration.pt:80
 msgid "Administrative Reports"
-msgstr ""
+msgstr "Administrativni izvještaji"
 
 #: bika/lims/content/sampletype.py:208
 msgid "Admitted sticker templates"
@@ -326,35 +326,35 @@ msgstr ""
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:359
 msgid "After ${end_date}"
-msgstr ""
+msgstr "Nakon ${end_date}"
 
 #: bika/lims/browser/instrument.py:648
 #: bika/lims/content/instrumentcertification.py:98
 msgid "Agency"
-msgstr ""
+msgstr "Agencija"
 
 #: bika/lims/browser/accreditation.py:83
 #: bika/lims/browser/analyses/view.py:219
 #: bika/lims/browser/analysisrequest/analysisrequests.py:362
 msgid "All"
-msgstr ""
+msgstr "Sve"
 
 #: bika/lims/browser/accreditation.py:75
 msgid "All Accredited analysis services are listed here."
-msgstr ""
+msgstr "Sve akreditovane analize su navedene ovdje."
 
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:40
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:38
 msgid "All Analyses of Service"
-msgstr ""
+msgstr "Sve analize usluge"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:621
 msgid "All analyses assigned"
-msgstr ""
+msgstr "Sve dodjeljene analize"
 
 #: bika/lims/content/abstractbaseanalysis.py:220
 msgid "Allow Manual Detection Limit input"
-msgstr ""
+msgstr "Dozvoli ručno postavljeni limit detekcije"
 
 #: bika/lims/content/bikasetup.py:179
 msgid "Allow access to worksheets only to assigned analysts"
@@ -374,7 +374,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:351
 msgid "Allow self-verification of results"
-msgstr ""
+msgstr "Dozvoli samo-verifikaciju rezultata"
 
 #: bika/lims/content/abstractbaseanalysis.py:221
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
@@ -394,18 +394,18 @@ msgstr ""
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:83
 msgid "Amount"
-msgstr ""
+msgstr "Količina"
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:58
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:58
 msgid "Analysed by"
-msgstr ""
+msgstr "Analizirao"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:95
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:116
 #: bika/lims/content/artemplate.py:275
 msgid "Analyses"
-msgstr ""
+msgstr "Analize"
 
 #: bika/lims/browser/reports/productivity_analysesperservice.py:49
 msgid "Analyses per analysis service"
@@ -414,35 +414,35 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:49
 #: bika/lims/browser/reports/templates/productivity.pt:203
 msgid "Analyses per sample type"
-msgstr ""
+msgstr "Analize po vrsti uzorka"
 
 #: bika/lims/browser/reports/templates/productivity.pt:165
 msgid "Analyses per service"
-msgstr ""
+msgstr "Analize po usluzi"
 
 #: bika/lims/browser/reports/templates/productivity.pt:387
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:77
 msgid "Analyses performed and published as % of total"
-msgstr ""
+msgstr "Analize izvršene i objavljenje kao % od ukupnih"
 
 #: bika/lims/browser/reports/productivity_analysesperformedpertotal.py:210
 msgid "Analyses performed as % of total"
-msgstr ""
+msgstr "Analize izvršene kao % od ukupno"
 
 #: bika/lims/browser/reports/templates/administration.pt:91
 #: bika/lims/browser/reports/templates/productivity.pt:160
 msgid "Analyses related reports"
-msgstr ""
+msgstr "Izvještaji za analize"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:115
 msgid "Analyses requested"
-msgstr ""
+msgstr "Tražene analize"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:219
 #: bika/lims/browser/reports/templates/productivity.pt:350
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:77
 msgid "Analyses summary per department"
-msgstr ""
+msgstr "Zbir analiza po odjeljenju"
 
 #: bika/lims/browser/analyses/view.py:112
 #: bika/lims/browser/reports/productivity_analysestats.py:134
@@ -464,7 +464,7 @@ msgstr "Kategorija analize"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Analysis Keyword"
-msgstr ""
+msgstr "Ključna riječ analize"
 
 #: bika/lims/content/analysisrequest.py:404
 #: bika/lims/content/artemplate.py:249
@@ -475,62 +475,62 @@ msgstr "Profil analize"
 #: bika/lims/browser/client/views/analysisprofiles.py:50
 #: bika/lims/content/analysisrequest.py:428
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Profili analiza"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:22
 msgid "Analysis Report"
-msgstr ""
+msgstr "Izvještaj analize"
 
 #: bika/lims/browser/publish/reports_listing.py:53
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Reports"
-msgstr ""
+msgstr "Izvještaji analiza"
 
 #: bika/lims/browser/publish/emailview.py:289
 msgid "Analysis Results for {}"
-msgstr ""
+msgstr "Rezultati analize za {}"
 
 #: bika/lims/browser/fields/referenceresultsfield.py:41
 #: bika/lims/browser/fields/resultrangefield.py:34
 #: bika/lims/browser/referencesample.py:276
 msgid "Analysis Service"
-msgstr ""
+msgstr "Usluga analize"
 
 #: bika/lims/config.py:68
 #: bika/lims/controlpanel/bika_analysisservices.py:192
 msgid "Analysis Services"
-msgstr ""
+msgstr "Usluge analiza"
 
 #: bika/lims/content/analysisrequest.py:655
 #: bika/lims/controlpanel/bika_analysisspecs.py:75
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Specifikacija analize"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:63
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Specifikacije analiza"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:59
 msgid "Analysis State"
-msgstr ""
+msgstr "Stanje analize"
 
 #: bika/lims/content/worksheettemplate.py:60
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:66
 msgid "Analysis Type"
-msgstr ""
+msgstr "Vrsta analize"
 
 #: bika/lims/browser/reports/selection_macros/select_analysiscategory.pt:2
 msgid "Analysis category"
-msgstr ""
+msgstr "Kategorija analize"
 
 #: bika/lims/content/analysisrequest.py:405
 msgid "Analysis profiles apply a certain set of analyses"
-msgstr ""
+msgstr "Profili analiza sadrže grupu analiza"
 
 #: bika/lims/browser/reports/productivity_analysesperservice.py:93
 #: bika/lims/browser/reports/selection_macros/select_analysisservice.pt:3
 msgid "Analysis service"
-msgstr ""
+msgstr "Analiza"
 
 #: bika/lims/content/bikasetup.py:315
 msgid "Analysis specifications which are edited directly on the Sample."
@@ -538,7 +538,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:283
 msgid "Analysis turnaround time"
-msgstr ""
+msgstr "Vrijeme za završetak analize"
 
 #: bika/lims/browser/reports/templates/productivity.pt:314
 msgid "Analysis turnaround time over time"
@@ -560,19 +560,19 @@ msgstr "Analitičar"
 
 #: bika/lims/browser/worksheet/views/add_worksheet.py:45
 msgid "Analyst must be specified."
-msgstr ""
+msgstr "Analitičar mora biti naveden"
 
 #: bika/lims/content/analysisservice.py:74
 msgid "Any"
-msgstr ""
+msgstr "Bilo koji"
 
 #: bika/lims/browser/worksheet/templates/results.pt:184
 msgid "Apply"
-msgstr ""
+msgstr "Primjeni"
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:43
 msgid "Apply template"
-msgstr ""
+msgstr "Primjeni šablon"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:47
 msgid "Apply wide"
@@ -580,7 +580,7 @@ msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:176
 msgid "Approved by"
-msgstr ""
+msgstr "Odobrio"
 
 #: bika/lims/content/instrument.py:280
 msgid "Asset Number"
@@ -598,16 +598,16 @@ msgstr "Dodjeljeno"
 
 #: bika/lims/browser/analyses/view.py:1186
 msgid "Assigned to: ${worksheet_id}"
-msgstr ""
+msgstr "Dodijeljeno: ${worksheet_id}"
 
 #: senaite/core/browser/dashboard/dashboard.py:541
 msgid "Assignment pending"
-msgstr ""
+msgstr "Još uvijek nije dodijeljeno"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Attach"
-msgstr ""
+msgstr "Dodaj"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:238
 #: senaite/core/browser/viewlets/templates/attachments.pt:236
@@ -618,7 +618,7 @@ msgstr ""
 #: bika/lims/content/attachment.py:51
 #: bika/lims/content/samplepoint.py:123
 msgid "Attachment"
-msgstr ""
+msgstr "Dodatak"
 
 #: bika/lims/content/attachment.py:82
 msgid "Attachment Keys"
@@ -641,7 +641,7 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Attachment due"
-msgstr ""
+msgstr "Nedostaje dodatak"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:263
 #: bika/lims/browser/referencesample.py:363
@@ -663,7 +663,7 @@ msgstr ""
 #: bika/lims/browser/client/views/attachments.py:45
 #: bika/lims/browser/publish/templates/email.pt:129
 msgid "Attachments"
-msgstr ""
+msgstr "Dodaci"
 
 #: bika/lims/controlpanel/auditlog.py:55
 #: bika/lims/profiles/default/types/AuditLog.xml
@@ -673,11 +673,11 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:145
 msgid "Authorized by"
-msgstr ""
+msgstr "Odobrio"
 
 #: bika/lims/exportimport/import.pt:89
 msgid "Auto Import Instrument Results"
-msgstr ""
+msgstr "Automatski uvezi rezultate instrumenta"
 
 #: bika/lims/browser/instrument.py:747
 msgid "Auto Import Logs of %s"
@@ -737,7 +737,7 @@ msgstr ""
 
 #: bika/lims/content/organisation.py:146
 msgid "Bank name"
-msgstr ""
+msgstr "Ime banke"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:133
 msgid "Base configuration"
@@ -791,18 +791,18 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:538
 msgid "Biannual"
-msgstr ""
+msgstr "Dvogodišnje"
 
 #: bika/lims/config.py:99
 #: bika/lims/content/organisation.py:109
 msgid "Billing address"
-msgstr ""
+msgstr "Adresa za račun"
 
 #: bika/lims/browser/referencesample.py:519
 #: bika/lims/browser/templates/referencesample_view.pt:21
 #: bika/lims/browser/worksheet/views/analyses.py:490
 msgid "Blank"
-msgstr ""
+msgstr "Prazno"
 
 #: bika/lims/config.py:104
 msgid "Blank QC analyses"
@@ -828,7 +828,7 @@ msgstr ""
 #: bika/lims/browser/client/views/contacts.py:72
 #: bika/lims/browser/supplier.py:116
 msgid "Business Phone"
-msgstr ""
+msgstr "Poslovni telefon"
 
 #: bika/lims/browser/reports/__init__.py:139
 msgid "By"
@@ -844,7 +844,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:188
 msgid "CC Contacts"
-msgstr ""
+msgstr "CC kontakti"
 
 #: bika/lims/content/analysisrequest.py:218
 #: bika/lims/content/client.py:81
@@ -859,11 +859,11 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_info.pt:152
 #: bika/lims/browser/widgets/serviceswidget.py:86
 msgid "Calculation"
-msgstr ""
+msgstr "Kalkulacija"
 
 #: bika/lims/content/calculation.py:119
 msgid "Calculation Formula"
-msgstr ""
+msgstr "Formula kalkulacije"
 
 #: bika/lims/content/abstractanalysis.py:145
 #: bika/lims/content/calculation.py:58
@@ -876,16 +876,16 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_calculations.py:59
 msgid "Calculations"
-msgstr ""
+msgstr "Kalkulacije"
 
 #: bika/lims/content/instrumentscheduledtask.py:114
 msgid "Calibration"
-msgstr ""
+msgstr "Kalibracija"
 
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/browser/templates/instrument_certifications.pt:40
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certifikati kalibracije"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
@@ -894,7 +894,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:218
 #: bika/lims/content/instrumentcalibration.py:107
 msgid "Calibrator"
-msgstr ""
+msgstr "Kalibrator"
 
 #: bika/lims/browser/analyses/view.py:1134
 msgid "Can verify, but submitted by current user"
@@ -908,13 +908,13 @@ msgstr ""
 #: bika/lims/browser/publish/templates/email.pt:205
 #: bika/lims/browser/templates/partition_magic.pt:249
 msgid "Cancel"
-msgstr ""
+msgstr "Otkaži"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:342
 #: bika/lims/browser/batchfolder.py:109
 #: bika/lims/browser/instrument.py:104
 msgid "Cancelled"
-msgstr ""
+msgstr "Otkazano"
 
 #: bika/lims/content/calculation.py:449
 msgid "Cannot activate calculation, because the following service dependencies are inactive: ${inactive_services}"
@@ -968,7 +968,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_info.pt:59
 #: bika/lims/browser/worksheet/views/add_analyses.py:92
 msgid "Category"
-msgstr ""
+msgstr "Kategorija"
 
 #: bika/lims/content/analysiscategory.py:114
 msgid "Category cannot be deactivated because it contains Analysis Services"
@@ -985,17 +985,17 @@ msgstr ""
 #: bika/lims/browser/auditlog.py:95
 #: bika/lims/controlpanel/auditlog.py:100
 msgid "Changes"
-msgstr ""
+msgstr "Izmjene"
 
 #: bika/lims/browser/analysisrequest/resultsinterpretation.py:57
 msgid "Changes Saved"
-msgstr ""
+msgstr "Izmjene su snimljene"
 
 #: bika/lims/browser/header_table.py:78
 #: bika/lims/browser/workflow/__init__.py:194
 #: bika/lims/browser/worksheet/views/add_analyses.py:132
 msgid "Changes saved."
-msgstr ""
+msgstr "Izmjene su snimljene"
 
 #: bika/lims/browser/templates/header_table.pt:41
 msgid "Changes will be propagated to partitions"
@@ -1027,7 +1027,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:656
 msgid "Choose default Sample specification values"
-msgstr ""
+msgstr "Izaberite referentne vrijednosti za uzorak"
 
 #: bika/lims/content/bikasetup.py:382
 msgid "Choose type of multiple verification for the same user.This setting can enable/disable verifying/consecutively verifyingmore than once for the same user."
@@ -1035,7 +1035,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:111
 msgid "City"
-msgstr ""
+msgstr "Grad"
 
 #: bika/lims/config.py:141
 msgid "Classic"
@@ -1043,7 +1043,7 @@ msgstr ""
 
 # senaite.app.listing: ButtonBar
 msgid "Clear selection"
-msgstr ""
+msgstr "Poništi izbor"
 
 #: bika/lims/content/referencedefinition.py:46
 msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
@@ -1061,7 +1061,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:76
 #: bika/lims/browser/batchfolder.py:77
 msgid "Client"
-msgstr ""
+msgstr "Klijent"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -1072,7 +1072,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:80
 #: bika/lims/browser/batchfolder.py:80
 msgid "Client ID"
-msgstr ""
+msgstr "ID klijenta"
 
 #: bika/lims/profiles/default/registry.xml
 msgid "Client Landing Page"
@@ -1100,73 +1100,73 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:172
 #: bika/lims/content/analysisrequest.py:286
 msgid "Client SID"
-msgstr ""
+msgstr "SID klijenta"
 
 #: bika/lims/content/analysisrequest.py:809
 msgid "Client Sample ID"
-msgstr ""
+msgstr "ID uzorka klijenta"
 
 #: bika/lims/browser/clientfolder.py:49
 msgid "Clients"
-msgstr ""
+msgstr "Klijenti"
 
 #: bika/lims/profiles/default/workflows/senaite_batch_workflow/definition.xml
 msgid "Close"
-msgstr ""
+msgstr "Zatvori"
 
 #: bika/lims/browser/batchfolder.py:104
 #: bika/lims/content/instrumentmaintenancetask.py:128
 #: bika/lims/profiles/default/workflows/senaite_batch_workflow/definition.xml
 msgid "Closed"
-msgstr ""
+msgstr "Zatvoreno"
 
 #: bika/lims/content/storagelocation.py:59
 msgid "Code for the location"
-msgstr ""
+msgstr "Kod za lokaciju"
 
 #: bika/lims/content/storagelocation.py:41
 msgid "Code for the site"
-msgstr ""
+msgstr "Kod za mjesto"
 
 #: bika/lims/content/storagelocation.py:83
 msgid "Code the the shelf"
-msgstr ""
+msgstr "Kod za policu"
 
 #: bika/lims/content/dynamic_analysisspec.py:71
 msgid "Column '{}' is missing"
-msgstr ""
+msgstr "Kolona '{} nedostaje"
 
 #: bika/lims/config.py:131
 msgid "Comma (,)"
-msgstr ""
+msgstr "Zarez (,)"
 
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:77
 #: bika/lims/content/analysiscategory.py:53
 msgid "Comments"
-msgstr ""
+msgstr "Komentari"
 
 #: bika/lims/content/analysisrequest.py:1298
 msgid "Comments or results interpretation"
-msgstr ""
+msgstr "Komentari ili interpretacija rezultata"
 
 #: bika/lims/content/abstractbaseanalysis.py:679
 #: bika/lims/content/analysisprofile.py:97
 msgid "Commercial ID"
-msgstr ""
+msgstr "Komercijalni ID"
 
 #: bika/lims/content/analysisrequest.py:929
 #: bika/lims/content/samplepoint.py:111
 #: bika/lims/controlpanel/bika_samplepoints.py:91
 msgid "Composite"
-msgstr ""
+msgstr "Miješani"
 
 #: bika/lims/content/artemplate.py:106
 msgid "Composite sample"
-msgstr ""
+msgstr "Miješani uzorak"
 
 #: bika/lims/content/laboratory.py:91
 msgid "Confidence Level %"
-msgstr ""
+msgstr "Nivo povjerljivosti %"
 
 # senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
@@ -1178,7 +1178,7 @@ msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:245
 msgid "Confirm password"
-msgstr ""
+msgstr "Potvrdi password"
 
 #: bika/lims/content/instrumentcalibration.py:118
 #: bika/lims/content/instrumentmaintenancetask.py:94
@@ -1190,7 +1190,7 @@ msgstr ""
 #: bika/lims/browser/reports/selection_macros/select_contact.pt:4
 #: bika/lims/browser/templates/supplyorder_content.pt:11
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: bika/lims/browser/templates/login_details.pt:118
 msgid "Contact is deactivated. User cannot be unlinked."
@@ -1199,11 +1199,11 @@ msgstr ""
 #: bika/lims/browser/client/views/contacts.py:59
 #: bika/lims/browser/supplier.py:98
 msgid "Contacts"
-msgstr ""
+msgstr "Kontakti"
 
 #: bika/lims/content/contact.py:54
 msgid "Contacts to CC"
-msgstr ""
+msgstr "Kontakti za CC"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:72
 #: bika/lims/content/arreport.py:54
@@ -1214,29 +1214,29 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:552
 #: bika/lims/content/analysisservice.py:135
 msgid "Container"
-msgstr ""
+msgstr "Kontejner"
 
 #: bika/lims/content/analysisservice.py:102
 #: bika/lims/content/container.py:48
 #: bika/lims/controlpanel/bika_containers.py:60
 msgid "Container Type"
-msgstr ""
+msgstr "Vrsta kontejnera"
 
 #: bika/lims/controlpanel/bika_containertypes.py:45
 msgid "Container Types"
-msgstr ""
+msgstr "Vrste kontejnera"
 
 #: bika/lims/controlpanel/bika_containers.py:46
 msgid "Containers"
-msgstr ""
+msgstr "Kontejneri"
 
 #: bika/lims/browser/client/views/attachments.py:52
 msgid "Content Type"
-msgstr ""
+msgstr "Vrsta sadržaja"
 
 #: bika/lims/browser/reports/productivity_analysesattachments.py:84
 msgid "Content type"
-msgstr ""
+msgstr "Vrsta sadržaja"
 
 #: bika/lims/browser/dynamic_analysisspec.py:43
 msgid "Contents of the file {}"
@@ -1253,7 +1253,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:56
 msgid "Copy"
-msgstr ""
+msgstr "Kopiraj"
 
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:11
 msgid "Copy analysis services"
@@ -1261,12 +1261,12 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:52
 msgid "Copy from"
-msgstr ""
+msgstr "Kopiraj iz"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:519
 #: bika/lims/browser/batch/batchbook.py:125
 msgid "Copy to new"
-msgstr ""
+msgstr "Kopiraj u novi"
 
 #: bika/lims/browser/idserver/view.py:71
 msgid "Could not convert '{}' to an integer"
@@ -1284,7 +1284,7 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:237
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:33
 msgid "Country"
-msgstr ""
+msgstr "Država"
 
 #: bika/lims/browser/templates/partition_magic.pt:243
 msgid "Create Partitions"
@@ -1304,11 +1304,11 @@ msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:212
 msgid "Create a new User"
-msgstr ""
+msgstr "Kreiraj novog korisnika"
 
 #: bika/lims/content/artemplate.py:92
 msgid "Create a new sample of this type"
-msgstr ""
+msgstr "Kreiraj novi uzorak ove vrste"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Create partitions"
@@ -1318,20 +1318,20 @@ msgstr ""
 #: bika/lims/browser/instrument.py:402
 #: bika/lims/browser/reports/__init__.py:135
 msgid "Created"
-msgstr ""
+msgstr "Kreirano"
 
 #: bika/lims/browser/instrument.py:401
 msgid "Created by"
-msgstr ""
+msgstr "Kreirao"
 
 #: bika/lims/browser/reports/templates/report_frame.pt:44
 msgid "Created by:"
-msgstr ""
+msgstr "Kreirao: "
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:44
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:44
 msgid "Created on"
-msgstr ""
+msgstr "Kreirano dana"
 
 #: bika/lims/browser/partition_magic.py:112
 msgid "Created {} partitions: {}"
@@ -1340,7 +1340,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:101
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:97
 msgid "Creator"
-msgstr ""
+msgstr "Kreator"
 
 #: bika/lims/browser/instrument.py:400
 #: bika/lims/content/instrumentscheduledtask.py:71
@@ -1349,7 +1349,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:225
 msgid "Currency"
-msgstr ""
+msgstr "Valuta"
 
 #: bika/lims/browser/referencesample.py:441
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
@@ -1367,13 +1367,13 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:534
 msgid "Daily"
-msgstr ""
+msgstr "Dnevno"
 
 #: bika/lims/browser/reports/productivity_dailysamplesreceived.py:131
 #: bika/lims/browser/reports/templates/productivity.pt:99
 #: bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:38
 msgid "Daily samples received"
-msgstr ""
+msgstr "Dnevno primljeni uzorci"
 
 #: bika/lims/content/instrument.py:210
 msgid "Data Interface"
@@ -1393,90 +1393,90 @@ msgstr ""
 #: bika/lims/browser/instrument.py:649
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:50
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: bika/lims/browser/analyses/view.py:109
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:53
 msgid "Date Created"
-msgstr ""
+msgstr "Datum"
 
 #: bika/lims/browser/supplyorderfolder.py:60
 #: bika/lims/content/supplyorder.py:102
 msgid "Date Dispatched"
-msgstr ""
+msgstr "Datum slanja"
 
 #: bika/lims/content/referencesample.py:147
 msgid "Date Disposed"
-msgstr ""
+msgstr "Datum uklanjanja"
 
 #: bika/lims/content/referencesample.py:140
 msgid "Date Expired"
-msgstr ""
+msgstr "Datum isteka"
 
 #: bika/lims/browser/client/views/attachments.py:54
 #: bika/lims/content/attachment.py:91
 msgid "Date Loaded"
-msgstr ""
+msgstr "Datum unosa"
 
 #: bika/lims/browser/auditlog.py:81
 #: bika/lims/controlpanel/auditlog.py:73
 msgid "Date Modified"
-msgstr ""
+msgstr "Datum izmjene"
 
 #: bika/lims/browser/referencesample.py:427
 #: bika/lims/browser/templates/referencesample_sticker.pt:71
 #: bika/lims/browser/templates/referencesample_view.pt:94
 msgid "Date Opened"
-msgstr ""
+msgstr "Datum otvaranja"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:119
 #: bika/lims/content/analysisrequest.py:591
 msgid "Date Preserved"
-msgstr ""
+msgstr "Datum skladištenja"
 
 #: bika/lims/content/arreport.py:127
 msgid "Date Printed"
-msgstr ""
+msgstr "Datum štampanja"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:135
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:126
 #: bika/lims/content/analysisrequest.py:1043
 msgid "Date Published"
-msgstr ""
+msgstr "Datum objavljivanja"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:125
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:90
 #: bika/lims/browser/referencesample.py:423
 msgid "Date Received"
-msgstr ""
+msgstr "Datum prijema"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:106
 msgid "Date Registered"
-msgstr ""
+msgstr "Datum registracije"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:50
 #: bika/lims/browser/reports/productivity_analysesperformedpertotal.py:50
 #: bika/lims/browser/worksheet/views/add_duplicate.py:76
 msgid "Date Requested"
-msgstr ""
+msgstr "Datum zahtjeva"
 
 #: bika/lims/content/analysisrequest.py:1030
 msgid "Date Sample Received"
-msgstr ""
+msgstr "Datum prijema uzorka"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:114
 #: bika/lims/browser/referencesample.py:419
 #: bika/lims/browser/templates/referencesample_view.pt:68
 msgid "Date Sampled"
-msgstr ""
+msgstr "Datum uzorkovanja"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:131
 msgid "Date Verified"
-msgstr ""
+msgstr "Datum verifikacije"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:102
 msgid "Date collected"
-msgstr ""
+msgstr "Datum prikupljanja"
 
 #: bika/lims/content/instrumentcertification.py:134
 msgid "Date from which the calibration certificate is valid"
@@ -1498,11 +1498,11 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:56
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:110
 msgid "Date received"
-msgstr ""
+msgstr "Datum prijema"
 
 #: bika/lims/content/instrumentcertification.py:145
 msgid "Date until the certificate is valid"
-msgstr ""
+msgstr "Datum do kada je certifikat validan"
 
 #: bika/lims/content/instrumentcalibration.py:100
 #: bika/lims/content/instrumentmaintenancetask.py:77
@@ -1516,7 +1516,7 @@ msgstr ""
 
 #: bika/lims/browser/fields/durationfield.py:37
 msgid "Days"
-msgstr ""
+msgstr "Dani"
 
 #: bika/lims/content/instrument.py:174
 msgid "De-activate until next calibration test"
@@ -1526,7 +1526,7 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/senaite_client_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/senaite_clientcontact_workflow/definition.xml
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktiviraj"
 
 #: bika/lims/content/client.py:151
 msgid "Decimal mark to use in the reports from this Client."
@@ -1536,16 +1536,16 @@ msgstr ""
 #: bika/lims/content/analysisservice.py:247
 #: bika/lims/controlpanel/bika_sampletypes.py:107
 msgid "Default Container"
-msgstr ""
+msgstr "Standardni kontejner"
 
 #: bika/lims/content/sampletype.py:165
 msgid "Default Container Type"
-msgstr ""
+msgstr "Vrsta standardnog kontejnera"
 
 #: bika/lims/content/labcontact.py:83
 #: bika/lims/controlpanel/bika_labcontacts.py:75
 msgid "Default Department"
-msgstr ""
+msgstr "Standardno odjeljenje"
 
 #: bika/lims/content/client.py:82
 msgid "Default Emails to CC all published Samples for this client"
@@ -1553,19 +1553,19 @@ msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:322
 msgid "Default Instrument"
-msgstr ""
+msgstr "Standardni instrument"
 
 #: bika/lims/content/abstractbaseanalysis.py:355
 msgid "Default Method"
-msgstr ""
+msgstr "Standardni metod"
 
 #: bika/lims/content/analysisservice.py:225
 msgid "Default Preservation"
-msgstr ""
+msgstr "Standarno čuvanje"
 
 #: bika/lims/content/client.py:99
 msgid "Default categories"
-msgstr ""
+msgstr "Standardne kategorije"
 
 #: bika/lims/content/analysisrequest.py:910
 msgid "Default container for new sample partitions"
@@ -1578,7 +1578,7 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:271
 #: bika/lims/content/client.py:138
 msgid "Default decimal mark"
-msgstr ""
+msgstr "Standardni decimalni znak"
 
 #: bika/lims/utils/analysis.py:484
 msgid "Default instrument %s is not valid"
@@ -1618,7 +1618,7 @@ msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:43
 msgid "Default value"
-msgstr ""
+msgstr "Standardna vrijednost"
 
 #: bika/lims/content/bikasetup.py:876
 msgid "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
@@ -1634,7 +1634,7 @@ msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:121
 msgid "Define the number of decimals to be used for this result."
-msgstr ""
+msgstr "Definišite broj decimala za ovaj rezultat"
 
 #: bika/lims/content/abstractbaseanalysis.py:135
 msgid "Define the precision when converting values to exponent notation.  The default is 7."
@@ -1654,18 +1654,18 @@ msgstr ""
 
 #: bika/lims/browser/fields/coordinatefield.py:41
 msgid "Degrees"
-msgstr ""
+msgstr "Stepeni"
 
 #: bika/lims/browser/department/labcontacts.py:51
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:96
 #: bika/lims/content/abstractbaseanalysis.py:486
 msgid "Department"
-msgstr ""
+msgstr "Odjeljenje"
 
 #: bika/lims/content/labcontact.py:69
 #: bika/lims/controlpanel/bika_labcontacts.py:78
 msgid "Departments"
-msgstr ""
+msgstr "Odjeljenja"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:201
 #: bika/lims/content/calculation.py:79
@@ -1674,13 +1674,13 @@ msgstr ""
 
 #: bika/lims/content/method.py:172
 msgid "Describes the method in layman terms. This information is made available to lab clients"
-msgstr ""
+msgstr "Objašnjava metod običnim riječnikom. Ove informaciej su dostupne klijentima."
 
 #: bika/lims/browser/batchfolder.py:72
 #: bika/lims/browser/client/views/analysisprofiles.py:57
 #: bika/lims/browser/client/views/artemplates.py:56
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #: bika/lims/content/instrumentcalibration.py:130
 msgid "Description of the actions made during the calibration"
@@ -1721,11 +1721,11 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:555
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:191
 msgid "Discount"
-msgstr ""
+msgstr "Popust"
 
 #: bika/lims/content/pricelist.py:66
 msgid "Discount %"
-msgstr ""
+msgstr "Popust %"
 
 #: bika/lims/profiles/default/workflows/senaite_supplyorder_workflow/definition.xml
 msgid "Dispatch"
@@ -1794,7 +1794,7 @@ msgstr ""
 
 #: bika/lims/config.py:130
 msgid "Dot (.)"
-msgstr ""
+msgstr "Tačka (.)"
 
 #: bika/lims/browser/instrument.py:84
 msgid "Down from"
@@ -1806,17 +1806,17 @@ msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:101
 msgid "Download PDF"
-msgstr ""
+msgstr "Preuzmi PDF"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:290
 msgid "Due"
-msgstr ""
+msgstr "Istekli"
 
 #: bika/lims/browser/analyses/view.py:168
 #: bika/lims/browser/analysisrequest/analysisrequests.py:128
 #: bika/lims/browser/referencesample.py:179
 msgid "Due Date"
-msgstr ""
+msgstr "Datum isteka"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:243
 msgid "Dup Var"
@@ -1847,15 +1847,15 @@ msgstr ""
 #: bika/lims/content/analysisspec.py:66
 #: bika/lims/profiles/default/types/DynamicAnalysisSpec.xml
 msgid "Dynamic Analysis Specification"
-msgstr ""
+msgstr "Dinamička specifikacija analize"
 
 #: bika/lims/profiles/default/types/DynamicAnalysisSpecs.xml
 msgid "Dynamic Analysis Specifications"
-msgstr ""
+msgstr "Dinamička specifikacija analize"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:81
 msgid "Dynamic Specification"
-msgstr ""
+msgstr "Dinamička specifikacija"
 
 #: bika/lims/content/laboratory.py:114
 msgid "E.g. SANAS, APLAC, etc."
@@ -1873,17 +1873,17 @@ msgstr ""
 #: bika/lims/browser/templates/login_details.pt:87
 #: bika/lims/controlpanel/bika_suppliers.py:77
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: bika/lims/browser/client/views/contacts.py:70
 #: bika/lims/browser/clientfolder.py:79
 #: bika/lims/browser/department/labcontacts.py:54
 msgid "Email Address"
-msgstr ""
+msgstr "Email adresa"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:96
 msgid "Email Log"
-msgstr ""
+msgstr "Email log"
 
 #: bika/lims/content/bikasetup.py:650
 msgid "Email body for Sample Invalidation notifications"
@@ -1895,11 +1895,11 @@ msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:156
 msgid "Email cancelled"
-msgstr ""
+msgstr "Email otkazan"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:109
 msgid "Email notification"
-msgstr ""
+msgstr "Email notifikacija"
 
 #: bika/lims/content/bikasetup.py:639
 msgid "Email notification on Sample invalidation"
@@ -2035,7 +2035,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:279
 #: bika/lims/browser/widgets/referenceresultswidget.py:68
 msgid "Expected Result"
-msgstr ""
+msgstr "Očekivani rezultat"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:110
 #: bika/lims/content/analysisrequest.py:509
@@ -2044,22 +2044,22 @@ msgstr ""
 
 #: bika/lims/content/referencesample.py:157
 msgid "Expected Values"
-msgstr ""
+msgstr "Očekivane vrijednosti"
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Expire"
-msgstr ""
+msgstr "Ističe"
 
 #: bika/lims/browser/referencesample.py:446
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Expired"
-msgstr ""
+msgstr "Isteklo"
 
 #: bika/lims/browser/referencesample.py:430
 #: bika/lims/browser/templates/referencesample_sticker.pt:81
 #: bika/lims/browser/templates/referencesample_view.pt:107
 msgid "Expiry Date"
-msgstr ""
+msgstr "Datum isteka"
 
 #: bika/lims/content/abstractbaseanalysis.py:134
 msgid "Exponential format precision"
@@ -2081,21 +2081,21 @@ msgstr ""
 #: bika/lims/browser/supplier.py:120
 #: bika/lims/content/organisation.py:66
 msgid "Fax"
-msgstr ""
+msgstr "Faks"
 
 #: bika/lims/content/person.py:119
 msgid "Fax (business)"
-msgstr ""
+msgstr "Faks (poslovni)"
 
 #: bika/lims/config.py:93
 msgid "Female"
-msgstr ""
+msgstr "Žensko"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:158
 #: bika/lims/config.py:58
 msgid "Field"
-msgstr ""
+msgstr "Polje"
 
 #: bika/lims/browser/analysisrequest/add2.py:1641
 msgid "Field '{}' is required"
@@ -2139,7 +2139,7 @@ msgstr ""
 
 #: bika/lims/content/person.py:52
 msgid "Firstname"
-msgstr ""
+msgstr "Ime"
 
 #: bika/lims/content/abstractbaseanalysis.py:84
 #: bika/lims/content/analysiscategory.py:80
@@ -2161,7 +2161,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_info.pt:183
 #: bika/lims/controlpanel/bika_calculations.py:78
 msgid "Formula"
-msgstr ""
+msgstr "Formula"
 
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:201
 msgid "Found Dynamic Analysis Specification for '{}' in '{}'"
@@ -2169,13 +2169,13 @@ msgstr ""
 
 #: bika/lims/config.py:114
 msgid "Friday"
-msgstr ""
+msgstr "Petak"
 
 #: bika/lims/browser/publish/templates/email.pt:47
 #: bika/lims/browser/reports/selection_macros/select_daterange.pt:9
 #: bika/lims/content/instrumentcalibration.py:89
 msgid "From"
-msgstr ""
+msgstr "Od"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:353
 msgid "From ${start_date} to ${end_date}"
@@ -2185,20 +2185,20 @@ msgstr ""
 #: bika/lims/browser/templates/login_details.pt:63
 #: bika/lims/content/person.py:85
 msgid "Full Name"
-msgstr ""
+msgstr "Puno ime"
 
 #: bika/lims/browser/supplier.py:112
 msgid "FullName"
-msgstr ""
+msgstr "Punoime"
 
 #: bika/lims/browser/auditlog.py:85
 #: bika/lims/controlpanel/auditlog.py:81
 msgid "Fullname"
-msgstr ""
+msgstr "Puno ime"
 
 #: bika/lims/content/calculation.py:87
 msgid "Function"
-msgstr ""
+msgstr "Fukcija"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:634
 msgid "Future dated sample"
@@ -2207,7 +2207,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/administration.pt:117
 #: bika/lims/browser/reports/templates/productivity.pt:117
 msgid "Generate report"
-msgstr ""
+msgstr "Kreiraj izvještaj"
 
 #: bika/lims/configure.zcml:41
 msgid "Generates an ID with the IDServer"
@@ -2246,43 +2246,43 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:522
 #: bika/lims/browser/templates/referencesample_view.pt:16
 msgid "Hazardous"
-msgstr ""
+msgstr "Opasno"
 
 #: bika/lims/browser/analyses/view.py:172
 #: bika/lims/browser/analysisrequest/manage_analyses.py:80
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:89
 msgid "Hidden"
-msgstr ""
+msgstr "Skriveno"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:46
 msgid "Hidden Field"
-msgstr ""
+msgstr "Skriveno polje"
 
 #: bika/lims/browser/widgets/reflexrulewidget.py:459
 msgid "Hide In Report"
-msgstr ""
+msgstr "Sakrij u izvještaju"
 
 #: bika/lims/config.py:151
 msgid "High"
-msgstr ""
+msgstr "Visoko"
 
 #: bika/lims/config.py:150
 msgid "Highest"
-msgstr ""
+msgstr "Najviše"
 
 #: bika/lims/browser/fields/durationfield.py:38
 msgid "Hours"
-msgstr ""
+msgstr "Sati"
 
 #: bika/lims/content/supplier.py:75
 msgid "IBN"
-msgstr ""
+msgstr "IBN"
 
 #: bika/lims/browser/referencesample.py:139
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:85
 #: bika/lims/browser/templates/referencesample_view.pt:39
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: bika/lims/content/bikasetup.py:854
 msgid "ID Server Values"
@@ -2408,7 +2408,7 @@ msgstr ""
 
 #: bika/lims/content/pricelist.py:75
 msgid "Include descriptions"
-msgstr ""
+msgstr "Uključi opise"
 
 #: bika/lims/validators.py:1141
 msgid "Incorrect IBAN number: %s"
@@ -2430,27 +2430,27 @@ msgstr ""
 #: bika/lims/browser/viewlets/templates/partition_ar_viewlet.pt:12
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:13
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Initialize"
-msgstr ""
+msgstr "Pokreni"
 
 #: bika/lims/content/instrument.py:326
 msgid "Installation Certificate"
-msgstr ""
+msgstr "Certifikat instalacije"
 
 #: bika/lims/content/instrument.py:327
 msgid "Installation certificate upload"
-msgstr ""
+msgstr "Upload certifikata instalacije"
 
 #: bika/lims/content/instrument.py:317
 msgid "InstallationDate"
-msgstr ""
+msgstr "Datum instalacije"
 
 #: bika/lims/content/method.py:73
 msgid "Instructions"
-msgstr ""
+msgstr "Instrukcije"
 
 #: bika/lims/content/instrument.py:189
 msgid "Instructions for in-lab regular calibration routines intended for analysts"
@@ -2464,33 +2464,33 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:67
 #: bika/lims/browser/referencesample.py:163
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: bika/lims/browser/instrument.py:190
 msgid "Instrument Calibrations"
-msgstr ""
+msgstr "Kalibracije instrumenta"
 
 #: bika/lims/browser/instrument.py:779
 msgid "Instrument Files"
-msgstr ""
+msgstr "Datoteke instrumenta"
 
 #: bika/lims/exportimport/import.pt:30
 msgid "Instrument Import"
-msgstr ""
+msgstr "Uvoz instrumenta"
 
 #: bika/lims/content/instrument.py:292
 #: bika/lims/profiles/default/types/InstrumentLocation.xml
 msgid "Instrument Location"
-msgstr ""
+msgstr "Lokacija  instrumenta"
 
 #: bika/lims/controlpanel/bika_instrumentlocations.py:51
 #: bika/lims/profiles/default/types/InstrumentLocations.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Lokacije instrumenta"
 
 #: bika/lims/browser/instrument.py:62
 msgid "Instrument Maintenance"
-msgstr ""
+msgstr "Održavanje instrumenta"
 
 #: bika/lims/browser/instrument.py:379
 msgid "Instrument Scheduled Tasks"
@@ -2498,7 +2498,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_instrumenttypes.py:45
 msgid "Instrument Types"
-msgstr ""
+msgstr "Vrste instrumenata"
 
 #: bika/lims/browser/instrument.py:287
 msgid "Instrument Validations"
@@ -2542,7 +2542,7 @@ msgstr ""
 
 #: bika/lims/content/instrument.py:83
 msgid "Instrument type"
-msgstr ""
+msgstr "Vrsta instrumenta"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:16
 msgid "Instrument's calibration certificate expired:"
@@ -2552,7 +2552,7 @@ msgstr ""
 #: bika/lims/content/method.py:94
 #: bika/lims/controlpanel/bika_instruments.py:59
 msgid "Instruments"
-msgstr ""
+msgstr "Instrumenti"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:39
 msgid "Instruments disabled until successful calibration:"
@@ -2576,7 +2576,7 @@ msgstr ""
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:53
 msgid "Interface"
-msgstr ""
+msgstr "Interfejs"
 
 #: bika/lims/content/instrument.py:235
 msgid "Interface Code"
@@ -2603,13 +2603,13 @@ msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:115
 msgid "Interval"
-msgstr ""
+msgstr "Interval"
 
 #: bika/lims/browser/analyses/view.py:214
 #: bika/lims/browser/analysisrequest/analysisrequests.py:352
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Invalid"
-msgstr ""
+msgstr "Poništeno"
 
 #: bika/lims/utils/analysis.py:483
 msgid "Invalid instruments are not displayed: %s"
@@ -2629,11 +2629,11 @@ msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Invalidate"
-msgstr ""
+msgstr "Poništi"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:17
 msgid "Invoice"
-msgstr ""
+msgstr "Račun"
 
 #: bika/lims/content/analysisrequest.py:945
 msgid "Invoice Exclude"
@@ -2641,19 +2641,19 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:39
 msgid "Invoice ID"
-msgstr ""
+msgstr "ID računa"
 
 #: bika/lims/content/invoice.py:43
 msgid "Invoice PDF"
-msgstr ""
+msgstr "PDF računa"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:30
 msgid "Invoice To"
-msgstr ""
+msgstr "Račun za"
 
 #: bika/lims/browser/analysisrequest/invoice.py:177
 msgid "Invoice {} created"
-msgstr ""
+msgstr "Račun {} kreiran"
 
 #: bika/lims/exportimport/setupdata/__init__.py:2318
 msgid "InvoiceBatch has no End Date"
@@ -2702,21 +2702,21 @@ msgstr ""
 #: bika/lims/config.py:59
 #: bika/lims/content/analysisspec.py:127
 msgid "Lab"
-msgstr ""
+msgstr "Laboratorija"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_manage_results.pt:62
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:87
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:392
 msgid "Lab Analyses"
-msgstr ""
+msgstr "Laboratorijske analize"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:60
 msgid "Lab Contacts"
-msgstr ""
+msgstr "Lab kontakti"
 
 #: bika/lims/controlpanel/bika_departments.py:62
 msgid "Lab Departments"
-msgstr ""
+msgstr "Lab odjeljenja"
 
 #: bika/lims/config.py:64
 msgid "Lab Preservation"
@@ -2725,19 +2725,19 @@ msgstr ""
 #: bika/lims/config.py:69
 #: bika/lims/controlpanel/bika_labproducts.py:46
 msgid "Lab Products"
-msgstr ""
+msgstr "Lab proizvodi"
 
 #: bika/lims/content/laboratory.py:64
 msgid "Lab URL"
-msgstr ""
+msgstr "Lab URL"
 
 #: bika/lims/controlpanel/bika_batchlabels.py:54
 msgid "Label"
-msgstr ""
+msgstr "Oznaka"
 
 #: bika/lims/content/laboratory.py:198
 msgid "Laboratory"
-msgstr ""
+msgstr "Laboratorija"
 
 #: bika/lims/content/laboratory.py:103
 msgid "Laboratory Accredited"
@@ -2745,7 +2745,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:565
 msgid "Laboratory Workdays"
-msgstr ""
+msgstr "Radni dani"
 
 #: bika/lims/content/bikasetup.py:479
 msgid "Landing Page"
@@ -2770,7 +2770,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:415
 #: bika/lims/browser/reports/productivity_analysestats.py:137
 msgid "Late"
-msgstr ""
+msgstr "Kasni"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:629
 msgid "Late Analyses"
@@ -2925,11 +2925,11 @@ msgstr ""
 
 #: bika/lims/config.py:92
 msgid "Male"
-msgstr ""
+msgstr "Muško"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt:14
 msgid "Manage Analyses"
-msgstr ""
+msgstr "Upravljanje analizama"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:296
 msgid "Manage Form Fields"
@@ -2958,7 +2958,7 @@ msgstr ""
 #: bika/lims/content/department.py:44
 #: bika/lims/controlpanel/bika_departments.py:81
 msgid "Manager"
-msgstr ""
+msgstr "Voditelj"
 
 #: bika/lims/controlpanel/bika_departments.py:87
 msgid "Manager Email"
@@ -2970,15 +2970,15 @@ msgstr ""
 
 #: bika/lims/browser/analyses/view.py:874
 msgid "Manual"
-msgstr ""
+msgstr "Ručno"
 
 #: bika/lims/browser/methodfolder.py:75
 msgid "Manual entry"
-msgstr ""
+msgstr "Ručni unos"
 
 #: bika/lims/content/method.py:120
 msgid "Manual entry of results"
-msgstr ""
+msgstr "Ručni unos rezultata"
 
 #: bika/lims/utils/analysis.py:486
 msgid "Manual entry of results for method %s is not allowed and no valid instruments found: %s"
@@ -3006,26 +3006,26 @@ msgstr ""
 #: bika/lims/browser/fields/referenceresultsfield.py:45
 #: bika/lims/browser/fields/resultrangefield.py:38
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:239
 msgid "Max Time"
-msgstr ""
+msgstr "Max vrijeme"
 
 #: bika/lims/browser/fields/resultrangefield.py:37
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:101
 msgid "Max operator"
-msgstr ""
+msgstr "Max operator"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:91
 #: bika/lims/browser/fields/resultrangefield.py:40
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:108
 msgid "Max warn"
-msgstr ""
+msgstr "Max upozorenje"
 
 #: bika/lims/content/container.py:56
 msgid "Maximum possible size or volume of samples."
-msgstr ""
+msgstr "Maksimalni mogući volumen uzoraka."
 
 #: bika/lims/content/abstractbaseanalysis.py:371
 msgid "Maximum time allowed for completion of the analysis. A late analysis alert is raised when this period elapses"
@@ -3041,30 +3041,30 @@ msgstr ""
 
 #: bika/lims/browser/clientfolder.py:107
 msgid "Member Discount"
-msgstr ""
+msgstr "Popust za članove"
 
 #: bika/lims/content/analysisrequest.py:1074
 #: bika/lims/content/bikasetup.py:247
 msgid "Member discount %"
-msgstr ""
+msgstr "Popust za članove %"
 
 #: bika/lims/content/client.py:72
 msgid "Member discount applies"
-msgstr ""
+msgstr "Primjenjuje se popust"
 
 #: bika/lims/browser/contact.py:289
 msgid "Member registered and linked to the current Contact."
-msgstr ""
+msgstr "Član registrovan i povezan na postojeći kontakt"
 
 #: bika/lims/browser/publish/emailview.py:144
 msgid "Message sent to {}, "
-msgstr ""
+msgstr "Poruka poslana za {}"
 
 #: bika/lims/browser/analyses/view.py:117
 #: bika/lims/browser/methodfolder.py:58
 #: bika/lims/browser/referencesample.py:159
 msgid "Method"
-msgstr ""
+msgstr "Metod"
 
 #: bika/lims/content/method.py:82
 msgid "Method Document"
@@ -3092,18 +3092,18 @@ msgstr ""
 #: bika/lims/browser/fields/referenceresultsfield.py:44
 #: bika/lims/browser/fields/resultrangefield.py:36
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: bika/lims/browser/fields/resultrangefield.py:35
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:94
 msgid "Min operator"
-msgstr ""
+msgstr "Min operator"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:87
 #: bika/lims/browser/fields/resultrangefield.py:39
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:91
 msgid "Min warn"
-msgstr ""
+msgstr "Min upozorenje"
 
 #: bika/lims/browser/worksheet/views/folder.py:179
 #: senaite/core/browser/dashboard/dashboard.py:350
@@ -3112,12 +3112,12 @@ msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:238
 msgid "Minimum 5 characters."
-msgstr ""
+msgstr "Minimum 5 znakova"
 
 #: bika/lims/content/sampletype.py:154
 #: bika/lims/controlpanel/bika_sampletypes.py:98
 msgid "Minimum Volume"
-msgstr ""
+msgstr "Minimalni volumen"
 
 #: bika/lims/content/bikasetup.py:293
 msgid "Minimum number of results for QC stats calculations"
@@ -3126,13 +3126,13 @@ msgstr ""
 #: bika/lims/browser/fields/coordinatefield.py:42
 #: bika/lims/browser/fields/durationfield.py:39
 msgid "Minutes"
-msgstr ""
+msgstr "Minute"
 
 #: bika/lims/browser/department/labcontacts.py:53
 #: bika/lims/browser/supplier.py:118
 #: bika/lims/controlpanel/bika_labcontacts.py:87
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Mobitel"
 
 #: bika/lims/browser/client/views/contacts.py:74
 msgid "MobilePhone"
@@ -3141,27 +3141,27 @@ msgstr ""
 #: bika/lims/content/instrument.py:131
 #: bika/lims/controlpanel/bika_instruments.py:84
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: bika/lims/browser/reports/administration_usershistory.py:92
 msgid "Modification date"
-msgstr ""
+msgstr "Datum izmjene"
 
 #: bika/lims/content/calculation.py:87
 msgid "Module"
-msgstr ""
+msgstr "ul"
 
 #: bika/lims/config.py:110
 msgid "Monday"
-msgstr ""
+msgstr "Ponedjeljak"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:536
 msgid "Monthly"
-msgstr ""
+msgstr "Mjesečno"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:59
 msgid "More"
-msgstr ""
+msgstr "Više"
 
 #: bika/lims/content/analysisservice.py:338
 msgid "More than one instrument can be used in a test of this type of analysis. A selection list with the instruments selected here is populated in the results manage view for each test of this type of analysis. The available instruments in the selection list will change in accordance with the method selected by the user for that test in the manage results view. Although a method can have more than one instrument assigned, the selection list is only populated with the instruments that are both set here and allowed for the selected method."
@@ -3177,7 +3177,7 @@ msgstr ""
 
 #: bika/lims/browser/analyses/view.py:1106
 msgid "Multi-verification required"
-msgstr ""
+msgstr "Multi-verifikacija neophodna"
 
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
@@ -3187,7 +3187,7 @@ msgstr ""
 #: bika/lims/browser/department/labcontacts.py:49
 #: bika/lims/browser/templates/analysisservice_info.pt:33
 msgid "Name"
-msgstr ""
+msgstr "Ime"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:24
 msgid "New ranges won't be applied to neither new nor current analyses. Re-assign the Specification if you want to apply latest changes."
@@ -3197,7 +3197,7 @@ msgstr ""
 #: bika/lims/browser/header_table.py:125
 #: bika/lims/content/abstractbaseanalysis.py:897
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: bika/lims/exportimport/instruments/eltra/cs/cs2000.py:51
 msgid "No Analysis Services defined"
@@ -3205,11 +3205,11 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:70
 msgid "No Email Address"
-msgstr ""
+msgstr "Nema email adrese"
 
 #: bika/lims/browser/templates/partition_magic.pt:111
 msgid "No Partitions"
-msgstr ""
+msgstr " particija"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:33
 msgid "No Reference Definitions for Blanks available. <br /> To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first."
@@ -3225,16 +3225,16 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/add2.py:1701
 msgid "No Samples could be created."
-msgstr ""
+msgstr "Uzorci se nisu mogli kreirati"
 
 #: bika/lims/browser/reports/productivity_dailysamplesreceived.py:63
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:67
 msgid "No Samples matched your query"
-msgstr ""
+msgstr "Nema uzoraka koji odgovaraju vašem upitu"
 
 #: bika/lims/browser/workflow/__init__.py:114
 msgid "No action defined."
-msgstr ""
+msgstr "Nema definisane akcije"
 
 #: bika/lims/browser/reports/administration_usershistory.py:185
 msgid "No actions found for user ${user}"
@@ -3256,30 +3256,30 @@ msgstr ""
 #: bika/lims/exportimport/instruments/biodrop/ulite/ulite.py:53
 #: bika/lims/exportimport/instruments/lifetechnologies/qubit/qubit.py:54
 msgid "No analysis selected"
-msgstr ""
+msgstr "Nema izabranih analiza"
 
 #: bika/lims/exportimport/instruments/thermoscientific/multiskan/go.py:51
 msgid "No analysis service selected"
-msgstr ""
+msgstr "Nije izabrana usluga analize"
 
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:28
 msgid "No analysis services were selected."
-msgstr ""
+msgstr "Nisu izabrane usluge analiza"
 
 #: bika/lims/browser/workflow/analysis.py:115
 #: bika/lims/browser/workflow/analysisrequest.py:116
 #: bika/lims/browser/workflow/worksheet.py:33
 msgid "No changes made"
-msgstr ""
+msgstr "Nisu nepravljene izmjene"
 
 #: bika/lims/browser/workflow/__init__.py:156
 #: bika/lims/browser/workflow/analysisrequest.py:101
 msgid "No changes made."
-msgstr ""
+msgstr "Nisu napravljene izmjene."
 
 #: bika/lims/controlpanel/bika_instruments.py:170
 msgid "No date set"
-msgstr ""
+msgstr "Nije podešen datum"
 
 #: bika/lims/browser/publish/reports_listing.py:196
 msgid "No email address set for this contact"
@@ -3287,7 +3287,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:165
 msgid "No email recipients selected"
-msgstr ""
+msgstr "Nisu izabrani promaoci email-a."
 
 #: bika/lims/exportimport/instruments/abaxis/vetscan/vs2.py:47
 #: bika/lims/exportimport/instruments/abbott/m2000rt/m2000rt.py:60
@@ -3338,7 +3338,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:111
 msgid "No samples were rejected"
-msgstr ""
+msgstr "Uzorci nisu odbačeni"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "No sampling workflow"
@@ -3364,7 +3364,7 @@ msgstr ""
 
 #: bika/lims/config.py:85
 msgid "Not Permitted"
-msgstr ""
+msgstr "Nije dozvoljeno"
 
 #: bika/lims/browser/publish/emailview.py:206
 msgid "Not all contacts are equal for the selected Reports. Please manually select recipients for this email."
@@ -3381,7 +3381,7 @@ msgstr ""
 #: bika/lims/api/snapshot.py:394
 #: bika/lims/content/instrumentcertification.py:256
 msgid "Not set"
-msgstr ""
+msgstr "Nije podešeno"
 
 #: bika/lims/content/worksheet.py:290
 #: bika/lims/content/worksheettemplate.py:227
@@ -3489,7 +3489,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:92
 #: bika/lims/browser/worksheet/views/folder.py:131
 msgid "Open"
-msgstr ""
+msgstr "Otvori"
 
 #: bika/lims/profiles.zcml:17
 msgid "Open Source Web based Laboratory Information Management System"
@@ -3497,7 +3497,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:66
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
-msgstr ""
+msgstr "Otvorite email formular za slanje izabranih izveštaja primaocima. Ovo će takođe objaviti izvještaje sadržanih uzoraka nakon što se email uspješno pošalje."
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:83
 msgid "Order"
@@ -3616,7 +3616,7 @@ msgstr ""
 #: bika/lims/browser/department/labcontacts.py:52
 #: bika/lims/browser/templates/batch_publish.pt:68
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
 #: bika/lims/content/person.py:111
 msgid "Phone (business)"
@@ -3642,11 +3642,11 @@ msgstr ""
 #: bika/lims/config.py:97
 #: bika/lims/content/organisation.py:83
 msgid "Physical address"
-msgstr ""
+msgstr "Adresa"
 
 #: bika/lims/browser/publish/emailview.py:168
 msgid "Please add an email subject"
-msgstr ""
+msgstr "Molimo dodajte temu email-a"
 
 #: bika/lims/browser/publish/emailview.py:171
 msgid "Please add an email text"
@@ -3659,7 +3659,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:11
 msgid "Please find attached the analysis result(s) for ${client_name}"
-msgstr ""
+msgstr "U prilogu ove poruke se nalaze rezultati laboratorijskih analiza."
 
 #: bika/lims/content/abstractbaseanalysis.py:596
 msgid "Please list all options for the analysis result if you want to restrict it to specific options only, e.g. 'Positive', 'Negative' and 'Indeterminable'.  The option's result value must be a number"
@@ -3703,7 +3703,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:124
 msgid "Postal code"
-msgstr ""
+msgstr "Poštanski broj"
 
 #: bika/lims/content/container.py:63
 #: bika/lims/controlpanel/bika_containers.py:64
@@ -3798,7 +3798,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:152
 #: bika/lims/browser/templates/analysisservice_info.pt:71
 msgid "Price"
-msgstr ""
+msgstr "Cijena"
 
 #: bika/lims/content/abstractbaseanalysis.py:449
 #: bika/lims/content/analysisprofile.py:118
@@ -3821,7 +3821,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisreport_info.pt:60
 #: bika/lims/content/analysisrequest.py:267
 msgid "Primary Sample"
-msgstr ""
+msgstr "Primarni uzorak"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:506
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:40
@@ -3869,7 +3869,7 @@ msgstr ""
 
 #: bika/lims/content/analysisprofile.py:70
 msgid "Profile Analyses"
-msgstr ""
+msgstr "Profil analiza"
 
 #: bika/lims/browser/client/views/analysisprofiles.py:59
 #: bika/lims/controlpanel/bika_analysisprofiles.py:82
@@ -3883,7 +3883,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:64
 #: bika/lims/browser/worksheet/views/folder.py:91
 msgid "Progress"
-msgstr ""
+msgstr "Stanje"
 
 #: bika/lims/content/abstractbaseanalysis.py:691
 msgid "Protocol ID"
@@ -3900,27 +3900,27 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:706
 msgid "Publication Specification"
-msgstr ""
+msgstr "Specifikacija za objavljivanje"
 
 #: bika/lims/browser/publish/reports_listing.py:84
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Publish"
-msgstr ""
+msgstr "Objavi"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:332
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:65
 #: bika/lims/browser/reports/productivity_analysesperservice.py:81
 msgid "Published"
-msgstr ""
+msgstr "Objavljeno"
 
 #: bika/lims/browser/publish/reports_listing.py:107
 msgid "Published By"
-msgstr ""
+msgstr "Objavio"
 
 #: bika/lims/browser/publish/reports_listing.py:105
 msgid "Published Date"
-msgstr ""
+msgstr "Datum objavljivanja"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:48
 msgid "Published Samples which have not been invoiced"
@@ -3928,7 +3928,7 @@ msgstr ""
 
 #: bika/lims/browser/workflow/client.py:56
 msgid "Published {}, "
-msgstr ""
+msgstr "Objavljeno {}, "
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:99
 #: bika/lims/browser/worksheet/views/folder.py:104
@@ -3993,13 +3993,13 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:147
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Receive"
-msgstr ""
+msgstr "Primi"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:302
 #: bika/lims/browser/reports/productivity_analysestats.py:76
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:172
 msgid "Received"
-msgstr ""
+msgstr "Primljeno"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:89
 msgid "Recept. Lag"
@@ -4013,12 +4013,12 @@ msgstr ""
 #: bika/lims/browser/publish/templates/email.pt:56
 #: bika/lims/browser/templates/analysisreport_info.pt:142
 msgid "Recipients"
-msgstr ""
+msgstr "Primaoci"
 
 #: bika/lims/browser/templates/referencesample_sticker.pt:46
 #: bika/lims/content/worksheettemplate.py:61
 msgid "Reference"
-msgstr ""
+msgstr "Referenca"
 
 #: bika/lims/browser/referencesample.py:79
 msgid "Reference Analyses"
@@ -4051,7 +4051,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:256
 #: bika/lims/content/referencedefinition.py:45
 msgid "Reference Values"
-msgstr ""
+msgstr "Referentne vrijednosti"
 
 #: bika/lims/content/referencedefinition.py:63
 #: bika/lims/content/referencesample.py:69
@@ -4089,37 +4089,37 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Reject"
-msgstr ""
+msgstr "Odbaci"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:18
 msgid "Reject samples"
-msgstr ""
+msgstr "Odbaci uzorke"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:371
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Rejected"
-msgstr ""
+msgstr "Odbačeni"
 
 #: bika/lims/browser/workflow/analysisrequest.py:105
 msgid "Rejected items: {}"
-msgstr ""
+msgstr "Odbačene stavke {}"
 
 #: bika/lims/browser/viewlets/templates/rejected_ar_viewlet.pt:13
 msgid "Rejected sample"
-msgstr ""
+msgstr "Odbačeni uzorak"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:113
 msgid "Rejected {} samples: {}"
-msgstr ""
+msgstr "Odbačeni {} uzorci: {}"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:120
 msgid "Rejection cancelled"
-msgstr ""
+msgstr "Odbacivanje otkazano"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:82
 msgid "Rejection reasons"
-msgstr ""
+msgstr "Razlog za odbacivanje"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:69
 msgid "Rejection workflow is not enabled"
@@ -4164,7 +4164,7 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Remove"
-msgstr ""
+msgstr "Ukloni"
 
 #: bika/lims/browser/idserver/view.py:75
 msgid "Removed key {} from storage"
@@ -4209,7 +4209,7 @@ msgstr ""
 
 #: bika/lims/content/report.py:43
 msgid "Report Type"
-msgstr ""
+msgstr "Vrsta izvještaja"
 
 #: bika/lims/content/instrumentcalibration.py:158
 #: bika/lims/content/instrumentvalidation.py:140
@@ -4242,11 +4242,11 @@ msgstr ""
 
 #: bika/lims/browser/reports/__init__.py:117
 msgid "Reports"
-msgstr ""
+msgstr "Izvještaji"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Republish"
-msgstr ""
+msgstr "Ponovo objavi"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:612
 msgid "Republished after last print"
@@ -4255,17 +4255,17 @@ msgstr ""
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:79
 #: bika/lims/browser/reports/productivity_analysesattachments.py:81
 msgid "Request"
-msgstr ""
+msgstr "Zahtjev"
 
 #: bika/lims/browser/client/views/attachments.py:49
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:69
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:68
 msgid "Request ID"
-msgstr ""
+msgstr "ID zahtjeva"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:230
 msgid "Request new analyses"
-msgstr ""
+msgstr "Unesi zahtjev za nove analize"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:135
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:76
@@ -4304,15 +4304,15 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:167
 #: bika/lims/browser/worksheet/views/analyses.py:92
 msgid "Result"
-msgstr ""
+msgstr "Rezultat"
 
 #: bika/lims/content/abstractbaseanalysis.py:595
 msgid "Result Options"
-msgstr ""
+msgstr "Opcije rezultata"
 
 #: bika/lims/content/abstractbaseanalysis.py:586
 msgid "Result Value"
-msgstr ""
+msgstr "Vrijednost rezultata"
 
 #: bika/lims/content/instrument.py:240
 msgid "Result files folders"
@@ -4336,72 +4336,72 @@ msgstr ""
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:59
 msgid "Results"
-msgstr ""
+msgstr "Razultati"
 
 #: bika/lims/content/analysisrequest.py:1299
 msgid "Results Interpretation"
-msgstr ""
+msgstr "Interpretacija rezultata"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:624
 msgid "Results have been withdrawn"
-msgstr ""
+msgstr "Rezultati su povučeni"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:112
 msgid "Results interpretation"
-msgstr ""
+msgstr "Interpretacija rezultata"
 
 #: senaite/core/browser/dashboard/dashboard.py:423
 msgid "Results pending"
-msgstr ""
+msgstr "Rezultati se čekaju"
 
 #: bika/lims/content/analysisrequest.py:625
 #: bika/lims/content/preservation.py:48
 #: bika/lims/content/sampletype.py:119
 msgid "Retention Period"
-msgstr ""
+msgstr "Vrijeme zadržavanja"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Retest"
-msgstr ""
+msgstr "Retestiranje"
 
 #: bika/lims/browser/analyses/view.py:154
 #: bika/lims/browser/referencesample.py:183
 #: bika/lims/browser/worksheet/views/analyses.py:96
 msgid "Retested"
-msgstr ""
+msgstr "Retestirano"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "Retract"
-msgstr ""
+msgstr "Povuci"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 msgid "Retracted"
-msgstr ""
+msgstr "Povučeno"
 
 #: bika/lims/browser/templates/analyses_retractedlist.pt:11
 msgid "Retracted analyses"
-msgstr ""
+msgstr "Povučene analize"
 
 #: bika/lims/browser/instrument.py:596
 msgid "Retractions"
-msgstr ""
+msgstr "Povlačenja"
 
 #: bika/lims/browser/publish/reports_listing.py:99
 msgid "Review State"
-msgstr ""
+msgstr "Izmjeni stanje"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:144
 msgid "Reviewed by"
-msgstr ""
+msgstr "Pregledao"
 
 #: bika/lims/browser/auditlog.py:87
 #: bika/lims/controlpanel/auditlog.py:85
 msgid "Roles"
-msgstr ""
+msgstr "Uloge"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
@@ -4410,7 +4410,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/views/folder.py:106
 msgid "Routine Analyses"
-msgstr ""
+msgstr "Rutinske analize"
 
 #: senaite/core/configure.zcml:33
 msgid "SENAITE CORE"
@@ -4426,11 +4426,11 @@ msgstr ""
 
 #: senaite/core/browser/frontpage/configure.zcml:23
 msgid "SENAITE LIMS front-page"
-msgstr ""
+msgstr "SENAITE LIMS naslovnica"
 
 #: senaite/core/browser/frontpage/configure.zcml:23
 msgid "SENAITE front-page"
-msgstr ""
+msgstr "SENAITE naslovnica"
 
 #: bika/lims/browser/contact.py:286
 msgid "SMTP server disconnected. User creation aborted."
@@ -4452,11 +4452,11 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt:16
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:303
 msgid "Sample"
-msgstr ""
+msgstr "Uzorak"
 
 #: bika/lims/browser/analysisrequest/add2.py:1707
 msgid "Sample ${AR} was successfully created."
-msgstr ""
+msgstr "Uzorak ${AR} je uspješno kreiran."
 
 #: bika/lims/content/bikasetup.py:396
 msgid "Sample Attachment Option"
@@ -4464,17 +4464,17 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_sampleconditions.py:71
 msgid "Sample Condition"
-msgstr ""
+msgstr "Stanje uzorka"
 
 #: bika/lims/controlpanel/bika_sampleconditions.py:59
 msgid "Sample Conditions"
-msgstr ""
+msgstr "Stanja uzorka"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:92
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:108
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:68
 msgid "Sample ID"
-msgstr ""
+msgstr "Broj uzorka"
 
 #: bika/lims/controlpanel/bika_samplematrices.py:46
 msgid "Sample Matrices"
@@ -4517,17 +4517,17 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:59
 #: bika/lims/browser/batch/batchbook.py:70
 msgid "Sample Type"
-msgstr ""
+msgstr "Vrsta uzorka"
 
 #: bika/lims/content/sampletype.py:147
 msgid "Sample Type Prefix"
-msgstr ""
+msgstr "Prefiks vrste uzorka"
 
 #: bika/lims/content/samplepoint.py:95
 #: bika/lims/controlpanel/bika_samplepoints.py:95
 #: bika/lims/controlpanel/bika_sampletypes.py:71
 msgid "Sample Types"
-msgstr ""
+msgstr "Vrste uzoraka"
 
 #: bika/lims/content/artemplate.py:114
 msgid "Sample collected by the laboratory"
@@ -4535,11 +4535,11 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:851
 msgid "Sample condition"
-msgstr ""
+msgstr "Stanje uzorka"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Sample due"
-msgstr ""
+msgstr "Uzorak istekao"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:81
 msgid "Sample point"
@@ -4547,11 +4547,11 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:625
 msgid "Sample received"
-msgstr ""
+msgstr "Uzorak primljen"
 
 #: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample registered"
-msgstr ""
+msgstr "Uzorak registrovan"
 
 #: bika/lims/browser/reports/templates/productivity.pt:95
 msgid "Sample related reports"
@@ -4561,7 +4561,7 @@ msgstr ""
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:80
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:92
 msgid "Sample type"
-msgstr ""
+msgstr "Vrsta uzorka"
 
 #: bika/lims/browser/viewlets/templates/primary_ar_viewlet.pt:15
 msgid "Sample with partitions"
@@ -4574,12 +4574,12 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:674
 #: bika/lims/content/artemplate.py:216
 msgid "SampleType"
-msgstr ""
+msgstr "Vrsta uzorka"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:199
 #: bika/lims/content/analysisrequest.py:474
 msgid "Sampler"
-msgstr ""
+msgstr "Uzorak uzeo"
 
 #: bika/lims/content/analysisrequest.py:495
 msgid "Sampler for scheduled sampling"
@@ -4589,7 +4589,7 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/folder.py:102
 #: senaite/core/browser/dashboard/dashboard.py:471
 msgid "Samples"
-msgstr ""
+msgstr "Uzorci"
 
 #: bika/lims/browser/analysisrequest/add2.py:1704
 msgid "Samples ${ARs} were successfully created."
@@ -4597,7 +4597,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:238
 msgid "Samples and analyses"
-msgstr ""
+msgstr "Uzorci i analize"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:45
 #: bika/lims/browser/reports/templates/productivity.pt:248
@@ -4617,7 +4617,7 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:444
 msgid "Samples published"
-msgstr ""
+msgstr "Objavljeni uzorci"
 
 #: bika/lims/browser/reports/productivity_samplereceivedvsreported.py:144
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:18
@@ -4638,35 +4638,35 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:401
 msgid "Samples to be preserved"
-msgstr ""
+msgstr "Uzorci za čuvanje"
 
 #: senaite/core/browser/dashboard/dashboard.py:452
 msgid "Samples to be printed"
-msgstr ""
+msgstr "Uzorci za štampanje"
 
 #: senaite/core/browser/dashboard/dashboard.py:415
 msgid "Samples to be received"
-msgstr ""
+msgstr "Uzorci za prijem"
 
 #: senaite/core/browser/dashboard/dashboard.py:394
 msgid "Samples to be sampled"
-msgstr ""
+msgstr "Uzorci za uzimanje"
 
 #: senaite/core/browser/dashboard/dashboard.py:430
 msgid "Samples to be verified"
-msgstr ""
+msgstr "Uzorci za verifikaciju"
 
 #: senaite/core/browser/dashboard/dashboard.py:437
 msgid "Samples verified"
-msgstr ""
+msgstr "Verifikovani uzorci"
 
 #: senaite/core/browser/dashboard/dashboard.py:422
 msgid "Samples with results pending"
-msgstr ""
+msgstr "Uzorci koji čekaju rezultate"
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:104
 msgid "Sampling Date"
-msgstr ""
+msgstr "Datum uzorka"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:194
 #: bika/lims/content/analysisrequest.py:827
@@ -4691,13 +4691,13 @@ msgstr ""
 
 #: bika/lims/config.py:115
 msgid "Saturday"
-msgstr ""
+msgstr "Subota"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:115
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:614
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:119
 msgid "Save"
-msgstr ""
+msgstr "Snimi"
 
 #: bika/lims/browser/workflow/__init__.py:198
 msgid "Saved items: {}"
@@ -4754,7 +4754,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:268
 msgid "Select a sample to create a secondary Sample"
-msgstr ""
+msgstr "Izaberite raniji uzorak da kreirate sekundarni uzorak"
 
 #: bika/lims/content/instrument.py:211
 msgid "Select an Export interface for this instrument."
@@ -4770,7 +4770,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/templates/worksheets.pt:33
 msgid "Select analyst"
-msgstr ""
+msgstr "Izaberite analitičara"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:167
 msgid "Select any add-ons you want to activate immediately. You can also activate add-ons after the site has been created using the Add-ons control panel."
@@ -4895,7 +4895,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:199
 msgid "Send"
-msgstr ""
+msgstr "Pošalji"
 
 #: bika/lims/browser/publish/templates/email.pt:23
 msgid "Send Analysis Reports via Email"
@@ -4907,7 +4907,7 @@ msgstr ""
 
 #: bika/lims/browser/templates/analysisreport_info.pt:131
 msgid "Sender"
-msgstr ""
+msgstr "Pošiljaoc"
 
 #: bika/lims/content/analysisservice.py:133
 msgid "Separate Container"
@@ -4925,15 +4925,15 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:151
 #: bika/lims/browser/templates/analysisservice_info.pt:209
 msgid "Service"
-msgstr ""
+msgstr "Usluga"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:459
 msgid "Service cannot be deselected. Please click the info button for further details"
-msgstr ""
+msgstr "Usluga se ne može isključiti. Kliknite na info dugme za više detalja"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:242
 msgid "Services"
-msgstr ""
+msgstr "Usluge"
 
 #: bika/lims/browser/widgets/reflexrulewidget.py:450
 msgid "Set Visibility"
@@ -4941,7 +4941,7 @@ msgstr ""
 
 #: bika/lims/browser/widgets/reflexrulewidget.py:449
 msgid "Set result"
-msgstr ""
+msgstr "Podesi rezultat"
 
 #: bika/lims/content/analysisrequest.py:636
 msgid "Set the Sample Rejection workflow and the reasons"
@@ -5009,7 +5009,7 @@ msgstr ""
 
 #: bika/lims/content/labcontact.py:50
 msgid "Signature"
-msgstr ""
+msgstr "Potpis"
 
 #: bika/lims/content/storagelocation.py:40
 msgid "Site Code"
@@ -5027,7 +5027,7 @@ msgstr ""
 #: bika/lims/browser/reports/__init__.py:131
 #: bika/lims/browser/reports/productivity_analysesattachments.py:85
 msgid "Size"
-msgstr ""
+msgstr "Veličina"
 
 #: bika/lims/content/bikasetup.py:706
 msgid "Small sticker"
@@ -5051,11 +5051,11 @@ msgstr ""
 #: bika/lims/browser/analyses/view.py:147
 #: bika/lims/browser/worksheet/views/analyses.py:100
 msgid "Specification"
-msgstr ""
+msgstr "Specifikacija"
 
 #: bika/lims/content/dynamic_analysisspec.py:47
 msgid "Specification File"
-msgstr ""
+msgstr "Datoteka sa specifikacijom"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:19
 msgid "Specification ranges have changed since they were assigned"
@@ -5063,7 +5063,7 @@ msgstr ""
 
 #: bika/lims/content/analysisspec.py:82
 msgid "Specifications"
-msgstr ""
+msgstr "Specifikacije"
 
 #: bika/lims/content/worksheettemplate.py:67
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
@@ -5085,13 +5085,13 @@ msgstr ""
 #: bika/lims/browser/batch/batchbook.py:87
 #: bika/lims/browser/batchfolder.py:86
 msgid "State"
-msgstr ""
+msgstr "Stanje"
 
 #: bika/lims/browser/analyses/view.py:132
 #: bika/lims/browser/reports/productivity_analysesperclient.py:145
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:86
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: bika/lims/content/bikasetup.py:695
 msgid "Sticker templates"
@@ -5126,13 +5126,13 @@ msgstr ""
 #: bika/lims/browser/publish/templates/email.pt:110
 #: bika/lims/browser/templates/analysisreport_info.pt:164
 msgid "Subject"
-msgstr ""
+msgstr "Tema"
 
 #: bika/lims/browser/batch/batchbook.py:253
 #: bika/lims/exportimport/import.pt:66
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Submit"
-msgstr ""
+msgstr "Pošalji"
 
 #: bika/lims/exportimport/import.pt:59
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
@@ -5144,25 +5144,25 @@ msgstr ""
 
 #: bika/lims/browser/analyses/view.py:165
 msgid "Submitter"
-msgstr ""
+msgstr "Poslao"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:570
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:182
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:122
 msgid "Subtotal"
-msgstr ""
+msgstr "Cijena bez poreza"
 
 #: bika/lims/config.py:116
 msgid "Sunday"
-msgstr ""
+msgstr "Nedjelja"
 
 #: bika/lims/content/laboratory.py:75
 msgid "Supervisor"
-msgstr ""
+msgstr "Supervizor"
 
 #: bika/lims/content/laboratory.py:76
 msgid "Supervisor of the Lab"
-msgstr ""
+msgstr "Supervizor laboratorije"
 
 #: bika/lims/browser/referencesample.py:404
 #: bika/lims/browser/worksheet/views/analyses.py:497
@@ -5184,7 +5184,7 @@ msgstr ""
 
 #: bika/lims/content/person.py:76
 msgid "Surname"
-msgstr ""
+msgstr "Prezime"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:15
 msgid "Switch to Frontpage"
@@ -5250,7 +5250,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:5
 msgid "Thank you for your analysis request."
-msgstr ""
+msgstr "Hvala na posjeti našoj ustanovi."
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:48
 msgid "The ID of the site. This ends up as part of the URL.<br /> No special characters or spaces are allowed."
@@ -5258,7 +5258,7 @@ msgstr ""
 
 #: bika/lims/content/laboratory.py:65
 msgid "The Laboratory's web address"
-msgstr ""
+msgstr "Web adresa laboratorije"
 
 #: bika/lims/content/abstractbaseanalysis.py:151
 msgid "The Lower Detection Limit is the lowest value to which the measured parameter can be measured using the specified testing methodology. Results entered which are less than this value will be reported as < LDL"
@@ -5307,7 +5307,7 @@ msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:437
 msgid "The category the analysis service belongs to"
-msgstr ""
+msgstr "Kategorija usluge"
 
 #: bika/lims/content/analysisrequest.py:810
 msgid "The client side identifier of the sample"
@@ -5327,7 +5327,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:189
 msgid "The contacts used in CC for email notifications"
-msgstr ""
+msgstr "Kontakti za CC preko email poruka"
 
 #: bika/lims/content/instrument.py:318
 msgid "The date the instrument was installed"
@@ -5343,7 +5343,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:454
 msgid "The date when the sample was taken"
-msgstr ""
+msgstr "Datum kada je uzorak uzet"
 
 #: bika/lims/content/analysisrequest.py:510
 msgid "The date when the sample will be taken"
@@ -5490,7 +5490,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:378
 msgid "The predefined values of the Sample template are set in the request"
-msgstr ""
+msgstr "Podešavanje predefinisanih vrijednosti za uzorak "
 
 #: bika/lims/content/abstractbaseanalysis.py:460
 msgid "The price charged per analysis for clients who qualify for bulk discounts"
@@ -5498,7 +5498,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:153
 msgid "The primary contact of this sample, who will receive notifications and publications via email"
-msgstr ""
+msgstr "Primarni kontakt za uzorak, koji će dobiti notifikacije i objavljene rezultate na email"
 
 #: bika/lims/content/analysisprofile.py:98
 msgid "The profile's commercial ID for accounting purposes."
@@ -5586,7 +5586,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:121
 msgid "The variable ${recipients} will be automatically replaced with the names and emails of the final selected recipients."
-msgstr ""
+msgstr "Varijabla ${recipients} će biti automatski zamjenjena sa imenima i email adresama konačno izabranih primalaca."
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:89
 msgid "There are no pre-defined conditions set"
@@ -5610,11 +5610,11 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:15
 msgid "This Sample has been generated automatically due to the retraction of the Sample"
-msgstr ""
+msgstr "Ovaj uzorak je generisan automatski zbog povlačenja uzorka"
 
 #: bika/lims/browser/viewlets/templates/rejected_ar_viewlet.pt:15
 msgid "This Sample has been rejected due to the following reasons:"
-msgstr ""
+msgstr "Ovaj uzorak je odbačen zbog sljedećih razloga:"
 
 #: bika/lims/browser/viewlets/templates/partition_ar_viewlet.pt:14
 msgid "This is a Partition from Sample"
@@ -5638,7 +5638,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:14
 msgid "This report was sent to the following contacts:"
-msgstr ""
+msgstr "Ovaj izvještaj je poslan sljedećim kontaktima:"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:50
 msgid "This site configuration is outdated and needs to be upgraded:"
@@ -5658,11 +5658,11 @@ msgstr ""
 
 #: bika/lims/config.py:113
 msgid "Thursday"
-msgstr ""
+msgstr "Četvrtak"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:47
 msgid "Time"
-msgstr ""
+msgstr "Vrijeme"
 
 #: bika/lims/exportimport/import.pt:68
 msgid "Tip. Attached documents will not be loaded unless they are present in the instance."
@@ -5672,7 +5672,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:54
 #: bika/lims/browser/client/views/artemplates.py:53
 msgid "Title"
-msgstr ""
+msgstr "Naziv"
 
 #: bika/lims/content/storagelocation.py:53
 msgid "Title of location"
@@ -5698,11 +5698,11 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:270
 msgid "To Be Preserved"
-msgstr ""
+msgstr "Za Čuvanje"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:261
 msgid "To Be Sampled"
-msgstr ""
+msgstr "Za uzimanje uzorka"
 
 #: bika/lims/content/analysiscategory.py:50
 msgid "To be displayed below each Analysis Category section on results reports."
@@ -5711,22 +5711,22 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: senaite/core/browser/dashboard/dashboard.py:402
 msgid "To be preserved"
-msgstr ""
+msgstr "Za čuvanje"
 
 #: senaite/core/browser/dashboard/dashboard.py:453
 msgid "To be printed"
-msgstr ""
+msgstr "Za štampanje"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: senaite/core/browser/dashboard/dashboard.py:395
 msgid "To be sampled"
-msgstr ""
+msgstr "Za uzimanje uzorka"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:312
 #: bika/lims/browser/worksheet/views/folder.py:141
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "To be verified"
-msgstr ""
+msgstr "Za verifikaciju"
 
 #: bika/lims/content/calculation.py:144
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
@@ -5736,7 +5736,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:210
 #: bika/lims/browser/reports/productivity_analysesattachments.py:129
 msgid "Total"
-msgstr ""
+msgstr "Ukupno"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:91
 msgid "Total Lag"
@@ -5744,7 +5744,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_labproducts.py:67
 msgid "Total Price"
-msgstr ""
+msgstr "Ukupna cijena"
 
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:128
 msgid "Total data points"
@@ -5753,7 +5753,7 @@ msgstr ""
 #: bika/lims/content/analysisprofile.py:148
 #: bika/lims/content/labproduct.py:67
 msgid "Total price"
-msgstr ""
+msgstr "Ukupna cijena"
 
 #: bika/lims/browser/publish/emailview.py:192
 msgid "Total size of email exceeded {:.1f} MB ({:.2f} MB)"
@@ -5761,7 +5761,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:72
 msgid "Total:"
-msgstr ""
+msgstr "Ukupno:"
 
 #: bika/lims/browser/reports/templates/administration.pt:128
 msgid "Traceability"
@@ -5773,7 +5773,7 @@ msgstr ""
 
 #: bika/lims/config.py:111
 msgid "Tuesday"
-msgstr ""
+msgstr "Utorak"
 
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:51
 msgid "Turnaround time (h)"
@@ -5783,7 +5783,7 @@ msgstr ""
 #: bika/lims/browser/viewlets/templates/attachments.pt:65
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:38
 msgid "Type"
-msgstr ""
+msgstr "Vrsta"
 
 #: bika/lims/content/multifile.py:74
 msgid "Type of document (e.g. user manual, instrument specifications, image, ...)"
@@ -5826,7 +5826,7 @@ msgstr ""
 #: bika/lims/browser/fields/interimfieldsfield.py:44
 #: bika/lims/browser/templates/analysisservice_info.pt:88
 msgid "Unit"
-msgstr ""
+msgstr "Jedinica"
 
 #: bika/lims/validators.py:1128
 msgid "Unknown IBAN country %s"
@@ -5877,7 +5877,7 @@ msgstr ""
 
 #: bika/lims/content/analysisprofile.py:107
 msgid "Use Analysis Profile Price"
-msgstr ""
+msgstr "Koristi cijenu profila analize"
 
 #: bika/lims/content/bikasetup.py:460
 msgid "Use Dashboard as default front page"
@@ -5923,37 +5923,37 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:151
 #: bika/lims/browser/templates/supplyorder_content.pt:24
 msgid "VAT"
-msgstr ""
+msgstr "Porez"
 
 #: bika/lims/content/abstractbaseanalysis.py:473
 #: bika/lims/content/analysisprofile.py:128
 #: bika/lims/content/bikasetup.py:259
 msgid "VAT %"
-msgstr ""
+msgstr "Porez %"
 
 #: bika/lims/controlpanel/bika_labproducts.py:65
 msgid "VAT Amount"
-msgstr ""
+msgstr "Iznos poreza"
 
 #: bika/lims/content/organisation.py:52
 msgid "VAT number"
-msgstr ""
+msgstr "Porezni broj"
 
 #: bika/lims/browser/analyses/view.py:192
 msgid "Valid"
-msgstr ""
+msgstr "Validno"
 
 #: bika/lims/browser/instrument.py:650
 msgid "Valid from"
-msgstr ""
+msgstr "Validno od"
 
 #: bika/lims/browser/instrument.py:651
 msgid "Valid to"
-msgstr ""
+msgstr "Validno do"
 
 #: bika/lims/content/instrumentscheduledtask.py:118
 msgid "Validation"
-msgstr ""
+msgstr "Validacija"
 
 #: bika/lims/validators.py:366
 msgid "Validation failed: '${keyword}': duplicate keyword"
@@ -6128,13 +6128,13 @@ msgstr ""
 #: bika/lims/browser/instrument.py:315
 #: bika/lims/content/instrumentvalidation.py:88
 msgid "Validator"
-msgstr ""
+msgstr "Validator"
 
 #: bika/lims/browser/worksheet/templates/results.pt:173
 #: bika/lims/content/calculation.py:138
 #: bika/lims/content/instrument.py:260
 msgid "Value"
-msgstr ""
+msgstr "Vrijednost"
 
 #: bika/lims/content/abstractanalysis.py:146
 #: bika/lims/content/analysisservice.py:388
@@ -6145,23 +6145,23 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/folder.py:151
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Verified"
-msgstr ""
+msgstr "Verificirano"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:117
 msgid "Verified By"
-msgstr ""
+msgstr "Verificirao"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "Verify"
-msgstr ""
+msgstr "Verificiraj"
 
 #: bika/lims/browser/auditlog.py:79
 #: bika/lims/browser/templates/analysisservice_info.pt:174
 #: bika/lims/controlpanel/auditlog.py:69
 msgid "Version"
-msgstr ""
+msgstr "Verzija"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:42
 msgid "View your SENAITE site"
@@ -6188,11 +6188,11 @@ msgstr ""
 #: bika/lims/browser/templates/supplyorder_edit.pt:38
 #: bika/lims/content/labproduct.py:36
 msgid "Volume"
-msgstr ""
+msgstr "Volumen"
 
 #: bika/lims/browser/viewlets/templates/invalid_ar_viewlet.pt:13
 msgid "Warning"
-msgstr ""
+msgstr "Upozorenje"
 
 #: bika/lims/content/laboratory.py:124
 msgid "Web address for the accreditation body"
@@ -6204,11 +6204,11 @@ msgstr ""
 
 #: bika/lims/config.py:112
 msgid "Wednesday"
-msgstr ""
+msgstr "Srijeda"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:535
 msgid "Weekly"
-msgstr ""
+msgstr "Sedmično"
 
 #: bika/lims/controlpanel/bika_instruments.py:91
 msgid "Weeks To Expire"
@@ -6232,7 +6232,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email_template.pt:20
 msgid "With best regards"
-msgstr ""
+msgstr "Srdačan pozdrav"
 
 #: bika/lims/content/instrumentcalibration.py:129
 #: bika/lims/content/instrumentmaintenancetask.py:104
@@ -6247,7 +6247,7 @@ msgstr ""
 #: bika/lims/browser/auditlog.py:93
 #: bika/lims/controlpanel/auditlog.py:96
 msgid "Workflow State"
-msgstr ""
+msgstr "Stanje procesa rada"
 
 #: bika/lims/browser/analyses/qc.py:51
 #: bika/lims/browser/referencesample.py:155
@@ -6280,7 +6280,7 @@ msgstr ""
 #: bika/lims/browser/header_table.py:125
 #: bika/lims/content/abstractbaseanalysis.py:897
 msgid "Yes"
-msgstr ""
+msgstr "Da"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:113
 msgid "You can add another SENAITE site:"
@@ -6334,11 +6334,11 @@ msgstr ""
 
 #: bika/lims/browser/reports/administration_usershistory.py:160
 msgid "comment"
-msgstr ""
+msgstr "komentar"
 
 #: bika/lims/content/instrumentcertification.py:257
 msgid "daily"
-msgstr ""
+msgstr "dnevno"
 
 #. Default: "${Y}-${m}-${d} ${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6370,7 +6370,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "days"
-msgstr ""
+msgstr "dani"
 
 #: bika/lims/browser/templates/referencesample_view.pt:123
 msgid "deactivate"
@@ -6383,7 +6383,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "hours"
-msgstr ""
+msgstr "sati"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:160
 msgid "hours: {} minutes: {} days: {}"
@@ -6460,15 +6460,15 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "minutes"
-msgstr ""
+msgstr "minute"
 
 #: bika/lims/content/instrumentcertification.py:259
 msgid "monthly"
-msgstr ""
+msgstr "mjesečno"
 
 #: senaite/core/browser/dashboard/dashboard.py:369
 msgid "of"
-msgstr ""
+msgstr "od"
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
@@ -6517,7 +6517,7 @@ msgstr ""
 #: bika/lims/browser/reports/selection_macros/select_daterange.pt:28
 #: senaite/core/browser/dashboard/templates/dashboard.pt:529
 msgid "to"
-msgstr ""
+msgstr "do"
 
 #: bika/lims/content/instrumentscheduledtask.py:136
 msgid "until"
@@ -6533,11 +6533,11 @@ msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:258
 msgid "weekly"
-msgstr ""
+msgstr "sedmično"
 
 #: bika/lims/content/instrumentcertification.py:262
 msgid "yearly"
-msgstr ""
+msgstr "godišnje"
 
 #: bika/lims/controlpanel/bika_instruments.py:180
 msgid "{} weeks and {} day(s)"

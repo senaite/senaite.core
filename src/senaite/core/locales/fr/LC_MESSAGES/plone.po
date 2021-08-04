@@ -3,13 +3,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# Ludwig Muster <ludwig.muster@gmail.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Last-Translator: Ludwig Muster <ludwig.muster@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/senaite/teams/87045/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3728,7 +3729,7 @@ msgid "Retested"
 msgstr ""
 
 msgid "Retract"
-msgstr ""
+msgstr "Retirer"
 
 #: senaite/core/browser/dashboard/dashboard.py:587
 msgid "Retracted"
@@ -3840,7 +3841,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_artemplates.py:62
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr ""
+msgstr "Modèles d'échantillon"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:180
 #: bika/lims/browser/batch/batchbook.py:70
@@ -3867,7 +3868,7 @@ msgid "Sample condition"
 msgstr ""
 
 msgid "Sample due"
-msgstr ""
+msgstr "Échantillon dû"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:81
 msgid "Sample point"
@@ -4870,7 +4871,7 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:402
 msgid "To be preserved"
-msgstr ""
+msgstr "A conserver"
 
 #: senaite/core/browser/dashboard/dashboard.py:453
 msgid "To be printed"

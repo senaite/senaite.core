@@ -23,7 +23,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:800
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr "<p> Serwer Bika LIMS ID zapewnia unikalne identyfikatory sekwencyjne dla obiektów takich jak próbki i arkusze kalkulacyjne itd., w oparciu o format określony dla każdego typu zawartości. </p> <p> Format jest skonstruowany podobnie do składni formatu Python, przy użyciu predefiniowanych zmiennych dla typu zawartości i zwiększa identyfikatory poprzez numer kolejny, \"seq\" i jego dopełnienie jako liczby cyfr, np. \"03d\" dla sekwencji identyfikatorów od 001 do 999. </p> <p> Alfanumeryczne przedrostki dla identyfikatorów są zawarte w formatach, np. WS dla arkusza roboczego (Working Sheet) w WS-{seq:03d} tworzy kolejne identyfikatory arkusza roboczego: WS-001, WS-002, WS-003 itp. </p> <p>W przypadku dynamicznego generowania alfanumerycznych i sekwencyjnych identyfikatorów, wieloznacznik {alpha} może być użyty. Np. WS-{alpha:2a3d} produkuje WS-AA001, WS-AA002, WS-AB034, itd. </p> <p>Zmienne, które mogą być używane to: <table> <tr> <th style = 'width:150px '> Typ zawartości </th> <th> Zmienne </th> </tr> <tr> <td> Klient </td> <td> {client} </td> </tr> <tr> <td> Rok </td> <td> {year} </td> </tr> <tr> <td> ID próbki </td> <td> {sampleId} </td> </tr> <tr> <td> Typ próbki </td> <td> {sampleType} </td> </tr> <tr> <td> Data pobrania próbki </td> <td> {samplingDate} </td> </tr> <tr> <td> Data próbkowana </td> <td> {dataSampled} </td> </tr> </table> </p> <p> Ustawienia konfiguracji: <ul> <li> format: <ul> <li> ciąg w formacie pythona zbudowany z predefiniowanych zmiennych, takich jak sampleId, client, sampleType. </li> <li> zmienna specjalna 'seq' musi być umieszczona na końcu w ciągu znaków </li> </ul> </li> <li> typ sekwencji: [wygenerowany | licznik] </li> <li> context: jeśli licznik typów, zapewnia kontekst funkcji liczenia </li> <li> typ licznika: [backreference|contained] </li> <li> counter reference: parametr do funkcji zliczania </li> <li> prefiks: domyślny prefiks, jeśli żaden nie jest podany w ciągu formatów </li> <li> split length: liczba części, które mają być zawarte w przedrostku </li> </ul> </p>"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -5540,7 +5540,7 @@ msgstr "Próbka jest mieszanką podpróbek"
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "Przyrządy, które mogą być zastosowanie w tej metodzie. Dla przypisania odpowiedniego przyrządu do metody należ użyć edycji Intrumentu"
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -6023,11 +6023,11 @@ msgstr "Weryfikacja nie powiodła się: Pojemniki do utrwalania muszą mieć zaz
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Weryfikacja nie powiodła się: Pole Result Text nie może być puste"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Weryfikacja nie powiodła się: Wartości muszą być liczbami"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"

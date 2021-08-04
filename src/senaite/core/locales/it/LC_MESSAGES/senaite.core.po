@@ -5538,7 +5538,7 @@ msgstr ""
 
 #: bika/lims/content/method.py:95
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr "Gli strumenti selezionati supportano questo metodo. Utilizza la vista modifica strumento per assegnare il metodo ad uno specifico strumento"
+msgstr ""
 
 #: bika/lims/content/instrument.py:140
 msgid "The serial number that uniquely identifies the instrument"
@@ -6021,11 +6021,11 @@ msgstr "Convalida non riuscita: i contenitori preconservati devono avere una con
 
 #: bika/lims/validators.py:631
 msgid "Validation failed: Result Text cannot be blank"
-msgstr "Convalida non riuscita: il risultato testo non può essere vuoto"
+msgstr ""
 
 #: bika/lims/validators.py:626
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Convalida non riuscita: i valori del risultato devono essere numeri"
+msgstr ""
 
 #: bika/lims/validators.py:672
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
