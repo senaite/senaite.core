@@ -53,7 +53,7 @@
       <li class="nav-item" tal:condition="view/is_manager">
         <a class="nav-link"
            tal:attributes="href view/get_lims_setup_url">
-          <span tal:omit-tag="" i18n:translate="">
+          <span tal:omit-tag="">
             <i class="fas fa-cog"></i>
           </span>
         </a>
