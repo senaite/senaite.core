@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1833 Added an 'extra_inline_buttons' metal slot on edit macro
 - #1831 Added adapter for custom validation of records in Sample Add form
 - #1830 Allow to override datepicker's dateformat via locales
 

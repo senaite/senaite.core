@@ -225,42 +225,47 @@
                  tal:attributes="value python:(last_referer and '%s/%s' % (context.absolute_url(), template.id) not in last_referer) and last_referer or (context.getParentNode() and context.getParentNode().absolute_url())"
           />
 
-          <!-- Buttons -->
-          <metal:block define-slot="buttons"
-                       tal:define="fieldset_index python:fieldset in fieldsets and fieldsets.index(fieldset);
-                                   n_fieldsets python:len(fieldsets)">
+          <div class="mt-2">
 
-            <div class="mt-2">
-              <input tal:condition="python:fieldset_index &gt; 0"
-                    class="btn btn-sm btn-outline-secondary"
-                    type="submit"
-                    name="form.button.previous"
-                    value="Previous"
-                    i18n:attributes="value label_previous;"
-                    tal:attributes="disabled python:test(isLocked, 'disabled', None);"
-              />
-              <input tal:condition="python:not allow_tabbing and (fieldset_index &lt; n_fieldsets - 1)"
-                    class="btn btn-sm btn-outline-secondary"
-                    type="submit"
-                    name="form.button.next"
-                    value="Next"
-                    i18n:attributes="value label_next;"
-                    tal:attributes="disabled python:test(isLocked, 'disabled', None);"
-              />
-              <input class="btn btn-sm btn-primary"
-                    type="submit"
-                    name="form.button.save"
-                    value="Save"
-                    i18n:attributes="value label_save;"
-                    tal:attributes="disabled python:test(isLocked, 'disabled', None);" />
+            <!-- Buttons -->
+            <metal:block define-slot="buttons"
+                         tal:define="fieldset_index python:fieldset in fieldsets and fieldsets.index(fieldset);
+                                     n_fieldsets python:len(fieldsets)">
 
-              <input class="btn btn-sm btn-secondary"
-                    type="submit"
-                    name="form.button.cancel"
-                    value="Cancel"
-                    i18n:attributes="value label_cancel;" />
-            </div>
-          </metal:block>
+                <input tal:condition="python:fieldset_index &gt; 0"
+                      class="btn btn-sm btn-outline-secondary"
+                      type="submit"
+                      name="form.button.previous"
+                      value="Previous"
+                      i18n:attributes="value label_previous;"
+                      tal:attributes="disabled python:test(isLocked, 'disabled', None);"
+                />
+                <input tal:condition="python:not allow_tabbing and (fieldset_index &lt; n_fieldsets - 1)"
+                      class="btn btn-sm btn-outline-secondary"
+                      type="submit"
+                      name="form.button.next"
+                      value="Next"
+                      i18n:attributes="value label_next;"
+                      tal:attributes="disabled python:test(isLocked, 'disabled', None);"
+                />
+                <input class="btn btn-sm btn-primary"
+                      type="submit"
+                      name="form.button.save"
+                      value="Save"
+                      i18n:attributes="value label_save;"
+                      tal:attributes="disabled python:test(isLocked, 'disabled', None);" />
+
+                <input class="btn btn-sm btn-secondary"
+                      type="submit"
+                      name="form.button.cancel"
+                      value="Cancel"
+                      i18n:attributes="value label_cancel;" />
+            </metal:block>
+
+            <!-- Extra In-line Button Slot -->
+            <metal:block define-slot="extra_inline_buttons" />
+
+          </div>
 
           <!-- Extra Button Slot -->
           <metal:block define-slot="extra_buttons" />
