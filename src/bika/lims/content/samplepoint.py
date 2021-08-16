@@ -47,6 +47,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.sampletype import SampleTypeAwareMixin
 from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISamplePoint
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField(
@@ -131,7 +132,7 @@ schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin,
                   SampleTypeAwareMixin):
-    implements(IDeactivable)
+    implements(ISamplePoint, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
