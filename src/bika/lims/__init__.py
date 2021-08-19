@@ -40,16 +40,6 @@ _ = senaiteMessageFactory
 # import this to log messages
 logger = logging.getLogger("senaite.core")
 
-# XXX: Do we really need all of these in templates?
-allow_module("bika.lims")
-allow_module("bika.lims.config")
-allow_module("bika.lims.permissions")
-allow_module("bika.lims.utils")
-allow_module("json")
-allow_module("zope.i18n.locales")
-allow_module("zope.component")
-allow_module("plone.registry.interfaces")
-
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
     allow_module("pdb")
