@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1835 Fix 404 error on `/manage_main` (Plone 5.2.5 compatibility)
 - #1834 Fix `SamplePoint` content type does not implement `ISamplePoint`
 - #1833 Added an 'extra_inline_buttons' metal slot on edit macro
 - #1831 Added adapter for custom validation of records in Sample Add form
