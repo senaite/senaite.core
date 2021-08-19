@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1836 Redirect client users to their organization page on login
 - #1836 Cleanup `allow_module` and remove obsolete Script Python file
 - #1835 Fix 404 error on `/manage_main` (Plone 5.2.5 compatibility)
 - #1834 Fix `SamplePoint` content type does not implement `ISamplePoint`

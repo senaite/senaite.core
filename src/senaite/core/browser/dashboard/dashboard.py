@@ -27,7 +27,9 @@ from time import time
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api import get_current_client
 from bika.lims.api import get_tool
+from bika.lims.api import get_url
 from bika.lims.api import search
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -181,6 +183,12 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
+        # If a client contact, redirect to the client's page
+        client = get_current_client()
+        if client:
+            url = get_url(client)
+            return self.request.response.redirect(url)
+
         frontpage_url = self.portal_url + "/senaite-frontpage"
         if not self.context.bika_setup.getDashboardByDefault():
             # Do not render dashboard, render frontpage instead
