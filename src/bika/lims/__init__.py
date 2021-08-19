@@ -41,7 +41,6 @@ _ = senaiteMessageFactory
 logger = logging.getLogger("senaite.core")
 
 # XXX: Do we really need all of these in templates?
-allow_module("AccessControl")
 allow_module("bika.lims")
 allow_module("bika.lims.config")
 allow_module("bika.lims.permissions")
