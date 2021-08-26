@@ -96,7 +96,7 @@ class LoadSetupData(BrowserView):
 
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']
-                tmp = tempfile.mktemp()
+                tmp = tempfile.mktemp(suffix='.xlsx')
                 file_content = form['file'].read()
                 open(tmp, 'wb').write(file_content)
                 workbook = load_workbook(filename=tmp)  # , use_iterators=True)
