@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1839 Allow sample partitions in submitted states
 - #1836 Redirect client users to their organization page on login
 - #1836 Cleanup `allow_module` and remove obsolete Script Python file
 - #1835 Fix 404 error on `/manage_main` (Plone 5.2.5 compatibility)
@@ -11,6 +12,7 @@ Changelog
 - #1833 Added an 'extra_inline_buttons' metal slot on edit macro
 - #1831 Added adapter for custom validation of records in Sample Add form
 - #1830 Allow to override datepicker's dateformat via locales
+
 
 2.0.0 (2021-07-26)
 ------------------

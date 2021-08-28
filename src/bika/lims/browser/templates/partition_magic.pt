@@ -108,7 +108,9 @@
                   <!-- No Partitions -->
                   <tr tal:condition="python:not number_of_partitions">
                     <td>
-                      <em class="text-muted" i18n:translate="">No Partitions</em>
+                      <div class="font-italic text-muted" i18n:translate="">
+                        Please select number of partitions to create and press the preview button
+                      </div>
                     </td>
                   </tr>
                   <!-- Partitions -->

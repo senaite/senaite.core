@@ -54,16 +54,7 @@ def guard_create_partitions(analysis_request):
     if analysis_request.isPartition():
         # Do not allow the creation of partitions from partitions
         return False
-
-    # Allow only the creation of partitions if all analyses from the Analysis
-    # Request are in unassigned state. Otherwise, we could end up with
-    # inconsistencies, because original analyses are deleted when the partition
-    # is created. Note here we exclude analyses from children (partitions).
-    analyses = analysis_request.objectValues("Analysis")
-    for analysis in analyses:
-        if api.get_workflow_status_of(analysis) != "unassigned":
-            return False
-    return analyses and True or False
+    return True
 
 
 def guard_submit(analysis_request):

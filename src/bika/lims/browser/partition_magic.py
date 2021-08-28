@@ -46,7 +46,6 @@ class PartitionMagicView(BrowserView):
         self.back_url = self.context.absolute_url()
         self.analyses_to_remove = dict()
 
-
     def __call__(self):
         form = self.request.form
 
