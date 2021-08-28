@@ -44,6 +44,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, "actions")
+    setup.runImportStepFromProfile(profile, "workflow")
 
     fix_types_i18n_domain(portal)
 
