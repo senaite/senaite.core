@@ -240,6 +240,7 @@ class AnalysesView(ListingView):
         """
         super(AnalysesView, self).update()
         self.load_analysis_categories()
+        self.append_partition_filters()
 
     def before_render(self):
         """Before render hook
@@ -514,6 +515,50 @@ class AnalysesView(ListingView):
         self.analysis_categories_order = dict([
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
+
+    def append_partition_filters(self):
+        """Append additional review state filters for partitions
+        """
+        new_states = []
+        valid_states = [
+            "registered",
+            "unassigned",
+            "assigned",
+            "to_be_verified",
+            "verified",
+            "published",
+        ]
+        if self.context.isRootAncestor():
+            root_id = api.get_id(self.context)
+            new_states.append({
+                "id": root_id,
+                "title": root_id,
+                "contentFilter": {
+                    "getAncestorsUIDs": api.get_uid(self.context),
+                    "review_state": valid_states,
+                    "path": {
+                        "query": api.get_path(self.context),
+                        "level": 0,
+                    },
+                },
+                "columns": self.columns.keys(),
+            })
+
+        for partition in self.context.getDescendants():
+            part_id = api.get_id(partition)
+            new_states.append({
+                "id": part_id,
+                "title": part_id,
+                "contentFilter": {
+                    "getAncestorsUIDs": api.get_uid(partition),
+                    "review_state": valid_states,
+                },
+                "columns": self.columns.keys(),
+            })
+
+        for state in sorted(new_states, key=lambda s: s.get("id")):
+            if state not in self.review_states:
+                self.review_states.append(state)
 
     def isItemAllowed(self, obj):
         """Checks if the passed in Analysis must be displayed in the list.
