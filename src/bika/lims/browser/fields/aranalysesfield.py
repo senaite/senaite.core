@@ -322,8 +322,11 @@ class ARAnalysesField(ObjectField):
         # Does the analysis exists in an ancestor?
         from_ancestor = self.get_from_ancestor(instance, service)
         for ancestor_analysis in from_ancestor:
-            # Move the analysis into this instance. The ancestor's
-            # analysis will be masked otherwise
+            # only move non-assigned analyses
+            state = api.get_workflow_status_of(ancestor_analysis)
+            if state != "unassigned":
+                continue
+            # Move the analysis into the partition
             analysis_id = api.get_id(ancestor_analysis)
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
             cp = ancestor_analysis.aq_parent.manage_cutObjects(analysis_id)
