@@ -56,6 +56,7 @@ def guard_create_partitions(analysis_request):
         return False
     return True
 
+
 def guard_submit(analysis_request):
     """Return whether the transition "submit" can be performed or not.
     Returns True if there is at least one analysis in a non-detached state and
