@@ -23,21 +23,23 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IClient
+from bika.lims.catalog import BIKA_CATALOG
 from bika.lims.permissions import AddBatch
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
+from plone.memoize import view
+from Products.CMFCore.permissions import View
+from senaite.app.listing import ListingView
 
 
-class BatchFolderContentsView(BikaListingView):
-    """Listing View for all Batches in the System
+class BatchFolderContentsView(ListingView):
+    """Listing view for Batches
     """
 
     def __init__(self, context, request):
         super(BatchFolderContentsView, self).__init__(context, request)
 
-        self.catalog = "bika_catalog"
+        self.catalog = BIKA_CATALOG
         self.contentFilter = {
             "portal_type": "Batch",
             "sort_on": "created",
@@ -45,16 +47,13 @@ class BatchFolderContentsView(BikaListingView):
             "is_active": True,
         }
 
-        self.context_actions = {}
-
-        self.show_select_all_checkbox = False
-        self.show_select_column = True
-        self.pagesize = 30
-
-        batch_image_path = "/++resource++bika.lims.images/batch_big.png"
-        self.icon = "{}{}".format(self.portal_url, batch_image_path)
         self.title = self.context.translate(_("Batches"))
         self.description = ""
+
+        self.show_select_column = True
+        self.form_id = "batches"
+        self.context_actions = {}
+        self.icon = "{}{}".format(self.portal_url, "/senaite_theme/icon/batch")
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -123,32 +122,40 @@ class BatchFolderContentsView(BikaListingView):
         """
         super(BatchFolderContentsView, self).update()
 
-        if self.context.portal_type == "BatchFolder":
-            self.request.set("disable_border", 1)
-
-        # By default, only users with AddBatch permissions for the current
-        # context can add batches.
-        self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=Batch",
-                "permission": AddBatch,
-                "icon": "++resource++bika.lims.images/add.png"
+        if self.can_add():
+            # Add button. Note we set "View" as the permission, cause when no
+            # permission is set, system fallback to "Add portal content" for
+            # current context
+            add_ico = "{}{}".format(self.portal_url, "/senaite_theme/icon/plus")
+            self.context_actions = {
+                _("Add"): {
+                    "url": self.get_add_url(),
+                    "permission": View,
+                    "icon": add_ico
+                }
             }
-        }
 
-        # If current user is a client contact and current context is not a
-        # Client, then modify the url for Add action so the Batch gets created
-        # inside the Client object to which the current user belongs. The
-        # reason is that Client contacts do not have privileges to create
-        # Batches inside portal/batches
-        if not IClient.providedBy(self.context):
-            # Get the client the current user belongs to
-            client = api.get_current_client()
-            if client and check_permission(AddBatch, client):
-                add_url = self.context_actions[_("Add")]["url"]
-                add_url = "{}/{}".format(api.get_url(client), add_url)
-                self.context_actions[_("Add")]["url"] = add_url
-                del(self.context_actions[_("Add")]["permission"])
+    @view.memoize
+    def get_add_url(self):
+        """Return the batch add URL
+        """
+        container = self.get_batches_container()
+        return "{}/createObject?type_name=Batch".format(api.get_url(container))
+
+    @view.memoize
+    def get_batches_container(self):
+        """Returns the container object where new batches will be added
+        """
+        return api.get_current_client() or self.context
+
+    @view.memoize
+    def can_add(self):
+        """Returns whether the current user can add new batches or not
+        """
+        container = self.get_batches_container()
+        if not api.security.check_permission(AddBatch, container):
+            return False
+        return True
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Batch) that is currently being
