@@ -1,13 +1,13 @@
 Analysis retest guard and event
-===============================
+-------------------------------
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t WorkflowAnalysisRetest
+    bin/test -t WorkflowAnalysisRetest
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -71,7 +71,7 @@ We need to create some basic objects for the test:
     >>> setup.setSelfVerificationEnabled(True)
 
 Retest transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request and submit results:
 
@@ -163,7 +163,7 @@ A new "retest" in `unassigned` state is created and the sample rolls back to
     'sample_received'
 
 Auto-rollback of Worksheet on analysis retest
----------------------------------------------
+.............................................
 
 The retesting of an analysis from a Worksheet that is in "to_be_verified" state
 causes the worksheet to rollback to "open" state.
@@ -217,7 +217,7 @@ The state of this additional analysis, the "retest", is `assigned`:
 
 
 Retest of an analysis with dependents
--------------------------------------
+.....................................
 
 Retesting an analysis that depends on other analyses (dependents), forces the
 dependents to be retested too:
@@ -299,7 +299,7 @@ And the current state of the Analysis Request is `sample_received` now:
 
 
 Retest of an analysis with dependencies hierarchy (recursive up)
-----------------------------------------------------------------
+................................................................
 
 Retesting an analysis with dependencies should end-up with retests for all them,
 regardless of their position in the hierarchy of dependencies. The system works
@@ -382,7 +382,7 @@ And the current state of the Analysis Request is `sample_received` now:
 
 
 Retest of an analysis with dependents hierarchy (recursive down)
-----------------------------------------------------------------
+................................................................
 
 Retesting an analysis with dependents should end-up with retests for all them,
 regardless of their position in the hierarchy of dependents. The system works
