@@ -1,4 +1,4 @@
-Analysis publication guard and event
+Batch creation and Client assignment
 ------------------------------------
 
 Running this test from the buildout directory:

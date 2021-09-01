@@ -52,6 +52,7 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestInvalidate.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestSample.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestToBeSampled.rst
+.. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRetest.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisUnassign.rst
