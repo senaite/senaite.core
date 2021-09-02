@@ -96,13 +96,15 @@ class ListingTableActionsViewlet(ViewletBase):
     def get_context_actions(self, **kw):
         """Get the defined ccontex actions of the listing view
         """
+        portal = api.get_portal()
+        portal_url = api.get_url(portal)
         actions = getattr(self.view, "context_actions", {})
         for k, v in actions.items():
             url = v.get("url")
             if not url:
                 continue
-            context_url = api.get_url(self.context)
-            if not url.startswith(context_url):
+            if not url.startswith(portal_url):
+                context_url = api.get_url(self.context)
                 url = "{}/{}".format(context_url, url)
             default_perm = k == "Add" and DEFAULT_ADD_PERM or DEFAULT_PERM
             perm = v.get("permission", default_perm)
