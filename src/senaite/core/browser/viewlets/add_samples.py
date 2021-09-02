@@ -17,7 +17,8 @@ class AddSamplesViewlet(ViewletBase):
         """
         if not ISamplesView.providedBy(self.view):
             return False
-        if not api.security.check_permission(AddAnalysisRequest, self.context):
+        container = self.get_samples_container()
+        if not api.security.check_permission(AddAnalysisRequest, container):
             return False
         return True
 
@@ -30,7 +31,13 @@ class AddSamplesViewlet(ViewletBase):
     def get_add_url(self):
         """Return the sample add URL
         """
-        return "{}/ar_add".format(api.get_url(self.context))
+        container = self.get_samples_container()
+        return "{}/ar_add".format(api.get_url(container))
+
+    def get_samples_container(self):
+        """Returns the container object where new samples will be added
+        """
+        return api.get_current_client() or self.context
 
     @property
     @memoize

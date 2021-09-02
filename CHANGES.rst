@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1841 Do not allow client user to deactivate its own client
+- #1840 Fix "+Add" buttons are not visible to client users in samples/batches
 - #1839 Allow sample partitions in submitted states
 - #1836 Redirect client users to their organization page on login
 - #1836 Cleanup `allow_module` and remove obsolete Script Python file
