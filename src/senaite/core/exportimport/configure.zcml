@@ -17,22 +17,6 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <browser:page
-      for="*"
-      name="getImportTemplate"
-      class="senaite.core.exportimport.dataimport.ajaxGetImportTemplate"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
-  <browser:page
-      for="*"
-      name="getImportInterfaces"
-      class="senaite.core.exportimport.dataimport.ajaxGetImportInterfaces"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
   <adapter
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       factory="senaite.core.exportimport.dataimport.SetupDataSetList"

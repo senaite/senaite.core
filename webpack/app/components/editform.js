@@ -307,6 +307,7 @@ class EditForm {
     let messages = data.messages || [];
     let notifications = data.notifications || [];
     let updates = data.updates || [];
+    let html = data.html || [];
 
     // render field errors
     for (const record of errors) {
@@ -381,6 +382,19 @@ class EditForm {
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_value(el, value);
+    }
+
+    // html
+    for (const record of html) {
+      let selector, html, rest;
+      ({selector, html, ...rest} = record);
+      let el = form.querySelector(selector);
+      if (!el) continue;
+      if (rest.append) {
+        el.innerHTML = el.innerHTML + html;
+      } else {
+        el.innerHTML = html;
+      }
     }
 
     // disallow submit when field errors are present

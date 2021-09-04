@@ -156,32 +156,3 @@ class ajaxGetImportTemplate(BrowserView):
             items.append((item.getKeyword, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
-
-
-class ajaxGetImportInterfaces(BrowserView):
-    """ Returns a json list with the interfaces assigned to the instrument
-        with the following structure:
-        [{'id': <interface_id>,
-          'title': <interface_title>
-        ]
-    """
-    def __call__(self):
-        interfaces = []
-        try:
-            plone.protect.CheckAuthenticator(self.request)
-        except Forbidden:
-            return json.dumps(interfaces)
-
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument = bsc(
-            portal_type='Instrument',
-            UID=self.request.get('instrument_uid', ''),
-            is_active=True,)
-        if instrument and len(instrument) == 1:
-            instrument = instrument[0].getObject()
-            for i in instrument.getImportDataInterface():
-                if i:
-                    exim = instruments.getExim(i)
-                    interface = {'id': i, 'title': exim.title}
-                    interfaces.append(interface)
-        return json.dumps(interfaces)
