@@ -88,9 +88,8 @@
               <select name="exim" id="exim" class="form-control form-control-sm">
               </select>
             </div>
-            <div id="import_form"></div>
-            <!-- filled by bika.lims.instrument.import.js (keep style attribute) -->
-            <div id="intermediate" style="display:none"></div>
+            <!-- Container for instrument import template -->
+            <div id="import_form" class="pt-3"></div>
           </div>
 
           <!-- Setup Data -->

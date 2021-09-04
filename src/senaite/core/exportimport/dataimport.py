@@ -126,33 +126,3 @@ class ImportView(BrowserView):
             items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
-
-
-class ajaxGetImportTemplate(BrowserView):
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        exim = self.request.get('exim').replace(".", "/")
-        # If a specific template for this instrument doesn't exist yet,
-        # use the default template for instrument results file import located
-        # at senaite.core.exportimport/instruments/instrument.pt
-        instrpath = os.path.join("exportimport", "instruments")
-        templates_dir = resource_filename("bika.lims", instrpath)
-        fname = "%s/%s_import.pt" % (templates_dir, exim)
-        if os.path.isfile(fname):
-            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
-        else:
-            return ViewPageTemplateFile("instruments/instrument.pt")(self)
-
-    def getAnalysisServicesDisplayList(self):
-        ''' Returns a Display List with the active Analysis Services
-            available. The value is the keyword and the title is the
-            text to be displayed.
-        '''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        brains = bsc(portal_type='AnalysisService')
-        items = []
-        for item in brains:
-            items.append((item.getKeyword, item.Title))
-        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-        return DisplayList(list(items))

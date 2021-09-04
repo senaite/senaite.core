@@ -34,6 +34,7 @@ class EditFormAdapterBase(object):
             "hide": [],
             "show": [],
             "readonly": [],
+            "editable": [],
             "errors": [],
             "messages": [],
             "notifications": [],

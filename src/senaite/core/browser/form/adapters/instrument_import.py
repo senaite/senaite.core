@@ -16,6 +16,8 @@ class EditForm(EditFormAdapterBase):
     """
 
     def initialized(self, data):
+        # hide instrument interface selection
+        self.add_hide_field("exim")
         return self.data
 
     def modified(self, data):
@@ -25,35 +27,42 @@ class EditForm(EditFormAdapterBase):
         # instrument selected
         if name == "instrument":
             uid = value[0] if value else None
-            instrument = api.get_object_by_uid(uid)
+            instrument = api.get_object_by_uid(uid) if uid else None
 
-            # check if the instrument is active
-            if not api.is_active(instrument):
-                self.add_readonly_field(
-                    "exim", message=_("Instrument is inactive"))
+            # hide instrument interface selection
+            self.add_hide_field("exim")
+            # flush import form container
+            self.add_inner_html("#import_form", "")
+
+            # no instrument selected
+            if instrument is None:
                 return self.data
 
-            # populate the import interfaces selection list
+            # query import interfacs for the selected instrument
             ifaces = self.get_import_interfaces_info_for(instrument)
 
+            # no import interfaces avaialble
             if not ifaces:
-                # no interfaces available -> make selection field readonly
-                self.add_readonly_field(
-                    "exim", message=_("No import interfaces available"))
-            else:
-                self.add_editable_field(
-                    "exim", message=_("Please select an import interface"))
+                self.add_notification(
+                    title="Warning",
+                    message=_(
+                        "No instrument import interfaces available for {}"
+                        .format(instrument.title)))
+                return self.data
 
-                # populate the import interfaces selection
-                i_opts = map(lambda i: dict(
-                    title=i.get("title"), value=i.get("id")), ifaces)
-                self.add_update_field("exim", {
-                    "options": i_opts})
+            # show instrument interface selection
+            self.add_show_field("exim")
 
-                # populate the import template
-                exim = ifaces[0].get("exim")
-                template = self.get_import_template(exim)
-                self.add_inner_html("#import_form", template)
+            # populate the import interfaces selection
+            i_opts = map(lambda i: dict(
+                title=i.get("title"), value=i.get("id")), ifaces)
+            self.add_update_field("exim", {
+                "options": i_opts})
+
+            # populate the import template
+            exim = ifaces[0].get("exim")
+            template = self.get_import_template(exim)
+            self.add_inner_html("#import_form", template)
 
         # Import interface changed
         if name == "exim":
