@@ -170,16 +170,32 @@ class EditForm {
   }
 
   /**
-   * set field readable only
+   * set field readonly
    */
   set_field_readonly(field, message=null) {
     field.setAttribute("readonly", "");
-    let existing_message = field.parentElement.querySelector("div.readonly-message");
+    let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
     } else {
       let div = document.createElement("div");
-      div.className = "readonly-message text-info small";
+      div.className = "message text-secondary small";
+      div.innerHTML = _t(message);
+      field.parentElement.appendChild(div);
+    }
+  }
+
+  /**
+   * set field editable
+   */
+  set_field_editable(field, message=null) {
+    field.removeAttribute("readonly");
+    let existing_message = field.parentElement.querySelector("div.message");
+    if (existing_message) {
+      existing_message.innerHTML = _t(message)
+    } else {
+      let div = document.createElement("div");
+      div.className = "message text-secondary small";
       div.innerHTML = _t(message);
       field.parentElement.appendChild(div);
     }
@@ -286,6 +302,7 @@ class EditForm {
     let hide = data.hide || [];
     let show = data.show || [];
     let readonly = data.readonly || [];
+    let editable = data.editable || [];
     let errors = data.errors || [];
     let messages = data.messages || [];
     let notifications = data.notifications || [];
@@ -346,6 +363,15 @@ class EditForm {
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_readonly(el, message);
+    }
+
+    // editable fields
+    for (const record of editable) {
+      let name, message, rest;
+      ({name, message, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
+      if (!el) continue;
+      this.set_field_editable(el, message);
     }
 
     // updated fields
@@ -534,7 +560,7 @@ class EditForm {
       "form": this.get_form_data(form)
     }, data)
 
-    console.debug("AJAX SEND --> ", payload)
+    console.debug("EditForm::AJAX SEND --> ", payload)
 
     let init = {
       method: "POST",
@@ -556,7 +582,7 @@ class EditForm {
         return response.json();
       })
       .then((data) => {
-        console.debug("GOT JSON RESPONSE --> ", data);
+        console.debug("EditForm::GOT JSON RESPONSE --> ", data);
         this.update_form(form, data);
       })
       .catch((error) => {
@@ -652,7 +678,7 @@ class EditForm {
    * event handler for `mutated` event
    */
   on_mutated(event) {
-    console.debug("EVENT -> on_mutated");
+    console.debug("EditForm::on_mutated");
     let form = event.detail.form;
     let mutations = event.detail.mutations;
     // reduce multiple mutations on the same node to one
@@ -670,7 +696,7 @@ class EditForm {
    * event handler for `modified` event
    */
   on_modified(event) {
-    console.debug("EVENT -> on_modified");
+    console.debug("EditForm::on_modified");
     let form = event.detail.form;
     let field = event.detail.field;
     this.notify(form, field, "modified");
@@ -680,7 +706,7 @@ class EditForm {
    * event handler for `blur` event
    */
   on_blur(event) {
-    console.debug("EVENT -> on_blur");
+    console.debug("EditForm::on_blur");
     let el = event.currentTarget;
     this.modified(el);
   }
@@ -689,7 +715,7 @@ class EditForm {
    * event handler for `click` event
    */
   on_click(event) {
-    console.debug("EVENT -> on_click");
+    console.debug("EditForm::on_click");
     let el = event.currentTarget;
     this.modified(el);
   }
@@ -698,7 +724,7 @@ class EditForm {
    * event handler for `change` event
    */
   on_change(event) {
-    console.debug("EVENT -> on_change");
+    console.debug("EditForm::on_change");
     let el = event.currentTarget;
     this.modified(el);
   }

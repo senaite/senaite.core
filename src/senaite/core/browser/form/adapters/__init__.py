@@ -78,6 +78,12 @@ class EditFormAdapterBase(object):
         record = dict(name=name, message=message, **kw)
         self.add_record_to("readonly", record)
 
+    def add_editable_field(self, name, message=None, **kw):
+        """Add field to the editable list
+        """
+        record = dict(name=name, message=message, **kw)
+        self.add_record_to("editable", record)
+
     def add_error_field(self, name, error, **kw):
         """Add field to the error list
         """
