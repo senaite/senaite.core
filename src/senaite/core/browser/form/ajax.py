@@ -142,6 +142,11 @@ class FormView(BrowserView):
 
     @property
     def adapter(self):
+        name = self.get_form_adapter_name()
+        if name is not None:
+            # query a named form adapter
+            return queryMultiAdapter(
+                (self.context, self.request), IAjaxEditForm, name=name)
         return queryMultiAdapter((self.context, self.request), IAjaxEditForm)
 
     @readonly_transaction
@@ -167,3 +172,10 @@ class FormView(BrowserView):
     def get_json(self):
         body = self.request.get("BODY", "{}")
         return json.loads(body)
+
+    def get_form_adapter_name(self):
+        """Returns the form adapter name for the query
+        """
+        data = self.get_json()
+        form = data.get("form", {})
+        return form.get("form_adapter_name")

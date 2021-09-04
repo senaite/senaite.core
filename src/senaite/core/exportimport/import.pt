@@ -23,10 +23,10 @@
 
     <metal:content-core fill-slot="content-core">
 
-      <form name="import" class="enableFormTabbing" method="POST" enctype="multipart/form-data">
-
+      <form name="import" class="senaite-ajax-form" method="POST" enctype="multipart/form-data">
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>
+        <input type="hidden" name="form_adapter_name" value="instrument_import_form"/>
 
         <ul class="nav nav-tabs mb-3" role="tablist">
           <li class="nav-item">
@@ -83,9 +83,11 @@
               Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br/>
               If no instrument selected, no Calibration Test will be created for orphan IDs.
             </p>
-            <label for="exim" i18n:translate="">Import Interface</label>
-            <select name="exim" id="exim" class="form-control form-control-sm">
-            </select>
+            <div class="field">
+              <label for="exim" i18n:translate="">Import Interface</label>
+              <select name="exim" id="exim" class="form-control form-control-sm">
+              </select>
+            </div>
             <div id="import_form"></div>
             <!-- filled by bika.lims.instrument.import.js (keep style attribute) -->
             <div id="intermediate" style="display:none"></div>

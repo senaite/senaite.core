@@ -17,4 +17,10 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".method.EditForm"/>
 
+  <adapter
+      name="instrument_import_form"
+      for="Products.CMFCore.interfaces.ISiteRoot
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".instrument_import.EditForm"/>
+
 </configure>
