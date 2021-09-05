@@ -40,6 +40,7 @@ class EditFormAdapterBase(object):
             "notifications": [],
             "updates": [],
             "html": [],
+            "attributes": [],
         }
 
     @property
@@ -111,7 +112,13 @@ class EditFormAdapterBase(object):
         self.add_record_to("updates", record)
 
     def add_inner_html(self, selector, html, **kw):
-        """Add inner html
+        """Add inner html to an element
         """
         record = dict(selector=selector, html=html, **kw)
         self.add_record_to("html", record)
+
+    def add_attribute(self, selector, name, value, **kw):
+        """Add an attribute to an element
+        """
+        record = dict(selector=selector, name=name, value=value, **kw)
+        self.add_record_to("attributes", record)

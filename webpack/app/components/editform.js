@@ -327,6 +327,7 @@ class EditForm {
     let notifications = data.notifications || [];
     let updates = data.updates || [];
     let html = data.html || [];
+    let attributes = data.attributes || [];
 
     // render field errors
     for (const record of errors) {
@@ -413,6 +414,19 @@ class EditForm {
         el.innerHTML = el.innerHTML + html;
       } else {
         el.innerHTML = html;
+      }
+    }
+
+    // set attribute to an element
+    for (const record of attributes) {
+      let selector, name, value, rest;
+      ({selector, name, value, ...rest} = record);
+      let el = form.querySelector(selector);
+      if (!el) continue;
+      if (value === null) {
+        el.removeAttribute(name);
+      } else {
+        el.addAttribute(name, value);
       }
     }
 
