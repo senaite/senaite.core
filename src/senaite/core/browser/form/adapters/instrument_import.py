@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import os
 
 from bika.lims import api
@@ -30,9 +31,27 @@ class EditForm(EditFormAdapterBase):
                 level="danger", flush=True)
             return self.data
 
+        iface = self.request.form.get("exim")
+        exim = self.get_exim_by_interface(iface)
+        if not exim:
+            self.add_status_message(
+                message=_("No improter not found for interface '{}'"
+                          .format(iface)),
+                title="Error", level="danger", flush=True)
+            return self.data
+
+        results = exim.Import(self.context, self.request)
+
+        # BBB: Importers return JSON
+        results = json.loads(results)
+
+        template = self.get_default_import_results_template()
+        html = ViewPageTemplateFile(template)(self, import_results=results)
+        self.add_inner_html("#import_results", html)
+
         self.add_status_message(
-            message=_("Import done"),
-            level="success", flush=True)
+            message=_("Instrument import finished"),
+            title="", level="info", flush=True)
         return self.data
 
     def modified(self, data):
@@ -133,6 +152,14 @@ class EditForm(EditFormAdapterBase):
         import senaite.core.exportimport.instruments
         path = os.path.dirname(senaite.core.exportimport.instruments.__file__)
         template = "instrument.pt"
+        return os.path.join(path, template)
+
+    def get_default_import_results_template(self):
+        """Returns the path of the default import template
+        """
+        import senaite.core.exportimport
+        path = os.path.dirname(senaite.core.exportimport.__file__)
+        template = "import_results.pt"
         return os.path.join(path, template)
 
     def getAnalysisServicesDisplayList(self):
