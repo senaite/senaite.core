@@ -20,6 +20,14 @@ class EditForm(EditFormAdapterBase):
         self.add_hide_field("exim")
         return self.data
 
+    def submit(self, data):
+        form = self.request.form
+        upload_file = form.get("instrument_results_file")
+        if not upload_file.file.tell():
+            self.add_error_field(
+                "instrument_results_file", _("Please select import file"))
+        return self.data
+
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")

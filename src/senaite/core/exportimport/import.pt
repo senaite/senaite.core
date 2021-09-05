@@ -23,7 +23,10 @@
 
     <metal:content-core fill-slot="content-core">
 
-      <form name="import" class="senaite-ajax-form" method="POST" enctype="multipart/form-data">
+      <form name="import"
+            class="senaite-ajax-form"
+            ajax-submit="1"
+            method="POST" enctype="multipart/form-data">
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>
         <input type="hidden" name="form_adapter_name" value="instrument_import_form"/>
@@ -66,8 +69,10 @@
           <div id="tab-instrumentimport"
                class="tab-pane fade show active"
                role="tabpanel">
+
+            <!-- Active instruments -->
             <select name="instrument"
-                    class="form-control form-control-sm"
+                    class="custom-select"
                     id="instrument_select"
                     tal:define="instruments view/getInstruments">
               <tal:options repeat="option instruments">
@@ -76,6 +81,7 @@
                   tal:content="python:instruments.getValue(option)"/>
               </tal:options>
             </select>
+
             <p class="form-text text-muted" i18n:translate="">
               If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
               it will use the record's identifier to find matches with Reference Sample IDs.
@@ -83,13 +89,16 @@
               Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br/>
               If no instrument selected, no Calibration Test will be created for orphan IDs.
             </p>
+
             <div class="field">
               <label for="exim" i18n:translate="">Import Interface</label>
-              <select name="exim" id="exim" class="form-control form-control-sm">
+              <select name="exim" id="exim" class="custom-select">
               </select>
             </div>
+
             <!-- Container for instrument import template -->
             <div id="import_form" class="pt-3"></div>
+            <div id="import_results" class="pt-3"></div>
           </div>
 
           <!-- Setup Data -->

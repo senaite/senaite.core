@@ -31,7 +31,7 @@ The edit form handler is the server part of `editform.js` JS and must implement
 the following two methods:
 
     def initialized():
-        payload = self.get_json()
+        payload = self.get_data()
         return {}
 
 This method is called after the edit form has been loaded on the client side.
@@ -40,7 +40,7 @@ and raw keys/values of the HTML form elements (including ZPublisher
 field converters, e.g. `fieldname:boolean:default` etc.).
 
     def modified():
-        payload = self.get_json()
+        payload = self.get_data()
         return {}
 
 This method is called on each field modification. The JSON `payload` provides
@@ -152,7 +152,7 @@ class FormView(BrowserView):
     @readonly_transaction
     @returns_json
     def initialized(self):
-        data = self.get_json()
+        data = self.get_data()
         if not data:
             data = {}
         if not self.adapter:
@@ -162,20 +162,34 @@ class FormView(BrowserView):
     @readonly_transaction
     @returns_json
     def modified(self):
-        data = self.get_json()
+        data = self.get_data()
         if not data:
             data = {}
         if not self.adapter:
             return {}
         return self.adapter.modified(data)
 
-    def get_json(self):
-        body = self.request.get("BODY", "{}")
-        return json.loads(body)
+    @returns_json
+    def submit(self):
+        data = self.get_data()
+        if not data:
+            data = {}
+        if not self.adapter:
+            return {}
+        return self.adapter.submit(data)
+
+    def get_data(self):
+        body = self.request.get("BODY")
+        if body:
+            return json.loads(body)
+        form = self.request.form
+        if form:
+            return {"form": form}
+        return {}
 
     def get_form_adapter_name(self):
         """Returns the form adapter name for the query
         """
-        data = self.get_json()
+        data = self.get_data()
         form = data.get("form", {})
         return form.get("form_adapter_name")

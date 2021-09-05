@@ -22,6 +22,7 @@ class EditForm {
     // bind event handlers
     this.on_mutated = this.on_mutated.bind(this);
     this.on_modified = this.on_modified.bind(this);
+    this.on_submit = this.on_submit.bind(this);
     this.on_blur = this.on_blur.bind(this);
     this.on_click = this.on_click.bind(this);
     this.on_change = this.on_change.bind(this);
@@ -64,6 +65,10 @@ class EditForm {
     // bind custom form event handlers
     form.addEventListener("modified", this.on_modified);
     form.addEventListener("mutated", this.on_mutated);
+
+    if (form.hasAttribute("ajax-submit")) {
+      form.addEventListener("submit", this.on_submit);
+    }
   }
 
   /**
@@ -564,7 +569,7 @@ class EditForm {
   }
 
   /**
-   * send ajax request to the server
+   * send application/json to the server
    */
   ajax_send(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
@@ -574,7 +579,7 @@ class EditForm {
       "form": this.get_form_data(form)
     }, data)
 
-    console.debug("EditForm::AJAX SEND --> ", payload)
+    console.debug("EditForm::ajax_send --> ", payload)
 
     let init = {
       method: "POST",
@@ -586,8 +591,43 @@ class EditForm {
       },
     }
 
+    this.ajax_request(form, ajax_url, init);
+
+  }
+
+  /**
+   * send multipart/form-data to the server
+   */
+  ajax_submit(form, data, endpoint) {
+    let view_url = document.body.dataset.viewUrl;
+    let ajax_url = `${view_url}/ajax_form/${endpoint}`;
+
+    let payload = new FormData(form);
+
+    data = {"foo": "bar"};
+
+    // update form data
+    for(let [key, value] of Object.entries(data)) {
+      payload.set(key, value);
+    }
+
+    console.debug("EditForm::ajax_submit --> ", payload)
+
+    let init = {
+      method: "POST",
+      body: payload,
+    }
+
+    this.ajax_request(form, ajax_url, init);
+  }
+
+
+  /**
+   * execute ajax request
+   */
+  ajax_request(form, url, init) {
     // send ajax request to server
-    let request = new Request(ajax_url, init);
+    let request = new Request(url, init);
     fetch(request)
       .then((response) => {
         if (!response.ok) {
@@ -596,7 +636,7 @@ class EditForm {
         return response.json();
       })
       .then((data) => {
-        console.debug("EditForm::GOT JSON RESPONSE --> ", data);
+        console.debug("EditForm::ajax_request --> ", data);
         this.update_form(form, data);
       })
       .catch((error) => {
@@ -612,7 +652,7 @@ class EditForm {
   }
 
   /**
-   * Checks if the element is a select field
+   * Checks if the elment is a select field
    */
   is_select(el) {
     return el.tagName == "SELECT";
@@ -714,6 +754,16 @@ class EditForm {
     let form = event.detail.form;
     let field = event.detail.field;
     this.notify(form, field, "modified");
+  }
+
+  /**
+   * event handler for `submit` event
+   */
+  on_submit(event) {
+    console.debug("EditForm::on_submit");
+    event.preventDefault();
+    let form = event.currentTarget;
+    this.ajax_submit(form, {}, "submit");
   }
 
   /**
