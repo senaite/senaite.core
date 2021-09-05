@@ -22,16 +22,6 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def submit(self, data):
-        form = self.request.form
-        upload_file = form.get("instrument_results_file")
-
-        if not upload_file.filename:
-            self.add_status_message(
-                title="Error",
-                message=_("No import file selected"),
-                level="danger", flush=True)
-            return self.data
-
         iface = self.request.form.get("exim")
         exim = self.get_exim_by_interface(iface)
         if not exim:
