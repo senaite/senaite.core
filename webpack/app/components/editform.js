@@ -641,8 +641,6 @@ class EditForm {
 
     let payload = new FormData(form);
 
-    data = {"foo": "bar"};
-
     // update form data
     for(let [key, value] of Object.entries(data)) {
       payload.set(key, value);
