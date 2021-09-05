@@ -235,12 +235,19 @@ class EditForm {
 
   /**
    * add a status message
+   * @param {string} message the message to display in the alert
+   * @param {string} level   one of "info", "success", "warning", "danger"
+   * @param {object} options additional options to control the behavior
+   *                 - option {string} title: alert title in bold
+   *                 - option {string} flush: remove previous alerts
    */
-  add_statusmessage(message, level="info") {
-    let el  = document.createElement("div");
+  add_statusmessage(message, level="info", options) {
+    options = options || {};
+    let el = document.createElement("div");
+    let title = options.title || `${level.charAt(0).toUpperCase() + level.slice(1)}`;
     el.innerHTML = `
       <div class="alert alert-${level} alert-dismissible fade show" role="alert">
-        <strong>${level.charAt(0).toUpperCase() + level.slice(1)}</strong>
+        <strong>${title}</strong>
         ${_t(message)}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -249,6 +256,13 @@ class EditForm {
     `
     el = el.firstElementChild
     let parent = document.getElementById("viewlet-above-content");
+
+    // clear put previous alerts
+    if (options.flush) {
+      for (let el of parent.querySelectorAll(".alert")) {
+        el.remove();
+      }
+    }
     parent.appendChild(el);
     return el;
   }
@@ -333,7 +347,7 @@ class EditForm {
       ({message, level, ...rest} = record);
       let level = level || "info";
       let message = message || "";
-      this.add_statusmessage(message, level);
+      this.add_statusmessage(message, level, rest);
     }
 
     // render notification messages
