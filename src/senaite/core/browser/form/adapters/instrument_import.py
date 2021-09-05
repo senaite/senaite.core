@@ -95,6 +95,7 @@ class EditForm(EditFormAdapterBase):
             exim = self.get_exim_by_interface(iface)
             template = self.get_import_template(exim)
             self.add_inner_html("#import_form", template)
+            self.add_inner_html("#import_results", "")
 
         return self.data
 
