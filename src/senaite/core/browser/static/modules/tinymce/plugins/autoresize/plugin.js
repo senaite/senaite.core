@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.9.1 (2021-08-27)
  */
 (function () {
     'use strict';
@@ -23,11 +23,16 @@
       };
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var hasOwnProperty = Object.hasOwnProperty;
+    var has = function (obj, key) {
+      return hasOwnProperty.call(obj, key);
+    };
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
     var fireResizeEditor = function (editor) {
       return editor.fire('ResizeEditor');
@@ -53,7 +58,7 @@
       return editor.plugins.fullscreen && editor.plugins.fullscreen.isFullscreen();
     };
     var wait = function (editor, oldSize, times, interval, callback) {
-      global$2.setEditorTimeout(editor, function () {
+      global.setEditorTimeout(editor, function () {
         resize(editor, oldSize);
         if (times--) {
           wait(editor, oldSize, times, interval, callback);
@@ -154,8 +159,8 @@
     };
 
     function Plugin () {
-      global.add('autoresize', function (editor) {
-        if (!editor.settings.hasOwnProperty('resize')) {
+      global$2.add('autoresize', function (editor) {
+        if (!has(editor.settings, 'resize')) {
           editor.settings.resize = false;
         }
         if (!editor.inline) {

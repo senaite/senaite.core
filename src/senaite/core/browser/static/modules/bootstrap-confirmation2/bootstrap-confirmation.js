@@ -1,16 +1,14 @@
 /*!
- * Bootstrap Confirmation (v4.1.0)
+ * Bootstrap Confirmation (v4.2.1)
  * @copyright 2013 Nimit Suwannagate <ethaizone@hotmail.com>
- * @copyright 2014-2018 Damien "Mistic" Sorel <contact@git.strangeplanet.fr>
+ * @copyright 2014-2021 Damien "Mistic" Sorel <contact@git.strangeplanet.fr>
  * @licence Apache License, Version 2.0
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery'), require('bootstrap')) :
   typeof define === 'function' && define.amd ? define(['jquery', 'bootstrap'], factory) :
-  (global = global || self, factory(global.jQuery));
-}(this, function ($) { 'use strict';
-
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.jQuery));
+}(this, (function ($) { 'use strict';
 
   function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
@@ -28,44 +26,38 @@
     return Constructor;
   }
 
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
+  function _extends() {
+    _extends = Object.assign || function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
 
-    return obj;
-  }
-
-  function _objectSpread(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
-
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
       }
 
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    }
+      return target;
+    };
 
-    return target;
+    return _extends.apply(this, arguments);
   }
 
   function _inheritsLoose(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype);
     subClass.prototype.constructor = subClass;
-    subClass.__proto__ = superClass;
+
+    _setPrototypeOf(subClass, superClass);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
   }
 
   if (typeof $.fn.popover === 'undefined' || $.fn.popover.Constructor.VERSION.split('.').shift() !== '4') {
@@ -81,14 +73,14 @@
    */
 
   var NAME = 'confirmation';
-  var VERSION = '4.1.0';
+  var VERSION = '4.2.1';
   var DATA_KEY = "bs." + NAME;
   var EVENT_KEY = "." + DATA_KEY;
   var JQUERY_NO_CONFLICT = $.fn[NAME];
   var BTN_CLASS_BASE = 'h-100 d-flex align-items-center';
   var BTN_CLASS_DEFAULT = 'btn btn-sm';
 
-  var DefaultType = _objectSpread({}, Popover.DefaultType, {
+  var DefaultType = _extends({}, Popover.DefaultType, {
     singleton: 'boolean',
     popout: 'boolean',
     copyAttributes: '(string|array)',
@@ -105,7 +97,7 @@
     buttons: 'array'
   });
 
-  var Default = _objectSpread({}, Popover.Default, {
+  var Default = _extends({}, Popover.Default, {
     _attributes: {},
     _selector: null,
     placement: 'top',
@@ -175,50 +167,10 @@
 
   var activeConfirmation;
 
-  var Confirmation =
-  /*#__PURE__*/
-  function (_Popover) {
+  var Confirmation = /*#__PURE__*/function (_Popover) {
     _inheritsLoose(Confirmation, _Popover);
 
-    _createClass(Confirmation, null, [{
-      key: "VERSION",
-      // Getters
-      get: function get() {
-        return VERSION;
-      }
-    }, {
-      key: "Default",
-      get: function get() {
-        return Default;
-      }
-    }, {
-      key: "NAME",
-      get: function get() {
-        return NAME;
-      }
-    }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY;
-      }
-    }, {
-      key: "Event",
-      get: function get() {
-        return Event;
-      }
-    }, {
-      key: "EVENT_KEY",
-      get: function get() {
-        return EVENT_KEY;
-      }
-    }, {
-      key: "DefaultType",
-      get: function get() {
-        return DefaultType;
-      } // Constructor
-
-    }]);
-
+    // Constructor
     function Confirmation(element, config) {
       var _this;
 
@@ -306,6 +258,26 @@
       _Popover.prototype.hide.call(this, callback);
     } // Private
 
+    /**
+     * Build configuration object
+     * Bootstrap standard is to give priority to JS config over data attributes,
+     * but for Confirmation we prefer data attributes
+     * @param config
+     * @return {*}
+     * @private
+     */
+    ;
+
+    _proto._getConfig = function _getConfig(config) {
+      config = _Popover.prototype._getConfig.call(this, config);
+      var dataAttributes = $(this.element).data();
+      Object.keys(dataAttributes).forEach(function (dataAttr) {
+        if (dataAttr.indexOf('btn') !== 0) {
+          delete dataAttributes[dataAttr];
+        }
+      });
+      return _extends({}, config, dataAttributes);
+    }
     /**
      * Copy the value of `copyAttributes` on the config object
      * @private
@@ -398,13 +370,13 @@
 
     _proto._setStandardButtons = function _setStandardButtons($tip) {
       var buttons = [{
-        class: this.config.btnOkClass,
+        "class": this.config.btnOkClass,
         label: this.config.btnOkLabel,
         iconClass: this.config.btnOkIconClass,
         iconContent: this.config.btnOkIconContent,
         attr: this.config._attributes
       }, {
-        class: this.config.btnCancelClass,
+        "class": this.config.btnCancelClass,
         label: this.config.btnCancelLabel,
         iconClass: this.config.btnCancelIconClass,
         iconContent: this.config.btnCancelIconContent,
@@ -425,7 +397,7 @@
       var self = this;
       var $group = $tip.find(Selector.BUTTONS).empty();
       buttons.forEach(function (button) {
-        var btn = $('<a href="#"></a>').addClass(BTN_CLASS_BASE).addClass(button.class || BTN_CLASS_DEFAULT + " btn-secondary").html(button.label || '').attr(button.attr || {});
+        var btn = $('<a href="#"></a>').addClass(BTN_CLASS_BASE).addClass(button["class"] || BTN_CLASS_DEFAULT + " btn-secondary").html(button.label || '').attr(button.attr || (button.cancel ? {} : self.config._attributes));
 
         if (button.iconClass || button.iconContent) {
           btn.prepend($('<i></i>').addClass(button.iconClass || '').text(button.iconContent || ''));
@@ -522,9 +494,6 @@
           $active.removeClass('active');
           $next.addClass('active').focus();
           break;
-
-        default:
-          break;
       }
     } // Static
 
@@ -573,6 +542,44 @@
       });
     };
 
+    _createClass(Confirmation, null, [{
+      key: "VERSION",
+      get: // Getters
+      function get() {
+        return VERSION;
+      }
+    }, {
+      key: "Default",
+      get: function get() {
+        return Default;
+      }
+    }, {
+      key: "NAME",
+      get: function get() {
+        return NAME;
+      }
+    }, {
+      key: "DATA_KEY",
+      get: function get() {
+        return DATA_KEY;
+      }
+    }, {
+      key: "Event",
+      get: function get() {
+        return Event;
+      }
+    }, {
+      key: "EVENT_KEY",
+      get: function get() {
+        return EVENT_KEY;
+      }
+    }, {
+      key: "DefaultType",
+      get: function get() {
+        return DefaultType;
+      }
+    }]);
+
     return Confirmation;
   }(Popover);
   /**
@@ -590,5 +597,5 @@
     return Confirmation._jQueryInterface;
   };
 
-}));
+})));
 //# sourceMappingURL=bootstrap-confirmation.js.map

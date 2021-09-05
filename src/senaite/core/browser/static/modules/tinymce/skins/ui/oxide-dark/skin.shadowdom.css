@@ -25,6 +25,7 @@ body.tox-dialog__disable-scroll {
   display: none;
 }
 .tox.tox-tinymce.tox-fullscreen {
+  background-color: transparent;
   z-index: 1200;
 }
 .tox-shadowhost.tox-fullscreen {

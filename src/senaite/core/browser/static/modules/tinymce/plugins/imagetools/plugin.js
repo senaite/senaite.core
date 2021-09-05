@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.9.1 (2021-08-27)
  */
 (function () {
     'use strict';
@@ -23,9 +23,40 @@
       };
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isArray = isType('array');
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
 
     var noop = function () {
     };
@@ -34,6 +65,9 @@
         return value;
       };
     };
+    var identity = function (x) {
+      return x;
+    };
     var never = constant(false);
     var always = constant(true);
 
@@ -41,20 +75,14 @@
       return NONE;
     };
     var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
       var call = function (thunk) {
         return thunk();
       };
-      var id = function (n) {
-        return n;
-      };
+      var id = identity;
       var me = {
         fold: function (n, _s) {
           return n();
         },
-        is: never,
         isSome: never,
         isNone: always,
         getOr: id,
@@ -71,9 +99,9 @@
         bind: none,
         exists: never,
         forall: always,
-        filter: none,
-        equals: eq,
-        equals_: eq,
+        filter: function () {
+          return none();
+        },
         toArray: function () {
           return [];
         },
@@ -92,9 +120,6 @@
       var me = {
         fold: function (n, s) {
           return s(a);
-        },
-        is: function (v) {
-          return a === v;
         },
         isSome: always,
         isNone: never,
@@ -122,14 +147,6 @@
         },
         toString: function () {
           return 'some(' + a + ')';
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never, function (b) {
-            return elementEq(a, b);
-          });
         }
       };
       return me;
@@ -143,43 +160,30 @@
       from: from
     };
 
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
-
-    function create(width, height) {
+    var create$1 = function (width, height) {
       return resize(document.createElement('canvas'), width, height);
-    }
-    function clone(canvas) {
-      var tCanvas = create(canvas.width, canvas.height);
+    };
+    var clone = function (canvas) {
+      var tCanvas = create$1(canvas.width, canvas.height);
       var ctx = get2dContext(tCanvas);
       ctx.drawImage(canvas, 0, 0);
       return tCanvas;
-    }
-    function get2dContext(canvas) {
+    };
+    var get2dContext = function (canvas) {
       return canvas.getContext('2d');
-    }
-    function resize(canvas, width, height) {
+    };
+    var resize = function (canvas, width, height) {
       canvas.width = width;
       canvas.height = height;
       return canvas;
-    }
+    };
 
-    function getWidth(image) {
+    var getWidth = function (image) {
       return image.naturalWidth || image.width;
-    }
-    function getHeight(image) {
+    };
+    var getHeight = function (image) {
       return image.naturalHeight || image.height;
-    }
+    };
 
     var promise = function () {
       var Promise = function (fn) {
@@ -196,13 +200,17 @@
       };
       var anyWindow = window;
       var asap = Promise.immediateFn || typeof anyWindow.setImmediate === 'function' && anyWindow.setImmediate || function (fn) {
-        setTimeout(fn, 1);
+        return setTimeout(fn, 1);
       };
-      function bind(fn, thisArg) {
+      var bind = function (fn, thisArg) {
         return function () {
-          return fn.apply(thisArg, arguments);
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          return fn.apply(thisArg, args);
         };
-      }
+      };
       var isArray = Array.isArray || function (value) {
         return Object.prototype.toString.call(value) === '[object Array]';
       };
@@ -265,7 +273,7 @@
         this.resolve = resolve;
         this.reject = reject;
       }
-      function doResolve(fn, onFulfilled, onRejected) {
+      var doResolve = function (fn, onFulfilled, onRejected) {
         var done = false;
         try {
           fn(function (value) {
@@ -288,7 +296,7 @@
           done = true;
           onRejected(ex);
         }
-      }
+      };
       Promise.prototype.catch = function (onRejected) {
         return this.then(null, onRejected);
       };
@@ -309,7 +317,7 @@
             return resolve([]);
           }
           var remaining = args.length;
-          function res(i, val) {
+          var res = function (i, val) {
             try {
               if (val && (typeof val === 'object' || typeof val === 'function')) {
                 var then = val.then;
@@ -327,7 +335,7 @@
             } catch (ex) {
               reject(ex);
             }
-          }
+          };
           for (var i = 0; i < args.length; i++) {
             res(i, args[i]);
           }
@@ -356,41 +364,41 @@
       };
       return Promise;
     };
-    var Promise = window.Promise ? window.Promise : promise();
+    var Promise$1 = window.Promise ? window.Promise : promise();
 
-    function imageToBlob(image) {
+    var imageToBlob$2 = function (image) {
       var src = image.src;
       if (src.indexOf('data:') === 0) {
         return dataUriToBlob(src);
       }
       return anyUriToBlob(src);
-    }
-    function blobToImage(blob) {
-      return new Promise(function (resolve, reject) {
+    };
+    var blobToImage$1 = function (blob) {
+      return new Promise$1(function (resolve, reject) {
         var blobUrl = URL.createObjectURL(blob);
         var image = new Image();
         var removeListeners = function () {
           image.removeEventListener('load', loaded);
           image.removeEventListener('error', error);
         };
-        function loaded() {
+        var loaded = function () {
           removeListeners();
           resolve(image);
-        }
-        function error() {
+        };
+        var error = function () {
           removeListeners();
           reject('Unable to load data of type ' + blob.type + ': ' + blobUrl);
-        }
+        };
         image.addEventListener('load', loaded);
         image.addEventListener('error', error);
         image.src = blobUrl;
         if (image.complete) {
-          loaded();
+          setTimeout(loaded, 0);
         }
       });
-    }
-    function anyUriToBlob(url) {
-      return new Promise(function (resolve, reject) {
+    };
+    var anyUriToBlob = function (url) {
+      return new Promise$1(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'blob';
@@ -414,8 +422,8 @@
         };
         xhr.send();
       });
-    }
-    function dataUriToBlobSync(uri) {
+    };
+    var dataUriToBlobSync = function (uri) {
       var data = uri.split(',');
       var matches = /data:([^;]+)/.exec(data[0]);
       if (!matches) {
@@ -438,18 +446,18 @@
         byteArrays[sliceIndex] = new Uint8Array(bytes);
       }
       return Optional.some(new Blob(byteArrays, { type: mimetype }));
-    }
-    function dataUriToBlob(uri) {
-      return new Promise(function (resolve, reject) {
+    };
+    var dataUriToBlob = function (uri) {
+      return new Promise$1(function (resolve, reject) {
         dataUriToBlobSync(uri).fold(function () {
           reject('uri is not base64: ' + uri);
         }, resolve);
       });
-    }
-    function canvasToBlob(canvas, type, quality) {
+    };
+    var canvasToBlob = function (canvas, type, quality) {
       type = type || 'image/png';
       if (isFunction(HTMLCanvasElement.prototype.toBlob)) {
-        return new Promise(function (resolve, reject) {
+        return new Promise$1(function (resolve, reject) {
           canvas.toBlob(function (blob) {
             if (blob) {
               resolve(blob);
@@ -461,49 +469,66 @@
       } else {
         return dataUriToBlob(canvas.toDataURL(type, quality));
       }
-    }
-    function canvasToDataURL(canvas, type, quality) {
+    };
+    var canvasToDataURL = function (canvas, type, quality) {
       type = type || 'image/png';
       return canvas.toDataURL(type, quality);
-    }
-    function blobToCanvas(blob) {
-      return blobToImage(blob).then(function (image) {
+    };
+    var blobToCanvas = function (blob) {
+      return blobToImage$1(blob).then(function (image) {
         revokeImageUrl(image);
-        var canvas = create(getWidth(image), getHeight(image));
+        var canvas = create$1(getWidth(image), getHeight(image));
         var context = get2dContext(canvas);
         context.drawImage(image, 0, 0);
         return canvas;
       });
-    }
-    function blobToDataUri(blob) {
-      return new Promise(function (resolve) {
+    };
+    var blobToDataUri = function (blob) {
+      return new Promise$1(function (resolve) {
         var reader = new FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
         reader.readAsDataURL(blob);
       });
-    }
-    function revokeImageUrl(image) {
+    };
+    var revokeImageUrl = function (image) {
       URL.revokeObjectURL(image.src);
-    }
+    };
 
-    var blobToImage$1 = function (blob) {
-      return blobToImage(blob);
+    var blobToImage = function (blob) {
+      return blobToImage$1(blob);
     };
     var imageToBlob$1 = function (image) {
-      return imageToBlob(image);
+      return imageToBlob$2(image);
     };
 
-    var each = function (xs, f) {
+    var nativeIndexOf = Array.prototype.indexOf;
+    var rawIndexOf = function (ts, t) {
+      return nativeIndexOf.call(ts, t);
+    };
+    var contains = function (xs, x) {
+      return rawIndexOf(xs, x) > -1;
+    };
+    var each$1 = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         f(x, i);
       }
     };
+    var filter = function (xs, pred) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          r.push(x);
+        }
+      }
+      return r;
+    };
     var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
+      each$1(xs, function (x, i) {
+        acc = f(acc, x, i);
       });
       return acc;
     };
@@ -521,35 +546,154 @@
     var find = function (xs, pred) {
       return findUntil(xs, pred, never);
     };
+    var forall = function (xs, pred) {
+      for (var i = 0, len = xs.length; i < len; ++i) {
+        var x = xs[i];
+        if (pred(x, i) !== true) {
+          return false;
+        }
+      }
+      return true;
+    };
 
-    function create$1(getCanvas, blob, uri) {
+    var keys = Object.keys;
+    var each = function (obj, f) {
+      var props = keys(obj);
+      for (var k = 0, len = props.length; k < len; k++) {
+        var i = props[k];
+        var x = obj[i];
+        f(x, i);
+      }
+    };
+
+    var generate = function (cases) {
+      if (!isArray(cases)) {
+        throw new Error('cases must be an array');
+      }
+      if (cases.length === 0) {
+        throw new Error('there must be at least one case');
+      }
+      var constructors = [];
+      var adt = {};
+      each$1(cases, function (acase, count) {
+        var keys$1 = keys(acase);
+        if (keys$1.length !== 1) {
+          throw new Error('one and only one name per case');
+        }
+        var key = keys$1[0];
+        var value = acase[key];
+        if (adt[key] !== undefined) {
+          throw new Error('duplicate key detected:' + key);
+        } else if (key === 'cata') {
+          throw new Error('cannot have a case named cata (sorry)');
+        } else if (!isArray(value)) {
+          throw new Error('case arguments must be an array');
+        }
+        constructors.push(key);
+        adt[key] = function () {
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          var argLength = args.length;
+          if (argLength !== value.length) {
+            throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
+          }
+          var match = function (branches) {
+            var branchKeys = keys(branches);
+            if (constructors.length !== branchKeys.length) {
+              throw new Error('Wrong number of arguments to match. Expected: ' + constructors.join(',') + '\nActual: ' + branchKeys.join(','));
+            }
+            var allReqd = forall(constructors, function (reqKey) {
+              return contains(branchKeys, reqKey);
+            });
+            if (!allReqd) {
+              throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            }
+            return branches[key].apply(null, args);
+          };
+          return {
+            fold: function () {
+              var foldArgs = [];
+              for (var _i = 0; _i < arguments.length; _i++) {
+                foldArgs[_i] = arguments[_i];
+              }
+              if (foldArgs.length !== cases.length) {
+                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
+              }
+              var target = foldArgs[count];
+              return target.apply(null, args);
+            },
+            match: match,
+            log: function (label) {
+              console.log(label, {
+                constructors: constructors,
+                constructor: key,
+                params: args
+              });
+            }
+          };
+        };
+      });
+      return adt;
+    };
+    var Adt = { generate: generate };
+
+    Adt.generate([
+      {
+        bothErrors: [
+          'error1',
+          'error2'
+        ]
+      },
+      {
+        firstError: [
+          'error1',
+          'value2'
+        ]
+      },
+      {
+        secondError: [
+          'value1',
+          'error2'
+        ]
+      },
+      {
+        bothValues: [
+          'value1',
+          'value2'
+        ]
+      }
+    ]);
+
+    var create = function (getCanvas, blob, uri) {
       var initialType = blob.type;
       var getType = constant(initialType);
-      function toBlob() {
-        return Promise.resolve(blob);
-      }
+      var toBlob = function () {
+        return Promise$1.resolve(blob);
+      };
       var toDataURL = constant(uri);
-      function toBase64() {
+      var toBase64 = function () {
         return uri.split(',')[1];
-      }
-      function toAdjustedBlob(type, quality) {
+      };
+      var toAdjustedBlob = function (type, quality) {
         return getCanvas.then(function (canvas) {
           return canvasToBlob(canvas, type, quality);
         });
-      }
-      function toAdjustedDataURL(type, quality) {
+      };
+      var toAdjustedDataURL = function (type, quality) {
         return getCanvas.then(function (canvas) {
           return canvasToDataURL(canvas, type, quality);
         });
-      }
-      function toAdjustedBase64(type, quality) {
+      };
+      var toAdjustedBase64 = function (type, quality) {
         return toAdjustedDataURL(type, quality).then(function (dataurl) {
           return dataurl.split(',')[1];
         });
-      }
-      function toCanvas() {
+      };
+      var toCanvas = function () {
         return getCanvas.then(clone);
-      }
+      };
       return {
         getType: getType,
         toBlob: toBlob,
@@ -560,50 +704,54 @@
         toAdjustedBase64: toAdjustedBase64,
         toCanvas: toCanvas
       };
-    }
-    function fromBlob(blob) {
+    };
+    var fromBlob = function (blob) {
       return blobToDataUri(blob).then(function (uri) {
-        return create$1(blobToCanvas(blob), blob, uri);
+        return create(blobToCanvas(blob), blob, uri);
       });
-    }
-    function fromCanvas(canvas, type) {
+    };
+    var fromCanvas = function (canvas, type) {
       return canvasToBlob(canvas, type).then(function (blob) {
-        return create$1(Promise.resolve(canvas), blob, canvas.toDataURL());
+        return create(Promise$1.resolve(canvas), blob, canvas.toDataURL());
       });
-    }
+    };
 
-    function rotate(ir, angle) {
+    var ceilWithPrecision = function (num, precision) {
+      if (precision === void 0) {
+        precision = 2;
+      }
+      var mul = Math.pow(10, precision);
+      var upper = Math.round(num * mul);
+      return Math.ceil(upper / mul);
+    };
+    var rotate$2 = function (ir, angle) {
       return ir.toCanvas().then(function (canvas) {
         return applyRotate(canvas, ir.getType(), angle);
       });
-    }
-    function applyRotate(image, type, angle) {
-      var canvas = create(image.width, image.height);
+    };
+    var applyRotate = function (image, type, angle) {
+      var degrees = angle < 0 ? 360 + angle : angle;
+      var rad = degrees * Math.PI / 180;
+      var width = image.width;
+      var height = image.height;
+      var sin = Math.sin(rad);
+      var cos = Math.cos(rad);
+      var newWidth = ceilWithPrecision(Math.abs(width * cos) + Math.abs(height * sin));
+      var newHeight = ceilWithPrecision(Math.abs(width * sin) + Math.abs(height * cos));
+      var canvas = create$1(newWidth, newHeight);
       var context = get2dContext(canvas);
-      var translateX = 0;
-      var translateY = 0;
-      angle = angle < 0 ? 360 + angle : angle;
-      if (angle === 90 || angle === 270) {
-        resize(canvas, canvas.height, canvas.width);
-      }
-      if (angle === 90 || angle === 180) {
-        translateX = canvas.width;
-      }
-      if (angle === 270 || angle === 180) {
-        translateY = canvas.height;
-      }
-      context.translate(translateX, translateY);
-      context.rotate(angle * Math.PI / 180);
-      context.drawImage(image, 0, 0);
+      context.translate(newWidth / 2, newHeight / 2);
+      context.rotate(rad);
+      context.drawImage(image, -width / 2, -height / 2);
       return fromCanvas(canvas, type);
-    }
-    function flip(ir, axis) {
+    };
+    var flip$2 = function (ir, axis) {
       return ir.toCanvas().then(function (canvas) {
         return applyFlip(canvas, ir.getType(), axis);
       });
-    }
-    function applyFlip(image, type, axis) {
-      var canvas = create(image.width, image.height);
+    };
+    var applyFlip = function (image, type, axis) {
+      var canvas = create$1(image.width, image.height);
       var context = get2dContext(canvas);
       if (axis === 'v') {
         context.scale(1, -1);
@@ -613,30 +761,20 @@
         context.drawImage(image, -canvas.width, 0);
       }
       return fromCanvas(canvas, type);
-    }
+    };
 
     var flip$1 = function (ir, axis) {
-      return flip(ir, axis);
+      return flip$2(ir, axis);
     };
     var rotate$1 = function (ir, angle) {
-      return rotate(ir, angle);
-    };
-
-    var keys = Object.keys;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i);
-      }
+      return rotate$2(ir, angle);
     };
 
     var sendRequest = function (url, headers, withCredentials) {
       if (withCredentials === void 0) {
         withCredentials = false;
       }
-      return new Promise(function (resolve) {
+      return new Promise$1(function (resolve) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
@@ -648,7 +786,7 @@
         };
         xhr.open('GET', url, true);
         xhr.withCredentials = withCredentials;
-        each$1(headers, function (value, key) {
+        each(headers, function (value, key) {
           xhr.setRequestHeader(key, value);
         });
         xhr.responseType = 'blob';
@@ -656,7 +794,7 @@
       });
     };
     var readBlobText = function (blob) {
-      return new Promise(function (resolve, reject) {
+      return new Promise$1(function (resolve, reject) {
         var reader = new FileReader();
         reader.onload = function () {
           resolve(reader.result);
@@ -726,7 +864,7 @@
     };
     var handleHttpError = function (status) {
       var message = getHttpErrorMsg(status);
-      return Promise.reject(message);
+      return Promise$1.reject(message);
     };
     var getServiceErrorMsg = function (type) {
       return find(friendlyServiceErrors, function (error) {
@@ -748,7 +886,7 @@
     var handleServiceError = function (blob) {
       return readBlobText(blob).then(function (text) {
         var serviceError = getServiceError(text);
-        return Promise.reject(serviceError);
+        return Promise$1.reject(serviceError);
       });
     };
     var handleServiceErrorResponse = function (status, blob) {
@@ -772,12 +910,12 @@
         'tiny-api-key': apiKey
       };
       return sendRequest(appendApiKey(url, apiKey), headers).then(function (result) {
-        return isError(result.status) ? handleServiceErrorResponse(result.status, result.blob) : Promise.resolve(result.blob);
+        return isError(result.status) ? handleServiceErrorResponse(result.status, result.blob) : Promise$1.resolve(result.blob);
       });
     };
     var requestBlob = function (url, withCredentials) {
       return sendRequest(url, {}, withCredentials).then(function (result) {
-        return isError(result.status) ? handleHttpError(result.status) : Promise.resolve(result.blob);
+        return isError(result.status) ? handleHttpError(result.status) : Promise$1.resolve(result.blob);
       });
     };
     var getUrl = function (url, apiKey, withCredentials) {
@@ -850,9 +988,9 @@
       }
     };
 
-    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+    typeof window !== 'undefined' ? window : Function('return this;')();
 
-    var child = function (scope, predicate) {
+    var child$1 = function (scope, predicate) {
       var pred = function (node) {
         return predicate(SugarElement.fromDom(node));
       };
@@ -860,17 +998,17 @@
       return result.map(SugarElement.fromDom);
     };
 
-    var child$1 = function (scope, selector) {
-      return child(scope, function (e) {
+    var child = function (scope, selector) {
+      return child$1(scope, function (e) {
         return is(e, selector);
       });
     };
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.URI');
+    var global = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var getToolbarItems = function (editor) {
       return editor.getParam('imagetools_toolbar', 'rotateleft rotateright flipv fliph editimage imageoptions');
@@ -897,11 +1035,11 @@
       return editor.getParam('images_reuse_filename', false, 'boolean');
     };
 
-    function getImageSize(img) {
+    var getImageSize = function (img) {
       var width, height;
-      function isPxValue(value) {
+      var isPxValue = function (value) {
         return /^[0-9\.]+px$/.test(value);
-      }
+      };
       width = img.style.width;
       height = img.style.height;
       if (width || height) {
@@ -922,8 +1060,8 @@
         };
       }
       return null;
-    }
-    function setImageSize(img, size) {
+    };
+    var setImageSize = function (img, size) {
       var width, height;
       if (size) {
         width = img.style.width;
@@ -940,17 +1078,17 @@
           img.setAttribute('height', String(size.h));
         }
       }
-    }
-    function getNaturalImageSize(img) {
+    };
+    var getNaturalImageSize = function (img) {
       return {
         w: img.naturalWidth,
         h: img.naturalHeight
       };
-    }
+    };
 
     var count = 0;
     var getFigureImg = function (elem) {
-      return child$1(SugarElement.fromDom(elem), 'img');
+      return child(SugarElement.fromDom(elem), 'img');
     };
     var isFigure = function (editor, elem) {
       return editor.dom.is(elem, 'figure');
@@ -996,13 +1134,13 @@
     };
     var isLocalImage = function (editor, img) {
       var url = img.src;
-      return url.indexOf('data:') === 0 || url.indexOf('blob:') === 0 || new global$4(url).host === editor.documentBaseURI.host;
+      return url.indexOf('data:') === 0 || url.indexOf('blob:') === 0 || new global(url).host === editor.documentBaseURI.host;
     };
     var isCorsImage = function (editor, img) {
-      return global$1.inArray(getCorsHosts(editor), new global$4(img.src).host) !== -1;
+      return global$3.inArray(getCorsHosts(editor), new global(img.src).host) !== -1;
     };
     var isCorsWithCredentialsImage = function (editor, img) {
-      return global$1.inArray(getCredentialsHosts(editor), new global$4(img.src).host) !== -1;
+      return global$3.inArray(getCredentialsHosts(editor), new global(img.src).host) !== -1;
     };
     var defaultFetchImage = function (editor, img) {
       if (isCorsImage(editor, img)) {
@@ -1016,7 +1154,7 @@
       }
       return imageToBlob$1(img);
     };
-    var imageToBlob$2 = function (editor, img) {
+    var imageToBlob = function (editor, img) {
       return getFetchImage(editor).fold(function () {
         return defaultFetchImage(editor, img);
       }, function (customFetchImage) {
@@ -1026,9 +1164,9 @@
     var findBlob = function (editor, img) {
       var blobInfo = editor.editorUpload.blobCache.getByUri(img.src);
       if (blobInfo) {
-        return global$3.resolve(blobInfo.blob());
+        return global$1.resolve(blobInfo.blob());
       }
-      return imageToBlob$2(editor, img);
+      return imageToBlob(editor, img);
     };
     var startTimedUpload = function (editor, imageUploadTimerState) {
       var imageUploadTimer = global$2.setEditorTimeout(editor, function () {
@@ -1066,7 +1204,7 @@
         });
         blobCache.add(blobInfo);
         editor.undoManager.transact(function () {
-          function imageLoadedHandler() {
+          var imageLoadedHandler = function () {
             editor.$(selectedImage).off('load', imageLoadedHandler);
             editor.nodeChanged();
             if (uploadImmediately) {
@@ -1075,7 +1213,7 @@
               cancelTimedUpload(imageUploadTimerState);
               startTimedUpload(editor, imageUploadTimerState);
             }
-          }
+          };
           editor.$(selectedImage).on('load', imageLoadedHandler);
           if (size) {
             editor.$(selectedImage).attr({
@@ -1106,24 +1244,22 @@
         });
       };
     };
-    var rotate$2 = function (editor, imageUploadTimerState, angle) {
+    var rotate = function (editor, imageUploadTimerState, angle) {
       return function () {
         var imgOpt = getSelectedImage(editor);
-        var flippedSize = imgOpt.fold(function () {
-          return null;
-        }, function (img) {
+        var flippedSize = imgOpt.map(function (img) {
           var size = getImageSize(img.dom);
           return size ? {
             w: size.h,
             h: size.w
           } : null;
-        });
+        }).getOrNull();
         return selectedImageOperation(editor, imageUploadTimerState, function (imageResult) {
           return rotate$1(imageResult, angle);
         }, flippedSize)();
       };
     };
-    var flip$2 = function (editor, imageUploadTimerState, axis) {
+    var flip = function (editor, imageUploadTimerState, axis) {
       return function () {
         return selectedImageOperation(editor, imageUploadTimerState, function (imageResult) {
           return flip$1(imageResult, axis);
@@ -1131,7 +1267,7 @@
       };
     };
     var handleDialogBlob = function (editor, imageUploadTimerState, img, originalSize, blob) {
-      return blobToImage$1(blob).then(function (newImage) {
+      return blobToImage(blob).then(function (newImage) {
         var newSize = getNaturalImageSize(newImage);
         if (originalSize.w !== newSize.w || originalSize.h !== newSize.h) {
           if (getImageSize(img)) {
@@ -1142,7 +1278,6 @@
         return blob;
       }).then(blobToImageResult).then(function (imageResult) {
         return updateSelectedImage(editor, blob, imageResult, true, imageUploadTimerState, img);
-      }).catch(function () {
       });
     };
 
@@ -1194,8 +1329,7 @@
               });
               api.close();
             },
-            onCancel: function () {
-            },
+            onCancel: noop,
             onAction: function (api, details) {
               switch (details.name) {
               case saveState:
@@ -1231,12 +1365,12 @@
       };
     };
 
-    var register = function (editor, imageUploadTimerState) {
-      global$1.each({
-        mceImageRotateLeft: rotate$2(editor, imageUploadTimerState, -90),
-        mceImageRotateRight: rotate$2(editor, imageUploadTimerState, 90),
-        mceImageFlipVertical: flip$2(editor, imageUploadTimerState, 'v'),
-        mceImageFlipHorizontal: flip$2(editor, imageUploadTimerState, 'h'),
+    var register$2 = function (editor, imageUploadTimerState) {
+      global$3.each({
+        mceImageRotateLeft: rotate(editor, imageUploadTimerState, -90),
+        mceImageRotateRight: rotate(editor, imageUploadTimerState, 90),
+        mceImageFlipVertical: flip(editor, imageUploadTimerState, 'v'),
+        mceImageFlipHorizontal: flip(editor, imageUploadTimerState, 'h'),
         mceEditImage: makeOpen(editor, imageUploadTimerState)
       }, function (fn, cmd) {
         editor.addCommand(cmd, fn);
@@ -1259,47 +1393,64 @@
     };
 
     var register$1 = function (editor) {
+      var changeHandlers = [];
       var cmd = function (command) {
         return function () {
           return editor.execCommand(command);
         };
       };
+      var isEditableImage = function () {
+        return getSelectedImage(editor).exists(function (element) {
+          return getEditableImage(editor, element.dom).isSome();
+        });
+      };
+      var onSetup = function (api) {
+        var handler = function (isEditableImage) {
+          return api.setDisabled(!isEditableImage);
+        };
+        handler(isEditableImage());
+        changeHandlers = changeHandlers.concat([handler]);
+        return function () {
+          changeHandlers = filter(changeHandlers, function (h) {
+            return h !== handler;
+          });
+        };
+      };
+      editor.on('NodeChange', function () {
+        var isEditable = isEditableImage();
+        each$1(changeHandlers, function (handler) {
+          return handler(isEditable);
+        });
+      });
       editor.ui.registry.addButton('rotateleft', {
         tooltip: 'Rotate counterclockwise',
         icon: 'rotate-left',
-        onAction: cmd('mceImageRotateLeft')
+        onAction: cmd('mceImageRotateLeft'),
+        onSetup: onSetup
       });
       editor.ui.registry.addButton('rotateright', {
         tooltip: 'Rotate clockwise',
         icon: 'rotate-right',
-        onAction: cmd('mceImageRotateRight')
+        onAction: cmd('mceImageRotateRight'),
+        onSetup: onSetup
       });
       editor.ui.registry.addButton('flipv', {
         tooltip: 'Flip vertically',
         icon: 'flip-vertically',
-        onAction: cmd('mceImageFlipVertical')
+        onAction: cmd('mceImageFlipVertical'),
+        onSetup: onSetup
       });
       editor.ui.registry.addButton('fliph', {
         tooltip: 'Flip horizontally',
         icon: 'flip-horizontally',
-        onAction: cmd('mceImageFlipHorizontal')
+        onAction: cmd('mceImageFlipHorizontal'),
+        onSetup: onSetup
       });
       editor.ui.registry.addButton('editimage', {
         tooltip: 'Edit image',
         icon: 'edit-image',
         onAction: cmd('mceEditImage'),
-        onSetup: function (buttonApi) {
-          var setDisabled = function () {
-            var disabled = getSelectedImage(editor).forall(function (element) {
-              return getEditableImage(editor, element.dom).isNone();
-            });
-            buttonApi.setDisabled(disabled);
-          };
-          editor.on('NodeChange', setDisabled);
-          return function () {
-            editor.off('NodeChange', setDisabled);
-          };
-        }
+        onSetup: onSetup
       });
       editor.ui.registry.addButton('imageoptions', {
         tooltip: 'Image options',
@@ -1308,20 +1459,18 @@
       });
       editor.ui.registry.addContextMenu('imagetools', {
         update: function (element) {
-          return getEditableImage(editor, element).fold(function () {
-            return [];
-          }, function (_) {
-            return [{
-                text: 'Edit image',
-                icon: 'edit-image',
-                onAction: cmd('mceEditImage')
-              }];
-          });
+          return getEditableImage(editor, element).map(function (_) {
+            return {
+              text: 'Edit image',
+              icon: 'edit-image',
+              onAction: cmd('mceEditImage')
+            };
+          }).toArray();
         }
       });
     };
 
-    var register$2 = function (editor) {
+    var register = function (editor) {
       editor.ui.registry.addContextToolbar('imagetools', {
         items: getToolbarItems(editor),
         predicate: function (elem) {
@@ -1333,12 +1482,12 @@
     };
 
     function Plugin () {
-      global.add('imagetools', function (editor) {
+      global$4.add('imagetools', function (editor) {
         var imageUploadTimerState = Cell(0);
         var lastSelectedImageState = Cell(null);
-        register(editor, imageUploadTimerState);
+        register$2(editor, imageUploadTimerState);
         register$1(editor);
-        register$2(editor);
+        register(editor);
         setup(editor, imageUploadTimerState, lastSelectedImageState);
       });
     }
