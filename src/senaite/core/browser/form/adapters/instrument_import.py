@@ -24,7 +24,8 @@ class EditForm(EditFormAdapterBase):
     def submit(self, data):
         form = self.request.form
         upload_file = form.get("instrument_results_file")
-        if not upload_file.file.getvalue():
+
+        if not upload_file.filename:
             self.add_status_message(
                 title="Error",
                 message=_("No import file selected"),
