@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "input[type='number']",
       "input[type='checkbox']",
       "input[type='radio']",
+      "input[type='file']",
       "select:not([multiple])",
       "textarea",
     ]
