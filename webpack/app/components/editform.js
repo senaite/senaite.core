@@ -572,6 +572,15 @@ class EditForm {
   }
 
   /**
+   * trigger ajax loading events
+   */
+  loading(toggle=true) {
+    let event_type = toggle ? "ajaxStart" : "ajaxStop";
+    let event = new CustomEvent(event_type);
+    document.dispatchEvent(event);
+  }
+
+  /**
    * notify a field change to the server ajax endpoint
    */
   notify(form, field, endpoint) {
@@ -641,6 +650,7 @@ class EditForm {
    */
   ajax_request(form, url, init) {
     // send ajax request to server
+    this.loading(true);
     let request = new Request(url, init);
     fetch(request)
       .then((response) => {
@@ -652,9 +662,11 @@ class EditForm {
       .then((data) => {
         console.debug("EditForm::ajax_request --> ", data);
         this.update_form(form, data);
+        this.loading(false);
       })
       .catch((error) => {
         console.error(error);
+        this.loading(false);
       });
   }
 
