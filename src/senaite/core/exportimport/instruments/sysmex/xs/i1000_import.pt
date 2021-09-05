@@ -14,7 +14,7 @@
     data from an unique Analysis Service.
     </p>
     <!-- If analysis service is selected we have to specify the Default Result Key -->
-    <div name="default_result" style='display:none'>
+    <div name="default_result">
         <label for='default_result'>Default Result Key</label>
         <input type="text" name="default_result" id="default_result">
         Please, introduce the result key column to use as a default result.
