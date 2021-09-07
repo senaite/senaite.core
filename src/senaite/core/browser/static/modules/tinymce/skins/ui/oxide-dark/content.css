@@ -322,11 +322,15 @@ pre[class*="language-"] {
 .mce-content-body div.mce-resizehandle:nth-of-type(4) {
   cursor: nesw-resize;
 }
+.mce-content-body .mce-resize-backdrop {
+  z-index: 10000;
+}
 .mce-content-body .mce-clonedresizable {
+  cursor: default;
   opacity: 0.5;
   outline: 1px dashed black;
   position: absolute;
-  z-index: 10000;
+  z-index: 10001;
 }
 .mce-content-body .mce-clonedresizable.mce-resizetable-columns th,
 .mce-content-body .mce-clonedresizable.mce-resizetable-columns td {
@@ -346,7 +350,7 @@ pre[class*="language-"] {
   padding: 5px;
   position: absolute;
   white-space: nowrap;
-  z-index: 10001;
+  z-index: 10002;
 }
 .tox-rtc-user-selection {
   position: relative;

@@ -1,4 +1,4 @@
-/** @license React v17.0.1
+/** @license React v17.0.2
  * react-dom-server.browser.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -26,7 +26,7 @@
   }
 
   // TODO: this is special because it gets imported during build.
-  var ReactVersion = '17.0.1';
+  var ReactVersion = '17.0.2';
 
   var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 

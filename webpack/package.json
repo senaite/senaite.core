@@ -19,16 +19,16 @@
   "author": "RIDING BYTES & NARALABS",
   "license": "GPL-2.0-only",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
-    "bootstrap": "^4.5.3",
-    "bootstrap-confirmation2": "^4.1.0",
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "bootstrap": "^4.6.0",
+    "bootstrap-confirmation2": "^4.2.1",
     "jquery": "<3",
     "jquery-form": "^4.3.0",
     "jquery-migrate": "<2",
     "popper.js": "^1.16.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "tinymce": "^5.6.2"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tinymce": "^5.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

@@ -11,7 +11,7 @@
       for="*"
       permission="cmf.ModifyPortalContent"
       class=".ajax.FormView"
-      allowed_attributes="initialized modified"
+      allowed_attributes="initialized modified submit"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 

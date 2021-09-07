@@ -97,10 +97,6 @@ window.bika.lims.controllers =  {
     ".portaltype-supplyorder.template-base_edit":
         ['SupplyOrderEditView'],
 
-    // Imports
-    ".portaltype-plone-site.template-import":
-        ['InstrumentImportView'],
-
     // Batches
     ".portaltype-batchfolder":
         ['BatchFolderView'],

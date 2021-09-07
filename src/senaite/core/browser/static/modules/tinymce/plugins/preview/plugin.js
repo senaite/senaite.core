@@ -4,16 +4,16 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.9.1 (2021-08-27)
  */
 (function () {
     'use strict';
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var getContentStyle = function (editor) {
       return editor.getParam('content_style', '', 'string');
@@ -51,13 +51,13 @@
       var encode = editor.dom.encode;
       var contentStyle = getContentStyle(editor);
       headHtml += '<base href="' + encode(editor.documentBaseURI.getURI()) + '">';
+      var cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
+      global.each(editor.contentCSS, function (url) {
+        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
+      });
       if (contentStyle) {
         headHtml += '<style type="text/css">' + contentStyle + '</style>';
       }
-      var cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
-      global$2.each(editor.contentCSS, function (url) {
-        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
-      });
       var bodyId = getBodyId(editor);
       var bodyClass = getBodyClass(editor);
       var isMetaKeyPressed = global$1.mac ? 'e.metaKey' : 'e.ctrlKey && !e.altKey';
@@ -92,33 +92,32 @@
       dataApi.focus('close');
     };
 
-    var register = function (editor) {
+    var register$1 = function (editor) {
       editor.addCommand('mcePreview', function () {
         open(editor);
       });
     };
 
-    var register$1 = function (editor) {
+    var register = function (editor) {
+      var onAction = function () {
+        return editor.execCommand('mcePreview');
+      };
       editor.ui.registry.addButton('preview', {
         icon: 'preview',
         tooltip: 'Preview',
-        onAction: function () {
-          return editor.execCommand('mcePreview');
-        }
+        onAction: onAction
       });
       editor.ui.registry.addMenuItem('preview', {
         icon: 'preview',
         text: 'Preview',
-        onAction: function () {
-          return editor.execCommand('mcePreview');
-        }
+        onAction: onAction
       });
     };
 
     function Plugin () {
-      global.add('preview', function (editor) {
-        register(editor);
+      global$2.add('preview', function (editor) {
         register$1(editor);
+        register(editor);
       });
     }
 

@@ -22,6 +22,7 @@ class EditForm {
     // bind event handlers
     this.on_mutated = this.on_mutated.bind(this);
     this.on_modified = this.on_modified.bind(this);
+    this.on_submit = this.on_submit.bind(this);
     this.on_blur = this.on_blur.bind(this);
     this.on_click = this.on_click.bind(this);
     this.on_change = this.on_change.bind(this);
@@ -64,6 +65,10 @@ class EditForm {
     // bind custom form event handlers
     form.addEventListener("modified", this.on_modified);
     form.addEventListener("mutated", this.on_mutated);
+
+    if (form.hasAttribute("ajax-submit")) {
+      form.addEventListener("submit", this.on_submit);
+    }
   }
 
   /**
@@ -170,16 +175,32 @@ class EditForm {
   }
 
   /**
-   * set field readable only
+   * set field readonly
    */
   set_field_readonly(field, message=null) {
     field.setAttribute("readonly", "");
-    let existing_message = field.parentElement.querySelector("div.readonly-message");
+    let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
     } else {
       let div = document.createElement("div");
-      div.className = "readonly-message text-info small";
+      div.className = "message text-secondary small";
+      div.innerHTML = _t(message);
+      field.parentElement.appendChild(div);
+    }
+  }
+
+  /**
+   * set field editable
+   */
+  set_field_editable(field, message=null) {
+    field.removeAttribute("readonly");
+    let existing_message = field.parentElement.querySelector("div.message");
+    if (existing_message) {
+      existing_message.innerHTML = _t(message)
+    } else {
+      let div = document.createElement("div");
+      div.className = "message text-secondary small";
       div.innerHTML = _t(message);
       field.parentElement.appendChild(div);
     }
@@ -214,12 +235,19 @@ class EditForm {
 
   /**
    * add a status message
+   * @param {string} message the message to display in the alert
+   * @param {string} level   one of "info", "success", "warning", "danger"
+   * @param {object} options additional options to control the behavior
+   *                 - option {string} title: alert title in bold
+   *                 - option {string} flush: remove previous alerts
    */
-  add_statusmessage(message, level="info") {
-    let el  = document.createElement("div");
+  add_statusmessage(message, level="info", options) {
+    options = options || {};
+    let el = document.createElement("div");
+    let title = options.title || `${level.charAt(0).toUpperCase() + level.slice(1)}`;
     el.innerHTML = `
       <div class="alert alert-${level} alert-dismissible fade show" role="alert">
-        <strong>${level.charAt(0).toUpperCase() + level.slice(1)}</strong>
+        <strong>${title}</strong>
         ${_t(message)}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -228,6 +256,13 @@ class EditForm {
     `
     el = el.firstElementChild
     let parent = document.getElementById("viewlet-above-content");
+
+    // clear put previous alerts
+    if (options.flush) {
+      for (let el of parent.querySelectorAll(".alert")) {
+        el.remove();
+      }
+    }
     parent.appendChild(el);
     return el;
   }
@@ -286,10 +321,13 @@ class EditForm {
     let hide = data.hide || [];
     let show = data.show || [];
     let readonly = data.readonly || [];
+    let editable = data.editable || [];
     let errors = data.errors || [];
     let messages = data.messages || [];
     let notifications = data.notifications || [];
     let updates = data.updates || [];
+    let html = data.html || [];
+    let attributes = data.attributes || [];
 
     // render field errors
     for (const record of errors) {
@@ -310,7 +348,7 @@ class EditForm {
       ({message, level, ...rest} = record);
       let level = level || "info";
       let message = message || "";
-      this.add_statusmessage(message, level);
+      this.add_statusmessage(message, level, rest);
     }
 
     // render notification messages
@@ -348,6 +386,15 @@ class EditForm {
       this.set_field_readonly(el, message);
     }
 
+    // editable fields
+    for (const record of editable) {
+      let name, message, rest;
+      ({name, message, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
+      if (!el) continue;
+      this.set_field_editable(el, message);
+    }
+
     // updated fields
     for (const record of updates) {
       let name, value, rest;
@@ -355,6 +402,32 @@ class EditForm {
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_value(el, value);
+    }
+
+    // html
+    for (const record of html) {
+      let selector, html, rest;
+      ({selector, html, ...rest} = record);
+      let el = form.querySelector(selector);
+      if (!el) continue;
+      if (rest.append) {
+        el.innerHTML = el.innerHTML + html;
+      } else {
+        el.innerHTML = html;
+      }
+    }
+
+    // set attribute to an element
+    for (const record of attributes) {
+      let selector, name, value, rest;
+      ({selector, name, value, ...rest} = record);
+      let el = form.querySelector(selector);
+      if (!el) continue;
+      if (value === null) {
+        el.removeAttribute(name);
+      } else {
+        el.addAttribute(name, value);
+      }
     }
 
     // disallow submit when field errors are present
@@ -513,6 +586,15 @@ class EditForm {
   }
 
   /**
+   * trigger ajax loading events
+   */
+  loading(toggle=true) {
+    let event_type = toggle ? "ajaxStart" : "ajaxStop";
+    let event = new CustomEvent(event_type);
+    document.dispatchEvent(event);
+  }
+
+  /**
    * notify a field change to the server ajax endpoint
    */
   notify(form, field, endpoint) {
@@ -524,7 +606,7 @@ class EditForm {
   }
 
   /**
-   * send ajax request to the server
+   * send application/json to the server
    */
   ajax_send(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
@@ -534,7 +616,7 @@ class EditForm {
       "form": this.get_form_data(form)
     }, data)
 
-    console.debug("AJAX SEND --> ", payload)
+    console.debug("EditForm::ajax_send --> ", payload)
 
     let init = {
       method: "POST",
@@ -546,8 +628,42 @@ class EditForm {
       },
     }
 
+    this.ajax_request(form, ajax_url, init);
+
+  }
+
+  /**
+   * send multipart/form-data to the server
+   */
+  ajax_submit(form, data, endpoint) {
+    let view_url = document.body.dataset.viewUrl;
+    let ajax_url = `${view_url}/ajax_form/${endpoint}`;
+
+    let payload = new FormData(form);
+
+    // update form data
+    for(let [key, value] of Object.entries(data)) {
+      payload.set(key, value);
+    }
+
+    console.debug("EditForm::ajax_submit --> ", payload)
+
+    let init = {
+      method: "POST",
+      body: payload,
+    }
+
+    this.ajax_request(form, ajax_url, init);
+  }
+
+
+  /**
+   * execute ajax request
+   */
+  ajax_request(form, url, init) {
     // send ajax request to server
-    let request = new Request(ajax_url, init);
+    this.loading(true);
+    let request = new Request(url, init);
     fetch(request)
       .then((response) => {
         if (!response.ok) {
@@ -556,11 +672,13 @@ class EditForm {
         return response.json();
       })
       .then((data) => {
-        console.debug("GOT JSON RESPONSE --> ", data);
+        console.debug("EditForm::ajax_request --> ", data);
         this.update_form(form, data);
+        this.loading(false);
       })
       .catch((error) => {
         console.error(error);
+        this.loading(false);
       });
   }
 
@@ -572,7 +690,7 @@ class EditForm {
   }
 
   /**
-   * Checks if the element is a select field
+   * Checks if the elment is a select field
    */
   is_select(el) {
     return el.tagName == "SELECT";
@@ -652,7 +770,7 @@ class EditForm {
    * event handler for `mutated` event
    */
   on_mutated(event) {
-    console.debug("EVENT -> on_mutated");
+    console.debug("EditForm::on_mutated");
     let form = event.detail.form;
     let mutations = event.detail.mutations;
     // reduce multiple mutations on the same node to one
@@ -670,17 +788,27 @@ class EditForm {
    * event handler for `modified` event
    */
   on_modified(event) {
-    console.debug("EVENT -> on_modified");
+    console.debug("EditForm::on_modified");
     let form = event.detail.form;
     let field = event.detail.field;
     this.notify(form, field, "modified");
   }
 
   /**
+   * event handler for `submit` event
+   */
+  on_submit(event) {
+    console.debug("EditForm::on_submit");
+    event.preventDefault();
+    let form = event.currentTarget;
+    this.ajax_submit(form, {}, "submit");
+  }
+
+  /**
    * event handler for `blur` event
    */
   on_blur(event) {
-    console.debug("EVENT -> on_blur");
+    console.debug("EditForm::on_blur");
     let el = event.currentTarget;
     this.modified(el);
   }
@@ -689,7 +817,7 @@ class EditForm {
    * event handler for `click` event
    */
   on_click(event) {
-    console.debug("EVENT -> on_click");
+    console.debug("EditForm::on_click");
     let el = event.currentTarget;
     this.modified(el);
   }
@@ -698,7 +826,7 @@ class EditForm {
    * event handler for `change` event
    */
   on_change(event) {
-    console.debug("EVENT -> on_change");
+    console.debug("EditForm::on_change");
     let el = event.currentTarget;
     this.modified(el);
   }

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.2 (2020-12-08)
+ * Version: 5.9.1 (2021-08-27)
  */
 (function () {
     'use strict';
@@ -23,7 +23,7 @@
       };
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var __assign = function () {
       __assign = Object.assign || function __assign(t) {
@@ -37,14 +37,38 @@
       };
       return __assign.apply(this, arguments);
     };
-    function __spreadArrays() {
-      for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-        s += arguments[i].length;
-      for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-          r[k] = a[j];
-      return r;
+    function __spreadArray(to, from, pack) {
+      if (pack || arguments.length === 2)
+        for (var i = 0, l = from.length, ar; i < l; i++) {
+          if (ar || !(i in from)) {
+            if (!ar)
+              ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+          }
+        }
+      return to.concat(ar || Array.prototype.slice.call(from));
     }
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
 
     var noop = function () {
     };
@@ -68,20 +92,14 @@
       return NONE;
     };
     var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
       var call = function (thunk) {
         return thunk();
       };
-      var id = function (n) {
-        return n;
-      };
+      var id = identity;
       var me = {
         fold: function (n, _s) {
           return n();
         },
-        is: never,
         isSome: never,
         isNone: always,
         getOr: id,
@@ -98,9 +116,9 @@
         bind: none,
         exists: never,
         forall: always,
-        filter: none,
-        equals: eq,
-        equals_: eq,
+        filter: function () {
+          return none();
+        },
         toArray: function () {
           return [];
         },
@@ -119,9 +137,6 @@
       var me = {
         fold: function (n, s) {
           return s(a);
-        },
-        is: function (v) {
-          return a === v;
         },
         isSome: always,
         isNone: never,
@@ -149,14 +164,6 @@
         },
         toString: function () {
           return 'some(' + a + ')';
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never, function (b) {
-            return elementEq(a, b);
-          });
         }
       };
       return me;
@@ -169,27 +176,6 @@
       none: none,
       from: from
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
 
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
@@ -231,14 +217,14 @@
       return r;
     };
     var foldr = function (xs, f, acc) {
-      eachr(xs, function (x) {
-        acc = f(acc, x);
+      eachr(xs, function (x, i) {
+        acc = f(acc, x, i);
       });
       return acc;
     };
     var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
+      each(xs, function (x, i) {
+        acc = f(acc, x, i);
       });
       return acc;
     };
@@ -270,11 +256,11 @@
       copy.sort(comparator);
       return copy;
     };
-    var get = function (xs, i) {
+    var get$1 = function (xs, i) {
       return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
     };
     var head = function (xs) {
-      return get(xs, 0);
+      return get$1(xs, 0);
     };
 
     var keys = Object.keys;
@@ -283,7 +269,7 @@
       return hasOwnProperty.call(obj, key);
     };
 
-    var generate = function (cases) {
+    var generate$1 = function (cases) {
       if (!isArray(cases)) {
         throw new Error('cases must be an array');
       }
@@ -308,13 +294,13 @@
         }
         constructors.push(key);
         adt[key] = function () {
-          var argLength = arguments.length;
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          var argLength = args.length;
           if (argLength !== value.length) {
             throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
-          }
-          var args = new Array(argLength);
-          for (var i = 0; i < args.length; i++) {
-            args[i] = arguments[i];
           }
           var match = function (branches) {
             var branchKeys = keys(branches);
@@ -331,10 +317,14 @@
           };
           return {
             fold: function () {
-              if (arguments.length !== cases.length) {
-                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + arguments.length);
+              var foldArgs = [];
+              for (var _i = 0; _i < arguments.length; _i++) {
+                foldArgs[_i] = arguments[_i];
               }
-              var target = arguments[count];
+              if (foldArgs.length !== cases.length) {
+                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
+              }
+              var target = foldArgs[count];
               return target.apply(null, args);
             },
             match: match,
@@ -350,9 +340,9 @@
       });
       return adt;
     };
-    var Adt = { generate: generate };
+    var Adt = { generate: generate$1 };
 
-    var comparison = Adt.generate([
+    Adt.generate([
       {
         bothErrors: [
           'error1',
@@ -395,9 +385,6 @@
     };
 
     var value = function (o) {
-      var is = function (v) {
-        return o === v;
-      };
       var or = function (_opt) {
         return value(o);
       };
@@ -429,7 +416,6 @@
         return Optional.some(o);
       };
       return {
-        is: is,
         isValue: always,
         isError: never,
         getOr: constant(o),
@@ -447,33 +433,30 @@
         toOptional: toOptional
       };
     };
-    var error = function (message) {
+    var error$1 = function (message) {
       var getOrThunk = function (f) {
         return f();
       };
       var getOrDie = function () {
         return die(String(message))();
       };
-      var or = function (opt) {
-        return opt;
-      };
+      var or = identity;
       var orThunk = function (f) {
         return f();
       };
       var map = function (_f) {
-        return error(message);
+        return error$1(message);
       };
       var mapError = function (f) {
-        return error(f(message));
+        return error$1(f(message));
       };
       var bind = function (_f) {
-        return error(message);
+        return error$1(message);
       };
       var fold = function (onError, _) {
         return onError(message);
       };
       return {
-        is: never,
         isValue: never,
         isError: always,
         getOr: identity,
@@ -493,12 +476,12 @@
     };
     var fromOption = function (opt, err) {
       return opt.fold(function () {
-        return error(err);
+        return error$1(err);
       }, value);
     };
     var Result = {
       value: value,
-      error: error,
+      error: error$1,
       fromOption: fromOption
     };
 
@@ -656,7 +639,7 @@
       };
     };
 
-    var get$1 = function (patternsState) {
+    var get = function (patternsState) {
       var setPatterns = function (newPatterns) {
         var normalized = partition(map(newPatterns, normalizePattern));
         if (normalized.errors.length > 0) {
@@ -666,7 +649,7 @@
         patternsState.set(createPatternSet(normalized.values));
       };
       var getPatterns = function () {
-        return __spreadArrays(map(patternsState.get().inlinePatterns, denormalizePattern), map(patternsState.get().blockPatterns, denormalizePattern));
+        return __spreadArray(__spreadArray([], map(patternsState.get().inlinePatterns, denormalizePattern)), map(patternsState.get().blockPatterns, denormalizePattern));
       };
       return {
         setPatterns: setPatterns,
@@ -676,7 +659,7 @@
 
     var Global = typeof window !== 'undefined' ? window : Function('return this;')();
 
-    var error$1 = function () {
+    var error = function () {
       var args = [];
       for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
@@ -741,7 +724,7 @@
     var getPatternSet = function (editor) {
       var patterns = editor.getParam('textpattern_patterns', defaultPatterns, 'array');
       if (!isArray(patterns)) {
-        error$1('The setting textpattern_patterns should be an array');
+        error('The setting textpattern_patterns should be an array');
         return {
           inlinePatterns: [],
           blockPatterns: []
@@ -749,7 +732,7 @@
       }
       var normalized = partition(map(patterns, normalizePattern));
       each(normalized.errors, function (err) {
-        return error$1(err.message, err.pattern);
+        return error(err.message, err.pattern);
       });
       return createPatternSet(normalized.values);
     };
@@ -764,18 +747,18 @@
       }
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.VK');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     var zeroWidth = '\uFEFF';
     var nbsp = '\xA0';
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.dom.TextSeeker');
+    var global = tinymce.util.Tools.resolve('tinymce.dom.TextSeeker');
 
     var point = function (container, offset) {
       return {
@@ -834,7 +817,7 @@
       }
     };
 
-    var DOM = global$4.DOM;
+    var DOM = global$1.DOM;
     var alwaysNext = function (startNode) {
       return function (node) {
         return startNode === node ? -1 : 0;
@@ -854,7 +837,7 @@
       if (isText(node) && offset >= 0) {
         return Optional.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
+        var textSeeker = global(DOM);
         return Optional.from(textSeeker.backwards(node, offset, alwaysNext(node), rootNode)).map(function (prev) {
           return point(prev.container, prev.container.data.length);
         });
@@ -864,7 +847,7 @@
       if (isText(node) && offset >= node.length) {
         return Optional.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
+        var textSeeker = global(DOM);
         return Optional.from(textSeeker.forwards(node, offset, alwaysNext(node), rootNode)).map(function (prev) {
           return point(prev.container, 0);
         });
@@ -878,7 +861,7 @@
       if (offset >= 0 && offset <= text.length) {
         return Optional.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
+        var textSeeker = global(DOM);
         return Optional.from(textSeeker.backwards(node, offset, alwaysNext(node), rootNode)).bind(function (prev) {
           var prevText = prev.container.data;
           return scanLeft(prev.container, offset + prevText.length, rootNode);
@@ -893,14 +876,14 @@
       if (offset <= text.length) {
         return Optional.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
+        var textSeeker = global(DOM);
         return Optional.from(textSeeker.forwards(node, offset, alwaysNext(node), rootNode)).bind(function (next) {
           return scanRight(next.container, offset - text.length, rootNode);
         });
       }
     };
     var repeatLeft = function (dom, node, offset, process, rootNode) {
-      var search = global$5(dom, isBoundary(dom));
+      var search = global(dom, isBoundary(dom));
       return Optional.from(search.backwards(node, offset, process, rootNode));
     };
 
@@ -979,7 +962,7 @@
         });
       });
     };
-    var applyPattern = function (editor, match) {
+    var applyPattern$1 = function (editor, match) {
       var dom = editor.dom;
       var pattern = match.pattern;
       var rng = resolvePathRange(dom.getRoot(), match.range).getOrDie('Unable to resolve path range');
@@ -1000,13 +983,13 @@
       });
       return true;
     };
-    var findPattern = function (patterns, text) {
+    var findPattern$1 = function (patterns, text) {
       var nuText = text.replace(nbsp, ' ');
       return find(patterns, function (pattern) {
         return text.indexOf(pattern.start) === 0 || nuText.indexOf(pattern.start) === 0;
       });
     };
-    var findPatterns = function (editor, patterns) {
+    var findPatterns$1 = function (editor, patterns) {
       var dom = editor.dom;
       var rng = editor.selection.getRng();
       return getParentBlock(editor, rng).filter(function (block) {
@@ -1015,9 +998,9 @@
         return block !== null && matchesForcedRootBlock;
       }).bind(function (block) {
         var blockText = block.textContent;
-        var matchedPattern = findPattern(patterns, blockText);
+        var matchedPattern = findPattern$1(patterns, blockText);
         return matchedPattern.map(function (pattern) {
-          if (global$3.trim(blockText).length === pattern.start.length) {
+          if (global$2.trim(blockText).length === pattern.start.length) {
             return [];
           }
           return [{
@@ -1027,19 +1010,19 @@
         });
       }).getOr([]);
     };
-    var applyMatches = function (editor, matches) {
+    var applyMatches$1 = function (editor, matches) {
       if (matches.length === 0) {
         return;
       }
       var bookmark = editor.selection.getBookmark();
       each(matches, function (match) {
-        return applyPattern(editor, match);
+        return applyPattern$1(editor, match);
       });
       editor.selection.moveToBookmark(bookmark);
     };
 
     var unique = 0;
-    var generate$1 = function (prefix) {
+    var generate = function (prefix) {
       var date = new Date();
       var time = date.getTime();
       var random = Math.floor(Math.random() * 1000000000);
@@ -1146,7 +1129,7 @@
         });
       });
     };
-    var findPattern$1 = function (editor, block, details) {
+    var findPattern = function (editor, block, details) {
       var dom = editor.dom;
       var root = dom.getRoot();
       var pattern = details.pattern;
@@ -1199,7 +1182,7 @@
           }
           var patternsWithoutCurrent = patterns.slice();
           patternsWithoutCurrent.splice(i, 1);
-          var result = findPattern$1(editor, block, {
+          var result = findPattern(editor, block, {
             pattern: pattern,
             remainingPatterns: patternsWithoutCurrent,
             position: endSpot
@@ -1211,7 +1194,7 @@
         return Optional.none();
       });
     };
-    var applyPattern$1 = function (editor, pattern, patternRange) {
+    var applyPattern = function (editor, pattern, patternRange) {
       editor.selection.setRng(patternRange);
       if (pattern.type === 'inline-format') {
         each(pattern.format, function (format) {
@@ -1224,7 +1207,7 @@
     var applyReplacementPattern = function (editor, pattern, marker, isRoot) {
       var markerRange = rangeFromMarker(editor.dom, marker);
       deleteRng(editor.dom, markerRange, isRoot);
-      applyPattern$1(editor, pattern, markerRange);
+      applyPattern(editor, pattern, markerRange);
     };
     var applyPatternWithContent = function (editor, pattern, startMarker, endMarker, isRoot) {
       var dom = editor.dom;
@@ -1238,10 +1221,10 @@
         end: endMarker.start
       };
       var patternRange = rangeFromMarker(dom, patternMarker);
-      applyPattern$1(editor, pattern, patternRange);
+      applyPattern(editor, pattern, patternRange);
     };
     var addMarkers = function (dom, matches) {
-      var markerPrefix = generate$1('mce_textpattern');
+      var markerPrefix = generate('mce_textpattern');
       var matchesWithEnds = foldr(matches, function (acc, match) {
         var endMarker = createMarker(dom, markerPrefix + ('_end' + acc.length), match.endRng);
         return acc.concat([__assign(__assign({}, match), { endMarker: endMarker })]);
@@ -1252,7 +1235,7 @@
         return acc.concat([__assign(__assign({}, match), { startMarker: startMarker })]);
       }, []);
     };
-    var findPatterns$1 = function (editor, patterns, space) {
+    var findPatterns = function (editor, patterns, space) {
       var rng = editor.selection.getRng();
       if (rng.collapsed === false) {
         return [];
@@ -1266,7 +1249,7 @@
         return result.matches;
       });
     };
-    var applyMatches$1 = function (editor, matches) {
+    var applyMatches = function (editor, matches) {
       if (matches.length === 0) {
         return;
       }
@@ -1293,16 +1276,16 @@
       if (!editor.selection.isCollapsed()) {
         return false;
       }
-      var inlineMatches = findPatterns$1(editor, patternSet.inlinePatterns, false);
-      var blockMatches = findPatterns(editor, patternSet.blockPatterns);
+      var inlineMatches = findPatterns(editor, patternSet.inlinePatterns, false);
+      var blockMatches = findPatterns$1(editor, patternSet.blockPatterns);
       if (blockMatches.length > 0 || inlineMatches.length > 0) {
         editor.undoManager.add();
         editor.undoManager.extra(function () {
           editor.execCommand('mceInsertNewLine');
         }, function () {
           editor.insertContent(zeroWidth);
-          applyMatches$1(editor, inlineMatches);
-          applyMatches(editor, blockMatches);
+          applyMatches(editor, inlineMatches);
+          applyMatches$1(editor, blockMatches);
           var range = editor.selection.getRng();
           var spot = textBefore(range.startContainer, range.startOffset, editor.dom.getRoot());
           editor.execCommand('mceInsertNewLine');
@@ -1321,10 +1304,10 @@
       return false;
     };
     var handleInlineKey = function (editor, patternSet) {
-      var inlineMatches = findPatterns$1(editor, patternSet.inlinePatterns, true);
+      var inlineMatches = findPatterns(editor, patternSet.inlinePatterns, true);
       if (inlineMatches.length > 0) {
         editor.undoManager.transact(function () {
-          applyMatches$1(editor, inlineMatches);
+          applyMatches(editor, inlineMatches);
         });
       }
     };
@@ -1334,10 +1317,11 @@
           return true;
         }
       }
+      return false;
     };
     var checkKeyCode = function (codes, event) {
       return checkKeyEvent(codes, event, function (code, event) {
-        return code === event.keyCode && global$2.modifierPressed(event) === false;
+        return code === event.keyCode && global$3.modifierPressed(event) === false;
       });
     };
     var checkCharCode = function (chars, event) {
@@ -1357,7 +1341,7 @@
       ];
       var keyCodes = [32];
       editor.on('keydown', function (e) {
-        if (e.keyCode === 13 && !global$2.modifierPressed(e)) {
+        if (e.keyCode === 13 && !global$3.modifierPressed(e)) {
           if (handleEnter(editor, patternsState.get())) {
             e.preventDefault();
           }
@@ -1370,7 +1354,7 @@
       });
       editor.on('keypress', function (e) {
         if (checkCharCode(charCodes, e)) {
-          global$1.setEditorTimeout(editor, function () {
+          global$4.setEditorTimeout(editor, function () {
             handleInlineKey(editor, patternsState.get());
           });
         }
@@ -1378,10 +1362,10 @@
     };
 
     function Plugin () {
-      global.add('textpattern', function (editor) {
+      global$5.add('textpattern', function (editor) {
         var patternsState = Cell(getPatternSet(editor));
         setup(editor, patternsState);
-        return get$1(patternsState);
+        return get(patternsState);
       });
     }
 

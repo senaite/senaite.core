@@ -37,12 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Ajax Edit Form Handler
   var form = new EditForm({
-    form_selectors: ["form[name='edit_form']"],
+    form_selectors: [
+      "form[name='edit_form']",
+      "form.senaite-ajax-form",
+    ],
     field_selectors: [
       "input[type='text']",
       "input[type='number']",
       "input[type='checkbox']",
       "input[type='radio']",
+      "input[type='file']",
       "select:not([multiple])",
       "textarea",
     ]
