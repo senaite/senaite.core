@@ -894,8 +894,27 @@ class AnalysisResultsImporter(Logger):
                              "analysis_result": str(analysis_with_calc.getResult())}
                 )
 
+    def override_analysis_result(self, analysis):
+        """Checks if the result shall be overwritten or not
+        """
+        result = analysis.getResult()
+        override = self.getOverride()
+        # analysis has non-empty result, but it is not allowed to override
+        if result and override[0] is False:
+            return False
+        return True
 
     def _process_analysis(self, objid, analysis, values):
+        # Check if the current analysis result can be overwritten
+        if not self.override_analysis_result(analysis):
+            keyword = analysis.getKeyword()
+            result = analysis.getResult()
+            self.log(
+                "Analysis '{keyword}' has existing result of {result}, which "
+                "is kept due to the no-override option selected".format(
+                    keyword=keyword, result=result))
+            return False
+
         resultsaved = False
         acode = analysis.getKeyword()
         defresultkey = values.get("DefaultResult", "")
@@ -949,7 +968,7 @@ class AnalysisResultsImporter(Logger):
 
         # Set result if present.
         res = values.get(defresultkey, '')
-        if res or res == 0 or self._override[1] == True:
+        if res or res == 0 or self._override[1]:
 
             # handle non-floating values in result options
             result_options = analysis.getResultOptions()
@@ -964,7 +983,7 @@ class AnalysisResultsImporter(Logger):
                 analysis.setResultCaptureDate(capturedate)
             resultsaved = True
 
-        if resultsaved == False:
+        if resultsaved is False:
             self.log(
                 "${request_id} result for '${analysis_keyword}': '${result}'",
                 mapping={"request_id": objid,
