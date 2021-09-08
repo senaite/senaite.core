@@ -22,14 +22,12 @@ import codecs
 from datetime import datetime
 
 import six
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
-from bika.lims.workflow import doActionFor
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from senaite.core.exportimport.instruments.logger import Logger
@@ -885,7 +883,7 @@ class AnalysisResultsImporter(Logger):
             # analysis is a dependent on that calculated analysis
             calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
             if calc_passed:
-                api.do_transition_for(analysis_with_calc, "submit")
+                self.save_submit_analysis(analysis_with_calc)
                 self.log(
                     "${request_id}: calculated result for "
                     "'${analysis_keyword}': '${analysis_result}'",
@@ -893,6 +891,14 @@ class AnalysisResultsImporter(Logger):
                              "analysis_keyword": analysis_with_calc.getKeyword(),
                              "analysis_result": str(analysis_with_calc.getResult())}
                 )
+
+    def save_submit_analysis(self, analysis):
+        """Submit analysis and ignore errors
+        """
+        try:
+            api.do_transition_for(analysis, "submit")
+        except api.APIError:
+            pass
 
     def override_analysis_result(self, analysis):
         """Checks if the result shall be overwritten or not
@@ -991,7 +997,7 @@ class AnalysisResultsImporter(Logger):
                          "result": ""})
 
         if resultsaved:
-            doActionFor(analysis, 'submit')
+            self.save_submit_analysis(analysis)
             self.calculateTotalResults(objid, analysis)
             fields_to_reindex.append('Result')
 
