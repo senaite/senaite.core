@@ -929,9 +929,9 @@ class AnalysisResultsImporter(Logger):
         if "DateTime" in values.keys():
             try:
                 dt = values.get('DateTime')
-                capturedate = DateTime(datetime.strptime(dt,
-                                                         '%Y%m%d %H:%M:%S'))
-            except:
+                capturedate = DateTime(
+                    datetime.strptime(dt, '%Y%m%d %H:%M:%S'))
+            except Exception:
                 capturedate = None
                 pass
             del values['DateTime']
@@ -940,7 +940,7 @@ class AnalysisResultsImporter(Logger):
         # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-                   and analysis.getInterimFields() or []
+            and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
@@ -1002,9 +1002,9 @@ class AnalysisResultsImporter(Logger):
             fields_to_reindex.append('Result')
 
         if (resultsaved) \
-            and values.get('Remarks', '') \
-            and analysis.portal_type == 'Analysis' \
-            and (analysis.getRemarks() != '' or self._override[1] == True):
+           and values.get('Remarks', '') \
+           and analysis.portal_type == 'Analysis' \
+           and (analysis.getRemarks() != '' or self._override[1] is True):
             analysis.setRemarks(values['Remarks'])
             fields_to_reindex.append('Remarks')
 
