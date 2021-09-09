@@ -976,20 +976,22 @@ class AnalysisResultsImporter(Logger):
 
         # Set result if present.
         res = values.get(defresultkey, '')
-        if res or res == 0 or self._override[1]:
+        calc = analysis.getCalculation()
 
-            # handle non-floating values in result options
-            result_options = analysis.getResultOptions()
-            if result_options:
-                result_values = map(
-                    lambda r: r.get("ResultValue"), result_options)
-                if "{:.0f}".format(res) in result_values:
-                    res = int(res)
-
-            analysis.setResult(res)
-            if capturedate:
-                analysis.setResultCaptureDate(capturedate)
-            resultsaved = True
+        # don't set results on calculated analyses
+        if not calc:
+            if api.is_floatable(res) or self._override[1]:
+                # handle non-floating values in result options
+                result_options = analysis.getResultOptions()
+                if result_options:
+                    result_values = map(
+                        lambda r: r.get("ResultValue"), result_options)
+                    if "{:.0f}".format(res) in result_values:
+                        res = int(res)
+                analysis.setResult(res)
+                if capturedate:
+                    analysis.setResultCaptureDate(capturedate)
+                resultsaved = True
 
         if resultsaved is False:
             self.log(
