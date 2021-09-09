@@ -879,6 +879,7 @@ class AnalysisResultsImporter(Logger):
             success = obj.calculateResult(override=self._override[0])
             if success:
                 self.save_submit_analysis(obj)
+                obj.reindexObject(idxs=["Result"])
                 self.log(
                     "${request_id}: calculated result for "
                     "'${analysis_keyword}': '${analysis_result}'",
@@ -984,15 +985,18 @@ class AnalysisResultsImporter(Logger):
 
         if resultsaved is False:
             self.log(
-                "${request_id} result for '${analysis_keyword}': '${result}'",
+                "${request_id} result for '${analysis_keyword}' not set",
                 mapping={"request_id": objid,
-                         "analysis_keyword": acode,
-                         "result": ""})
+                         "analysis_keyword": acode})
 
         if resultsaved:
             self.save_submit_analysis(analysis)
-            self.calculateTotalResults(objid, analysis)
             fields_to_reindex.append('Result')
+            self.log(
+                "${request_id} result for '${analysis_keyword}': '${result}'",
+                mapping={"request_id": objid,
+                         "analysis_keyword": acode,
+                         "result": res})
 
         if (resultsaved) \
            and values.get('Remarks', '') \
