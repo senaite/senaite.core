@@ -438,6 +438,7 @@ class AnalysisResultsImporter(Logger):
         importedinsts = {}
         rawacodes = self._parser.getAnalysisKeywords()
         exclude = self.getKeywordsToBeExcluded()
+        updated_analyses = []
         for acode in rawacodes:
             if acode in exclude or not acode:
                 continue
@@ -574,6 +575,7 @@ class AnalysisResultsImporter(Logger):
                         values['DateTime'] = capturedate
                     processed = self._process_analysis(objid, analysis, values)
                     if processed:
+                        updated_analyses.append(analysis)
                         ancount += 1
                         if inst:
                             # Calibration Test (import to Instrument)
@@ -601,6 +603,11 @@ class AnalysisResultsImporter(Logger):
                                 "Attachment cannot be linked to analysis as "
                                 "it is not assigned to a worksheet (%s)" %
                                 analysis)
+
+        # recalculate analyses with calculations after all results are set
+        for analysis in updated_analyses:
+            sample_id = analysis.getRequestID()
+            self.calculateTotalResults(sample_id, analysis)
 
         for arid, acodes in six.iteritems(importedars):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
