@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import codecs
-from datetime import datetime
 
 import six
 from bika.lims import api
@@ -28,7 +27,6 @@ from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from senaite.core.exportimport.instruments.logger import Logger
 
@@ -925,16 +923,12 @@ class AnalysisResultsImporter(Logger):
         acode = analysis.getKeyword()
         defresultkey = values.get("DefaultResult", "")
         capturedate = None
-        # Look for timestamp
+
         if "DateTime" in values.keys():
-            try:
-                dt = values.get('DateTime')
-                capturedate = DateTime(
-                    datetime.strptime(dt, '%Y%m%d %H:%M:%S'))
-            except Exception:
-                capturedate = None
-                pass
-            del values['DateTime']
+            ts = values.get("DateTime")
+            capturedate = api.to_date(ts)
+            if capturedate is None:
+                del values["DateTime"]
 
         fields_to_reindex = []
         # get interims
