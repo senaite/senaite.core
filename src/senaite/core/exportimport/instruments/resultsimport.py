@@ -862,33 +862,32 @@ class AnalysisResultsImporter(Logger):
         :param objid: AR ID or Worksheet's Reference Sample IDs
         :param analysis: Analysis Object
         """
-        analyses = self._getZODBAnalyses(objid)
-        # Filter Analyses With Calculation
-        analyses_with_calculation = filter(
-                                        lambda an: an.getCalculation(),
-                                        analyses)
-        for analysis_with_calc in analyses_with_calculation:
-            # Get the calculation to get the formula so that we can check
-            # if param analysis keyword is used on the calculation formula
-            calcultion = analysis_with_calc.getCalculation()
-            formula = calcultion.getMinifiedFormula()
-            # The analysis that we are currenly on
-            analysis_keyword = analysis.getKeyword()
-            if analysis_keyword not in formula:
+        for obj in self._getZODBAnalyses(objid):
+            # skip analyses w/o calculations
+            if not obj.getCalculation():
                 continue
-
-            # If the analysis_keyword is in the formula, it means that this
-            # analysis is a dependent on that calculated analysis
-            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
-            if calc_passed:
-                self.save_submit_analysis(analysis_with_calc)
+            # get the calculation
+            calculation = obj.getCalculation()
+            # get the dependent services of the calculation
+            dependencies = calculation.getDependentServices()
+            # get the analysis service of the passed in analysis
+            service = analysis.getAnalysisService()
+            # skip when service is not a dependency of the calculation
+            if service not in dependencies:
+                continue
+            # recalculate analysis result
+            success = obj.calculateResult(override=self._override[0])
+            if success:
+                self.save_submit_analysis(obj)
                 self.log(
                     "${request_id}: calculated result for "
                     "'${analysis_keyword}': '${analysis_result}'",
                     mapping={"request_id": objid,
-                             "analysis_keyword": analysis_with_calc.getKeyword(),
-                             "analysis_result": str(analysis_with_calc.getResult())}
-                )
+                             "analysis_keyword": obj.getKeyword(),
+                             "analysis_result": str(obj.getResult())})
+                # recursively recalculate analyses that have this analysis as
+                # a dependent service
+                self.calculateTotalResults(objid, obj)
 
     def save_submit_analysis(self, analysis):
         """Submit analysis and ignore errors
