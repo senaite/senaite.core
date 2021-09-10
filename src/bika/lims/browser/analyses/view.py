@@ -519,6 +519,18 @@ class AnalysesView(ListingView):
     def append_partition_filters(self):
         """Append additional review state filters for partitions
         """
+
+        # view is used for instrument QC view as well
+        if not IAnalysisRequest.providedBy(self.context):
+            return
+
+        # check if the sample has partitions
+        partitions = self.context.getDescendants()
+
+        # root partition w/o partitions
+        if not partitions:
+            return
+
         new_states = []
         valid_states = [
             "registered",
@@ -528,6 +540,7 @@ class AnalysesView(ListingView):
             "verified",
             "published",
         ]
+
         if self.context.isRootAncestor():
             root_id = api.get_id(self.context)
             new_states.append({
@@ -544,7 +557,7 @@ class AnalysesView(ListingView):
                 "columns": self.columns.keys(),
             })
 
-        for partition in self.context.getDescendants():
+        for partition in partitions:
             part_id = api.get_id(partition)
             new_states.append({
                 "id": part_id,
