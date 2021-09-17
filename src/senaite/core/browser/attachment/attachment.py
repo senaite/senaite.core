@@ -169,9 +169,9 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            title = api.safe_unicode(api.get_title(analysis))
             self.add_status_message(
-                _("Attachment added to analysis '{}'"
-                  .format(api.get_title(analysis))))
+                _(u"Attachment added to analysis '{}'".format(title)))
 
         if service_uid:
             attached = 0
@@ -201,14 +201,15 @@ class AttachmentsView(BrowserView):
                 analysis.setAttachment(attachments)
                 attached += 1
 
+            service_title = api.safe_unicode(api.get_title(service))
             if attached > 0:
                 self.add_status_message(
-                    _("Attachment added to all '{}' analyses"
-                      .format(api.get_title(service))))
+                    _(u"Attachment added to all '{}' analyses"
+                      .format(service_title)))
             else:
                 self.add_status_message(
-                    _("No analysis found for service '{}'"
-                      .format(api.get_title(service))), level="warning")
+                    _(u"No analysis found for service '{}'"
+                      .format(service_title)), level="warning")
 
         if not any([analysis_uid, service_uid]):
             self.add_status_message(
@@ -261,9 +262,9 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            title = api.safe_unicode(api.get_title(analysis))
             self.add_status_message(
-                _("Attachment added to analysis '{}'"
-                  .format(api.get_title(analysis))))
+                _(u"Attachment added to analysis '{}'".format(title)))
         else:
             others = self.context.getAttachment()
             attachments = []
