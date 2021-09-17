@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1847 Added Analysis Profile Edit Form Adapter
 - #1844 Fix instrument results import
 - #1842 Refactor instrument results import form
 - #1841 Do not allow client user to deactivate its own client
