@@ -1,6 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="senaite.core">
 
+  <!-- Edit Form: Analysis Profile -->
+  <adapter
+      for="bika.lims.interfaces.IAnalysisProfile
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisprofile.EditForm"/>
+
   <adapter
       for="bika.lims.interfaces.IAnalysisService
            zope.publisher.interfaces.browser.IBrowserRequest"

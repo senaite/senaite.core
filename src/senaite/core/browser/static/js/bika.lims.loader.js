@@ -34,10 +34,6 @@ window.bika.lims.controllers =  {
 
     /** JS objects to be loaded on specific views or pages **/
 
-    // Analysis Profile
-    ".portaltype-analysisprofile.template-base_edit":
-        ['AnalysisProfileEditView'],
-
     // Instruments
     ".portaltype-instrument.template-referenceanalyses":
         ['InstrumentReferenceAnalysesView'],
