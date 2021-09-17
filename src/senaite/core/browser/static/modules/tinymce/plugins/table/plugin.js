@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.1 (2021-08-27)
+ * Version: 5.9.2 (2021-09-08)
  */
 (function () {
     'use strict';
@@ -3633,7 +3633,7 @@
         return element.dom.innerText;
       }).join('');
     };
-    var registerEvents = function (editor, selections, actions, cellSelection) {
+    var registerEvents = function (editor, selections, actions) {
       editor.on('BeforeGetContent', function (e) {
         var multiCellContext = function (cells) {
           e.preventDefault();
