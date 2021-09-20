@@ -10,7 +10,9 @@ from Products.Archetypes.public import DisplayList
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.exportimport import instruments
-
+from senaite.core.exportimport.load_setup_data import LoadSetupData
+from plone import api
+import transaction
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for instrument imports
@@ -24,26 +26,37 @@ class EditForm(EditFormAdapterBase):
     def submit(self, data):
         iface = self.request.form.get("exim")
         exim = self.get_exim_by_interface(iface)
-        if not exim:
-            self.add_status_message(
-                message=_("No improter not found for interface '{}'"
-                          .format(iface)),
+        if not exim: #it may be setup data
+            portal = api.portal.get()
+            portal.REQUEST.form = data['form']
+            lsd = LoadSetupData(portal, portal.REQUEST)
+            try:
+                lsd()
+                transaction.commit()
+            except Exception as e:
+                self.add_status_message(
+                    message=_("Setup or Instrument data import failed '{}'"
+                          .format(iface), stre(e)),
                 title="Error", level="danger", flush=True)
+                return
+
+            self.add_status_message(
+                message=_("Setupdata import completed"),
+                title="Success: ", level="info", flush=True)
             return self.data
-
-        results = exim.Import(self.context, self.request)
-
+        else:
+            results = exim.Import(self.context, self.request)
         # BBB: Importers return JSON
-        results = json.loads(results)
+            results = json.loads(results)
 
-        template = self.get_default_import_results_template()
-        html = ViewPageTemplateFile(template)(self, import_results=results)
-        self.add_inner_html("#import_results", html)
+            template = self.get_default_import_results_template()
+            html = ViewPageTemplateFile(template)(self, import_results=results)
+            self.add_inner_html("#import_results", html)
 
-        self.add_status_message(
-            message=_("Instrument import finished"),
-            title="", level="info", flush=True)
-        return self.data
+            self.add_status_message(
+                message=_("Instrument import finished"),
+                title="", level="info", flush=True)
+            return self.data
 
     def modified(self, data):
         name = data.get("name")

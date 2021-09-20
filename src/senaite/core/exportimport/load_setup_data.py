@@ -79,8 +79,7 @@ class LoadSetupData(BrowserView):
         form = self.request.form
         portal = getSite()
         workbook = None
-
-        if 'setupexisting' in form and 'existing' in form and form['existing']:
+        if 'existing' in form and form['existing']:
                 fn = form['existing'].split(":")
                 self.dataset_project = fn[0]
                 self.dataset_name = fn[1]

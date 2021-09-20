@@ -84,6 +84,7 @@ class ImportView(BrowserView):
 
         request.set("disable_border", 1)
 
+
     def getDataInterfaces(self):
         return get_instrument_import_interfaces()
 
