@@ -26,7 +26,7 @@ class EditForm(EditFormAdapterBase):
         exim = self.get_exim_by_interface(iface)
         if not exim:
             self.add_status_message(
-                message=_("No improter not found for interface '{}'"
+                message=_("No importer not found for interface '{}'"
                           .format(iface)),
                 title="Error", level="danger", flush=True)
             return self.data
