@@ -65,7 +65,6 @@ class EditForm {
     // bind custom form event handlers
     form.addEventListener("modified", this.on_modified);
     form.addEventListener("mutated", this.on_mutated);
-
     if (form.hasAttribute("ajax-submit")) {
       form.addEventListener("submit", this.on_submit);
     }
@@ -628,8 +627,7 @@ class EditForm {
       },
     }
 
-    this.ajax_request(form, ajax_url, init);
-
+    return this.ajax_request(form, ajax_url, init);
   }
 
   /**
@@ -653,7 +651,7 @@ class EditForm {
       body: payload,
     }
 
-    this.ajax_request(form, ajax_url, init);
+    return this.ajax_request(form, ajax_url, init);
   }
 
 
@@ -664,7 +662,7 @@ class EditForm {
     // send ajax request to server
     this.loading(true);
     let request = new Request(url, init);
-    fetch(request)
+    return fetch(request)
       .then((response) => {
         if (!response.ok) {
           return Promise.reject(response);
@@ -680,6 +678,15 @@ class EditForm {
         console.error(error);
         this.loading(false);
       });
+  }
+
+  /**
+   * Toggle element disable
+   */
+  toggle_disable(el, toggle) {
+    if (el) {
+      el.disabled = toggle;
+    }
   }
 
   /**
@@ -800,8 +807,19 @@ class EditForm {
   on_submit(event) {
     console.debug("EditForm::on_submit");
     event.preventDefault();
-    let form = event.currentTarget;
-    this.ajax_submit(form, {}, "submit");
+    let data = {}
+    let form = event.currentTarget.closest("form");
+    // NOTE: submit input field not included in request form data!
+    let submitter = event.submitter;
+    if (submitter) {
+      data[submitter.name] = submitter.value;
+      // disable submit button during ajax call
+      this.toggle_disable(submitter, true);
+    }
+    this.ajax_submit(form, data, "submit")
+      .then((response) =>
+        // enable submit button after ajax call again
+        this.toggle_disable(submitter, false));
   }
 
   /**
