@@ -151,7 +151,7 @@
           <div id="tab-autoimport"
                class="tab-pane fade"
                role="tabpanel">
-            <label for="automimport">Auto Import</label>
+            <label for="autoimport">Auto Import</label>
             <a id="autoimport" href="autoimportlogs">
               <input class="btn btn-sm btn-primary" type="button" value="Show Last Results" />
             </a>
