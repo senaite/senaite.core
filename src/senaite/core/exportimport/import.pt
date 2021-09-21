@@ -29,7 +29,7 @@
             method="POST" enctype="multipart/form-data">
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>
-        <input type="hidden" name="form_adapter_name" value="instrument_import_form"/>
+        <input type="hidden" name="form_adapter_name" value="data_import_form"/>
 
         <ul class="nav nav-tabs mb-3" role="tablist">
           <li class="nav-item">
