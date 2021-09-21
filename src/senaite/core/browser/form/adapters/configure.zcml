@@ -34,9 +34,9 @@
 
   <!-- Custom Form: Instrument Import -->
   <adapter
-      name="instrument_import_form"
+      name="data_import_form"
       for="Products.CMFCore.interfaces.ISiteRoot
            zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".instrument_import.EditForm"/>
+      factory=".data_import.EditForm"/>
 
 </configure>
