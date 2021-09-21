@@ -79,21 +79,23 @@ class LoadSetupData(BrowserView):
         form = self.request.form
         portal = getSite()
         workbook = None
-        if 'existing' in form and form['existing']:
-                fn = form['existing'].split(":")
+        if not form['file'].filename: #then it's an internal file
+                fn = form['setupdatafile'].split(":")
                 self.dataset_project = fn[0]
                 self.dataset_name = fn[1]
                 path = 'setupdata/%s/%s.xlsx' % \
                     (self.dataset_name, self.dataset_name)
                 filename = resource_filename(self.dataset_project, path)
+                logger.info("Importing internal setup file %s" %  filename )
                 try:
                     workbook = load_workbook(filename=filename)  # , use_iterators=True)
                 except AttributeError:
+                    logger.error("Failed importing internal setup file %s" % filename)
                     print("")
                     print(traceback.format_exc())
                     print("Error while loading ", path)
-
-        elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
+        else:
+                logger.info("Importing uploaded file %s" % form['file'].filename )
                 self.dataset_project = form['projectname']
                 tmp = tempfile.mktemp(suffix='.xlsx')
                 file_content = form['file'].read()

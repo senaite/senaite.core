@@ -14,6 +14,7 @@ from senaite.core.exportimport.load_setup_data import LoadSetupData
 from plone import api
 import transaction
 
+
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for instrument imports
     """
@@ -31,16 +32,13 @@ class EditForm(EditFormAdapterBase):
             portal.REQUEST.form = data['form']
             lsd = LoadSetupData(portal, portal.REQUEST)
             try:
+                self.add_inner_html("#import_results", "Importing setup file")
                 lsd()
-                transaction.commit()
             except Exception as e:
-                self.add_status_message(
-                    message=_("Setup or Instrument data import failed '{}'"
-                          .format(iface), stre(e)),
-                title="Error", level="danger", flush=True)
-                return
+                self.add_inner_html("#import_results","Setup import failed " + str(e))
+                return self.data
 
-            self.add_status_message(
+            self.add_notification(
                 message=_("Setupdata import completed"),
                 title="Success: ", level="info", flush=True)
             return self.data

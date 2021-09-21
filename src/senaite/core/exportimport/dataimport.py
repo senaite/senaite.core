@@ -104,15 +104,14 @@ class ImportView(BrowserView):
 
     def __call__(self):
         if 'submitted' in self.request:
-            if 'setupfile' in self.request.form or \
-               'setupexisting' in self.request.form:
+            if form['file'].filename:
                 lsd = LoadSetupData(self.context, self.request)
                 return lsd()
             else:
                 exim = instruments.getExim(self.request['exim'])
                 if not exim:
                     er_mes = "Importer not found for: %s" % self.request['exim']
-                    results = {'errors': [er_mes], 'log': '', 'warns': ''}
+                    results = {'errors': [er_mes], 'log': '', 'warns': '', 'import_status': 77.0 }
                     return json.dumps(results)
                 else:
                     return exim.Import(self.context, self.request)
