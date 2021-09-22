@@ -2,18 +2,21 @@
 
 import json
 import os
+import traceback
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.exportimport import instruments
+from senaite.core.exportimport.load_setup_data import LoadSetupData
 
 
 class EditForm(EditFormAdapterBase):
-    """Edit form adapter for instrument imports
+    """Edit form adapter for data import
     """
 
     def initialized(self, data):
@@ -22,14 +25,37 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def submit(self, data):
+        setupfile = self.request.form.get("setupfile")
+        setupexisting = self.request.form.get("setupexisting")
+        if setupfile or setupexisting:
+            self.handle_data_import()
+        else:
+            self.handle_instrument_import()
+        return self.data
+
+    def handle_data_import(self):
+        try:
+            LoadSetupData(self.context, self.request)()
+        except Exception:
+            tb = traceback.format_exc()
+            self.add_status_message(
+                message=tb, title="Error", level="danger", flush=True)
+            logger.error(tb)
+            return False
+        self.add_status_message(
+            message=_("Data import successful"),
+            title="Info", level="success", flush=True)
+        return True
+
+    def handle_instrument_import(self):
         iface = self.request.form.get("exim")
         exim = self.get_exim_by_interface(iface)
         if not exim:
             self.add_status_message(
-                message=_("No improter not found for interface '{}'"
+                message=_("No importer not found for interface '{}'"
                           .format(iface)),
                 title="Error", level="danger", flush=True)
-            return self.data
+            return False
 
         results = exim.Import(self.context, self.request)
 
@@ -43,7 +69,8 @@ class EditForm(EditFormAdapterBase):
         self.add_status_message(
             message=_("Instrument import finished"),
             title="", level="info", flush=True)
-        return self.data
+
+        return True
 
     def modified(self, data):
         name = data.get("name")
