@@ -315,10 +315,10 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
         value = self.field.get(self.context)
         if not value:
             return ""
-        #import pdb; pdb.set_trace()
         try:
             return value.raw
-        except:
+        except AttributeError as e:
+            logger.info("Imported value has no Attribute 'raw' {}".format(str(e)))
             return value
 
 
