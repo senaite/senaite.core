@@ -3,8 +3,7 @@ Changelog
 
 2.0.1 (unreleased)
 ------------------
-- #     Fix for exception on tarball import
-- #     Added default password of '12345 'for tarball imports where too short 
+- #1850 Add valid password for portal_setup tarball import new user creation
 - #1845 Added edit form adapter for lab contacts
 - #1846 Fix UnicodeDecodeError on Attachment upload
 - #1847 Added Analysis Profile Edit Form Adapter
