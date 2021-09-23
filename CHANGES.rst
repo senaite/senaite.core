@@ -3,7 +3,7 @@ Changelog
 
 2.0.1 (unreleased)
 ------------------
-
+- #     Added default password for tarball imports where too short 
 - #1845 Added edit form adapter for lab contacts
 - #1846 Fix UnicodeDecodeError on Attachment upload
 - #1847 Added Analysis Profile Edit Form Adapter
