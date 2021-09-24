@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #1851 Added readonly_transactions decorator (#1732 port)
 
 1.3.5 (2021-07-23)
 ------------------
