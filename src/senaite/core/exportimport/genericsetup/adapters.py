@@ -315,7 +315,11 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
         value = self.field.get(self.context)
         if not value:
             return ""
-        return value.raw
+        try:
+            return value.raw
+        except AttributeError as e:
+            logger.info("Imported value has no Attribute 'raw' {}".format(str(e)))
+            return value
 
 
 class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):

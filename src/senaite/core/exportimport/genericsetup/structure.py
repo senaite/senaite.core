@@ -136,10 +136,10 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
                     continue
                 user_id = cn.firstChild.nodeValue
                 user = api.user.get_user(user_id)
-                if not user:
+
+                if not user: # add new user with password
                     self._logger.info("Adding user {}".format(user_id))
-                    # add a new user with the same password as the user id
-                    user = reg_tool.addMember(user_id, user_id)
+                    user = reg_tool.addMember(user_id, '12345') 
 
                 # set the user properties
                 user.setProperties(properties={
