@@ -56,6 +56,13 @@ schema = Organisation.schema.copy() + Schema((
         validators=("uniquefieldvalidator", "standard_id_validator"),
         widget=StringWidget(
             label=_("Client ID"),
+            description=_(
+                "Short and unique identifier of this client. Besides fast "
+                "searches by client in Samples listings, the purposes of this "
+                "field depend on the laboratory needs. For instance, the "
+                "Client ID can be included as part of the Sample identifier, "
+                "so the lab can easily know the client a given sample belongs "
+                "to by just looking to its ID.")
         ),
     ),
 
