@@ -609,6 +609,11 @@ class AnalysisResultsImporter(Logger):
             sample_id = analysis.getRequestID()
             self.calculateTotalResults(sample_id, analysis)
 
+        # reindex sample to update progress (and other indexes/metadata)
+        samples = set(map(api.get_parent, updated_analyses))
+        for sample in samples:
+            sample.reindexObject()
+
         for arid, acodes in six.iteritems(importedars):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
             self.log(
