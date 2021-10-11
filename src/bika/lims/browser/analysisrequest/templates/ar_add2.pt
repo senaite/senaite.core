@@ -262,7 +262,8 @@
               </select>
               {{else}}
               <input type="{{type}}"
-                     name="ServiceConditions-{{../arnum}}.value:records"/>
+                     name="ServiceConditions-{{../arnum}}.value:records"
+                     value="{{default}}"/>
               {{/if}}
             </td>
           </tr>
