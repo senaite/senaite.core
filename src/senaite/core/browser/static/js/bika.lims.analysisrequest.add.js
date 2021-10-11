@@ -13,6 +13,7 @@
     var typeIsArray;
 
     function AnalysisRequestAdd() {
+      this.on_analysis_change = bind(this.on_analysis_change, this);
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
@@ -987,7 +988,8 @@
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
       $(me).trigger("form:changed");
-      return $(me).trigger("services:changed");
+      $(me).trigger("services:changed");
+      return this.on_analysis_change(event);
     };
 
     AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
@@ -1371,6 +1373,47 @@
       });
       file_field_div.append(del_btn);
       return $(element).parent().parent().append(file_field_div);
+    };
+
+    AnalysisRequestAdd.prototype.on_analysis_change = function(event) {
+
+      /*
+       * EventHandler when the user checks/unchecks a service. Checks if there
+       * are analysis conditions to be rendered for the selected service and if
+       * so, renders the form for user input in accordance
+       */
+      var $el, $parent, arnum, base_info, conditions, context, data, el, template, uid;
+      el = event.currentTarget;
+      $el = $(el);
+      $parent = $el.closest("td");
+      uid = $parent.attr("uid");
+      arnum = $parent.attr("arnum");
+      console.debug("°°° on_analysis_change::UID=" + uid + "°°°");
+      conditions = $("div.service-conditions", $parent);
+      conditions.empty();
+      data = conditions.data("data");
+      base_info = {
+        arnum: arnum
+      };
+      if (!data) {
+        return this.get_service(uid).done(function(data) {
+          var context, template;
+          context = $.extend({}, data, base_info);
+          if (context.conditions && context.conditions.length > 0) {
+            template = this.render_template("service-conditions", context);
+            conditions.append(template);
+            conditions.data("data", context);
+            return conditions.fadeIn();
+          }
+        });
+      } else {
+        context = $.extend({}, data, base_info);
+        if (context.conditions && context.conditions.length > 0) {
+          template = this.render_template("service-conditions", context);
+          conditions.append(template);
+          return conditions.fadeToggle();
+        }
+      }
     };
 
     return AnalysisRequestAdd;

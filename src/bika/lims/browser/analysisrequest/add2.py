@@ -897,7 +897,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
-
+            "conditions": obj.getConditions(),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()

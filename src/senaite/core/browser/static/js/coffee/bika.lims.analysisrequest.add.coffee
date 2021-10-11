@@ -1029,6 +1029,8 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
     # trigger event for price recalculation
     $(me).trigger "services:changed"
+    # trigger service-specific conditions
+    @on_analysis_change event
 
 
   on_service_listing_header_click: (event) =>
@@ -1406,3 +1408,41 @@ class window.AnalysisRequestAdd
 
     # Attach the new field to the outer div of the passed file field
     $(element).parent().parent().append file_field_div
+
+
+  on_analysis_change: (event) =>
+    ###
+     * EventHandler when the user checks/unchecks a service. Checks if there
+     * are analysis conditions to be rendered for the selected service and if
+     * so, renders the form for user input in accordance
+    ###
+    el = event.currentTarget
+    $el = $(el)
+    $parent = $el.closest "td"
+    uid = $parent.attr "uid"
+    arnum = $parent.attr "arnum"
+    console.debug "°°° on_analysis_change::UID=#{uid}°°°"
+
+    # Get the div where service conditions will be rendered
+    conditions = $("div.service-conditions", $parent)
+    conditions.empty()
+
+    # Check if this service requires conditions
+    data = conditions.data "data"
+    base_info =
+      arnum: arnum
+
+    if not data
+      @get_service(uid).done (data) ->
+        context = $.extend({}, data, base_info)
+        if context.conditions and context.conditions.length > 0
+          template = @render_template "service-conditions", context
+          conditions.append template
+          conditions.data "data", context
+          conditions.fadeIn()
+    else
+      context = $.extend({}, data, base_info)
+      if context.conditions and context.conditions.length > 0
+        template = @render_template "service-conditions", context
+        conditions.append template
+        conditions.fadeToggle()
