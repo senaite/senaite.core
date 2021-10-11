@@ -231,6 +231,49 @@
         </div>
       </script>
 
+      <!-- Service Conditions template -->
+      <script id="service-conditions" type="text/x-handlebars-template">
+        <div data-fieldname="ServiceConditions-{{arnum}}">
+        <table class="service-conditions-table table table-condensed table-bordered">
+          {{#each conditions}}
+          <tr>
+            <td class="service-conditions-label">
+              <label class="formQuestion">
+                <span class="">{{title}}</span>
+                <span class="formHelp discreet help-block small"
+                      id="ServiceConditions-{{arnum}}_help">{{description}}</span>
+              </label>
+            </td>
+            <td class="service-conditions-value">
+              <input type='hidden'
+                     name="ServiceConditions-{{../arnum}}.uid:records"
+                     value="{{../uid}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.title:records"
+                     value="{{title}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.type:records"
+                     value="{{type}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.unit:records"
+                     value="{{unit}}"/>
+              {{#if options}}
+              <select name="ServiceConditions-{{../arnum}}.value:records">
+                {{#each options}}
+                <option>{{this}}</option>
+                {{/each}}
+              </select>
+              {{else}}
+              <input type="{{type}}"
+                     name="ServiceConditions-{{../arnum}}.value:records"/>
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </table>
+        </div>
+      </script>
+
     </metal:block>
   </head>
 
@@ -506,6 +549,12 @@
                           <!-- Service Info Box -->
                           <div tal:attributes="id python:'{}-info'.format(service_uid);
                                                class python:'{}-info service-info'.format(service_uid);">
+                          </div>
+
+
+                          <!-- Service conditions -->
+                          <div tal:attributes="id python:'{}-conditions'.format(service_uid);
+                                               class python:'{}-conditions service-conditions'.format(service_uid);">
                           </div>
 
                         </td>
