@@ -44,6 +44,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
@@ -186,6 +187,63 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
+Conditions = RecordsField(
+    "Conditions",
+    schemata="Custom settings",
+    type="conditions",
+    subfields=(
+        "title",
+        "description",
+        "type",
+        "default",
+    ),
+    required_subfields=(
+        "title",
+        "type",
+    ),
+    subfield_labels={
+        "title": _("Title"),
+        "description": _("Description"),
+        "type": _("Control type"),
+        "default": _("Default value"),
+    },
+    subfield_types={
+        "title": "string",
+        "description": "string",
+        "type": "string",
+        "default": "string",
+    },
+    subfield_sizes={
+        "title": 20,
+        "description": 50,
+        "type": 1,
+        "default": 20,
+    },
+    subfield_maxlength={
+        "title": 20,
+        "description": 100,
+    },
+    subfield_vocabularies={
+        "type": DisplayList((
+            ('text', _('Text')),
+            ('number', _('Number')),
+            ('checkbox', _('Checkbox')),
+            ('select', _('Select')),
+        )),
+    },
+    widget=RecordsWidget(
+        label=_("Analysis conditions"),
+        description=_(
+            "Conditions to ask for this analysis on sample registration. For "
+            "instance, laboratory may want the user to input the temperature, "
+            "the ramp and flow when a thermogravimetric (TGA) analysis is "
+            "selected on sample registration. The information provided will be "
+            "later considered by the laboratory personnel when performing the "
+            "test."
+        ),
+    )
+)
+
 
 schema = schema.copy() + Schema((
     Methods,
@@ -197,6 +255,7 @@ schema = schema.copy() + Schema((
     Preservation,
     Container,
     PartitionSetup,
+    Conditions,
 ))
 
 # Move default method field after available methods field
