@@ -254,9 +254,6 @@
               <input type="hidden"
                      name="ServiceConditions-{{../arnum}}.type:records"
                      value="{{type}}"/>
-              <input type="hidden"
-                     name="ServiceConditions-{{../arnum}}.unit:records"
-                     value="{{unit}}"/>
               {{#if options}}
               <select name="ServiceConditions-{{../arnum}}.value:records">
                 {{#each options}}
