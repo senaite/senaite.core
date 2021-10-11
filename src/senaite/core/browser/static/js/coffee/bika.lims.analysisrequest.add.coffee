@@ -1427,6 +1427,11 @@ class window.AnalysisRequestAdd
     conditions = $("div.service-conditions", $parent)
     conditions.empty()
 
+    # If the service is unchecked, remove the conditions form
+    if not el.checked
+      conditions.hide()
+      return
+
     # Check if this service requires conditions
     data = conditions.data "data"
     base_info =
@@ -1439,10 +1444,10 @@ class window.AnalysisRequestAdd
           template = @render_template "service-conditions", context
           conditions.append template
           conditions.data "data", context
-          conditions.fadeIn()
+          conditions.show()
     else
       context = $.extend({}, data, base_info)
       if context.conditions and context.conditions.length > 0
         template = @render_template "service-conditions", context
         conditions.append template
-        conditions.fadeToggle()
+        conditions.show()

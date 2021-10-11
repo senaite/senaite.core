@@ -1391,6 +1391,10 @@
       console.debug("°°° on_analysis_change::UID=" + uid + "°°°");
       conditions = $("div.service-conditions", $parent);
       conditions.empty();
+      if (!el.checked) {
+        conditions.hide();
+        return;
+      }
       data = conditions.data("data");
       base_info = {
         arnum: arnum
@@ -1403,7 +1407,7 @@
             template = this.render_template("service-conditions", context);
             conditions.append(template);
             conditions.data("data", context);
-            return conditions.fadeIn();
+            return conditions.show();
           }
         });
       } else {
@@ -1411,7 +1415,7 @@
         if (context.conditions && context.conditions.length > 0) {
           template = this.render_template("service-conditions", context);
           conditions.append(template);
-          return conditions.fadeToggle();
+          return conditions.show();
         }
       }
     };
