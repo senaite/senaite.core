@@ -1357,6 +1357,12 @@ schema = BikaSchema.copy() + Schema((
             visible={'add': 'edit',}
         ),
     ),
+
+    # Initial conditions for analyses set on Sample registration
+    RecordsField(
+        "ServiceConditions",
+        visible=False,
+    )
 )
 )
 
