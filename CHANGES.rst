@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1854 Support for analyses (pre) conditions on sample registration
 - #1853 Fix sample progress update after instrument results import
 - #1852 Fix `{client}` is wrongly stated as a variable on ID generation
 - #1850 Add valid password for portal_setup tarball import new user creation

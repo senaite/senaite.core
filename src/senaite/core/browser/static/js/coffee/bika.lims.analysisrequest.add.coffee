@@ -74,7 +74,7 @@ class window.AnalysisRequestAdd
     # InvoiceExclude Checkbox clicked
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
-    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
+    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
     # Generic onchange event handler for reference fields
     $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
 
