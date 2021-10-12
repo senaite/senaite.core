@@ -110,17 +110,29 @@ class AutoImportResultsView(BrowserView):
             tb = None
             try:
                 importer.process()
-            except Exception:
+            except Exception:  # noqa
                 tb = traceback.format_exc()
-            self.log(importer.logs, instrument=instrument, interface=interface)
-            self.log(importer.errors, instrument=instrument,
-                     interface=interface, level="error")
+
+            # extract importer logs
+            logs = importer.logs
+            errors = importer.errors
             if tb:
-                self.log(tb, instrument=instrument, interface=interface,
-                         level="error")
+                errors.append(tb)
+
+            # log all importer logs
+            self.log(logs, instrument=instrument, interface=interface)
+            self.log(errors, instrument=instrument,
+                     interface=interface, level="error")
 
             # write imported file
             self.write_imported_file(folder, resultsfile)
+
+            # write info logs to logfile
+            self.write_import_logs(
+                logs, folder, instrument, interface, "info")
+            # write error logs to logfile
+            self.write_import_logs(
+                errors, folder, instrument, interface, "error")
 
         return True
 
@@ -168,6 +180,30 @@ class AutoImportResultsView(BrowserView):
         path = os.path.join(folder, INDEXFILE)
         with open(path, "a") as fileobj:
             self.writelines(fileobj, filename)
+
+    def write_import_logs(self, logs, folder, instrument, interface, level):
+        """Write import log to file
+        """
+        if isinstance(logs, string_types):
+            logs = [logs]
+        for log in logs:
+            msg = self.format_logmsg(log, instrument, interface, level)
+            # write message to logfile
+            path = os.path.join(folder, LOGFILE)
+            with open(path, "a") as fileobj:
+                self.writelines(fileobj, msg)
+
+    def format_logmsg(self, message, instrument, interface, level):
+        """Format log message with timestamp and additional information
+        """
+        timestamp = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
+        msg = "%s [%s] " % (timestamp, level.upper())
+        if instrument:
+            msg += "[Instrument:%s] " % api.get_title(instrument)
+        if interface:
+            msg += "[Interface:%s] " % interface
+        msg += "%s" % message
+        return msg
 
     def writelines(self, fileobj, lines):
         """write line to file with newline at the end
@@ -236,14 +272,8 @@ class AutoImportResultsView(BrowserView):
         log_level = logging.getLevelName(level.upper())
         logger.log(level=log_level, msg=message)
         # Append to logs
-        timestamp = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
-        log_msg = "%s [%s] " % (timestamp, level.upper())
-        if instrument:
-            log_msg += "[Instrument:%s] " % api.get_title(instrument)
-        if interface:
-            log_msg += "[Interface:%s] " % interface
-        log_msg += "%s" % message
-        self.logs.append(log_msg)
+        msg = self.format_logmsg(message, instrument, interface, level)
+        self.logs.append(msg)
 
 
 class UploadFileWrapper:
