@@ -127,3 +127,23 @@ Run the import view again:
     '2.0'
     >>> sample.Cu.getResult()
     '1.0'
+
+Autologs should be created:
+
+    >>> autolog = instrument.objectValues("AutoImportLog")[0] 
+    >>> print autolog.getResults()
+    2... [INFO] Parsing file .../results/import1.csv
+    2... [INFO] End of file reached successfully: 1 objects, 3 analyses, 3 results
+    2... [INFO] Allowed Sample states: sample_received, to_be_verified
+    2... [INFO] Allowed analysis states: unassigned, assigned, to_be_verified
+    2... [INFO] W-0001 result for 'Cu': '1.0'
+    2... [INFO] W-0001 result for 'Fe': '2.0'
+    2... [INFO] W-0001 result for 'Au': '3.0'
+    2... [INFO] W-0001: Analysis Cu, Fe, Au imported sucessfully
+    2... [INFO] Import finished successfully: 1 Samples, 0 Instruments and 3 results updated
+
+    >>> autolog.getInterface()
+    'generic.two_dimension'
+
+    >>> autolog.getImportFile()
+    'import1.csv'
