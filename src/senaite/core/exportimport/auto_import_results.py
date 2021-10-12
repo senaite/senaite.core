@@ -47,7 +47,7 @@ class AutoImportResultsView(BrowserView):
         return CR.join(self.logs)
 
     def auto_import_results(self):
-        """Check instrument results folders
+        """Auto import all new instrument import files
         """
         interfaces = []
         for brain in self.query_active_instruments():
@@ -93,6 +93,11 @@ class AutoImportResultsView(BrowserView):
 
     def import_results(self, instrument, interface, folder, resultsfile):
         """Import resultsfile for instrument interface
+
+        :param instrument: Instrument object
+        :param interface: Interface name. e.g. generic.two_dimension
+        :param folder: auto import folder path
+        :param resultsfile: the filename of the imported file
         """
         with open(os.path.join(folder, resultsfile), "r") as fileobj:
             wrapped = UploadFileWrapper(fileobj)
@@ -163,6 +168,9 @@ class AutoImportResultsView(BrowserView):
 
     def read_imported_files(self, folder):
         """Read filenames from index file
+
+        :param folder: auto import folder path
+        :returns: list of read lines
         """
         path = os.path.join(folder, INDEXFILE)
 
@@ -179,16 +187,27 @@ class AutoImportResultsView(BrowserView):
 
     def write_imported_file(self, folder, filename):
         """Append filename to index file
+
+        :param folder: auto import folder path
+        :param filename: auto import filename
         """
         path = os.path.join(folder, INDEXFILE)
         with open(path, "a") as fileobj:
             self.writelines(fileobj, filename)
 
-    def write_import_logs(self, logs, folder, instrument, interface, level):
-        """Write import log to file
+    def write_import_logfile(self, logs, folder, instrument, interface, level):
+        """Write logs to the logfile inside the import folder
+
+        :param logs: log message or list of log messages
+        :param folder: auto import folder path
+        :param instrument: Instrument object
+        :param interface: Interface name. e.g. generic.two_dimension
+        :param level: Log level, e.g. debug, info, warning, error
         """
         if isinstance(logs, string_types):
             logs = [logs]
+
+        # write log into logfile
         for log in logs:
             msg = self.format_logmsg(log, instrument, interface, level)
             # write message to logfile
@@ -196,8 +215,34 @@ class AutoImportResultsView(BrowserView):
             with open(path, "a") as fileobj:
                 self.writelines(fileobj, msg)
 
+    def log(self, message, instrument=None, interface=None, level="info"):
+        """Log to logging facility
+
+        :param message: Log message
+        :param instrument: Instrument object
+        :param interface: Interface name. e.g. generic.two_dimension
+        :param level: Log level, e.g. debug, info, warning, error
+        """
+        if isinstance(message, (list, tuple)):
+            for msg in message:
+                self.log(msg, instrument=instrument, interface=interface,
+                         level=level)
+            return
+        # log into default facility
+        log_level = logging.getLevelName(level.upper())
+        logger.log(level=log_level, msg=message)
+        # Append to logs
+        msg = self.format_logmsg(message, instrument, interface, level)
+        self.logs.append(msg)
+
     def format_logmsg(self, message, instrument, interface, level):
         """Format log message with timestamp and additional information
+
+        :param message: Log message
+        :param instrument: Instrument object
+        :param interface: Interface name. e.g. generic.two_dimension
+        :param level: Log level, e.g. debug, info, warning, error
+        :returns: formatted log message
         """
         timestamp = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
         msg = "%s [%s] " % (timestamp, level.upper())
@@ -220,7 +265,6 @@ class AutoImportResultsView(BrowserView):
             if not line.endswith(CR):
                 line += CR
             fileobj.write(line)
-        return fileobj
 
     def get_interface_folder_mapping(self, instrument):
         """Returns an instrument interface -> folder mapping
@@ -257,26 +301,6 @@ class AutoImportResultsView(BrowserView):
 
         results = api.search(query, SETUP_CATALOG)
         return results
-
-    def log(self, message, instrument=None, interface=None, level="info"):
-        """Logging multiplexer
-
-        :param message: Log message
-        :param instrument: Instrument object
-        :param interface: Interface name. e.g. generic.two_dimension
-        :param level: Log level, e.g. debug, info, warning, error
-        """
-        if isinstance(message, (list, tuple)):
-            for msg in message:
-                self.log(msg, instrument=instrument, interface=interface,
-                         level=level)
-            return
-        # log into default facility
-        log_level = logging.getLevelName(level.upper())
-        logger.log(level=log_level, msg=message)
-        # Append to logs
-        msg = self.format_logmsg(message, instrument, interface, level)
-        self.logs.append(msg)
 
 
 class UploadFileWrapper:
