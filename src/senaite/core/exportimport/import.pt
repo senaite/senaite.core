@@ -164,7 +164,7 @@
 
               <div class="py-3">
                 <div class="form-text text-muted" i18n:translate="">
-                  Example Cronjob to execute the auto import on every 10 minutes
+                  Example Cronjob to execute the auto import every 10 minutes
                 </div>
                 <code class="">
                   # m h  dom mon dow   command
