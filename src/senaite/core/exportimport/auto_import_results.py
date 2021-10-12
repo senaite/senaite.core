@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import os
 import traceback
-import logging
+
+from six import string_types
 
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
@@ -38,23 +40,10 @@ class AutoImportResultsView(BrowserView):
     def __call__(self):
         # disable CSRF because
         alsoProvides(self.request, IDisableCSRFProtection)
+        # run auto import of results
         self.auto_import_results()
+        # return the concatenated logs
         return CR.join(self.logs)
-
-    def log(self, message, instrument=None, interface=None, level="info"):
-        """Log message
-        """
-        # log into default facility
-        log_level = logging.getLevelName(level.upper())
-        logger.log(level=log_level, msg=message)
-        # Append to logs
-        log_msg = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
-        if instrument:
-            log_msg += " Instrument: %s " % api.get_title(instrument)
-        if interface:
-            log_msg += " Interface: %s " % interface
-        log_msg += " %s" % message
-        self.logs.append(log_msg)
 
     def auto_import_results(self):
         """Check instrument results folders
@@ -102,8 +91,8 @@ class AutoImportResultsView(BrowserView):
     def import_results(self, instrument, interface, folder, resultsfile):
         """Import resultsfile for instrument interface
         """
-        with open(os.path.join(folder, resultsfile), "r") as rf:
-            wrapped = UploadFileWrapper(rf)
+        with open(os.path.join(folder, resultsfile), "r") as fileobj:
+            wrapped = UploadFileWrapper(fileobj)
             parser = get_automatic_parser(interface, wrapped)
             if not parser:
                 self.log("No parser found for %s" % resultsfile,
@@ -123,10 +112,12 @@ class AutoImportResultsView(BrowserView):
                 importer.process()
             except Exception:
                 tb = traceback.format_exc()
-            self.logs.extend(importer.logs)
-            self.logs.extend(importer.errors)
+            self.log(importer.logs, instrument=instrument, interface=interface)
+            self.log(importer.errors, instrument=instrument,
+                     interface=interface, level="error")
             if tb:
-                self.logs.append(tb)
+                self.log(tb, instrument=instrument, interface=interface,
+                         level="error")
 
             # write imported file
             self.write_imported_file(folder, resultsfile)
@@ -162,25 +153,41 @@ class AutoImportResultsView(BrowserView):
 
         # create the index file if it does not exist
         if not os.path.exists(path):
-            with open(path, "wb") as f:
-                f.write(LOGFILE + CR)
-                f.write(INDEXFILE + CR)
+            with open(path, "wb") as fileobj:
+                self.writelines(fileobj, [LOGFILE, INDEXFILE])
             return [INDEXFILE, LOGFILE]
 
         # read the contents of the file
-        with open(path, "r") as f:
-            imported = f.readlines()
+        with open(path, "r") as fileobj:
+            imported = fileobj.readlines()
             return [i.strip() for i in imported]
 
     def write_imported_file(self, folder, filename):
-        """Write filename to index file
+        """Append filename to index file
         """
         path = os.path.join(folder, INDEXFILE)
-        with open(path, "a") as f:
-            f.write(filename + CR)
+        with open(path, "a") as fileobj:
+            self.writelines(fileobj, filename)
+
+    def writelines(self, fileobj, lines):
+        """write line to file with newline at the end
+
+        :param fileobj: open file
+        :param lines: list or string of lines to write
+        """
+        if isinstance(lines, string_types):
+            lines = [lines]
+        for line in lines:
+            if not line.endswith(CR):
+                line += CR
+            fileobj.write(line)
+        return fileobj
 
     def get_interface_folder_mapping(self, instrument):
         """Returns an instrument interface -> folder mapping
+
+        :param instrument: Instrument object
+        :returns: dictionary of interface -> folder path
         """
         mapping = {}
         for record in instrument.getResultFilesFolder():
@@ -196,6 +203,8 @@ class AutoImportResultsView(BrowserView):
 
     def query_active_instruments(self):
         """Return all active instruments
+
+        :returns: list of catalog brains
         """
         query = {
             "portal_type": "Instrument",
@@ -209,6 +218,32 @@ class AutoImportResultsView(BrowserView):
 
         results = api.search(query, SETUP_CATALOG)
         return results
+
+    def log(self, message, instrument=None, interface=None, level="info"):
+        """Logging multiplexer
+
+        :param message: Log message
+        :param instrument: Instrument object
+        :param interface: Interface name. e.g. generic.two_dimension
+        :param level: Log level, e.g. debug, info, warning, error
+        """
+        if isinstance(message, (list, tuple)):
+            for msg in message:
+                self.log(msg, instrument=instrument, interface=interface,
+                         level=level)
+            return
+        # log into default facility
+        log_level = logging.getLevelName(level.upper())
+        logger.log(level=log_level, msg=message)
+        # Append to logs
+        timestamp = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
+        log_msg = "%s [%s] " % (timestamp, level.upper())
+        if instrument:
+            log_msg += "[Instrument:%s] " % api.get_title(instrument)
+        if interface:
+            log_msg += "[Interface:%s] " % interface
+        log_msg += "%s" % message
+        self.logs.append(log_msg)
 
 
 class UploadFileWrapper:
