@@ -88,7 +88,8 @@ class AutoImportResultsView(BrowserView):
                         # skip already imported files
                         continue
                     self.import_results(instrument, interface, folder, f)
-            else:
+
+            if not interfaces:
                 self.log("No active interfaces defined", instrument=instrument)
 
             self.log("Auto-Import finished")
