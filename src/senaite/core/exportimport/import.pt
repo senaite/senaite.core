@@ -169,7 +169,7 @@
                 <code class="">
                   # m h  dom mon dow   command
                   <br/>
-                  */10 * * * * curl <span tal:replace="python:context.absolute_url() + '/auto_import_results'"></span>
+                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"></span>
                 </code>
               </div>
             </p>
@@ -181,7 +181,7 @@
                        class="btn btn-sm btn-outline-secondary"
                        i18n:attributes="value"
                        i18n:attributes="value"
-                       value="Show last auto imported results" />
+                       value="Show last auto import logs" />
               </a>
               <!-- Trigger auto import -->
               <input type="submit"
