@@ -112,7 +112,6 @@ Now create an instrument results file:
     >>> with open(os.path.join(resultsfolder, "import1.csv"), "w") as f:
     ...     f.write("SampleID,Cu,Fe,Au,end\n")
     ...     f.write("%s,1,2,3,end\n" % sample.getId())
-    ...     f.write("end")
 
 Run the import view again:
 
