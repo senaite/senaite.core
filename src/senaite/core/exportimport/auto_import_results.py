@@ -136,11 +136,19 @@ class AutoImportResultsView(BrowserView):
             self.write_imported_file(folder, resultsfile)
 
             # write info logs to logfile
-            self.write_import_logs(
+            self.write_import_logfile(
                 logs, folder, instrument, interface, "info")
             # write error logs to logfile
-            self.write_import_logs(
+            self.write_import_logfile(
                 errors, folder, instrument, interface, "error")
+
+            # crate auto import log object
+            logobj = self.create_autoimportlog(
+                instrument, interface, resultsfile)
+            # write import logs
+            self.write_autologs(logobj, logs, "info")
+            # write error logs
+            self.write_autologs(logobj, errors, "error")
 
         return True
 
@@ -214,6 +222,42 @@ class AutoImportResultsView(BrowserView):
             path = os.path.join(folder, LOGFILE)
             with open(path, "a") as fileobj:
                 self.writelines(fileobj, msg)
+
+    def write_autologs(self, logobj, logs, level="info"):
+        """Write log messages to the auto import log object contained in the instrument
+
+        :param logobj: AutoImportLog object
+        :param logs: log message or list of log messages
+        :param level: Log level, e.g. debug, info, warning, error
+        """
+        if isinstance(logs, string_types):
+            logs = [logs]
+
+        # write log into logfile
+        for log in logs:
+            msg = self.format_logmsg(log, None, None, level)
+            results = logobj.getResults()
+            if results:
+                results += "\n"
+            messages = "{}{}".format(results, msg)
+            logobj.setResults(messages)
+        logobj._p_changed = 1
+
+    def create_autoimportlog(self, instrument, interface, resultsfile):
+        """Creates a new autoimportlog object
+
+        :param instrument: instrument object where the log get created
+        :param interface: interface name, e.g. 'generic.two_dimension'
+        :param resultsfile: the filename of the imported file
+        :returns: AutoImportLog object
+        """
+        timestamp = DateTime.strftime(DateTime(), "%Y-%m-%d %H:%M:%S")
+        importlog = api.create(instrument, "AutoImportLog")
+        importlog.setInstrument(instrument)
+        importlog.setInterface(interface)
+        importlog.setImportFile(resultsfile)
+        importlog.setLogTime(timestamp)
+        return importlog
 
     def log(self, message, instrument=None, interface=None, level="info"):
         """Log to logging facility
