@@ -20,6 +20,7 @@ from zope.interface import alsoProvides
 CR = "\n"
 LOGFILE = "logs.log"
 INDEXFILE = "imported.csv"
+IGNORE = ",".join([INDEXFILE, LOGFILE])
 
 
 class AutoImportResultsView(BrowserView):
@@ -76,12 +77,14 @@ class AutoImportResultsView(BrowserView):
                              interface=interface, level="error")
                     continue
                 # get all files in the instrument folder
-                allfiles = self.list_files(folder)
+                allfiles = self.list_files(folder, ignore=IGNORE)
                 # get already imported files
                 imported = self.read_imported_files(folder)
                 # import results file
                 for f in allfiles:
                     if f in imported:
+                        self.log("Skipping already imported file '%s'" % (f),
+                                 instrument=instrument, interface=interface)
                         # skip already imported files
                         continue
                     self.import_results(instrument, interface, folder, f)
