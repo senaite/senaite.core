@@ -241,7 +241,7 @@ class AutoImportResultsView(BrowserView):
             msg = self.format_logmsg(log, None, None, level)
             results = logobj.getResults()
             if results:
-                results += "\n"
+                results += CR
             messages = "{}{}".format(results, msg)
             logobj.setResults(messages)
         logobj._p_changed = 1
