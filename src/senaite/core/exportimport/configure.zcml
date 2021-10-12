@@ -9,6 +9,15 @@
   <include package=".genericsetup"/>
   <include package=".setupdata"/>
 
+  <!-- Auto Import Results View -->
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="auto_import_results"
+      class=".auto_import_results.AutoImportResultsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="import"
