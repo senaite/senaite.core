@@ -10,7 +10,7 @@
     :target: https://pypi.python.org/pypi/senaite.core
 
 .. image:: https://img.shields.io/travis/com/senaite/senaite.core/2.x.svg?style=flat-square
-    :target: https://travis-ci.com/senaite/senaite.core
+    :target: https://app.travis-ci.com/github/senaite/senaite.core
 
 .. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/2.x.svg?style=flat-square
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/?branch=2.x
