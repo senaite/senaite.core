@@ -9,13 +9,16 @@ from six import string_types
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from DateTime import DateTime
-from plone.app.blob.interfaces import IFileUpload
+from plone.app.blob.adapters.file import BlobbableFile
+from plone.app.blob.interfaces import IBlobbable
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from senaite.core import logger
 from senaite.core.exportimport.instruments import get_automatic_parser
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
+from zope.component import adapter
+from zope.interface import Interface
 from zope.interface import alsoProvides
 from zope.interface import implementer
 
@@ -352,19 +355,20 @@ class AutoImportResultsView(BrowserView):
         return results
 
 
-@implementer(IFileUpload)
-class UploadFileWrapper:
+class IUploadFileWrapper(Interface):
     """File object wrapper
-
-    NOTE: We implement `IFileUpload` to get adapted by `IBlobbable`
-          This is needed when an attachment is created during resultsimport
 
     File objects don't have 'filename' and 'headers' attributes.
     Since Import step of different Interfaces checks if 'filename' is set
     to be sure that submitted form contains uploaded file, we also have to add
     this attribute to our File object.
     """
+
+
+@implementer(IUploadFileWrapper)
+class UploadFileWrapper(object):
     def __init__(self, orig_file):
+        self.orig_file = orig_file
         if hasattr(orig_file, "__methods__"):
             methods = orig_file.__methods__
         else:
@@ -377,3 +381,16 @@ class UploadFileWrapper:
             if hasattr(orig_file, m):
                 d[m] = getattr(orig_file, m)
         self.filename = orig_file.name
+
+
+@adapter(IUploadFileWrapper)
+@implementer(IBlobbable)
+class BlobbableUploadFileWrapper(BlobbableFile):
+    """Adapter that is needed when a blob file is created from the file contents
+
+    This is needed when an imported analysis result is assigned to a worksheet
+    and the results file is attached to the analysis.
+    """
+    def __init__(self, context):
+        # make the original file the context
+        self.context = context.orig_file

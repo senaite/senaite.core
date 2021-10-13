@@ -9,6 +9,9 @@
   <include package=".genericsetup"/>
   <include package=".setupdata"/>
 
+  <!-- IBlobbable Adapter for UploadFileWrapper -->
+  <adapter factory=".auto_import_results.BlobbableUploadFileWrapper" />
+
   <!-- Auto Import Results View -->
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
