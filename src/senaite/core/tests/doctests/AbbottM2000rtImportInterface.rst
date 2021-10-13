@@ -22,7 +22,7 @@ Needed imports:
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import ConvertToUploadFile
 
 Functional helpers:
 
