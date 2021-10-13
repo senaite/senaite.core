@@ -21,7 +21,7 @@ Needed imports::
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
     >>> from senaite.core.exportimport.instruments.sysmex.xt.i1800 import TX1800iParser
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import UploadFileWrapper
 
 Functional helpers::
 
@@ -155,7 +155,7 @@ Load results test file and import the results::
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/2012-05-09_11-06-14-425_CBDB6A.txt',
     ...                         encoding='utf-8-sig')
-    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> test_file = UploadFileWrapper(temp_file)
     >>> tx1800i_parser = TX1800iParser(test_file)
     >>> importer = SysmexXTImporter(parser=tx1800i_parser,
     ...                             context=portal,

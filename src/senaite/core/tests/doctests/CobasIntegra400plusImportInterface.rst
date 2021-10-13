@@ -21,7 +21,7 @@ Needed imports::
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2Importer
     >>> from senaite.core.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2CSVParser
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import UploadFileWrapper
 
 Functional helpers::
 
@@ -154,7 +154,7 @@ Load results test file and import the results::
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/cobasintegra.csv',
     ...                         encoding='utf-8-sig')
-    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> test_file = UploadFileWrapper(temp_file)
     >>> cobasintegra_parser = CobasIntegra400plus2CSVParser(test_file)
     >>> importer = CobasIntegra400plus2Importer(parser=cobasintegra_parser,
     ...                             context=portal,

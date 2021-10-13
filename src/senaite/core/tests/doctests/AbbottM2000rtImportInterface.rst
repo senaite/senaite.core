@@ -22,7 +22,7 @@ Needed imports:
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
-    >>> from senaite.core.exportimport.auto_import_results import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import UploadFileWrapper
 
 Functional helpers:
 
@@ -194,7 +194,7 @@ Load results test file and import the results:
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/AbbottM2000.log.123',
     ...                         encoding='utf-8-sig')
-    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> test_file = UploadFileWrapper(temp_file)
     >>> abbott_parser = Abbottm2000rtTSVParser(test_file)
     >>> importer = Abbottm2000rtImporter(parser=abbott_parser,
     ...                                  context=portal,

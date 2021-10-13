@@ -27,7 +27,6 @@ Needed imports::
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
     >>> from senaite.core.exportimport.instruments.sysmex.xt.i1800 import TX1800iParser
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 
 Functional helpers::
 
