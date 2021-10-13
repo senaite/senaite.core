@@ -9,6 +9,7 @@ from six import string_types
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from DateTime import DateTime
+from plone.app.blob.interfaces import IFileUpload
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from senaite.core import logger
@@ -16,6 +17,7 @@ from senaite.core.exportimport.instruments import get_automatic_parser
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
 from zope.interface import alsoProvides
+from zope.interface import implementer
 
 CR = "\n"
 LOGFILE = "logs.log"
@@ -350,8 +352,12 @@ class AutoImportResultsView(BrowserView):
         return results
 
 
+@implementer(IFileUpload)
 class UploadFileWrapper:
     """File object wrapper
+
+    NOTE: We implement `IFileUpload` to get adapted by `IBlobbable`
+          This is needed when an attachment is created during resultsimport
 
     File objects don't have 'filename' and 'headers' attributes.
     Since Import step of different Interfaces checks if 'filename' is set
