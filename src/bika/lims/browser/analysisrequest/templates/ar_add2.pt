@@ -236,7 +236,7 @@
         <div data-fieldname="ServiceConditions-{{arnum}}">
         <table class="service-conditions-table table table-condensed table-bordered">
           {{#each conditions}}
-          <tr>
+          <tr data-subfield="{{title}}">
             <td class="service-conditions-label">
               <label class="formQuestion">
                 <span class="">{{title}}</span>

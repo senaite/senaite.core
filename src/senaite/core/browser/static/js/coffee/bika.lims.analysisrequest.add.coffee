@@ -1157,10 +1157,12 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
-        # show/hide the service conditions for this analysis
         if is_service
+          # show/hide the service conditions for this analysis
           uid = $el.closest("[uid]").attr "uid"
           me.set_service_conditions arnum, uid, checked
+          # copy the conditions for this analysis
+          me.copy_service_conditions 0, arnum, uid
 
       # trigger event for price recalculation
       if is_service
@@ -1459,3 +1461,28 @@ class window.AnalysisRequestAdd
         template = @render_template "service-conditions", context
         conditions.append template
         conditions.show()
+
+
+  copy_service_conditions: (from, to, uid) =>
+    ###
+     * Copies the service conditions values from those set for the service with
+     * the specified uid and arnum_from column to the same analysis from the
+     * arnum_to column
+    ###
+    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
+
+    me = this
+
+    # Copy the values from all input fields to destination by name
+    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
+    $(source).each (idx, el) ->
+
+      # Extract the information from the field to look for
+      $el = $(el)
+      name = $el.attr "name"
+      subfield = $el.closest("[data-subfield]").attr "data-subfield"
+      console.debug "-> Copy service condition: #{subfield}"
+
+      # Set the value
+      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
+      dest.val($el.val())

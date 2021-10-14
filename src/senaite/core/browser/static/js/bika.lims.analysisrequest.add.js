@@ -13,6 +13,7 @@
     var typeIsArray;
 
     function AnalysisRequestAdd() {
+      this.copy_service_conditions = bind(this.copy_service_conditions, this);
       this.set_service_conditions = bind(this.set_service_conditions, this);
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
@@ -1115,7 +1116,8 @@
           $(_el).prop("checked", checked);
           if (is_service) {
             uid = $el.closest("[uid]").attr("uid");
-            return me.set_service_conditions(arnum, uid, checked);
+            me.set_service_conditions(arnum, uid, checked);
+            return me.copy_service_conditions(0, arnum, uid);
           }
         });
         if (is_service) {
@@ -1422,6 +1424,28 @@
           return conditions.show();
         }
       }
+    };
+
+    AnalysisRequestAdd.prototype.copy_service_conditions = function(from, to, uid) {
+
+      /*
+       * Copies the service conditions values from those set for the service with
+       * the specified uid and arnum_from column to the same analysis from the
+       * arnum_to column
+       */
+      var me, source;
+      console.debug("*** copy_service_conditions::from=" + from + " to=" + to + " UID=" + uid);
+      me = this;
+      source = "td[fieldname='Analyses-" + from + "'] div[id='" + uid + "-conditions'] input[name='ServiceConditions-" + from + ".value:records']";
+      return $(source).each(function(idx, el) {
+        var $el, dest, name, subfield;
+        $el = $(el);
+        name = $el.attr("name");
+        subfield = $el.closest("[data-subfield]").attr("data-subfield");
+        console.debug("-> Copy service condition: " + subfield);
+        dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
+        return dest.val($el.val());
+      });
     };
 
     return AnalysisRequestAdd;
