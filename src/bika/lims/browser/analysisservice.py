@@ -37,6 +37,7 @@ from magnitude import mg
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
 from zope.component import adapts
 from zope.i18n.locales import locales
 from zope.interface import implements
@@ -135,6 +136,11 @@ class AnalysisServiceInfoView(BrowserView):
         if not self.can_view_logs_of(service):
             return None
         view = api.get_view("auditlog", context=service, request=self.request)
+        if not view:
+            logger.error("Could not get auditlog view for %s. "
+                         "Maybe it does not provide IAuditable interface?"
+                         % repr(service))
+            return None
         view.update()
         view.before_render()
         return view
