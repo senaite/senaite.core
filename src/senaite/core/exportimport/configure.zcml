@@ -9,6 +9,18 @@
   <include package=".genericsetup"/>
   <include package=".setupdata"/>
 
+  <!-- IBlobbable Adapter for UploadFileWrapper -->
+  <adapter factory=".auto_import_results.BlobbableUploadFileWrapper" />
+
+  <!-- Auto Import Results View -->
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="auto_import_results"
+      class=".auto_import_results.AutoImportResultsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="import"

@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1856 Fix referenceanalysis popup in Worksheets
+- #1855 Fix analyses results not set after auto import
 - #1853 Fix sample progress update after instrument results import
 - #1852 Fix `{client}` is wrongly stated as a variable on ID generation
 - #1850 Add valid password for portal_setup tarball import new user creation
