@@ -284,7 +284,7 @@ class ReferenceSample(BaseFolder):
             return None
 
         interim_fields = service.getInterimFields()
-        analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
+        analysis = api.create(self, "ReferenceAnalysis")
         # Copy all the values from the schema
         # TODO Add Service as a param in ReferenceAnalysis constructor and do
         #      this logic there instead of here
