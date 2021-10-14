@@ -41,7 +41,6 @@ Needed imports::
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt \
     ...      import Abbottm2000rtTSVParser, Abbottm2000rtImporter
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
     >>> from zope.publisher.browser import FileUpload, TestRequest
 
 Functional helpers::
