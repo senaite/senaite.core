@@ -13,6 +13,7 @@
     var typeIsArray;
 
     function AnalysisRequestAdd() {
+      this.init_service_conditions = bind(this.init_service_conditions, this);
       this.copy_service_conditions = bind(this.copy_service_conditions, this);
       this.set_service_conditions = bind(this.set_service_conditions, this);
       this.init_file_fields = bind(this.init_file_fields, this);
@@ -69,6 +70,7 @@
       this.get_global_settings();
       this.get_flush_settings();
       this.recalculate_records();
+      this.init_service_conditions();
       this.recalculate_prices();
       return this;
     };
@@ -668,7 +670,7 @@
       if (this.is_poc_expanded(poc)) {
         el.closest("tr").addClass("visible");
       }
-      me.set_service_conditions(arnum, uid, checked);
+      me.set_service_conditions(el);
       return $(this).trigger("services:changed");
     };
 
@@ -983,15 +985,14 @@
       /*
        * Eventhandler for Analysis Service Checkboxes.
        */
-      var $el, arnum, checked, el, me, uid;
+      var $el, checked, el, me, uid;
       me = this;
       el = event.currentTarget;
       checked = el.checked;
       $el = $(el);
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
-      arnum = $el.closest("[arnum]").attr("arnum");
-      me.set_service_conditions(arnum, uid, checked);
+      me.set_service_conditions($el);
       $(me).trigger("form:changed");
       return $(me).trigger("services:changed");
     };
@@ -1116,7 +1117,7 @@
           $(_el).prop("checked", checked);
           if (is_service) {
             uid = $el.closest("[uid]").attr("uid");
-            me.set_service_conditions(arnum, uid, checked);
+            me.set_service_conditions($(_el));
             return me.copy_service_conditions(0, arnum, uid);
           }
         });
@@ -1385,16 +1386,17 @@
       return $(element).parent().parent().append(file_field_div);
     };
 
-    AnalysisRequestAdd.prototype.set_service_conditions = function(arnum, uid, checked) {
+    AnalysisRequestAdd.prototype.set_service_conditions = function(el) {
 
       /*
        * Shows or hides the service conditions input elements for the service
-       * with the provided UID and arnum provided
+       * bound to the checkbox element passed in
        */
-      var base_info, conditions, context, data, el, parent, template;
-      console.debug("*** set_service_conditions::AR=" + arnum + " UID=" + uid + " checked=" + checked);
-      el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + arnum + "_" + uid);
-      parent = el.closest("td");
+      var arnum, base_info, checked, conditions, context, data, parent, template, uid;
+      checked = el.prop("checked");
+      parent = el.closest("td[uid][arnum]");
+      uid = parent.attr("uid");
+      arnum = parent.attr("arnum");
       conditions = $("div.service-conditions", parent);
       conditions.empty();
       if (!checked) {
@@ -1445,6 +1447,22 @@
         console.debug("-> Copy service condition: " + subfield);
         dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
         return dest.val($el.val());
+      });
+    };
+
+    AnalysisRequestAdd.prototype.init_service_conditions = function() {
+
+      /*
+       * Updates the visibility of the conditions for the selected services
+       */
+      var me, services;
+      console.debug("init_service_conditions");
+      me = this;
+      services = $("input[type=checkbox].analysisservice-cb:checked");
+      return $(services).each(function(idx, el) {
+        var $el;
+        $el = $(el);
+        return me.set_service_conditions($el);
       });
     };
 

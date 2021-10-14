@@ -45,6 +45,9 @@ class window.AnalysisRequestAdd
     # recalculate records on load (needed for AR copies)
     @recalculate_records()
 
+    # initialize service conditions (needed for AR copies)
+    @init_service_conditions()
+
     # always recalculate prices in the first run
     @recalculate_prices()
 
@@ -675,7 +678,7 @@ class window.AnalysisRequestAdd
     if @is_poc_expanded poc
       el.closest("tr").addClass "visible"
     # show/hide the service conditions for this analysis
-    me.set_service_conditions arnum, uid, checked
+    me.set_service_conditions el
     # trigger event for price recalculation
     $(@).trigger "services:changed"
 
@@ -1029,8 +1032,7 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_analysis_click::UID=#{uid} checked=#{checked}°°°"
 
     # show/hide the service conditions for this analysis
-    arnum = $el.closest("[arnum]").attr "arnum"
-    me.set_service_conditions arnum, uid, checked
+    me.set_service_conditions $el
     # trigger form:changed event
     $(me).trigger "form:changed"
     # trigger event for price recalculation
@@ -1160,7 +1162,7 @@ class window.AnalysisRequestAdd
         if is_service
           # show/hide the service conditions for this analysis
           uid = $el.closest("[uid]").attr "uid"
-          me.set_service_conditions arnum, uid, checked
+          me.set_service_conditions $(_el)
           # copy the conditions for this analysis
           me.copy_service_conditions 0, arnum, uid
 
@@ -1422,18 +1424,21 @@ class window.AnalysisRequestAdd
     $(element).parent().parent().append file_field_div
 
 
-  set_service_conditions: (arnum, uid, checked) =>
+  set_service_conditions: (el) =>
     ###
      * Shows or hides the service conditions input elements for the service
-     * with the provided UID and arnum provided
+     * bound to the checkbox element passed in
     ###
-    console.debug "*** set_service_conditions::AR=#{arnum} UID=#{uid} checked=#{checked}"
 
-    # Get the service checkbox element
-    el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
+    # Check whether the checkbox is selected or not
+    checked = el.prop "checked"
+
+    # Get the uid of the analysis and the column number
+    parent = el.closest("td[uid][arnum]")
+    uid = parent.attr "uid"
+    arnum = parent.attr "arnum"
 
     # Get the div where service conditions are rendered
-    parent = el.closest("td")
     conditions = $("div.service-conditions", parent)
     conditions.empty()
 
@@ -1476,7 +1481,6 @@ class window.AnalysisRequestAdd
     # Copy the values from all input fields to destination by name
     source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
     $(source).each (idx, el) ->
-
       # Extract the information from the field to look for
       $el = $(el)
       name = $el.attr "name"
@@ -1486,3 +1490,18 @@ class window.AnalysisRequestAdd
       # Set the value
       dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
       dest.val($el.val())
+
+
+  init_service_conditions: =>
+    ###
+     * Updates the visibility of the conditions for the selected services
+    ###
+    console.debug "init_service_conditions"
+
+    me = this
+
+    # Find out all selected services checkboxes
+    services = $("input[type=checkbox].analysisservice-cb:checked")
+    $(services).each (idx, el) ->
+      $el = $(el)
+      me.set_service_conditions $el
