@@ -27,8 +27,12 @@ class EditForm(EditFormAdapterBase):
     def submit(self, data):
         setupfile = self.request.form.get("setupfile")
         setupexisting = self.request.form.get("setupexisting")
+        auto_import_results = self.request.form.get("auto_import_results")
         if setupfile or setupexisting:
             self.handle_data_import()
+        elif auto_import_results:
+            view = api.get_view("auto_import_results")
+            self.add_inner_html(".autoimport-results", view())
         else:
             self.handle_instrument_import()
         return self.data

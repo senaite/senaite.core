@@ -21,11 +21,13 @@
 import codecs
 
 import six
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
 from senaite.core.exportimport.instruments.logger import Logger
@@ -606,8 +608,10 @@ class AnalysisResultsImporter(Logger):
 
         # recalculate analyses with calculations after all results are set
         for analysis in updated_analyses:
-            sample_id = analysis.getRequestID()
-            self.calculateTotalResults(sample_id, analysis)
+            # only routine analyses can be used in calculations
+            if IRoutineAnalysis.providedBy(analysis):
+                sample_id = analysis.getRequestID()
+                self.calculateTotalResults(sample_id, analysis)
 
         # reindex sample to update progress (and other indexes/metadata)
         samples = set(map(api.get_parent, updated_analyses))
