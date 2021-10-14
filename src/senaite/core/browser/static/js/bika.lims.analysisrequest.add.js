@@ -13,7 +13,7 @@
     var typeIsArray;
 
     function AnalysisRequestAdd() {
-      this.on_analysis_change = bind(this.on_analysis_change, this);
+      this.set_service_conditions = bind(this.set_service_conditions, this);
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
@@ -655,8 +655,9 @@
       /*
        * Select the checkbox of a service by UID
        */
-      var el, poc;
+      var el, me, poc;
       console.debug("*** set_service::AR=" + arnum + " UID=" + uid + " checked=" + checked);
+      me = this;
       el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + arnum + "_" + uid);
       if (el.is(":checked") === checked) {
         return;
@@ -666,6 +667,7 @@
       if (this.is_poc_expanded(poc)) {
         el.closest("tr").addClass("visible");
       }
+      me.set_service_conditions(arnum, uid, checked);
       return $(this).trigger("services:changed");
     };
 
@@ -980,16 +982,17 @@
       /*
        * Eventhandler for Analysis Service Checkboxes.
        */
-      var $el, checked, el, me, uid;
+      var $el, arnum, checked, el, me, uid;
       me = this;
       el = event.currentTarget;
       checked = el.checked;
       $el = $(el);
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
+      arnum = $el.closest("[arnum]").attr("arnum");
+      me.set_service_conditions(arnum, uid, checked);
       $(me).trigger("form:changed");
-      $(me).trigger("services:changed");
-      return this.on_analysis_change(event);
+      return $(me).trigger("services:changed");
     };
 
     AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
@@ -1093,10 +1096,11 @@
         return;
       }
       $td1.find("input[type=checkbox]").each(function(index, el) {
-        var checked, j, results1;
+        var checked, is_service, j, results1;
         console.debug("-> Copy checkbox field");
         $el = $(el);
         checked = $el.prop("checked");
+        is_service = $el.hasClass("analysisservice-cb");
         $.each((function() {
           results1 = [];
           for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
@@ -1108,9 +1112,13 @@
           }
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find("input[type=checkbox]")[index];
-          return $(_el).prop("checked", checked);
+          $(_el).prop("checked", checked);
+          if (is_service) {
+            uid = $el.closest("[uid]").attr("uid");
+            return me.set_service_conditions(arnum, uid, checked);
+          }
         });
-        if ($el.hasClass("analysisservice-cb")) {
+        if (is_service) {
           return $(me).trigger("services:changed");
         }
       });
@@ -1375,23 +1383,19 @@
       return $(element).parent().parent().append(file_field_div);
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_change = function(event) {
+    AnalysisRequestAdd.prototype.set_service_conditions = function(arnum, uid, checked) {
 
       /*
-       * EventHandler when the user checks/unchecks a service. Checks if there
-       * are analysis conditions to be rendered for the selected service and if
-       * so, renders the form for user input in accordance
+       * Shows or hides the service conditions input elements for the service
+       * with the provided UID and arnum provided
        */
-      var $el, $parent, arnum, base_info, conditions, context, data, el, template, uid;
-      el = event.currentTarget;
-      $el = $(el);
-      $parent = $el.closest("td");
-      uid = $parent.attr("uid");
-      arnum = $parent.attr("arnum");
-      console.debug("°°° on_analysis_change::UID=" + uid + "°°°");
-      conditions = $("div.service-conditions", $parent);
+      var base_info, conditions, context, data, el, parent, template;
+      console.debug("*** set_service_conditions::AR=" + arnum + " UID=" + uid + " checked=" + checked);
+      el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + arnum + "_" + uid);
+      parent = el.closest("td");
+      conditions = $("div.service-conditions", parent);
       conditions.empty();
-      if (!el.checked) {
+      if (!checked) {
         conditions.hide();
         return;
       }

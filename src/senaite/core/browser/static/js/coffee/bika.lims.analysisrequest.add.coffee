@@ -661,6 +661,7 @@ class window.AnalysisRequestAdd
      * Select the checkbox of a service by UID
     ###
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
+    me = this
     # get the service checkbox element
     el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
     # avoid unneccessary event triggers if the checkbox status is unchanged
@@ -673,6 +674,8 @@ class window.AnalysisRequestAdd
     # make the element visible if the categories are visible
     if @is_poc_expanded poc
       el.closest("tr").addClass "visible"
+    # show/hide the service conditions for this analysis
+    me.set_service_conditions arnum, uid, checked
     # trigger event for price recalculation
     $(@).trigger "services:changed"
 
@@ -1025,12 +1028,13 @@ class window.AnalysisRequestAdd
 
     console.debug "°°° on_analysis_click::UID=#{uid} checked=#{checked}°°°"
 
+    # show/hide the service conditions for this analysis
+    arnum = $el.closest("[arnum]").attr "arnum"
+    me.set_service_conditions arnum, uid, checked
     # trigger form:changed event
     $(me).trigger "form:changed"
     # trigger event for price recalculation
     $(me).trigger "services:changed"
-    # trigger service-specific conditions
-    @on_analysis_change event
 
 
   on_service_listing_header_click: (event) =>
@@ -1145,6 +1149,7 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy checkbox field"
       $el = $(el)
       checked = $el.prop "checked"
+      is_service = $el.hasClass "analysisservice-cb"
       # iterate over columns, starting from column 2
       $.each [1..ar_count], (arnum) ->
         # skip the first column
@@ -1152,8 +1157,13 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
+        # show/hide the service conditions for this analysis
+        if is_service
+          uid = $el.closest("[uid]").attr "uid"
+          me.set_service_conditions arnum, uid, checked
+
       # trigger event for price recalculation
-      if $el.hasClass "analysisservice-cb"
+      if is_service
         $(me).trigger "services:changed"
 
     # Copy <select> fields
@@ -1410,25 +1420,23 @@ class window.AnalysisRequestAdd
     $(element).parent().parent().append file_field_div
 
 
-  on_analysis_change: (event) =>
+  set_service_conditions: (arnum, uid, checked) =>
     ###
-     * EventHandler when the user checks/unchecks a service. Checks if there
-     * are analysis conditions to be rendered for the selected service and if
-     * so, renders the form for user input in accordance
+     * Shows or hides the service conditions input elements for the service
+     * with the provided UID and arnum provided
     ###
-    el = event.currentTarget
-    $el = $(el)
-    $parent = $el.closest "td"
-    uid = $parent.attr "uid"
-    arnum = $parent.attr "arnum"
-    console.debug "°°° on_analysis_change::UID=#{uid}°°°"
+    console.debug "*** set_service_conditions::AR=#{arnum} UID=#{uid} checked=#{checked}"
 
-    # Get the div where service conditions will be rendered
-    conditions = $("div.service-conditions", $parent)
+    # Get the service checkbox element
+    el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
+
+    # Get the div where service conditions are rendered
+    parent = el.closest("td")
+    conditions = $("div.service-conditions", parent)
     conditions.empty()
 
     # If the service is unchecked, remove the conditions form
-    if not el.checked
+    if not checked
       conditions.hide()
       return
 
