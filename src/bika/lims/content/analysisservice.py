@@ -196,6 +196,7 @@ Conditions = RecordsField(
         "description",
         "type",
         "default",
+        "required",
     ),
     required_subfields=(
         "title",
@@ -206,12 +207,14 @@ Conditions = RecordsField(
         "description": _("Description"),
         "type": _("Control type"),
         "default": _("Default value"),
+        "required": _("Required"),
     },
     subfield_types={
         "title": "string",
         "description": "string",
         "type": "string",
         "default": "string",
+        "required": "boolean",
     },
     subfield_sizes={
         "title": 20,

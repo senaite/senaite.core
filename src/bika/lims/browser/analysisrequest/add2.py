@@ -1572,6 +1572,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
+            # Handle required fields from Service conditions
+            for condition in record.get("ServiceConditions", []):
+                if condition.get("required") == "on":
+                    if not condition.get("value"):
+                        title = condition.get("title")
+                        if title not in missing:
+                            missing.append(title)
+
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, n)
