@@ -605,6 +605,7 @@ class AnalysesView(ListingView):
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
+        item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
 
         # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler

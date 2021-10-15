@@ -446,7 +446,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             uid = condition.get("uid")
             if api.is_uid(uid) and uid == service_uid:
                 value = condition.get("value", None)
-                if value is not None:
+                if value:
                     return "title" in condition
             return False
 
