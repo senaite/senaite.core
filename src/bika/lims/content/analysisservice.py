@@ -37,12 +37,14 @@ from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IDeactivable
 from Products.Archetypes.atapi import PicklistWidget
+from Products.Archetypes.Field import StringField
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
+from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.p3compat import cmp
 from zope.interface import implements
@@ -186,6 +188,19 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
+# Allow/disallow the capture of text as the result of the analysis
+DefaultResult = StringField(
+    "DefaultResult",
+    schemata="Analysis",
+    validators=('service_defaultresult_validator',),
+    widget=StringWidget(
+        label=_("Default result"),
+        description=_(
+            "Default result to display on result entry"
+        )
+    )
+)
+
 
 schema = schema.copy() + Schema((
     Methods,
@@ -197,12 +212,15 @@ schema = schema.copy() + Schema((
     Preservation,
     Container,
     PartitionSetup,
+    DefaultResult,
 ))
 
 # Move default method field after available methods field
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
 schema.moveField("Instrument", after="Instruments")
+# Move default result field after String result
+schema.moveField("DefaultResult", after="StringResult")
 
 
 class AnalysisService(AbstractBaseAnalysis):
