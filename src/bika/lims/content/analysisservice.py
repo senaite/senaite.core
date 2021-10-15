@@ -195,6 +195,7 @@ Conditions = RecordsField(
         "title",
         "description",
         "type",
+        "choices",
         "default",
         "required",
     ),
@@ -206,6 +207,7 @@ Conditions = RecordsField(
         "title": _("Title"),
         "description": _("Description"),
         "type": _("Control type"),
+        "choices": _("Choices"),
         "default": _("Default value"),
         "required": _("Required"),
     },
@@ -214,13 +216,18 @@ Conditions = RecordsField(
         "description": "string",
         "type": "string",
         "default": "string",
+        "choices": "string",
         "required": "boolean",
     },
     subfield_sizes={
         "title": 20,
         "description": 50,
         "type": 1,
+        "choices": 30,
         "default": 20,
+    },
+    subfield_validators={
+        'title': 'service_conditions_validator',
     },
     subfield_maxlength={
         "title": 20,
@@ -228,6 +235,7 @@ Conditions = RecordsField(
     },
     subfield_vocabularies={
         "type": DisplayList((
+            ('', ''),
             ('text', _('Text')),
             ('number', _('Number')),
             ('checkbox', _('Checkbox')),

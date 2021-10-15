@@ -1409,3 +1409,71 @@ class ImportValidator(object):
 
 
 validation.register(ImportValidator())
+
+
+class ServiceConditionsValidator(object):
+    """Validate AnalysisService Conditions field
+    """
+    implements(IValidator)
+    name = "service_conditions_validator"
+
+    def __call__(self, field_value, **kwargs):
+        instance = kwargs['instance']
+        request = kwargs.get('REQUEST', {})
+        translate = getToolByName(instance, 'translation_service').translate
+        field_name = kwargs['field'].getName()
+
+        # This value in request prevents running once per subfield value.
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = '{}-{}-{}'.format(self.name, instance.getId(), field_name)
+        if instance.REQUEST.get(key, False):
+            return True
+
+        # Walk through all records set for this records field
+        field_name_value = "{}_value".format(field_name)
+        records = request.get(field_name_value, [])
+        for record in records:
+            # Validate the record
+            msg = self.validate_record(record)
+            if msg:
+                return to_utf8(translate(msg))
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_record(self, record):
+        # 'choices' subfield is required when 'select' control type
+        control_type = record.get("type")
+        choices = record.get("choices")
+        if control_type == 'select':
+            # choices is required, check if the value for subfield is ok
+            if not choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "required when the control type of choice is "
+                         "'Select'")
+
+            # Choices must follow the format  'choice 1|choice 2|choice 3'
+            choices_arr = filter(None, choices.split('|'))
+            if len(choices_arr) <= 1:
+                return _("Validation failed: Please use the character '|' "
+                         "to separate the available options in 'Choices' "
+                         "subfield")
+
+        else:
+            # choices should be left empty
+            if choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "only required for when the control type of choice "
+                         "is 'Select'")
+
+        # The type of the default value must match with the selected type
+        default_value = record.get("default")
+        if default_value:
+            if control_type == "number":
+                if not api.is_floatable(default_value):
+                    return _("Validation failed: '{}' is not numeric").format(
+                        default_value)
+
+
+validation.register(ServiceConditionsValidator())
