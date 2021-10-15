@@ -1361,7 +1361,7 @@ schema = BikaSchema.copy() + Schema((
     # Initial conditions for analyses set on Sample registration
     RecordsField(
         "ServiceConditions",
-        visible=False,
+        widget=ComputedWidget(visible=False)
     )
 )
 )
