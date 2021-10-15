@@ -264,6 +264,9 @@
                      value="{{required}}"/>
               {{#if options}}
               <select name="ServiceConditions-{{../arnum}}.value:records">
+                {{#unless required}}
+                <option></option>
+                {{/unless}}
                 {{#each options}}
                 <option>{{this}}</option>
                 {{/each}}

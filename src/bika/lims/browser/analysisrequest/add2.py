@@ -897,7 +897,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
-            "conditions": obj.getConditions(),
+            "conditions": self.get_conditions_info(obj),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()
@@ -1060,6 +1060,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         })
 
         return info
+
+    @cache(cache_key)
+    def get_conditions_info(self, obj):
+        conditions = obj.getConditions()
+        for condition in conditions:
+            choices = condition.get("choices", "")
+            options = filter(None, choices.split('|'))
+            if options:
+                condition.update({"options": options})
+        return conditions
 
     @cache(cache_key)
     def to_field_value(self, obj):
