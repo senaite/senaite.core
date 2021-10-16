@@ -675,23 +675,35 @@ class SamplesView(ListingView):
                 "url": "{}/workflow_action?action={}".format(
                     self.url, "print_sample")
             })
-        if self.copy_to_new_allowed:
-            custom_transitions.append({
-                "id": "copy_to_new",
-                "title": _("Copy to new"),
-                "url": "{}/workflow_action?action={}".format(
-                    self.url, "copy_to_new")
-            })
+
+        copy_to_new = self.get_copy_to_new_transition()
+        if copy_to_new:
+            custom_transitions.append(copy_to_new)
 
         for rv in self.review_states:
             rv.setdefault("custom_transitions", []).extend(custom_transitions)
 
-    @property
-    def copy_to_new_allowed(self):
+    def get_copy_to_new_transition(self):
+        """Returns the copy to new custom transition if the current has enough
+        privileges. Returns None otherwise
+        """
+        base_url = None
         mtool = api.get_tool("portal_membership")
         if mtool.checkPermission(AddAnalysisRequest, self.context):
-            return True
-        return False
+            base_url = self.url
+        else:
+            client = api.get_current_client()
+            if client and mtool.checkPermission(AddAnalysisRequest, client):
+                base_url = api.get_url(client)
+
+        if base_url:
+            return {
+                "id": "copy_to_new",
+                "title": _("Copy to new"),
+                "url": "{}/workflow_action?action=copy_to_new".format(base_url)
+            }
+
+        return None
 
     @property
     def is_printing_workflow_enabled(self):

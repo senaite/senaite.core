@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1858 Show "copy to new" transition to Clients in samples listing
 - #1856 Fix referenceanalysis popup in Worksheets
 - #1855 Fix analyses results not set after auto import
 - #1853 Fix sample progress update after instrument results import
