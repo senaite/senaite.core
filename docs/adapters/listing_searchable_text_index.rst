@@ -38,7 +38,7 @@ The second mechanism involves the creation of an adapter that implements
 
 .. code-block:: python
 
-    @adapter(IAnalysisRequest)
+    @adapter(IAnalysisRequest, IBikaCatalogAnalysisRequestListing)
     @implementer(IListingSearchableTextProvider)
     class ListingSearchableTextProvider(object):
         """Adapter for Analysis Request Listing Searchable Text Index
