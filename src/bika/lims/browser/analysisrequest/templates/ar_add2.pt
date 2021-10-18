@@ -567,7 +567,6 @@
                                                class python:'{}-info service-info'.format(service_uid);">
                           </div>
 
-
                           <!-- Service conditions -->
                           <div tal:attributes="id python:'{}-conditions'.format(service_uid);
                                                class python:'{}-conditions service-conditions'.format(service_uid);">
