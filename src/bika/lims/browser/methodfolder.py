@@ -94,10 +94,12 @@ class MethodFolderContentsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
+    def update(self):
         """Before template render hook
         """
-        # Render the Add button if the user has the AddClient permission
+        super(MethodFolderContentsView, self).update()
+
+        # Render the Add button if the user has the AddMethod permission
         if check_permission(AddMethod, self.context):
             self.context_actions[_("Add")] = {
                 "url": "createObject?type_name=Method",
