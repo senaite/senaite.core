@@ -189,7 +189,7 @@ PartitionSetup = PartitionSetupField(
 
 Conditions = RecordsField(
     "Conditions",
-    schemata="Custom settings",
+    schemata="Advanced",
     type="conditions",
     subfields=(
         "title",
