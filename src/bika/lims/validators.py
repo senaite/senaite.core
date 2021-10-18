@@ -1518,4 +1518,3 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
->>>>>>> 2.x
