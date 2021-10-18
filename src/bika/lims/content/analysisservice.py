@@ -199,6 +199,7 @@ DefaultResult = StringField(
         description=_(
             "Default result to display on result entry"
         )
+    )
 )
 
 Conditions = RecordsField(
