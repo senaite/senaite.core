@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
+
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
@@ -432,3 +434,22 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             alsoProvides(self, IInternalUse)
         else:
             noLongerProvides(self, IInternalUse)
+
+    def getConditions(self):
+        """Returns the conditions of this analysis. These conditions are usually
+        set on sample registration and are stored at sample level
+        """
+        sample = self.getRequest()
+        service_uid = self.getRawAnalysisService()
+
+        def is_valid(condition):
+            uid = condition.get("uid")
+            if api.is_uid(uid) and uid == service_uid:
+                value = condition.get("value", None)
+                if value:
+                    return "title" in condition
+            return False
+
+        conditions = sample.getServiceConditions()
+        conditions = filter(is_valid, conditions)
+        return copy.deepcopy(conditions)

@@ -229,6 +229,9 @@ class ARAnalysesField(ObjectField):
         prices = kwargs.get("prices") or {}
         price = prices.get(service_uid) or service.getPrice()
 
+        # Get the default result for the service
+        default_result = service.getDefaultResult()
+
         # Gets the analysis or creates the analysis for this service
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
@@ -257,6 +260,10 @@ class ARAnalysesField(ObjectField):
             # Set the internal use status
             parent_sample = analysis.getRequest()
             analysis.setInternalUse(parent_sample.getInternalUse())
+
+            # Set the default result to the analysis
+            if not analysis.getResult():
+                analysis.setResult(default_result)
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
