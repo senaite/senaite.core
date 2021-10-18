@@ -188,9 +188,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getServiceUID(self):
         """Return the UID of the associated service.
         """
-        service = self.getAnalysisService()
-        if service:
-            return service.UID()
+        return self.getRawAnalysisService()
 
     @security.public
     def getNumberOfVerifications(self):

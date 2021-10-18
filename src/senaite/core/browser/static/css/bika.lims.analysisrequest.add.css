@@ -140,3 +140,10 @@
     padding: 0.5em 1em;
 }
 /* /Service Info Table */
+
+
+/* Service conditions */
+.ar-table tr td.service-column div.service-conditions {
+  display:none;
+}
+/* /Service conditions */
