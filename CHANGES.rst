@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #1858 Cannot override behavior of Methods folder when using `before_render`
+- #1857 Allow to set default result for analyses
+- #1854 Support for analyses (pre) conditions on sample registration
 - #1856 Fix referenceanalysis popup in Worksheets
 - #1855 Fix analyses results not set after auto import
 - #1853 Fix sample progress update after instrument results import

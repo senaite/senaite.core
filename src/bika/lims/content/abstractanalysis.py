@@ -188,9 +188,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getServiceUID(self):
         """Return the UID of the associated service.
         """
-        service = self.getAnalysisService()
-        if service:
-            return service.UID()
+        return self.getRawAnalysisService()
 
     @security.public
     def getNumberOfVerifications(self):
@@ -456,6 +454,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
+
+        # Convert to list ff the analysis has result options set with multi
+        if self.getResultOptions() and "multi" in self.getResultOptionsType():
+            if not isinstance(value, (list, tuple)):
+                value = filter(None, [value])
 
         # Handle list results
         if isinstance(value, (list, tuple)):

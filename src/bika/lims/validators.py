@@ -1409,3 +1409,112 @@ class ImportValidator(object):
 
 
 validation.register(ImportValidator())
+
+
+class DefaultResultValidator(object):
+    """Validate AnalysisService's DefaultResult field value
+    """
+    implements(IValidator)
+    name = "service_defaultresult_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs['instance']
+        request = kwargs.get('REQUEST', {})
+        field_name = kwargs['field'].getName()
+        translate = getToolByName(instance, 'translation_service').translate
+
+        default_result = request.get(field_name, None)
+        if default_result:
+            # Default result must be one of the available result options
+            options = request.get("ResultOptions", None)
+            if options:
+                values = map(lambda ro: ro.get("ResultValue"), options)
+                if default_result not in values:
+                    msg = _("Default result must be one of the following "
+                            "result options: {}").format(", ".join(values))
+                    return to_utf8(translate(msg))
+
+            elif not request.get("StringResult"):
+                # Default result must be numeric
+                if not api.is_floatable(default_result):
+                    msg = _("Default result is not numeric")
+                    return to_utf8(translate(msg))
+
+        return True
+
+
+validation.register(DefaultResultValidator())
+
+
+class ServiceConditionsValidator(object):
+    """Validate AnalysisService Conditions field
+    """
+    implements(IValidator)
+    name = "service_conditions_validator"
+
+    def __call__(self, field_value, **kwargs):
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        translate = getToolByName(instance, "translation_service").translate
+        field_name = kwargs["field"].getName()
+
+        # This value in request prevents running once per subfield value.
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = "{}-{}-{}".format(self.name, instance.getId(), field_name)
+        if instance.REQUEST.get(key, False):
+            return True
+
+        # Walk through all records set for this records field
+        field_name_value = "{}_value".format(field_name)
+        records = request.get(field_name_value, [])
+        for record in records:
+            # Validate the record
+            msg = self.validate_record(record)
+            if msg:
+                return to_utf8(translate(msg))
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_record(self, record):
+        control_type = record.get("type")
+        choices = record.get("choices")
+        required = record.get("required") == "on"
+        default = record.get("default")
+
+        if control_type == "select":
+            # choices is required, check if the value for subfield is ok
+            if not choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "required when the control type of choice is "
+                         "'Select'")
+
+            # Choices must follow the format  'choice 1|choice 2|choice 3'
+            choices_arr = filter(None, choices.split('|'))
+            if len(choices_arr) <= 1:
+                return _("Validation failed: Please use the character '|' "
+                         "to separate the available options in 'Choices' "
+                         "subfield")
+        elif control_type == "checkbox":
+            # required checkboxes need a default value to be submitted
+            if required and not default:
+                return _("Validation failed: Please set a default value "
+                         "when defining a required checkbox condition.")
+        else:
+            # choices should be left empty
+            if choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "only required for when the control type of choice "
+                         "is 'Select'")
+
+        # The type of the default value must match with the selected type
+        default_value = record.get("default")
+        if default_value:
+            if control_type == "number":
+                if not api.is_floatable(default_value):
+                    return _("Validation failed: '{}' is not numeric").format(
+                        default_value)
+
+
+validation.register(ServiceConditionsValidator())

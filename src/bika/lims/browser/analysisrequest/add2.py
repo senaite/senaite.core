@@ -897,7 +897,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
-
+            "conditions": self.get_conditions_info(obj),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()
@@ -1060,6 +1060,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         })
 
         return info
+
+    @cache(cache_key)
+    def get_conditions_info(self, obj):
+        conditions = obj.getConditions()
+        for condition in conditions:
+            choices = condition.get("choices", "")
+            options = filter(None, choices.split('|'))
+            if options:
+                condition.update({"options": options})
+        return conditions
 
     @cache(cache_key)
     def to_field_value(self, obj):
@@ -1571,6 +1581,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
+
+            # Handle required fields from Service conditions
+            for condition in record.get("ServiceConditions", []):
+                if condition.get("required") == "on":
+                    if not condition.get("value"):
+                        title = condition.get("title")
+                        if title not in missing:
+                            missing.append(title)
 
             # If there are required fields missing, flag an error
             for field in missing:
