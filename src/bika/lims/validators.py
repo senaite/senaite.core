@@ -1418,15 +1418,15 @@ class ServiceConditionsValidator(object):
     name = "service_conditions_validator"
 
     def __call__(self, field_value, **kwargs):
-        instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
-        translate = getToolByName(instance, 'translation_service').translate
-        field_name = kwargs['field'].getName()
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        translate = getToolByName(instance, "translation_service").translate
+        field_name = kwargs["field"].getName()
 
         # This value in request prevents running once per subfield value.
         # self.name returns the name of the validator. This allows other
         # subfield validators to be called if defined (eg. in other add-ons)
-        key = '{}-{}-{}'.format(self.name, instance.getId(), field_name)
+        key = "{}-{}-{}".format(self.name, instance.getId(), field_name)
         if instance.REQUEST.get(key, False):
             return True
 
@@ -1443,12 +1443,12 @@ class ServiceConditionsValidator(object):
         return True
 
     def validate_record(self, record):
-        # 'choices' subfield is required when 'select' control type
         control_type = record.get("type")
         choices = record.get("choices")
         required = record.get("required") == "on"
         default = record.get("default")
-        if control_type == 'select':
+
+        if control_type == "select":
             # choices is required, check if the value for subfield is ok
             if not choices:
                 return _("Validation failed: value for Choices subfield is "
@@ -1461,7 +1461,11 @@ class ServiceConditionsValidator(object):
                 return _("Validation failed: Please use the character '|' "
                          "to separate the available options in 'Choices' "
                          "subfield")
-
+        elif control_type == "checkbox":
+            # required checkboxes need a default value to be submitted
+            if required and not default:
+                return _("Validation failed: Please set a default value "
+                         "when defining a required checkbox condition.")
         else:
             # choices should be left empty
             if choices:
