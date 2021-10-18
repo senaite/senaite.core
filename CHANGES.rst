@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1858 Show "copy to new" transition to Clients in samples listing
 - #1858 Cannot override behavior of Methods folder when using `before_render`
 - #1857 Allow to set default result for analyses
 - #1854 Support for analyses (pre) conditions on sample registration
