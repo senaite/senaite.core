@@ -1446,6 +1446,8 @@ class ServiceConditionsValidator(object):
         # 'choices' subfield is required when 'select' control type
         control_type = record.get("type")
         choices = record.get("choices")
+        required = record.get("required") == "on"
+        default = record.get("default")
         if control_type == 'select':
             # choices is required, check if the value for subfield is ok
             if not choices:

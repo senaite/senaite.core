@@ -211,6 +211,10 @@ Conditions = RecordsField(
         "default": _("Default value"),
         "required": _("Required"),
     },
+    subfield_descriptions={
+        "choices": _("Please use the following format for select options: "
+                     "key1:value1|key2:value2|...|keyN:valueN"),
+    },
     subfield_types={
         "title": "string",
         "description": "string",
@@ -227,7 +231,7 @@ Conditions = RecordsField(
         "default": 20,
     },
     subfield_validators={
-        'title': 'service_conditions_validator',
+        "title": "service_conditions_validator",
     },
     subfield_maxlength={
         "title": 20,
