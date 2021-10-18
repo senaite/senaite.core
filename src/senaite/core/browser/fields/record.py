@@ -78,6 +78,7 @@ class RecordField(ObjectField):
         "required_subfields": (),
         "subfield_validators": {},
         "subfield_conditions": {},
+        "subfield_descriptions": {},
         "innerJoin": ", ",
         "outerJoin": ", ",
         "widget": RecordWidget,
@@ -105,6 +106,13 @@ class RecordField(ObjectField):
         default: the id of the subfield
         """
         return self.subfield_labels.get(subfield, subfield.capitalize())
+
+    security.declarePublic('getSubfieldDescription')
+    def getSubfieldDescription(self, subfield):
+        """
+        optional custom description for the subfield
+        """
+        return self.subfield_descriptions.get(subfield)
 
     def getSubfieldSize(self, subfield, default=40):
         """

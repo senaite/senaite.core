@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1854 Support for analyses (pre) conditions on sample registration
 - #1856 Fix referenceanalysis popup in Worksheets
 - #1855 Fix analyses results not set after auto import
 - #1853 Fix sample progress update after instrument results import

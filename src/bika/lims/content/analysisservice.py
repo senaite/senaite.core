@@ -44,6 +44,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
@@ -186,6 +187,78 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
+Conditions = RecordsField(
+    "Conditions",
+    schemata="Advanced",
+    type="conditions",
+    subfields=(
+        "title",
+        "description",
+        "type",
+        "choices",
+        "default",
+        "required",
+    ),
+    required_subfields=(
+        "title",
+        "type",
+    ),
+    subfield_labels={
+        "title": _("Title"),
+        "description": _("Description"),
+        "type": _("Control type"),
+        "choices": _("Choices"),
+        "default": _("Default value"),
+        "required": _("Required"),
+    },
+    subfield_descriptions={
+        "choices": _("Please use the following format for select options: "
+                     "key1:value1|key2:value2|...|keyN:valueN"),
+    },
+    subfield_types={
+        "title": "string",
+        "description": "string",
+        "type": "string",
+        "default": "string",
+        "choices": "string",
+        "required": "boolean",
+    },
+    subfield_sizes={
+        "title": 20,
+        "description": 50,
+        "type": 1,
+        "choices": 30,
+        "default": 20,
+    },
+    subfield_validators={
+        "title": "service_conditions_validator",
+    },
+    subfield_maxlength={
+        "title": 20,
+        "description": 100,
+    },
+    subfield_vocabularies={
+        "type": DisplayList((
+            ('', ''),
+            ('text', _('Text')),
+            ('number', _('Number')),
+            ('checkbox', _('Checkbox')),
+            ('select', _('Select')),
+        )),
+    },
+    widget=RecordsWidget(
+        label=_("Analysis conditions"),
+        description=_(
+            "Conditions to ask for this analysis on sample registration. For "
+            "instance, laboratory may want the user to input the temperature, "
+            "the ramp and flow when a thermogravimetric (TGA) analysis is "
+            "selected on sample registration. The information provided will be "
+            "later considered by the laboratory personnel when performing the "
+            "test."
+        ),
+    )
+)
+
 
 schema = schema.copy() + Schema((
     Methods,
@@ -197,6 +270,7 @@ schema = schema.copy() + Schema((
     Preservation,
     Container,
     PartitionSetup,
+    Conditions,
 ))
 
 # Move default method field after available methods field
