@@ -537,8 +537,11 @@ class AnalysisResultsImporter(Logger):
                         # Analysis keyword doesn't exist
                         continue
 
-                    ans = [analysis for analysis in analyses
-                           if analysis.getKeyword() == acode]
+                    ans = [
+                        a for a in analyses
+                        if a.getKeyword() == acode
+                           and api.get_workflow_status_of(a)
+                           in self._allowed_analysis_states]
 
                     if len(ans) > 1:
                         self.warn("More than one analysis found for "
