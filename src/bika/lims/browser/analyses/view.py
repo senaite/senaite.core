@@ -36,6 +36,7 @@ from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import FieldEditAnalysisHidden
@@ -1385,6 +1386,10 @@ class AnalysesView(ListingView):
         """Renders the analysis conditions
         """
         analysis = self.get_object(analysis_brain)
+       
+        if not IRoutineAnalysis.providedBy(analysis):
+            return
+        
         conditions = analysis.getConditions()
         if conditions:
             conditions = map(lambda it: ": ".join([it["title"], it["value"]]),
