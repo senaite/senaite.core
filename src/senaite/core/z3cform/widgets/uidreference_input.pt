@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+<textarea
+    id="" name="" class="" cols="" rows=""
+    tabindex="" disabled="" readonly="" accesskey=""
+    tal:attributes="id view/id;
+                    name view/name;
+                    class view/klass;
+                    style view/style;
+                    title view/title;
+                    lang view/lang;
+                    onclick view/onclick;
+                    ondblclick view/ondblclick;
+                    onmousedown view/onmousedown;
+                    onmouseup view/onmouseup;
+                    onmouseover view/onmouseover;
+                    onmousemove view/onmousemove;
+                    onmouseout view/onmouseout;
+                    onkeypress view/onkeypress;
+                    onkeydown view/onkeydown;
+                    onkeyup view/onkeyup;
+                    disabled view/disabled;
+                    tabindex view/tabindex;
+                    onfocus view/onfocus;
+                    onblur view/onblur;
+                    onchange view/onchange;
+                    cols view/cols;
+                    rows view/rows;
+                    readonly view/readonly;
+                    accesskey view/accesskey;
+                    onselect view/onselect"
+    tal:content="structure view/value" />
+</html>

@@ -24,3 +24,8 @@ class IDataGridField(IList):
 class IDataGridRow(IRow):
     """Datagrid row
     """
+
+
+class IUIDReferenceField(IList):
+    """Senaite UID reference field
+    """
