@@ -146,3 +146,18 @@ The field only accepts the values that are specified by `allow_types`:
     ...
     TypeError: ('Only the following types are allowed: 'Contact'')
 
+
+The field only accepts valid UIDs. Invalid ones are ignored and not set:
+
+    >>> field.set(context, ['4711', contact1])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>]
+
+Removed reference UIDs are also ignored:
+
+    >>> setattr(context, "contact", ["REMOVED_UID"])
+    >>> getattr(context, "contact")
+    ['REMOVED_UID']
+    >>> field.get(context)
+    []
+

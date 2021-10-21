@@ -72,8 +72,8 @@ class UIDReferenceField(List, BaseField):
         portal_type = api.get_portal_type(context)
         return "%s.%s" % (portal_type, self.__name__)
 
-    def to_uid(self, value):
-        """convert a value to an UID
+    def get_uid(self, value):
+        """Value -> UID
 
         :parm value: object/UID/SuperModel
         :returns: UID
@@ -81,7 +81,17 @@ class UIDReferenceField(List, BaseField):
         try:
             return api.get_uid(value)
         except api.APIError:
-            raise TypeError("Can not get UID of '%s'" % repr(value))
+            return None
+
+    def get_object(self, value):
+        """Value -> object
+
+        :returns: Object or None
+        """
+        try:
+            return api.get_object(value)
+        except api.APIError:
+            return None
 
     def get_allowed_types(self):
         """Returns the allowed reference types
@@ -116,7 +126,7 @@ class UIDReferenceField(List, BaseField):
         # check if the type is allowed
         allowed_types = self.get_allowed_types()
         if allowed_types:
-            objs = map(api.get_object, value)
+            objs = filter(None, map(self.get_object, value))
             types = set(map(api.get_portal_type, objs))
             if not types.issubset(allowed_types):
                 raise TypeError("Only the following types are allowed: %s"
@@ -125,7 +135,9 @@ class UIDReferenceField(List, BaseField):
         # convert to UIDs
         uids = []
         for v in value:
-            uid = self.to_uid(v)
+            uid = self.get_uid(v)
+            if uid is None:
+                continue
             uids.append(uid)
 
         # current set UIDs
@@ -133,15 +145,18 @@ class UIDReferenceField(List, BaseField):
 
         # filter out new/removed UIDs
         added_uids = [u for u in uids if u not in existing]
+        added_objs = filter(None, map(self.get_object, added_uids))
+
         removed_uids = [u for u in existing if u not in uids]
+        removed_objs = filter(None, map(self.get_object, removed_uids))
 
         # link backreferences of new uids
-        for uid in added_uids:
-            self.link_bref(api.get_object(uid), object)
+        for added_obj in added_objs:
+            self.link_bref(added_obj, object)
 
         # unlink backreferences of removed UIDs
-        for uid in removed_uids:
-            self.unlink_bref(api.get_object(uid), object)
+        for removed_obj in removed_objs:
+            self.unlink_bref(removed_obj, object)
 
         super(UIDReferenceField, self).set(object, uids)
 
@@ -152,7 +167,7 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the bref points to (our object)
         :returns: True when the bref was removed, False otherwise
         """
-        target_uid = api.get_uid(target)
+        target_uid = self.get_uid(target)
         # get the storage key
         key = self.get_relationship_key(target)
         # get all backreferences from the source
@@ -216,7 +231,7 @@ class UIDReferenceField(List, BaseField):
             uids = []
 
         if as_objects is True:
-            uids = map(api.get_object_by_uid, uids)
+            uids = filter(None, map(self.get_object, uids))
 
         if self.multi_valued:
             return uids
