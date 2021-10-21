@@ -1,0 +1,148 @@
+UID reference field
+===================
+
+The main purpose of this field is to provide a light reference to one or many
+objects using the UID.
+
+Running this test from the buildout directory:
+
+    bin/test test_schema_fields -t uidreferencefield
+
+Test code taken from:
+
+    - plone.app.dexterity (nextprevious.txt)
+    - plone.app.content (basecontent.rst)
+    - plone.app.textfield (field.rst)
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> import types
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+    >>> portal = self.portal
+    >>> setup = api.get_setup()
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager",])
+    >>> labcontacts = setup.bika_labcontacts
+    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Contact")
+    >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
+    >>> contact1 = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
+    >>> contact2 = api.create(client, "Contact", Firstname="John", Lastname="Doe")
+    >>> contact3 = api.create(client, "Contact", Firstname="Neil", Lastname="Standard")
+
+
+Using the field
+---------------
+
+The field can be used for dexterity types:
+
+    >>> from plone.dexterity.content import Item
+    >>> from plone.dexterity.fti import DexterityFTI
+    >>> from senaite.core.schema import UIDReferenceField
+    >>> from zope.interface import Interface
+    >>> from zope.interface import implementer
+
+    >>> class IContentSchema(Interface):
+    ...     contact = UIDReferenceField(title=u"Contact",
+    ...                                 allowed_types=("Contact", ),
+    ...                                 multi_valued=True)
+
+    >>> @implementer(IContentSchema)
+    ... class Content(Item):
+    ...     portal_type = "Content"
+    ...     title = u""
+    ...     description = u""
+
+Add the class to a fake module, so that it can be imported by the FTI and pickled by the ZODB.
+
+NOTE: When the content is created, it knows that it comes from `__builtin__.Content`.
+      Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
+
+    >>> module = types.ModuleType("__builtin__", "Builtin module")
+    >>> module.Content = Content
+    >>> module.IContentSchema = IContentSchema
+    >>> sys.modules["__builtin__"] = module
+
+Register the new type:
+
+    >>> fti = DexterityFTI("Content")
+    >>> fti_id = portal.portal_types._setObject("Content", fti)
+    >>> fti.behaviors = ("plone.app.dexterity.behaviors.metadata.IBasic", )
+    >>> fti.klass = "__builtin__.Content"
+    >>> fti.schema = "__builtin__.IContentSchema"
+
+Now we can create our new type:
+
+    >>> newid = portal.invokeFactory("Content", "content")
+    >>> context = portal[newid]
+
+Set a reference with the field setter:
+
+    >>> field = IContentSchema["contact"]
+    >>> field.set(context, contact1)
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>]
+
+Multiple values can be also set:
+
+    >>> field.set(context, [contact1, contact2])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>, <Contact at /plone/clients/client-1/contact-2>]
+
+It is also possible to set UID values:
+
+    >>> field.set(context, [api.get_uid(contact3)])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-3>]
+
+Besides getting the full objects, it is also possible to get the UIDs instead:
+
+    >>> uids = field.get_raw(context)
+
+    >>> len(uids) == 1
+    True
+
+    >>> uids[0] == api.get_uid(contact3)
+    True
+
+Each linked object has also a backreference to the linking object:
+
+    >>> from senaite.core.schema.uidreferencefield import get_brefs
+
+    >>> relationship = field.get_relationship_key(context)
+
+The referenced contact object should have a backreference to the current object:
+
+    >>> brefs = get_brefs(contact3, relationship)
+
+    >>> len(brefs) == 1
+    True
+
+    >>> brefs[0] == api.get_uid(context)
+    True
+
+Removing the reference should also remove the backreference:
+
+    >>> field.set(context, [])
+
+    >>> brefs = get_brefs(contact3, relationship)
+
+    >>> len(brefs) == 0
+    True
+
+
+Edge cases
+----------
+
+The field only accepts the values that are specified by `allow_types`:
+
+    >>> field.set(context, labcontact)
+    Traceback (most recent call last):
+    ...
+    TypeError: ('Only the following types are allowed: 'Contact'')
+
