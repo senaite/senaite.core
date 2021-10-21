@@ -19,7 +19,6 @@ Test preparation
 ----------------
 
     >>> import sys
-    >>> import types
     >>> from bika.lims import api
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
@@ -63,7 +62,7 @@ Add the class to a fake module, so that it can be imported by the FTI and pickle
 NOTE: When the content is created, it knows that it comes from `__builtin__.Content`.
       Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
 
-    >>> module = types.ModuleType("__builtin__", "Builtin module")
+    >>> module = sys.modules["__builtin__"]
     >>> module.Content = Content
     >>> module.IContentSchema = IContentSchema
     >>> sys.modules["__builtin__"] = module
@@ -160,4 +159,3 @@ Removed reference UIDs are also ignored:
     ['REMOVED_UID']
     >>> field.get(context)
     []
-
