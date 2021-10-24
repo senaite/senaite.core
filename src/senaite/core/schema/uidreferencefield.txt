@@ -22,17 +22,31 @@ Test preparation
     >>> from bika.lims import api
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.app.testing import TEST_USER_PASSWORD
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+    >>> import transaction; transaction.commit()
+
+Setup:
 
     >>> portal = self.portal
     >>> setup = api.get_setup()
-    >>> setRoles(portal, TEST_USER_ID, ["LabManager",])
     >>> labcontacts = setup.bika_labcontacts
     >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Contact")
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact1 = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> contact2 = api.create(client, "Contact", Firstname="John", Lastname="Doe")
     >>> contact3 = api.create(client, "Contact", Firstname="Neil", Lastname="Standard")
+    >>> import transaction; transaction.commit()
+
+Test Browser
+
+  >>> from plone.testing.z2 import Browser
+  >>> browser = Browser(self.app)
+  >>> browser.addHeader("Authorization", "Basic %s:%s" % (TEST_USER_NAME, TEST_USER_PASSWORD,))
 
 
 Using the field
@@ -41,6 +55,7 @@ Using the field
 The field can be used for dexterity types:
 
     >>> from plone.dexterity.content import Item
+    >>> from plone.dexterity.content import Container
     >>> from plone.dexterity.fti import DexterityFTI
     >>> from senaite.core.schema import UIDReferenceField
     >>> from zope.interface import Interface
@@ -57,9 +72,7 @@ The field can be used for dexterity types:
     ...     title = u""
     ...     description = u""
 
-Add the class to a fake module, so that it can be imported by the FTI and pickled by the ZODB.
-
-NOTE: When the content is created, it knows that it comes from `__builtin__.Content`.
+: When the content is created, it knows that it comes from `__builtin__.Content`.
       Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
 
     >>> module = sys.modules["__builtin__"]
@@ -70,10 +83,11 @@ NOTE: When the content is created, it knows that it comes from `__builtin__.Cont
 Register the new type:
 
     >>> fti = DexterityFTI("Content")
-    >>> fti_id = portal.portal_types._setObject("Content", fti)
     >>> fti.behaviors = ("plone.app.dexterity.behaviors.metadata.IBasic", )
+    >>> fti.filter_content_types = False
     >>> fti.klass = "__builtin__.Content"
     >>> fti.schema = "__builtin__.IContentSchema"
+    >>> fti_id = portal.portal_types._setObject("Content", fti)
 
 Now we can create our new type:
 
