@@ -118,19 +118,6 @@ class UIDReferenceField(List, BaseField):
         elif api.is_object(value):
             value = [value]
 
-        # check if the fields accepts single values only
-        if not self.multi_valued and len(value) > 1:
-            raise TypeError("Single valued field accepts at most 1 value")
-
-        # check if the type is allowed
-        allowed_types = self.get_allowed_types()
-        if allowed_types:
-            objs = filter(None, map(self.get_object, value))
-            types = set(map(api.get_portal_type, objs))
-            if not types.issubset(allowed_types):
-                raise TypeError("Only the following types are allowed: %s"
-                                % ",".join(allowed_types))
-
         # convert to UIDs
         uids = []
         for v in value:
@@ -237,3 +224,25 @@ class UIDReferenceField(List, BaseField):
         if len(uids) == 0:
             return None
         return uids[0]
+
+    def _validate(self, value):
+        """
+        """
+        super(UIDReferenceField, self)._validate(value)
+        # check if the fields accepts single values only
+        if not self.multi_valued and len(value) > 1:
+            raise ValueError("Single valued field accepts at most 1 value")
+
+        # check for valid UIDs
+        for uid in value:
+            if not api.is_uid(uid):
+                raise ValueError("Invalid UID: '%s'" % uid)
+
+        # check if the type is allowed
+        allowed_types = self.get_allowed_types()
+        if allowed_types:
+            objs = filter(None, map(self.get_object, value))
+            types = set(map(api.get_portal_type, objs))
+            if not types.issubset(allowed_types):
+                raise ValueError("Only the following types are allowed: %s"
+                                 % ",".join(allowed_types))

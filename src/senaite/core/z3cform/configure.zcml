@@ -16,6 +16,9 @@
   <adapter factory=".datamanager.AttributeDataManager" />
   <adapter factory=".datamanager.DictionaryDataManager" />
 
+  <!-- Error view snippet -->
+  <adapter factory=".error.ValueErrorViewSnippet" trusted="True" permission="zope.Public" />
+
   <!-- static resources -->
   <browser:resourceDirectory
       name="senaite.core.z3cform.static"
