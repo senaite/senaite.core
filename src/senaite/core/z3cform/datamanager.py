@@ -3,6 +3,7 @@
 from senaite.core.schema.interfaces import IBaseField
 from z3c.form.datamanager import AttributeField
 from z3c.form.datamanager import DictionaryField
+from z3c.form.interfaces import NO_VALUE
 from zope.component import adapts
 from zope.interface import Interface
 
@@ -33,6 +34,17 @@ class AttributeDataManager(AttributeField):
         """Delegate to the field setter
         """
         self.field.set(self.adapted_context, value)
+
+    def query(self, default=NO_VALUE):
+        """Delegate to the field `get_raw` method
+
+        This method is called from widget `update` to get the value.
+        It should therefore return a value that is suitable, e.g. not objects.
+        """
+        get_raw = getattr(self.field, "get_raw", None)
+        if not callable(get_raw):
+            return super(AttributeDataManager, self).query(default=default)
+        return get_raw(self.adapted_context)
 
 
 class DictionaryDataManager(DictionaryField):
