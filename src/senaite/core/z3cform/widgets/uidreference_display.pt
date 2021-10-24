@@ -17,5 +17,12 @@
             onkeypress view/onkeypress;
             onkeydown view/onkeydown;
             onkeyup view/onkeyup">
-    <tal:block condition="view/value" content="view/value"/></span>
+    <div tal:repeat="uid view/value">
+      <div tal:define="item python:view.get_info_for(uid)">
+        <a href="#" target="_blank"
+           tal:attributes="href item/url"
+           tal:content="item/title"></a>
+      </div>
+    </div>
+  </span>
 </html>
