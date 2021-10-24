@@ -199,6 +199,9 @@ class UIDReferenceField(List, BaseField):
     def get_raw(self, object):
         """Get referenced UIDs
 
+        NOTE: Called from the data manager `query` method
+              to get the widget value
+
         :param object: instance of the field
         :returns: list of referenced UIDs
         """
@@ -226,7 +229,7 @@ class UIDReferenceField(List, BaseField):
         return uids[0]
 
     def _validate(self, value):
-        """
+        """Validator when called from form submission
         """
         super(UIDReferenceField, self)._validate(value)
         # check if the fields accepts single values only
