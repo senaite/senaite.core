@@ -152,14 +152,6 @@ Removing the reference should also remove the backreference:
 Edge cases
 ----------
 
-The field only accepts the values that are specified by `allow_types`:
-
-    >>> field.set(context, labcontact)
-    Traceback (most recent call last):
-    ...
-    TypeError: ('Only the following types are allowed: 'Contact'')
-
-
 The field only accepts valid UIDs. Invalid ones are ignored and not set:
 
     >>> field.set(context, ['4711', contact1])
