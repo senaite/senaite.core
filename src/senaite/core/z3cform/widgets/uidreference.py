@@ -16,11 +16,23 @@ from zope.interface import implementer
 
 @adapter(IUIDReferenceField, interfaces.IWidget)
 class UIDReferenceDataConverter(TextLinesConverter):
+    """Converts the raw field data for widget/field usage
+    """
 
     def toWidgetValue(self, value):
+        """Converts a list of UIDs for the display/hidden widget
+
+        returns a list of UIDs when widget is in "display" mode
+        returns a unicode string when widget is in "hidden" mode
+        """
         if self.widget.mode == "display":
-            return map(api.get_object, value)
+            return value
         return super(UIDReferenceDataConverter, self).toWidgetValue(value)
+
+    def toFieldValue(self, value):
+        """Converts a unicode string to a list of UIDs
+        """
+        return super(UIDReferenceDataConverter, self).toFieldValue(value)
 
 
 @implementer(IUIDReferenceWidget)
