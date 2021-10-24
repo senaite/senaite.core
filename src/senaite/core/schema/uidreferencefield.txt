@@ -125,27 +125,27 @@ Besides getting the full objects, it is also possible to get the UIDs instead:
 
 Each linked object has also a backreference to the linking object:
 
-    >>> from senaite.core.schema.uidreferencefield import get_brefs
+    >>> from senaite.core.schema.uidreferencefield import get_backrefs
 
     >>> relationship = field.get_relationship_key(context)
 
 The referenced contact object should have a backreference to the current object:
 
-    >>> brefs = get_brefs(contact3, relationship)
+    >>> backrefs = get_backrefs(contact3, relationship)
 
-    >>> len(brefs) == 1
+    >>> len(backrefs) == 1
     True
 
-    >>> brefs[0] == api.get_uid(context)
+    >>> backrefs[0] == api.get_uid(context)
     True
 
 Removing the reference should also remove the backreference:
 
     >>> field.set(context, [])
 
-    >>> brefs = get_brefs(contact3, relationship)
+    >>> backrefs = get_backrefs(contact3, relationship)
 
-    >>> len(brefs) == 0
+    >>> len(backrefs) == 0
     True
 
 
