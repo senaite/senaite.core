@@ -17,27 +17,27 @@ from zope.schema import List
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
 
 
-def get_brefs(context, relationship, as_objects=False):
+def get_backrefs(context, relationship, as_objects=False):
     """Return backreferences of the context
 
     :returns: List of UIDs that are linked by the relationship
     """
     context = aq_base(context)
-    # get the bref annotation storage of the context
-    brefs = get_bref_storage(context)
+    # get the backref annotation storage of the context
+    backrefs = get_backref_storage(context)
     # get the referenced UIDs
-    bref_uids = list(brefs.get(relationship, []))
+    backref_uids = list(backrefs.get(relationship, []))
 
-    if not bref_uids:
+    if not backref_uids:
         return []
 
     if as_objects is True:
-        return [api.get_object(uid) for uid in bref_uids]
+        return [api.get_object(uid) for uid in backref_uids]
 
-    return bref_uids
+    return backref_uids
 
 
-def get_bref_storage(context):
+def get_backref_storage(context):
     """Get the annotation storage for backreferences of the context
     """
     annotation = IAnnotations(context)
@@ -138,54 +138,54 @@ class UIDReferenceField(List, BaseField):
 
         # link backreferences of new uids
         for added_obj in added_objs:
-            self.link_bref(added_obj, object)
+            self.link_backref(added_obj, object)
 
         # unlink backreferences of removed UIDs
         for removed_obj in removed_objs:
-            self.unlink_bref(removed_obj, object)
+            self.unlink_backref(removed_obj, object)
 
         super(UIDReferenceField, self).set(object, uids)
 
-    def unlink_bref(self, source, target):
+    def unlink_backref(self, source, target):
         """Remove backreference from the source to the target
 
-        :param source: the object where the bref is stored (our reference)
-        :param target: the object where the bref points to (our object)
-        :returns: True when the bref was removed, False otherwise
+        :param source: the object where the backref is stored (our reference)
+        :param target: the object where the backref points to (our object)
+        :returns: True when the backref was removed, False otherwise
         """
         target_uid = self.get_uid(target)
         # get the storage key
         key = self.get_relationship_key(target)
         # get all backreferences from the source
-        brefs = get_bref_storage(source)
-        if key not in brefs:
+        backrefs = get_backref_storage(source)
+        if key not in backrefs:
             logger.warn(
                 "Referenced object {} has no backreferences for the key {}"
                 .format(repr(source), key))
             return False
-        if target_uid not in brefs[key]:
+        if target_uid not in backrefs[key]:
             logger.warn("Target {} was not linked by {}"
                         .format(repr(target), repr(source)))
             return False
-        brefs[key].remove(target_uid)
+        backrefs[key].remove(target_uid)
         return True
 
-    def link_bref(self, source, target):
+    def link_backref(self, source, target):
         """Add backreference from the source to the target
 
-        :param source: the object where the bref is stored (our reference)
-        :param target: the object where the bref points to (our object)
-        :returns: True when the bref was written
+        :param source: the object where the backref is stored (our reference)
+        :param target: the object where the backref points to (our object)
+        :returns: True when the backref was written
         """
         target_uid = api.get_uid(target)
         # get the annotation storage key
         key = self.get_relationship_key(target)
         # get all backreferences
-        brefs = get_bref_storage(source)
-        if key not in brefs:
-            brefs[key] = PersistentList()
-        if target_uid not in brefs[key]:
-            brefs[key].append(target_uid)
+        backrefs = get_backref_storage(source)
+        if key not in backrefs:
+            backrefs[key] = PersistentList()
+        if target_uid not in backrefs[key]:
+            backrefs[key].append(target_uid)
         return True
 
     def get(self, object):
