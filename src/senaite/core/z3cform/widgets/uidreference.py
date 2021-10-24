@@ -17,6 +17,10 @@ class UIDReferenceWidget(TextLinesWidget):
     """
     klass = u"uidreference-widget"
 
+    def __init__(self, request, *args, **kw):
+        super(UIDReferenceWidget, self).__init__(request)
+        self.request = request
+
     def update(self):
         super(UIDReferenceWidget, self).update()
         widget.addFieldClass(self)
