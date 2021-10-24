@@ -13,7 +13,6 @@ from zope.interface import implementer
 from zope.schema import ASCIILine
 from Acquisition import aq_base
 from zope.schema import List
-from zope.schema.interfaces import IFromUnicode
 
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
 
@@ -47,7 +46,7 @@ def get_bref_storage(context):
     return annotation[BACKREFS_STORAGE]
 
 
-@implementer(IUIDReferenceField, IFromUnicode)
+@implementer(IUIDReferenceField)
 class UIDReferenceField(List, BaseField):
     """Stores UID references to other objects
     """
@@ -238,7 +237,3 @@ class UIDReferenceField(List, BaseField):
         if len(uids) == 0:
             return None
         return uids[0]
-
-    def fromUnicode(self, value):
-        self.validate(value)
-        return value
