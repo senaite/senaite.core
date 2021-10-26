@@ -56,6 +56,12 @@ class UIDReferenceWidget(TextLinesWidget):
     def get_value(self):
         return self.field.get_raw(self.context)
 
+    def get_api_url(self):
+        portal = api.get_portal()
+        portal_url = api.get_url(portal)
+        api_url = "{}/@@API/senaite/v1".format(portal_url)
+        return api_url
+
     def get_catalog(self):
         return getattr(self, "catalog", "portal_catalog")
 
@@ -82,6 +88,7 @@ class UIDReferenceWidget(TextLinesWidget):
             "data-id": self.id,
             "data-name": self.name,
             "data-uids": uids,
+            "data-api_url": self.get_api_url(),
             "data-items": dict(zip(uids, map(self.get_info_for, uids))),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),

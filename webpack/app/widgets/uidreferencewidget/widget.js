@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 
 import References from "./components/References.js"
 import ReferenceField from "./components/ReferenceField.js"
+import ReferenceWidgetAPI from "./api.js"
 
 
 class UIDReferenceWidgetController extends React.Component {
@@ -12,7 +13,8 @@ class UIDReferenceWidgetController extends React.Component {
 
     // Internal state
     this.state = {
-      "results": []
+      "results": [],
+      "loading": false,
     }
 
     // root input HTML element
@@ -23,6 +25,7 @@ class UIDReferenceWidgetController extends React.Component {
       "id",
       "name",
       "uids",
+      "api_url",
       "items",
       "catalog",
       "query",
@@ -40,8 +43,17 @@ class UIDReferenceWidgetController extends React.Component {
       this.state[key] = this.parse_json(value);
     }
 
+    // Prepare API
+    this.api = new ReferenceWidgetAPI({
+      api_url: this.state.api_url,
+    });
+
+    this.search = this.search.bind(this);
+    this.clear_results = this.clear_results.bind(this);
+    this.select = this.select.bind(this);
     this.deselect = this.deselect.bind(this);
     this.on_esc = this.on_esc.bind(this);
+    this.on_click = this.on_click.bind(this);
 
     // dev only
     window.widget = this;
@@ -51,10 +63,12 @@ class UIDReferenceWidgetController extends React.Component {
 
   componentDidMount() {
     document.addEventListener("keydown", this.on_esc, false);
+    document.addEventListener("click", this.on_click, false)
   }
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.on_esc, false);
+    document.removeEventListener("click", this.on_click, false);
   }
 
   /*
@@ -68,6 +82,42 @@ class UIDReferenceWidgetController extends React.Component {
     }
   }
 
+  search(value) {
+    console.debug("ReferenceWidgetController::search:value:", value);
+
+    let query = Object.assign({
+      q: value,
+      limit: this.state.limit,
+      complete: 1,
+    }, this.state.query);
+
+    // prepare the server request
+    let self = this;
+    this.toggle_loading(true);
+    let promise = this.api.search(this.state.catalog, query);
+    promise.then(function(data) {
+      console.debug(">>> GOT REFWIDGET SEARCH RESULTS: ", data);
+      // keep track of all loaded records to render display values properly
+      // let by_uid = self.results_by_uid(data);
+      // let items = Object.assign(self.state.items, by_uid);
+      // self.setState({
+      //   results: data,
+      //   items: items
+      // });
+      self.toggle_loading(false);
+    });
+  }
+
+  select(uid) {
+    console.debug("ReferenceWidgetController::select:uid:", uid);
+    // create a copy of the selected UIDs
+    let uids = [].concat(this.state.uids);
+    if (uids.indexOf(uid) == -1) {
+      uids.push(uid);
+    }
+    this.setState({uids: uids});
+  }
+
   deselect(uid) {
     console.debug("ReferenceWidgetController::deselect:uid:", uid);
     let uids = [].concat(this.state.uids);
@@ -79,12 +129,34 @@ class UIDReferenceWidgetController extends React.Component {
     this.clear_results();
   }
 
+  toggle_loading(toggle) {
+    if (toggle == null) {
+      toggle = false;
+    }
+    this.setState({
+      loading: toggle
+    });
+    return toggle;
+  }
+
+
   clear_results() {
     this.setState({results: []})
   }
 
   on_esc(event){
+    // clear results when ESC key is pressed
     if(event.keyCode === 27) {
+      this.clear_results();
+    }
+  }
+
+  on_click(event) {
+    // clear results when clicked outside of the widget
+    let widget = this.props.root_el;
+    let target = event.target;
+    if (!widget.contains(target)) {
+      this.clear_results();
     }
   }
 
@@ -102,6 +174,7 @@ class UIDReferenceWidgetController extends React.Component {
           <ReferenceField
             className="form-control"
             name="uidreference-search"
+            on_search={this.search}
           />
         </div>
     );
