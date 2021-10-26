@@ -117,6 +117,8 @@ class UIDReferenceField(List, BaseField):
             value = [value]
         elif api.is_object(value):
             value = [value]
+        elif value is None:
+            value = []
 
         # convert to UIDs
         uids = []
