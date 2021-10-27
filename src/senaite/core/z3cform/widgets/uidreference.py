@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import json
+import string
+from collections import OrderedDict
 
 from bika.lims import api
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
+from senaite.jsonapi.interfaces import IInfo
 from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.textlines import TextLinesWidget
@@ -14,6 +17,8 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
 from zope.interface import implementer
+
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title} ${uid}</a>"
 
 
 @adapter(IUIDReferenceField, interfaces.IWidget)
@@ -53,6 +58,9 @@ class UIDReferenceWidget(TextLinesWidget):
         super(UIDReferenceWidget, self).update()
         widget.addFieldClass(self)
 
+    def get_display_template(self):
+        return getattr(self, "display_template", DISPLAY_TEMPLATE)
+
     def get_value(self):
         return self.field.get_raw(self.context)
 
@@ -67,9 +75,6 @@ class UIDReferenceWidget(TextLinesWidget):
 
     def get_query(self):
         return getattr(self, "query", {})
-
-    def get_display_field(self):
-        return getattr(self, "display_field", "title")
 
     def get_columns(self):
         return getattr(self, "columns", [])
@@ -89,11 +94,12 @@ class UIDReferenceWidget(TextLinesWidget):
             "data-name": self.name,
             "data-uids": uids,
             "data-api_url": self.get_api_url(),
-            "data-items": dict(zip(uids, map(self.get_info_for, uids))),
+            "data-items": OrderedDict(zip(uids, map(self.get_obj_info, uids))),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
             "data-columns": self.get_columns(),
             "data-display_field": self.get_display_field(),
+            "data-display_template": self.get_display_template(),
             "data-limit": self.get_limit(),
             "data-multi_valued": self.is_multi_valued(),
             "data-disabled": self.disabled or False,
@@ -106,25 +112,21 @@ class UIDReferenceWidget(TextLinesWidget):
 
         return attributes
 
-    def get_info_for(self, uid):
-        """Get display object information for the given UID
+    def get_obj_info(self, uid):
+        """Returns a dictionary with the object info
         """
         obj = api.get_object(uid)
-        info = {
-            "uid": uid,
-            "title": api.get_title(obj),
-            "path": api.get_path(obj),
-            "url": api.get_url(obj),
-        }
+        obj_info = IInfo(obj).to_dict()
+        obj_info["uid"] = uid
+        obj_info["url"] = api.get_url(obj)
+        return obj_info
 
-        display_key = self.display_field
-        if display_key not in info:
-            display_value = getattr(obj, display_key, None)
-            if display_value is None:
-                display_value = api.get_title(obj) or api.get_id(obj)
-            info[display_key] = display_value
-
-        return info
+    def render_reference(self, uid):
+        """Returns a rendered HTML element for the reference
+        """
+        template = string.Template(self.get_display_template())
+        obj_info = self.get_obj_info(uid)
+        return template.safe_substitute(obj_info)
 
 
 @adapter(IUIDReferenceField, ISenaiteFormLayer)

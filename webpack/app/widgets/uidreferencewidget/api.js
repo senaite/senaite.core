@@ -11,18 +11,19 @@ class ReferenceWidgetAPI {
     return `${this.api_url}/${endpoint}#${location.search}`
   }
 
+  /*
+   * Fetch Ajax API resource from the server
+   *
+   * @param {string} endpoint
+   * @param {object} options
+   * @returns {Promise}
+   */
   get_json(endpoint, options) {
-    /*
-     * Fetch Ajax API resource from the server
-     * @param {string} endpoint
-     * @param {object} options
-     * @returns {Promise}
-     */
     var data, init, method, on_api_error, request, url;
     if (options == null) {
       options = {};
     }
-    method = options.method || "GET";
+    method = options.method || "POST";
     data = JSON.stringify(options.data) || "{}";
     on_api_error = this.on_api_error;
     url = this.get_api_url(endpoint);
@@ -51,22 +52,19 @@ class ReferenceWidgetAPI {
   }
 
   search(catalog, query) {
-    let options = {
-      method: "GET"
-    };
     let url = `search?catalog=${catalog}`;
     for(let [key, value] of Object.entries(query)) {
       url += `&${key}=${value}`;
     }
     console.debug("ReferenceWidgetAPI::search:url=", url);
-    return this.get_json(url, options);
+    return this.get_json(url, {method: "GET"});
   }
 
+  /*
+   * Get the plone.protect CSRF token
+   * Note: The fields won't save w/o that token set
+   */
   get_csrf_token() {
-    /*
-     * Get the plone.protect CSRF token
-     * Note: The fields won't save w/o that token set
-     */
     return document.querySelector("#protect-script").dataset.token;
   };
 

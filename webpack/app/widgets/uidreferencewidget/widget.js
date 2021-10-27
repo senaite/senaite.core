@@ -12,10 +12,7 @@ class UIDReferenceWidgetController extends React.Component {
     super(props);
 
     // Internal state
-    this.state = {
-      "results": [],
-      "loading": false,
-    }
+    this.state = {}
 
     // root input HTML element
     let el = props.root_el;
@@ -30,7 +27,7 @@ class UIDReferenceWidgetController extends React.Component {
       "catalog",
       "query",
       "columns",
-      "display_field",
+      "display_template",
       "limit",
       "multi_valued",
       "disabled",
@@ -42,6 +39,12 @@ class UIDReferenceWidgetController extends React.Component {
       let value = el.dataset[key];
       this.state[key] = this.parse_json(value);
     }
+
+    // search results
+    this.state["results"] = []
+
+    // add loading state
+    this.state["loading"] = false
 
     // Prepare API
     this.api = new ReferenceWidgetAPI({
@@ -167,7 +170,7 @@ class UIDReferenceWidgetController extends React.Component {
           <References
             uids={this.state.uids}
             items={this.state.items}
-            display_field={this.state.display_field}
+            display_template={this.state.display_template}
             name={this.state.name}
             on_deselect={this.deselect}
           />

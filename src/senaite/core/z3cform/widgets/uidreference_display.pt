@@ -2,28 +2,11 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:omit-tag="">
 
-  <span id="" class=""
-        tal:attributes="id view/id;
-            class view/klass;
-            style view/style;
-            title view/title;
-            lang view/lang;
-            onclick view/onclick;
-            ondblclick view/ondblclick;
-            onmousedown view/onmousedown;
-            onmouseup view/onmouseup;
-            onmouseover view/onmouseover;
-            onmousemove view/onmousemove;
-            onmouseout view/onmouseout;
-            onkeypress view/onkeypress;
-            onkeydown view/onkeydown;
-            onkeyup view/onkeyup">
-    <div tal:repeat="uid view/value">
-      <div tal:define="item python:view.get_info_for(uid)">
-        <a href="#" target="_blank"
-           tal:attributes="href item/url"
-           tal:content="item/title"></a>
-      </div>
-    </div>
-  </span>
+  <ul class="list-group">
+    <!-- list all referenced items -->
+    <li tal:repeat="uid view/value">
+      <span tal:replace="structure python:view.render_reference(uid)"/>
+    </li>
+
+  </ul>
 </html>
