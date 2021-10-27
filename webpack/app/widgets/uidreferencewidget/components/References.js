@@ -41,7 +41,7 @@ class References extends React.Component {
     for (let uid of selected_uids) {
       items.push(
         <li uid={uid}>
-          <div className="p-1 mb-1 bg-light border rounded d-inline-block">
+          <div className="p-1 mb-1 mr-1 bg-light border rounded d-inline-block">
             <span dangerouslySetInnerHTML={{__html: this.render_display_template(uid)}}></span>
             <button uid={uid}
                     className="btn btn-sm btn-link-danger"
@@ -69,7 +69,7 @@ class References extends React.Component {
   render() {
     return (
       <div className="uidreferencewidget-references">
-        <ul className="list-unstyled">
+        <ul className="list-unstyled list-group list-group-horizontal">
           {this.build_selected_items()}
         </ul>
         {/* submitted in form */}
