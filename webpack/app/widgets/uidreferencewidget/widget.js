@@ -12,7 +12,15 @@ class UIDReferenceWidgetController extends React.Component {
     super(props);
 
     // Internal state
-    this.state = {}
+    this.state = {
+      results: [],
+      loading: false,
+      count: 0,
+      page: 1,
+      pages: 1,
+      next_url: null,
+      prev_url: null
+    }
 
     // root input HTML element
     let el = props.root_el;
@@ -39,12 +47,6 @@ class UIDReferenceWidgetController extends React.Component {
       let value = el.dataset[key];
       this.state[key] = this.parse_json(value);
     }
-
-    // search results
-    this.state["results"] = []
-
-    // add loading state
-    this.state["loading"] = false
 
     // Prepare API
     this.api = new ReferenceWidgetAPI({
@@ -100,13 +102,7 @@ class UIDReferenceWidgetController extends React.Component {
     let promise = this.api.search(this.state.catalog, query);
     promise.then(function(data) {
       console.debug(">>> GOT REFWIDGET SEARCH RESULTS: ", data);
-      // keep track of all loaded records to render display values properly
-      // let by_uid = self.results_by_uid(data);
-      // let items = Object.assign(self.state.items, by_uid);
-      // self.setState({
-      //   results: data,
-      //   items: items
-      // });
+      self.set_results_data(data)
       self.toggle_loading(false);
     });
   }
@@ -142,9 +138,27 @@ class UIDReferenceWidgetController extends React.Component {
     return toggle;
   }
 
+  set_results_data(data) {
+    data = data || {};
+    this.setState({
+      results: data.items || [],
+      count: data.count || 0,
+      page: data.page || 1,
+      pages: data.pages || 1,
+      next_url: data.next || null,
+      prev_url: data.previous || null,
+    });
+  }
 
   clear_results() {
-    this.setState({results: []})
+    this.setState({
+      results: [],
+      count: 0,
+      page: 1,
+      pages: 1,
+      next_url: null,
+      prev_url: null,
+    });
   }
 
   on_esc(event){
