@@ -1,9 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
-import References from "./components/References.js"
-import ReferenceField from "./components/ReferenceField.js"
 import ReferenceWidgetAPI from "./api.js"
+import ReferenceField from "./components/ReferenceField.js"
+import ReferenceResults from "./components/ReferenceResults.js"
+import References from "./components/References.js"
 
 
 class UIDReferenceWidgetController extends React.Component {
@@ -14,12 +15,14 @@ class UIDReferenceWidgetController extends React.Component {
     // Internal state
     this.state = {
       results: [],
+      searchterm: "",
       loading: false,
       count: 0,
       page: 1,
       pages: 1,
       next_url: null,
-      prev_url: null
+      prev_url: null,
+      b_start: 1,
     }
 
     // root input HTML element
@@ -54,6 +57,7 @@ class UIDReferenceWidgetController extends React.Component {
     });
 
     this.search = this.search.bind(this);
+    this.goto_page = this.goto_page.bind(this);
     this.clear_results = this.clear_results.bind(this);
     this.select = this.select.bind(this);
     this.deselect = this.deselect.bind(this);
@@ -87,24 +91,41 @@ class UIDReferenceWidgetController extends React.Component {
     }
   }
 
-  search(value) {
-    console.debug("ReferenceWidgetController::search:value:", value);
-
-    let query = Object.assign({
-      q: value,
+  make_query(options) {
+    options = options || {};
+    return Object.assign({
+      q: this.state.searchterm,
       limit: this.state.limit,
       complete: 1,
-    }, this.state.query);
+    }, options, this.state.query);
+  }
 
+  fetch_results(url_params) {
+    url_params = url_params || {};
     // prepare the server request
     let self = this;
+    let query = this.make_query();
     this.toggle_loading(true);
-    let promise = this.api.search(this.state.catalog, query);
+    let promise = this.api.search(this.state.catalog, query, url_params);
     promise.then(function(data) {
       console.debug(">>> GOT REFWIDGET SEARCH RESULTS: ", data);
       self.set_results_data(data)
       self.toggle_loading(false);
     });
+  }
+
+  search(value) {
+    console.debug("ReferenceWidgetController::search:value:", value);
+    // set the searchterm directly
+    this.state.searchterm = value;
+    this.fetch_results();
+  }
+
+  goto_page(page) {
+    page = parseInt(page);
+    let limit = parseInt(this.state.limit)
+    let b_start = page * limit - limit;
+    this.fetch_results({b_start: b_start});
   }
 
   select(uid) {
@@ -140,8 +161,18 @@ class UIDReferenceWidgetController extends React.Component {
 
   set_results_data(data) {
     data = data || {};
+    let items = data.items || [];
+
+    let records = Object.assign(this.state.items, {})
+    // update state items
+    for (let item of items) {
+      let uid = item.uid;
+      records[uid] = item;
+    }
+
     this.setState({
-      results: data.items || [],
+      items: records,
+      results: items,
       count: data.count || 0,
       page: data.page || 1,
       pages: data.pages || 1,
@@ -192,6 +223,19 @@ class UIDReferenceWidgetController extends React.Component {
             className="form-control"
             name="uidreference-search"
             on_search={this.search}
+          />
+          <ReferenceResults
+            className="position-absolute shadow border rounded bg-white mt-1 p-1"
+            columns={this.state.columns}
+            uids={this.state.uids}
+            results={this.state.results}
+            count={this.state.count}
+            page={this.state.page}
+            pages={this.state.pages}
+            next_url={this.state.next_url}
+            prev_url={this.state.prev_url}
+            on_select={this.select}
+            on_page={this.goto_page}
           />
         </div>
     );

@@ -51,9 +51,13 @@ class ReferenceWidgetAPI {
     });
   }
 
-  search(catalog, query) {
+  search(catalog, query, params) {
+    params = params || {};
     let url = `search?catalog=${catalog}`;
     for(let [key, value] of Object.entries(query)) {
+      url += `&${key}=${value}`;
+    }
+    for(let [key, value] of Object.entries(params)) {
       url += `&${key}=${value}`;
     }
     console.debug("ReferenceWidgetAPI::search:url=", url);
