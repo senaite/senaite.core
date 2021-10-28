@@ -328,6 +328,7 @@ class UIDReferenceWidgetController extends React.Component {
             prev_url={this.state.prev_url}
             on_select={this.select}
             on_page={this.goto_page}
+            on_clear={this.clear_results}
           />
         </div>
     );

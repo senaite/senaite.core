@@ -12,6 +12,7 @@ class ReferenceResults extends React.Component {
     this.on_page = this.on_page.bind(this);
     this.on_prev_page = this.on_prev_page.bind(this);
     this.on_next_page = this.on_next_page.bind(this);
+    this.on_close = this.on_close.bind(this);
   }
 
   get_columns() {
@@ -183,6 +184,13 @@ class ReferenceResults extends React.Component {
     )
   }
 
+  build_close_button() {
+    return (
+      <button className="btn btn-sm btn-link" onClick={this.on_close}>
+        <i class="fas fa-window-close"></i>
+      </button>
+    )
+  }
   on_select(event) {
     event.preventDefault();
     let target = event.currentTarget;
@@ -232,6 +240,14 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  on_close(event) {
+    event.preventDefault();
+    console.debug("ReferenceResults::on_close:event=", event);
+    if (this.props.on_clear) {
+      this.props.on_clear();
+    }
+  }
+
   render() {
     if (!this.has_results()) {
       return null;
@@ -239,6 +255,9 @@ class ReferenceResults extends React.Component {
     return (
       <div className={this.props.className}
            style={this.get_style()}>
+        <div style={{position: "absolute", top: 0, right: 0}}>
+          {this.build_close_button()}
+        </div>
         <table className="table table-sm table-hover small">
           <thead>
             <tr>
