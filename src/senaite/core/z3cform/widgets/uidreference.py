@@ -2,7 +2,6 @@
 
 import json
 import string
-from collections import OrderedDict
 
 from bika.lims import api
 from senaite.core.interfaces import ISenaiteFormLayer
@@ -94,7 +93,7 @@ class UIDReferenceWidget(TextLinesWidget):
             "data-name": self.name,
             "data-uids": uids,
             "data-api_url": self.get_api_url(),
-            "data-items": OrderedDict(zip(uids, map(self.get_obj_info, uids))),
+            "data-records": dict(zip(uids, map(self.get_obj_info, uids))),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
             "data-columns": self.get_columns(),

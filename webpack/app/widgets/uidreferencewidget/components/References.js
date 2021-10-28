@@ -29,7 +29,7 @@ class References extends React.Component {
 
   render_display_template(uid) {
     let template = this.props.display_template;
-    let context = this.props.items[uid];
+    let context = this.props.records[uid];
     if (!context) return uid;
     return this.interpolate(template, context);
   }

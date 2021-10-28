@@ -35,7 +35,7 @@ class UIDReferenceWidgetController extends React.Component {
       "name",
       "uids",
       "api_url",
-      "items",
+      "records",
       "catalog",
       "query",
       "columns",
@@ -224,15 +224,15 @@ class UIDReferenceWidgetController extends React.Component {
     data = data || {};
     let items = data.items || [];
 
-    let records = Object.assign(this.state.items, {})
-    // update state items
+    let records = Object.assign(this.state.records, {})
+    // update state records
     for (let item of items) {
       let uid = item.uid;
       records[uid] = item;
     }
 
     this.setState({
-      items: records,
+      records: records,
       results: items,
       count: data.count || 0,
       page: data.page || 1,
@@ -283,7 +283,7 @@ class UIDReferenceWidgetController extends React.Component {
         <div className="uidreferencewidget">
           <References
             uids={this.state.uids}
-            items={this.state.items}
+            records={this.state.records}
             display_template={this.state.display_template}
             name={this.state.name}
             on_deselect={this.deselect}
