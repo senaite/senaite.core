@@ -73,12 +73,21 @@ class ReferenceResults extends React.Component {
    * Build Header <th></th> columns
    */
   build_header_columns() {
-    let columns = []
-    for (let label of this.get_column_labels()) {
+    let columns = [];
+    for (let column of this.get_columns()) {
+      let label = column.label || column.title;
+      let width = column.width || "auto";
+      let align = column.align || "left";
       columns.push(
-        <th className="border-top-0">{label}</th>
+        <th className="border-top-0" width={width} align={align}>
+          {label}
+        </th>
       );
     }
+    // Append additional column for usage state
+    columns.push(
+      <th className="border-top-0" width="1"></th>
+    )
     return columns;
   }
 
@@ -92,6 +101,11 @@ class ReferenceResults extends React.Component {
         <td>{result[name]}</td>
       );
     }
+    let uid = result.uid;
+    let used = this.props.uids.indexOf(uid) > -1;
+    columns.push(
+      <td>{used && <i class="fas fa-link text-success"></i>}</td>
+    );
     return columns;
   }
 
