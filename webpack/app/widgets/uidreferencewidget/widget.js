@@ -302,6 +302,7 @@ class UIDReferenceWidgetController extends React.Component {
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
             uids={this.state.uids}
+            searchterm={this.state.searchterm}
             results={this.state.results}
             count={this.state.count}
             page={this.state.page}

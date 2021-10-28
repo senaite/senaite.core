@@ -96,9 +96,12 @@ class ReferenceResults extends React.Component {
    */
   build_columns(result) {
     let columns = []
+    let searchterm = this.props.searchterm || "";
     for (let name of this.get_column_names()) {
+      let value = result[name];
+      let highlighted = this.highlight(value, searchterm);
       columns.push(
-        <td>{result[name]}</td>
+        <td dangerouslySetInnerHTML={{__html: highlighted}}></td>
       );
     }
     let uid = result.uid;
@@ -107,6 +110,15 @@ class ReferenceResults extends React.Component {
       <td>{used && <i class="fas fa-link text-success"></i>}</td>
     );
     return columns;
+  }
+
+  highlight(text, searchterm) {
+    let rx = new RegExp(searchterm, "gi");
+    let match = text.match(rx);
+    if (match) {
+      text = text.replace(match, "<span class='font-weight-bold text-info'>"+match+"</span>");
+    }
+    return text
   }
 
   /*
