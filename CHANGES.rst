@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1864 Added UID reference field/widget for Dexterity Contents
 - #1861 Fix export interface lookup when name contains uppercase letters
 - #1858 Show "copy to new" transition to Clients in samples listing
 - #1858 Cannot override behavior of Methods folder when using `before_render`
