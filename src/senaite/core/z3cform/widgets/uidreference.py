@@ -97,7 +97,6 @@ class UIDReferenceWidget(TextLinesWidget):
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
             "data-columns": self.get_columns(),
-            "data-display_field": self.get_display_field(),
             "data-display_template": self.get_display_template(),
             "data-limit": self.get_limit(),
             "data-multi_valued": self.is_multi_valued(),
