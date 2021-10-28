@@ -9,6 +9,6 @@
         <span tal:replace="structure python:view.render_reference(uid)"/>
       </div>
     </li>
-
   </ul>
+
 </html>
