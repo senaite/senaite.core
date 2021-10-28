@@ -61,7 +61,10 @@ class UIDReferenceWidget(TextLinesWidget):
         return getattr(self, "display_template", DISPLAY_TEMPLATE)
 
     def get_value(self):
-        return self.field.get_raw(self.context)
+        value = self.field.get_raw(self.context)
+        if api.is_uid(value):
+            value = [value]
+        return value
 
     def get_api_url(self):
         portal = api.get_portal()

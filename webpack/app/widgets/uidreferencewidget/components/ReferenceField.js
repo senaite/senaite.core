@@ -108,12 +108,17 @@ class ReferenceField extends React.Component {
                  onBlur={this.on_blur}
                  placeholder={this.props.placeholder}
                  style={{maxWidth: "160px"}}
+                 disabled={this.props.disabled}
           />
           <div class="input-group-append">
-            <button className="btn btn-sm btn-outline-secondary" onClick={this.on_clear_click}>
+            <button className="btn btn-sm btn-outline-secondary"
+                    disabled={this.props.disabled}
+                    onClick={this.on_clear_click}>
               <i class="fas fa-times"></i>
             </button>
-            <button className="btn btn-sm btn-outline-primary" onClick={this.on_search_click}>
+            <button className="btn btn-sm btn-outline-primary"
+                    disabled={this.props.disabled}
+                    onClick={this.on_search_click}>
               <i class="fas fa-search"></i>
             </button>
           </div>

@@ -4,7 +4,7 @@
 
   <ul class="list-unstyled list-group list-group-horizontal">
     <!-- list all referenced items -->
-    <li tal:repeat="uid view/value">
+    <li tal:repeat="uid view/get_value">
       <div class="p-1 mb-1 mr-1 bg-light border rounded d-inline-block">
         <span tal:replace="structure python:view.render_reference(uid)"/>
       </div>

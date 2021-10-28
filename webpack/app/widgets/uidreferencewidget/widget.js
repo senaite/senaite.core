@@ -97,6 +97,19 @@ class UIDReferenceWidgetController extends React.Component {
     }
   }
 
+  is_disabled() {
+    if (this.state.disabled) {
+      return true;
+    }
+    if (this.state.readonly) {
+      return true;
+    }
+    if (!this.state.multi_valued && this.state.uids.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   /*
    * Create a query object for the API
    *
@@ -182,6 +195,9 @@ class UIDReferenceWidgetController extends React.Component {
       uids.push(uid);
     }
     this.setState({uids: uids});
+    if (uids.length > 0 && !this.state.multi_valued) {
+      this.clear_results();
+    }
     return uids;
   }
 
@@ -294,6 +310,7 @@ class UIDReferenceWidgetController extends React.Component {
           <ReferenceField
             className="form-control"
             name="uidreference-search"
+            disabled={this.is_disabled()}
             on_search={this.search}
             on_clear={this.clear_results}
             on_focus={this.search}
