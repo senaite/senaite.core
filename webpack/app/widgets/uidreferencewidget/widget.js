@@ -143,9 +143,12 @@ class UIDReferenceWidgetController extends React.Component {
    * @returns {Promise}
    */
   search(searchterm) {
+    if (!searchterm && this.state.results.length > 0) {
+      return;
+    }
     console.debug("ReferenceWidgetController::search:searchterm:", searchterm);
     // set the searchterm directly to avoid re-rendering
-    this.state.searchterm = searchterm;
+    this.state.searchterm = searchterm || "";
     return this.fetch_results();
   }
 
@@ -292,6 +295,8 @@ class UIDReferenceWidgetController extends React.Component {
             className="form-control"
             name="uidreference-search"
             on_search={this.search}
+            on_clear={this.clear_results}
+            on_focus={this.search}
           />
           <ReferenceResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"

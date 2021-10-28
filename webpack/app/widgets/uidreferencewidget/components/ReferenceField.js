@@ -7,6 +7,8 @@ class ReferenceField extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {}
+
     // React reference to the input field
     // https://reactjs.org/docs/react-api.html#reactcreateref
     this.input_field_ref = React.createRef();
@@ -16,13 +18,15 @@ class ReferenceField extends React.Component {
     this.on_blur = this.on_blur.bind(this);
     this.on_change = this.on_change.bind(this);
     this.on_keypress = this.on_keypress.bind(this);
+    this.on_clear_click = this.on_clear_click.bind(this);
+    this.on_search_click = this.on_search_click.bind(this);
   }
 
   /*
    * Returns the search value from the input field
    */
   get_search_value() {
-    return this.input_field_ref.current.value
+    return this.input_field_ref.current.value;
   }
 
   /*
@@ -31,8 +35,7 @@ class ReferenceField extends React.Component {
   on_focus(event) {
     console.debug("ReferenceField::on_focus");
     if (this.props.on_focus) {
-      let value = this.get_search_value();
-      this.props.on_focus(value);
+      this.props.on_focus(null);
     }
   }
 
@@ -42,7 +45,8 @@ class ReferenceField extends React.Component {
   on_blur(event) {
     console.debug("ReferenceField::on_blur");
     if (this.props.on_blur) {
-      this.props.on_blur();
+      let value = this.get_search_value();
+      this.props.on_blur(value);
     }
   }
 
@@ -70,6 +74,24 @@ class ReferenceField extends React.Component {
     }
   }
 
+  on_clear_click(event) {
+    event.preventDefault();
+    if (this.props.on_clear) {
+      let value = this.get_search_value();
+      this.props.on_clear(value);
+      // clear the input field
+      this.input_field_ref.current.value = ""
+    }
+  }
+
+  on_search_click(event) {
+    event.preventDefault();
+    if (this.props.on_search) {
+      let value = this.get_search_value();
+      this.props.on_search(value);
+    }
+  }
+
   render() {
     return (
       <div className="uidreferencewidget-search-field">
@@ -87,9 +109,12 @@ class ReferenceField extends React.Component {
                  style={{maxWidth: "160px"}}
           />
           <div class="input-group-append">
-            <span class="input-group-text">
+            <button className="btn btn-sm btn-outline-secondary" onClick={this.on_clear_click}>
+              <i class="fas fa-times"></i>
+            </button>
+            <button className="btn btn-sm btn-outline-primary" onClick={this.on_search_click}>
               <i class="fas fa-search"></i>
-            </span>
+            </button>
           </div>
         </div>
       </div>
