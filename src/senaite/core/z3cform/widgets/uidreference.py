@@ -2,9 +2,11 @@
 
 import json
 import string
+
 import six
 
 from bika.lims import api
+from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
@@ -20,6 +22,8 @@ from zope.component import adapter
 from zope.interface import implementer
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title} ${uid}</a>"
+
+_marker = object
 
 
 @adapter(IUIDReferenceField, interfaces.IWidget)
@@ -59,8 +63,20 @@ class UIDReferenceWidget(TextLinesWidget):
         super(UIDReferenceWidget, self).update()
         widget.addFieldClass(self)
 
-    def get_display_template(self):
-        return getattr(self, "display_template", DISPLAY_TEMPLATE)
+    def attr(self, name, default=None):
+        """Get the named attribute of the widget or the field
+        """
+        value = getattr(self, name, _marker)
+        if value is _marker:
+            return default
+        if isinstance(value, six.string_types):
+            if base_hasattr(self.context, value):
+                attr = getattr(self.context, value)
+                if callable(attr):
+                    value = attr()
+                else:
+                    value = attr
+        return value
 
     def get_value(self):
         """Extract the value from the request or get it from the field
@@ -84,17 +100,20 @@ class UIDReferenceWidget(TextLinesWidget):
         api_url = "{}/@@API/senaite/v1".format(portal_url)
         return api_url
 
+    def get_display_template(self):
+        return self.attr("display_template", DISPLAY_TEMPLATE)
+
     def get_catalog(self):
-        return getattr(self, "catalog", "portal_catalog")
+        return self.attr("catalog", "portal_catalog")
 
     def get_query(self):
-        return getattr(self, "query", {})
+        return self.attr("query", {})
 
     def get_columns(self):
-        return getattr(self, "columns", [])
+        return self.attr("columns", [])
 
     def get_limit(self):
-        return getattr(self, "limit", 25)
+        return self.attr("limit", 25)
 
     def is_multi_valued(self):
         return getattr(self.field, "multi_valued", False)
