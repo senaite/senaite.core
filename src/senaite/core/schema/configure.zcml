@@ -2,4 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
+  <!-- Event subscribers -->
+  <subscriber handler=".uidreferencefield.on_object_created" />
+
 </configure>

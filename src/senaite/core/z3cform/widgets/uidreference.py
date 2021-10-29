@@ -61,7 +61,7 @@ class UIDReferenceWidget(TextLinesWidget):
         return getattr(self, "display_template", DISPLAY_TEMPLATE)
 
     def get_value(self):
-        value = self.field.get_raw(self.field.context)
+        value = self.field.get_raw(self.context)
         if api.is_uid(value):
             value = [value]
         return value

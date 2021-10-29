@@ -2,19 +2,55 @@
 
 import six
 
+from Acquisition import ImplicitAcquisitionWrapper
+from Acquisition import aq_base
 from bika.lims import api
 from persistent.dict import PersistentDict
 from persistent.list import PersistentList
 from senaite.core import logger
+from senaite.core.interfaces import IHaveUIDReferences
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IUIDReferenceField
 from zope.annotation.interfaces import IAnnotations
+from zope.component import adapter
+from zope.interface import alsoProvides
 from zope.interface import implementer
+from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 from zope.schema import ASCIILine
-from Acquisition import aq_base
 from zope.schema import List
 
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
+
+
+@adapter(IHaveUIDReferences, IObjectCreatedEvent)
+def on_object_created(object, event):
+    """Link backreferences after the object was created
+
+    This is necessary, because objects during initialization have no UID set!
+    https://community.plone.org/t/accessing-uid-in-dexterity-field-setter/14468
+
+    Therefore, and only for the creation case, we need to link the back
+    references in this handler for all UID reference fields.
+    """
+    fields = api.get_fields(object)
+    for name, field in fields.items():
+        if not IUIDReferenceField.providedBy(field):
+            continue
+        # after creation, we only need to link backreferences
+        value = field.get(object)
+        # handle single valued reference fields
+        if api.is_object(value):
+            field.link_backref(value, object)
+            logger.info(
+                "Adding back reference from %s -> %s" % (
+                    value, object))
+        # handle multi valued reference fields
+        elif isinstance(value, list):
+            for ref in value:
+                logger.info(
+                    "Adding back reference from %s -> %s" % (
+                        ref, object))
+                field.link_backref(ref, object)
 
 
 def get_backrefs(context, relationship, as_objects=False):
@@ -59,6 +95,18 @@ class UIDReferenceField(List, BaseField):
         self.allowed_types = allowed_types
         self.multi_valued = multi_valued
         super(UIDReferenceField, self).__init__(**kw)
+
+    def is_initializing(self, object):
+        """Checks if the object is initialized at the moment
+
+        Background:
+
+        Objects being created do not have a UID set.
+        Therefore, ths backreferences need to be postponed to an event handler.
+
+        https://community.plone.org/t/accessing-uid-in-dexterity-field-setter/14468
+        """
+        return isinstance(object, ImplicitAcquisitionWrapper)
 
     def get_relationship_key(self, context):
         """Relationship key used for backreferences
@@ -112,6 +160,11 @@ class UIDReferenceField(List, BaseField):
         :type value: list/tuple/str
         """
 
+        # always mark the object if references are set
+        # NOTE: there might be multiple UID reference field set on this object!
+        if value:
+            alsoProvides(object, IHaveUIDReferences)
+
         # always handle all values internally as a list
         if isinstance(value, six.string_types):
             value = [value]
@@ -155,6 +208,12 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the backref points to (our object)
         :returns: True when the backref was removed, False otherwise
         """
+
+        # This should be actually not possible
+        if self.is_initializing(target):
+            raise ValueError("Objects in initialization state "
+                             "can not have existing back references!")
+
         target_uid = self.get_uid(target)
         # get the storage key
         key = self.get_relationship_key(target)
@@ -179,6 +238,14 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the backref points to (our object)
         :returns: True when the backref was written
         """
+
+        # Object is initializing and don't have an UID!
+        # -> Postpone to set back references in event handler
+        if self.is_initializing(target):
+            logger.info("Object is in initialization state. "
+                        "Back references will be set in event handler")
+            return
+
         target_uid = api.get_uid(target)
         # get the annotation storage key
         key = self.get_relationship_key(target)
@@ -216,7 +283,10 @@ class UIDReferenceField(List, BaseField):
         :param as_objects: Flag for UID/object returns
         :returns: list of referenced UIDs
         """
-        if object is None:
+
+        # when creating a new object the context is the container
+        # which does not have the field
+        if self.interface and not self.interface.providedBy(object):
             if self.multi_valued:
                 return []
             return None
