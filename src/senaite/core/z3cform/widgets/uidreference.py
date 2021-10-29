@@ -65,8 +65,12 @@ class UIDReferenceWidget(TextLinesWidget):
     def get_value(self):
         value = self.value
         if isinstance(value, six.string_types):
-            return IDataConverter(self).toFieldValue(value)
-        return value
+            value = IDataConverter(self).toFieldValue(value)
+        if value is None:
+            return []
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        return [uid for uid in value if api.is_uid(uid)]
 
     def get_api_url(self):
         portal = api.get_portal()
