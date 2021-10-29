@@ -216,6 +216,11 @@ class UIDReferenceField(List, BaseField):
         :param as_objects: Flag for UID/object returns
         :returns: list of referenced UIDs
         """
+        if object is None:
+            if self.multi_valued:
+                return []
+            return None
+
         uids = super(UIDReferenceField, self).get(object)
 
         if not uids:
