@@ -63,13 +63,19 @@ class UIDReferenceWidget(TextLinesWidget):
         return getattr(self, "display_template", DISPLAY_TEMPLATE)
 
     def get_value(self):
+        """Extract the value from the request or get it from the field
+        """
+        # get the processed value from the `update` method
         value = self.value
+        # the value might come from the request, e.g. on object creation
         if isinstance(value, six.string_types):
             value = IDataConverter(self).toFieldValue(value)
+        # we handle always lists in the templates
         if value is None:
             return []
         if not isinstance(value, (list, tuple)):
             value = [value]
+        # just to be sure (paranoid)
         return [uid for uid in value if api.is_uid(uid)]
 
     def get_api_url(self):
