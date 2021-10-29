@@ -39,9 +39,8 @@ class UIDReferenceDataConverter(TextLinesConverter):
         All widget templates use the `get_value` method,
         which ensures a list of UIDs.
 
-        However, this coverter method is called by `widget.update()`
-        to get `self.value`, which is on the other hand used by the
-        `get_value` method again.
+        However, `toWidgetValue` is called by `widget.update()` implicitly for
+        `self.value`, which is then used by the `get_value` method again.
         """
         return value
 
