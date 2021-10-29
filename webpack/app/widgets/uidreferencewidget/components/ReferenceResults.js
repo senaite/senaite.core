@@ -15,45 +15,60 @@ class ReferenceResults extends React.Component {
     this.on_close = this.on_close.bind(this);
   }
 
+  /*
+   * Return the header columns config
+   *
+   * @returns {Array} of column config objects
+   */
   get_columns() {
-    /*
-     * Header columns
-     */
     return this.props.columns || [];
   }
 
+  /*
+   * Return only the (field-)names of the columns config
+   *
+   * @returns {Array} of column names
+   */
   get_column_names() {
-    /*
-     * Header column names
-     */
     let columns = this.get_columns();
     return columns.map((column) => {
       return column.name;
     });
   }
 
+  /*
+   * Return only the labels of the columns config
+   *
+   * @returns {Array} of column labels
+   */
   get_column_labels() {
-    /*
-     * Header column labels
-     */
     let columns = this.get_columns();
     return columns.map((column) => { return column.label });
   }
 
+  /*
+   * Return the search results
+   *
+   * @returns {Array} of result objects (items of `senaite.jsonapi` response)
+   */
   get_results() {
-    /*
-     * List of results records
-     */
     return this.props.results || [];
   }
 
+  /*
+   * Checks if results are available
+   *
+   * @returns {Boolean} true if there are results, false otherwise
+   */
   has_results() {
-    /*
-     * Checks if we have results records
-     */
     return this.get_results().length > 0;
   }
 
+  /*
+   * Returns the style object for the dropdown table
+   *
+   * @returns {Object} of ReactJS CSS styles
+   */
   get_style() {
     return {
       minWidth: this.props.width || "400px",
@@ -62,16 +77,28 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Returns the UID of a result object
+   *
+   * @returns {String} UID of the result
+   */
   get_result_uid(result) {
     return result.uid || "NO UID FOUND!";
   }
 
+  /*
+   * Checks wehter the UID is already in the list of selected UIDs
+   *
+   * @returns {Boolean} true if the UID is already selected, false otherwise
+   */
   is_uid_selected(uid) {
     return this.props.uids.indexOf(uid) > -1;
   }
 
   /*
    * Build Header <th></th> columns
+   *
+   * @returns {Array} of <th>...</th> columns
    */
   build_header_columns() {
     let columns = [];
@@ -81,7 +108,7 @@ class ReferenceResults extends React.Component {
       let align = column.align || "left";
       columns.push(
         <th className="border-top-0" width={width} align={align}>
-          {label}
+          {_t(label)}
         </th>
       );
     }
@@ -93,7 +120,29 @@ class ReferenceResults extends React.Component {
   }
 
   /*
-   * Build table <td></td> columns
+   * Build table <tr></tr> rows
+   *
+   * @returns {Array} of <tr>...</tr> rows
+   */
+  build_rows() {
+    let rows = [];
+    let results = this.get_results();
+    for (let result of results) {
+      let uid = this.get_result_uid(result);
+      rows.push(
+        <tr uid={uid}
+            onClick={this.on_select}>
+          {this.build_columns(result)}
+        </tr>
+      );
+    }
+    return rows
+  }
+
+  /*
+   * Build Header <td></td> columns
+   *
+   * @returns {Array} of <td>...</td> columns
    */
   build_columns(result) {
     let columns = []
@@ -113,6 +162,11 @@ class ReferenceResults extends React.Component {
     return columns;
   }
 
+  /*
+   * Highlight any found match of the searchterm in the text
+   *
+   * @returns {String} highlighted text
+   */
   highlight(text, searchterm) {
     let rx = new RegExp(searchterm, "gi");
     let match = text.match(rx);
@@ -123,27 +177,10 @@ class ReferenceResults extends React.Component {
   }
 
   /*
-   * Build table <tr></tr> rows
+   * Build pagination <li>...</li> items
+   *
+   * @returns {Array} Pagination JSX
    */
-  build_rows() {
-    let rows = [];
-    let results = this.get_results();
-    for (let result of results) {
-      let uid = this.get_result_uid(result);
-      // skip selected UIDs
-      // if (this.is_uid_selected(uid)) {
-      //   continue;
-      // }
-      rows.push(
-        <tr uid={uid}
-            onClick={this.on_select}>
-          {this.build_columns(result)}
-        </tr>
-      );
-    }
-    return rows
-  }
-
   build_pages() {
     let pages = [];
     for (let page=1; page <= this.props.pages; page++) {
@@ -160,6 +197,11 @@ class ReferenceResults extends React.Component {
     return pages;
   }
 
+  /*
+   * Build pagination next button
+   *
+   * @returns {Array} Next button JSX
+   */
   build_next_button() {
     let cls = ["page-item"]
     if (!this.props.next_url) cls.push("disabled")
@@ -172,6 +214,11 @@ class ReferenceResults extends React.Component {
     )
   }
 
+  /*
+   * Build pagination previous button
+   *
+   * @returns {Array} Previous button JSX
+   */
   build_prev_button() {
     let cls = ["page-item"]
     if (!this.props.prev_url) cls.push("disabled")
@@ -184,6 +231,11 @@ class ReferenceResults extends React.Component {
     )
   }
 
+  /*
+   * Build results dropdown close button
+   *
+   * @returns {Array} Close button JSX
+   */
   build_close_button() {
     return (
       <button className="btn btn-sm btn-link" onClick={this.on_close}>
@@ -191,6 +243,10 @@ class ReferenceResults extends React.Component {
       </button>
     )
   }
+
+  /*
+   * Event handler when a result was selected
+   */
   on_select(event) {
     event.preventDefault();
     let target = event.currentTarget;
@@ -201,6 +257,9 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Event handler when a page was clicked
+   */
   on_page(event) {
     event.preventDefault();
     let target = event.currentTarget;
@@ -214,6 +273,9 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Event handler when the pagination previous button was clicked
+   */
   on_prev_page(event) {
     event.preventDefault();
     console.debug("ReferenceResults::on_prev_page:event=", event);
@@ -227,6 +289,9 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Event handler when the pagination next button was clicked
+   */
   on_next_page(event) {
     event.preventDefault();
     console.debug("ReferenceResults::on_next_page:event=", event);
@@ -240,6 +305,9 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Event handler when the dropdown close button was clicked
+   */
   on_close(event) {
     event.preventDefault();
     console.debug("ReferenceResults::on_close:event=", event);
@@ -248,6 +316,9 @@ class ReferenceResults extends React.Component {
     }
   }
 
+  /*
+   * Render the reference results selection
+   */
   render() {
     if (!this.has_results()) {
       return null;
