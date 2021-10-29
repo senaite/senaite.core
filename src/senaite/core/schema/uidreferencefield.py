@@ -111,6 +111,19 @@ class UIDReferenceField(List, BaseField):
             return True
         return False
 
+    def to_list(self, value, filter_empty=True):
+        """Ensure the value is a list
+        """
+        if isinstance(value, six.string_types):
+            value = [value]
+        elif api.is_object(value):
+            value = [value]
+        elif value is None:
+            value = []
+        if filter_empty:
+            value = filter(None, value)
+        return value
+
     def get_relationship_key(self, context):
         """Relationship key used for backreferences
 
@@ -169,12 +182,7 @@ class UIDReferenceField(List, BaseField):
             alsoProvides(object, IHaveUIDReferences)
 
         # always handle all values internally as a list
-        if isinstance(value, six.string_types):
-            value = [value]
-        elif api.is_object(value):
-            value = [value]
-        elif value is None:
-            value = []
+        value = self.to_list(value)
 
         # convert to UIDs
         uids = []
@@ -185,7 +193,7 @@ class UIDReferenceField(List, BaseField):
             uids.append(uid)
 
         # current set UIDs
-        existing = self.get_raw(object)
+        existing = self.to_list(self.get_raw(object))
 
         # filter out new/removed UIDs
         added_uids = [u for u in uids if u not in existing]
