@@ -2,11 +2,11 @@
 
 import six
 
-from Acquisition import ImplicitAcquisitionWrapper
 from Acquisition import aq_base
 from bika.lims import api
 from persistent.dict import PersistentDict
 from persistent.list import PersistentList
+from plone.uuid.interfaces import ATTRIBUTE_NAME
 from senaite.core import logger
 from senaite.core.interfaces import IHaveUIDReferences
 from senaite.core.schema.fields import BaseField
@@ -106,7 +106,10 @@ class UIDReferenceField(List, BaseField):
 
         https://community.plone.org/t/accessing-uid-in-dexterity-field-setter/14468
         """
-        return isinstance(object, ImplicitAcquisitionWrapper)
+        uid = getattr(object, ATTRIBUTE_NAME, None)
+        if uid is None:
+            return True
+        return False
 
     def get_relationship_key(self, context):
         """Relationship key used for backreferences

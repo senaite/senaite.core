@@ -2,6 +2,7 @@
 
 import json
 import string
+import six
 
 from bika.lims import api
 from senaite.core.interfaces import ISenaiteFormLayer
@@ -12,6 +13,7 @@ from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.textlines import TextLinesWidget
 from z3c.form.converter import TextLinesConverter
+from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
@@ -61,9 +63,9 @@ class UIDReferenceWidget(TextLinesWidget):
         return getattr(self, "display_template", DISPLAY_TEMPLATE)
 
     def get_value(self):
-        value = self.field.get_raw(self.context)
-        if api.is_uid(value):
-            value = [value]
+        value = self.value
+        if isinstance(value, six.string_types):
+            return IDataConverter(self).toFieldValue(value)
         return value
 
     def get_api_url(self):
