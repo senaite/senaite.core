@@ -10,9 +10,9 @@ from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
-from senaite.jsonapi.interfaces import IInfo
 from z3c.form import interfaces
 from z3c.form.browser import widget
+from senaite.app.supermodel import SuperModel
 from z3c.form.browser.textlines import TextLinesWidget
 from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
@@ -150,10 +150,10 @@ class UIDReferenceWidget(TextLinesWidget):
     def get_obj_info(self, uid):
         """Returns a dictionary with the object info
         """
-        obj = api.get_object(uid)
-        obj_info = IInfo(obj).to_dict()
+        model = SuperModel(uid)
+        obj_info = model.to_dict()
         obj_info["uid"] = uid
-        obj_info["url"] = api.get_url(obj)
+        obj_info["url"] = api.get_url(model)
         return obj_info
 
     def render_reference(self, uid):
