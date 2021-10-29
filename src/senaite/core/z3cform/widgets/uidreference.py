@@ -32,14 +32,18 @@ class UIDReferenceDataConverter(TextLinesConverter):
     """
 
     def toWidgetValue(self, value):
-        """Converts a list of UIDs for the display/hidden widget
+        """Return the value w/o changes
 
-        returns a list of UIDs when widget is in "display" mode
-        returns a unicode string when widget is in "hidden" mode
+        Note:
+
+        All widget templates use the `get_value` method,
+        which ensures a list of UIDs.
+
+        However, this coverter method is called by `widget.update()`
+        to get `self.value`, which is on the other hand used by the
+        `get_value` method again.
         """
-        if self.widget.mode == "display":
-            return value
-        return super(UIDReferenceDataConverter, self).toWidgetValue(value)
+        return value
 
     def toFieldValue(self, value):
         """Converts a unicode string to a list of UIDs
