@@ -24,7 +24,7 @@ from zope.component import getUtility
 from zope.component.interfaces import IFactory
 from zope.interface import implementer
 
-DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title} ${uid}</a>"
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
 
 _marker = object
 
