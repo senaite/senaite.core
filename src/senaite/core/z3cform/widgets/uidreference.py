@@ -11,6 +11,7 @@ from senaite.app.supermodel import SuperModel
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
+from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.textlines import TextLinesWidget
@@ -68,6 +69,15 @@ class UIDReferenceWidget(TextLinesWidget):
         super(UIDReferenceWidget, self).update()
         widget.addFieldClass(self)
 
+    def get_form(self):
+        """Return the current form of the widget
+        """
+        form = self.form
+        # form is a fieldset group
+        if IDescriptiveGroup.providedBy(form):
+            form = form.parentForm
+        return form
+
     def get_context(self):
         """Get the current context
 
@@ -81,7 +91,8 @@ class UIDReferenceWidget(TextLinesWidget):
         # Hack alert!
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
-        portal_type = self.form.portal_type
+        form = self.get_form()
+        portal_type = form.portal_type
         portal_types = api.get_tool("portal_types")
         fti = portal_types[portal_type]
         factory = getUtility(IFactory, fti.factory)
