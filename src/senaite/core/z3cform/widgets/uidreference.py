@@ -7,18 +7,20 @@ import six
 
 from bika.lims import api
 from Products.CMFPlone.utils import base_hasattr
+from senaite.app.supermodel import SuperModel
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
 from z3c.form import interfaces
 from z3c.form.browser import widget
-from senaite.app.supermodel import SuperModel
 from z3c.form.browser.textlines import TextLinesWidget
 from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
+from zope.component import getUtility
+from zope.component.interfaces import IFactory
 from zope.interface import implementer
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title} ${uid}</a>"
@@ -66,6 +68,28 @@ class UIDReferenceWidget(TextLinesWidget):
         super(UIDReferenceWidget, self).update()
         widget.addFieldClass(self)
 
+    def get_context(self):
+        """Get the current context
+
+        NOTE: If we are in the ++add++ form, `self.context` is the container!
+              Therefore, we create one here to have access to the methods.
+        """
+        schema_iface = self.field.interface
+        if schema_iface and schema_iface.providedBy(self.context):
+            return self.context
+
+        # Hack alert!
+        # we are in ++add++ form and have no context!
+        # Create a temporary object to be able to access class methods
+        portal_type = self.form.portal_type
+        portal_types = api.get_tool("portal_types")
+        fti = portal_types[portal_type]
+        factory = getUtility(IFactory, fti.factory)
+        context = factory("temporary")
+        # hook into acquisition chain
+        context = context.__of__(self.context)
+        return context
+
     def attr(self, name, default=None):
         """Get the named attribute of the widget or the field
         """
@@ -73,8 +97,9 @@ class UIDReferenceWidget(TextLinesWidget):
         if value is _marker:
             return default
         if isinstance(value, six.string_types):
-            if base_hasattr(self.context, value):
-                attr = getattr(self.context, value)
+            context = self.get_context()
+            if base_hasattr(context, value):
+                attr = getattr(context, value)
                 if callable(attr):
                     value = attr()
                 else:
