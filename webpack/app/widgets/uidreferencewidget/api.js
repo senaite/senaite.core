@@ -55,7 +55,16 @@ class ReferenceWidgetAPI {
     params = params || {};
     let url = `search?catalog=${catalog}`;
     for(let [key, value] of Object.entries(query)) {
-      url += `&${key}=${value}`;
+      // workaround for path queries
+      if (key == "path") {
+        value = value.query || null;
+        if (value.depth !== null) {
+          url += `&depth=${value.depth}`;
+        }
+      }
+      if (value) {
+        url += `&${key}=${value}`;
+      }
     }
     for(let [key, value] of Object.entries(params)) {
       url += `&${key}=${value}`;
