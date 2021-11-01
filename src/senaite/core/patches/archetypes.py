@@ -5,6 +5,7 @@ import re
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import api
+from Products.Archetypes.utils import isFactoryContained
 from Products.Archetypes.utils import shasattr
 from senaite.core import logger
 
@@ -17,7 +18,6 @@ def is_tmp_id(id):
 
 def isTemporary(self):
     parent = aq_parent(aq_inner(self))
-
     # Fix indexing of temporary objects resulting in orphan entries in catalog
     # https://github.com/senaite/senaite.core/pull/1865
     if is_tmp_id(self.id) or is_tmp_id(parent.id):
@@ -27,3 +27,22 @@ def isTemporary(self):
     # portal factory.
     tmp = shasattr(parent, "meta_type") and parent.meta_type == "TempFolder"
     return tmp
+
+
+def indexObject(self):
+    if isFactoryContained(self):
+        return
+    parent = aq_parent(aq_inner(self))
+    # Fix indexing of temporary objects resulting in orphan entries in catalog
+    # https://github.com/senaite/senaite.core/pull/1865
+    if is_tmp_id(self.id) or is_tmp_id(parent.id):
+        logger.debug("Object %s is temporary!" % api.get_path(self))
+        return
+    catalogs = self.getCatalogs()
+    url = api.get_path(self)
+    for c in catalogs:
+        if c.id == "portal_catalog":
+            # use catalog tool queuing system
+            c.indexObject(self)
+            continue
+        c.catalog_object(self, url)

@@ -4,10 +4,17 @@
     i18n_domain="senaite.core">
 
   <monkey:patch
-      description="Pach BasObject.isTemporary to avoid duplicate indexing during object creation"
+      description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
       class="Products.Archetypes.BaseObject.BaseObject"
       original="isTemporary"
       replacement=".archetypes.isTemporary"
+      />
+
+  <monkey:patch
+      description="Patch `CatalogMultiplex.indexObject` to avoid duplicate indexing during object creation in *other catalogs*"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="indexObject"
+      replacement=".archetypes.indexObject"
       />
 
 </configure>
