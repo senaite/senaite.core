@@ -17,7 +17,9 @@ def is_tmp_id(id):
 
 def isTemporary(self):
     parent = aq_parent(aq_inner(self))
-    # temporary IDs from `tmpID()` look like UIDs
+
+    # Fix indexing of temporary objects resulting in orphan entries in catalog
+    # https://github.com/senaite/senaite.core/pull/1865
     if is_tmp_id(self.id) or is_tmp_id(parent.id):
         logger.debug("Object %s is temporary!" % api.get_path(self))
         return True
