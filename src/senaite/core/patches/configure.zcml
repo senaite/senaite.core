@@ -3,18 +3,14 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="senaite.core">
 
+  <!-- https://github.com/senaite/senaite.core/pull/1865
+       Please also note the patch of `isFactoryContained` in ´__init__´
+  -->
   <monkey:patch
       description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
       class="Products.Archetypes.BaseObject.BaseObject"
       original="isTemporary"
       replacement=".archetypes.isTemporary"
-      />
-
-  <monkey:patch
-      description="Patch `CatalogMultiplex.indexObject` to avoid duplicate indexing during object creation in *other catalogs*"
-      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
-      original="indexObject"
-      replacement=".archetypes.indexObject"
       />
 
 </configure>
