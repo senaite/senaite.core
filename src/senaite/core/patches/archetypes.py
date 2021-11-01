@@ -18,7 +18,7 @@ def is_tmp_id(id):
 def isTemporary(self):
     parent = aq_parent(aq_inner(self))
     # temporary IDs from `tmpID()` look like UIDs
-    if is_tmp_id(parent.id) or is_tmp_id(self.id):
+    if is_tmp_id(self.id) or is_tmp_id(parent.id):
         logger.debug("Object %s is temporary!" % api.get_path(self))
         return True
     # Checks to see if we are created as temporary object by
