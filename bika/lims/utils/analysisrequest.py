@@ -307,7 +307,7 @@ def create_retest(ar):
             # Exclude intermediate analyses
             continue
 
-        nan = _createObjectByType("Analysis", retest, an.getKeyword())
+        nan = _createObjectByType("Analysis", retest, api.get_id(an))
 
         # Make a copy
         ignore_fieldnames = ['DataAnalysisPublished']
