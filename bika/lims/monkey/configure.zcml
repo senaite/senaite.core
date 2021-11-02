@@ -58,4 +58,14 @@
       replacement=".Widget.isVisible"
       />
 
+  <!-- https://github.com/senaite/senaite.core/pull/1868
+       Please also note the patch of `isFactoryContained` in ´__init__´
+  -->
+  <monkey:patch
+      description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="isTemporary"
+      replacement=".archetypes.isTemporary"
+  />
+
 </configure>
