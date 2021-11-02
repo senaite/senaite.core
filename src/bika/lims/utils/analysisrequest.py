@@ -303,11 +303,20 @@ def create_retest(ar):
         # skip retests
         if an.isRetest():
             continue
-        if (api.get_workflow_status_of(an) in intermediate_states):
+
+        if api.get_workflow_status_of(an) in intermediate_states:
             # Exclude intermediate analyses
             continue
 
-        nan = _createObjectByType("Analysis", retest, an.getKeyword())
+        # Original sample might have multiple copies of same analysis
+        keyword = an.getKeyword()
+        analyses = retest.getAnalyses(full_objects=True)
+        analyses = filter(lambda ret: ret.getKeyword() == keyword, analyses)
+        if analyses:
+            keyword = '{}-{}'.format(keyword, len(analyses))
+
+        # Create the analysis retest
+        nan = _createObjectByType("Analysis", retest, keyword)
 
         # Make a copy
         ignore_fieldnames = ['DataAnalysisPublished']
