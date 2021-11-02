@@ -82,3 +82,8 @@ class ISamples(Interface):
 class ISamplesView(Interface):
     """Marker interface for samples listing view
     """
+
+
+class IHaveUIDReferences(Interface):
+    """Marker interface when the object contains UID references
+    """

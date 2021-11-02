@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1864 Added UID reference field/widget for Dexterity Contents
 - #1867 Fix error when invalidating samples with copies of analyses
 - #1865 Fix indexing of temporary objects resulting in orphan entries in catalog
 - #1861 Fix export interface lookup when name contains uppercase letters

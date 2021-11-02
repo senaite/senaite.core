@@ -4,6 +4,7 @@ import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
+import UIDReferenceWidgetController from "./widgets/uidreferencewidget/widget.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -57,4 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
     $("[data-toggle='tooltip']").tooltip()
   });
 
+  // Widgets
+  window.widgets = {};
+  // Referencewidgets
+  var ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
+  for (let widget of ref_widgets) {
+    let id = widget.dataset.id;
+    let controller = ReactDOM.render(<UIDReferenceWidgetController root_el={widget} />, widget);
+    window.widgets[id] = controller;
+  }
 });

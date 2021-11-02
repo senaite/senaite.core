@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims.api.security import check_permission
 from collective.z3cform.datagridfield import DictRow
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import View
 from senaite.core.schema.interfaces import IBaseField
 from senaite.core.schema.interfaces import IDataGridField
 from senaite.core.schema.interfaces import IDataGridRow
@@ -32,9 +35,9 @@ class BaseField(Field):
                                         defaultFactory=defaultFactory,
                                         missing_value=missing_value)
 
-        # handle additional field arguments
-        self.read_permission = kw.get("read_permission")
-        self.write_permission = kw.get("write_permission")
+        # field security
+        self.read_permission = kw.get("read_permission", View)
+        self.write_permission = kw.get("write_permission", ModifyPortalContent)
 
     def get(self, object):
         """Custom field getter
@@ -53,6 +56,16 @@ class BaseField(Field):
         check permissions to write the field.
         """
         super(BaseField, self).set(object, value)
+
+    def can_access(self):
+        """Checks if the field can be read
+        """
+        return check_permission(self.read_permission, self.context)
+
+    def can_write(self):
+        """Checks the write permission
+        """
+        return check_permission(self.write_permission, self.context)
 
 
 @implementer(IIntField)

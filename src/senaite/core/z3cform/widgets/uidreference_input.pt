@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div class="senaite-uidreference-widget-input"
+       tal:attributes="python:view.get_input_widget_attributes();
+                       data-class view/klass;
+                       data-style view/style;
+                       data-title view/title;
+                       data-lang view/lang;
+                       data-onclick view/onclick;
+                       data-ondblclick view/ondblclick;
+                       data-onmousedown view/onmousedown;
+                       data-onmouseup view/onmouseup;
+                       data-onmouseover view/onmouseover;
+                       data-onmousemove view/onmousemove;
+                       data-onmouseout view/onmouseout;
+                       data-onkeypress view/onkeypress;
+                       data-onkeydown view/onkeydown;
+                       data-onkeyup view/onkeyup;
+                       data-tabindex view/tabindex;
+                       data-onfocus view/onfocus;
+                       data-onblur view/onblur;
+                       data-onchange view/onchange;
+                       data-onselect view/onselect;
+                       data-cols view/cols;
+                       data-rows view/rows;
+                       data-accesskey view/accesskey;">
+    <!-- ReactJS controlled component -->
+  </div>
+</html>
