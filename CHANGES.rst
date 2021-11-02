@@ -7,7 +7,6 @@ Changelog
 - #1868 Fix indexing of temporary objects resulting in orphan entries in catalog
 - #1866 Fix error when invalidating samples with copies of analyses
 - #1851 Added readonly_transactions decorator (#1732 port)
-- #1866 Fix error when invalidating samples with copies of analyses
 
 
 1.3.5 (2021-07-23)
