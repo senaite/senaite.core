@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1851 Added readonly_transactions decorator (#1732 port)
+- #1866 Fix error when invalidating samples with copies of analyses
 
 1.3.5 (2021-07-23)
 ------------------

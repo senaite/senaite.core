@@ -14,6 +14,7 @@ Needed Imports:
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.interfaces import IAnalysisRequestRetest
+    >>> from bika.lims.utils.analysis import create_analysis
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -132,6 +133,60 @@ From the retest, I can go back to the invalidated Analysis Request:
 
     >>> retest.getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/W-0001>
+
+
+Invalidate a sample with multiple copies of same analysis
+---------------------------------------------------------
+
+Create and receive an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> ar
+    <AnalysisRequest at /plone/clients/client-1/W-0002>
+
+    >>> success = do_action_for(ar, "receive")
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+Add another copy of existing analyses:
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> for analysis in analyses:
+    ...     new_id = "{}-1".format(analysis.getKeyword())
+    ...     duplicate = create_analysis(ar, analysis, id=new_id)
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> sorted(map(api.get_id, analyses))
+    ['Au', 'Au-1', 'Cu', 'Cu-1', 'Fe', 'Fe-1']
+
+Submit and verify analyses:
+
+    >>> setup.setSelfVerificationEnabled(True)
+    >>> for analysis in ar.getAnalyses(full_objects=True):
+    ...     analysis.setResult(12)
+    ...     submitted = do_action_for(analysis, "submit")
+    ...     verified = do_action_for(analysis, "verify")
+    >>> setup.setSelfVerificationEnabled(False)
+
+Invalidate the sample:
+
+    >>> success = do_action_for(ar, "invalidate")
+    >>> api.get_workflow_status_of(ar)
+    'invalid'
+
+    >>> retest = ar.getRetest()
+    >>> retest
+    <AnalysisRequest at /plone/clients/client-1/W-0002-R01>
+
+And the retest provides `IAnalysisRequestRetest` interface:
+
+    >>> IAnalysisRequestRetest.providedBy(retest)
+    True
+
+From the retest, I can go back to the invalidated Analysis Request:
+
+    >>> retest.getInvalidated()
+    <AnalysisRequest at /plone/clients/client-1/W-0002>
 
 
 Check permissions for Invalidate transition
