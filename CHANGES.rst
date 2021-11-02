@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1865 Fix indexing of temporary objects resulting in orphan entries in catalog
 - #1861 Fix export interface lookup when name contains uppercase letters
 - #1858 Show "copy to new" transition to Clients in samples listing
 - #1858 Cannot override behavior of Methods folder when using `before_render`
