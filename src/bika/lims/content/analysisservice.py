@@ -249,8 +249,8 @@ Conditions = RecordsField(
         "title": "service_conditions_validator",
     },
     subfield_maxlength={
-        "title": 20,
-        "description": 100,
+        "title": 50,
+        "description": 200,
     },
     subfield_vocabularies={
         "type": DisplayList((
