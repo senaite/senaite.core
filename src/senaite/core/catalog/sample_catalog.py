@@ -13,6 +13,7 @@ INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("sortable_title", "sortable_title", "FieldIndex"),
     ("getDueDate", "getDueDate", "DateIndex"),
+    ("listing_searchable_text", "", "ZCTextIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

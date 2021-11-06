@@ -29,8 +29,12 @@ from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
 from plone.registry.interfaces import IRegistry
+from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
+from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.CMFPlone.utils import get_installer
 from Products.GenericSetup.utils import _resolveDottedName
+from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
+from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from senaite.core import logger
 from senaite.core.catalog.sample_catalog import SampleCatalog
 from senaite.core.config import PROFILE_ID
@@ -224,10 +228,25 @@ def setup_catalogs(portal, reindex=True):
                     % (idx_id, catalog_id))
 
 
-def add_zc_text_index(catalog, name):
+def add_zc_text_index(catalog, name, lex_id="Lexicon"):
     """Add ZC text index to the catalog
     """
-    pass
+    lexicon = getattr(catalog, lex_id, None)
+    if lexicon is None:
+        # create the lexicon first
+        splitter = Splitter()
+        casenormalizer = CaseNormalizer()
+        stopwordremover = StopWordAndSingleCharRemover()
+        pipeline = [splitter, casenormalizer, stopwordremover]
+        lexicon = PLexicon(lex_id, "Senaite Lexicon", *pipeline)
+        catalog._setObject(lex_id, lexicon)
+
+    if name not in catalog.indexes():
+        class extra(object):
+            doc_attr = name
+            lexicon_id = lex_id
+            index_type = "Okapi BM25 Rank"
+        catalog.addIndex(name, "ZCTextIndex", extra)
 
 
 def remove_default_content(portal):
