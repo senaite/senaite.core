@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1871 Allow calculations to rely on results of tests in subsamples (partitiones)
 - #1864 Added UID reference field/widget for Dexterity Contents
 - #1867 Fix error when invalidating samples with copies of analyses
 - #1865 Fix indexing of temporary objects resulting in orphan entries in catalog
