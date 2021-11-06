@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+
+from zope.interface import Interface
+
+
+class ISenaiteCatalog(Interface):
+    """Marker interface for Senaite catalog objects
+    """
+
+
+class ISampleCatalog(ISenaiteCatalog):
+    """Marker interface for Senaite sample catalog
+    """

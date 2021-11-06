@@ -1,8 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from Products.CMFPlone.CatalogTool import CatalogTool
-
-
-class BaseCatalog(CatalogTool):
-    """Parent class for Senaite catalogs
-    """
+from senaite.core.catalog.sample_catalog import CATALOG_ID as SAMPLE_CATALOG  # noqa
