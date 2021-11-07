@@ -103,6 +103,29 @@ CATALOGS = (
     ReportCatalog,
 )
 
+INDEXES = (
+    # catalog, id, indexed attribute, type
+    ("portal_catalog", "Analyst", "", "FieldIndex"),
+    ("portal_catalog", "sample_uid", "", "KeywordIndex"),
+    ("portal_catalog", "analysisRequestTemplates", "", "FieldIndex"),
+    ("portal_catalog", "is_active", "", "BooleanIndex"),
+    ("portal_catalog", "review_state", "", "FieldIndex"),
+    ("portal_catalog", "getName", "", "FieldIndex"),
+    ("portal_catalog", "getParentUID", "", "FieldIndex"),
+    ("portal_catalog", "getFullname", "", "FieldIndex"),
+    ("portal_catalog", "getUsername", "", "FieldIndex"),
+    ("portal_catalog", "title", "", "FieldIndex"),
+    ("portal_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
+)
+
+COLUMNS = (
+    # catalog, column name
+    ("portal_catalog", "analysisRequestTemplates"),
+    ("portal_catalog", "review_state"),
+    ("portal_catalog", "getClientID"),
+    ("portal_catalog", "Analyst"),
+)
+
 
 def install(context):
     """Install handler
