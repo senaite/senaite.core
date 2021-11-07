@@ -3,31 +3,36 @@
 from zope.interface import Interface
 
 
-class ISenaiteCatalog(Interface):
+class ISenaiteCatalogObject(Interface):
     """Marker interface for Senaite catalog objects
     """
 
 
-class ISampleCatalog(ISenaiteCatalog):
+class ISampleCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite sample catalog
     """
 
 
-class ISetupCatalog(ISenaiteCatalog):
+class ISetupCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite setup catalog
     """
 
 
-class IAnalysisCatalog(ISenaiteCatalog):
+class IAnalysisCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite analysis catalog
     """
 
 
-class IAuditlogCatalog(ISenaiteCatalog):
+class IAuditlogCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite auditlog catalog
     """
 
 
-class IAutoImportLogCatalog(ISenaiteCatalog):
+class IAutoImportLogCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite auto import log catalog
+    """
+
+
+class ISenaiteCatalog(ISenaiteCatalogObject):
+    """Marker interface for Senaite catalog
     """

@@ -40,6 +40,7 @@ from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
 from senaite.core.catalog import SampleCatalog
+from senaite.core.catalog import SenaiteCatalog
 from senaite.core.catalog import SetupCatalog
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
@@ -91,11 +92,12 @@ CONTENTS_TO_DELETE = (
 )
 
 CATALOGS = (
-    SampleCatalog,
-    SetupCatalog,
     AnalysisCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
+    SampleCatalog,
+    SenaiteCatalog,
+    SetupCatalog,
 )
 
 

@@ -12,5 +12,7 @@ from senaite.core.catalog.autoimportlog_catalog import \
     AutoImportLogCatalog  # noqa
 from senaite.core.catalog.sample_catalog import CATALOG_ID as SAMPLE_CATALOG  # noqa
 from senaite.core.catalog.sample_catalog import SampleCatalog  # noqa
+from senaite.core.catalog.senaite_catalog import CATALOG_ID as SENAITE_CATALOG  # noqa
+from senaite.core.catalog.senaite_catalog import SenaiteCatalog  # noqa
 from senaite.core.catalog.setup_catalog import CATALOG_ID as SETUP_CATALOG  # noqa
 from senaite.core.catalog.setup_catalog import SetupCatalog  # noqa
