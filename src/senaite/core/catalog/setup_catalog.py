@@ -57,8 +57,6 @@ TYPES = [
 class SetupCatalog(BaseCatalog):
     """Catalog for setup objects
     """
-    id = CATALOG_ID
-
     def __init__(self):
         BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
 

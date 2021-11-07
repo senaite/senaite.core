@@ -64,8 +64,11 @@ class BaseCatalog(CatalogTool):
 
     def __init__(self, id, title="", **kw):
         # CatalogTool does not take any parameters in __init__
-        ZCatalog.__init__(self, self.getId(), title=title, **kw)
-        self.mapped_catalog_types = []
+        ZCatalog.__init__(self, id, title=title, **kw)
+
+    @property
+    def mapped_catalog_types(self):
+        return TYPES
 
     def is_indexable(self, obj):
         """Checks if the object can be indexed

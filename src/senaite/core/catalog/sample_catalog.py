@@ -36,7 +36,6 @@ INDEXES = BASE_INDEXES + [
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("modified", "", "DateIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("sortable_title", "sortable_title", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
@@ -106,10 +105,7 @@ TYPES = [
 class SampleCatalog(BaseCatalog):
     """Catalog for sample objects
     """
-    id = CATALOG_ID
-
     def __init__(self):
-        self._mapped_types = TYPES
         BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
 
     @property
