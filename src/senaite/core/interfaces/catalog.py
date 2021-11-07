@@ -36,3 +36,8 @@ class IAutoImportLogCatalog(ISenaiteCatalogObject):
 class ISenaiteCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite catalog
     """
+
+
+class IWorksheetCatalog(ISenaiteCatalogObject):
+    """Marker interface for Senaite worksheet catalog
+    """

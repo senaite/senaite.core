@@ -16,3 +16,6 @@ from senaite.core.catalog.senaite_catalog import CATALOG_ID as SENAITE_CATALOG  
 from senaite.core.catalog.senaite_catalog import SenaiteCatalog  # noqa
 from senaite.core.catalog.setup_catalog import CATALOG_ID as SETUP_CATALOG  # noqa
 from senaite.core.catalog.setup_catalog import SetupCatalog  # noqa
+from senaite.core.catalog.worksheet_catalog import \
+    CATALOG_ID as WORKSHEET_CATALOG  # noqa
+from senaite.core.catalog.worksheet_catalog import WorksheetCatalog  # noqa

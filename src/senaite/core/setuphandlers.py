@@ -42,6 +42,7 @@ from senaite.core.catalog import AutoImportLogCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
 from senaite.core.catalog import SetupCatalog
+from senaite.core.catalog import WorksheetCatalog
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
 from zope.interface import implementer
@@ -98,6 +99,7 @@ CATALOGS = (
     SampleCatalog,
     SenaiteCatalog,
     SetupCatalog,
+    WorksheetCatalog,
 )
 
 
