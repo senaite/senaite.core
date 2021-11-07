@@ -12,11 +12,57 @@ CATALOG_TITLE = "Senaite Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
+    ("allowedRolesAndUsers", "", "KeywordIndex"),
+    ("BatchDate", "", "DateIndex"),
+    ("created", "", "DateIndex"),
+    ("Creator", "", "FieldIndex"),
+    ("Description", "", "ZCTextIndex"),
+    ("getBlank", "", "BooleanIndex"),
+    ("getClientBatchID", "", "FieldIndex"),
+    ("getClientID", "", "FieldIndex"),
+    ("getClientTitle", "", "FieldIndex"),
+    ("getClientUID", "", "FieldIndex"),
+    ("getDateReceived", "", "DateIndex"),
+    ("getDateSampled", "", "DateIndex"),
+    ("getDueDate", "", "DateIndex"),
+    ("getExpiryDate", "", "DateIndex"),
+    ("getId", "", "FieldIndex"),
+    ("getReferenceDefinitionUID", "", "FieldIndex"),
+    ("getSupportedServices", "", "KeywordIndex"),
+    ("id", "getId", "FieldIndex"),
+    ("isValid", "", "BooleanIndex"),
+    ("is_active", "", "BooleanIndex"),
     ("listing_searchable_text", "", "ZCTextIndex"),
+    ("path", "getPhysicalPath", "ExtendedPathIndex"),
+    ("portal_type", "", "FieldIndex"),
+    ("review_state", "", "FieldIndex"),
+    ("sortable_title", "", "FieldIndex"),
+    ("title", "", "FieldIndex"),
+    ("Title", "", "ZCTextIndex"),
+    ("Type", "", "FieldIndex"),
+    ("UID", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
+    "Created",
+    "creator",
+    "Description",
+    "getClientBatchID",
+    "getClientID",
+    "getClientTitle",
+    "getDateReceived",
+    "getDateSampled",
+    "getId",
+    "getProgress",
+    "id",
+    "path",
+    "portal_type",
+    "review_state",
+    "sortable_title",
+    "Title",
+    "Type",
+    "UID",
 ]
 
 TYPES = [

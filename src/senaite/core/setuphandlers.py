@@ -24,7 +24,6 @@ from bika.lims.setuphandlers import add_dexterity_portal_items
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_auditlog_catalog
-from bika.lims.setuphandlers import setup_catalog_mappings
 from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
@@ -47,6 +46,7 @@ from senaite.core.catalog import WorksheetCatalog
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
 from zope.interface import implementer
+from senaite.core.catalog import AUDITLOG_CATALOG
 
 try:
     from Products.CMFPlone.interfaces import IMarkupSchema
@@ -126,6 +126,8 @@ def install(context):
 
     # setup catalogs
     setup_catalogs(portal)
+    # register catalog mappings in archetype_tool
+    setup_catalog_mappings(portal)
 
     # skip installers if already installed
     qi = get_installer(portal)
@@ -141,10 +143,6 @@ def install(context):
     setup_content_structure(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
-    setup_catalog_mappings(portal)
-
-    # Run after all catalogs have been setup
-    setup_auditlog_catalog(portal)
 
     # Set CMF Form actions
     setup_form_controller_actions(portal)
@@ -154,6 +152,24 @@ def install(context):
     setup_markup_schema(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
+
+
+def setup_catalog_mappings(portal):
+    """Map catalogs to types in archetype tool
+    """
+    at = api.get_tool("archetype_tool")
+    pt = api.get_tool("portal_types")
+
+    # map all known types to the auditlog catalog
+    auditlog_catalog = api.get_tool(AUDITLOG_CATALOG)
+    for portal_type in pt.listContentTypes():
+        catalogs = at.getCatalogsByType(portal_type)
+        if auditlog_catalog not in catalogs:
+            existing_catalogs = list(map(lambda c: c.getId(), catalogs))
+            new_catalogs = existing_catalogs + [AUDITLOG_CATALOG]
+            at.setCatalogsByType(portal_type, new_catalogs)
+            logger.info("*** Adding catalog '{}' for '{}'".format(
+                AUDITLOG_CATALOG, portal_type))
 
 
 def setup_catalogs(portal, reindex=True):
