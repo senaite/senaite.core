@@ -41,3 +41,8 @@ class ISenaiteCatalog(ISenaiteCatalogObject):
 class IWorksheetCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite worksheet catalog
     """
+
+
+class IReportCatalog(ISenaiteCatalogObject):
+    """Marker interface for Senaite report catalog
+    """

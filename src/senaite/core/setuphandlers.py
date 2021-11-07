@@ -39,6 +39,7 @@ from senaite.core import logger
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
+from senaite.core.catalog import ReportCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
 from senaite.core.catalog import SetupCatalog
@@ -100,6 +101,7 @@ CATALOGS = (
     SenaiteCatalog,
     SetupCatalog,
     WorksheetCatalog,
+    ReportCatalog,
 )
 
 

@@ -10,6 +10,8 @@ from senaite.core.catalog.autoimportlog_catalog import \
     CATALOG_ID as AUTOIMPORTLOG_CATALOG  # noqa
 from senaite.core.catalog.autoimportlog_catalog import \
     AutoImportLogCatalog  # noqa
+from senaite.core.catalog.report_catalog import CATALOG_ID as REPORT_CATALOG  # noqa
+from senaite.core.catalog.report_catalog import ReportCatalog  # noqa
 from senaite.core.catalog.sample_catalog import CATALOG_ID as SAMPLE_CATALOG  # noqa
 from senaite.core.catalog.sample_catalog import SampleCatalog  # noqa
 from senaite.core.catalog.senaite_catalog import CATALOG_ID as SENAITE_CATALOG  # noqa
