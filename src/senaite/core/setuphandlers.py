@@ -23,7 +23,6 @@ from bika.lims import api
 from bika.lims.setuphandlers import add_dexterity_portal_items
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
-from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
