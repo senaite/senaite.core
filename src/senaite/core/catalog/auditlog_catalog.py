@@ -17,7 +17,6 @@ INDEXES = BASE_INDEXES + [
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("modified", "", "DateIndex"),
     ("modifiers", "", "KeywordIndex"),
-    ("portal_type", "", "FieldIndex"),
     ("snapshot_created", "", "DateIndex"),
     ("snapshot_version", "", "FieldIndex"),
 ]
