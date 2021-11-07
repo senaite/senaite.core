@@ -129,14 +129,15 @@ class BaseCatalog(CatalogTool):
                     # NOTE: This method indexes only the object in this
                     #       catalog, but does not take DX multiplexing into
                     #       consideration.
-                    self.reindexObject(obj, idxs=idxs)
+                    self._reindexObject(obj, idxs=idxs)  # bypass queue
                     self.counter += 1
                 elif api.is_dexterity_content(obj):
-                    # NOTE: This method does take DX multiplexing into
-                    #       consideration, but always reindexes the object as
-                    #       well in portal_catalog
-                    obj.reindexObject(idxs=idxs)
-                    self.counter += 1
+                    # NOTE: Catalog multiplexing is only available for DX types
+                    #       and stores the catalogs in a variable `_catalogs`.
+                    multiplex_catalogs = getattr(obj, "_catalogs", [])
+                    if self.id in multiplex_catalogs:
+                        self._reindexObject(obj, idxs=idxs)  # bypass queue
+                        self.counter += 1
                 else:
                     return
             except TypeError:
@@ -144,7 +145,7 @@ class BaseCatalog(CatalogTool):
                 # take different args, and will fail
                 pass
 
-            if self.counter % 100 == 0:
+            if self.counter and self.counter % 100 == 0:
                 logger.info("Progress: {} objects have been cataloged for {}."
                             .format(self.counter, self.id))
                 transaction.savepoint(optimistic=True)
