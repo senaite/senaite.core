@@ -122,17 +122,22 @@ class BaseCatalog(CatalogTool):
             try:
                 # only consider mapped types if we have them set
                 if mapped_types and portal_type in mapped_types:
+                    # NOTE: This method indexes only the object in this
+                    #       catalog, but does not take DX multiplexing into
+                    #       consideration.
                     self.reindexObject(obj, idxs=idxs)
                     self.counter += 1
                 elif api.is_dexterity_content(obj):
-                    # we use `obj.reindexObject` for DX contents to handle
-                    # catalog multiplexing.
-                    # NOTE: This also reindexes the object in portal_catalog
+                    # NOTE: This method does take DX multiplexing into
+                    #       consideration, but always reindexes the object as
+                    #       well in portal_catalog
                     obj.reindexObject(idxs=idxs)
                     self.counter += 1
                 else:
                     return
             except TypeError:
+                # Catalogs have 'indexObject' as well, but they
+                # take different args, and will fail
                 pass
 
             if self.counter % 100 == 0:
