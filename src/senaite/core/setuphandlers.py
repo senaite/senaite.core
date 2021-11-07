@@ -120,7 +120,6 @@ def install(context):
     _run_import_step(portal, "typeinfo")
     _run_import_step(portal, "factorytool")
     _run_import_step(portal, "workflow", "profile-senaite.core:default")
-    _run_import_step(portal, "toolset", "profile-senaite.core:default")
     _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
 
     # setup catalogs
