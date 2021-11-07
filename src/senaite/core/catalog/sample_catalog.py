@@ -8,6 +8,7 @@ from senaite.core.interfaces import ISampleCatalog
 from zope.interface import implementer
 
 CATALOG_ID = "senaite_sample_catalog"
+CATALOG_TITLE = "Senaite Sample Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
@@ -19,7 +20,7 @@ INDEXES = BASE_INDEXES + [
     ("getClientID", "", "FieldIndex"),
     ("getBatchUID", "", "FieldIndex"),
     ("getDateSampled", "", "DateIndex"),
-    ("getSamplingDate", "", "DateIndex)",
+    ("getSamplingDate", "", "DateIndex"),
     ("getDateReceived", "", "DateIndex"),
     ("getDateVerified", "", "DateIndex"),
     ("getDatePublished", "", "DateIndex"),
@@ -111,7 +112,11 @@ class SampleCatalog(BaseCatalog):
 
     def __init__(self):
         self._mapped_types = TYPES
-        BaseCatalog.__init__(self, CATALOG_ID, title="Sample Catalog")
+        BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
+
+    @property
+    def mapped_catalog_types(self):
+        return TYPES
 
 
 InitializeClass(SampleCatalog)

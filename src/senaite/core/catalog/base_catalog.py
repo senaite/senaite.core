@@ -17,6 +17,7 @@ from senaite.core.interfaces import ISenaiteCatalog
 from zope.interface import implementer
 
 CATALOG_ID = "senaite_catalog"
+CATALOG_TITLE = "Senaite Base Catalog"
 
 INDEXES = [
     # id, indexed attribute, type
@@ -64,9 +65,7 @@ class BaseCatalog(CatalogTool):
     def __init__(self, id, title="", **kw):
         # CatalogTool does not take any parameters in __init__
         ZCatalog.__init__(self, self.getId(), title=title, **kw)
-
-    def get_mapped_catalog_types(self):
-        return getattr(self, "_mapped_types", [])
+        self.mapped_catalog_types = []
 
     def is_indexable(self, obj):
         """Checks if the object can be indexed
@@ -85,7 +84,7 @@ class BaseCatalog(CatalogTool):
         return api.get_portal_type(obj)
 
     def get_mapped_at_types(self):
-        """Returns all mapped AT portal types from archetype_tool
+        """Returns all mapped AT types from archetype_tool
         """
         at = api.get_tool("archetype_tool", default=None)
         if at is None:
@@ -94,9 +93,11 @@ class BaseCatalog(CatalogTool):
         return mapped_types
 
     def get_mapped_types(self):
-        """Returns the mapped types for this catalog
+        """Returns the mapped types of this catalog
+
+        :returns: list of catalog types + types mapped over archetype_tool
         """
-        mapped_catalog_types = self.get_mapped_catalog_types()
+        mapped_catalog_types = self.mapped_catalog_types
         mapped_at_types = self.get_mapped_at_types()
         return mapped_catalog_types + mapped_at_types
 

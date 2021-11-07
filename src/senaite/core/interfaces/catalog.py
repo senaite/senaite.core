@@ -11,3 +11,8 @@ class ISenaiteCatalog(Interface):
 class ISampleCatalog(ISenaiteCatalog):
     """Marker interface for Senaite sample catalog
     """
+
+
+class ISetupCatalog(ISenaiteCatalog):
+    """Marker interface for Senaite setup catalog
+    """
