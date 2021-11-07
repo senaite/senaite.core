@@ -228,7 +228,7 @@ def setup_catalogs(portal, reindex=True):
                             % (column, catalog_id))
             else:
                 logger.info("*** Column '%s' already in catalog '%s'  [SKIP]"
-                            % (columns, catalog))
+                            % (column, catalog_id))
                 continue
 
         if not reindex:
