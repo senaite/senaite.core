@@ -21,3 +21,8 @@ class ISetupCatalog(ISenaiteCatalog):
 class IAnalysisCatalog(ISenaiteCatalog):
     """Marker interface for Senaite analysis catalog
     """
+
+
+class IAuditlogCatalog(ISenaiteCatalog):
+    """Marker interface for Senaite auditlog catalog
+    """
