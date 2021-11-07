@@ -172,12 +172,9 @@ def setup_catalogs(portal, reindex=True):
         # contains tuples of (catalog, index) pairs
         to_reindex = []
 
-        # get the existing catalog indexes and columns
-        indexes = catalog.indexes()
-        columns = catalog.schema()
-
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
+            indexes = catalog.indexes()
             # check if the index exists
             if idx_id in indexes:
                 logger.info("*** %s '%s' already in catalog '%s' [SKIP]"
@@ -201,6 +198,7 @@ def setup_catalogs(portal, reindex=True):
 
         # catalog columns
         for column in catalog_columns:
+            columns = catalog.schema()
             if column not in columns:
                 catalog.addColumn(column)
                 logger.info("*** Added column '%s' to catalog '%s' [DONE]"
