@@ -33,6 +33,7 @@ class SampleCatalog(BaseCatalog):
     id = CATALOG_ID
 
     def __init__(self):
+        self._mapped_types = TYPES
         BaseCatalog.__init__(self, CATALOG_ID, title="Sample Catalog")
 
 
