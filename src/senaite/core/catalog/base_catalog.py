@@ -16,38 +16,38 @@ from Products.ZCatalog.ZCatalog import ZCatalog
 from senaite.core.interfaces import ISenaiteCatalog
 from zope.interface import implementer
 
-CATALOG_ID = "senaite_catalog"
+CATALOG_ID = "senaite_catalog_base"
 CATALOG_TITLE = "Senaite Base Catalog"
 
 INDEXES = [
     # id, indexed attribute, type
-    ("id", "", "FieldIndex"),
-    ("title", "", "FieldIndex"),
-    ("getId", "", "FieldIndex"),
-    ("portal_type", "", "FieldIndex"),
-    ("object_provides", "", "KeywordIndex"),
-    ("UID", "", "UUIDIndex"),
+    ("allowedRolesAndUsers", "", "KeywordIndex"),
     ("created", "", "DateIndex"),
     ("CreationDate", "", "DateIndex"),
     ("Creator", "", "FieldIndex"),
-    ("allowedRolesAndUsers", "", "KeywordIndex"),
-    ("review_state", "", "FieldIndex"),
-    ("path", "", "ExtendedPathIndex"),
+    ("getId", "", "FieldIndex"),
+    ("id", "", "FieldIndex"),
     ("is_active", "", "BooleanIndex"),
+    ("object_provides", "", "KeywordIndex"),
+    ("path", "", "ExtendedPathIndex"),
+    ("portal_type", "", "FieldIndex"),
+    ("review_state", "", "FieldIndex"),
+    ("title", "", "FieldIndex"),
+    ("UID", "", "UUIDIndex"),
 ]
 
 COLUMNS = [
     # attribute name
-    "UID",
-    "getId",
-    "meta_type",
-    "Title",
-    "review_state",
-    "state_title",
-    "portal_type",
     "allowedRolesAndUsers",
     "created",
     "Creator",
+    "getId",
+    "meta_type",
+    "portal_type",
+    "review_state",
+    "state_title",
+    "Title",
+    "UID",
 ]
 
 TYPES = [

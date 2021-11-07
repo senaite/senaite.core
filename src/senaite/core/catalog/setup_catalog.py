@@ -7,22 +7,20 @@ from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.interfaces import ISetupCatalog
 from zope.interface import implementer
 
-CATALOG_ID = "senaite_setup_catalog"
-CATALOG_TITLE = "Setup Catalog"
+CATALOG_ID = "senaite_catalog_setup"
+CATALOG_TITLE = "Senaite Setup Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
-    ("Description", "", "ZCTextIndex"),
-    ("Title", "", "ZCTextIndex"),
-    ("Type", "", "FieldIndex"),
     ("category_uid", "", "KeywordIndex"),
+    ("department_id", "", "KeywordIndex"),
     ("department_title", "", "KeywordIndex"),
     ("department_uid", "", "KeywordIndex"),
-    ("department_id", "", "KeywordIndex"),
+    ("Description", "", "ZCTextIndex"),
     ("getClientUID", "", "FieldIndex"),
     ("getKeyword", "", "FieldIndex"),
-    ("instrument_title", "", "KeywordIndex"),
     ("instrumenttype_title", "", "KeywordIndex"),
+    ("instrument_title", "", "KeywordIndex"),
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("method_available_uid", "", "KeywordIndex"),
     ("point_of_capture", "", "FieldIndex"),
@@ -31,21 +29,23 @@ INDEXES = BASE_INDEXES + [
     ("sampletype_title", "", "KeywordIndex"),
     ("sampletype_uid", "", "KeywordIndex"),
     ("sortable_title", "", "FieldIndex"),
+    ("Title", "", "ZCTextIndex"),
+    ("Type", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
-    "path",
-    "id",
-    "Type",
     "Description",
-    "title",
-    "sortable_title",
     "description",
     "getCategoryTitle",
     "getCategoryUID",
     "getClientUID",
     "getKeyword",
+    "id",
+    "path",
+    "sortable_title",
+    "title",
+    "Type",
 ]
 
 TYPES = [
