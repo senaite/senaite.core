@@ -2,8 +2,8 @@
 
 from bika.lims.interfaces import IAnalysisRequest
 from plone.indexer import indexer
-from senaite.core.api.catalog import get_searchable_text_tokens
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog.utils import get_searchable_text_tokens
 from senaite.core.interfaces import ISampleCatalog
 
 
