@@ -12,8 +12,6 @@
       title="SENAITE Core 1.x (do not install)"
       directory="profiles/default"
       description="Open Source Web based Laboratory Information Management System"
-      pre_handler="bika.lims.setuphandlers.pre_install"
-      post_handler="bika.lims.setuphandlers.post_install"
       provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
   <!-- Run Setup Script -->

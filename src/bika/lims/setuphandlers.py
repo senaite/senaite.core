@@ -19,12 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
-import six
 
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.catalog import auditlog_catalog
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
@@ -129,109 +127,12 @@ CATALOG_MAPPINGS = (
 
 INDEXES = (
     # catalog, id, indexed attribute, type
-    ("bika_catalog", "BatchDate", "", "DateIndex"),
-    ("bika_catalog", "Creator", "", "FieldIndex"),
-    ("bika_catalog", "Description", "", "ZCTextIndex"),
-    ("bika_catalog", "Title", "", "ZCTextIndex"),
-    ("bika_catalog", "Type", "", "FieldIndex"),
-    ("bika_catalog", "UID", "", "FieldIndex"),
-    ("bika_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
-    ("bika_catalog", "created", "", "DateIndex"),
-    ("bika_catalog", "getBlank", "", "BooleanIndex"),
-    ("bika_catalog", "getClientBatchID", "", "FieldIndex"),
-    ("bika_catalog", "getClientID", "", "FieldIndex"),
-    ("bika_catalog", "getClientTitle", "", "FieldIndex"),
-    ("bika_catalog", "getClientUID", "", "FieldIndex"),
-    ("bika_catalog", "getDateReceived", "", "DateIndex"),
-    ("bika_catalog", "getDateSampled", "", "DateIndex"),
-    ("bika_catalog", "getDueDate", "", "DateIndex"),
-    ("bika_catalog", "getExpiryDate", "", "DateIndex"),
-    ("bika_catalog", "getId", "", "FieldIndex"),
-    ("bika_catalog", "getReferenceDefinitionUID", "", "FieldIndex"),
-    ("bika_catalog", "getSupportedServices", "", "KeywordIndex"),
-    ("bika_catalog", "id", "getId", "FieldIndex"),
-    ("bika_catalog", "isValid", "", "BooleanIndex"),
-    ("bika_catalog", "is_active", "", "BooleanIndex"),
-    ("bika_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
-    ("bika_catalog", "portal_type", "", "FieldIndex"),
-    ("bika_catalog", "review_state", "", "FieldIndex"),
-    ("bika_catalog", "sortable_title", "", "FieldIndex"),
-    ("bika_catalog", "title", "", "FieldIndex"),
-    ("bika_catalog", "listing_searchable_text", "", "TextIndexNG3"),
-
-    ("bika_setup_catalog", "Creator", "", "FieldIndex"),
-    ("bika_setup_catalog", "Description", "", "ZCTextIndex"),
-    ("bika_setup_catalog", "Title", "", "ZCTextIndex"),
-    ("bika_setup_catalog", "Type", "", "FieldIndex"),
-    ("bika_setup_catalog", "UID", "", "FieldIndex"),
-    ("bika_setup_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
-    ("bika_setup_catalog", "category_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "created", "", "DateIndex"),
-    ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
-    ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "department_id", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
-    ("bika_setup_catalog", "getId", "", "FieldIndex"),
-    ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
-    ("bika_setup_catalog", "id", "getId", "FieldIndex"),
-    ("bika_setup_catalog", "instrument_title", "", "KeywordIndex"),
-    ("bika_setup_catalog", "instrumenttype_title", "", "KeywordIndex"),
-    ("bika_setup_catalog", "is_active", "", "BooleanIndex"),
-    ("bika_setup_catalog", "listing_searchable_text", "", "TextIndexNG3"),
-    ("bika_setup_catalog", "method_available_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
-    ("bika_setup_catalog", "point_of_capture", "", "FieldIndex"),
-    ("bika_setup_catalog", "portal_type", "", "FieldIndex"),
-    ("bika_setup_catalog", "price", "", "FieldIndex"),
-    ("bika_setup_catalog", "price_total", "", "FieldIndex"),
-    ("bika_setup_catalog", "review_state", "", "FieldIndex"),
-    ("bika_setup_catalog", "sampletype_title", "", "KeywordIndex"),
-    ("bika_setup_catalog", "sampletype_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "sortable_title", "", "FieldIndex"),
-    ("bika_setup_catalog", "title", "", "FieldIndex"),
-
     ("portal_catalog", "Analyst", "", "FieldIndex"),
     ("portal_catalog", "sample_uid", "", "KeywordIndex"),
 )
 
 COLUMNS = (
     # catalog, column name
-    ("bika_catalog", "path"),
-    ("bika_catalog", "UID"),
-    ("bika_catalog", "id"),
-    ("bika_catalog", "getId"),
-    ("bika_catalog", "Type"),
-    ("bika_catalog", "portal_type"),
-    ("bika_catalog", "creator"),
-    ("bika_catalog", "Created"),
-    ("bika_catalog", "Title"),
-    ("bika_catalog", "Description"),
-    ("bika_catalog", "sortable_title"),
-    ("bika_catalog", "getClientTitle"),
-    ("bika_catalog", "getClientID"),
-    ("bika_catalog", "getClientBatchID"),
-    ("bika_catalog", "getDateReceived"),
-    ("bika_catalog", "getDateSampled"),
-    ("bika_catalog", "review_state"),
-    ("bika_catalog", "getProgress"),
-
-    ("bika_setup_catalog", "path"),
-    ("bika_setup_catalog", "UID"),
-    ("bika_setup_catalog", "id"),
-    ("bika_setup_catalog", "getId"),
-    ("bika_setup_catalog", "Type"),
-    ("bika_setup_catalog", "portal_type"),
-    ("bika_setup_catalog", "Title"),
-    ("bika_setup_catalog", "Description"),
-    ("bika_setup_catalog", "title"),
-    ("bika_setup_catalog", "sortable_title"),
-    ("bika_setup_catalog", "description"),
-    ("bika_setup_catalog", "review_state"),
-    ("bika_setup_catalog", "getCategoryTitle"),
-    ("bika_setup_catalog", "getCategoryUID"),
-    ("bika_setup_catalog", "getClientUID"),
-    ("bika_setup_catalog", "getKeyword"),
-
     ("portal_catalog", "Analyst"),
 )
 
@@ -239,42 +140,6 @@ ALLOWED_STYLES = [
     "color",
     "background-color"
 ]
-
-
-def pre_install(portal_setup):
-    """Runs before the first import step of the *default* profile
-
-    This handler is registered as a *pre_handler* in the generic setup profile
-
-    :param portal_setup: SetupTool
-    """
-    logger.info("SENAITE PRE-INSTALL handler [BEGIN]")
-
-    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
-    profile_id = PROFILE_ID
-
-    context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
-
-    logger.info("SENAITE PRE-INSTALL handler [DONE]")
-
-
-def post_install(portal_setup):
-    """Runs after the last import step of the *default* profile
-
-    This handler is registered as a *post_handler* in the generic setup profile
-
-    :param portal_setup: SetupTool
-    """
-    logger.info("SENAITE POST-INSTALL handler [BEGIN]")
-
-    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
-    profile_id = PROFILE_ID
-
-    context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
-
-    logger.info("SENAITE POST-INSTALL handler [DONE]")
 
 
 def setup_handler(context):
@@ -298,9 +163,6 @@ def setup_handler(context):
     add_dexterity_setup_items(portal)
     # XXX P5: Fix HTML filtering
     # setup_html_filter(portal)
-
-    # Run after all catalogs have been setup
-    setup_auditlog_catalog(portal)
 
     # Set CMF Form actions
     setup_form_controller_actions(portal)
@@ -430,50 +292,6 @@ def setup_core_catalogs(portal):
         logger.info("*** Indexing new index '%s' ..." % name)
         catalog.manage_reindexIndex(name)
         logger.info("*** Indexing new index '%s' [DONE]" % name)
-
-
-def setup_auditlog_catalog(portal):
-    """Setup auditlog catalog
-    """
-    logger.info("*** Setup Audit Log Catalog ***")
-
-    catalog_id = auditlog_catalog.CATALOG_AUDITLOG
-    catalog = api.get_tool(catalog_id)
-
-    for name, meta_type in six.iteritems(auditlog_catalog._indexes):
-        indexes = catalog.indexes()
-        if name in indexes:
-            logger.info("*** Index '%s' already in Catalog [SKIP]" % name)
-            continue
-
-        logger.info("*** Adding Index '%s' for field '%s' to catalog ..."
-                    % (meta_type, name))
-
-        catalog.addIndex(name, meta_type)
-
-        # Setup TextIndexNG3 for listings
-        # XXX is there another way to do this?
-        if meta_type == "TextIndexNG3":
-            index = catalog._catalog.getIndex(name)
-            index.index.default_encoding = "utf-8"
-            index.index.query_parser = "txng.parsers.en"
-            index.index.autoexpand = "always"
-            index.index.autoexpand_limit = 3
-
-        logger.info("*** Added Index '%s' for field '%s' to catalog [DONE]"
-                    % (meta_type, name))
-
-    # Attach the catalog to all known portal types
-    at = api.get_tool("archetype_tool")
-    pt = api.get_tool("portal_types")
-
-    for portal_type in pt.listContentTypes():
-        catalogs = at.getCatalogsByType(portal_type)
-        if catalog not in catalogs:
-            new_catalogs = map(lambda c: c.getId(), catalogs) + [catalog_id]
-            at.setCatalogsByType(portal_type, new_catalogs)
-            logger.info("*** Adding catalog '{}' for '{}'".format(
-                catalog_id, portal_type))
 
 
 def setup_form_controller_actions(portal):
