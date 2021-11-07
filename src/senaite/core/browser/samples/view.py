@@ -23,7 +23,7 @@ import collections
 
 from bika.lims import _
 from bika.lims import api
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from senaite.core.catalog import SAMPLE_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import TransitionSampleSample
@@ -45,7 +45,7 @@ class SamplesView(ListingView):
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
 
-        self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+        self.catalog = SAMPLE_CATALOG
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
