@@ -36,8 +36,9 @@ from Products.GenericSetup.utils import _resolveDottedName
 from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from senaite.core import logger
-from senaite.core.catalog.sample_catalog import SampleCatalog
-from senaite.core.catalog.setup_catalog import SetupCatalog
+from senaite.core.catalog import AnalysisCatalog
+from senaite.core.catalog import SampleCatalog
+from senaite.core.catalog import SetupCatalog
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
 from zope.interface import implementer
@@ -90,6 +91,7 @@ CONTENTS_TO_DELETE = (
 CATALOGS = (
     SampleCatalog,
     SetupCatalog,
+    AnalysisCatalog,
 )
 
 
