@@ -2,4 +2,7 @@
            xmlns:zcml="http://namespaces.zope.org/zcml"
            i18n_domain="senaite.core">
 
+  <!-- Catalog indexes -->
+  <include package=".indexer" />
+
 </configure>
