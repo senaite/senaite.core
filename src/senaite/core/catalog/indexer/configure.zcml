@@ -51,4 +51,7 @@
   <!-- Contact Indexer -->
   <adapter name="sortable_title" factory=".contact.sortable_title"/>
 
+  <!-- Organization Indexer -->
+  <adapter name="title" factory=".organisation.title"/>
+
 </configure>
