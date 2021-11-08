@@ -28,4 +28,19 @@
   <!-- BaseAnalysis Indexer -->
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
 
+  <!-- Setup indexer -->
+  <adapter name="category_uid" factory=".senaitesetup.category_uid"/>
+  <adapter name="department_id" factory=".senaitesetup.department_id"/>
+  <adapter name="department_title" factory=".senaitesetup.department_title"/>
+  <adapter name="department_uid" factory=".senaitesetup.department_uid"/>
+  <adapter name="instrument_title" factory=".senaitesetup.instrument_title"/>
+  <adapter name="instrumenttype_title" factory=".senaitesetup.instrumenttype_title"/>
+  <adapter name="listing_searchable_text" factory=".senaitesetup.listing_searchable_text"/>
+  <adapter name="method_available_uid" factory=".senaitesetup.method_available_uid"/>
+  <adapter name="point_of_capture" factory=".senaitesetup.point_of_capture"/>
+  <adapter name="price" factory=".senaitesetup.price"/>
+  <adapter name="price_total" factory=".senaitesetup.price_total"/>
+  <adapter name="sampletype_title" factory=".senaitesetup.sampletype_title"/>
+  <adapter name="sampletype_uid" factory=".senaitesetup.sampletype_uid"/>
+
 </configure>
