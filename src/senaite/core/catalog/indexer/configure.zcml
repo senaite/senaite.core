@@ -7,4 +7,7 @@
   <adapter name="is_received" factory=".sample.is_received"/>
   <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
 
+  <!-- Request Analysis Indexer -->
+  <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
+
 </configure>
