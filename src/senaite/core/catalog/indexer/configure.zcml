@@ -2,6 +2,11 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
+  <!-- Generic Indexer -->
+  <adapter name="is_active" factory=".generic.is_active"/>
+  <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
+  <adapter name="sortable_title" factory=".generic.sortable_title"/>
+
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
   <adapter name="is_received" factory=".sample.is_received"/>
