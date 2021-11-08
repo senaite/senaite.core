@@ -10,4 +10,7 @@
   <!-- Request Analysis Indexer -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
 
+  <!-- AnalysisCategory Indexer -->
+  <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
+
 </configure>
