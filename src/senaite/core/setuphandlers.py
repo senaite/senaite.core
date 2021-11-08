@@ -26,13 +26,15 @@ from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
 from plone.registry.interfaces import IRegistry
-from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
-from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.CMFPlone.utils import get_installer
 from Products.GenericSetup.utils import _resolveDottedName
-from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
-from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from senaite.core import logger
+from senaite.core.api.catalog import add_column
+from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import get_columns
+from senaite.core.api.catalog import get_indexes
+from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
@@ -44,7 +46,6 @@ from senaite.core.catalog import WorksheetCatalog
 from senaite.core.config import PROFILE_ID
 from zope.component import getUtility
 from zope.interface import implementer
-from senaite.core.catalog import AUDITLOG_CATALOG
 
 try:
     from Products.CMFPlone.interfaces import IMarkupSchema
@@ -145,11 +146,11 @@ def install(context):
     _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
 
     # skip installers if already installed
-    #qi = get_installer(portal)
-    #profiles = ["bika.lims", "senaite.core"]
-    #if any(map(lambda p: qi.is_product_installed(p), profiles)):
-    #    logger.info("SENAITE CORE already installed [SKIP]")
-    #    return
+    qi = get_installer(portal)
+    profiles = ["bika.lims", "senaite.core"]
+    if any(map(lambda p: qi.is_product_installed(p), profiles)):
+        logger.info("SENAITE CORE already installed [SKIP]")
+        return
 
     # Run Installers
     setup_groups(portal)
@@ -215,33 +216,24 @@ def setup_catalogs(portal, reindex=True):
 
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
-            indexes = catalog.indexes()
+            indexes = get_indexes(catalog)
             # check if the index exists
             if idx_id in indexes:
                 logger.info("*** %s '%s' already in catalog '%s' [SKIP]"
                             % (idx_type, idx_id, catalog_id))
                 continue
             # create the index
-            if idx_type == "ZCTextIndex":
-                add_zc_text_index(catalog, idx_id)
-            else:
-                catalog.addIndex(idx_id, idx_type)
-
-            # get the new created index
-            index = catalog._catalog.getIndex(idx_id)
-            # set the indexed attributes
-            if hasattr(index, "indexed_attrs"):
-                index.indexed_attrs = [idx_attr or idx_id]
-
+            catalog.addIndex(idx_id, idx_type)
+            add_index(catalog, idx_id, idx_type, attr=idx_attr)
             to_reindex.append((catalog, idx_id))
             logger.info("*** Added %s '%s' for catalog '%s' [DONE]"
                         % (idx_type, idx_id, catalog_id))
 
         # catalog columns
         for column in catalog_columns:
-            columns = catalog.schema()
+            columns = get_columns(catalog)
             if column not in columns:
-                catalog.addColumn(column)
+                add_column(catalog, column)
                 logger.info("*** Added column '%s' to catalog '%s' [DONE]"
                             % (column, catalog_id))
             else:
@@ -268,30 +260,9 @@ def setup_catalogs(portal, reindex=True):
         catalog_id = catalog.id
         logger.info("*** Indexing new index '%s' in '%s' ..."
                     % (idx_id, catalog_id))
-        catalog.manage_reindexIndex(idx_id)
+        reindex_index(catalog, idx_id)
         logger.info("*** Indexing new index '%s' in '%s' [DONE]"
                     % (idx_id, catalog_id))
-
-
-def add_zc_text_index(catalog, name, lex_id="Lexicon"):
-    """Add ZC text index to the catalog
-    """
-    lexicon = getattr(catalog, lex_id, None)
-    if lexicon is None:
-        # create the lexicon first
-        splitter = Splitter()
-        casenormalizer = CaseNormalizer()
-        stopwordremover = StopWordAndSingleCharRemover()
-        pipeline = [splitter, casenormalizer, stopwordremover]
-        lexicon = PLexicon(lex_id, "Senaite Lexicon", *pipeline)
-        catalog._setObject(lex_id, lexicon)
-
-    if name not in catalog.indexes():
-        class extra(object):
-            doc_attr = name
-            lexicon_id = lex_id
-            index_type = "Okapi BM25 Rank"
-        catalog.addIndex(name, "ZCTextIndex", extra)
 
 
 def remove_default_content(portal):
