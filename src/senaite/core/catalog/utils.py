@@ -3,6 +3,8 @@
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IListingSearchableTextProvider
+from Products.CMFPlone.utils import safe_callable
+from senaite.core.catalog.indexer.generic import sortable_title
 from zope.component import getAdapters
 
 
