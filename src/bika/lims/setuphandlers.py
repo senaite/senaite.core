@@ -23,9 +23,6 @@ import itertools
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.catalog import getCatalogDefinitions
-from bika.lims.catalog import setup_catalogs
-from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
 from senaite.core.upgrade.utils import temporary_allow_type
 
@@ -158,7 +155,6 @@ def setup_handler(context):
     reindex_content_structure(portal)
     setup_groups(portal)
     setup_catalog_mappings(portal)
-    setup_core_catalogs(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
     # XXX P5: Fix HTML filtering
@@ -237,61 +233,6 @@ def setup_catalog_mappings(portal):
     at = api.get_tool("archetype_tool")
     for portal_type, catalogs in CATALOG_MAPPINGS:
         at.setCatalogsByType(portal_type, catalogs)
-
-
-def setup_core_catalogs(portal):
-    """Setup core catalogs
-    """
-    logger.info("*** Setup Core Catalogs ***")
-
-    # Setting up all LIMS catalogs defined in catalog folder
-    setup_catalogs(portal, getCatalogDefinitions())
-
-    to_reindex = []
-    for catalog, name, attribute, meta_type in INDEXES:
-        c = api.get_tool(catalog)
-        indexes = c.indexes()
-        if name in indexes:
-            logger.info("*** Index '%s' already in Catalog [SKIP]" % name)
-            continue
-
-        logger.info("*** Adding Index '%s' for field '%s' to catalog ..."
-                    % (meta_type, name))
-
-        # do we still need ZCTextIndexes?
-        if meta_type == "ZCTextIndex":
-            addZCTextIndex(c, name)
-        else:
-            c.addIndex(name, meta_type)
-
-        # get the new created index
-        index = c._catalog.getIndex(name)
-        # set the indexed attributes
-        if hasattr(index, "indexed_attrs"):
-            index.indexed_attrs = [attribute or name]
-
-        to_reindex.append((c, name))
-        logger.info("*** Added Index '%s' for field '%s' to catalog [DONE]"
-                    % (meta_type, name))
-
-    # catalog columns
-    for catalog, name in COLUMNS:
-        c = api.get_tool(catalog)
-        if name not in c.schema():
-            logger.info("*** Adding Column '%s' to catalog '%s' ..."
-                        % (name, catalog))
-            c.addColumn(name)
-            logger.info("*** Added Column '%s' to catalog '%s' [DONE]"
-                        % (name, catalog))
-        else:
-            logger.info("*** Column '%s' already in catalog '%s'  [SKIP]"
-                        % (name, catalog))
-            continue
-
-    for catalog, name in to_reindex:
-        logger.info("*** Indexing new index '%s' ..." % name)
-        catalog.manage_reindexIndex(name)
-        logger.info("*** Indexing new index '%s' [DONE]" % name)
 
 
 def setup_form_controller_actions(portal):
