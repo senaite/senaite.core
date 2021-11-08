@@ -371,7 +371,7 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
 
-        self.catalog = "bika_catalog"
+        self.catalog = "senaite_catalog"
 
         self.contentFilter = {
             "portal_type": "ReferenceSample",

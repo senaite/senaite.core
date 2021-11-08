@@ -1008,7 +1008,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not type or type not in ['b', 'c']:
             return []
 
-        bc = api.get_tool("bika_catalog")
+        bc = api.get_tool("senaite_catalog")
         wst_type = type == 'b' and 'blank_ref' or 'control_ref'
 
         slots_sample = list()

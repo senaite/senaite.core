@@ -60,7 +60,7 @@ schema = BikaSchema.copy() + Schema((
                 "view": "visible",
                 "add": "edit",
             },
-            catalog_name="bika_catalog_analysisrequest_listing",
+            catalog_name="senaite_catalog_sample",
             base_query={},
             showOn=True,
             colModel=[

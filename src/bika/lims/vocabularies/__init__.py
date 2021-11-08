@@ -126,7 +126,7 @@ class BikaContentVocabulary(object):
 
 class BikaCatalogTypesVocabulary(object):
     """Vocabulary factory for really user friendly portal types,
-    filtered to return only types listed as indexed by bika_catalog
+    filtered to return only types listed as indexed by senaite_catalog
     """
     implements(IVocabularyFactory)
 

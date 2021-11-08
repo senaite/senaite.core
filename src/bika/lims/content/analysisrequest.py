@@ -23,6 +23,7 @@ import functools
 import re
 import sys
 from decimal import Decimal
+
 from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
@@ -46,10 +47,6 @@ from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -125,6 +122,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
@@ -273,7 +274,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            catalog_name=SAMPLE_CATALOG,
             search_fields=('listing_searchable_text',),
             base_query={'is_active': True,
                         'is_received': True,
@@ -311,7 +312,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name=BIKA_CATALOG,
+            catalog_name=SENAITE_CATALOG,
             search_fields=('listing_searchable_text',),
             base_query={"is_active": True,
                         "sort_limit": 50,
@@ -1888,7 +1889,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # Get the worksheets that contain any of these analyses
         query = dict(getAnalysesUIDs=analyses_uids)
-        worksheets = api.search(query, CATALOG_WORKSHEET_LISTING)
+        worksheets = api.search(query, WORKSHEET_CATALOG)
         if full_objects:
             worksheets = map(api.get_object, worksheets)
         return worksheets
@@ -1905,13 +1906,13 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # Get reference qc analyses from these worksheets
         query = dict(portal_type="ReferenceAnalysis",
                      getWorksheetUID=worksheet_uids)
-        qc_analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        qc_analyses = api.search(query, ANALYSIS_CATALOG)
 
         # Extend with duplicate qc analyses from these worksheets and Sample
         query = dict(portal_type="DuplicateAnalysis",
                      getWorksheetUID=worksheet_uids,
                      getAncestorsUIDs=[api.get_uid(self)])
-        qc_analyses += api.search(query, CATALOG_ANALYSIS_LISTING)
+        qc_analyses += api.search(query, ANALYSIS_CATALOG)
 
         # Bail out analyses with a different review_state
         if review_state:
@@ -2154,7 +2155,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not idxs:
             idxs = []
         analyses = self.getAnalyses()
-        catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
+        catalog = getToolByName(self, ANALYSIS_CATALOG)
         for analysis in analyses:
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
