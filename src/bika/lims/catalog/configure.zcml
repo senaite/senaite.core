@@ -5,10 +5,4 @@
   <!-- Catalog Indexes -->
   <include package=".indexers" />
 
-  <utility
-      factory=".catalog_multiplex_processor.CatalogMultiplexProcessor"
-      provides="Products.CMFCore.interfaces.IPortalCatalogQueueProcessor"
-      name="catalogmultiplex"
-      />
-
 </configure>
