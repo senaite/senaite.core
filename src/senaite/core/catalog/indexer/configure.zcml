@@ -13,4 +13,7 @@
   <!-- AnalysisCategory Indexer -->
   <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
 
+  <!-- ARReport Indexer -->
+  <adapter name="sample_uid" factory=".arreport.sample_uid"/>
+
 </configure>
