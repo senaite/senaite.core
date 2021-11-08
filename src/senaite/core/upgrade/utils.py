@@ -29,12 +29,12 @@ import transaction
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from bika.lims import api
-from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from bika.lims.interfaces import IAuditable
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
+from senaite.core.api.catalog import add_zc_text_index
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -107,7 +107,7 @@ class UpgradeUtils(object):
         if index in cat.indexes():
             return
         if indextype == 'ZCTextIndex':
-            addZCTextIndex(cat, index)
+            add_zc_text_index(cat, index)
         else:
             cat.addIndex(index, indextype)
         logger.info('Catalog index %s added.' % index)
