@@ -297,7 +297,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This function returns the registered methods in the system as a
         vocabulary.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
                               is_active=True)]
@@ -314,7 +314,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if self.getMethod():
             cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
                                         "operator": "or"}
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in
             bsc(cfilter)]
@@ -363,7 +363,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         query = dict(portal_type="AnalysisService", UID=service_uids,
                      sort_on="sortable_title")
         services = filter(lambda service: api.get_uid(service) not in processed,
-                          api.search(query, "bika_setup_catalog"))
+                          api.search(query, "senaite_catalog_setup"))
 
         # Ref analyses from the same slot must have the same group id
         ref_gid = self.nextRefAnalysesGroupID(reference)
@@ -437,7 +437,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             prefix = reference.id + "-D"
-        bac = getToolByName(reference, 'bika_analysis_catalog')
+        bac = getToolByName(reference, 'senaite_catalog_analysis')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
         rr = re.compile("^" + prefix + "[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]

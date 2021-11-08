@@ -766,7 +766,7 @@ class InstrumentMultifileView(BikaListingView):
     def __init__(self, context, request):
         super(InstrumentMultifileView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "Multifile",
             "path": {
@@ -873,7 +873,7 @@ class ajaxGetInstrumentMethods(BrowserView):
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
             return json.dumps(out)
-        bsc = getToolByName(self, "bika_setup_catalog")
+        bsc = getToolByName(self, "senaite_catalog_setup")
         results = bsc(portal_type="Instrument",
                       UID=self.request.get("uid", "0"))
         instrument = results[0] if results and len(results) == 1 else None

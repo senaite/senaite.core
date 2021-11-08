@@ -559,12 +559,12 @@ class IBikaCatalog(Interface):
 
 
 class IBikaAnalysisCatalog(Interface):
-    """Marker interface for bika_analysis_catalog
+    """Marker interface for senaite_catalog_analysis
     """
 
 
 class IBikaSetupCatalog(Interface):
-    """Marker interface for bika_setup_catalog
+    """Marker interface for senaite_catalog_setup
     """
 
 

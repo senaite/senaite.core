@@ -314,7 +314,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                 return False
 
             query = dict(UID=services, getKeyword=self.getKeyword())
-            services = api.search(query, "bika_setup_catalog")
+            services = api.search(query, "senaite_catalog_setup")
             return len(services) > 0
 
         siblings = self.getSiblings(with_retests=with_retests)

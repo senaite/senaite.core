@@ -215,7 +215,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         if Formula is None:
             self.setDependentServices(None)
             self.getField('Formula').set(self, Formula)
@@ -451,7 +451,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             raise WorkflowException
 
     def workflow_script_deactivate(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be deactivated if active services are using it.
         services = bsc(portal_type="AnalysisService", is_active=True)

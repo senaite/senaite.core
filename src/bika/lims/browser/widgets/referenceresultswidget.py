@@ -38,7 +38,7 @@ class ReferenceResultsView(BikaListingView):
     def __init__(self, context, request, fieldvalue=[], allow_edit=True):
         super(ReferenceResultsView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "is_active": True,

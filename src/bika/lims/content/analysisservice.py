@@ -594,7 +594,7 @@ class AnalysisService(AbstractBaseAnalysis):
         return DisplayList(containers)
 
     def getPreservations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Preservation', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))

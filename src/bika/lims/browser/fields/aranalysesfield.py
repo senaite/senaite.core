@@ -69,7 +69,7 @@ class ARAnalysesField(ObjectField):
         """Returns a list of Analyses assigned to this AR
 
         Return a list of catalog brains unless `full_objects=True` is passed.
-        Other keyword arguments are passed to bika_analysis_catalog
+        Other keyword arguments are passed to senaite_catalog_analysis
 
         :param instance: Analysis Request object
         :param kwargs: Keyword arguments to inject in the search query

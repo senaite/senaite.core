@@ -210,7 +210,7 @@ class Batch(ATFolder, ClientAwareMixin):
     def BatchLabelVocabulary(self):
         """Return all batch labels as a display list
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         ret = []
         for p in bsc(portal_type='BatchLabel',
                      is_active=True,

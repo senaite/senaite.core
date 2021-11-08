@@ -130,7 +130,7 @@ schema = BikaSchema.copy() + Schema((
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
             showOn=True,
-            catalog_name="bika_setup_catalog",
+            catalog_name="senaite_catalog_setup",
             base_query={
                 "sort_on": "sortable_title",
                 "is_active": True,

@@ -230,6 +230,6 @@ class AddAnalysesView(BikaListingView):
         """Return WS Templates
         """
         vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = "bika_setup_catalog"
+        vocabulary.catalog = "senaite_catalog_setup"
         return vocabulary(
             portal_type="WorksheetTemplate", sort_on="sortable_title")

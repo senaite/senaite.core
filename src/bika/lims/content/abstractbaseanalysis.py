@@ -829,7 +829,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getAnalysisCategories(self):
         """A vocabulary listing available (and activated) categories.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()

@@ -97,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "
                           "selected, then all sample types are available."),
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},

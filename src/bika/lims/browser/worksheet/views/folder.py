@@ -371,7 +371,7 @@ class FolderView(BikaListingView):
             "portal_type": "WorksheetTemplate",
             "is_active": True,
         }
-        return api.search(query, "bika_setup_catalog")
+        return api.search(query, "senaite_catalog_setup")
 
     def _get_instruments_brains(self):
         """Returns all active Instruments
@@ -382,4 +382,4 @@ class FolderView(BikaListingView):
             "portal_type": "Instrument",
             "is_active": True
         }
-        return api.search(query, "bika_setup_catalog")
+        return api.search(query, "senaite_catalog_setup")

@@ -170,7 +170,7 @@ class AnalysisServicesView(BikaListingView):
 
         self.an_cats = None
         self.an_cats_order = None
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
 
         self.contentFilter = {
             "portal_type": "AnalysisService",
@@ -415,7 +415,7 @@ class AnalysisServicesView(BikaListingView):
     def folderitems(self):
         """Sort by Categories
         """
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         self.an_cats = bsc(
             portal_type="AnalysisCategory",
             sort_on="sortable_title")

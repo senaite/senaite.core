@@ -84,8 +84,8 @@ class barcode_entry(BrowserView):
         ar_catalog = getToolByName(
             self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         catalogs = [
-            self.bika_catalog,
-            self.bika_setup_catalog,
+            self.senaite_catalog,
+            self.senaite_catalog_setup,
             ar_catalog,
         ]
         for catalog in catalogs:

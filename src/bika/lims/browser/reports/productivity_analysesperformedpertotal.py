@@ -55,7 +55,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        analyses = self.bika_analysis_catalog(self.contentFilter)
+        analyses = self.senaite_catalog_analysis(self.contentFilter)
         if not analyses:
             message = _("No analyses matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")

@@ -79,7 +79,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Instrument type"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -96,7 +96,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Manufacturer"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -113,7 +113,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Supplier"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -289,7 +289,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             label=_("Instrument Location"),
             description=_("The room and location where the instrument is installed"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -399,7 +399,7 @@ class Instrument(ATFolder):
             One method can be done by multiple instruments, but one
             instrument can only be used in one method.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
                               is_active=True)]
@@ -612,8 +612,8 @@ class Instrument(ATFolder):
         # TODO Workflow - Analyses. Assignment of refanalysis to Instrument
         addedanalyses = []
         wf = getToolByName(self, 'portal_workflow')
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        bac = getToolByName(self, 'bika_analysis_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
+        bac = getToolByName(self, 'senaite_catalog_analysis')
         ref_type = reference.getBlank() and 'b' or 'c'
         ref_uid = reference.UID()
         postfix = 1

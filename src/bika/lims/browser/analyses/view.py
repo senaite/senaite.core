@@ -66,7 +66,7 @@ class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
 
     Visible InterimFields from all analyses are added to self.columns[].
-    Keyword arguments are passed directly to bika_analysis_catalog.
+    Keyword arguments are passed directly to senaite_catalog_analysis.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -509,7 +509,7 @@ class AnalysesView(ListingView):
 
     def load_analysis_categories(self):
         # Getting analysis categories
-        bsc = api.get_tool('bika_setup_catalog')
+        bsc = api.get_tool('senaite_catalog_setup')
         analysis_categories = bsc(portal_type="AnalysisCategory",
                                   sort_on="sortable_title")
         # Sorting analysis categories
