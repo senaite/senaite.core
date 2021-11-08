@@ -85,54 +85,6 @@ CONTENTS_TO_DELETE = (
     "events",
 )
 
-CATALOG_MAPPINGS = (
-    # portal_type, catalog_ids
-    ("ARTemplate", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisCategory", ["senaite_catalog_setup"]),
-    ("AnalysisProfile", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisService", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisSpec", ["senaite_catalog_setup"]),
-    ("Attachment", ["portal_catalog"]),
-    ("AttachmentType", ["senaite_catalog_setup"]),
-    ("Batch", ["bika_catalog", "portal_catalog"]),
-    ("BatchLabel", ["senaite_catalog_setup"]),
-    ("Calculation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Container", ["senaite_catalog_setup"]),
-    ("ContainerType", ["senaite_catalog_setup"]),
-    ("Department", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Instrument", ["senaite_catalog_setup", "portal_catalog"]),
-    ("InstrumentLocation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("InstrumentType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("LabContact", ["senaite_catalog_setup", "portal_catalog"]),
-    ("LabProduct", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Manufacturer", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Method", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Multifile", ["senaite_catalog_setup"]),
-    ("Preservation", ["senaite_catalog_setup"]),
-    ("ReferenceDefinition", ["senaite_catalog_setup", "portal_catalog"]),
-    ("ReferenceSample", ["bika_catalog", "portal_catalog"]),
-    ("SampleCondition", ["senaite_catalog_setup"]),
-    ("SampleMatrix", ["senaite_catalog_setup"]),
-    ("SamplePoint", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SampleType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SamplingDeviation", ["senaite_catalog_setup"]),
-    ("StorageLocation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SubGroup", ["senaite_catalog_setup"]),
-    ("Supplier", ["senaite_catalog_setup", "portal_catalog"]),
-    ("WorksheetTemplate", ["senaite_catalog_setup", "portal_catalog"]),
-)
-
-INDEXES = (
-    # catalog, id, indexed attribute, type
-    ("portal_catalog", "Analyst", "", "FieldIndex"),
-    ("portal_catalog", "sample_uid", "", "KeywordIndex"),
-)
-
-COLUMNS = (
-    # catalog, column name
-    ("portal_catalog", "Analyst"),
-)
-
 ALLOWED_STYLES = [
     "color",
     "background-color"
@@ -223,16 +175,6 @@ def setup_groups(portal):
                 roles=gdata["roles"],)
             logger.info("+++ Granted group {title} ({id}) the roles {roles}"
                         .format(**gdata))
-
-
-def setup_catalog_mappings(portal):
-    """Setup portal_type -> catalog mappings
-    """
-    logger.info("*** Setup Catalog Mappings ***")
-
-    at = api.get_tool("archetype_tool")
-    for portal_type, catalogs in CATALOG_MAPPINGS:
-        at.setCatalogsByType(portal_type, catalogs)
 
 
 def setup_form_controller_actions(portal):
