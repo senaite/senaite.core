@@ -224,7 +224,7 @@ def setup_catalogs(portal, reindex=True):
                 continue
             # create the index
             catalog.addIndex(idx_id, idx_type)
-            add_index(catalog, idx_id, idx_type, attr=idx_attr)
+            add_index(catalog, idx_id, idx_type, indexed_attrs=idx_attr)
             to_reindex.append((catalog, idx_id))
             logger.info("*** Added %s '%s' for catalog '%s' [DONE]"
                         % (idx_type, idx_id, catalog_id))

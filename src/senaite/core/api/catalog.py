@@ -58,7 +58,7 @@ def get_columns(catalog):
     return catalog.schema()
 
 
-def add_index(catalog, index, index_type, attr=None):
+def add_index(catalog, index, index_type, indexed_attrs=None):
     """Add an index to the catalog
 
     :param catalog: Catalog object
@@ -72,6 +72,12 @@ def add_index(catalog, index, index_type, attr=None):
     if index_type == "ZCTextIndex":
         return add_zc_text_index(catalog, index)
     catalog.addIndex(index, index_type)
+    # set indexed attribute
+    if indexed_attrs and hasattr(index, "indexed_attrs"):
+        index_obj = get_index(index)
+        if not isinstance(indexed_attrs, list):
+            indexed_attrs = [indexed_attrs]
+        index_obj.indexed_attrs = indexed_attrs
     return True
 
 
