@@ -126,6 +126,42 @@ COLUMNS = (
     ("portal_catalog", "Analyst"),
 )
 
+CATALOG_MAPPINGS = (
+    # portal_type, catalog_ids
+    ("ARTemplate", ["senaite_catalog_setup"]),
+    ("AnalysisCategory", ["senaite_catalog_setup"]),
+    ("AnalysisProfile", ["senaite_catalog_setup"]),
+    ("AnalysisService", ["senaite_catalog_setup"]),
+    ("AnalysisSpec", ["senaite_catalog_setup"]),
+    ("Attachment", ["senaite_catalog"]),
+    ("AttachmentType", ["senaite_catalog_setup"]),
+    ("Batch", ["senaite_catalog"]),
+    ("BatchLabel", ["senaite_catalog_setup"]),
+    ("Calculation", ["senaite_catalog_setup"]),
+    ("Container", ["senaite_catalog_setup"]),
+    ("ContainerType", ["senaite_catalog_setup"]),
+    ("Department", ["senaite_catalog_setup"]),
+    ("Instrument", ["senaite_catalog_setup"]),
+    ("InstrumentType", ["senaite_catalog_setup"]),
+    ("LabContact", ["senaite_catalog_setup"]),
+    ("LabProduct", ["senaite_catalog_setup"]),
+    ("Manufacturer", ["senaite_catalog_setup"]),
+    ("Method", ["senaite_catalog_setup"]),
+    ("Multifile", ["senaite_catalog_setup"]),
+    ("Preservation", ["senaite_catalog_setup"]),
+    ("ReferenceDefinition", ["senaite_catalog_setup"]),
+    ("ReferenceSample", ["senaite_catalog"]),
+    ("SampleCondition", ["senaite_catalog_setup"]),
+    ("SampleMatrix", ["senaite_catalog_setup"]),
+    ("SamplePoint", ["senaite_catalog_setup"]),
+    ("SampleType", ["senaite_catalog_setup"]),
+    ("SamplingDeviation", ["senaite_catalog_setup"]),
+    ("StorageLocation", ["senaite_catalog_setup"]),
+    ("SubGroup", ["senaite_catalog_setup"]),
+    ("Supplier", ["senaite_catalog_setup"]),
+    ("WorksheetTemplate", ["senaite_catalog_setup"]),
+)
+
 
 def install(context):
     """Install handler
@@ -158,6 +194,7 @@ def install(context):
     # setup catalogs
     setup_catalogs(portal)
     setup_catalog_mappings(portal)
+    setup_auditlog_catalog_mappings(portal)
     setup_content_structure(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
@@ -170,24 +207,6 @@ def install(context):
     setup_markup_schema(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
-
-
-def setup_catalog_mappings(portal):
-    """Map catalogs to types in archetype tool
-    """
-    at = api.get_tool("archetype_tool")
-    pt = api.get_tool("portal_types")
-
-    # map all known types to the auditlog catalog
-    auditlog_catalog = api.get_tool(AUDITLOG_CATALOG)
-    for portal_type in pt.listContentTypes():
-        catalogs = at.getCatalogsByType(portal_type)
-        if auditlog_catalog not in catalogs:
-            existing_catalogs = list(map(lambda c: c.getId(), catalogs))
-            new_catalogs = existing_catalogs + [AUDITLOG_CATALOG]
-            at.setCatalogsByType(portal_type, new_catalogs)
-            logger.info("*** Adding catalog '{}' for '{}'".format(
-                AUDITLOG_CATALOG, portal_type))
 
 
 def setup_catalogs(portal, reindex=True):
@@ -244,7 +263,7 @@ def setup_catalogs(portal, reindex=True):
             logger.info("*** Skipping reindex of new indexes")
             return
 
-        # catalog types
+        # map allowed types to this catalog in archetype_tool
         for portal_type in catalog_types:
             # check existing catalogs
             catalogs = at.getCatalogsByType(portal_type)
@@ -262,6 +281,35 @@ def setup_catalogs(portal, reindex=True):
         reindex_index(catalog, idx_id)
         logger.info("*** Indexing new index '%s' in '%s' [DONE]"
                     % (idx_id, catalog_id))
+
+
+def setup_catalog_mappings(portal):
+    """Setup portal_type -> catalog mappings
+    """
+    logger.info("*** Setup Catalog Mappings ***")
+
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in CATALOG_MAPPINGS:
+        at.setCatalogsByType(portal_type, catalogs)
+
+
+def setup_auditlog_catalog_mappings(portal):
+    """Map auditlog catalog to all AT content types
+    """
+    at = api.get_tool("archetype_tool")
+    pt = api.get_tool("portal_types")
+    portal_types = pt.listContentTypes()
+
+    # map all known types to the auditlog catalog
+    auditlog_catalog = api.get_tool(AUDITLOG_CATALOG)
+    for portal_type in portal_types:
+        catalogs = at.getCatalogsByType(portal_type)
+        if auditlog_catalog not in catalogs:
+            existing_catalogs = list(map(lambda c: c.getId(), catalogs))
+            new_catalogs = existing_catalogs + [AUDITLOG_CATALOG]
+            at.setCatalogsByType(portal_type, new_catalogs)
+            logger.info("*** Adding catalog '{}' for '{}'".format(
+                AUDITLOG_CATALOG, portal_type))
 
 
 def remove_default_content(portal):
