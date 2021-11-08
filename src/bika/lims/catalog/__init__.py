@@ -26,8 +26,8 @@ from senaite.core.catalog import AUTOIMPORTLOG_CATALOG as CATALOG_AUTOIMPORTLOGS
 from senaite.core.catalog import SENAITE_CATALOG as BIKA_CATALOG  # noqa
 from senaite.core.catalog import WORKSHEET_CATALOG as CATALOG_WORKSHEET_LISTING  # noqa
 from senaite.core.catalog import REPORT_CATALOG as CATALOG_REPORT_LISTING  # noqa
-from senaite.core.catlog import SETUP_CATALOG  # noqa
-from senaite.core.catlog import SETUP_CATALOG as CATALOG_SETUP # noqa
+from senaite.core.catalog import SETUP_CATALOG  # noqa
+from senaite.core.catalog import SETUP_CATALOG as CATALOG_SETUP # noqa
 
 # Catalog classes
 from .auditlog_catalog import AuditLogCatalog  # noqa
@@ -38,8 +38,3 @@ from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing  # noqa
 from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing  # noqa
 from .worksheet_catalog import BikaCatalogWorksheetListing  # noqa
 from .report_catalog import BikaCatalogReport  # noqa
-
-# Catalog public functions
-from .catalog_utilities import getCatalogDefinitions  # noqa
-from .catalog_utilities import setup_catalogs  # noqa
-from .catalog_utilities import getCatalog  # noqa
