@@ -78,3 +78,17 @@ def get_metadata_for(instance, catalog):
                 attr = attr()
             metadata[key] = attr
         return metadata
+
+
+def sortable_sortkey_title(instance):
+    """Returns a sortable title as a mxin of sortkey + lowercase sortable_title
+    """
+    title = sortable_title(instance)
+    if safe_callable(title):
+        title = title()
+
+    sort_key = instance.getSortKey()
+    if sort_key is None:
+        sort_key = 999999
+
+    return "{:010.3f}{}".format(sort_key, title)
