@@ -23,7 +23,6 @@ from bika.lims import api
 from bika.lims.setuphandlers import add_dexterity_portal_items
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
-from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
 from plone.registry.interfaces import IRegistry
@@ -145,11 +144,6 @@ def install(context):
     _run_import_step(portal, "workflow", "profile-senaite.core:default")
     _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
 
-    # setup catalogs
-    setup_catalogs(portal)
-    # register catalog mappings in archetype_tool
-    setup_catalog_mappings(portal)
-
     # skip installers if already installed
     qi = get_installer(portal)
     profiles = ["bika.lims", "senaite.core"]
@@ -160,7 +154,9 @@ def install(context):
     # Run Installers
     setup_groups(portal)
     remove_default_content(portal)
-    setup_core_catalogs(portal)
+    # setup catalogs
+    setup_catalogs(portal)
+    setup_catalog_mappings(portal)
     setup_content_structure(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
