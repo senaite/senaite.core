@@ -3,8 +3,9 @@
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IListingSearchableTextProvider
+from Products.CMFPlone.CatalogTool import \
+    sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
-from senaite.core.catalog.indexer.generic import sortable_title
 from zope.component import getAdapters
 
 
@@ -80,6 +81,15 @@ def get_metadata_for(instance, catalog):
                 attr = attr()
             metadata[key] = attr
         return metadata
+
+
+def sortable_title(instance):
+    """Uses the default Plone sortable_text index lower-case
+    """
+    title = plone_sortable_title(instance)
+    if safe_callable(title):
+        title = title()
+    return title.lower()
 
 
 def sortable_sortkey_title(instance):
