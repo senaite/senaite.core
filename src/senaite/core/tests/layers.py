@@ -54,6 +54,7 @@ class BaseLayer(PloneSandboxLayer):
         self.loadZCML(package=senaite.lims)
 
         # Install product and call its initialize() function
+        zope.installProduct(app, "bika.lims")
         zope.installProduct(app, "senaite.core")
         zope.installProduct(app, "senaite.app.listing")
         zope.installProduct(app, "senaite.app.spotlight")
