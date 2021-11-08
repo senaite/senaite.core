@@ -145,11 +145,11 @@ def install(context):
     _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
 
     # skip installers if already installed
-    qi = get_installer(portal)
-    profiles = ["bika.lims", "senaite.core"]
-    if any(map(lambda p: qi.is_product_installed(p), profiles)):
-        logger.info("SENAITE CORE already installed [SKIP]")
-        return
+    #qi = get_installer(portal)
+    #profiles = ["bika.lims", "senaite.core"]
+    #if any(map(lambda p: qi.is_product_installed(p), profiles)):
+    #    logger.info("SENAITE CORE already installed [SKIP]")
+    #    return
 
     # Run Installers
     setup_groups(portal)
