@@ -48,4 +48,7 @@
   <adapter name="sampletype_title" factory=".senaitesetup.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".senaitesetup.sampletype_uid"/>
 
+  <!-- Contact Indexer -->
+  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+
 </configure>
