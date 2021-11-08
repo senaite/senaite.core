@@ -25,4 +25,7 @@
   <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>
   <adapter name="snapshot_version" factory=".auditlog.snapshot_version"/>
 
+  <!-- BaseAnalysis Indexer -->
+  <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
+
 </configure>
