@@ -81,7 +81,7 @@ def Import(context, request):
 
 
 def is_keyword(kw):
-    bsc = api.get_tool('bika_setup_catalog')
+    bsc = api.get_tool('senaite_catalog_setup')
     return len(bsc(getKeyword=kw))
 
 

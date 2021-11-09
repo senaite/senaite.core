@@ -358,7 +358,7 @@ class AnalysisResultsImporter(Logger):
         self._override = override
         self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
-        self.bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
         self.bac = getToolByName(self.context, 'bika_analysis_catalog')
         self.ar_catalog = getToolByName(
             self.context, CATALOG_ANALYSIS_REQUEST_LISTING)

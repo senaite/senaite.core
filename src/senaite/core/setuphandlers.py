@@ -192,7 +192,7 @@ def install(context):
     setup_groups(portal)
     remove_default_content(portal)
     # setup catalogs
-    setup_catalogs(portal)
+    setup_core_catalogs(portal)
     setup_catalog_mappings(portal)
     setup_auditlog_catalog_mappings(portal)
     setup_content_structure(portal)
@@ -209,7 +209,7 @@ def install(context):
     logger.info("SENAITE CORE install handler [DONE]")
 
 
-def setup_catalogs(portal, reindex=True):
+def setup_core_catalogs(portal, reindex=True):
     """Setup core catalogs
     """
     logger.info("*** Setup catalogs ***")

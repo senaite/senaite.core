@@ -711,7 +711,7 @@ class window.AnalysisServiceEditView
     options =
       url: @get_portal_url() + "/@@API/read"
       data:
-        catalog_name: "bika_setup_catalog"
+        catalog_name: "senaite_catalog_setup"
         page_size: 0
         portal_type: "Instrument"
 
@@ -810,7 +810,7 @@ class window.AnalysisServiceEditView
     options =
       url: @get_portal_url() + "/@@API/read"
       data:
-        catalog_name: "bika_setup_catalog"
+        catalog_name: "senaite_catalog_setup"
         page_size: 0
         UID: calculation_uid
         is_active: true

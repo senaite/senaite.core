@@ -132,8 +132,8 @@ class LoadSetupData(BrowserView):
                     len(self.deferred), self.deferred))
             check = new
 
-        logger.info("Rebuilding bika_setup_catalog")
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        logger.info("Rebuilding senaite_catalog_setup")
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         bsc.clearFindAndRebuild()
         logger.info("Rebuilding bika_catalog")
         bc = getToolByName(self.context, 'bika_catalog')

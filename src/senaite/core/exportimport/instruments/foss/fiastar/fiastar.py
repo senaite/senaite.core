@@ -49,7 +49,7 @@ class Export(BrowserView):
     def __call__(self, analyses):
         tray = 1
         now = DateTime().strftime('%Y%m%d-%H%M')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         uc = getToolByName(self.context, 'uid_catalog')
         instrument = self.context.getInstrument()
         norm = getUtility(IIDNormalizer).normalize
