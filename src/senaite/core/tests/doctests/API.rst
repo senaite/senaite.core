@@ -1138,12 +1138,9 @@ Try now with a valid contact::
     >>> api.get_user_client(contact1)
     <Client at /plone/clients/client-1>
 
-    >>> api.get_user_client(client_user)
-    <Client at /plone/clients/client-1>
+Unset the user again
 
-Unlink the user again:
-
-    >>> contact1.unlinkUser()
+    >>> contact1.unlinkUser(client_user)
     True
 
 
@@ -1152,18 +1149,17 @@ Creating a Cache Key
 
 This function creates a good cache key for a generic object or brain::
 
-    >>> client2 = api.create(portal.clients, "Client", title="Test Client 2")
-    >>> key1 = api.get_cache_key(client2)
+    >>> key1 = api.get_cache_key(client)
     >>> key1
-    'Client-client-2-...'
+    'Client-client-1-...'
 
 This can be also done for a catalog result brain::
 
     >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client2)})
+    >>> brains = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
     >>> key2 = api.get_cache_key(brains[0])
     >>> key2
-    'Client-client-2-...'
+    'Client-client-1-...'
 
 The two keys should be equal::
 
@@ -1172,9 +1168,9 @@ The two keys should be equal::
 
 The key should change when the object get modified::
 
-    >>> client2.setClientID("TESTCLIENT 2")
-    >>> client2.processForm()
-    >>> key3 = api.get_cache_key(client2)
+    >>> client.setClientID("TESTCLIENT")
+    >>> client.processForm()
+    >>> key3 = api.get_cache_key(client)
     >>> key3 != key1
     True
 
@@ -1183,10 +1179,10 @@ A custom event subscriber will update it therefore.
 
 A workflow transition should also change the cache key::
 
-    >>> _ = api.do_transition_for(client2, transition="deactivate")
-    >>> api.is_active(client2)
+    >>> _ = api.do_transition_for(client, transition="deactivate")
+    >>> api.is_active(client)
     False
-    >>> key4 = api.get_cache_key(client2)
+    >>> key4 = api.get_cache_key(client)
     >>> key4 != key3
     True
 

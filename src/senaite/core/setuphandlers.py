@@ -106,16 +106,16 @@ CATALOGS = (
 INDEXES = (
     # catalog, id, indexed attribute, type
     ("portal_catalog", "Analyst", "", "FieldIndex"),
-    ("portal_catalog", "sample_uid", "", "KeywordIndex"),
     ("portal_catalog", "analysisRequestTemplates", "", "FieldIndex"),
-    ("portal_catalog", "is_active", "", "BooleanIndex"),
-    ("portal_catalog", "review_state", "", "FieldIndex"),
+    ("portal_catalog", "getFullname", "", "FieldIndex"),
     ("portal_catalog", "getName", "", "FieldIndex"),
     ("portal_catalog", "getParentUID", "", "FieldIndex"),
-    ("portal_catalog", "getFullname", "", "FieldIndex"),
     ("portal_catalog", "getUsername", "", "FieldIndex"),
-    ("portal_catalog", "title", "", "FieldIndex"),
+    ("portal_catalog", "is_active", "", "BooleanIndex"),
     ("portal_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
+    ("portal_catalog", "review_state", "", "FieldIndex"),
+    ("portal_catalog", "sample_uid", "", "KeywordIndex"),
+    ("portal_catalog", "title", "", "FieldIndex"),
 )
 
 COLUMNS = (
@@ -193,6 +193,7 @@ def install(context):
     remove_default_content(portal)
     # setup catalogs
     setup_core_catalogs(portal)
+    setup_other_catalogs(portal)
     setup_catalog_mappings(portal)
     setup_auditlog_catalog_mappings(portal)
     setup_content_structure(portal)
@@ -212,7 +213,7 @@ def install(context):
 def setup_core_catalogs(portal, reindex=True):
     """Setup core catalogs
     """
-    logger.info("*** Setup catalogs ***")
+    logger.info("*** Setup core catalogs ***")
     at = api.get_tool("archetype_tool")
 
     for cls in CATALOGS:
@@ -232,31 +233,20 @@ def setup_core_catalogs(portal, reindex=True):
 
         # contains tuples of (catalog, index) pairs
         to_reindex = []
+        refresh_catalog = False
 
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
-            indexes = get_indexes(catalog)
-            # check if the index exists
-            if idx_id in indexes:
-                logger.info("*** %s '%s' already in catalog '%s' [SKIP]"
-                            % (idx_type, idx_id, catalog_id))
+            if add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+                to_reindex.append((catalog, idx_id))
+            else:
                 continue
-            # create the index
-            add_index(catalog, idx_id, idx_type, indexed_attrs=idx_attr)
-            to_reindex.append((catalog, idx_id))
-            logger.info("*** Added %s '%s' for catalog '%s' [DONE]"
-                        % (idx_type, idx_id, catalog_id))
 
         # catalog columns
         for column in catalog_columns:
-            columns = get_columns(catalog)
-            if column not in columns:
-                add_column(catalog, column)
-                logger.info("*** Added column '%s' to catalog '%s' [DONE]"
-                            % (column, catalog_id))
+            if add_catalog_column(catalog, column):
+                refresh_catalog = True
             else:
-                logger.info("*** Column '%s' already in catalog '%s'  [SKIP]"
-                            % (column, catalog_id))
                 continue
 
         if not reindex:
@@ -274,13 +264,80 @@ def setup_core_catalogs(portal, reindex=True):
                 logger.info("*** Mapped catalog '%s' for type '%s'"
                             % (catalog_id, portal_type))
 
+    # reindex new indexes
     for catalog, idx_id in to_reindex:
-        catalog_id = catalog.id
-        logger.info("*** Indexing new index '%s' in '%s' ..."
-                    % (idx_id, catalog_id))
-        reindex_index(catalog, idx_id)
-        logger.info("*** Indexing new index '%s' in '%s' [DONE]"
-                    % (idx_id, catalog_id))
+        reindex_catalog_index(catalog, idx_id)
+
+    # refresh
+    if refresh_catalog:
+        catalog.refreshCatalog()
+
+
+def setup_other_catalogs(portal, reindex=True):
+    logger.info("*** Setup other catalogs ***")
+
+    # contains tuples of (catalog, index) pairs
+    to_reindex = []
+    refresh_catalog = False
+
+    # catalog indexes
+    for catalog, idx_id, idx_attr, idx_type in INDEXES:
+        catalog = api.get_tool(catalog)
+        if add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+            to_reindex.append((catalog, idx_id))
+        else:
+            continue
+
+    # catalog columns
+    for catalog, column in COLUMNS:
+        catalog = api.get_tool(catalog)
+        if add_catalog_column(catalog, column):
+            refresh_catalog = True
+        else:
+            continue
+
+    # reindex new indexes
+    for catalog, idx_id in to_reindex:
+        reindex_catalog_index(catalog, idx_id)
+
+    # refresh
+    if refresh_catalog:
+        catalog.refreshCatalog()
+
+
+def reindex_catalog_index(catalog, index):
+    catalog_id = catalog.id
+    logger.info("*** Indexing new index '%s' in '%s' ..."
+                % (index, catalog_id))
+    reindex_index(catalog, index)
+    logger.info("*** Indexing new index '%s' in '%s' [DONE]"
+                % (index, catalog_id))
+
+
+def add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+    indexes = get_indexes(catalog)
+    # check if the index exists
+    if idx_id in indexes:
+        logger.info("*** %s '%s' already in catalog '%s'"
+                    % (idx_type, idx_id, catalog.id))
+        return False
+    # create the index
+    add_index(catalog, idx_id, idx_type, indexed_attrs=idx_attr)
+    logger.info("*** Added %s '%s' for catalog '%s'"
+                % (idx_type, idx_id, catalog.id))
+    return True
+
+
+def add_catalog_column(catalog, column):
+    columns = get_columns(catalog)
+    if column in columns:
+        logger.info("*** Column '%s' already in catalog '%s'"
+                    % (column, catalog.id))
+        return False
+    add_column(catalog, column)
+    logger.info("*** Added column '%s' to catalog '%s'"
+                % (column, catalog.id))
+    return True
 
 
 def setup_catalog_mappings(portal):
