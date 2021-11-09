@@ -233,7 +233,6 @@ def setup_core_catalogs(portal, reindex=True):
 
         # contains tuples of (catalog, index) pairs
         to_reindex = []
-        refresh_catalog = False
 
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
@@ -244,10 +243,7 @@ def setup_core_catalogs(portal, reindex=True):
 
         # catalog columns
         for column in catalog_columns:
-            if add_catalog_column(catalog, column):
-                refresh_catalog = True
-            else:
-                continue
+            add_catalog_column(catalog, column)
 
         if not reindex:
             logger.info("*** Skipping reindex of new indexes")
@@ -267,10 +263,6 @@ def setup_core_catalogs(portal, reindex=True):
     # reindex new indexes
     for catalog, idx_id in to_reindex:
         reindex_catalog_index(catalog, idx_id)
-
-    # refresh
-    if refresh_catalog:
-        catalog.refreshCatalog()
 
 
 def setup_other_catalogs(portal, reindex=True):

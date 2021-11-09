@@ -53,10 +53,10 @@ def upgrade(tool):
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
-    # if ut.isOlderVersion(product, version):
-    #     logger.info("Skipping upgrade of {0}: {1} > {2}".format(
-    #         product, ver_from, version))
-    #     return True
+    if ut.isOlderVersion(product, version):
+        logger.info("Skipping upgrade of {0}: {1} > {2}".format(
+            product, ver_from, version))
+        return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
@@ -139,9 +139,7 @@ def migrate_catalogs(portal):
         dst_cat._catalog.paths = src_cat._catalog.paths
         dst_cat._catalog._length = src_cat._catalog._length
 
-        # dst_cat.refreshCatalog()
-
         # delete old catalog
-        # portal.manage_delObjects([src_cat_id])
+        portal.manage_delObjects([src_cat_id])
 
     logger.info("Migrate catalogs to Senaite [DONE]")
