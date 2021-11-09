@@ -359,11 +359,11 @@ class AnalysisResultsImporter(Logger):
         self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
         self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        self.bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.bac = getToolByName(self.context, 'senaite_catalog_analysis')
         self.ar_catalog = getToolByName(
             self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         self.pc = getToolByName(self.context, 'portal_catalog')
-        self.bc = getToolByName(self.context, 'bika_catalog')
+        self.bc = getToolByName(self.context, 'senaite_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
         if not self._allowed_ar_states:
             self._allowed_ar_states = ['sample_received',

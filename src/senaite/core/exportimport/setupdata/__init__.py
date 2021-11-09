@@ -2214,7 +2214,7 @@ class Analysis_Requests(WorksheetImporter):
                 return
             self.analyses_worksheet = worksheet
         bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        bc = getToolByName(self.context, 'bika_catalog')
+        bc = getToolByName(self.context, 'senaite_catalog')
         for row in self.get_rows(3, worksheet=self.analyses_worksheet):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
@@ -2262,7 +2262,7 @@ class Analysis_Requests(WorksheetImporter):
         analysis.setInterimFields(interims)
 
     def Import(self):
-        bc = getToolByName(self.context, 'bika_catalog')
+        bc = getToolByName(self.context, 'senaite_catalog')
         bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):

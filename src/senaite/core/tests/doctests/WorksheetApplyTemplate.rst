@@ -462,7 +462,7 @@ as the rest of the slots:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
@@ -583,7 +583,7 @@ While none of the analyses from new samples have been added:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
@@ -686,7 +686,7 @@ Create a Worksheet Template and assign the instrument:
 Reject any previous analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 Create and receive 2 samples:
@@ -726,7 +726,7 @@ Unassign instrument from `Cu` service:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
@@ -800,5 +800,5 @@ Unassign method from `Cu` service:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
