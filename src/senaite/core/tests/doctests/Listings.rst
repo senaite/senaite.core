@@ -124,9 +124,9 @@ Listing View
 
 Setup the view to behave like the `SamplesView`:
 
-    >>> from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
 
-    >>> listing.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+    >>> listing.catalog = SAMPLE_CATALOG
     >>> listing.contentFilter = {
     ...     'sort_on': 'created',
     ...     'sort_order': 'reverse',
@@ -148,7 +148,7 @@ Searching for a value should work:
     >>> map(lambda x: x.getObject().getSampleType().getPrefix(), results)
     ['s1', 's1', 's1']
 
-    >>> results = listing.search(searchterm="client-3")
+    >>> results = listing.search(searchterm="C3")
     >>> map(lambda x: x.getObject().getClient(), results)
     [<Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>]
 
