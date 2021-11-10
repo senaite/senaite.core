@@ -131,7 +131,6 @@ def migrate_catalogs(portal):
         dst_cat._catalog.data = src_cat._catalog.data
         dst_cat._catalog.uids = src_cat._catalog.uids
         dst_cat._catalog.paths = src_cat._catalog.paths
-        dst_cat._catalog._length = src_cat._catalog._length
 
         # refesh the catalog
         pghandler = ZLogHandler(100)
