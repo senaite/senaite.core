@@ -112,6 +112,11 @@ def migrate_catalogs(portal):
             if index not in get_indexes(dst_cat):
                 index_obj = get_index(src_cat, index)
                 index_type = index_obj.__class__.__name__
+                # skip TextIndexNG3
+                if index_type == "TextIndexNG3":
+                    logger.info("Skipping %s('%s') for %s"
+                                % (index_type, index, dst_cat_id))
+                    continue
                 add_index(dst_cat, index, index_type)
                 logger.info("Added missing index %s('%s') to %s"
                             % (index_type, index, dst_cat_id))
