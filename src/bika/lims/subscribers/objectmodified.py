@@ -18,11 +18,10 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-
 from bika.lims import api
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_SETUP
+from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CATALOG_SETUP
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -72,7 +71,7 @@ def ObjectModifiedEventHandler(obj, event):
 
         # re-index analyses
         query = dict(getCategoryUID=obj.UID())
-        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        brains = api.search(query, ANALYSIS_CATALOG)
         for brain in brains:
             obj = api.get_object(brain)
             obj.reindexObject(idxs=['getCategoryTitle'])

@@ -28,7 +28,6 @@ from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
@@ -64,6 +63,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
@@ -865,7 +865,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         if not analyses:
             return
 
@@ -1526,7 +1526,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         steps = 0
         query = dict(getWorksheetUID=api.get_uid(self))
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         max_steps = len(analyses) * 2
         for analysis in analyses:
             an_state = analysis.review_state

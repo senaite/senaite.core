@@ -24,7 +24,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
@@ -35,6 +34,7 @@ from DateTime import DateTime
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import ANALYSIS_CATALOG
 
 
 class AddAnalysesView(BikaListingView):
@@ -45,7 +45,7 @@ class AddAnalysesView(BikaListingView):
     def __init__(self, context, request):
         super(AddAnalysesView, self).__init__(context, request)
 
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
 
         self.contentFilter = {
             "portal_type": "Analysis",

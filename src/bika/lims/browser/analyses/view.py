@@ -30,8 +30,6 @@ from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.api.analysis import is_result_range_compliant
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
@@ -58,6 +56,8 @@ from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -81,7 +81,7 @@ class AnalysesView(ListingView):
         })
 
         # set the listing view config
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
         self.sort_order = "ascending"
         self.context_actions = {}
 
