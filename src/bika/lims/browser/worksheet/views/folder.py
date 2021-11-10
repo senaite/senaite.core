@@ -24,16 +24,17 @@ import json
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.utils import get_display_list, get_progress_bar_html
+from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
+from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from bika.lims.utils import user_fullname
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import WORKSHEET_CATALOG
 
 
 class FolderView(BikaListingView):
@@ -44,7 +45,7 @@ class FolderView(BikaListingView):
     def __init__(self, context, request):
         super(FolderView, self).__init__(context, request)
 
-        self.catalog = CATALOG_WORKSHEET_LISTING
+        self.catalog = WORKSHEET_CATALOG
         self.contentFilter = {
             "review_state": ["open", "to_be_verified", "verified", "rejected"],
             "sort_on": "created",

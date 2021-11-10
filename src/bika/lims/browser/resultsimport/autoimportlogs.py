@@ -20,11 +20,11 @@
 
 from collections import OrderedDict
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
-from bika.lims import api
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
 
 
 class AutoImportLogsView(ListingView):
@@ -32,7 +32,7 @@ class AutoImportLogsView(ListingView):
     """
     def __init__(self, context, request):
         super(AutoImportLogsView, self).__init__(context, request)
-        self.catalog = CATALOG_AUTOIMPORTLOGS_LISTING
+        self.catalog = AUTOIMPORTLOG_CATALOG
         self.contentFilter = {
             "portal_type": "AutoImportLog",
             "sort_on": "created",
