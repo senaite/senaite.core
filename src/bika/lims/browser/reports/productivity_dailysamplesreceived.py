@@ -18,14 +18,13 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
 
 
@@ -58,7 +57,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        ars = api.search(self.contentFilter, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ars = api.search(self.contentFilter, SAMPLE_CATALOG)
         if not ars:
             message = _("No Samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")

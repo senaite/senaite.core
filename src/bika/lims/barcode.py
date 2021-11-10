@@ -24,9 +24,9 @@ import plone.protect
 from bika.lims import api
 from bika.lims import workflow as wf
 from bika.lims.browser import BrowserView
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import SAMPLE_CATALOG
 
 
 class barcode_entry(BrowserView):
@@ -81,8 +81,7 @@ class barcode_entry(BrowserView):
         return entry
 
     def resolve_item(self, entry):
-        ar_catalog = getToolByName(
-            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
         catalogs = [
             self.senaite_catalog,
             self.senaite_catalog_setup,
