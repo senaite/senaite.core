@@ -25,11 +25,11 @@ import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
 
 
@@ -360,8 +360,7 @@ class AnalysisResultsImporter(Logger):
         self._priorizedsearchcriteria = ''
         self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
         self.bac = getToolByName(self.context, 'senaite_catalog_analysis')
-        self.ar_catalog = getToolByName(
-            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        self.ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
         self.pc = getToolByName(self.context, 'portal_catalog')
         self.bc = getToolByName(self.context, 'senaite_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
