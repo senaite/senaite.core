@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
@@ -124,13 +125,6 @@ def migrate_catalogs(portal):
 
         # copy over internal catalog structure from internal Catalog:
         #
-        # self.schema = {}   # mapping from attribute name to column number
-        # self.names = ()    # sequence of column names
-        # self.indexes = {}  # mapping from index name to index object
-        dst_cat._catalog.schema = src_cat._catalog.schema
-        dst_cat._catalog.names = src_cat._catalog.names
-        dst_cat._catalog.indexes = src_cat._catalog.indexes
-
         # self.data = IOBTree()  # mapping of rid to meta_data
         # self.uids = OIBTree()  # mapping of uid to rid
         # self.paths = IOBTree()  # mapping of rid to uid
@@ -138,6 +132,10 @@ def migrate_catalogs(portal):
         dst_cat._catalog.uids = src_cat._catalog.uids
         dst_cat._catalog.paths = src_cat._catalog.paths
         dst_cat._catalog._length = src_cat._catalog._length
+
+        # refesh the catalog
+        pghandler = ZLogHandler(100)
+        dst_cat.refreshCatalog(pghandler=pghandler)
 
         # delete old catalog
         portal.manage_delObjects([src_cat_id])
