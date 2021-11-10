@@ -320,8 +320,13 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             query = dict(UID=services, getKeyword=self.getKeyword())
             services = api.search(query, "bika_setup_catalog")
             return len(services) > 0
-
-        siblings = self.getSiblings(with_retests=with_retests)
+        
+        request = self.getRequest()                                                                                                                    
+        if request.isPartition():                                                                                                                      
+            siblings = request.getParentAnalysisRequest().getAnalyses(full_objects=True)                                                               
+        else:                                                                                                                                          
+            siblings = self.getSiblings(with_retests=with_retests)                                                                                     
+                                                                                                                                                                                                                                              
         dependents = filter(lambda sib: is_dependent(sib), siblings)
         if not recursive:
             return dependents
