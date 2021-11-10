@@ -220,6 +220,10 @@ class UIDReferenceField(List, BaseField):
         :returns: True when the backref was removed, False otherwise
         """
 
+        # Target might be a behavior instead of the object itself
+        if not api.is_object(target):
+            target = target.context
+
         # This should be actually not possible
         if self.is_initializing(target):
             raise ValueError("Objects in initialization state "
@@ -249,6 +253,10 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the backref points to (our object)
         :returns: True when the backref was written
         """
+
+        # Target might be a behavior instead of the object itself
+        if not api.is_object(target):
+            target = target.context
 
         # Object is initializing and don't have an UID!
         # -> Postpone to set back references in event handler
