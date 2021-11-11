@@ -6,6 +6,7 @@ from Acquisition import aq_base
 from bika.lims import api
 from persistent.dict import PersistentDict
 from persistent.list import PersistentList
+from plone.behavior.interfaces import IBehavior
 from plone.uuid.interfaces import ATTRIBUTE_NAME
 from senaite.core import logger
 from senaite.core.interfaces import IHaveUIDReferences
@@ -221,7 +222,7 @@ class UIDReferenceField(List, BaseField):
         """
 
         # Target might be a behavior instead of the object itself
-        if not api.is_object(target):
+        if IBehavior.providedBy(target):
             target = target.context
 
         # This should be actually not possible
@@ -255,7 +256,7 @@ class UIDReferenceField(List, BaseField):
         """
 
         # Target might be a behavior instead of the object itself
-        if not api.is_object(target):
+        if IBehavior.providedBy(target):
             target = target.context
 
         # Object is initializing and don't have an UID!
