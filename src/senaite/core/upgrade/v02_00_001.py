@@ -142,4 +142,9 @@ def migrate_catalogs(portal):
         # delete old catalog
         portal.manage_delObjects([src_cat_id])
 
+    # Update archetype tool
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in at.catalog_map.items():
+        at.setCatalogsByType(portal_type, catalogs)
+
     logger.info("Migrate catalogs to Senaite [DONE]")
