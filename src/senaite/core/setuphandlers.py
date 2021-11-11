@@ -210,13 +210,17 @@ def install(context):
     logger.info("SENAITE CORE install handler [DONE]")
 
 
-def setup_core_catalogs(portal, reindex=True):
+def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
     """Setup core catalogs
     """
     logger.info("*** Setup core catalogs ***")
     at = api.get_tool("archetype_tool")
 
-    for cls in CATALOGS:
+    # allow add-ons to use this handler with own catalogs
+    if catalog_classes is None:
+        catalog_classes = CATALOGS
+
+    for cls in catalog_classes:
         module = _resolveDottedName(cls.__module__)
 
         # get the required attributes from the module
