@@ -513,7 +513,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not calc:
             return False
 
-        mapping = {}
+        # Include the current context UID in the mapping, so it can be passed
+        # as a param in built-in functions, like 'get_result(%(context_uid)s)'
+        mapping = {"context_uid": '"{}"'.format(self.UID())}
 
         # Interims' priority order (from low to high):
         # Calculation < Analysis
