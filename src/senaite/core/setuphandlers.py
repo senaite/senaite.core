@@ -265,12 +265,11 @@ def setup_core_catalogs(portal, reindex=True):
         reindex_catalog_index(catalog, idx_id)
 
 
-def setup_other_catalogs(portal, indexes=None, columns=None, reindex=True):
+def setup_other_catalogs(portal, indexes=None, columns=None):
     logger.info("*** Setup other catalogs ***")
 
     # contains tuples of (catalog, index) pairs
     to_reindex = []
-    refresh_catalog = False
 
     # allow add-ons to use this handler with other index/column definitions
     if indexes is None:
@@ -289,18 +288,11 @@ def setup_other_catalogs(portal, indexes=None, columns=None, reindex=True):
     # catalog columns
     for catalog, column in columns:
         catalog = api.get_tool(catalog)
-        if add_catalog_column(catalog, column):
-            refresh_catalog = True
-        else:
-            continue
+        add_catalog_column(catalog, column)
 
     # reindex new indexes
     for catalog, idx_id in to_reindex:
         reindex_catalog_index(catalog, idx_id)
-
-    # refresh
-    if refresh_catalog:
-        catalog.refreshCatalog()
 
 
 def reindex_catalog_index(catalog, index):
