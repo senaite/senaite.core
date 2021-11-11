@@ -330,13 +330,17 @@ def add_catalog_column(catalog, column):
     return True
 
 
-def setup_catalog_mappings(portal):
+def setup_catalog_mappings(portal, catalog_mappings=None):
     """Setup portal_type -> catalog mappings
     """
     logger.info("*** Setup Catalog Mappings ***")
 
+    # allow add-ons to use this handler with own mappings
+    if catalog_mappings is None:
+        catalog_mappings = CATALOG_MAPPINGS
+
     at = api.get_tool("archetype_tool")
-    for portal_type, catalogs in CATALOG_MAPPINGS:
+    for portal_type, catalogs in catalog_mappings:
         at.setCatalogsByType(portal_type, catalogs)
 
 
