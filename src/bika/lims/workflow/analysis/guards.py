@@ -372,7 +372,7 @@ def is_submitted_or_submittable(analysis):
     """
     if ISubmitted.providedBy(analysis):
         return True
-    if wf.isTransitionAllowed(analysis, "submit"):
+    if is_transition_allowed(analysis, "submit"):
         return True
     return False
 
@@ -382,8 +382,8 @@ def is_verified_or_verifiable(analysis):
     """
     if IVerified.providedBy(analysis):
         return True
-    if wf.isTransitionAllowed(analysis, "verify"):
+    if is_transition_allowed(analysis, "verify"):
         return True
-    if wf.isTransitionAllowed(analysis, "multi_verify"):
+    if is_transition_allowed(analysis, "multi_verify"):
         return True
     return False
