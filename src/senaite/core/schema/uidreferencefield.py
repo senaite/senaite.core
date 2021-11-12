@@ -315,6 +315,8 @@ class UIDReferenceField(List, BaseField):
 
         if not uids:
             uids = []
+        elif not isinstance(uids, (list, tuple)):
+            uids = [uids]
 
         if as_objects is True:
             uids = filter(None, map(self.get_object, uids))
