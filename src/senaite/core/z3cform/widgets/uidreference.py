@@ -92,7 +92,9 @@ class UIDReferenceWidget(TextLinesWidget):
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
         form = self.get_form()
-        portal_type = form.portal_type
+        portal_type = getattr(form, "portal_type", None)
+        if not portal_type:
+            portal_type = api.get_portal_type(self.context)
         portal_types = api.get_tool("portal_types")
         fti = portal_types[portal_type]
         factory = getUtility(IFactory, fti.factory)

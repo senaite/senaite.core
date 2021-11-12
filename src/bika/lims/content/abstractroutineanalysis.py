@@ -305,24 +305,31 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :rtype: list of IAnalysis
         """
         def is_dependent(analysis):
+            # Never consider myself as dependent
+            if analysis.UID() == self.UID():
+                return False
+
+            # Never consider analyses from same service as dependents
+            self_service_uid = self.getRawAnalysisService()
+            if analysis.getRawAnalysisService() == self_service_uid:
+                return False
+
+            # Without calculation, no dependency relationship is possible
             calculation = analysis.getCalculation()
             if not calculation:
                 return False
 
+            # Calculation must have the service I belong to
             services = calculation.getRawDependentServices()
-            if not services:
-                return False
-
-            query = dict(UID=services, getKeyword=self.getKeyword())
-            services = api.search(query, "senaite_catalog_setup")
-            return len(services) > 0
+            return self_service_uid in services
         
-        request = self.getRequest()                                                                                                                    
-        if request.isPartition():                                                                                                                      
-            siblings = request.getParentAnalysisRequest().getAnalyses(full_objects=True)                                                               
-        else:                                                                                                                                          
-            siblings = self.getSiblings(with_retests=with_retests)                                                                                     
-                                                                                                                                                                                                                                              
+        request = self.getRequest()
+        if request.isPartition():
+            parent = request.getParentAnalysisRequest()
+            siblings = parent.getAnalyses(full_objects=True)
+        else:
+            siblings = self.getSiblings(with_retests=with_retests)
+
         dependents = filter(lambda sib: is_dependent(sib), siblings)
         if not recursive:
             return dependents
@@ -352,6 +359,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # If the calculation this analysis is bound does not have analysis
         # keywords (only interims), no need to go further
         service_uids = calc.getRawDependentServices()
+
+        # Ensure we exclude ourselves
+        service_uid = self.getRawAnalysisService()
+        service_uids = filter(lambda serv: serv != service_uid, service_uids)
         if len(service_uids) == 0:
             return []
 
@@ -368,7 +379,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                                                       recursive=True)
                     dependencies.extend(up_deps)
 
-        return dependencies
+        # Exclude analyses of same service as me to prevent max recursion depth
+        return filter(lambda dep: dep.getRawAnalysisService() != service_uid,
+                      dependencies)
 
     @security.public
     def getPrioritySortkey(self):

@@ -4,6 +4,8 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1875 Prevent max recursion depth error with copies of same analysis
+- #1874 Support for `%(context_uid)s` wildcard in calculations
 - #1871 Allow calculations to rely on results of tests in subsamples (partitiones)
 - #1864 Added UID reference field/widget for Dexterity Contents
 - #1867 Fix error when invalidating samples with copies of analyses
