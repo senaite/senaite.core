@@ -187,7 +187,7 @@ class InstrumentCalibration(BaseFolder):
         renameAfterCreation(self)
 
     def getLabContacts(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',

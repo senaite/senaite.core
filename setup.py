@@ -69,7 +69,7 @@ setup(
         "Products.DataGridField",
         "Products.TextIndexNG3",
         "Products.contentmigration",
-        #  Requirement of zopyx.txng3.core: zopyx.txng3.ext<3.4.99999
+        # XXX: Remove after 2.0.1
         "zopyx.txng3.ext==3.4.0",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",

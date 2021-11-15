@@ -48,7 +48,7 @@ registerType(SampleMatrix, PROJECTNAME)
 
 def SampleMatrices(self, instance=None, allow_blank=False):
     instance = instance or self
-    bsc = getToolByName(instance, 'bika_setup_catalog')
+    bsc = getToolByName(instance, 'senaite_catalog_setup')
     items = []
     for sm in bsc(portal_type='SampleMatrix',
                   is_active=True,

@@ -30,8 +30,6 @@ from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.api.analysis import is_result_range_compliant
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
@@ -58,6 +56,8 @@ from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -66,7 +66,7 @@ class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
 
     Visible InterimFields from all analyses are added to self.columns[].
-    Keyword arguments are passed directly to bika_analysis_catalog.
+    Keyword arguments are passed directly to senaite_catalog_analysis.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -81,7 +81,7 @@ class AnalysesView(ListingView):
         })
 
         # set the listing view config
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
         self.sort_order = "ascending"
         self.context_actions = {}
 
@@ -509,7 +509,7 @@ class AnalysesView(ListingView):
 
     def load_analysis_categories(self):
         # Getting analysis categories
-        bsc = api.get_tool('bika_setup_catalog')
+        bsc = api.get_tool('senaite_catalog_setup')
         analysis_categories = bsc(portal_type="AnalysisCategory",
                                   sort_on="sortable_title")
         # Sorting analysis categories

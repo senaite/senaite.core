@@ -201,7 +201,7 @@ class ReferenceSample(BaseFolder):
 
             return title
 
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
                     is_active = True)]
@@ -214,7 +214,7 @@ class ReferenceSample(BaseFolder):
         return DisplayList(list(items))
 
     def getManufacturers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',
                                    is_active = True)]

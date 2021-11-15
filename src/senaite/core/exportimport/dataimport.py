@@ -119,7 +119,7 @@ class ImportView(BrowserView):
             return self.template()
 
     def getInstruments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         brains = bsc(portal_type='Instrument', is_active=True)
         items = [('', '...Choose an Instrument...')]
         for item in brains:

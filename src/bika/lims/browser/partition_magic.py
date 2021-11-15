@@ -184,7 +184,7 @@ class PartitionMagicView(BrowserView):
             "sort_order": "ascending",
             "is_active": True,
         }
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     def get_containers(self):
@@ -194,7 +194,7 @@ class PartitionMagicView(BrowserView):
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     def get_preservations(self):
@@ -204,7 +204,7 @@ class PartitionMagicView(BrowserView):
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     @returns_super_model

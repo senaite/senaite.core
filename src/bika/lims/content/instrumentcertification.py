@@ -239,7 +239,7 @@ class InstrumentCertification(BaseFolder):
             self.getField("ValidTo").set(self, valid_to)
 
     def getLabContacts(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',

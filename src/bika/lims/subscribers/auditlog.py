@@ -25,11 +25,12 @@ from bika.lims.api.snapshot import supports_snapshots
 from bika.lims.api.snapshot import take_snapshot
 from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
+from senaite.core.catalog import AUDITLOG_CATALOG
 from zope.interface import alsoProvides
 
 
 def reindex_object(obj):
-    """Reindex the object in the `auditlog_catalog` catalog
+    """Reindex the object in the AUDITLOG catalog
 
     This is needed *after* the event handlers fired, because the indexing takes
     place before the snapshot was created.
@@ -41,7 +42,7 @@ def reindex_object(obj):
     `reindexObject()` is called. If you manipulate your content object in a
     handler for this event, you need to manually reindex new values.
     """
-    auditlog_catalog = api.get_tool("auditlog_catalog", default=None)
+    auditlog_catalog = api.get_tool(AUDITLOG_CATALOG, default=None)
     if auditlog_catalog is None:
         logger.warn("Auditlog catalog not found. Skipping reindex.")
         return
@@ -49,9 +50,9 @@ def reindex_object(obj):
 
 
 def unindex_object(obj):
-    """Unindex the object in the `auditlog_catalog` catalog
+    """Unindex the object in the AUDITLOG catalog
     """
-    auditlog_catalog = api.get_tool("auditlog_catalog", default=None)
+    auditlog_catalog = api.get_tool(AUDITLOG_CATALOG, default=None)
     if auditlog_catalog is None:
         logger.warn("Auditlog catalog not found. Skipping unindex.")
         return

@@ -40,7 +40,7 @@ class PartitionSetupWidget(RecordsWidget):
         """ Some special field handling for disabled fields, which don't
         get submitted by the browser but still need to be written away.
         """
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         default = super(PartitionSetupWidget,self).process_form(
             instance, field, form, empty_marker, emptyReturnsMarker)
         if not default:

@@ -22,14 +22,13 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.security import check_permission
-from bika.lims.catalog import BIKA_CATALOG
 from bika.lims.permissions import AddBatch
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
 from plone.memoize import view
 from Products.CMFCore.permissions import View
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SENAITE_CATALOG
 
 
 class BatchFolderContentsView(ListingView):
@@ -39,7 +38,7 @@ class BatchFolderContentsView(ListingView):
     def __init__(self, context, request):
         super(BatchFolderContentsView, self).__init__(context, request)
 
-        self.catalog = BIKA_CATALOG
+        self.catalog = SENAITE_CATALOG
         self.contentFilter = {
             "portal_type": "Batch",
             "sort_on": "created",

@@ -49,7 +49,7 @@ class InstrumentQCFailuresViewlet(ViewletBase):
 
         Return a dictionary with all info about expired/invalid instruments
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         insts = bsc(portal_type="Instrument", is_active=True)
         for i in insts:
             i = i.getObject()

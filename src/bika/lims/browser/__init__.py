@@ -167,16 +167,16 @@ class BrowserView(BaseBrowserView):
         return getToolByName(self.context, 'reference_catalog')
 
     @lazy_property
-    def bika_analysis_catalog(self):
-        return getToolByName(self.context, 'bika_analysis_catalog')
+    def senaite_catalog_analysis(self):
+        return getToolByName(self.context, 'senaite_catalog_analysis')
 
     @lazy_property
-    def bika_setup_catalog(self):
-        return getToolByName(self.context, 'bika_setup_catalog')
+    def senaite_catalog_setup(self):
+        return getToolByName(self.context, 'senaite_catalog_setup')
 
     @lazy_property
-    def bika_catalog(self):
-        return getToolByName(self.context, 'bika_catalog')
+    def senaite_catalog(self):
+        return getToolByName(self.context, 'senaite_catalog')
 
     @lazy_property
     def portal_membership(self):

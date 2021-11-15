@@ -116,7 +116,7 @@ class ManageResultsView(BrowserView):
     def getInstruments(self):
         # TODO: Return only the allowed instruments for at least one contained
         # analysis
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Instrument',
                                   is_active=True)]

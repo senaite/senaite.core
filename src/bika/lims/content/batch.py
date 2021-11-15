@@ -26,7 +26,6 @@ from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -45,6 +44,7 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
 
 
@@ -210,7 +210,7 @@ class Batch(ATFolder, ClientAwareMixin):
     def BatchLabelVocabulary(self):
         """Return all batch labels as a display list
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         ret = []
         for p in bsc(portal_type='BatchLabel',
                      is_active=True,
@@ -223,7 +223,7 @@ class Batch(ATFolder, ClientAwareMixin):
         kargs are passed directly to the catalog.
         """
         kwargs['getBatchUID'] = self.UID()
-        catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
+        catalog = getToolByName(self, SAMPLE_CATALOG)
         brains = catalog(kwargs)
         return brains
 

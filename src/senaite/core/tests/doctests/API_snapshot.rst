@@ -298,14 +298,14 @@ the field `Analyses` is a `UIDReferenceField` which contained initially 3 values
 and after adding 2 analyses, 2 UID more references:
 
    >>> diff_raw = compare_snapshots(snap0, snap1, raw=True)
-   >>> diff_raw
-   {u'Analyses': [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]}
+   >>> diff_raw["Analyses"]
+   [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]
 
 It is also possible to process the values to get a more human readable diff:
 
    >>> diff = compare_snapshots(snap0, snap1, raw=False)
-   >>> diff
-   {u'Analyses': [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]}
+   >>> diff["Analyses"]
+   [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]
 
 
 To directly compare the last two snapshots taken, we can call
@@ -317,8 +317,8 @@ First we edit the sample to get a new snapshot:
    >>> snapshot = take_snapshot(sample)
 
    >>> last_diff = compare_last_two_snapshots(sample, raw=False)
-   >>> last_diff
-   {u'CCEmails': [('Not set', 'rb@ridingbytes.com')]}
+   >>> last_diff["CCEmails"]
+   [('Not set', 'rb@ridingbytes.com')]
 
 
 Pause and Resume Snapshots

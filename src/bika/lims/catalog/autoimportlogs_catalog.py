@@ -1,74 +1,16 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2021 by it's authors.
-# Some rights reserved, see README and LICENSE.
+# XXX: REMOVE AFTER 2.0.1
 
 from App.class_init import InitializeClass
 from bika.lims.catalog.base import BaseCatalog
-from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
-from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_INDEXES
 from bika.lims.interfaces import IBikaCatalogAutoImportLogsListing
 from zope.interface import implements
-
-# Using a variable to avoid plain strings in code
-CATALOG_AUTOIMPORTLOGS_LISTING = "bika_catalog_autoimportlogs_listing"
-
-# Defining the indexes for this catalog
-_indexes_dict = {
-    "getInstrumentUID": "FieldIndex",
-}
-# Defining the columns for this catalog
-_columns_list = [
-    "getInstrumentUrl",
-    "getInstrumentTitle",
-    "getImportedFile",
-    "getInterface",
-    "getResults",
-    "getLogTime"
-]
-
-# Adding basic indexes
-_base_indexes_copy = BASE_CATALOG_INDEXES.copy()
-_indexes_dict.update(_base_indexes_copy)
-# Adding basic columns
-_base_columns_copy = BASE_CATALOG_COLUMNS[:]
-_columns_list += _base_columns_copy
-
-# Defining the types for this catalog
-_types_list = ["AutoImportLog", ]
-bika_catalog_autoimportlogs_listing_definition = {
-    CATALOG_AUTOIMPORTLOGS_LISTING: {
-        "types": _types_list,
-        "indexes": _indexes_dict,
-        "columns": _columns_list,
-    }
-}
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG as CATALOG_AUTOIMPORTLOGS_LISTING  # noqa
 
 
 class BikaCatalogAutoImportLogsListing(BaseCatalog):
-    """Catalog for Auto import listings
-    """
     implements(IBikaCatalogAutoImportLogsListing)
-
-    def __init__(self):
-        BaseCatalog.__init__(self, CATALOG_AUTOIMPORTLOGS_LISTING,
-                             "Catalog Auto-Import Logs Listing",
-                             "BikaCatalogAutoImportLogsListing")
 
 
 InitializeClass(BikaCatalogAutoImportLogsListing)

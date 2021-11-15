@@ -478,7 +478,7 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Category catalog results
         :rtype: brains
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         query = {
             "portal_type": "AnalysisCategory",
             "is_active": True,
@@ -508,7 +508,7 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Mapping of category -> list of services
         :rtype: dict
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         query = {
             "portal_type": "AnalysisService",
             "point_of_capture": poc,

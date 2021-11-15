@@ -25,8 +25,6 @@ from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
@@ -36,6 +34,8 @@ from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 DETACHED_STATES = ["cancelled", "retracted", "rejected"]
@@ -69,7 +69,7 @@ class ARAnalysesField(ObjectField):
         """Returns a list of Analyses assigned to this AR
 
         Return a list of catalog brains unless `full_objects=True` is passed.
-        Other keyword arguments are passed to bika_analysis_catalog
+        Other keyword arguments are passed to senaite_catalog_analysis
 
         :param instance: Analysis Request object
         :param kwargs: Keyword arguments to inject in the search query
@@ -79,7 +79,7 @@ class ARAnalysesField(ObjectField):
         full_objects = kwargs.get("full_objects", False)
 
         # Bail out parameters from kwargs that don't match with indexes
-        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        catalog = api.get_tool(ANALYSIS_CATALOG)
         indexes = catalog.indexes()
         query = dict([(k, v) for k, v in kwargs.items() if k in indexes])
 

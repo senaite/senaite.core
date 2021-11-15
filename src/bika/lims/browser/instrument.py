@@ -29,13 +29,15 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.browser.viewlets import InstrumentQCFailuresViewlet  # noqa
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.utils import get_image, get_link, t
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
+from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import ANALYSIS_CATALOG
 from zExceptions import Forbidden
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
@@ -538,7 +540,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         self.show_search = False
         self.omit_form = True
 
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
 
         self.contentFilter = {
             "portal_type": "ReferenceAnalysis",
@@ -764,7 +766,7 @@ class InstrumentMultifileView(BikaListingView):
     def __init__(self, context, request):
         super(InstrumentMultifileView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "Multifile",
             "path": {
@@ -871,7 +873,7 @@ class ajaxGetInstrumentMethods(BrowserView):
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
             return json.dumps(out)
-        bsc = getToolByName(self, "bika_setup_catalog")
+        bsc = getToolByName(self, "senaite_catalog_setup")
         results = bsc(portal_type="Instrument",
                       UID=self.request.get("uid", "0"))
         instrument = results[0] if results and len(results) == 1 else None

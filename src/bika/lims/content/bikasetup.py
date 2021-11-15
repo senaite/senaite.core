@@ -911,7 +911,7 @@ class BikaSetup(folder.ATFolder):
         """
         Get all active Analysis Services from Bika Setup and return them as Display List.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         brains = bsc(portal_type='AnalysisService',
                      is_active=True)
         items = [(b.UID, b.Title) for b in brains]

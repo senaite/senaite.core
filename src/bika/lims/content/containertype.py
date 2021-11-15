@@ -58,7 +58,7 @@ registerType(ContainerType, PROJECTNAME)
 
 def ContainerTypes(self, instance=None, allow_blank=False):
     instance = instance or self
-    bsc = getToolByName(instance, 'bika_setup_catalog')
+    bsc = getToolByName(instance, 'senaite_catalog_setup')
     items = []
     for o in bsc(portal_type='ContainerType',
                  sort_on = 'sortable_title'):

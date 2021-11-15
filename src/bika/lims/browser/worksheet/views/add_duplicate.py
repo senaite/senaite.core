@@ -39,7 +39,7 @@ class AddDuplicateView(BikaListingView):
     def __init__(self, context, request):
         super(AddDuplicateView, self).__init__(context, request)
 
-        self.catalog = "bika_analysis_catalog"
+        self.catalog = "senaite_catalog_analysis"
         self.contentFilter = {
             "portal_type": "Analysis",
             "getWorksheetUID": "",

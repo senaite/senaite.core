@@ -28,7 +28,7 @@ from senaite.core.p3compat import cmp
 
 class get_sampletypes(object):
 
-    catalog_name='bika_setup_catalog'
+    catalog_name='senaite_catalog_setup'
     contentFilter = {'portal_type': 'SampleType',
                      'is_active': True}
 

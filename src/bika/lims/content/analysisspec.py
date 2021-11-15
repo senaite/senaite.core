@@ -19,26 +19,25 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.Archetypes import atapi
-from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import Schema
-from Products.CMFPlone.utils import safe_unicode
-from zope.i18n import translate
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import ResultsRangesField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.sampletype import SampleTypeAwareMixin
 from bika.lims.interfaces import IAnalysisSpec
 from bika.lims.interfaces import IDeactivable
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import Schema
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import SETUP_CATALOG
+from zope.i18n import translate
+from zope.interface import implements
 
 schema = Schema((
 

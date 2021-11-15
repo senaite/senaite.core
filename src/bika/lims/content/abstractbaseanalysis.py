@@ -25,7 +25,6 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
@@ -54,6 +53,7 @@ from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
@@ -829,7 +829,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getAnalysisCategories(self):
         """A vocabulary listing available (and activated) categories.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()

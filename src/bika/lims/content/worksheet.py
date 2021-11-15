@@ -28,7 +28,6 @@ from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
@@ -64,6 +63,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
@@ -297,7 +297,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This function returns the registered methods in the system as a
         vocabulary.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
                               is_active=True)]
@@ -314,7 +314,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if self.getMethod():
             cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
                                         "operator": "or"}
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in
             bsc(cfilter)]
@@ -363,7 +363,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         query = dict(portal_type="AnalysisService", UID=service_uids,
                      sort_on="sortable_title")
         services = filter(lambda service: api.get_uid(service) not in processed,
-                          api.search(query, "bika_setup_catalog"))
+                          api.search(query, "senaite_catalog_setup"))
 
         # Ref analyses from the same slot must have the same group id
         ref_gid = self.nextRefAnalysesGroupID(reference)
@@ -437,7 +437,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             prefix = reference.id + "-D"
-        bac = getToolByName(reference, 'bika_analysis_catalog')
+        bac = getToolByName(reference, 'senaite_catalog_analysis')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
         rr = re.compile("^" + prefix + "[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
@@ -865,7 +865,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         if not analyses:
             return
 
@@ -1008,7 +1008,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not type or type not in ['b', 'c']:
             return []
 
-        bc = api.get_tool("bika_catalog")
+        bc = api.get_tool("senaite_catalog")
         wst_type = type == 'b' and 'blank_ref' or 'control_ref'
 
         slots_sample = list()
@@ -1526,7 +1526,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         steps = 0
         query = dict(getWorksheetUID=api.get_uid(self))
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         max_steps = len(analyses) * 2
         for analysis in analyses:
             an_state = analysis.review_state

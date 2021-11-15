@@ -264,7 +264,7 @@ class ServiceKeywordValidator:
         # check the value against all AnalysisService keywords
         # this has to be done from catalog so we don't
         # clash with ourself
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         services = bsc(portal_type='AnalysisService', getKeyword=value)
         for service in services:
             if service.UID != instance.UID():
@@ -325,7 +325,7 @@ class InterimFieldsValidator:
         interim_fields = form.get(fieldname, [])
 
         translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
 
         # We run through the validator once per form submit, and check all
         # values
@@ -709,7 +709,7 @@ class RestrictedCategoriesValidator:
         # form = request.get('form', {})
 
         translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         # uc = getToolByName(instance, 'uid_catalog')
 
         failures = []
@@ -767,7 +767,7 @@ class PrePreservationValidator:
             return True
 
         translate = getToolByName(instance, 'translation_service').translate
-        # bsc = getToolByName(instance, 'bika_setup_catalog')
+        # bsc = getToolByName(instance, 'senaite_catalog_setup')
 
         if not preservation:
             msg = _("Validation failed: PrePreserved containers "

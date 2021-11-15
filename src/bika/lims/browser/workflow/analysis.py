@@ -27,11 +27,11 @@ from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
 from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from senaite.core.catalog import SAMPLE_CATALOG
 
 
 class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
@@ -122,7 +122,7 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             query = dict(getInstrumentUID=invalid_instrument_uid,
                          portal_type=['Analysis', 'DuplicateAnalysis'],
                          review_state='to_be_verified',)
-            brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+            brains = api.search(query, SAMPLE_CATALOG)
             for brain in brains:
                 analysis = api.get_object(brain)
                 failed_msg = '{0}: {1}'.format(

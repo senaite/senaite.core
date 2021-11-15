@@ -39,7 +39,7 @@ class Report(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
-        bc = getToolByName(self.context, 'bika_catalog')
+        bc = getToolByName(self.context, 'senaite_catalog')
         self.report_content = {}
         parm_lines = {}
         parms = []

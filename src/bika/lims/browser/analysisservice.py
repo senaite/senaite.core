@@ -188,7 +188,7 @@ class ajaxGetServiceInterimFields:
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         service_url = self.request['service_url']
         service_id = service_url.split('/')[-1]
         services = bsc(portal_type='AnalysisService', id=service_id)

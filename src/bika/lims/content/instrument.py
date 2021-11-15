@@ -18,9 +18,9 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import six
-
 from datetime import date
+
+import six
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -31,11 +31,9 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.bikaschema import BikaSchema
-from senaite.core.exportimport import instruments
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t
@@ -65,6 +63,8 @@ from Products.ATContentTypes.content import schemata
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.exportimport import instruments
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
@@ -79,7 +79,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Instrument type"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -96,7 +96,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Manufacturer"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -113,7 +113,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Supplier"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -289,7 +289,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             label=_("Instrument Location"),
             description=_("The room and location where the instrument is installed"),
             showOn=True,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={
                 "is_active": True,
                 "sort_on": "sortable_title",
@@ -399,7 +399,7 @@ class Instrument(ATFolder):
             One method can be done by multiple instruments, but one
             instrument can only be used in one method.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
                               is_active=True)]
@@ -464,7 +464,7 @@ class Instrument(ATFolder):
                  "sort_on": "getResultCaptureDate",
                  "sort_order": "reverse",
                  "sort_limit": 1,}
-        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        brains = api.search(query, ANALYSIS_CATALOG)
         if len(brains) == 0:
             # There are no Reference Analyses assigned to this instrument yet
             return True
@@ -477,7 +477,7 @@ class Instrument(ATFolder):
         query = {"portal_type": "ReferenceAnalysis",
                  "getInstrumentUID": self.UID(),
                  "getReferenceAnalysesGroupID": group_id,}
-        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        brains = api.search(query, ANALYSIS_CATALOG)
         for brain in brains:
             analysis = api.get_object(brain)
             results_range = analysis.getResultsRange()
@@ -612,8 +612,8 @@ class Instrument(ATFolder):
         # TODO Workflow - Analyses. Assignment of refanalysis to Instrument
         addedanalyses = []
         wf = getToolByName(self, 'portal_workflow')
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        bac = getToolByName(self, 'bika_analysis_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
+        bac = getToolByName(self, 'senaite_catalog_analysis')
         ref_type = reference.getBlank() and 'b' or 'c'
         ref_uid = reference.UID()
         postfix = 1

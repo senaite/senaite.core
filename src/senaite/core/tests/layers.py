@@ -44,7 +44,6 @@ class BaseLayer(PloneSandboxLayer):
         import senaite.app.supermodel
         import senaite.impress
         import senaite.lims
-        import Products.TextIndexNG3
 
         self.loadZCML(package=bika.lims)
         self.loadZCML(package=senaite.core)
@@ -53,7 +52,6 @@ class BaseLayer(PloneSandboxLayer):
         self.loadZCML(package=senaite.app.supermodel)
         self.loadZCML(package=senaite.impress)
         self.loadZCML(package=senaite.lims)
-        self.loadZCML(package=Products.TextIndexNG3)
 
         # Install product and call its initialize() function
         zope.installProduct(app, "bika.lims")
@@ -63,7 +61,6 @@ class BaseLayer(PloneSandboxLayer):
         zope.installProduct(app, "senaite.app.supermodel")
         zope.installProduct(app, "senaite.impress")
         zope.installProduct(app, "senaite.lims")
-        zope.installProduct(app, "Products.TextIndexNG3")
 
     def setUpPloneSite(self, portal):
         super(BaseLayer, self).setUpPloneSite(portal)

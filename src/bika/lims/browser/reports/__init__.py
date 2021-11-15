@@ -18,28 +18,27 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
+import os
 
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.interfaces import IAdministrationReport
+from bika.lims.interfaces import IProductivityReport
 from bika.lims.utils import createPdf
-from bika.lims.utils import getUsers, logged_in_client
+from bika.lims.utils import getUsers
+from bika.lims.utils import logged_in_client
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.interfaces import IProductivityReport
-from bika.lims.interfaces import IAdministrationReport
-from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import REPORT_CATALOG
 from zope.component import getAdapters
 from zope.interface import implements
-import os
-import plone
 
 
 class ProductivityView(BrowserView):
@@ -102,7 +101,7 @@ class ReportHistoryView(BikaListingView):
     def __init__(self, context, request):
         super(ReportHistoryView, self).__init__(context, request)
 
-        self.catalog = CATALOG_REPORT_LISTING
+        self.catalog = REPORT_CATALOG
 
         self.context_actions = {}
 
@@ -223,7 +222,7 @@ class SubmitForm(BrowserView):
 
         # signature image
         self.reporter_signature = ""
-        c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+        c = [x for x in self.senaite_catalog_setup(portal_type='LabContact')
              if x.getObject().getUsername() == username]
         if c:
             sf = c[0].getObject().getSignature()

@@ -126,7 +126,7 @@ class Container(BaseContent):
         return str(default)
 
     def getContainerTypes(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='ContainerType')]
         o = self.getContainerType()
@@ -136,7 +136,7 @@ class Container(BaseContent):
         return DisplayList(list(items))
 
     def getPreservations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Preservation',
                                    apiis_active = True)]
@@ -151,7 +151,7 @@ registerType(Container, PROJECTNAME)
 
 class ajaxGetContainers:
 
-    catalog_name='bika_setup_catalog'
+    catalog_name='senaite_catalog_setup'
     contentFilter = {'portal_type': 'Container',
                      'is_active': True}
 

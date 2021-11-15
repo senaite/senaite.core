@@ -82,8 +82,8 @@ Getting a Tool
 There are many ways to get a tool in SENAITE LIMS / Plone. This function
 centralizes this functionality and makes it painless::
 
-    >>> api.get_tool("bika_setup_catalog")
-    <BikaSetupCatalog at /plone/bika_setup_catalog>
+    >>> api.get_tool("senaite_catalog_setup")
+    <SetupCatalog at /plone/senaite_catalog_setup>
 
 Trying to fetch an non-existing tool raises a custom `APIError`.
 
@@ -541,7 +541,7 @@ Multiple content types are also supported::
     >>> map(api.get_id, results)
     ['client-1', 'clients']
 
-Now we create some objects which are located in the `bika_setup_catalog`::
+Now we create some objects which are located in the `senaite_catalog_setup`::
 
     >>> instruments = bika_setup.bika_instruments
     >>> instrument1 = api.create(instruments, "Instrument", title="Instrument-1")
@@ -563,8 +563,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     [...]
     APIError: Multi Catalog Queries are not supported!
 
-Catalog queries w/o any `portal_type`, default to the `portal_catalog`, which
-will not find the following items::
+Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
 
     >>> analysiscategories = bika_setup.bika_analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
@@ -573,7 +572,10 @@ will not find the following items::
 
     >>> results = api.search({"id": "analysiscategory-1"})
     >>> len(results)
-    0
+    1
+    >>> res = results[0]
+    >>> res.aq_parent
+    <CatalogTool at /plone/portal_catalog>
 
 Would we add the `portal_type`, the search function would ask the
 `archetype_tool` for the right catalog, and it would return a result::
@@ -584,7 +586,7 @@ Would we add the `portal_type`, the search function would ask the
 
 We could also explicitly define a catalog to achieve the same::
 
-    >>> results = api.search({"id": "analysiscategory-1"}, catalog="bika_setup_catalog")
+    >>> results = api.search({"id": "analysiscategory-1"}, catalog="senaite_catalog_setup")
     >>> len(results)
     1
 
@@ -1136,8 +1138,10 @@ Try now with a valid contact::
     >>> api.get_user_client(contact1)
     <Client at /plone/clients/client-1>
 
-    >>> api.get_user_client(client_user)
-    <Client at /plone/clients/client-1>
+Unset the user again
+
+    >>> contact1.unlinkUser(client_user)
+    True
 
 
 Creating a Cache Key

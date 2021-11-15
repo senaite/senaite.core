@@ -20,17 +20,16 @@
 
 import six
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims import workflow as wf
-from bika.lims.browser import BrowserView, ulocalized_time
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
-from plone.memoize import view
-
+from bika.lims.browser import BrowserView
+from bika.lims.browser import ulocalized_time
 from bika.lims.utils.analysisrequest import do_rejection
+from plone.memoize import view
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SAMPLE_CATALOG
 
 
 class RejectSamplesView(BrowserView):
@@ -137,7 +136,7 @@ class RejectSamplesView(BrowserView):
 
         # Filter those analysis requests "reject" transition is allowed
         query = dict(portal_type="AnalysisRequest", UID=uids)
-        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = api.search(query, SAMPLE_CATALOG)
         samples = map(api.get_object, brains)
         return filter(lambda ob: wf.isTransitionAllowed(ob, "reject"), samples)
 

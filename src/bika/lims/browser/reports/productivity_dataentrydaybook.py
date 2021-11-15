@@ -18,17 +18,16 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.workflow import getTransitionDate
-
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.workflow import getTransitionDate
 from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SAMPLE_CATALOG
+from zope.interface import implements
 
 
 class Report(BrowserView):
@@ -57,7 +56,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        catalog = getToolByName(self.context, SAMPLE_CATALOG)
         ars = catalog(self.contentFilter)
 
         logger.info("Catalog Query '{}' returned {} results".format(

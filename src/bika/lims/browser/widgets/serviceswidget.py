@@ -39,7 +39,7 @@ class ServicesView(BikaListingView):
     def __init__(self, context, request):
         super(ServicesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",

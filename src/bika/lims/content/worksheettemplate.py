@@ -191,7 +191,7 @@ class WorksheetTemplate(BaseContent):
                 }
             })
 
-        instruments = api.search(query, "bika_setup_catalog")
+        instruments = api.search(query, "senaite_catalog_setup")
         items = map(lambda i: (i.UID, i.Title), instruments)
 
         instrument = self.getInstrument()
@@ -220,7 +220,7 @@ class WorksheetTemplate(BaseContent):
         methods = api.search({
             "portal_type": "Method",
             "is_active": True
-        }, "bika_setup_catalog")
+        }, "senaite_catalog_setup")
 
         items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)
         items.sort(lambda x, y: cmp(x[1], y[1]))

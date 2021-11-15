@@ -19,15 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
-
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget
-from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -39,15 +36,14 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.ATContentTypes.utils import DT2dt
 from Products.ATContentTypes.utils import dt2DT
 from Products.CMFCore.permissions import View
+from senaite.core.catalog.indexer.baseanalysis import sortable_title
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.

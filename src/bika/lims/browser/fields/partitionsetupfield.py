@@ -43,14 +43,14 @@ def getContainers(instance,
     If the partition is flagged 'Separate', only containers are displayed.
     If the Separate flag is false, displays container types.
 
-    XXX bsc = self.portal.bika_setup_catalog
+    XXX bsc = self.portal.senaite_catalog_setup
     XXX obj = bsc(getKeyword='Moist')[0].getObject()
     XXX u'Container Type: Canvas bag' in obj.getContainers().values()
     XXX True
 
     """
 
-    bsc = getToolByName(instance, 'bika_setup_catalog')
+    bsc = getToolByName(instance, 'senaite_catalog_setup')
 
     items = [['', _('Any')]] if allow_blank else []
 
@@ -142,7 +142,7 @@ class PartitionSetupField(RecordsField):
 
     def SampleTypes(self, instance=None):
         instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         items = []
         for st in bsc(portal_type='SampleType',
                       is_active=True,
@@ -157,7 +157,7 @@ class PartitionSetupField(RecordsField):
 
     def Preservations(self, instance=None):
         instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         items = [[c.UID, c.title] for c in
                  bsc(portal_type='Preservation',
                      is_active=True,

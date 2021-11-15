@@ -8,7 +8,7 @@
 
 ## Catalog-specific
 
-### bika_setup_catalog
+### senaite_setup_catalog
 
 - `category_uid`: Searches by analysis category
 - `department_title`: Sorting of Analyses Categories listing

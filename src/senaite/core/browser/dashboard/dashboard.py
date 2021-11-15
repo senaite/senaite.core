@@ -32,9 +32,6 @@ from bika.lims.api import get_tool
 from bika.lims.api import get_url
 from bika.lims.api import search
 from bika.lims.browser import BrowserView
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
 from DateTime import DateTime
@@ -46,6 +43,9 @@ from plone.memoize import view as viewcache
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
@@ -385,7 +385,7 @@ class DashboardView(BrowserView):
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
-        catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        catalog = getToolByName(self.context, SAMPLE_CATALOG)
         query = {'portal_type': "AnalysisRequest",
                  'is_active': True}
 
@@ -484,7 +484,7 @@ class DashboardView(BrowserView):
             WS to be verified, WS with results pending, etc.)
         """
         out = []
-        bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
+        bc = getToolByName(self.context, WORKSHEET_CATALOG)
         query = {'portal_type': "Worksheet", }
 
         # Check if dashboard_cookie contains any values to query
@@ -535,7 +535,7 @@ class DashboardView(BrowserView):
             analyses assigned, etc.)
         """
         out = []
-        bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
+        bc = getToolByName(self.context, ANALYSIS_CATALOG)
         query = {'portal_type': "Analysis", 'is_active': True}
 
         # Check if dashboard_cookie contains any values to query elements by

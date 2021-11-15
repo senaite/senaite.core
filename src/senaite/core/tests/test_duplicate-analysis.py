@@ -72,7 +72,7 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wsfolder = self.portal.worksheets
         ws = _createObjectByType("Worksheet", wsfolder, tmpID())
         ws.processForm()
-        bsc = getToolByName(self.portal, 'bika_setup_catalog')
+        bsc = getToolByName(self.portal, 'senaite_catalog_setup')
         lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
         lab_contact = [o for o in lab_contacts if o.getUsername() == 'analyst1']
         self.assertEquals(len(lab_contact), 1)

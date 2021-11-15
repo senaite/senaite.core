@@ -40,8 +40,8 @@ class Report(BrowserView):
     def __call__(self):
 
         # get all the data into datalines
-        sc = getToolByName(self.context, 'bika_setup_catalog')
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        sc = getToolByName(self.context, 'senaite_catalog_setup')
+        bac = getToolByName(self.context, 'senaite_catalog_analysis')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}

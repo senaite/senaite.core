@@ -35,6 +35,7 @@ from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
+from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
@@ -44,7 +45,7 @@ class AuditLogView(BikaListingView):
     def __init__(self, context, request):
         super(AuditLogView, self).__init__(context, request)
 
-        self.catalog = "auditlog_catalog"
+        self.catalog = AUDITLOG_CATALOG
 
         self.contentFilter = {
             "path": "/",

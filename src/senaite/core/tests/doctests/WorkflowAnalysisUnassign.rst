@@ -13,8 +13,8 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
-    >>> from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-    >>> from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
+    >>> from senaite.core.catalog import WORKSHEET_CATALOG
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -104,10 +104,10 @@ The status of the analyses is `unassigned`:
 And the Analysis Request' assigned state index is 'unassigned':
 
     >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     1
     >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     0
 
 Create a Worksheet and add the analyses:
@@ -123,10 +123,10 @@ Create a Worksheet and add the analyses:
 The Analysis Request' assigned state indexer is 'assigned':
 
     >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     0
     >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     1
 
 The worksheet has now 3 analyses assigned:
@@ -139,7 +139,7 @@ The worksheet has now 3 analyses assigned:
 And metadata gets updated accordingly:
 
     >>> query = dict(UID=api.get_uid(worksheet))
-    >>> ws_brain = api.search(query, CATALOG_WORKSHEET_LISTING)[0]
+    >>> ws_brain = api.search(query, WORKSHEET_CATALOG)[0]
     >>> ws_brain.getNumberOfRegularAnalyses
     3
     >>> ws_brain.getNumberOfQCAnalyses
@@ -158,7 +158,7 @@ When we unassign the `Cu` analysis, the workseet gets updated:
     False
     >>> worksheet.getNumberOfRegularAnalyses()
     2
-    >>> ws_brain = api.search(query, CATALOG_WORKSHEET_LISTING)[0]
+    >>> ws_brain = api.search(query, WORKSHEET_CATALOG)[0]
     >>> ws_brain.getNumberOfRegularAnalyses
     2
     >>> api.get_uid(cu) in ws_brain.getAnalysesUIDs
@@ -169,10 +169,10 @@ When we unassign the `Cu` analysis, the workseet gets updated:
 And the Analysis Request' assigned state index is updated as well:
 
     >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     1
     >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
-    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    >>> len(api.search(query, SAMPLE_CATALOG))
     0
 
 

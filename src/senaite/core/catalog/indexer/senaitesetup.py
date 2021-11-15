@@ -1,28 +1,7 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2021 by it's authors.
-# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.catalog.indexers import get_searchable_text_tokens
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
@@ -31,9 +10,12 @@ from bika.lims.interfaces import IInstrument
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from plone.indexer import indexer
 from Products.CMFCore.interfaces import IContentish
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog.utils import get_searchable_text_tokens
+from senaite.core.interfaces import ISetupCatalog
 
 
-@indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
+@indexer(ISampleTypeAwareMixin, ISetupCatalog)
 def sampletype_uid(instance):
     """Returns the list of SampleType UIDs the instance is assigned to
 
@@ -46,7 +28,7 @@ def sampletype_uid(instance):
     return to_keywords_list(sample_type, api.get_uid)
 
 
-@indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
+@indexer(ISampleTypeAwareMixin, ISetupCatalog)
 def sampletype_title(instance):
     """Returns a list of titles from SampleType the instance is assigned to
 
@@ -57,7 +39,7 @@ def sampletype_title(instance):
     return to_keywords_list(sample_type, api.get_title)
 
 
-@indexer(IAnalysisService, IBikaSetupCatalog)
+@indexer(IAnalysisService, ISetupCatalog)
 def method_available_uid(instance):
     """Returns a list of Method UIDs that are available for this instance
 
@@ -72,7 +54,7 @@ def method_available_uid(instance):
     return instance.getAvailableMethodUIDs() or (None, )
 
 
-@indexer(IHaveInstrument, IBikaSetupCatalog)
+@indexer(IHaveInstrument, ISetupCatalog)
 def instrument_title(instance):
     """Returns a list of titles from Instrument the instance is assigned to
 
@@ -83,21 +65,21 @@ def instrument_title(instance):
     return to_keywords_list(instrument, api.get_title)
 
 
-@indexer(IHavePrice, IBikaSetupCatalog)
+@indexer(IHavePrice, ISetupCatalog)
 def price(instance):
     """Returns the price of the instance
     """
     return instance.getPrice()
 
 
-@indexer(IHavePrice, IBikaSetupCatalog)
+@indexer(IHavePrice, ISetupCatalog)
 def price_total(instance):
     """Returns the total price of the instance
     """
     return instance.getTotalPrice()
 
 
-@indexer(IInstrument, IBikaSetupCatalog)
+@indexer(IInstrument, ISetupCatalog)
 def instrumenttype_title(instance):
     """Returns a list of Instrument Type titles the instance is assigned to
     """
@@ -105,7 +87,7 @@ def instrumenttype_title(instance):
     return to_keywords_list(instrument_type, api.get_title)
 
 
-@indexer(IHaveDepartment, IBikaSetupCatalog)
+@indexer(IHaveDepartment, ISetupCatalog)
 def department_uid(instance):
     """Returns a list of Department UIDs the instance is assigned to
     """
@@ -113,7 +95,7 @@ def department_uid(instance):
     return to_keywords_list(department, api.get_uid)
 
 
-@indexer(IHaveDepartment, IBikaSetupCatalog)
+@indexer(IHaveDepartment, ISetupCatalog)
 def department_title(instance):
     """Returns the title of the Department the instance is assigned to
     """
@@ -121,7 +103,7 @@ def department_title(instance):
     return to_keywords_list(department, api.get_title)
 
 
-@indexer(IHaveDepartment, IBikaSetupCatalog)
+@indexer(IHaveDepartment, ISetupCatalog)
 def department_id(instance):
     """Returns the ID of the Department the instance is assigned to
     """
@@ -129,14 +111,14 @@ def department_id(instance):
     return to_keywords_list(department, lambda dep: dep.getDepartmentID())
 
 
-@indexer(IAnalysisService, IBikaSetupCatalog)
+@indexer(IAnalysisService, ISetupCatalog)
 def point_of_capture(instance):
     """Returns the point of capture of the instance
     """
     return instance.getPointOfCapture()
 
 
-@indexer(IContentish, IBikaSetupCatalog)
+@indexer(IContentish, ISetupCatalog)
 def listing_searchable_text(instance):
     """ Retrieves all the values of metadata columns in the catalog for
     wildcard searches
@@ -160,7 +142,7 @@ def listing_searchable_text(instance):
     return u" ".join(tokens)
 
 
-@indexer(IHaveAnalysisCategory, IBikaSetupCatalog)
+@indexer(IHaveAnalysisCategory, ISetupCatalog)
 def category_uid(instance):
     """Returns a list of Category UIDs the instance is assigned to
     """

@@ -1,25 +1,8 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2021 by it's authors.
-# Some rights reserved, see README and LICENSE.
 
 import itertools
 import re
+
 import six
 
 from bika.lims import api
@@ -28,10 +11,11 @@ from bika.lims.api.snapshot import get_snapshot_count
 from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshots
 from bika.lims.api.user import get_user_id
-from bika.lims.interfaces import IAuditable, IAuditLogCatalog
+from bika.lims.interfaces import IAuditable
 from plone.indexer import indexer
 from plone.memoize.ram import DontCache
 from plone.memoize.ram import cache
+from senaite.core.interfaces import IAuditlogCatalog
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
 DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
@@ -130,7 +114,7 @@ def action(instance):
     return get_action(last_snapshot)
 
 
-@indexer(IAuditable, IAuditLogCatalog)
+@indexer(IAuditable, IAuditlogCatalog)
 def listing_searchable_text(instance):
     """Fulltext search for the audit metadata
     """

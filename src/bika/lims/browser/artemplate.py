@@ -115,7 +115,7 @@ class JSONReadExtender(object):
         return parts
 
     def __call__(self, request, data):
-        bsc = self.context.bika_setup_catalog
+        bsc = self.context.senaite_catalog_setup
         service_data = []
         for item in self.context.getAnalyses():
             service_uid = item['service_uid']
