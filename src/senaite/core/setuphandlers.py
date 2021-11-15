@@ -25,6 +25,7 @@ from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
+from plone.dexterity.fti import DexterityFTI
 from plone.registry.interfaces import IRegistry
 from Products.CMFPlone.utils import get_installer
 from Products.GenericSetup.utils import _resolveDottedName
@@ -355,9 +356,15 @@ def setup_auditlog_catalog_mappings(portal):
     pt = api.get_tool("portal_types")
     portal_types = pt.listContentTypes()
 
-    # map all known types to the auditlog catalog
+    # map all known AT types to the auditlog catalog
     auditlog_catalog = api.get_tool(AUDITLOG_CATALOG)
     for portal_type in portal_types:
+
+        # Do not map DX types into archetypes tool
+        fti = pt.getTypeInfo(portal_type)
+        if isinstance(fti, DexterityFTI):
+            continue
+
         catalogs = at.getCatalogsByType(portal_type)
         if auditlog_catalog not in catalogs:
             existing_catalogs = list(map(lambda c: c.getId(), catalogs))
