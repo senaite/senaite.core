@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1876 Hide contents listing for dexterity containers
 - #1872 Upgrade/migrate catalogs and remove dependency to TextindexNG3
 - #1862 Fix failing instrument import for some QC analyes
 - #1875 Prevent max recursion depth error with copies of same analysis

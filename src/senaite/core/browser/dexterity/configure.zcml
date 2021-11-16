@@ -34,6 +34,16 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Default view for Dexterity Container -->
+  <browser:page
+      for="plone.dexterity.interfaces.IDexterityContainer"
+      name="view"
+      class=".views.SenaiteDefaultView"
+      template="templates/container.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Defaut edit view for Dexterity Items -->
   <browser:page
       for="plone.dexterity.interfaces.IDexterityContent"
