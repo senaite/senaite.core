@@ -28,6 +28,7 @@ from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import get_indexes
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -92,7 +93,8 @@ def migrate_catalogs(portal):
     logger.info("Migrate catalogs to Senaite...")
     # 1. Install new core catalogs
     setup_core_catalogs(portal)
-    # 2. Setup auditog catalog
+    # 2. Setup catalog mappings
+    setup_catalog_mappings(portal)
     setup_auditlog_catalog_mappings(portal)
 
     # 3. Migrate old -> new indexes
