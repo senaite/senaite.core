@@ -219,7 +219,8 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
             result = self.get_result(column_name, result, line)
             quantitation[quantitation['DefaultResult']] = result
 
-            kw = re.sub(r"\W", "", self._keywords[i])
+            # remove all non alphanumeric words, except `-+.`
+            kw = re.sub(r"[^a-zA-Z0-9_\-\+\.]", "", self._keywords[i])
             if not is_keyword(kw):
                 new_kw = find_kw(quantitation['AR'], kw)
                 if new_kw:
