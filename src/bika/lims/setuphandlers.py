@@ -106,7 +106,6 @@ def setup_handler(context):
     hide_navbar_items(portal)
     reindex_content_structure(portal)
     setup_groups(portal)
-    setup_catalog_mappings(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
     # XXX P5: Fix HTML filtering
