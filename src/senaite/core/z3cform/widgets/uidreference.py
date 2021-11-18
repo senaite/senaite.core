@@ -18,6 +18,7 @@ from z3c.form.browser.textlines import TextLinesWidget
 from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import ISubForm
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
 from zope.component import getUtility
@@ -76,6 +77,9 @@ class UIDReferenceWidget(TextLinesWidget):
         # form is a fieldset group
         if IDescriptiveGroup.providedBy(form):
             form = form.parentForm
+        # form is a subform (e.g. DataGridFieldObjectSubForm)
+        if ISubForm.providedBy(form):
+            form = form.parentForm
         return form
 
     def get_context(self):
@@ -88,11 +92,18 @@ class UIDReferenceWidget(TextLinesWidget):
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
 
+        # we might be in a subform, so try first to retrieve the object from
+        # the base form itself first
+        form = self.get_form()
+        portal_type = getattr(form, "portal_type", None)
+        context = getattr(form, "context", None)
+        if api.is_object(context):
+            if api.get_portal_type(context) == portal_type:
+                return context
+
         # Hack alert!
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
-        form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
         if not portal_type:
             portal_type = api.get_portal_type(self.context)
         portal_types = api.get_tool("portal_types")
