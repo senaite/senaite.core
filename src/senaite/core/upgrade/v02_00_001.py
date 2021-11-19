@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from BTrees.IOBTree import IOBTree
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
 from senaite.core.api.catalog import add_column
@@ -128,25 +129,31 @@ def migrate_catalogs(portal):
                 logger.info("Added missing column %s to %s"
                             % (column, dst_cat_id))
 
-        # copy over internal catalog structure from internal Catalog:
+        # copy over internal catalog structure from internal Catalog
+        # https://btrees.readthedocs.io/en/stable/overview.html#btree-diagnostic-tools
         #
-        # self.data = IOBTree()  # mapping of rid to meta_data
-        # self.uids = OIBTree()  # mapping of uid to rid
-        # self.paths = IOBTree()  # mapping of rid to uid
-        dst_cat._catalog.data = src_cat._catalog.data
-        dst_cat._catalog.uids = src_cat._catalog.uids
-        dst_cat._catalog.paths = src_cat._catalog.paths
+        # initial structure set in `Products.ZCatalog.Catalog`
+        #
+        # def clear(self):
+        #     self.data = IOBTree()  # mapping of rid to meta_data
+        #     self.uids = OIBTree()  # mapping of uid to rid
+        #     self.paths = IOBTree()  # mapping of rid to uid
+        #     self._length = BTrees.Length.Length()
+        #     for index in self.indexes:
+        #         self.getIndex(index).clear()
+
+        # NOTE: we just copy the paths, because `refreshCatalog(clear=1)` only
+        #       make use of them and clears all the other values.
+        paths = IOBTree(src_cat._catalog.paths)
+        dst_cat._catalog.paths = paths
 
         # refesh the catalog
-        pghandler = ZLogHandler(100)
-        dst_cat.refreshCatalog(pghandler=pghandler)
+        # this is needed to update the BTrees of the indexes
+        pghandler = ZLogHandler(1000)
+        # we pass clear=1 to drop all data except the paths of the new catalog
+        dst_cat.refreshCatalog(clear=1, pghandler=pghandler)
 
         # delete old catalog
         portal.manage_delObjects([src_cat_id])
-
-    # Update archetype tool
-    at = api.get_tool("archetype_tool")
-    for portal_type, catalogs in at.catalog_map.items():
-        at.setCatalogsByType(portal_type, catalogs)
 
     logger.info("Migrate catalogs to Senaite [DONE]")
