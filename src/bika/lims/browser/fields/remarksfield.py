@@ -171,6 +171,11 @@ class RemarksField(ObjectField):
         else:
             raise ValueError("Type not supported: {}".format(type(value)))
 
+        # filter nasty html in the complete history
+        for record in history:
+            content = record.get("content")
+            record["content"] = self.to_safe_html(content)
+
         # Store the data
         ObjectField.set(self, instance, history)
 
@@ -182,6 +187,11 @@ class RemarksField(ObjectField):
 
         # notify new remarks for e.g. later email notification etc.
         event.notify(RemarksAddedEvent(instance, history))
+
+    def to_safe_html(self, html):
+        pt = api.get_tool("portal_transforms")
+        stream = pt.convertTo("text/x-html-safe", html)
+        return stream.getData()
 
     def get(self, instance, **kwargs):
         """Returns a RemarksHistory object
