@@ -189,6 +189,7 @@ class RemarksField(ObjectField):
         event.notify(RemarksAddedEvent(instance, history))
 
     def to_safe_html(self, html):
+        # see: Products.PortalTransforms.tests.test_xss
         pt = api.get_tool("portal_transforms")
         stream = pt.convertTo("text/x-html-safe", html)
         return stream.getData()
