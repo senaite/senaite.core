@@ -221,6 +221,9 @@ def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
     if catalog_classes is None:
         catalog_classes = CATALOGS
 
+    # contains tuples of (catalog, index) pairs
+    to_reindex = []
+
     for cls in catalog_classes:
         module = _resolveDottedName(cls.__module__)
 
@@ -235,9 +238,6 @@ def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
             catalog = cls()
             catalog._setId(catalog_id)
             portal._setObject(catalog_id, catalog)
-
-        # contains tuples of (catalog, index) pairs
-        to_reindex = []
 
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
