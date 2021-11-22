@@ -61,17 +61,18 @@ def ObjectModifiedEventHandler(obj, event):
     elif obj.portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
+        uid = obj.UID()
 
         # re-index all analysis services
-        query = dict(getCategoryUID=obj.UID())
+        query = dict(category_uid=uid, portal_type="AnalysisService")
         brains = api.search(query, SETUP_CATALOG)
         for brain in brains:
             obj = api.get_object(brain)
-            obj.reindexObject(idxs=['getCategoryTitle'])
+            obj.reindexObject()
 
         # re-index analyses
-        query = dict(getCategoryUID=obj.UID())
+        query = dict(getCategoryUID=uid)
         brains = api.search(query, ANALYSIS_CATALOG)
         for brain in brains:
             obj = api.get_object(brain)
-            obj.reindexObject(idxs=['getCategoryTitle'])
+            obj.reindexObject()
