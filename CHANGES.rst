@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1883 Fix possible XSS in remarks field
 - #1882 Fix catalog query in analysis category modified handler
 - #1878 Fix two dimension results parser for Analyses containing a dash in the name
 - #1876 Hide contents listing for dexterity containers
