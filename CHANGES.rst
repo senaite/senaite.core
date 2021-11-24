@@ -4,6 +4,8 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #1885 Allow to re-add cancelled/rejected/retracted analyses (#1777 port)
+- #1885 Fix APIError when a retest analysis source is removed (#1777 port)
 - #1868 Fix indexing of temporary objects resulting in orphan entries in catalog
 - #1866 Fix error when invalidating samples with copies of analyses
 - #1851 Added readonly_transactions decorator (#1732 port)

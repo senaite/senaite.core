@@ -22,25 +22,23 @@ import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
-from zope.interface import alsoProvides
+from Products.Archetypes.Registry import registerField
 from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
+
+DETACHED_STATES = ["cancelled", "retracted", "rejected"]
 
 """Field to manage Analyses on ARs
 
@@ -235,19 +233,21 @@ class ARAnalysesField(ObjectField):
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
         analyses = self.resolve_analyses(instance, service)
+
+        # Filter out analyses in detached states
+        # This allows to re-add an analysis that was retracted or cancelled
+        analyses = filter(
+            lambda an: api.get_workflow_status_of(an) not in DETACHED_STATES,
+            analyses)
+
         if not analyses:
             # Create the analysis
-            keyword = service.getKeyword()
-            logger.info("Creating new analysis '{}'".format(keyword))
-            analysis = create_analysis(instance, service)
+            new_id = self.generate_analysis_id(instance, service)
+            logger.info("Creating new analysis '{}'".format(new_id))
+            analysis = create_analysis(instance, service, id=new_id)
             analyses.append(analysis)
 
-        skip = ["cancelled", "retracted", "rejected"]
         for analysis in analyses:
-            # Skip analyses to better not modify
-            if api.get_review_status(analysis) in skip:
-                continue
-
             # Set the hidden status
             analysis.setHidden(hidden)
 
@@ -263,6 +263,17 @@ class ARAnalysesField(ObjectField):
             analysis.setResultsRange(analysis_rr)
             analysis.reindexObject()
 
+    def generate_analysis_id(self, instance, service):
+        """Generate a new analysis ID
+        """
+        count = 1
+        keyword = service.getKeyword()
+        new_id = keyword
+        while new_id in instance.objectIds():
+            new_id = "{}-{}".format(keyword, count)
+            count += 1
+        return new_id
+
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance
         """
@@ -275,6 +286,12 @@ class ARAnalysesField(ObjectField):
         worksheet = analysis.getWorksheet()
         if worksheet:
             worksheet.removeAnalysis(analysis)
+
+        # handle retest source deleted
+        retest = analysis.getRetest()
+        if retest:
+            # unset reference link
+            retest.setRetestOf(None)
 
         # Remove the analysis
         # Note the analysis might belong to a partition

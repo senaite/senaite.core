@@ -1181,4 +1181,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return None
         if len(back_refs) > 1:
             logger.warn("Analysis {} with multiple retests".format(self.id))
-        return api.get_object_by_uid(back_refs[0])
+        retest_uid = back_refs[0]
+        retest = api.get_object_by_uid(retest_uid, default=None)
+        if retest is None:
+            logger.error("Retest with UID {} not found".format(retest_uid))
+        return retest
