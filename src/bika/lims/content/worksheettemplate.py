@@ -38,7 +38,6 @@ from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
@@ -100,16 +99,6 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("Method",),
         relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
-        widget=SelectionWidget(
-            format="select",
-            label=_("Method"),
-            description=_(
-                "Restrict the available analysis services and instruments"
-                "to those with the selected method."
-                " In order to apply this change to the services list, you "
-                "should save the change first."
-            ),
-        ),
     ),
 
     ReferenceField(
@@ -157,6 +146,13 @@ schema["title"].widget.visible = True
 
 schema["description"].schemata = "Description"
 schema["description"].widget.visible = True
+schema["RestrictToMethod"].widget.label =  "Method"
+schema["RestrictToMethod"].widget.description = _(
+    "Restrict the available analysis services and instruments"
+    "to those with the selected method."
+    " In order to apply this change to the services list, you "
+    "should save the change first."
+)
 
 
 class WorksheetTemplate(BaseContent):
