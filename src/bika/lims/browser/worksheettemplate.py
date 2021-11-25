@@ -18,11 +18,9 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.utils import DisplayList
 from senaite.core.p3compat import cmp
+from bika.lims import api
 from bika.lims.browser import BrowserView
-from bika.lims.browser.widgets.serviceswidget import ServicesView
 import json
 
 
@@ -31,16 +29,20 @@ class AJAXGetWorksheetTemplateInstruments(BrowserView):
     Returns a vocabulary with the instruments available for the selected method
     """
     def __call__(self):
-        if 'method_uid' in self.request.keys():
-            method_uid = str(json.loads(self.request.get('method_uid', '')))
-            cfilter = {
-                'portal_type': 'Instrument',
-                'is_active': True,
-                'getMethodUIDs': {"query": method_uid,
-                                  "operator": "or"}}
-            bsc = getToolByName(self, 'senaite_catalog_setup')
-            items = [{'uid': '', 'm_title': 'No instrument'}] + [
-                {'uid': o.UID, 'm_title': o.Title} for o in
-                bsc(cfilter)]
-            items.sort(lambda x, y: cmp(x['m_title'], y['m_title']))
+        items = [{'uid': '', 'm_title': 'No instrument'}]
+        if 'method_uid' not in self.request.keys():
             return json.dumps(items)
+
+        method_uid = str(json.loads(self.request.get('method_uid', '')))
+        if not method_uid:
+            return json.dumps(items)
+
+        try:
+            instruments = api.get_object(method_uid).getInstruments()
+        except api.APIError:
+            return json.dumps(items)
+
+        items.extend([
+            {'uid': o.UID(), 'm_title': o.Title()} for o in instruments])
+        items.sort(lambda x, y: cmp(x['m_title'], y['m_title']))
+        return json.dumps(items)
