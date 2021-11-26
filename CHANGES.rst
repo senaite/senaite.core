@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1888 Reduce logging in AR Add
 - #1886 Use the current timestamp instead of the client name for report archive download
 - #1883 Fix possible XSS in remarks field
 - #1882 Fix catalog query in analysis category modified handler
