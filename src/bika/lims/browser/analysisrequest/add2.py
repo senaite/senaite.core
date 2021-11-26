@@ -106,7 +106,7 @@ class AnalysisRequestAddView(BrowserView):
         self.ShowPrices = self.setup.getShowPrices()
         self.theme = api.get_view("senaite_theme")
         self.icon = self.theme.icon_url("Sample")
-        logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
+        logger.debug("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
     def get_view_url(self):
@@ -154,7 +154,7 @@ class AnalysisRequestAddView(BrowserView):
         """Create a temporary AR to fetch the fields from
         """
         if not self.tmp_ar:
-            logger.info("*** CREATING TEMPORARY AR ***")
+            logger.debug("*** CREATING TEMPORARY AR ***")
             self.tmp_ar = self.context.restrictedTraverse(
                 "portal_factory/AnalysisRequest/Request new analyses")
         return self.tmp_ar
@@ -162,14 +162,14 @@ class AnalysisRequestAddView(BrowserView):
     def get_ar_schema(self):
         """Return the AR schema
         """
-        logger.info("*** GET AR SCHEMA ***")
+        logger.debug("*** GET AR SCHEMA ***")
         ar = self.get_ar()
         return ar.Schema()
 
     def get_ar_fields(self):
         """Return the AR schema fields (including extendend fields)
         """
-        logger.info("*** GET AR FIELDS ***")
+        logger.debug("*** GET AR FIELDS ***")
         schema = self.get_ar_schema()
         return schema.fields()
 
@@ -229,7 +229,7 @@ class AnalysisRequestAddView(BrowserView):
         form = dict()
         form[new_fieldname] = value
         self.request.form.update(form)
-        logger.info("get_input_widget: fieldname={} arnum={} "
+        logger.debug("get_input_widget: fieldname={} arnum={} "
                     "-> new_fieldname={} value={}".format(
                         fieldname, arnum, new_fieldname, value))
         widget = context.widget(new_fieldname, **kw)
@@ -248,7 +248,7 @@ class AnalysisRequestAddView(BrowserView):
             if ar is None:
                 continue
             out[n] = ar
-        logger.info("get_copy_from: uids={}".format(copy_from_uids))
+        logger.debug("get_copy_from: uids={}".format(copy_from_uids))
         return out
 
     def get_default_value(self, field, context, arnum):
@@ -291,8 +291,8 @@ class AnalysisRequestAddView(BrowserView):
             interface=IGetDefaultFieldValueARAddHook)
         if adapter is not None:
             default = adapter(self.context)
-        logger.info("get_default_value: context={} field={} value={} arnum={}"
-                    .format(context, name, default, arnum))
+        logger.debug("get_default_value: context={} field={} value={} arnum={}"
+                     .format(context, name, default, arnum))
         return default
 
     def get_field_value(self, field, context):
@@ -300,7 +300,7 @@ class AnalysisRequestAddView(BrowserView):
         """
         name = field.getName()
         value = context.getField(name).get(context)
-        logger.info("get_field_value: context={} field={} value={}".format(
+        logger.debug("get_field_value: context={} field={} value={}".format(
             context, name, value))
         return value
 
@@ -1138,7 +1138,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Maybe other add-ons have additional fields that require flushing
         for name, ad in getAdapters((self.context,), IAddSampleFieldsFlush):
-            logger.info("Additional flush settings from {}".format(name))
+            logger.debug("Additional flush settings from {}".format(name))
             additional_settings = ad.get_flush_settings()
             for key, values in additional_settings.items():
                 new_values = flush_settings.get(key, []) + values
@@ -1383,7 +1383,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
-            logger.info("adapter for '{}': {}".format(field_name, name))
+            logger.debug("adapter for '{}': {}".format(field_name, name))
             ad_info = adapter.get_object_info()
             self.update_object_info(info, ad_info)
 
@@ -1471,7 +1471,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Calculate the member discount if it applies
             if member_discount and member_discount_applies:
-                logger.info("Member discount applies with {}%".format(
+                logger.debug("Member discount applies with {}%".format(
                     member_discount))
                 ardiscount_amount = base_price * member_discount / 100
 
@@ -1485,9 +1485,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "vat": "{0:.2f}".format(vat_amount),
                 "total": "{0:.2f}".format(total),
             }
-            logger.info("Prices for AR {}: Discount={discount} "
-                        "VAT={vat} Subtotal={subtotal} total={total}"
-                        .format(n, **prices[n]))
+            logger.debug("Prices for AR {}: Discount={discount} "
+                         "VAT={vat} Subtotal={subtotal} total={total}"
+                         .format(n, **prices[n]))
 
         return prices
 
