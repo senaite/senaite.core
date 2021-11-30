@@ -998,17 +998,18 @@ class DurationValidator:
     def __call__(self, value, *args, **kwargs):
 
         instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
+        request = kwargs.get('REQUEST') or {}
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
-        value = request[fieldname]
-        for v in value.values():
-            try:
-                int(v)
-            except:
-                return to_utf8(
-                    translate(_("Validation failed: Values must be numbers")))
+        value = request.get(fieldname) or None
+        if value:
+            for v in value.values():
+                try:
+                    int(v)
+                except:
+                    return to_utf8(
+                        translate(_("Validation failed: Values must be numbers")))
         return True
 
 
