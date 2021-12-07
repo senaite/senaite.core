@@ -56,7 +56,7 @@ class DateTimeWidget(TypesWidget):
     def today(self, offset=0):
         now = DateTime() + offset
         if self.show_time:
-            return now.ISO8601()
+            return now.strftime("%Y-%m-%dT00:00")
         return now.strftime("%Y-%m-%d")
 
     def attrs(self):
