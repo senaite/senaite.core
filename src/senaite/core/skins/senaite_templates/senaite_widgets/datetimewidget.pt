@@ -33,7 +33,6 @@
         <input metal:fill-slot="widget_body"
                type="date"
                class="form-control form-control-sm"
-               pattern="\d{4}-\d{2}-\d{2}"
                tal:attributes="python:widget.attrs();
                                name fieldName;
                                id fieldName;

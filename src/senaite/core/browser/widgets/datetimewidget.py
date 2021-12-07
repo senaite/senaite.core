@@ -50,17 +50,21 @@ class DateTimeWidget(TypesWidget):
     def isoformat(self, time, context, request):
         dt = api.to_date(time)
         if self.show_time:
-            return dt.strftime("%Y-%m-%dT%H:%M")
+            return dt.ISO8601()
         return dt.strftime("%Y-%m-%d")
 
     def today(self, offset=0):
         now = DateTime() + offset
         if self.show_time:
-            return now.strftime("%Y-%m-%dT00:00")
+            return now.ISO8601()
         return now.strftime("%Y-%m-%d")
 
     def attrs(self):
         attrs = {}
+        if self.show_time:
+            attrs["pattern"] = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"
+        else:
+            attrs["pattern"] = r"\d{4}-\d{2}-\d{2}}"
         if self.datepicker_nofuture:
             attrs["max"] = self.today()
         if self.datepicker_nopast:
