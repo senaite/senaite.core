@@ -925,6 +925,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.5.tgz#9283c9ce5b289a3c4f61c12757469e59377f81f3"
   integrity sha512-6nFkfkmSeV/rqSaS4oWHgmpnYw194f6hmWF5is6b0J1naJZoiD0NTc9AiUwPHvWsowkjuHErCZT1wa0jg+BLIA==
 
+"@eonasdan/tempus-dominus@^6.0.0-alpha15":
+  version "6.0.0-alpha15"
+  resolved "https://registry.yarnpkg.com/@eonasdan/tempus-dominus/-/tempus-dominus-6.0.0-alpha15.tgz#8e3b654f905130bcbf7977a08bf81d6accda02fa"
+  integrity sha512-b+CdtztmlSe97Uw170g7to1W0b+nVXvI320uwoT8DqFVGoMZfgaEahNfLkbZDMYcsHE27crAZKBx7CJMarwQ+w==
+
 "@fortawesome/fontawesome-free@^5.15.4":
   version "5.15.4"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.4.tgz#ecda5712b61ac852c760d8b3c79c96adca5554e5"
