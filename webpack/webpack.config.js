@@ -210,8 +210,6 @@ module.exports = {
         src: [
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
-          "../src/senaite/core/browser/static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js",
-          "../src/senaite/core/browser/static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js",
           "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
