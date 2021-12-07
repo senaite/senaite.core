@@ -18,9 +18,10 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from AccessControl import ClassSecurityInfo
-from bika.lims.browser import get_date
 from bika.lims.browser import ulocalized_time as ut
+from DateTime import DateTime
 from Products.Archetypes.Registry import registerPropertyType
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
@@ -30,6 +31,8 @@ class DateTimeWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         "show_time": False,
+        "datepicker_nofuture": False,
+        "datepicker_nopast": False,
         "macro": "senaite_widgets/datetimewidget",
         "helper_js": ("senaite_widgets/datetimewidget.js",),
         "helper_css": ("senaite_widgets/datetimewidget.css",),
@@ -44,15 +47,25 @@ class DateTimeWidget(TypesWidget):
                    context=context, request=request)
         return value or ""
 
-    def ulocalized_gmt0_time(self, time, context, request):
-        """Returns the localized time in string format, but in GMT+0
-        """
-        value = get_date(context, time)
-        if not value:
-            return ""
-        # DateTime is stored with TimeZone, but DateTimeWidget omits TZ
-        value = value.toZone("GMT+0")
-        return self.ulocalized_time(value, context, request)
+    def isoformat(self, time, context, request):
+        dt = api.to_date(time)
+        if self.show_time:
+            return dt.strftime("%Y-%m-%dT%H:%M")
+        return dt.strftime("%Y-%m-%d")
+
+    def today(self, offset=0):
+        now = DateTime() + offset
+        if self.show_time:
+            return now.strftime("%Y-%m-%dT00:00")
+        return now.strftime("%Y-%m-%d")
+
+    def attrs(self):
+        attrs = {}
+        if self.datepicker_nofuture:
+            attrs["max"] = self.today()
+        if self.datepicker_nopast:
+            attrs["min"] = self.today()
+        return attrs
 
 
 registerWidget(
