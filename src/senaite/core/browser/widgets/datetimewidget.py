@@ -18,10 +18,11 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from AccessControl import ClassSecurityInfo
 from bika.lims.browser import ulocalized_time as ut
 from DateTime import DateTime
+from DateTime.DateTime import safelocaltime
+from DateTime.interfaces import DateTimeError
 from Products.Archetypes.Registry import registerPropertyType
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
@@ -47,14 +48,34 @@ class DateTimeWidget(TypesWidget):
                    context=context, request=request)
         return value or ""
 
-    def isoformat(self, time, context, request):
-        dt = api.to_date(time)
+    def to_tz_date(self, value):
+        if not isinstance(value, DateTime):
+            try:
+                value = DateTime(value)
+                if value.timezoneNaive():
+                    # Use local timezone for tz naive strings
+                    # see http://dev.plone.org/plone/ticket/10141
+                    zone = value.localZone(safelocaltime(value.timeTime()))
+                    parts = value.parts()[:-1] + (zone,)
+                    value = DateTime(*parts)
+            except DateTimeError:
+                value = None
+        return value
+
+    def to_local_date(self, time, context, request):
+        dt = self.to_tz_date(time)
         if self.show_time:
-            return dt.ISO8601()
+            return dt.strftime("%Y-%m-%dT%H:%M")
         return dt.strftime("%Y-%m-%d")
 
-    def today(self, offset=0):
-        now = DateTime() + offset
+    def get_max(self):
+        now = DateTime()
+        if self.show_time:
+            return now.strftime("%Y-%m-%dT23:59")
+        return now.strftime("%Y-%m-%d")
+
+    def get_min(self):
+        now = DateTime()
         if self.show_time:
             return now.strftime("%Y-%m-%dT00:00")
         return now.strftime("%Y-%m-%d")
@@ -66,9 +87,9 @@ class DateTimeWidget(TypesWidget):
         else:
             attrs["pattern"] = r"\d{4}-\d{2}-\d{2}}"
         if self.datepicker_nofuture:
-            attrs["max"] = self.today()
+            attrs["max"] = self.get_max()
         if self.datepicker_nopast:
-            attrs["min"] = self.today()
+            attrs["min"] = self.get_min()
         return attrs
 
 

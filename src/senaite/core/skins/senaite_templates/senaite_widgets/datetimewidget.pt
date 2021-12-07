@@ -37,7 +37,7 @@
                                name fieldName;
                                id fieldName;
                                type python:'datetime-local' if widget.show_time else 'date';
-                               value python:widget.isoformat(value, context=context, request=request) if value else '';
+                               value python:widget.to_local_date(value, context=context, request=request) if value else '';
                                size widget/size|nothing;
                                maxlength widget/maxlength|nothing;"/>
       </metal:use>
