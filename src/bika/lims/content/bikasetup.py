@@ -152,16 +152,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField(
-        'PasswordLifetime',
-        schemata="Security",
-        required=1,
-        default=0,
-        widget=IntegerWidget(
-            label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
-        )
-    ),
-    IntegerField(
         'AutoLogOff',
         schemata="Security",
         required=1,
