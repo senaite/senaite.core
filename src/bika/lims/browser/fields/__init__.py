@@ -21,7 +21,6 @@
 from .addressfield import AddressField  # noqa
 from .aranalysesfield import ARAnalysesField # noqa
 from .coordinatefield import CoordinateField # noqa
-from .datetimefield import DateTimeField # noqa
 from .durationfield import DurationField # noqa
 from .emailsfield import EmailsField # noqa
 from .historyawarereferencefield import HistoryAwareReferenceField # noqa
