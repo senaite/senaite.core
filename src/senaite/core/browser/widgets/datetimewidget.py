@@ -63,6 +63,10 @@ class DateTimeWidget(TypesWidget):
         return value
 
     def to_local_date(self, time, context, request):
+        """This method converts to a local date w/o timezone
+
+        This is required for the native datetime-local field.
+        """
         dt = self.to_tz_date(time)
         if self.show_time:
             return dt.strftime("%Y-%m-%dT%H:%M")
