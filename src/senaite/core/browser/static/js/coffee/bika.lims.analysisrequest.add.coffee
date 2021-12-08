@@ -1218,6 +1218,18 @@ class window.AnalysisRequestAdd
         _el = $(_td).find("input[type=radio]")[index]
         $(_el).prop "checked", checked
 
+    # Copy <input type="date"> fields
+    $td1.find("input[type='date'],input[type='datetime-local']").each (index, el) ->
+      console.debug "-> Copy date field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='date'],input[type='datetime-local']")[index]
+        $(_el).val value
+
     # trigger form:changed event
     $(me).trigger "form:changed"
 

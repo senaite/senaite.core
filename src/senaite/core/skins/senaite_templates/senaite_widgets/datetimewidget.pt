@@ -26,22 +26,20 @@
               tal:attributes="href string:${static_path}/datetimewidget.css"/>
       </tal:static>
       <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <!-- Note: The displayed date format will differ from the actual value —
+             the displayed date is formatted based on the locale of the user's
+             browser, but the parsed value is always formatted yyyy-mm-dd.
+        -->
         <input metal:fill-slot="widget_body"
-               type="text"
-               name=""
-               class="blurrable firstToFocus"
-               id=""
-               value=""
-               size="30"
-               tal:attributes="name fieldName;
+               type="date"
+               class="form-control form-control-sm"
+               tal:attributes="python:widget.attrs();
+                               name fieldName;
                                id fieldName;
-                               value python: widget.ulocalized_gmt0_time(value, context=context, request=request) if value else '';
+                               type python:'datetime-local' if widget.show_time else 'date';
+                               value python:widget.to_local_date(value, context=context, request=request) if value else '';
                                size widget/size|nothing;
-                               datepicker python:1 if not widget.show_time else 0;
-                               datetimepicker python:1 if widget.show_time else 0;
-                               maxlength widget/maxlength|nothing;
-                               datepicker_nofuture python:1 if hasattr(widget, 'datepicker_nofuture') and widget.datepicker_nofuture else 0;
-                               datepicker_nopast  python:1 if hasattr(widget, 'datepicker_nopast') and widget.datepicker_nopast else 0;"/>
+                               maxlength widget/maxlength|nothing;"/>
       </metal:use>
     </metal:edit_macro>
 

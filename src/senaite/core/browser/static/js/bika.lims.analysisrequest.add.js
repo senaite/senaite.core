@@ -1201,6 +1201,25 @@
           return $(_el).prop("checked", checked);
         });
       });
+      $td1.find("input[type='date'],input[type='datetime-local']").each(function(index, el) {
+        var j, results1;
+        console.debug("-> Copy date field");
+        $el = $(el);
+        value = $el.val();
+        return $.each((function() {
+          results1 = [];
+          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          return results1;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find("td[arnum=" + arnum + "]");
+          _el = $(_td).find("input[type='date'],input[type='datetime-local']")[index];
+          return $(_el).val(value);
+        });
+      });
       return $(me).trigger("form:changed");
     };
 
