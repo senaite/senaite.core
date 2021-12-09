@@ -512,7 +512,6 @@ schema = BikaSchema.copy() + Schema((
             description=_("The date when the sample will be taken"),
             size=20,
             show_time=True,
-            datepicker_nopast=1,
             render_own_label=True,
             visible={
                 'add': 'edit',
