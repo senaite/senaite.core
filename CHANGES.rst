@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1895 Disable native form validation in header table
 - #1893 Removed unused field PasswordLifeTime
 - #1892 Drop jQuery Datepicker for HTML5 native date fields
 - #1886 Use the current timestamp instead of the client name for report archive download
