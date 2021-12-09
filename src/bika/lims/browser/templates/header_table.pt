@@ -20,7 +20,16 @@
                 sublists python:dummy[1];
                 errors python:request.get('errors',{})"
     tal:condition="sublists">
-    <form method="post" name="header_form">
+    <tal:comment condition="python:False">
+      <!--
+        Note: the `novalidate` attribute is needed to avoid browser validation
+        when e.g. the "expected sampling date" has passed and another value
+        wants to be changed.
+
+        https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Constraint_validation
+      -->
+    </tal:comment>
+    <form novalidate method="post" name="header_form">
       <input type="hidden" name="header_table_submitted" value="1" />
 
       <table class="header_table table table-condensed table-bordered table-sm">
