@@ -21,18 +21,24 @@
 import math
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.widgets import ComboBoxWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInstrumentCertification
 from DateTime import DateTime
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
-# Widgets
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ReferenceField
-# Schema and Fields
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
@@ -40,18 +46,7 @@ from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-# bika.lims imports
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import ComboBoxWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims import logger
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IInstrumentCertification
-from plone.app.blob.field import FileField as BlobFileField
+from senaite.core.browser.widgets import DateTimeWidget
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
