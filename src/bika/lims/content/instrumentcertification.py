@@ -225,11 +225,13 @@ class InstrumentCertification(BaseFolder):
 
         if valid_from and interval:
             valid_to = valid_from + int(interval)
+            # convert back to date string w/o timezone
+            valid_to = valid_to.strftime("%Y-%m-%dT%H:%M")
             self.getField("ValidTo").set(self, valid_to)
             logger.debug("Set ValidTo Date to: %r" % valid_to)
         else:
             # just set the value
-            self.getField("ValidTo").set(self, valid_to)
+            self.getField("ValidTo").set(self, value)
 
     def getLabContacts(self):
         bsc = getToolByName(self, 'senaite_catalog_setup')
