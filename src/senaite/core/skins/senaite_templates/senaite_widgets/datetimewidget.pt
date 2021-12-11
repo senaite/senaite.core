@@ -31,12 +31,12 @@
              browser, but the parsed value is always formatted yyyy-mm-dd.
         -->
         <div metal:fill-slot="widget_body">
-          <div class="input-group" style="width:250px;">
+          <div class="input-group" style="width:260px;">
             <!-- date -->
             <input
               type="date"
               class="form-control form-control-sm"
-              style="max-width:60%"
+              style="max-width:55%"
               tal:attributes="
                     python:widget.attrs();
                     target fieldName;
@@ -45,7 +45,7 @@
             <!-- time -->
             <input
               type="time"
-              style="max-width:40%"
+              style="max-width:45%"
               class="form-control form-control-sm"
               tal:condition="python:widget.show_time"
               tal:attributes="
