@@ -98,8 +98,9 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'Date',
         widget=DateTimeWidget(
-            label=_("Date"),
+            label=_("Date granted"),
             description=_("Date when the calibration certificate was granted"),
+            show_time=True,
         ),
     ),
 
@@ -115,29 +116,27 @@ schema = BikaSchema.copy() + Schema((
             default="",
             # configures the HTML input attributes for the additional field
             field_config={"type": "number", "step": "1", "max": "99999"},
-            field_regex="\d+"
+            field_regex=r"\d+"
         )
     ),
 
     DateTimeField(
         'ValidFrom',
-        with_time=1,
-        with_date=1,
         required=1,
         widget=DateTimeWidget(
-            label=_("From"),
-            description=_("Date from which the calibration certificate is valid"),
+            label=_("Valid from"),
+            description=_("Date when the certificate is valid"),
+            show_time=True,
         ),
     ),
 
     DateTimeField(
         'ValidTo',
-        with_time=1,
-        with_date=1,
         required=1,
         widget=DateTimeWidget(
-            label=_("To"),
+            label=_("Valid to"),
             description=_("Date until the certificate is valid"),
+            show_time=True,
         ),
     ),
 
@@ -208,14 +207,13 @@ class InstrumentCertification(BaseFolder):
     implements(IInstrumentCertification)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declareProtected("Modify portal content", "setValidTo")
+    @security.protected("Modify portal content")
     def setValidTo(self, value):
         """Custom setter method to calculate a `ValidTo` date based on
         the `ValidFrom` and `ExpirationInterval` field values.
