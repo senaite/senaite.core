@@ -47,6 +47,7 @@
               type="time"
               style="max-width:40%"
               class="form-control form-control-sm"
+              tal:condition="python:widget.show_time"
               tal:attributes="
                     target fieldName;
                     name string:${fieldName}-time;
