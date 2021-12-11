@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    /**
+     * returns the current date without TZ
+     */
     get_default_date() {
       // returns the default date
       let dt = new Date();
@@ -28,11 +31,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return ds.substring(0, ds.lastIndexOf("T"))
     }
 
+    /**
+     * set an input field value (if the field exists)
+     * @param {object} field input field
+     * @param {string} value the value the should get set on the field
+     */
     set_field(field, value) {
       if (!field) return;
       field.value = value;
     }
 
+    /**
+      * generate a full date w/o TZ from the date and time inputs
+      * @param {object} date the date input field
+      * @param {object} time the time input field
+      * @param {object} hidden hidden field that contains the full date for from submission
+    */
     update_date(date, time, input) {
       // console.debug("DateTimeWidget::update_date");
       let ds = date ? date.value : null;
@@ -54,6 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    /**
+     * event handler for `change` event
+     *
+     * collect the date/time and hidden input of the field
+     * and set the full date for form submission.
+     *
+     * Fires when the date/time changes
+     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
+     */
     on_change(event) {
       // console.debug("DateTimeWidget::on_change");
       let el = event.currentTarget;
