@@ -30,16 +30,37 @@
              the displayed date is formatted based on the locale of the user's
              browser, but the parsed value is always formatted yyyy-mm-dd.
         -->
-        <input metal:fill-slot="widget_body"
-               type="date"
-               class="form-control form-control-sm"
-               tal:attributes="python:widget.attrs();
-                               name fieldName;
-                               id fieldName;
-                               type python:'datetime-local' if widget.show_time else 'date';
-                               value python:widget.to_local_date(value, context=context, request=request) if value else '';
-                               size widget/size|nothing;
-                               maxlength widget/maxlength|nothing;"/>
+        <div metal:fill-slot="widget_body">
+          <div class="input-group" style="width:260px;">
+            <!-- date -->
+            <input
+              type="date"
+              class="form-control form-control-sm"
+              tal:attributes="
+                    python:widget.attrs();
+                    target fieldName;
+                    name string:${fieldName}-date;
+                    style python:'max-width:55%' if widget.show_time else '';
+                    value python:widget.get_date(value) if value else '';"/>
+            <!-- time -->
+            <input
+              type="time"
+              class="form-control form-control-sm"
+              tal:condition="python:widget.show_time"
+              tal:attributes="
+                    target fieldName;
+                    name string:${fieldName}-time;
+                    style python:'max-width:45%' if widget.show_time else '';
+                    value python:widget.get_time(value) if value else '';"/>
+          </div>
+          <!-- datetime value (outside to avoid style issues) -->
+          <input
+            type="hidden"
+            tal:attributes="
+                  name string:${fieldName};
+                  value python:widget.to_local_date(value, context=context, request=request) if value else '';"/>
+        </div>
+
       </metal:use>
     </metal:edit_macro>
 

@@ -64,32 +64,34 @@ class DateTimeWidget(TypesWidget):
 
     def to_local_date(self, time, context, request):
         """This method converts to a local date w/o timezone
-
-        This is required for the native datetime-local field.
         """
         dt = self.to_tz_date(time)
         if self.show_time:
             return dt.strftime("%Y-%m-%dT%H:%M")
         return dt.strftime("%Y-%m-%d")
 
+    def get_date(self, value):
+        if not value:
+            return ""
+        dt = self.to_tz_date(value)
+        return dt.strftime("%Y-%m-%d")
+
+    def get_time(self, value):
+        if not value:
+            return ""
+        dt = self.to_tz_date(value)
+        return dt.strftime("%H:%M")
+
     def get_max(self):
         now = DateTime()
-        if self.show_time:
-            return now.strftime("%Y-%m-%dT23:59")
         return now.strftime("%Y-%m-%d")
 
     def get_min(self):
         now = DateTime()
-        if self.show_time:
-            return now.strftime("%Y-%m-%dT00:00")
         return now.strftime("%Y-%m-%d")
 
     def attrs(self):
         attrs = {}
-        if self.show_time:
-            attrs["pattern"] = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"
-        else:
-            attrs["pattern"] = r"\d{4}-\d{2}-\d{2}}"
         if self.datepicker_nofuture:
             attrs["max"] = self.get_max()
         if self.datepicker_nopast:

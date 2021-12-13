@@ -56,9 +56,6 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     if not time or not isinstance(time, DateTime):
         return ''
 
-    # no printing times if they were not specified in inputs
-    if time.second() + time.minute() + time.hour() == 0:
-        long_format = False
     try:
         time_str = _ut(time, long_format, time_only, context, 'senaite.core', request)
     except ValueError:
