@@ -72,6 +72,8 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1872
     migrate_catalogs(portal)
 
+    fix_catalog_mappings(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -157,3 +159,21 @@ def migrate_catalogs(portal):
         portal.manage_delObjects([src_cat_id])
 
     logger.info("Migrate catalogs to Senaite [DONE]")
+
+
+def fix_catalog_mappings(portal):
+    """Removes invalid catalog mappings
+    """
+    logger.info("Fix Archetype Tool catalog mappings ...")
+
+    # Remove invalid mappings in archetype tool
+    at = api.get_tool("archetype_tool")
+    catalog_map = getattr(at, "catalog_map", {})
+    to_remove = dict(MIGRATE_CATALOGS).keys()
+    for portal_type, catalogs in catalog_map.items():
+        new_catalogs = filter(lambda cid: cid not in to_remove, catalogs)
+        at.setCatalogsByType(portal_type, new_catalogs)
+        logger.info("Updated catalog mapping for '%s' to %r" % (
+            portal_type, new_catalogs))
+
+    logger.info("Fix Archetype Tool catalog mappings [DONE]")
