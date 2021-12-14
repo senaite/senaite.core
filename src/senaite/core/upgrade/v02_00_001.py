@@ -72,6 +72,7 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1872
     migrate_catalogs(portal)
 
+    # https://github.com/senaite/senaite.core/pull/1898
     fix_catalog_mappings(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
