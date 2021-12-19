@@ -26,11 +26,6 @@
     }
 }
 
-.form-control {
-    @extend .form-control;
-    min-width: 260px;
-}
-
 ul.configlets>li>form,
 form.rowlike,
 form.loginform,
