@@ -30,8 +30,8 @@
              the displayed date is formatted based on the locale of the user's
              browser, but the parsed value is always formatted yyyy-mm-dd.
         -->
-        <div metal:fill-slot="widget_body">
-          <div class="input-group" style="width:260px;">
+        <div class="text-left" metal:fill-slot="widget_body">
+          <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
             <!-- date -->
             <input
               type="date"
@@ -40,7 +40,6 @@
                     python:widget.attrs();
                     target fieldName;
                     name string:${fieldName}-date;
-                    style python:'max-width:55%' if widget.show_time else '';
                     value python:widget.get_date(value) if value else '';"/>
             <!-- time -->
             <input
@@ -50,7 +49,6 @@
               tal:attributes="
                     target fieldName;
                     name string:${fieldName}-time;
-                    style python:'max-width:45%' if widget.show_time else '';
                     value python:widget.get_time(value) if value else '';"/>
           </div>
           <!-- datetime value (outside to avoid style issues) -->
