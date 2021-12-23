@@ -191,6 +191,8 @@ def get_tool(name, context=None, default=_marker):
         return ploneapi.portal.get_tool(name)
     except InvalidParameterError:
         if default is not _marker:
+            if isinstance(default, six.string_types):
+                return get_tool(default)
             return default
         fail("No tool named '%s' found." % name)
 
