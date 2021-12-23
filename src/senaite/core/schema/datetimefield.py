@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IDatetimeField
 from zope.interface import implementer
@@ -10,6 +12,18 @@ from zope.schema import Datetime
 class DatetimeField(Datetime, BaseField):
     """A field that handles date and time
     """
+
+    def set(self, object, value):
+        """Set UID reference
+
+        :param object: the instance of the field
+        :param value: datetime value
+        :type value: datetime
+        """
+        if not isinstance(value, datetime):
+            raise TypeError("Expected datetime, got %r" % type(value))
+        super(DatetimeField, self).set(object, value)
+
     def _validate(self, value):
         """Validator when called from form submission
         """

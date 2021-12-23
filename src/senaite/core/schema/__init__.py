@@ -2,7 +2,7 @@
 
 from zope.interface import classImplementsFirst
 
-from .datetime import DatetimeField
+from .datetimefield import DatetimeField
 from .fields import IntField
 from .interfaces import IDatetimeField
 from .interfaces import IIntField

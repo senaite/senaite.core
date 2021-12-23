@@ -6,7 +6,7 @@ The datetime field stores Python datetime values.
 
 Running this test from the buildout directory:
 
-    bin/test test_schema_fields -t datetime
+    bin/test test_schema_fields -t datetimefield
 
 
 Hints
@@ -49,7 +49,7 @@ The field can be used much like any other field:
 
     >>> field = IContent['date']
     >>> field
-    <senaite.core.schema.datetime.DatetimeField object at ...>
+    <senaite.core.schema.datetimefield.DatetimeField object at ...>
 
     >>> from persistent import Persistent
     >>> @implementer(IContent)
@@ -59,12 +59,21 @@ The field can be used much like any other field:
 
 
     >>> from datetime import datetime
-    >>> date = datetime.strptime("2030-12-24", "%Y-%m-%d")
+    >>> datestring = "2030-12-24"
+    >>> date = datetime.strptime(datestring, "%Y-%m-%d")
     >>> content = Content()
 
 
 Set a value through the field:
 
-    >>> field.set(date, content)
+    >>> field.set(content, date)
     >>> field.get(content)
     datetime.datetime(2030, 12, 24, 0, 0)
+
+Setting a wrong type raises an error:
+
+    >>> field.set(content, datestring)
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected datetime, got <type 'str'>
+
