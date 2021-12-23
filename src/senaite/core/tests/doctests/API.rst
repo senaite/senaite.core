@@ -99,6 +99,21 @@ This error can also be used for custom methods with the `fail` function::
     [...]
     APIError: This failed badly
 
+When default param is specified, the system returns the tool if the parameter
+is a string:
+
+    >>> api.get_tool("NotExistingTool", default="senaite_catalog_setup")
+    <SetupCatalog at /plone/senaite_catalog_setup>
+
+but returns the default value otherwise:
+
+    >>> api.get_tool("NotExistingTool", default=None) is None
+    True
+
+    >>> catalog_setup = api.get_tool("senaite_catalog_setup")
+    >>> api.get_tool("NotExistingTool", default=catalog_setup)
+    <SetupCatalog at /plone/senaite_catalog_setup>
+
 
 Getting an Object
 .................
