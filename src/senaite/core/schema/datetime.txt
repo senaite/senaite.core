@@ -1,0 +1,70 @@
+Datetime field
+==============
+
+The datetime field stores Python datetime values.
+
+
+Running this test from the buildout directory:
+
+    bin/test test_schema_fields -t datetime
+
+
+Hints
+
+- z3c.form.converter.txt (Date Data Converter)
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+Helper functions:
+
+    >>> def commit():
+    ...    import transaction; transaction.commit()
+     
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+    >>> commit()
+
+
+Using the field
+---------------
+
+The field can be used much like any other field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import DatetimeField
+
+    >>> class IContent(Interface):
+    ...     date = DatetimeField(title=u"Date")
+
+    >>> field = IContent['date']
+    >>> field
+    <senaite.core.schema.datetime.DatetimeField object at ...>
+
+    >>> from persistent import Persistent
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     def __init__(self, date=None):
+    ...         self.date = date
+
+
+    >>> from datetime import datetime
+    >>> date = datetime.strptime("2030-12-24", "%Y-%m-%d")
+    >>> content = Content()
+
+
+Set a value through the field:
+
+    >>> field.set(date, content)
+    >>> field.get(content)
+    datetime.datetime(2030, 12, 24, 0, 0)
