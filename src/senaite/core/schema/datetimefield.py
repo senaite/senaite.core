@@ -20,8 +20,6 @@ class DatetimeField(Datetime, BaseField):
         :param value: datetime value
         :type value: datetime
         """
-        if not isinstance(value, datetime):
-            raise TypeError("Expected datetime, got %r" % type(value))
         super(DatetimeField, self).set(object, value)
 
     def _validate(self, value):

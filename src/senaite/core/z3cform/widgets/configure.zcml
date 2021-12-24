@@ -3,8 +3,9 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="senaite.core">
 
-  <include file="number.zcml" />
   <include file="datagrid.zcml" />
+  <include file="datetimewidget.zcml" />
+  <include file="number.zcml" />
   <include file="uidreference.zcml" />
 
 </configure>

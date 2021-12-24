@@ -69,11 +69,3 @@ Set a value through the field:
     >>> field.set(content, date)
     >>> field.get(content)
     datetime.datetime(2030, 12, 24, 0, 0)
-
-Setting a wrong type raises an error:
-
-    >>> field.set(content, datestring)
-    Traceback (most recent call last):
-    ...
-    TypeError: Expected datetime, got <type 'str'>
-
