@@ -12,6 +12,9 @@
   <!-- Datetime data converter -->
   <adapter factory=".datetimewidget.DatetimeDataConverter" />
 
+  <!-- Datetime data validator -->
+  <adapter factory=".datetimewidget.DatetimeDataValidator" />
+
   <!-- Datetime input widget template -->
   <z3c:widgetTemplate
       mode="input"
