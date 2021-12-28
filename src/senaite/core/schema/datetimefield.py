@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-
-import pytz
-from plone.app.event.base import default_timezone as current_timezone
+from senaite.core.api import dtime
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IDatetimeField
 from zope.interface import implementer
 from zope.schema import Datetime
+
+
+def localize(dt, fallback="UTC"):
+    if dtime.is_timezone_naive(dt):
+        zone = dtime.get_os_timezone()
+        if not zone:
+            zone = fallback
+        dt = dtime.to_zone(dt, zone)
+    return dt
 
 
 @implementer(IDatetimeField)
@@ -16,12 +22,18 @@ class DatetimeField(Datetime, BaseField):
     """
 
     def set(self, object, value):
-        """Set UID reference
+        """Set datetime value
+
+
+        NOTE: we need to ensure timzone aware datetime values,
+              so that also API calls work
 
         :param object: the instance of the field
         :param value: datetime value
         :type value: datetime
         """
+        if dtime.is_dt(value):
+            value = localize(value)
         super(DatetimeField, self).set(object, value)
 
     def get(self, object):
@@ -31,14 +43,9 @@ class DatetimeField(Datetime, BaseField):
         :returns: datetime or None
         """
         value = super(DatetimeField, self).get(object)
-        if not isinstance(value, datetime):
+        if not dtime.is_dt(value):
             return None
-        # append current timezone if timezone naive
-        if value.tzinfo is None:
-            tz = current_timezone()
-            tzinfo = pytz.timezone(tz)
-            value = tzinfo.localize(value)
-        return value
+        return localize(value)
 
     def _validate(self, value):
         """Validator when called from form submission
