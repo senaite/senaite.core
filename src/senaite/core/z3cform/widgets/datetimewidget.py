@@ -3,11 +3,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-import pytz
 from bika.lims import api
-from bika.lims import senaiteMessageFactory as _
-from plone.app.event.base import default_timezone as current_timezone
-from Products.CMFPlone.utils import safe_callable
+from senaite.core.api import dtime
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDatetimeField
 from senaite.core.z3cform.interfaces import IDatetimeWidget
@@ -15,11 +12,13 @@ from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
+from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.validator import SimpleFieldValidator
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
 from zope.component import adapter
+from zope.component import queryMultiAdapter
 from zope.interface import Interface
 from zope.interface import implementer
 
@@ -44,11 +43,12 @@ class DatetimeDataValidator(SimpleFieldValidator):
 
     Adapter looked up by `z3c.form.field.extract()` when storing a new value
     """
-    def validate(self, value, force=False):
-        if isinstance(value, datetime):
-            if value.tzinfo is None:
-                return _("No timezone found for date %r" % value)
-        return super(DatetimeDataValidator, self).validate(value, force)
+    def validate(self, value, force=True):
+        # we always force to avoid comparison of datetime objects, which might
+        # eventually raise this error `TypeError`:
+        #
+        # TypeError: can't compare offset-naive and offset-aware datetimes
+        return super(DatetimeDataValidator, self).validate(value, force=True)
 
 
 @adapter(IDatetimeField, interfaces.IWidget)
@@ -57,6 +57,9 @@ class DatetimeDataConverter(BaseDataConverter):
     """
     def toWidgetValue(self, value):
         """Converts from field value to widget.
+
+        This value will be set to the hidden field and does not reflect the
+        date that is visible to the user!
 
         called by `z3c.form.widget.update`
 
@@ -77,16 +80,16 @@ class DatetimeDataConverter(BaseDataConverter):
         return DATE_AND_TIME.format(value=value)
 
     def toFieldValue(self, value):
-        """Converts from widget value to field.
+        """Converts from widget (date string) value to field value (datetime)
 
-        :param value: Value inserted by datetime widget.
+        :param value: Date string inserted by datetime widget.
         :type value: string
 
         :returns: `datetime.datetime` object.
         :rtype: datetime
         """
         default = self.field.missing_value
-        timezone = self.widget.get_timezone()
+        timezone = self.widget.default_timezone or dtime.get_os_timezone()
         return to_datetime(value, timezone=timezone, default=default)
 
 
@@ -114,8 +117,7 @@ def to_datetime(value, timezone=None, default=None):
 
     ret = datetime(*map(int, value))
     if timezone:
-        tzinfo = pytz.timezone(timezone)
-        ret = tzinfo.localize(ret)
+        ret = dtime.to_zone(ret, timezone)
     return ret
 
 
@@ -146,40 +148,28 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         super(DatetimeWidget, self).update()
         widget.addFieldClass(self)
 
-    def get_timezone(self):
-        """Return the current timezone
-        """
-        default_zone = self.default_timezone
-        timezone = default_zone(self.context)\
-            if safe_callable(default_zone) else default_zone
-        if not timezone:
-            # return computed timezone
-            timezone = current_timezone(context=self.context, as_tzinfo=False)
-        return timezone
-
     def to_localized_time(self, time, long_format=None, time_only=None):
         """Convert time to localized time
         """
+        if dtime.is_dt(time):
+            # NOTE: ts.ulocalized_time converts the value into a DateTime
+            #       object, which always uses the current timezone without
+            #       daylight savings, which might result in an offset.
+            time = time.isoformat()
         ts = api.get_tool("translation_service")
         long_format = True if self.show_time else False
         return ts.ulocalized_time(
             time, long_format, time_only, self.context, domain="senaite.core")
 
-    def to_local_date(self, value, length="short"):
-        """Converts value to localized date
-
-        Used in the display template to show a localized version of the date
-
-        :param value: date or datetime
-        :type value: string or datetime object
-        :returns: localized date string
+    def get_display_value(self):
+        """Returns the localized date value
         """
-        dt = self.to_datetime(value)
-        if not dt:
-            return ""
-        df = "dateTime" if self.show_time else "date"
-        formatter = self.request.locale.dates.getFormatter(df, length)
-        return formatter.format(dt)
+        value = self.value
+        dm = queryMultiAdapter((self.context, self.field), IDataManager)
+        if dm:
+            # extract the object from the database
+            value = dm.query()
+        return self.to_localized_time(value)
 
     def to_datetime(self, value):
         """convert date string to datetime object with tz
@@ -189,7 +179,7 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         :returns: datetime object
         """
         default = self.field.missing_value
-        timezone = self.get_timezone()
+        timezone = self.default_timezone
         return to_datetime(value, timezone=timezone, default=default)
 
     def get_date(self, value):

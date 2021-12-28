@@ -4,11 +4,10 @@
 
 
   <span
-    tal:define="value view/value"
     tal:attributes="id view/id;
                     class view/klass;
                     style view/style;
                     title view/title;">
-    <tal:block content="python:view.to_localized_time(value)" />
+    <tal:block content="python:view.get_display_value()" />
   </span>
 </html>
