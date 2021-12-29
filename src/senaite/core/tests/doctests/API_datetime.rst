@@ -15,6 +15,10 @@ Imports:
 
     >>> from senaite.core.api import dtime
 
+Define some variables:
+
+    >>> DATEFORMAT = "%Y-%m-%d %H:%M"
+
 
 Setup the test user
 ...................
@@ -87,20 +91,69 @@ Check if a datetime object is TZ aware
     True
 
 
-Convert datetime to DateTime
-............................
+Convert to DateTime
+...................
 
-    >>> dt = dtime.dt_to_DT(datetime.now())
-    >>> isinstance(dt, DateTime)
-    True
+    >>> DATE = "2021-12-24 12:00"
+
+Timezone naive datetimes are converterd to `GMT+0`:
+
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dt
+    datetime.datetime(2021, 12, 24, 12, 0)
+
+    >>> dtime.to_DT(dt)
+    DateTime('2021/12/24 12:00:00 GMT+0')
+
+    >>> DATE = "2021-08-01 12:00"
+
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dt
+    datetime.datetime(2021, 8, 1, 12, 0)
+
+    >>> dtime.to_DT(dt)
+    DateTime('2021/08/01 12:00:00 GMT+0')
+
+Timezone aware datetimes are converterd to `GMT+<tzoffset>`
+
+    >>> local_dt = dtime.to_zone(dt, "CET")
+    >>> local_dt
+    datetime.datetime(2021, 8, 1, 12, 0, tzinfo=<DstTzInfo 'CET' CEST+2:00:00 DST>)
+
+    >>> dtime.to_DT(local_dt)
+    DateTime('2021/08/01 12:00:00 GMT+2')
 
 
-Convert DateTime to datetime
-............................
+Convert to datetime
+...................
 
-    >>> dt = dtime.DT_to_dt(DateTime())
+    >>> dt = dtime.to_dt(DateTime())
     >>> isinstance(dt, datetime)
     True
+
+Timezone naive `DateTime` is converted w/o timezone:
+
+    >>> dt = DateTime(DATE)
+    >>> dt
+    DateTime('2021/08/01 12:00:00 GMT+0')
+
+    >>> dtime.is_timezone_naive(dt)
+    True
+
+    >>> dtime.to_dt(dt)
+    datetime.datetime(2021, 8, 1, 12, 0)
+
+Timezone aware `DateTime` is converted with timezone.
+
+    >>> dt = dtime.to_zone(dt, "CET")
+    >>> dtime.is_timezone_naive(dt)
+    False
+
+    >>> dt
+    DateTime('2021/08/01 13:00:00 GMT+1')
+
+    >>> dtime.to_dt(dt)
+    datetime.datetime(2021, 8, 1, 13, 0, tzinfo=<StaticTzInfo 'GMT+1'>)
 
 
 Check if timezone is valid
@@ -139,11 +192,10 @@ Convert date to timezone
 ........................
 
     >>> DATE = "1970-01-01 01:00"
-    >>> FORMAT = "%Y-%m-%d %H:%M"
 
 Convert `datetime` objects to a timezone:
 
-    >>> dt = datetime.strptime(DATE, FORMAT)
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
     >>> dt_utc = dtime.to_zone(dt, "UTC")
     >>> dt_utc
     datetime.datetime(1970, 1, 1, 1, 0, tzinfo=<UTC>)

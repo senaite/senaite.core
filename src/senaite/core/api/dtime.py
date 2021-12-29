@@ -1,12 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import os
+from datetime import date
 from datetime import datetime
 from time import tzname
 
 import pytz
 from bika.lims import logger
 from DateTime import DateTime
+
+
+def is_d(dt):
+    """Check if the date is a Python `date` object
+
+    :param dt: date to check
+    :returns: True when the date is a Python `date`
+    """
+    return isinstance(dt, date)
 
 
 def is_dt(dt):
@@ -62,29 +72,34 @@ def is_timezone_aware(dt):
     return not is_timezone_naive(dt)
 
 
-def dt_to_DT(dt):
-    """Convert datetime to DateTime
+def to_DT(dt):
+    """Convert to DateTime
 
-    :param dt: datetime object
+    :param dt: DateTime/datetime/date
     :returns: DateTime object
     """
     if is_DT(dt):
         return dt
     elif is_dt(dt):
-        return DateTime(dt)
+        return DateTime(dt.isoformat())
+    elif is_d(dt):
+        dt = datetime(dt.year, dt.month, dt.day)
+        return DateTime(dt.isoformat())
     raise TypeError("Expected datetime, got '%r'" % type(dt))
 
 
-def DT_to_dt(dt):
-    """Convert DateTime to datetime
+def to_dt(dt):
+    """Convert to datetime
 
-    :param dt: DateTime object
+    :param dt: DateTime/datetime/date
     :returns: datetime object
     """
     if is_DT(dt):
         return dt.asdatetime()
     elif is_dt(dt):
         return dt
+    elif is_d(dt):
+        return datetime(dt.year, dt.month, dt.day)
     raise TypeError("Expected DateTime, got '%r'" % type(dt))
 
 
@@ -142,4 +157,5 @@ def to_zone(dt, timezone):
             return dt.astimezone(zone)
         return zone.localize(dt)
     if is_DT(dt):
+        # NOTE: This shifts the time according to the TZ offset
         return dt.toZone(timezone)
