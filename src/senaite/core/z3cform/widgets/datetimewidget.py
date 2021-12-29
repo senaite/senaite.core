@@ -117,6 +117,8 @@ def to_datetime(value, timezone=None, default=None):
 
     ret = datetime(*map(int, value))
     if timezone:
+        if callable(timezone):
+            timezone = timezone()
         ret = dtime.to_zone(ret, timezone)
     return ret
 
