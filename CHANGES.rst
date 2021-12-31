@@ -4,6 +4,7 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1903 Added date and time field/widget for Dexterity contents
 - #1900 Fix snapshot listing fails on orphan catalog entries
 - #1897 Support date and number fields copy in sample add form
 - #1896 Custom date and time widget
