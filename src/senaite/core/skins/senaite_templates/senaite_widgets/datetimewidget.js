@@ -1,65 +1,96 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  try {
-    var lang = i18n.currentLanguage;
-  } catch(err) {
-    lang = "en";
+  class DateTimeWidget {
+
+    constructor() {
+      let datefields = document.querySelectorAll("input[type='date']");
+      let timefields = document.querySelectorAll("input[type='time']");
+
+      // bind event handlers
+      this.update_date = this.update_date.bind(this);
+      this.on_change = this.on_change.bind(this);
+
+      // bind datefields
+      datefields.forEach((el, idx) => {
+        el.addEventListener("change", this.on_change);
+      });
+
+      // bind timefields
+      timefields.forEach((el, idx) => {
+        el.addEventListener("change", this.on_change);
+      });
+    }
+
+    /**
+     * returns the current date without TZ
+     */
+    get_default_date() {
+      // returns the default date
+      let dt = new Date();
+      let ds = dt.toISOString()
+      return ds.substring(0, ds.lastIndexOf("T"))
+    }
+
+    /**
+     * set an input field value (if the field exists)
+     * @param {object} field input field
+     * @param {string} value the value the should get set on the field
+     */
+    set_field(field, value) {
+      if (!field) return;
+      field.value = value;
+    }
+
+    /**
+      * generate a full date w/o TZ from the date and time inputs
+      * @param {object} date the date input field
+      * @param {object} time the time input field
+      * @param {object} hidden hidden field that contains the full date for from submission
+    */
+    update_date(date, time, input) {
+      // console.debug("DateTimeWidget::update_date");
+      let ds = date ? date.value : null;
+      let ts = time ? time.value : null;
+
+      if (!ds) ds = this.get_default_date();
+      if (!ts) ts = "00:00";
+
+      // set the values of the fields
+      this.set_field(date, ds);
+      this.set_field(time, ts);
+
+      if (date && time) {
+        // set date and time
+        this.set_field(input, `${ds}T${ts}`);
+      } else {
+        // set date only
+        this.set_field(input, `${ds}`);
+      }
+    }
+
+    /**
+     * event handler for `change` event
+     *
+     * collect the date/time and hidden input of the field
+     * and set the full date for form submission.
+     *
+     * Fires when the date/time changes
+     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
+     */
+    on_change(event) {
+      // console.debug("DateTimeWidget::on_change");
+      let el = event.currentTarget;
+      let target = el.getAttribute("target");
+
+      // for simplicity, we just fetch all the required elements here
+      let date = el.parentElement.querySelector("input[type='date']");
+      let time = el.parentElement.querySelector("input[type='time']");
+      let input = document.querySelector(`input[name='${target}']`);
+
+      // always write the full date to the hidden field
+      this.update_date(date, time, input);
+    }
   }
 
-  var dt_config = $.datepicker.regional[lang] || $.datepicker.regional[''];
-  var tp_config = $.timepicker.regional[lang] || $.timepicker.regional[''];
-
-  var date_format = "yy-mm-dd";
-  var dt_fmt_string = "date_format_short_datepicker";
-  var dt_fmt = _t(dt_fmt_string);
-
-  if (dt_fmt != dt_fmt_string) {
-    date_format = dt_fmt.replaceAll(/[${}]/gi, "");
-  }
-
-  var config = Object.assign(dt_config, tp_config);
-
-  $('[datepicker="1"]').datepicker(
-    Object.assign(config, {
-      changeMonth: true,
-      changeYear: true,
-      yearRange: "-150:+150",
-      dateFormat: date_format
-    }));
-
-  $('[datetimepicker="1"]').datetimepicker(
-    Object.assign(config, {
-      hourGrid: 4,
-      minuteGrid: 10,
-      dateFormat: date_format,
-      timeFormat: "HH:mm",
-      changeMonth: true,
-      changeYear: true,
-      yearRange: "-150:+150"
-    }));
-
-  $('[datepicker_nofuture="1"]').on("click", function() {
-    $(this).datepicker("option", {
-      maxDate: "0",
-      changeMonth: true,
-      changeYear: true,
-      yearRange: "-150:+0",
-      dateFormat: date_format
-    })
-    .click(function() { $(this).attr("value", ""); })
-    .focus();
-  });
-
-  $('[datepicker_nopast="1"]').on("click", function() {
-    $(this).datepicker("option", {
-      minDate: "0",
-      changeMonth: true,
-      changeYear: true,
-      yearRange: "-0:+150",
-      dateFormat: date_format
-    })
-    .click(function() { $(this).attr("value", ""); })
-    .focus();
-  });
-
+  new DateTimeWidget();
 });

@@ -33,7 +33,6 @@ from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
@@ -121,6 +120,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG

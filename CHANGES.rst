@@ -4,6 +4,13 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
+- #1901 Ensure `get_tool` returns a tool when a name is set as the default param
+- #1900 Fix snapshot listing fails on orphan catalog entries
+- #1897 Support date and number fields copy in sample add form
+- #1896 Custom date and time widget
+- #1895 Disable native form validation in header table
+- #1893 Removed unused field PasswordLifeTime
+- #1892 Drop jQuery Datepicker for HTML5 native date fields
 - #1890 Fix DurationValidator when field value is empty
 - #1886 Use the current timestamp instead of the client name for report archive download
 - #1883 Fix possible XSS in remarks field

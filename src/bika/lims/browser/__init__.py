@@ -19,79 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 import traceback
-from datetime import datetime
-from time import strptime
-
-import six
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import logger
 from DateTime.DateTime import DateTime
-from DateTime.DateTime import safelocaltime
-from Products.ATContentTypes.utils import dt2DT
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time as _ut
 from Products.Five.browser import BrowserView as BaseBrowserView
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
-
-
-def get_date(context, value):
-    """Tries to return a DateTime.DateTime object
-    """
-    if not value:
-        return None
-    if isinstance(value, DateTime):
-        return value
-    if isinstance(value, datetime):
-        return dt2DT(value)
-    if not isinstance(value, six.string_types):
-        return None
-
-    def try_parse(date_string, format):
-        if not format:
-            return None
-        try:
-            struct_time = strptime(date_string, format)
-            return datetime(*struct_time[:6])
-        except ValueError:
-            pass
-        return None
-
-    def get_locale_format(key):
-        request = api.get_request()
-        format = translate(
-            key, domain="senaite.core", mapping={}, context=request)
-        # The variables at locales .po files (e.g. "date_format_short") take
-        # into consideration the translation service tool and therefore, their
-        # format is like "${d}/${m}/${Y}". We need to "convert" this format
-        # to %-like.
-        return format.replace(r"${", '%').replace('}', '')
-
-    # Try with prioritized formats
-    formats = [
-        get_locale_format("date_format_long"),
-        get_locale_format("date_format_short"),
-        "%Y-%m-%d %H:%M",
-        "%Y-%m-%d",
-        "%Y-%m-%d %H:%M:%S",
-    ]
-    for pri_format in formats:
-        val = try_parse(value, pri_format)
-        if not val:
-            continue
-        val = dt2DT(val)
-        if val.timezoneNaive():
-            # Use local timezone for tz naive strings
-            # see http://dev.plone.org/plone/ticket/10141
-            zone = val.localZone(safelocaltime(val.timeTime()))
-            parts = val.parts()[:-1] + (zone,)
-            val = DateTime(*parts)
-        return val
-
-    logger.warn("Unable to convert {} to datetime".format(value))
-    return None
 
 
 def ulocalized_time(time, long_format=None, time_only=None, context=None,
@@ -115,13 +52,10 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     """
     # if time is a string, we'll try pass it through strptime with the various
     # formats defined.
-    time = get_date(context, time)
+    time = api.to_date(time)
     if not time or not isinstance(time, DateTime):
         return ''
 
-    # no printing times if they were not specified in inputs
-    if time.second() + time.minute() + time.hour() == 0:
-        long_format = False
     try:
         time_str = _ut(time, long_format, time_only, context, 'senaite.core', request)
     except ValueError:

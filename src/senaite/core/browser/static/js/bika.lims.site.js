@@ -26,14 +26,12 @@
       this.get_authenticator = bind(this.get_authenticator, this);
       this.get_portal_url = bind(this.get_portal_url, this);
       this.init_referencedefinition = bind(this.init_referencedefinition, this);
-      this.init_datepickers = bind(this.init_datepickers, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
 
     SiteView.prototype.load = function() {
       console.debug("SiteView::load");
-      this.init_datepickers();
       this.bind_eventhandler();
       return this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
     };
@@ -67,54 +65,6 @@
           $("body").removeClass("loading");
         }
       });
-    };
-
-    SiteView.prototype.init_datepickers = function() {
-
-      /*
-       * Initialize date pickers
-       */
-      var config, curDate, dateFormat, lang, lang_config, make_datepicker_config, y, yearRange;
-      console.debug("SiteView::init_datepickers");
-      curDate = new Date();
-      y = curDate.getFullYear();
-      yearRange = "1900:" + y;
-      lang = (typeof i18n !== "undefined" && i18n !== null ? i18n.currentLanguage : void 0) || "en";
-      lang_config = $.datepicker.regional[lang] || $.datepicker.regional[""];
-      dateFormat = _t("date_format_short_datepicker");
-      if (dateFormat === "date_format_short_datepicker") {
-        dateFormat = "yy-mm-dd";
-      }
-      config = Object.assign(lang_config, {
-        dateFormat: dateFormat,
-        timeFormat: "HH:mm",
-        showOn: "focus",
-        showAnim: "fadeIn",
-        changeMonth: true,
-        changeYear: true,
-        showWeek: true,
-        yearRange: yearRange,
-        numberOfMonths: 1
-      });
-      make_datepicker_config = function(options) {
-        var default_config;
-        if (options === void 0) {
-          options = {};
-        }
-        default_config = Object.assign({}, config);
-        return Object.assign(default_config, options);
-      };
-      $("input.datepicker_nofuture").datepicker(make_datepicker_config({
-        maxDate: curDate
-      }));
-      $("input.datepicker").datepicker(make_datepicker_config());
-      $("input.datepicker_2months").datepicker(make_datepicker_config({
-        maxDate: curDate,
-        numberOfMonths: 2
-      }));
-      return $("input.datetimepicker_nofuture").datetimepicker(make_datepicker_config({
-        maxDate: curDate
-      }));
     };
 
     SiteView.prototype.init_referencedefinition = function() {
