@@ -212,3 +212,18 @@ Convert `DateTime` objects to a timezone:
 
     >>> dtime.to_zone(DT_utc, "CET")
     DateTime('1970/01/01 02:00:00 GMT+1')
+
+
+Make a POSIX timestamp
+......................
+
+
+    >>> DATE = "1970-01-01 01:00"
+    >>> DT = DateTime(DATE)
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+
+    >>> dtime.to_timestamp(dt)
+    3600.0
+
+    >>> dtime.to_timestamp(DT)
+    3600.0

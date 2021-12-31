@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 from datetime import date
 from datetime import datetime
 from time import tzname
@@ -159,3 +160,17 @@ def to_zone(dt, timezone):
     if is_DT(dt):
         # NOTE: This shifts the time according to the TZ offset
         return dt.toZone(timezone)
+
+
+def to_timestamp(dt):
+    """Generate a Portable Operating System Interface (POSIX) timestamp
+
+    :param dt: date object
+    :returns: timestamp in seconds
+    """
+    timestamp = 0
+    if is_DT(dt):
+        timestamp = dt.timeTime()
+    elif is_dt(dt):
+        timestamp = time.mktime(dt.timetuple())
+    return timestamp
