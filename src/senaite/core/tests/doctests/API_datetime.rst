@@ -227,3 +227,6 @@ Make a POSIX timestamp
 
     >>> dtime.to_timestamp(DT)
     3600.0
+
+    >>> dtime.from_timestamp(dtime.to_timestamp(dt)) == dt
+    True

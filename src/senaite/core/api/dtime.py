@@ -174,3 +174,13 @@ def to_timestamp(dt):
     elif is_dt(dt):
         timestamp = time.mktime(dt.timetuple())
     return timestamp
+
+
+def from_timestamp(timestamp):
+    """Generate a datetime object from a POSIX timestamp
+
+    :param timestamp: POSIX timestamp
+    :returns: datetime object
+    """
+
+    return datetime.utcfromtimestamp(timestamp)
