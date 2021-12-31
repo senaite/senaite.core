@@ -184,3 +184,13 @@ def from_timestamp(timestamp):
     """
 
     return datetime.utcfromtimestamp(timestamp)
+
+
+def to_iso_format(dt):
+    """Convert to ISO format
+    """
+    if is_dt(dt):
+        return dt.isoformat()
+    elif is_DT(dt):
+        return dt.ISO()
+    return None

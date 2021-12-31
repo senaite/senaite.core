@@ -230,3 +230,21 @@ Make a POSIX timestamp
 
     >>> dtime.from_timestamp(dtime.to_timestamp(dt)) == dt
     True
+
+
+Convert to ISO format
+.....................
+
+    >>> DATE = "2021-08-01 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dt_local = dtime.to_zone(dt, "CET")
+    >>> dt_local
+    datetime.datetime(2021, 8, 1, 12, 0, tzinfo=<DstTzInfo 'CET' CEST+2:00:00 DST>)
+
+    >>> dtime.to_iso_format(dt_local)
+    '2021-08-01T12:00:00+02:00'
+
+    >>> dtime.to_iso_format(dtime.to_DT(dt_local))
+    '2021-08-01T12:00:00+02:00'
+
+
