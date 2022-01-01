@@ -17,7 +17,7 @@ def is_d(dt):
     :param dt: date to check
     :returns: True when the date is a Python `date`
     """
-    return isinstance(dt, date)
+    return type(dt) is date
 
 
 def is_dt(dt):
@@ -26,7 +26,7 @@ def is_dt(dt):
     :param dt: date to check
     :returns: True when the date is a Python `datetime`
     """
-    return isinstance(dt, datetime)
+    return type(dt) is datetime
 
 
 def is_DT(dt):
@@ -35,7 +35,7 @@ def is_DT(dt):
     :param dt: object to check
     :returns: True when the object is a Zope `DateTime`
     """
-    return isinstance(dt, DateTime)
+    return type(dt) is DateTime
 
 
 def is_date(dt):
@@ -44,6 +44,8 @@ def is_date(dt):
     :param dt: date to check
     :returns: True when the object is either a datetime or DateTime
     """
+    if is_d(dt):
+        return True
     if is_dt(dt):
         return True
     if is_DT(dt):
@@ -57,7 +59,9 @@ def is_timezone_naive(dt):
     :param dt: date to check
     :returns: True when the date has no timezone
     """
-    if is_DT(dt):
+    if is_d(dt):
+        return True
+    elif is_DT(dt):
         return dt.timezoneNaive()
     elif is_dt(dt):
         return dt.tzinfo is None

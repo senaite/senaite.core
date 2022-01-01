@@ -43,6 +43,18 @@ Check if an object is a Python `datetime`
     False
 
 
+Check if an object is a Python `date`
+.....................................
+
+    >>> from datetime import date
+
+    >>> dtime.is_d(date.today())
+    True
+
+    >>> dtime.is_d("2022-01-01")
+    False
+
+
 Check if an object is a ZOPE `DateTime`
 .......................................
 
@@ -57,6 +69,9 @@ Check if an object is a ZOPE `DateTime`
 
 Check if an object represents a date
 ....................................
+
+    >>> dtime.is_date(date.today())
+    True
 
     >>> dtime.is_date(datetime.now())
     True
@@ -74,6 +89,9 @@ Check if an object represents a date
 Check if a datetime object is TZ naive
 ......................................
 
+    >>> dtime.is_timezone_naive(date.today())
+    True
+
     >>> dtime.is_timezone_naive(datetime.now())
     True
 
@@ -83,6 +101,9 @@ Check if a datetime object is TZ naive
 
 Check if a datetime object is TZ aware
 ......................................
+
+    >>> dtime.is_timezone_aware(date.today())
+    False
 
     >>> dtime.is_timezone_aware(datetime.now())
     False
@@ -113,6 +134,10 @@ Timezone naive datetimes are converterd to `GMT+0`:
 
     >>> dtime.to_DT(dt)
     DateTime('2021/08/01 12:00:00 GMT+0')
+
+    >>> dtime.to_DT(date.fromtimestamp(0))
+    DateTime('1970/01/01 00:00:00 GMT+0')
+
 
 Timezone aware datetimes are converterd to `GMT+<tzoffset>`
 
@@ -246,5 +271,3 @@ Convert to ISO format
 
     >>> dtime.to_iso_format(dtime.to_DT(dt_local))
     '2021-08-01T12:00:00+02:00'
-
-
