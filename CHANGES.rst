@@ -12,6 +12,7 @@ Changelog
 - #1895 Disable native form validation in header table
 - #1893 Removed unused field PasswordLifeTime
 - #1892 Drop jQuery Datepicker for HTML5 native date fields
+- #1890 Fix DurationValidator when field value is empty
 - #1886 Use the current timestamp instead of the client name for report archive download
 - #1883 Fix possible XSS in remarks field
 - #1882 Fix catalog query in analysis category modified handler
