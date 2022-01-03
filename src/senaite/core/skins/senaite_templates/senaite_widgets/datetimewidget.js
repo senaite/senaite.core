@@ -22,16 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * returns the current date without TZ
-     */
-    get_default_date() {
-      // returns the default date
-      let dt = new Date();
-      let ds = dt.toISOString()
-      return ds.substring(0, ds.lastIndexOf("T"))
-    }
-
-    /**
      * set an input field value (if the field exists)
      * @param {object} field input field
      * @param {string} value the value the should get set on the field
@@ -49,22 +39,21 @@ document.addEventListener("DOMContentLoaded", () => {
     */
     update_date(date, time, input) {
       // console.debug("DateTimeWidget::update_date");
-      let ds = date ? date.value : null;
-      let ts = time ? time.value : null;
-
-      if (!ds) ds = this.get_default_date();
-      if (!ts) ts = "00:00";
+      let ds = date ? date.value : "";
+      let ts = time ? time.value : "";
 
       // set the values of the fields
       this.set_field(date, ds);
       this.set_field(time, ts);
 
-      if (date && time) {
+      if (ds && ts) {
         // set date and time
-        this.set_field(input, `${ds}T${ts}`);
-      } else {
+        this.set_field(input, `${ds} ${ts}`);
+      } else if (ds) {
         // set date only
         this.set_field(input, `${ds}`);
+      } else {
+        this.set_field(input, "");
       }
     }
 
