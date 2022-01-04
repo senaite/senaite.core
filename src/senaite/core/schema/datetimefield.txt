@@ -35,6 +35,11 @@ Grant required privileges:
     >>> setRoles(portal, TEST_USER_ID, ["Manager",])
     >>> commit()
 
+Test fixture:
+
+    >>> import os
+    >>> os.environ["TZ"] = "CET"
+
 
 Using the field
 ---------------
@@ -68,4 +73,4 @@ Set a value through the field:
 
     >>> field.set(content, date)
     >>> field.get(content)
-    datetime.datetime(2030, 12, 24, 0, 0)
+    datetime.datetime(2030, 12, 24, 0, 0, tzinfo=<DstTzInfo 'CET' CET+1:00:00 STD>)
