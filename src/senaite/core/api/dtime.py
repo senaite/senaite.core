@@ -4,7 +4,6 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from time import tzname
 
 import pytz
 from bika.lims import logger
@@ -133,7 +132,7 @@ def get_os_timezone():
         timezone = os.environ["TZ"]
     if not timezone:
         # Timezone from python time
-        zones = tzname
+        zones = time.tzname
         if zones and len(zones) > 0:
             timezone = zones[0]
         else:
