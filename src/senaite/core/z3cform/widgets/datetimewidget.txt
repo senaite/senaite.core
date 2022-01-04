@@ -1,0 +1,125 @@
+Datetime widget
+===============
+
+The datetime field widget allows to set a date and display it.
+
+
+Running this test from the buildout directory:
+
+    bin/test test_z3c_widgets -t datetimewidget
+
+Hints:
+
+`plone.app.z3cform.widget.DatetimeWidget`
+
+
+Some variables we need:
+
+    >>> DATE = "2021-12-24"
+    >>> INPUT_TPL = "datetimewidget_input.pt"
+    >>> HIDDEN_TPL = "datetimewidget_hidden.pt"
+    >>> DISPLAY_TPL = "datetimewidget_display.pt"
+
+The widget can render a input field for a date and time:
+
+    >>> from zope.interface.verify import verifyClass
+    >>> from z3c.form import interfaces
+    >>> from senaite.core.z3cform.widgets.datetimewidget import DatetimeWidget
+
+Verify widget:
+
+    >>> verifyClass(interfaces.IWidget, DatetimeWidget)
+    True
+
+The widget can render a input field only by adapting a request:
+
+    >>> from z3c.form.testing import TestRequest
+    >>> request = TestRequest()
+    >>> widget = DatetimeWidget(request)
+
+Such a field provides IWidget:
+
+    >>> interfaces.IWidget.providedBy(widget)
+    True
+
+We also need to register the template for at least the widget and request:
+
+    >>> import os.path
+    >>> import zope.interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.pagetemplate.interfaces import IPageTemplate
+    >>> import senaite.core.z3cform.widgets
+    >>> import z3c.form.widget
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), INPUT_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='input')
+
+If we render the widget we get the HTML:
+
+    >>> widget.value = DATE
+    >>> widget.mode = interfaces.INPUT_MODE
+    >>> print(widget.render().replace('\n', ''))
+    <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
+      <!-- date -->
+      <input type="date" class="form-control form-control-sm" name="None-date" value="2021-12-24"/>
+      <!-- time -->
+      <input type="time" class="form-control form-control-sm" name="None-time" value="00:00"/>
+    </div>
+    <!-- datetime value (outside to avoid style issues) -->
+    <input type="hidden" value="2021-12-24"/>
+    <!-- static resources -->
+    <script type="text/javascript" src="http://nohost/plone/++resource++senaite.core.z3cform.static/datetimewidget.js"></script>
+    <link rel="stylesheet" href="http://nohost/plone/++resource++senaite.core.z3cform.static/datetimewidget.css" type="text/css" media="screen"/>
+
+Render without the time component:
+
+    >>> widget.show_time = False
+    >>> print(widget.render().replace('\n', ''))
+    <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
+      <!-- date -->
+      <input type="date" class="form-control form-control-sm" name="None-date" value="2021-12-24"/>
+      <!-- time -->
+    </div>
+    <!-- datetime value (outside to avoid style issues) -->
+    <input type="hidden" value="2021-12-24"/>
+    <!-- static resources -->
+    <script type="text/javascript" src="http://nohost/plone/++resource++senaite.core.z3cform.static/datetimewidget.js"></script>
+    <link rel="stylesheet" href="http://nohost/plone/++resource++senaite.core.z3cform.static/datetimewidget.css" type="text/css" media="screen"/>
+
+Check DISPLAY_MODE:
+
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), DISPLAY_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='display')
+  
+    >>> widget.show_time = True
+    >>> widget.value = DATE
+    >>> widget.mode = interfaces.DISPLAY_MODE
+    >>> print(widget.render())
+    <html>
+      <body>
+        <span class="senaite-datetime-widget">2021-12-24 00:00</span>
+      </body>
+    </html>
+
+
+Check HIDDEN_MODE:
+
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), HIDDEN_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='hidden')
+  
+    >>> widget.value = DATE
+    >>> widget.mode = interfaces.HIDDEN_MODE
+    >>> print(widget.render())
+    <html>
+      <body>
+        <input type="hidden" value="2021-12-24">
+      </body>
+    </html>

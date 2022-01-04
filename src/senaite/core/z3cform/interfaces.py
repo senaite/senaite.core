@@ -23,3 +23,8 @@ class IDataGridWidget(IDataGridField):
 class IDataGridRowWidget(IObjectWidget):
     """Datagrid row widget (table rows)
     """
+
+
+class IDatetimeWidget(IObjectWidget):
+    """Date and time widget
+    """
