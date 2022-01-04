@@ -19,6 +19,11 @@ Define some variables:
 
     >>> DATEFORMAT = "%Y-%m-%d %H:%M"
 
+Test fixture:
+
+    >>> import os
+    >>> os.environ["TZ"] = "CET"
+
 
 Setup the test user
 ...................

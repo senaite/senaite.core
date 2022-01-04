@@ -73,7 +73,7 @@ class DatetimeDataConverter(BaseDataConverter):
         :returns: Datetime in format `Y-m-d H:M`
         :rtype: string
         """
-        if value is self.field.missing_value:
+        if value is None:
             return u""
         if getattr(self.widget, "show_time", None) is False:
             return DATE_ONLY.format(value=value)
@@ -88,7 +88,7 @@ class DatetimeDataConverter(BaseDataConverter):
         :returns: `datetime.datetime` object.
         :rtype: datetime
         """
-        default = self.field.missing_value
+        default = getattr(self.field, "missing_value", None)
         timezone = self.widget.default_timezone or dtime.get_os_timezone()
         return to_datetime(value, timezone=timezone, default=default)
 
@@ -153,15 +153,11 @@ class DatetimeWidget(HTMLInputWidget, Widget):
     def to_localized_time(self, time, long_format=None, time_only=None):
         """Convert time to localized time
         """
-        if dtime.is_dt(time):
-            # NOTE: ts.ulocalized_time converts the value into a DateTime
-            #       object, which always uses the current timezone without
-            #       daylight savings, which might result in an offset.
-            time = time.isoformat()
+        dt = self.to_datetime(time)
         ts = api.get_tool("translation_service")
         long_format = True if self.show_time else False
         return ts.ulocalized_time(
-            time, long_format, time_only, self.context, domain="senaite.core")
+            dt, long_format, time_only, self.context, domain="senaite.core")
 
     def get_display_value(self):
         """Returns the localized date value
@@ -180,7 +176,7 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         :type value: string or datetime object
         :returns: datetime object
         """
-        default = self.field.missing_value
+        default = getattr(self.field, "missing_value", None)
         timezone = self.default_timezone
         return to_datetime(value, timezone=timezone, default=default)
 
