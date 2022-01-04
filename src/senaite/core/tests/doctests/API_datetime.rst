@@ -213,7 +213,7 @@ Get the default timezone from the system
     'Europe/Berlin'
 
     >>> os.environ["TZ"] = ""
-    >>> time.tzname = ("CET", "CEST")
+    >>> dtime.time.tzname = ("CET", "CEST")
     >>> dtime.get_os_timezone()
     'CET'
 
