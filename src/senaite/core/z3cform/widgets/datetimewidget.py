@@ -213,32 +213,17 @@ class DatetimeWidget(HTMLInputWidget, Widget):
             dt = dt + timedelta(offset)
         return dt
 
-    def get_max(self):
-        """Return the max allowed date in the future
-
-        :returns: date string
-        """
-        now = self.date_now()
-        return now.strftime(DATE_FORMAT)
-
-    def get_min(self):
-        """Return the min allowed date in the past
-
-        :returns: date string
-        """
-        now = self.date_now()
-        return now.strftime(DATE_FORMAT)
-
     def attrs(self):
         """Return the template attributes for the date field
 
         :returns: dictionary of HTML attributes
         """
         attrs = {}
+        today = self.date_now().strftime(DATE_FORMAT)
         if self.datepicker_nofuture:
-            attrs["max"] = self.get_max()
+            attrs["max"] = today
         if self.datepicker_nopast:
-            attrs["min"] = self.get_min()
+            attrs["min"] = today
         return attrs
 
     @property
