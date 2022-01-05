@@ -8,8 +8,8 @@ contributions descending.
 
 - Campbell McKellar-Basset, rockfruit@users.noreply.github.com
 - Jordi Puiggené, jp@naralabs.com
-- Pau Soliva, psoliva@naralabs.com
 - Ramon Bartl, rb@ridingbytes.com
+- Pau Soliva, psoliva@naralabs.com
 - Nihad Mammadli, 1992.nihad@gmail.com
 - Anneline Sweetname, anneline@bikalabs.com
 - Juan Gallostra, juangallostra@users.noreply.github.com
@@ -27,6 +27,7 @@ contributions descending.
 - witekdev, witekdev@gmail.com
 - Anderson Smith, andersonsmith183@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
+- toropok, leonid.toporkov@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Jean Jordaan, jean.jordaan@gmail.com
 - MoffatMore, 12894381+MoffatMore@users.noreply.github.com
