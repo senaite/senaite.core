@@ -169,7 +169,7 @@
                 <code class="">
                   # m h  dom mon dow   command
                   <br/>
-                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"></span>
+                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"/>
                 </code>
               </div>
             </p>
@@ -192,7 +192,7 @@
             </div>
 
             <!-- Auto import results -->
-            <pre class="autoimport-results pt-3"></pre>
+            <pre class="autoimport-results pt-3"/>
 
           </div>
 
