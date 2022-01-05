@@ -2,13 +2,14 @@
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2021-08-04 22:51+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2021\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2021\n"
 "Language-Team: Spanish (Latin America) (https://www.transifex.com/senaite/teams/87045/es_419/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6660,7 +6661,6 @@ msgstr "Añadir a los grupos siguientes:"
 
 #. Default: "<span>x</span> <a href=\"http://plone.org\" title=\"x\">x</a>"
 #: senaite/core/browser/viewlets/templates/colophon.pt:12
-#, fuzzy
 msgid "label_powered_by"
 msgstr "SENAITE es desarrollado por:"
 

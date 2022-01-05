@@ -1,20 +1,20 @@
 #
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # 道 <liangyuandong.1990@aliyun.com>, 2019
 # Zhuo Song, 2019
 # prosper wang <prosperwang@163.com>, 2020
 # Raymond Yu <cl_yu@hotmail.com>, 2020
 # xuhaida76 <xuhaida@gmail.com>, 2020
-# Kevin Xu <139526780@qq.com>, 2021
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2021
+# aaron lau, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2021-08-04 22:51+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Kevin Xu <139526780@qq.com>, 2021\n"
+"Last-Translator: aaron lau, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/senaite/teams/87045/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +28,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:788
 msgid " <p>The ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr ""
+msgstr "<p>LIMS ID服务器为如样本和工作表等对象提供唯一的ID识别号，为特定的内容类型指定特定的格式。</p><p>该格式与Python语法结构类似，为每个内容类型指定预定义变量，并且通过序列数字、“seq”和多个数字为其填充(例如， '03d'表示从001到999的一系列顺序ID)。</p><p>用于ID的字母数字前缀被包括在格式中，例如， WS- {seq:03d}中用于工作表的WS会生成顺序的工作表ID：WS-001，WS-002，WS-003等。</p><p>为了动态生成字母数字和顺序ID，可以使用通配符{alpha}。例如WS-{alpha:2a3d}产生WS-AA001, WS-AA002, WS-AB034等。</p><p>可以使用的变量包括：<table><tr><th style='width:150px'>内容类型：Content Type</th><th>变量：Variables</th></tr><tr><td>客户</td><td>{client}</td></tr><tr><td>年份</td><td>{year}</td></tr><tr><td>样品ID</td><td>{sampleId}</td></tr><tr><td>样品类型</td><td>{sampleType}</td></tr><tr><td>计划取样日期</td><td>{samplingDate} </td></tr><tr><td>取样日期</td><td>{dateSampled} </td></tr></table></p><p>配置设置: <ul><li>格式：<ul><li>由预定义变量（如样品ID：sampleId，客户：client，样品类型：sampleType）构造的python格式字符串。</li><li>特殊变量'seq'必须位于格式字符串的最后</li></ul></li><li>sequence type：序列类型，如生产|计数器[generated|counter]</li><li>context：提示，如果类型为计数器counter，则提供上下文计数功能</li><li>counter reference：计数器类型，反向引用|包含[backreference|contained]</li><li>counter reference：计数器参数，计数功能的参数</li><li>prefix：前缀，默认前缀，如果没有在格式字符串中提供</li><li>split length: 拆分长度，要包含在前缀中的部件数量"
 
 #: bika/lims/browser/publish/templates/email.pt:138
 msgid "${amount} attachments with a total size of ${total_size}"
@@ -42,7 +42,7 @@ msgstr "${back_link} 返回链接"
 
 #: bika/lims/browser/templates/login_details.pt:32
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
-msgstr "联系人${contact_fullname} （全名）可以使用用户名${contact_username} 登录入LIMS系统。联系人必须修改他们自己的登录密码。如果忘记密码，联系人可以在登录界面中请求新生成密码。"
+msgstr "用户${contact_fullname} 可以使用用户名${contact_username} 登录入LIMS系统。用户必须修改他们自己的登录密码。如果忘记密码，用户可以在登录界面中请求新生成密码。"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:149
 msgid "${items} were successfully created."
@@ -260,7 +260,7 @@ msgstr "添加平行样"
 
 #: senaite/core/browser/viewlets/templates/add_samples.pt:22
 msgid "Add Samples"
-msgstr ""
+msgstr "添加样品"
 
 #: bika/lims/content/bikasetup.py:341
 msgid "Add a remarks field to all analyses"
@@ -285,7 +285,7 @@ msgstr "添加备注"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:169
 msgid "Add-ons"
-msgstr ""
+msgstr "附加"
 
 #: bika/lims/content/calculation.py:97
 msgid "Additional Python Libraries"
@@ -297,7 +297,7 @@ msgstr "要通知的其他电子邮件地址"
 
 #: bika/lims/content/analysisservice.py:115
 msgid "Additional result values"
-msgstr ""
+msgstr "附加结果值"
 
 #: bika/lims/content/storagelocation.py:93
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:137
@@ -322,7 +322,7 @@ msgstr "该样品类型已批准的标签"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:138
 msgid "Advanced"
-msgstr ""
+msgstr "高级"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:359
 msgid "After ${end_date}"
@@ -612,11 +612,11 @@ msgstr "任务待定"
 
 #: bika/lims/validators.py:478
 msgid "At least, two options for choices field are required"
-msgstr ""
+msgstr "至少选中两个选项"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:249
 msgid "Attach to Sample"
-msgstr ""
+msgstr "附加到样品"
 
 #: bika/lims/content/analysisrequest.py:999
 #: bika/lims/content/attachment.py:51
@@ -691,7 +691,7 @@ msgstr "被授权于"
 
 #: senaite/core/exportimport/import.pt:52
 msgid "Auto Import"
-msgstr ""
+msgstr "自动导入"
 
 #: bika/lims/browser/instrument.py:747
 msgid "Auto Import Logs of %s"
@@ -1079,7 +1079,7 @@ msgstr "勾选本框以确认本次检验服务需使用单独的样品容器"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:46
 msgid "Choices"
-msgstr ""
+msgstr "选项"
 
 #: bika/lims/content/analysisrequest.py:657
 msgid "Choose default Sample specification values"
@@ -1372,7 +1372,7 @@ msgstr ""
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:134
 msgid "Create a new SENAITE site"
-msgstr ""
+msgstr "创建新的站点"
 
 #: bika/lims/browser/templates/login_details.pt:212
 msgid "Create a new User"
@@ -1689,7 +1689,7 @@ msgstr "默认小标签"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:97
 msgid "Default timezone"
-msgstr ""
+msgstr "默认时区"
 
 #: bika/lims/content/bikasetup.py:565
 msgid "Default turnaround time for analyses."
@@ -1740,7 +1740,7 @@ msgstr "部门"
 #: bika/lims/content/department.py:45
 #: bika/lims/controlpanel/bika_departments.py:77
 msgid "Department ID"
-msgstr ""
+msgstr "部门ID"
 
 #: bika/lims/content/labcontact.py:69
 #: bika/lims/controlpanel/bika_labcontacts.py:80
@@ -2500,7 +2500,7 @@ msgstr "在报告中忽略"
 #: senaite/core/exportimport/import.pt:14
 #: senaite/core/profiles/default/actions.xml
 msgid "Import"
-msgstr ""
+msgstr "导入"
 
 #: bika/lims/content/instrument.py:220
 msgid "Import Data Interface"
@@ -2508,7 +2508,7 @@ msgstr "导入数据接口"
 
 #: senaite/core/exportimport/import.pt:86
 msgid "Import Interface"
-msgstr ""
+msgstr "导入接口"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:59
 msgid "Imported File"
@@ -2556,7 +2556,7 @@ msgstr "初始化"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:13
 msgid "Install SENAITE LIMS"
-msgstr ""
+msgstr "安装LIMS"
 
 #: bika/lims/content/instrument.py:323
 msgid "Installation Certificate"
@@ -2774,7 +2774,7 @@ msgstr "发票"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:55
 msgid "Invoice Date"
-msgstr ""
+msgstr "票据数据"
 
 #: bika/lims/content/analysisrequest.py:946
 msgid "Invoice Exclude"
@@ -2904,7 +2904,7 @@ msgstr "登陆页面"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:74
 msgid "Language"
-msgstr ""
+msgstr "语言"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Large Sticker"
@@ -2992,7 +2992,7 @@ msgstr "已加载"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:59
 msgid "Location"
-msgstr ""
+msgstr "位置"
 
 #: bika/lims/content/storagelocation.py:58
 #: bika/lims/controlpanel/bika_storagelocations.py:88
@@ -3744,7 +3744,7 @@ msgstr "输出格式"
 
 #: bika/lims/controlpanel/bika_storagelocations.py:97
 msgid "Owner"
-msgstr ""
+msgstr "拥有者"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:42
 msgid "Paperformat"
@@ -4648,15 +4648,15 @@ msgstr "常规检验项目"
 
 #: senaite/core/configure.zcml:39
 msgid "SENAITE CORE"
-msgstr ""
+msgstr "LIMS核心组件"
 
 #: senaite/core/configure.zcml:39
 msgid "SENAITE CORE Add-on"
-msgstr ""
+msgstr "LIMS核心附件"
 
 #: bika/lims/profiles.zcml:17
 msgid "SENAITE Core 1.x (do not install)"
-msgstr ""
+msgstr "LIMS核心组件 1.x（请勿安装）"
 
 #: senaite/core/browser/frontpage/configure.zcml:23
 msgid "SENAITE LIMS front-page"
@@ -5093,7 +5093,7 @@ msgstr "选择此选项可在实验室人员创建且采样工作流程被禁用
 
 #: bika/lims/content/bikasetup.py:529
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-msgstr ""
+msgstr "选择向客户端联系人显示示例分区。如果停用，分区将不会包含在列表中，并且没有与主示例链接的信息消息显示给客户端联系人。"
 
 #: bika/lims/content/worksheettemplate.py:88
 msgid "Select which Analyses should be included on the Worksheet"
@@ -5113,7 +5113,7 @@ msgstr "选择启用自动标签打印时要打印的标签"
 
 #: bika/lims/content/abstractbaseanalysis.py:564
 msgid "Selection list"
-msgstr ""
+msgstr "选择列表"
 
 #: bika/lims/content/abstractbaseanalysis.py:624
 msgid "Self-verification of results"
@@ -5160,15 +5160,15 @@ msgstr "服务"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:61
 msgid "Set"
-msgstr ""
+msgstr "设置"
 
 #: bika/lims/browser/worksheet/views/analyses.py:130
 msgid "Set remarks"
-msgstr ""
+msgstr "设置标记"
 
 #: bika/lims/browser/worksheet/views/analyses.py:134
 msgid "Set remarks for selected analyses"
-msgstr ""
+msgstr "为选定的分析设置备注"
 
 #: bika/lims/content/analysisrequest.py:637
 msgid "Set the Sample Rejection workflow and the reasons"
@@ -5188,7 +5188,7 @@ msgstr "设置发布样品之前要使用的检验标准。"
 
 #: bika/lims/content/bikasetup.py:611
 msgid "Set the text for the body of the email to be sent to the Sample's client contact if the option 'Email notification on Sample rejection' is enabled. You can use reserved keywords: $sample_id, $sample_link, $reasons, $lab_address"
-msgstr ""
+msgstr "如果启用了“关于样品拒绝的电子邮件通知”选项，则设置电子邮件发送到样品的客户端联系人。你可以使用保留关键字:$sample_id, $sample_link, $reasons, $lab_address"
 
 #: bika/lims/content/bikasetup.py:652
 msgid "Set the text for the body of the email to be sent, , if option 'Email notification on Sample 'invalidation' enabled,  to the Sample's client contact. You can use reserved keywords: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
@@ -5218,7 +5218,7 @@ msgstr "邮寄地址"
 
 #: bika/lims/content/method.py:161
 msgid "Short method description"
-msgstr ""
+msgstr "简短方法描述"
 
 #: bika/lims/content/abstractbaseanalysis.py:67
 msgid "Short title"
@@ -5230,7 +5230,7 @@ msgstr "这些检验项目是否应从发票中排除？"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:127
 msgid "Should the default example content be added to the site?"
-msgstr ""
+msgstr "是否应该将默认示例内容添加到站点中？"
 
 #: bika/lims/content/client.py:124
 msgid "Show only selected categories in client views"
@@ -5433,7 +5433,7 @@ msgstr "服务支持"
 
 #: bika/lims/content/method.py:115
 msgid "Supported calculations of this method"
-msgstr ""
+msgstr "支持这种方法的计算"
 
 #: bika/lims/content/person.py:75
 msgid "Surname"
@@ -5507,7 +5507,7 @@ msgstr "感谢您的请检单。"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:54
 msgid "The ID of the site. This ends up as part of the URL. No special characters or spaces are allowed."
-msgstr ""
+msgstr "站点的 ID。 这最终作为 URL 的一部分。 不允许使用特殊字符或空格。"
 
 #: bika/lims/content/laboratory.py:66
 msgid "The Laboratory's web address"
@@ -5612,7 +5612,7 @@ msgstr "默认容器类型。除非为每个分析服务指定了更多详细信
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:113
 msgid "The default timezone setting of the portal. Users will be able to set their own timezone, if available timezones are defined in the date and time settings."
-msgstr ""
+msgstr "操控版的默认时区设置。 如果在日期和时间设置中定义了可用时区，用户将能够设置他们自己的时区。"
 
 #: bika/lims/content/bikasetup.py:250
 msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
@@ -5628,7 +5628,7 @@ msgstr "已从此样品创建以下分切："
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:47
 msgid "The following sample(s) will be dispatched"
-msgstr ""
+msgstr "将分发以下样品"
 
 #: bika/lims/content/samplepoint.py:75
 msgid "The height or depth at which the sample has to be taken"
@@ -5662,7 +5662,7 @@ msgstr "实验室科系/部门"
 
 #: bika/lims/content/bikasetup.py:468
 msgid "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
-msgstr ""
+msgstr "如果未选择仪表板作为默认首页，则将为未经身份验证的用户显示登录页面。 如果未选择登录页面，则显示默认首页。"
 
 #: bika/lims/content/samplepoint.py:96
 msgid "The list of sample types that can be collected at this sample point.  If no sample types are selected, then all sample types are available."
@@ -5670,7 +5670,7 @@ msgstr "可以在此采样点收集的样品类型列表。如果未选择样品
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:90
 msgid "The main language of the site."
-msgstr ""
+msgstr "主语言"
 
 #: bika/lims/content/abstractbaseanalysis.py:107
 msgid "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
@@ -5735,7 +5735,7 @@ msgstr "领样人"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:51
 msgid "The place where the instrument is located in the laboratory"
-msgstr ""
+msgstr "仪器在实验室中的位置"
 
 #: bika/lims/content/analysisrequest.py:379
 msgid "The predefined values of the Sample template are set in the request"
@@ -5875,7 +5875,7 @@ msgstr "此报告已发送至以下联系人："
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:57
 msgid "This site configuration is outdated and needs to be upgraded:"
-msgstr ""
+msgstr "此站点配置已过时，需要升级："
 
 #: bika/lims/content/laboratory.py:93
 msgid "This value is reported at the bottom of all published results"
@@ -6020,7 +6020,7 @@ msgstr "类型"
 
 #: bika/lims/content/abstractbaseanalysis.py:577
 msgid "Type of control to be displayed on result entry when predefined results are set"
-msgstr ""
+msgstr "设置预定义结果时在结果条目上显示的控件类型"
 
 #: bika/lims/content/multifile.py:74
 msgid "Type of document (e.g. user manual, instrument specifications, image, ...)"
@@ -6032,7 +6032,7 @@ msgstr "位置的类型"
 
 #: senaite/core/browser/controlpanel/templates/setupview.pt:27
 msgid "Type to filter ..."
-msgstr ""
+msgstr "键入以筛选..."
 
 #: bika/lims/browser/worksheet/views/printview.py:148
 msgid "Unable to load the template"
@@ -6065,7 +6065,7 @@ msgstr "未定义"
 
 #: bika/lims/content/department.py:46
 msgid "Unique Department ID that identifies the department"
-msgstr ""
+msgstr "标识部门的唯一部门 ID"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:78
 #: bika/lims/browser/fields/interimfieldsfield.py:47
@@ -6109,7 +6109,7 @@ msgstr "未分派"
 
 #: bika/lims/skins/bika/bika_widgets/scheduleinputwidget.pt:63
 msgid "Until"
-msgstr ""
+msgstr "直到"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:180
 msgid "Update Attachments"
@@ -6152,7 +6152,7 @@ msgstr "用户名"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:98
 msgid "User groups"
-msgstr ""
+msgstr "用户组"
 
 #: bika/lims/browser/reports/templates/administration.pt:132
 msgid "User history"
@@ -6164,7 +6164,7 @@ msgstr "用户链接到此联系人"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:95
 msgid "User name"
-msgstr ""
+msgstr "用户名"
 
 #: bika/lims/browser/reports/administration_usershistory.py:203
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:56
@@ -6422,11 +6422,11 @@ msgstr "示图"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:52
 msgid "View your SENAITE site"
-msgstr ""
+msgstr "浏览LIMS"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:477
 msgid "Visibility"
-msgstr ""
+msgstr "能见度"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:24
 #: bika/lims/browser/viewlets/templates/sample_dynamic_specs_viewlet.pt:24
@@ -6468,15 +6468,15 @@ msgstr "几周后过期"
 
 #: senaite/core/browser/frontpage/templates/frontpage.pt:16
 msgid "Welcome to"
-msgstr ""
+msgstr "欢迎"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:14
 msgid "Welcome to SENAITE"
-msgstr ""
+msgstr "欢迎来到LIMS"
 
 #: bika/lims/content/bikasetup.py:354
 msgid "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
-msgstr ""
+msgstr "启用后，一旦验证所有结果，就会自动验证样品。 否则，具有足够权限的用户必须随后手动验证样本。 默认值：启用"
 
 #: bika/lims/content/analysisprofile.py:102
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
@@ -6666,7 +6666,6 @@ msgstr "增加标签到组"
 
 #. Default: "<span>x</span> <a href=\"http://plone.org\" title=\"x\">x</a>"
 #: senaite/core/browser/viewlets/templates/colophon.pt:12
-#, fuzzy
 msgid "label_powered_by"
 msgstr "标签赞助商"
 

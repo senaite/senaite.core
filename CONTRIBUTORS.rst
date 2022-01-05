@@ -8,8 +8,8 @@ contributions descending.
 
 - Campbell McKellar-Basset, rockfruit@users.noreply.github.com
 - Jordi Puiggené, jp@naralabs.com
-- Pau Soliva, psoliva@naralabs.com
 - Ramon Bartl, rb@ridingbytes.com
+- Pau Soliva, psoliva@naralabs.com
 - Nihad Mammadli, 1992.nihad@gmail.com
 - Anneline Sweetname, anneline@bikalabs.com
 - Juan Gallostra, juangallostra@users.noreply.github.com
@@ -27,6 +27,7 @@ contributions descending.
 - witekdev, witekdev@gmail.com
 - Anderson Smith, andersonsmith183@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
+- toropok, leonid.toporkov@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Jean Jordaan, jean.jordaan@gmail.com
 - MoffatMore, 12894381+MoffatMore@users.noreply.github.com
@@ -68,6 +69,8 @@ Translators
 - limsgr, inactive+limsgr@transifex.com, Greek (el)
 - Mike Metcalfe, mike@webtide.co.za, English (United States) (en_US)
 - PabloBF, pablobusattof@gmail.com, Esperanto (eo)
+- ELvira Aylon, elvira@icb.csic.es, Spanish (es)
+- Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (es)
 - Leonardo Rojas, leonardorojass@gmail.com, Spanish (es)
 - Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (es)
 - Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (es)
@@ -79,16 +82,20 @@ Translators
 - SSchott, sschottv@gmail.com, Spanish (es)
 - Michael Quintana, michaelquintana@gmail.com, Spanish (es)
 - Campbell McKellar-Basset, campbell@bikalabs.com, Spanish (es)
+- Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (Latin America) (es_419)
 - Marco Rodriguez, tabarishneo@gmail.com, Spanish (Latin America) (es_419)
 - Didinson Muñoz, dmunozcster@gmail.com, Spanish (Latin America) (es_419)
+- Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (Argentina) (es_AR)
 - Fernando Sánchez, nando@liberorbis.com, Spanish (Peru) (es_PE)
 - Jordi Puiggené, jpuiggene@naralabs.com, Spanish (Peru) (es_PE)
 - Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (Peru) (es_PE)
 - Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (Peru) (es_PE)
 - Campbell McKellar-Basset, campbell@bikalabs.com, Spanish (Peru) (es_PE)
+- roozbeh karimi, information.spnco@gmail.com, Persian (fa)
 - alireza mashayekhi, alireza.mashayekhi@gmail.com, Persian (fa)
 - arma, arma4c@gmail.com, Persian (fa)
 - Mohammad Javad Danesh, daneshy@gmail.com, Persian (fa)
+- Ludwig Muster, ludwig.muster@gmail.com, French (fr)
 - CestPasFaux, rodriguesdossantos.vincent@gmail.com, French (fr)
 - Bonamour, nicolas.bonamour-du-tartre@parisdescartes.fr, French (fr)
 - MALESSAN, malessan@gmail.com, French (fr)
@@ -98,6 +105,7 @@ Translators
 - Didier Desplanque, didier.desplanque@gmail.com, French (fr)
 - Ahmed BEN BRAHIM, ahmed.benbrahim@hotmail.com, French (fr)
 - DELAMARRE, julien.delamarre@univ-rouen.fr, French (fr)
+- Wei Chung Sim, wchung.mardi@gmail.com, Malay (ms)
 - Jayadeep Karnati, karnatijayadeep@gmail.com, Hindi (hi)
 - Alphons Senki, senki.alphons@gmail.com, Hungarian (hu)
 - Fitra Purna, fitra_purna@yahoo.co.id, Indonesian (id)
@@ -127,6 +135,8 @@ Translators
 - cruzrenato1, renatorlcruz@gmail.com, Portuguese (Brazil) (pt_BR)
 - baktron, fernando@baktron.com.br, Portuguese (Brazil) (pt_BR)
 - corneliu.e, corneliueva@yahoo.com, Romanian (Romania) (ro_RO)
+- Алексей Сериков, nchrom@gmail.com, Russian (ru)
+- Artem Kladov, artem.kladov@flant.com, Russian (ru)
 - Oleksandr Fedorov, fedoroffall@yandex.ru, Russian (ru)
 - Pavel Shuper, shuper@bionixlab.com, Russian (ru)
 - Михаил Стручалин, m.struchalin@gmail.com, Russian (ru)
@@ -139,7 +149,12 @@ Translators
 - Dima Domin, dima.domin@gmail.com, Ukrainian (Ukraine) (uk_UA)
 - Misha Bychkov, mich.bychkov@gmail.com, Ukrainian (Ukraine) (uk_UA)
 - Pavel Shuper, shuper@bionixlab.com, Ukrainian (Ukraine) (uk_UA)
+- Muzzammil Hussain, dexter.hussain@gmail.com, Urdu (ur)
+- Kevin Xu, 139526780@qq.com, Chinese (zh)
 - Rui Tang, bio.nanoparticle@gmail.com, Chinese (zh)
+- xuhaida76, xuhaida@gmail.com, Chinese (China) (zh_CN)
+- Raymond Yu, cl_yu@hotmail.com, Chinese (China) (zh_CN)
+- 道, liangyuandong.1990@aliyun.com, Chinese (China) (zh_CN)
 - lin chen, aling1472@163.com, Chinese (China) (zh_CN)
 - Rui Tang, bio.nanoparticle@gmail.com, Chinese (China) (zh_CN)
 - jincheng_li, 394428196@qq.com, Chinese (China) (zh_CN)
@@ -153,3 +168,4 @@ Translators
 - Rui Tang, bio.nanoparticle@gmail.com, Chinese (Taiwan) (zh_TW)
 - Matthew Tsui, mtsui@app2one.com, Chinese (Taiwan) (zh_TW)
 - Liz Sung, lesliesong@gmail.com, Chinese (Taiwan) (zh_TW)
+- Wei Chung Sim, wchung.mardi@gmail.com, Chinese (Taiwan) (zh_TW)
