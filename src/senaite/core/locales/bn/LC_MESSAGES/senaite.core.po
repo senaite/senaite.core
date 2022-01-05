@@ -6622,7 +6622,7 @@ msgstr ""
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "yy-mm-dd"
+#. Default: "mm/dd/yy"
 msgid "date_format_short_datepicker"
 msgstr ""
 
