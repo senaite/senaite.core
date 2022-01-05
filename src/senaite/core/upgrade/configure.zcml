@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- 2.1.0 to 2.2.0 -->
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.2.0"
+      source="2.1.0"
+      destination="2.2.0"
+      handler="senaite.core.upgrade.v02_02_000.upgrade"
+      profile="senaite.core:default"/>
+
   <!-- 2.0.0 to 2.1.0 -->
   <genericsetup:upgradeStep
       title="Upgrade to SENAITE.CORE 2.1.0"
