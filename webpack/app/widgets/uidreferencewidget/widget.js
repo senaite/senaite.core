@@ -156,9 +156,6 @@ class UIDReferenceWidgetController extends React.Component {
    * @returns {Promise}
    */
   search(searchterm) {
-    if (!searchterm && this.state.results.length > 0) {
-      return;
-    }
     console.debug("ReferenceWidgetController::search:searchterm:", searchterm);
     // set the searchterm directly to avoid re-rendering
     this.state.searchterm = searchterm || "";
