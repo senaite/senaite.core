@@ -9,6 +9,7 @@ import six
 
 import pytz
 from bika.lims import logger
+from bika.lims.api import APIError
 from DateTime import DateTime
 from DateTime.DateTime import DateError
 from DateTime.DateTime import SyntaxError
@@ -84,7 +85,7 @@ def is_timezone_naive(dt):
     elif is_str(dt):
         DT = to_DT(dt)
         return is_timezone_naive(DT)
-    raise TypeError("Expected a date, got '%r'" % type(dt))
+    raise APIError("Expected a date type, got '%r'" % type(dt))
 
 
 def is_timezone_aware(dt):
