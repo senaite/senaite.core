@@ -127,15 +127,16 @@ class ReferenceResults extends React.Component {
   build_rows() {
     let rows = [];
     let results = this.get_results();
-    for (let result of results) {
+    results.forEach((result, index) => {
       let uid = this.get_result_uid(result);
       rows.push(
         <tr uid={uid}
+            className={this.props.focused == index ? "table-active": ""}
             onClick={this.on_select}>
           {this.build_columns(result)}
         </tr>
       );
-    }
+    });
     return rows
   }
 
