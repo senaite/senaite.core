@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1908 Added searchable text querystring converter to catalog API
 - #1905 Fix empty field in sample add form when using edit accessor
 
 
