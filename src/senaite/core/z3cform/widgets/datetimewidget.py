@@ -167,8 +167,6 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         if dm:
             # extract the object from the database
             value = dm.query()
-        if not dtime.is_date(value):
-            return None
         return self.to_localized_time(value)
 
     def to_datetime(self, value):
