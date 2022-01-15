@@ -273,6 +273,20 @@ class UIDReferenceWidgetController extends React.Component {
         }
       }
     }
+
+    else if (direction == "left") {
+      this.setState({focused: 0});
+      if (page > 0) {
+        this.goto_page(page - 1);
+      }
+    }
+
+    else if (direction == "right") {
+      this.setState({focused: 0});
+      if (page < pages) {
+        this.goto_page(page + 1);
+      }
+    }
   }
 
   /*

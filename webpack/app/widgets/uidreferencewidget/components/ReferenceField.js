@@ -81,6 +81,20 @@ class ReferenceField extends React.Component {
         this.props.on_arrow_key("up");
       }
     }
+
+    // left arrow
+    if (event.which == 37) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("left");
+      }
+    }
+
+    // right arrow
+    if (event.which == 39) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("right");
+      }
+    }
   }
 
   /*
