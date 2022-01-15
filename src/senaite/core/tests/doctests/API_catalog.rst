@@ -146,3 +146,49 @@ Check if the column was deleted:
 
     >>> COLUMN in capi.get_columns(sample_catalog)
     False
+
+
+Searchable Text Querystring
+---------------------------
+
+https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html#boolean-expressions
+
+Searching for a single word:
+
+    >>> capi.to_searchable_text_qs("sample")
+    u'sample*'
+
+Without wildcard:
+
+    >>> capi.to_searchable_text_qs("sample", wildcard=False)
+    u'sample'
+
+Searching for a unicode word:
+
+    >>> capi.to_searchable_text_qs("AäOöUüZ")
+    u'A\xe4O\xf6U\xfcZ*'
+
+Searching for multiple unicode words:
+
+    >>> capi.to_searchable_text_qs("Ä Ö Ü")
+    u'\xc4* AND \xd6* AND \xdc*'
+
+Searching for a concatenated word:
+
+    >>> capi.to_searchable_text_qs("H2O-0001")
+    u'H2O* AND 0001*'
+
+Searching for two words:
+
+    >>> capi.to_searchable_text_qs("Fresh Funky")
+    u'Fresh* AND Funky*'
+
+Tricky query strings (with and/or/not in words or in between):
+
+    >>> capi.to_searchable_text_qs("Fresh and Funky or Sand but not Bor")
+    u'Fresh* AND Funky* OR Sand* AND but* NOT Bor*'
+
+A questionmark allows to search for all strings that start with what is before:
+
+    >>> capi.to_searchable_text_qs("Ca? OR Mg?")
+    u'Ca? OR Mg?'
