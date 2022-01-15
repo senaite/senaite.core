@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1909 Allow to navigate and select with arrow keys in dexterity reference widget
 - #1905 Fix empty field in sample add form when using edit accessor
 
 
