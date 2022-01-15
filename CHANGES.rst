@@ -4,8 +4,6 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
-- #1905 Fix empty field in sample add form when using edit accessor
-
 
 2.1.0 (2022-01-05)
 ------------------
