@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 import six
 
+from bika.lims.api import APIError
 from bika.lims.api import get_tool
-from Products.ZCatalog.interfaces import IZCatalog
-from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
+from bika.lims.api import safe_unicode
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
 from Products.CMFPlone.UnicodeSplitter import Splitter
+from Products.ZCatalog.interfaces import IZCatalog
+from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
-from Products.ZCatalog.ZCatalog import ZCatalog
-from bika.lims.api import APIError
 
 
 def get_catalog(name_or_obj):
@@ -192,3 +194,60 @@ def del_column(catalog, column):
 
     catalog.delColumn(column)
     return True
+
+
+def to_searchable_text_qs(qs, op="AND", wildcard=True):
+    """Convert the query string for a searchable text index
+
+    :param qs: search string
+    :param op: operator for token concatenation
+    :param wildcard: append `*` to the tokens
+    :returns: sarchable text string
+    """
+    WILDCARDS = ["*", "?"]
+    OPERATORS = ["AND", "OR", "NOT"]
+
+    if op not in OPERATORS:
+        op = "AND"
+    if not isinstance(qs, six.string_types):
+        return ""
+
+    # convert to unicode
+    term = safe_unicode(qs)
+
+    # splits the string on all non alphanumeric characters (except * and ?)
+    tokens = re.split(r"[^\w*?]", term, flags=re.U | re.I)
+
+    parts = []
+
+    def is_op(token):
+        return token.upper() in OPERATORS
+
+    def has_wc(token):
+        return token[-1] in WILDCARDS
+
+    for num, token in enumerate(tokens):
+        # skip empty tokens
+        if not token:
+            continue
+
+        # append operators without changes and continue
+        if is_op(token):
+            parts.append(token.upper())
+            continue
+
+        # append wildcard to token
+        if wildcard:
+            if not is_op(token) and not has_wc(token):
+                token = token + "*"
+
+        # append the token
+        parts.append(token)
+
+        # add operator if neither the current nor the next token are operators
+        is_last = num == len(tokens) - 1
+        next_token = tokens[num + 1] if not is_last else ""
+        if not is_last and not is_op(next_token):
+            parts.append(op)
+
+    return " ".join(parts)
