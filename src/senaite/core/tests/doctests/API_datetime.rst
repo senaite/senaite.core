@@ -85,6 +85,15 @@ Check if an object represents a date
     True
 
     >>> dtime.is_date("2021-12-24")
+    True
+
+    >>> dtime.is_date("2021-12-24T12:00:00")
+    True
+
+    >>> dtime.is_date("2021-12-24T12:00:00+01:00")
+    True
+
+    >>> dtime.is_date("Hello World")
     False
 
     >>> dtime.is_date(object())
@@ -103,6 +112,15 @@ Check if a datetime object is TZ naive
     >>> dtime.is_timezone_naive(DateTime())
     False
 
+    >>> dtime.is_timezone_naive("2021-12-24")
+    True
+
+    >>> dtime.is_timezone_naive("2021-12-24T12:00:00")
+    True
+
+    >>> dtime.is_timezone_naive("2021-12-24T12:00:00+01:00")
+    False
+
 
 Check if a datetime object is TZ aware
 ......................................
@@ -116,6 +134,15 @@ Check if a datetime object is TZ aware
     >>> dtime.is_timezone_aware(DateTime())
     True
 
+    >>> dtime.is_timezone_aware("2021-12-24")
+    False
+
+    >>> dtime.is_timezone_aware("2021-12-24T12:00:00")
+    False
+
+    >>> dtime.is_timezone_aware("2021-12-24T12:00:00+01:00")
+    True
+
 
 Convert to DateTime
 ...................
@@ -127,6 +154,9 @@ Timezone naive datetimes are converterd to `GMT+0`:
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
     >>> dt
     datetime.datetime(2021, 12, 24, 12, 0)
+
+    >>> dtime.to_DT(DATE)
+    DateTime('2021/12/24 12:00:00 GMT+0')
 
     >>> dtime.to_DT(dt)
     DateTime('2021/12/24 12:00:00 GMT+0')
@@ -233,6 +263,13 @@ Convert `datetime` objects to a timezone:
     >>> dtime.to_zone(dt_utc, "CET")
     datetime.datetime(1970, 1, 1, 2, 0, tzinfo=<DstTzInfo 'CET' CET+1:00:00 STD>)
 
+Convert `date` objects to a timezone (converts to `datetime`):
+
+    >>> d = date.fromordinal(dt.toordinal())
+    >>> d_utc = dtime.to_zone(d, "UTC")
+    >>> d_utc
+    datetime.datetime(1970, 1, 1, 0, 0, tzinfo=<UTC>)
+
 Convert `DateTime` objects to a timezone:
 
     >>> DT = DateTime(DATE)
@@ -252,6 +289,9 @@ Make a POSIX timestamp
     >>> DT = DateTime(DATE)
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
 
+    >>> dtime.to_timestamp(DATE)
+    3600.0
+
     >>> dtime.to_timestamp(dt)
     3600.0
 
@@ -270,6 +310,9 @@ Convert to ISO format
     >>> dt_local = dtime.to_zone(dt, "CET")
     >>> dt_local
     datetime.datetime(2021, 8, 1, 12, 0, tzinfo=<DstTzInfo 'CET' CEST+2:00:00 DST>)
+
+    >>> dtime.to_iso_format(DATE)
+    '2021-08-01T12:00:00'
 
     >>> dtime.to_iso_format(dt_local)
     '2021-08-01T12:00:00+02:00'
