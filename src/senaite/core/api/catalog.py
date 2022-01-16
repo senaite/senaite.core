@@ -199,37 +199,57 @@ def del_column(catalog, column):
 def to_searchable_text_qs(qs, op="AND", wildcard=True):
     """Convert the query string for a searchable text index
 
+    https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html#searching-zctextindexes
+
+    NOTE: we do not support parenthesis, questionmarks or negated searches,
+          because this raises quickly parse errors for ZCTextIndexes
+
     :param qs: search string
     :param op: operator for token concatenation
     :param wildcard: append `*` to the tokens
     :returns: sarchable text string
     """
-    WILDCARDS = ["*", "?"]
-    OPERATORS = ["AND", "OR", "NOT"]
+    OPERATORS = ["AND", "OR"]
 
     if op not in OPERATORS:
         op = "AND"
     if not isinstance(qs, six.string_types):
         return ""
 
-    # convert to unicode
-    term = safe_unicode(qs)
-
-    # splits the string on all non alphanumeric characters (except * and ?)
-    tokens = re.split(r"[^\w*?]", term, flags=re.U | re.I)
-
-    parts = []
-
     def is_op(token):
         return token.upper() in OPERATORS
 
-    def has_wc(token):
-        return token[-1] in WILDCARDS
+    def append_op_after(index, token, tokens):
+        # do not append an operator after the last token
+        if index == len(tokens) - 1:
+            return False
+        # do not append an operator if the next token is an operator
+        next_token = tokens[num + 1]
+        if is_op(next_token):
+            return False
+        # append an operator (AND/OR) after this token
+        return True
+
+    # convert to unicode
+    term = safe_unicode(qs)
+
+    # splits the string on all non alphanumeric characters
+    tokens = re.split(r"[^\w]", term, flags=re.U | re.I)
+
+    # filter out all empty tokens
+    tokens = filter(None, tokens)
+
+    # cleanup starting operators
+    while tokens and is_op(tokens[0]):
+        tokens.pop(0)
+
+    # cleanup any trailing operators
+    while tokens and is_op(tokens[-1]):
+        tokens.pop(-1)
+
+    parts = []
 
     for num, token in enumerate(tokens):
-        # skip empty tokens
-        if not token:
-            continue
 
         # append operators without changes and continue
         if is_op(token):
@@ -237,17 +257,15 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
             continue
 
         # append wildcard to token
-        if wildcard:
-            if not is_op(token) and not has_wc(token):
-                token = token + "*"
+        if wildcard and not is_op(token):
+            token = token + "*"
 
         # append the token
         parts.append(token)
 
-        # add operator if neither the current nor the next token are operators
-        is_last = num == len(tokens) - 1
-        next_token = tokens[num + 1] if not is_last else ""
-        if not is_last and not is_op(next_token):
+        # check if we need to append an operator after the current token
+        if append_op_after(num, token, tokens):
             parts.append(op)
 
-    return " ".join(parts)
+    # return the final querystring
+    return u" ".join(parts)

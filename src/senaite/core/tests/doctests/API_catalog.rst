@@ -183,12 +183,47 @@ Searching for two words:
     >>> capi.to_searchable_text_qs("Fresh Funky")
     u'Fresh* AND Funky*'
 
-Tricky query strings (with and/or/not in words or in between):
+Tricky query strings (with and/or in words or in between):
 
-    >>> capi.to_searchable_text_qs("Fresh and Funky or Sand but not Bor")
-    u'Fresh* AND Funky* OR Sand* AND but* NOT Bor*'
+    >>> capi.to_searchable_text_qs("Fresh and Funky Oranges from Andorra")
+    u'Fresh* AND Funky* AND Oranges* AND from* AND Andorra*'
 
-A questionmark allows to search for all strings that start with what is before:
+All wildcards are removed and replaced with `*` to avoid parse errors:
 
     >>> capi.to_searchable_text_qs("Ca? OR Mg?")
-    u'Ca? OR Mg?'
+    u'Ca* OR Mg*'
+
+Search with special characters:
+
+    >>> capi.to_searchable_text_qs("'H2O-0001'")
+    u'H2O* AND 0001*'
+
+    >>> capi.to_searchable_text_qs("\'H2O-0001\'")
+    u'H2O* AND 0001*'
+
+    >>> capi.to_searchable_text_qs("(H2O-0001)*")
+    u'H2O* AND 0001*'
+
+    >>> capi.to_searchable_text_qs("****([H2O-0001])****")
+    u'H2O* AND 0001*'
+
+    >>> capi.to_searchable_text_qs("********************")
+    u''
+
+    >>> capi.to_searchable_text_qs("????????????????????")
+    u''
+
+    >>> capi.to_searchable_text_qs("?H2O?")
+    u'H2O*'
+
+    >>> capi.to_searchable_text_qs("*H2O*")
+    u'H2O*'
+
+    >>> capi.to_searchable_text_qs("And the question is: AND OR maybe NOT AND")
+    u'the* AND question* AND is* AND OR maybe* AND NOT*'
+
+    >>> capi.to_searchable_text_qs("AND OR")
+    u''
+
+    >>> capi.to_searchable_text_qs("H2O NOT 11")
+    u'H2O* AND NOT* AND 11*'
