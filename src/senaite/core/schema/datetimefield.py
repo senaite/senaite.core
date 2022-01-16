@@ -32,8 +32,8 @@ class DatetimeField(Datetime, BaseField):
         :param value: datetime value
         :type value: datetime
         """
-        if dtime.is_dt(value):
-            value = localize(value)
+        if dtime.is_date(value):
+            value = localize(dtime.to_dt(value))
         super(DatetimeField, self).set(object, value)
 
     def get(self, object):
@@ -43,8 +43,12 @@ class DatetimeField(Datetime, BaseField):
         :returns: datetime or None
         """
         value = super(DatetimeField, self).get(object)
-        if not dtime.is_dt(value):
+        # bail out if value is not a known date object
+        if not dtime.is_date(value):
             return None
+        # ensure we have a `datetime` object
+        value = dtime.to_dt(value)
+        # always return localized datetime objects
         return localize(value)
 
     def _validate(self, value):
