@@ -69,6 +69,13 @@ class ReferenceField extends React.Component {
    *
    */
   on_keydown(event) {
+    // backspace
+    if (event.which == 8) {
+      if (this.get_search_value() == "") {
+        this.props.on_clear();
+      }
+    }
+
     // down arrow
     if (event.which == 40) {
       if (this.props.on_arrow_key) {

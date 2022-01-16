@@ -160,6 +160,7 @@ class UIDReferenceWidgetController extends React.Component {
    */
   search(searchterm) {
     if (!searchterm && this.state.results.length > 0) {
+      this.state.searchterm = "";
       return;
     }
     console.debug("ReferenceWidgetController::search:searchterm:", searchterm);
@@ -249,6 +250,7 @@ class UIDReferenceWidgetController extends React.Component {
     let pages = this.state.pages;
     let results = this.state.results;
     let focused = this.state.focused;
+    let searchterm = this.state.searchterm;
 
     console.debug("ReferenceWidgetController::navigate_results:focused:", focused);
 
@@ -264,6 +266,9 @@ class UIDReferenceWidgetController extends React.Component {
     }
 
     else if (direction == "down") {
+      if (this.state.results.length == 0) {
+        this.search(searchterm);
+      }
       if (focused < results.length - 1) {
         this.setState({focused: focused + 1});
       } else {
