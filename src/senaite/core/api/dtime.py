@@ -5,9 +5,24 @@ import time
 from datetime import date
 from datetime import datetime
 
+import six
+
 import pytz
 from bika.lims import logger
+from bika.lims.api import APIError
 from DateTime import DateTime
+from DateTime.DateTime import DateError
+from DateTime.DateTime import SyntaxError
+from DateTime.DateTime import TimeError
+
+
+def is_str(obj):
+    """Check if the given object is a string
+
+    :param obj: arbitrary object
+    :returns: True when the object is a string
+    """
+    return isinstance(obj, six.string_types)
 
 
 def is_d(dt):
@@ -43,6 +58,9 @@ def is_date(dt):
     :param dt: date to check
     :returns: True when the object is either a datetime or DateTime
     """
+    if is_str(dt):
+        DT = to_DT(dt)
+        return is_date(DT)
     if is_d(dt):
         return True
     if is_dt(dt):
@@ -64,7 +82,10 @@ def is_timezone_naive(dt):
         return dt.timezoneNaive()
     elif is_dt(dt):
         return dt.tzinfo is None
-    raise TypeError("Expected a date, got '%r'" % type(dt))
+    elif is_str(dt):
+        DT = to_DT(dt)
+        return is_timezone_naive(DT)
+    raise APIError("Expected a date type, got '%r'" % type(dt))
 
 
 def is_timezone_aware(dt):
@@ -84,12 +105,18 @@ def to_DT(dt):
     """
     if is_DT(dt):
         return dt
+    elif is_str(dt):
+        try:
+            return DateTime(dt)
+        except (DateError, TimeError, SyntaxError, IndexError):
+            return None
     elif is_dt(dt):
         return DateTime(dt.isoformat())
     elif is_d(dt):
         dt = datetime(dt.year, dt.month, dt.day)
         return DateTime(dt.isoformat())
-    raise TypeError("Expected datetime, got '%r'" % type(dt))
+    else:
+        return None
 
 
 def to_dt(dt):
@@ -100,11 +127,15 @@ def to_dt(dt):
     """
     if is_DT(dt):
         return dt.asdatetime()
+    elif is_str(dt):
+        DT = to_DT(dt)
+        return to_dt(DT)
     elif is_dt(dt):
         return dt
     elif is_d(dt):
         return datetime(dt.year, dt.month, dt.day)
-    raise TypeError("Expected DateTime, got '%r'" % type(dt))
+    else:
+        return None
 
 
 def is_valid_timezone(timezone):
@@ -155,14 +186,16 @@ def to_zone(dt, timezone):
     :param timezone: timezone
     :returns: date converted to timezone
     """
-    if is_dt(dt):
+    if is_dt(dt) or is_d(dt):
+        dt = to_dt(dt)
         zone = pytz.timezone(timezone)
         if is_timezone_aware(dt):
             return dt.astimezone(zone)
         return zone.localize(dt)
-    if is_DT(dt):
+    elif is_DT(dt):
         # NOTE: This shifts the time according to the TZ offset
         return dt.toZone(timezone)
+    raise TypeError("Expected a date, got '%r'" % type(dt))
 
 
 def to_timestamp(dt):
@@ -176,6 +209,9 @@ def to_timestamp(dt):
         timestamp = dt.timeTime()
     elif is_dt(dt):
         timestamp = time.mktime(dt.timetuple())
+    elif is_str(dt):
+        DT = to_DT(dt)
+        return to_timestamp(DT)
     return timestamp
 
 
@@ -185,7 +221,6 @@ def from_timestamp(timestamp):
     :param timestamp: POSIX timestamp
     :returns: datetime object
     """
-
     return datetime.utcfromtimestamp(timestamp)
 
 
@@ -196,4 +231,7 @@ def to_iso_format(dt):
         return dt.isoformat()
     elif is_DT(dt):
         return dt.ISO()
+    elif is_str(dt):
+        DT = to_DT(dt)
+        return to_iso_format(DT)
     return None

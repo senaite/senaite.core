@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1908 Added searchable text querystring converter to catalog API
+- #1907 Fix datetime field/widget shows current date and time if empty
 - #1905 Fix empty field in sample add form when using edit accessor
 
 
