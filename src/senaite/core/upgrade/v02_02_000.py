@@ -20,6 +20,7 @@
 
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -42,6 +43,12 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # run import steps located in senaite.core profiles
+    setup.runImportStepFromProfile(profile, "typeinfo")
+
+    # Add sample containers folder
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
