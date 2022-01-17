@@ -29,7 +29,6 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.utils import changeWorkflowState
 from plone.dexterity.fti import DexterityFTI
 from Products.Archetypes.config import UID_CATALOG
@@ -37,6 +36,7 @@ from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
+from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.setuphandlers import setup_markup_schema
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
