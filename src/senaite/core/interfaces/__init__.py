@@ -93,3 +93,8 @@ class IHaveUIDReferences(Interface):
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
+
+
+class ISampleContainer(Interface):
+    """Marker interface for sample containers
+    """

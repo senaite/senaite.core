@@ -17,16 +17,14 @@ class ISampleContainerSchema(model.Schema):
     """Schema interface
     """
 
-    directives.omitted("title")
     title = schema.TextLine(
         title=u"Title",
-        required=False
+        required=False,
     )
 
-    directives.omitted("description")
     description = schema.Text(
         title=u"Description",
-        required=False
+        required=False,
     )
 
     # Container type reference
@@ -43,8 +41,49 @@ class ISampleContainerSchema(model.Schema):
         title=_(u"Container Type"),
         allowed_types=("ContainerType", ),
         multi_valued=False,
-        description=_(u"Select the container type"),
-        required=False)
+        description=_(u"Type of the container"),
+        required=False,
+    )
+
+    capacity = schema.TextLine(
+        title=_("Capacity"),
+        description=_("Maximum possible size or volume of samples"),
+        default=u"0 ml",
+        required=True,
+    )
+
+    pre_preserved = schema.Bool(
+        title=_("Pre-preserved"),
+        description=_(
+            "Check this box if this container is already preserved."
+            "Setting this will short-circuit the preservation workflow "
+            "for sample partitions stored in this container."),
+        required=True,
+    )
+
+    # Preservation reference
+    directives.widget(
+        "preservation",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query="get_preservation_query",
+        display_template="<a href='${url}'>${title}</a>",
+        columns="get_default_columns",
+        limit=5,
+    )
+    preservation = UIDReferenceField(
+        title=_(u"Preservation"),
+        allowed_types=("Preservation", ),
+        multi_valued=False,
+        description=_(u"Preservation method of this container"),
+        required=False,
+    )
+
+    security_seal_intact = schema.Bool(
+        title=_("Security seal intact"),
+        description=_(""),
+        required=False,
+    )
 
 
 @implementer(ISampleContainer, ISampleContainerSchema, IDeactivable)
@@ -59,6 +98,16 @@ class SampleContainer(Container):
         """
         return {
             "portal_type": "ContainerType",
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        }
+
+    def get_preservation_query(self):
+        """Return the query for the preservation field
+        """
+        return {
+            "portal_type": "Preservation",
             "is_active": True,
             "sort_on": "title",
             "sort_order": "ascending",
