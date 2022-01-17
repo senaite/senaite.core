@@ -224,6 +224,7 @@ class AnalysisRequestAddView(BrowserView):
         # XXX: This is a hack to make the widget available in the template
         schema._fields[new_fieldname] = new_field
         new_field.getAccessor = getAccessor
+        new_field.getEditAccessor = getAccessor
 
         # set the default value
         form = dict()

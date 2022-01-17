@@ -17,6 +17,7 @@ class ReferenceField extends React.Component {
     this.on_focus = this.on_focus.bind(this);
     this.on_blur = this.on_blur.bind(this);
     this.on_change = this.on_change.bind(this);
+    this.on_keydown = this.on_keydown.bind(this);
     this.on_keypress = this.on_keypress.bind(this);
     this.on_clear_click = this.on_clear_click.bind(this);
     this.on_search_click = this.on_search_click.bind(this);
@@ -64,14 +65,58 @@ class ReferenceField extends React.Component {
   }
 
   /*
-   * Handler for keypress events in the searh field
+   * Handler for keydown events in the search field
+   *
+   */
+  on_keydown(event) {
+    // backspace
+    if (event.which == 8) {
+      if (this.get_search_value() == "") {
+        this.props.on_clear();
+      }
+    }
+
+    // down arrow
+    if (event.which == 40) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("down");
+      }
+    }
+    // up arrow
+    if (event.which == 38) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("up");
+      }
+    }
+
+    // left arrow
+    if (event.which == 37) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("left");
+      }
+    }
+
+    // right arrow
+    if (event.which == 39) {
+      if (this.props.on_arrow_key) {
+        this.props.on_arrow_key("right");
+      }
+    }
+  }
+
+  /*
+   * Handler for keypress events in the search field
    *
    */
   on_keypress(event) {
-    // prevent form submission when clicking ENTER
     if (event.which == 13) {
-      console.debug("ReferenceField::on_keypress: Catch ENTER key");
+      console.debug("ReferenceField::on_keypress:ENTER");
+      // prevent form submission when clicking ENTER
       event.preventDefault();
+      if (this.props.on_enter) {
+        this.props.on_enter();
+      }
+
     }
   }
 
@@ -102,6 +147,7 @@ class ReferenceField extends React.Component {
                  className={this.props.className}
                  ref={this.input_field_ref}
                  disabled={this.props.disabled}
+                 onKeyDown={this.on_keydown}
                  onKeyPress={this.on_keypress}
                  onChange={this.on_change}
                  onFocus={this.on_focus}

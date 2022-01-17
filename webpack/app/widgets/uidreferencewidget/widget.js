@@ -23,6 +23,7 @@ class UIDReferenceWidgetController extends React.Component {
       next_url: null,  // next page API URL (coming from `senaite.jsonapi`)
       prev_url: null,  // previous page API URL (coming from `senaite.jsonapi`)
       b_start: 1,  // batch start for pagination (see `senaite.jsonapi.batch`)
+      focused: 0,  // current result that has the focus
     }
 
     // Root input HTML element
@@ -62,7 +63,9 @@ class UIDReferenceWidgetController extends React.Component {
     this.goto_page = this.goto_page.bind(this);
     this.clear_results = this.clear_results.bind(this);
     this.select = this.select.bind(this);
+    this.select_focused = this.select_focused.bind(this);
     this.deselect = this.deselect.bind(this);
+    this.navigate_results = this.navigate_results.bind(this);
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
 
@@ -157,6 +160,7 @@ class UIDReferenceWidgetController extends React.Component {
    */
   search(searchterm) {
     if (!searchterm && this.state.results.length > 0) {
+      this.state.searchterm = "";
       return;
     }
     console.debug("ReferenceWidgetController::search:searchterm:", searchterm);
@@ -202,6 +206,24 @@ class UIDReferenceWidgetController extends React.Component {
   }
 
   /*
+   * Add/remove the focused result
+   *
+   */
+  select_focused() {
+    console.debug("ReferenceWidgetController::select_focused");
+    let focused = this.state.focused;
+    let result = this.state.results.at(focused);
+    if (result) {
+      let uid = result.uid;
+      if (this.state.uids.indexOf(uid) == -1) {
+        this.select(uid);
+      } else {
+        this.deselect(uid);
+      }
+    }
+  }
+
+  /*
    * Remove the UID of a reference from the state
    *
    * @param {String} uid: The selected UID
@@ -216,6 +238,60 @@ class UIDReferenceWidgetController extends React.Component {
     }
     this.setState({uids: uids});
     return uids;
+  }
+
+  /*
+   * Navigate the results either up or down
+   *
+   * @param {String} direction: either up or down
+   */
+  navigate_results(direction) {
+    let page = this.state.page;
+    let pages = this.state.pages;
+    let results = this.state.results;
+    let focused = this.state.focused;
+    let searchterm = this.state.searchterm;
+
+    console.debug("ReferenceWidgetController::navigate_results:focused:", focused);
+
+    if (direction == "up") {
+      if (focused > 0) {
+        this.setState({focused: focused - 1});
+      } else {
+        this.setState({focused: 0});
+        if (page > 1) {
+          this.goto_page(page - 1);
+        }
+      }
+    }
+
+    else if (direction == "down") {
+      if (this.state.results.length == 0) {
+        this.search(searchterm);
+      }
+      if (focused < results.length - 1) {
+        this.setState({focused: focused + 1});
+      } else {
+        this.setState({focused: 0});
+        if (page < pages) {
+          this.goto_page(page + 1);
+        }
+      }
+    }
+
+    else if (direction == "left") {
+      this.setState({focused: 0});
+      if (page > 0) {
+        this.goto_page(page - 1);
+      }
+    }
+
+    else if (direction == "right") {
+      this.setState({focused: 0});
+      if (page < pages) {
+        this.goto_page(page + 1);
+      }
+    }
   }
 
   /*
@@ -314,6 +390,8 @@ class UIDReferenceWidgetController extends React.Component {
             on_search={this.search}
             on_clear={this.clear_results}
             on_focus={this.search}
+            on_arrow_key={this.navigate_results}
+            on_enter={this.select_focused}
           />
           <ReferenceResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
@@ -321,6 +399,7 @@ class UIDReferenceWidgetController extends React.Component {
             uids={this.state.uids}
             searchterm={this.state.searchterm}
             results={this.state.results}
+            focused={this.state.focused}
             count={this.state.count}
             page={this.state.page}
             pages={this.state.pages}
