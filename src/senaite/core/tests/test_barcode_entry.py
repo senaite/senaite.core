@@ -56,8 +56,6 @@ class TestBarcodeEntry(BaseTestCase):
             clients, 'Client', title='Happy Hills', ClientID='HH')
         contact = self.addthing(
             self.client, 'Contact', Firstname='Rita', Lastname='Mohale')
-        container = self.addthing(
-            bs.bika_containers, 'Container', title='Bottle', capacity="10ml")
         sampletype = self.addthing(
             bs.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
         service = self.addthing(
