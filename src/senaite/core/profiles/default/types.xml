@@ -19,4 +19,5 @@
   <!-- Interpretation Templates -->
   <object name="InterpretationTemplate" meta_type="Dexterity FTI" />
   <object name="InterpretationTemplates" meta_type="Dexterity FTI" />
+  <object name="SampleContainers" meta_type="Dexterity FTI" />
 </object>

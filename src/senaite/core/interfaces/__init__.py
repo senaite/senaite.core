@@ -88,3 +88,8 @@ class ISamplesView(Interface):
 class IHaveUIDReferences(Interface):
     """Marker interface when the object contains UID references
     """
+
+
+class ISampleContainers(Interface):
+    """Marker interface for sample container setup folder
+    """
