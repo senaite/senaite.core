@@ -18,6 +18,7 @@ from z3c.form.interfaces import IDataManager
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
+from zope.interface import directlyProvidedBy
 from zope.interface import implementer
 
 SKIP_FIELDS = [
@@ -94,6 +95,11 @@ class ContentMigrator(object):
             wfh = copyPermMap(wfh)
             target.workflow_history = wfh
 
+    def copy_marker_interfaces(self, src, target):
+        """Copy marker interfaces
+        """
+        alsoProvides(target, directlyProvidedBy(src))
+
     def copy_snapshots(self, src, target):
         """copy over snapshots from source -> target
         """
@@ -150,6 +156,9 @@ class ATDXContentMigrator(ContentMigrator):
 
         # copy workflow history
         self.copy_workflow_history(self.src, self.target)
+
+        # copy marker interfaces
+        self.copy_marker_interfaces(self.src, self.target)
 
         # copy dates
         self.copy_dates(self.src, self.target)
