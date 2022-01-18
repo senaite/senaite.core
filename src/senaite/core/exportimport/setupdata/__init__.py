@@ -665,29 +665,26 @@ class Preservations(WorksheetImporter):
 class Containers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_containers
-        bsc = getToolByName(self.context, 'senaite_catalog_setup')
+        folder = self.context.bika_setup.sample_containers
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         for row in self.get_rows(3):
-            if not row['title']:
+            if not row["title"]:
                 continue
-            obj = _createObjectByType("Container", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''),
-                Capacity=row.get('Capacity', 0),
-                PrePreserved=self.to_bool(row['PrePreserved'])
-            )
-            if row['ContainerType_title']:
-                ct = self.get_object(bsc, 'ContainerType', row.get('ContainerType_title',''))
+            obj = api.create(folder, "SampleContainer")
+            obj.setTitle(row["title"])
+            obj.setDescription(row.get("description", ""))
+            obj.setCapacity(row.get("Capacity", 0))
+            obj.setPrePreserved(self.to_bool(row["PrePreserved"]))
+            if row["ContainerType_title"]:
+                ct = self.get_object(
+                    bsc, "ContainerType", row.get("ContainerType_title", ""))
                 if ct:
                     obj.setContainerType(ct)
-            if row['Preservation_title']:
-                pres = self.get_object(bsc, 'Preservation',row.get('Preservation_title',''))
+            if row["Preservation_title"]:
+                pres = self.get_object(
+                    bsc, "Preservation", row.get("Preservation_title", ""))
                 if pres:
                     obj.setPreservation(pres)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
 
 
 class Suppliers(WorksheetImporter):
