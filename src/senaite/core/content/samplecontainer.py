@@ -102,25 +102,53 @@ class SampleContainer(Container):
             return None
         return schema[fieldname].get
 
+    def mutator(self, fieldname):
+        """Return the field mutator for the fieldname
+        """
+        schema = api.get_schema(self)
+        if fieldname not in schema:
+            return None
+        return schema[fieldname].set
+
     def getContainerType(self):
         accessor = self.accessor("containertype")
         return accessor(self)
+
+    def setContainerType(self, value):
+        mutator = self.mutator("containertype")
+        return mutator(self, value)
 
     def getCapacity(self):
         accessor = self.accessor("capacity")
         return accessor(self)
 
+    def setCapacity(self, value):
+        mutator = self.mutator("capacity")
+        return mutator(self, api.safe_unicode(value))
+
     def getPrePreserved(self):
         accessor = self.accessor("pre_preserved")
         return accessor(self)
+
+    def setPrePreserved(self, value):
+        mutator = self.mutator("pre_preserved")
+        return mutator(self, value)
 
     def getPreservation(self):
         accessor = self.accessor("preservation")
         return accessor(self)
 
+    def setPreservation(self, value):
+        mutator = self.mutator("preservation")
+        return mutator(self, value)
+
     def getSecuritySealIntact(self):
         accessor = self.accessor("security_seal_intact")
         return accessor(self)
+
+    def setSecuritySealIntact(self, value):
+        mutator = self.mutator("security_seal_intact")
+        return mutator(self, bool(value))
 
     def get_containertype_query(self):
         """Return the query for the containertype field
