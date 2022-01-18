@@ -102,16 +102,24 @@ class SampleContainer(Container):
             return None
         return schema[fieldname].get
 
-    def get_containertype(self):
-        """Return the container type
-        """
+    def getContainerType(self):
         accessor = self.accessor("containertype")
         return accessor(self)
 
-    def get_preservation(self):
-        """Return the container type
-        """
+    def getCapacity(self):
+        accessor = self.accessor("capacity")
+        return accessor(self)
+
+    def getPrePreserved(self):
+        accessor = self.accessor("pre_preserved")
+        return accessor(self)
+
+    def getPreservation(self):
         accessor = self.accessor("preservation")
+        return accessor(self)
+
+    def getSecuritySealIntact(self):
+        accessor = self.accessor("security_seal_intact")
         return accessor(self)
 
     def get_containertype_query(self):

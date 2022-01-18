@@ -51,6 +51,9 @@ class SampleContainersView(ListingView):
             ("pre_preserved", {
                 "title": _("Pre-preserved"),
                 "toggle": True}),
+            ("security_seal_intact", {
+                "title": _("Security seal intact"),
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -87,18 +90,23 @@ class SampleContainersView(ListingView):
         item["description"] = api.get_description(obj)
 
         # container type
-        containertype = obj.get_containertype()
+        containertype = obj.getContainerType()
         if containertype:
             item["containertype"] = containertype.title
             item["replace"]["containertype"] = get_link_for(containertype)
 
         # capacity
-        item["capacity"] = obj.capacity
+        item["capacity"] = obj.getCapacity()
 
         # pre-preserved and preservation
-        if obj.pre_preserved:
-            preservation = obj.get_preservation()
+        if obj.getPrePreserved():
+            preservation = obj.getPreservation()
             if preservation:
                 item["after"]["pre_preserved"] = get_link_for(preservation)
+
+        if obj.getSecuritySealIntact():
+            item["security_seal_intact"] = _("Yes")
+        else:
+            item["security_seal_intact"] = _("No")
 
         return item
