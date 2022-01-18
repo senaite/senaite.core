@@ -24,14 +24,11 @@ from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
-from senaite.core.upgrade.utils import catalog_object
-from senaite.core.upgrade.utils import copy_creators
-from senaite.core.upgrade.utils import copy_dates
 from senaite.core.upgrade.utils import copy_snapshots
-from senaite.core.upgrade.utils import copy_workflow_history
 from senaite.core.upgrade.utils import delete_object
-from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.interfaces import IContentMigrator
+from zope.component import getMultiAdapter
 
 version = "2.2.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -86,42 +83,24 @@ def migrate_containers_to_dx(portal):
     # uncatalog the old object
     uncatalog_object(old)
 
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "ContainerType": ("getContainerType", "containertype", None),
+        "Capacity": ("getCapacity", "capacity", "0 ml"),
+        "PrePreserved": ("getPrePreserved", "prepreserved", False),
+        "Preservation": ("getPreservation", "preservation", None),
+        "SecuritySealIntact": ("getSecuritySealIntact", "security_seal_intact", False),
+    }
+
     # copy items from old -> new container
     for src in old.objectValues():
-        # extract the old values
-        uid = api.get_uid(src)
-        title = api.get_title(src)
-        description = api.get_description(src)
-        containertype = src.getRawContainerType()
-        capacity = src.getCapacity()
-        prepreserved = src.getPrePreserved()
-        preservation = src.getRawPreservation()
-        securityseal = src.getSecuritySealIntact()
-
-        # uncatalog the old object
-        uncatalog_object(src)
-
-        # create the new DX object and set explicitly the values
-        target = api.create(new, "SampleContainer", title=title)
-        target.description = api.safe_unicode(description)
-        target.containertype = [containertype] if containertype else []
-        target.capacity = capacity if capacity else "0 ml"
-        target.pre_preserved = prepreserved or False
-        target.preservation = [preservation] if preservation else []
-        target.security_seal_intact = securityseal or False
-
-        # take over the UID
-        set_uid(target, uid)
-        # copy auditlog
-        copy_snapshots(src, target)
-        # copy creators
-        copy_creators(src, target)
-        # copy modification/creation dates
-        copy_dates(src, target)
-        # copy workflow history
-        copy_workflow_history(src, target)
-        # catalog the new object
-        catalog_object(target)
+        target = api.create(new, "SampleContainer")
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+        migrator.migrate(schema_mapping)
 
     # copy snapshots for the container
     copy_snapshots(old, new)
