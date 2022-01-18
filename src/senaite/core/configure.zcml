@@ -17,6 +17,7 @@
   <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".locales" />
+  <include package=".migration" />
   <include package=".patches" />
   <include package=".schema" />
   <include package=".upgrade" />

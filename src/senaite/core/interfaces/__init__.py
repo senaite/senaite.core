@@ -98,3 +98,13 @@ class ISampleContainers(Interface):
 class ISampleContainer(Interface):
     """Marker interface for sample containers
     """
+
+
+class IContentMigrator(Interface):
+    """Marker interface for content migrator
+    """
+
+
+class IFieldMigrator(Interface):
+    """Marker interface for field migrator
+    """
