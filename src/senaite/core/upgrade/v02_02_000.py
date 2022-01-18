@@ -100,7 +100,7 @@ def migrate_containers_to_dx(portal):
         target = api.create(new, "SampleContainer")
         migrator = getMultiAdapter(
             (src, target), interface=IContentMigrator)
-        migrator.migrate(schema_mapping)
+        migrator.migrate(schema_mapping, delete_src=False)
 
     # copy snapshots for the container
     copy_snapshots(old, new)
