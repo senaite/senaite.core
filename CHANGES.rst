@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1911 Converted Container to Dexterity Contents
 - #1909 Allow to navigate and select with arrow keys in dexterity reference widget
 - #1908 Added searchable text querystring converter to catalog API
 - #1907 Fix datetime field/widget shows current date and time if empty
