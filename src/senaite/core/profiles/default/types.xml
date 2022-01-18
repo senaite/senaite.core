@@ -8,6 +8,8 @@
   <object remove="True" name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
+  <object remove="True" name="Container" meta_type="Factory-based Type Information with dynamic views"/>
+  <object remove="True" name="Containers" meta_type="Factory-based Type Information with dynamic views"/>
 
   <!-- Samples -->
   <object name="Samples" meta_type="Dexterity FTI" />
