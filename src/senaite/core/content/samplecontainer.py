@@ -11,7 +11,9 @@ from senaite.core.interfaces import ISampleContainer
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
 
 
 class ISampleContainerSchema(model.Schema):
@@ -61,6 +63,16 @@ class ISampleContainerSchema(model.Schema):
             "for sample partitions stored in this container."),
         required=True,
     )
+
+    @invariant
+    def validate_pre_preserved(data):
+        """Checks if a preservation is selected
+        """
+        if data.pre_preserved is False:
+            return
+        if not data.preservation:
+            raise Invalid(_(
+                "Pre-preserved containers must have a preservation selected"))
 
     # Preservation reference
     directives.widget(
