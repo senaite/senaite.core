@@ -34,14 +34,23 @@ class SampleContainersView(ListingView):
         self.pagesize = 25
 
         self.columns = collections.OrderedDict((
-            ("Title", {
+            ("title", {
                 "title": _("Container"),
                 "index": "sortable_title"}),
-            ("Description", {
+            ("description", {
                 "title": _("Description"),
                 "index": "Description",
                 "toggle": True,
             }),
+            ("containertype", {
+                "title": _("Container Type"),
+                "toggle": True}),
+            ("capacity", {
+                "title": _("Capacity"),
+                "toggle": True}),
+            ("pre_preserved", {
+                "title": _("Pre-preserved"),
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -74,7 +83,22 @@ class SampleContainersView(ListingView):
         """
         obj = api.get_object(obj)
 
-        item["replace"]["Title"] = get_link_for(obj)
-        item["Description"] = api.get_description(obj)
+        item["replace"]["title"] = get_link_for(obj)
+        item["description"] = api.get_description(obj)
+
+        # container type
+        containertype = obj.get_containertype()
+        if containertype:
+            item["containertype"] = containertype.title
+            item["replace"]["containertype"] = get_link_for(containertype)
+
+        # capacity
+        item["capacity"] = obj.capacity
+
+        # pre-preserved and preservation
+        if obj.pre_preserved:
+            preservation = obj.get_preservation()
+            if preservation:
+                item["after"]["pre_preserved"] = get_link_for(preservation)
 
         return item

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
@@ -92,6 +93,18 @@ class SampleContainer(Container):
     """
     # Catalogs where this type will be catalogued
     _catalogs = [SETUP_CATALOG]
+
+    def get_containertype(self):
+        """Return the container type
+        """
+        schema = api.get_schema(self)
+        return schema["containertype"].get(self)
+
+    def get_preservation(self):
+        """Return the container type
+        """
+        schema = api.get_schema(self)
+        return schema["preservation"].get(self)
 
     def get_containertype_query(self):
         """Return the query for the containertype field
