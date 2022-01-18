@@ -190,7 +190,7 @@ class PartitionMagicView(BrowserView):
     def get_containers(self):
         """Returns the available Containers of the system
         """
-        query = dict(portal_type="Container",
+        query = dict(portal_type="SampleContainer",
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)

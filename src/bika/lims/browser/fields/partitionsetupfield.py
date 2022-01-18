@@ -55,7 +55,7 @@ def getContainers(instance,
     items = [['', _('Any')]] if allow_blank else []
 
     containers = []
-    for container in bsc(portal_type='Container', sort_on='sortable_title'):
+    for container in bsc(portal_type='SampleContainer', sort_on='sortable_title'):
         container = container.getObject()
 
         # verify container capacity is large enough for required sample volume.
