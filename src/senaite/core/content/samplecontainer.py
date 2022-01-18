@@ -94,17 +94,25 @@ class SampleContainer(Container):
     # Catalogs where this type will be catalogued
     _catalogs = [SETUP_CATALOG]
 
+    def accessor(self, fieldname):
+        """Return the field accessor for the fieldname
+        """
+        schema = api.get_schema(self)
+        if fieldname not in schema:
+            return None
+        return schema[fieldname].get
+
     def get_containertype(self):
         """Return the container type
         """
-        schema = api.get_schema(self)
-        return schema["containertype"].get(self)
+        accessor = self.accessor("containertype")
+        return accessor(self)
 
     def get_preservation(self):
         """Return the container type
         """
-        schema = api.get_schema(self)
-        return schema["preservation"].get(self)
+        accessor = self.accessor("preservation")
+        return accessor(self)
 
     def get_containertype_query(self):
         """Return the query for the containertype field
