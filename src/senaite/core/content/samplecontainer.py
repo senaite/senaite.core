@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.dexterity.content import Container
 from plone.supermodel import model
+from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ISampleContainer
 from senaite.core.schema import UIDReferenceField
@@ -106,6 +108,9 @@ class SampleContainer(Container):
     # Catalogs where this type will be catalogued
     _catalogs = [SETUP_CATALOG]
 
+    security = ClassSecurityInfo()
+
+    @security.private
     def accessor(self, fieldname):
         """Return the field accessor for the fieldname
         """
@@ -114,6 +119,7 @@ class SampleContainer(Container):
             return None
         return schema[fieldname].get
 
+    @security.private
     def mutator(self, fieldname):
         """Return the field mutator for the fieldname
         """
@@ -122,46 +128,57 @@ class SampleContainer(Container):
             return None
         return schema[fieldname].set
 
+    @security.protected(permissions.View)
     def getContainerType(self):
         accessor = self.accessor("containertype")
         return accessor(self)
 
+    @security.protected(permissions.ModifyPortalContent)
     def setContainerType(self, value):
         mutator = self.mutator("containertype")
         return mutator(self, value)
 
+    @security.protected(permissions.View)
     def getCapacity(self):
         accessor = self.accessor("capacity")
         return accessor(self)
 
+    @security.protected(permissions.ModifyPortalContent)
     def setCapacity(self, value):
         mutator = self.mutator("capacity")
         return mutator(self, api.safe_unicode(value))
 
+    @security.protected(permissions.View)
     def getPrePreserved(self):
         accessor = self.accessor("pre_preserved")
         return accessor(self)
 
+    @security.protected(permissions.ModifyPortalContent)
     def setPrePreserved(self, value):
         mutator = self.mutator("pre_preserved")
         return mutator(self, value)
 
+    @security.protected(permissions.View)
     def getPreservation(self):
         accessor = self.accessor("preservation")
         return accessor(self)
 
+    @security.protected(permissions.ModifyPortalContent)
     def setPreservation(self, value):
         mutator = self.mutator("preservation")
         return mutator(self, value)
 
+    @security.protected(permissions.View)
     def getSecuritySealIntact(self):
         accessor = self.accessor("security_seal_intact")
         return accessor(self)
 
+    @security.protected(permissions.ModifyPortalContent)
     def setSecuritySealIntact(self, value):
         mutator = self.mutator("security_seal_intact")
         return mutator(self, bool(value))
 
+    @security.private
     def get_containertype_query(self):
         """Return the query for the containertype field
         """
@@ -172,6 +189,7 @@ class SampleContainer(Container):
             "sort_order": "ascending",
         }
 
+    @security.private
     def get_preservation_query(self):
         """Return the query for the preservation field
         """
@@ -182,6 +200,7 @@ class SampleContainer(Container):
             "sort_order": "ascending",
         }
 
+    @security.private
     def get_default_columns(self):
         """Returns the default columns for the reference dropdown
         """
