@@ -120,7 +120,10 @@ class ReferenceWidget(StringWidget):
     def get_base_query(self, context, fieldName):
         base_query = self.base_query
         if callable(base_query):
-            base_query = base_query()
+            try:
+                base_query = base_query(context, self, fieldName)
+            except TypeError:
+                base_query = base_query()
         if base_query and isinstance(base_query, six.string_types):
             base_query = json.loads(base_query)
 
