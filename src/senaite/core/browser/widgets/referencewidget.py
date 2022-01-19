@@ -139,7 +139,7 @@ class ReferenceWidget(StringWidget):
             if allowed_types \
             else self.portal_types
 
-        return json.dumps(self.base_query)
+        return json.dumps(base_query)
 
     def initial_uid_field_value(self, value):
         if type(value) in (list, tuple):
