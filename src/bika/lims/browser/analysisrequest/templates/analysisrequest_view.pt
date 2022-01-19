@@ -19,7 +19,7 @@
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
         <!-- Hazardous icon -->
-        <i class="hazardous-icon" title="Hazdardous" i18n:attributes="title"
+        <i class="hazardous-icon" title="Hazardous" i18n:attributes="title"
            tal:condition="python:view.is_hazardous()">
           <svg tal:replace="structure senaite_theme/icon_data/hazardous" />
         </i>
