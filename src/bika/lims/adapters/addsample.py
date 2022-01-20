@@ -50,3 +50,9 @@ class AddSampleObjectInfoAdapter(object):
         See IAddSampleObjectInfo for further details
         """
         raise NotImplementedError("get_object_info not implemented")
+
+    def get_object_info_with_record(self, record):
+        """Same as get_object_record, but contains the current request record
+        """
+        # default to the base object info
+        return self.get_object_info()
