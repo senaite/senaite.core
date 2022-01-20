@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1915 Support list queries in dx reference widget
 - #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets
 - #1912 Fixed typo in sample view
 - #1909 Allow to navigate and select with arrow keys in dexterity reference widget
