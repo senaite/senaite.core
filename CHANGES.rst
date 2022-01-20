@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1915 Support list queries in dx reference widget
 - #1912 Fixed typo in sample view
 - #1909 Allow to navigate and select with arrow keys in dexterity reference widget
 - #1908 Added searchable text querystring converter to catalog API
