@@ -1389,7 +1389,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             if record is not None:
                 ad_info = adapter.get_object_info_with_record(record)
             else:
-                ad_info = adapter.get_object_info(record)
+                ad_info = adapter.get_object_info()
             self.update_object_info(info, ad_info)
 
         return info
