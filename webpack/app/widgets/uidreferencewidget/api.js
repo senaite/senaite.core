@@ -55,6 +55,13 @@ class ReferenceWidgetAPI {
     params = params || {};
     let url = `search?catalog=${catalog}`;
     for(let [key, value] of Object.entries(query)) {
+      // handle arrays as repeating parameters
+      if (Array.isArray(value)) {
+        value.forEach( (item) => {
+          url += `&${key}=${item}`;
+        });
+        continue;
+      }
       // workaround for path queries
       if (key == "path") {
         value = value.query || null;

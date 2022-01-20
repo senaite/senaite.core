@@ -120,7 +120,10 @@ class ReferenceWidget(StringWidget):
     def get_base_query(self, context, fieldName):
         base_query = self.base_query
         if callable(base_query):
-            base_query = base_query()
+            try:
+                base_query = base_query(context, self, fieldName)
+            except TypeError:
+                base_query = base_query()
         if base_query and isinstance(base_query, six.string_types):
             base_query = json.loads(base_query)
 
@@ -136,7 +139,7 @@ class ReferenceWidget(StringWidget):
             if allowed_types \
             else self.portal_types
 
-        return json.dumps(self.base_query)
+        return json.dumps(base_query)
 
     def initial_uid_field_value(self, value):
         if type(value) in (list, tuple):

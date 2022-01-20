@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #1913 Ported PR #1865 for dexterity contents
+- #1915 Support list queries in dx reference widget
+- #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets
 - #1912 Fixed typo in sample view
 - #1909 Allow to navigate and select with arrow keys in dexterity reference widget
 - #1908 Added searchable text querystring converter to catalog API
