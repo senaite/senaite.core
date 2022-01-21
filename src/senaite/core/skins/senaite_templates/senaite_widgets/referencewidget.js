@@ -133,9 +133,6 @@ function referencewidget_lookups(elements) {
       }
     };
 
-    if (window.location.href.search("portal_factory") > -1) {
-      options.url = window.location.href.split("/portal_factory")[0] + "/" + options.url;
-    }
     options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
     options.url = options.url + "&catalog_name=" + $(element).attr("catalog_name");
     options.url = options.url + "&base_query=" + $(element).attr("base_query");
