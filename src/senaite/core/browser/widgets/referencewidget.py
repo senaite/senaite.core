@@ -100,8 +100,14 @@ class ReferenceWidget(StringWidget):
         colModel = self.colModel
         if "UID" not in [x["columnName"] for x in colModel]:
             colModel.append({"columnName": "UID", "hidden": True})
+
+        # ensure we have an absolute url for the current context
+        url = api.get_url(context)
+        search_path = self.url.split(url)[-1]
+        search_url = "/".join([url, search_path])
+
         options = {
-            "url": self.url,
+            "url": search_url,
             "colModel": colModel,
             "showOn": self.showOn,
             "width": self.popup_width,
