@@ -1357,18 +1357,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # can be multivalued
         uids = self.get_uids_from_record(record, key)
         objects = map(self.get_object_by_uid, uids)
-        objects = map(lambda obj: self.get_object_info(obj, key), objects)
+        objects = map(lambda obj: self.get_object_info(
+            obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key):
+    def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
         field_name = key.replace("_uid", "").lower()
         obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key])
+        return "-".join([field_name, obj_key] + kw.keys())
 
     @cache(object_info_cache_key)
-    def get_object_info(self, obj, key):
+    def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
         :param key: The key of the field from the record (e.g. Client_uid)
@@ -1385,7 +1386,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
             logger.info("adapter for '{}': {}".format(field_name, name))
-            ad_info = adapter.get_object_info()
+            if record is not None:
+                ad_info = adapter.get_object_info_with_record(record)
+            else:
+                ad_info = adapter.get_object_info()
             self.update_object_info(info, ad_info)
 
         return info

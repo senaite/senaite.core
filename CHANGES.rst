@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1916 Provide the request record to object info adapters in the sample add form
 - #1913 Ported PR #1865 for dexterity contents
 - #1915 Support list queries in dx reference widget
 - #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets
