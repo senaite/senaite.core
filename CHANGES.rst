@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #1911 Converted Container to Dexterity Contents
+- #1918 Fix stale combobox items displayed when search query changed
+- #1917 Fix wrong context in reference widget lookups
+- #1916 Provide the request record to object info adapters in the sample add form
 - #1913 Ported PR #1865 for dexterity contents
 - #1915 Support list queries in dx reference widget
 - #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets

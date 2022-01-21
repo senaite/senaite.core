@@ -510,8 +510,7 @@
         return;
       }
       options = JSON.parse(field.attr("combogrid_options"));
-      url = this.get_base_url();
-      url += "/" + options.url;
+      url = options.url;
       url += "?_authenticator=" + (this.get_authenticator());
       url += "&catalog_name=" + catalog_name;
       url += "&colModel=" + (JSON.stringify(options.colModel));
@@ -532,7 +531,8 @@
       options.url = url;
       options.force_all = "false";
       field.combogrid(options);
-      return field.attr("search_query", "{}");
+      field.attr("search_query", "{}");
+      return field.trigger("blur");
     };
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, uid, title) {

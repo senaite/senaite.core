@@ -1221,7 +1221,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     if len(uids) == 1:
                         extra_fields[field_name] = uids[0]
 
-        # Populate metadata with object info from extra fields
+        # Populate metadata with object info from extra fields (hidden fields)
         for field_name, uid in extra_fields.items():
             key = "{}_metadata".format(field_name.lower())
             if metadata.get(key):
@@ -1230,7 +1230,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj = self.get_object_by_uid(uid)
             if not obj:
                 continue
-            obj_info = self.get_object_info(obj, field_name)
+            obj_info = self.get_object_info(obj, field_name, record=extra_fields)
             if not obj_info or "uid" not in obj_info:
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
@@ -1357,18 +1357,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # can be multivalued
         uids = self.get_uids_from_record(record, key)
         objects = map(self.get_object_by_uid, uids)
-        objects = map(lambda obj: self.get_object_info(obj, key), objects)
+        objects = map(lambda obj: self.get_object_info(
+            obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key):
+    def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
         field_name = key.replace("_uid", "").lower()
         obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key])
+        return "-".join([field_name, obj_key] + kw.keys())
 
     @cache(object_info_cache_key)
-    def get_object_info(self, obj, key):
+    def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
         :param key: The key of the field from the record (e.g. Client_uid)
@@ -1379,13 +1380,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
+        # always ensure we have a record
+        if record is None:
+            record = {}
+
         # Get the info for each object
         info = callable(func) and func(obj) or self.get_base_info(obj)
 
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
             logger.info("adapter for '{}': {}".format(field_name, name))
-            ad_info = adapter.get_object_info()
+            ad_info = adapter.get_object_info_with_record(record)
             self.update_object_info(info, ad_info)
 
         return info
