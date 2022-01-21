@@ -491,9 +491,11 @@ class window.AnalysisRequestAdd
     # get the combogrid options
     options = JSON.parse field.attr "combogrid_options"
 
+    # we have absolute URLs now
+    # https://github.com/senaite/senaite.core/pull/1917
+    url = options.url
+
     # prepare the new query url
-    url = @get_base_url()
-    url += "/#{options.url}"
     url += "?_authenticator=#{@get_authenticator()}"
     url += "&catalog_name=#{catalog_name}"
     url += "&colModel=#{JSON.stringify options.colModel}"
@@ -519,9 +521,11 @@ class window.AnalysisRequestAdd
     options.url = url
     options.force_all = "false"
 
-
     field.combogrid options
     field.attr "search_query", "{}"
+
+    # close on any open searchbox to force reload on the next focus
+    field.trigger("blur")
 
 
   set_reference_field: (field, uid, title) =>
