@@ -42,6 +42,7 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, "viewlets")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
