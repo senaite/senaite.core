@@ -67,6 +67,8 @@ class SamplesView(ListingView):
         # Toggle some columns if the sampling workflow is enabled
         sampling_enabled = api.get_setup().getSamplingWorkflowEnabled()
 
+        now = DateTime().strftime("%Y-%m-%d %H:%M")
+
         self.columns = collections.OrderedDict((
             ("Priority", {
                 "title": "",
@@ -103,12 +105,13 @@ class SamplesView(ListingView):
                 "title": _("Date Sampled"),
                 "toggle": True,
                 "type": "datetime",
-                "input_width": "10"}),
+                "max": now,
+                "sortable": True}),
             ("getDatePreserved", {
                 "title": _("Date Preserved"),
                 "toggle": False,
                 "type": "datetime",
-                "input_width": "10",
+                "max": now,
                 "sortable": False}),  # no datesort without index
             ("getDateReceived", {
                 "title": _("Date Received"),
