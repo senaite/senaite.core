@@ -75,8 +75,8 @@ def add_index(catalog, index, index_type, indexed_attrs=None):
         return add_zc_text_index(catalog, index)
     catalog.addIndex(index, index_type)
     # set indexed attribute
-    if indexed_attrs and hasattr(index, "indexed_attrs"):
-        index_obj = get_index(index)
+    index_obj = get_index(catalog, index)
+    if indexed_attrs and hasattr(index_obj, "indexed_attrs"):
         if not isinstance(indexed_attrs, list):
             indexed_attrs = [indexed_attrs]
         index_obj.indexed_attrs = indexed_attrs
