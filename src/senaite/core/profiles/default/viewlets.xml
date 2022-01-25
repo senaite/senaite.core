@@ -30,6 +30,11 @@
     <viewlet name="senaite.core.listings.add_samples" />
   </order>
 
+  <!-- Hidden viewlets in plone.htmlhead -->
+  <hidden manager="plone.htmlhead" skinname="*">
+    <viewlet name="plone.htmlhead.socialtags" />
+  </hidden>
+
   <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>
@@ -43,8 +48,13 @@
     <viewlet name="plone.global_sections"/>
   </hidden>
 
-  <!-- Hidden viewlets in plone.belowcontenttitle -->
+  <!-- Hidden viewlets in plone.abovecontent -->
   <hidden manager="plone.abovecontent" skinname="*" purge="True">
+  </hidden>
+
+  <!-- Hidden viewlets in plone.abovecontenttitle -->
+  <hidden manager="plone.abovecontenttitle" skinname="*" purge="True">
+    <viewlet name="plone.abovecontenttitle.socialtags"/>
   </hidden>
 
   <!-- Hidden viewlets in plone.belowcontenttitle -->
