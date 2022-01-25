@@ -4,7 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
-- #1924 Fix viewlet rendering error on login screen #192
+- #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
 - #1918 Fix stale combobox items displayed when search query changed
 - #1917 Fix wrong context in reference widget lookups
 - #1916 Provide the request record to object info adapters in the sample add form
