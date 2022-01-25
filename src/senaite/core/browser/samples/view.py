@@ -23,7 +23,7 @@ import collections
 
 from bika.lims import _
 from bika.lims import api
-from senaite.core.catalog import SAMPLE_CATALOG
+from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import TransitionSampleSample
@@ -33,6 +33,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISamplesView
 from zope.interface import implementer
 
