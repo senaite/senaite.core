@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1923 Use native date input fields in reports
 - #1920 Fix indexed attributes not set when adding a new index with catalog API
 - #1918 Fix stale combobox items displayed when search query changed
 - #1917 Fix wrong context in reference widget lookups
