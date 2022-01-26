@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1925 Fix sample transition in listings
 - #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
 - #1923 Use native date input fields in reports
 - #1920 Fix indexed attributes not set when adding a new index with catalog API
