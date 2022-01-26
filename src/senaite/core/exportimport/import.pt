@@ -152,7 +152,7 @@
                class="tab-pane fade"
                role="tabpanel">
 
-            <p>
+            <div class="pb-1">
               <div class="form-text text-muted" i18n:translate="">
                 Instruments can be configured with one or multiple import data interfaces.
               </div>
@@ -169,17 +169,16 @@
                 <code class="">
                   # m h  dom mon dow   command
                   <br/>
-                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"/>
+                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"></span>
                 </code>
               </div>
-            </p>
+            </div>
 
             <div class="form-controls">
               <!-- Show last results -->
               <a class="" tal:attributes="href string:${context/absolute_url}/autoimportlogs">
                 <input type="button"
                        class="btn btn-sm btn-outline-secondary"
-                       i18n:attributes="value"
                        i18n:attributes="value"
                        value="Show last auto import logs" />
               </a>
@@ -192,7 +191,7 @@
             </div>
 
             <!-- Auto import results -->
-            <pre class="autoimport-results pt-3"/>
+            <pre class="autoimport-results pt-3"></pre>
 
           </div>
 
