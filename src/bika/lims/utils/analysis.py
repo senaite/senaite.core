@@ -58,7 +58,7 @@ def copy_analysis_field_values(source, analysis, **kwargs):
     IGNORE_FIELDNAMES = [
         'UID', 'id', 'allowDiscussion', 'subject', 'location', 'contributors',
         'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
-        'creation_date', 'modification_date', 'Hidden']
+        'creation_date', 'modification_date', 'Hidden', 'Attachment']
     for field in src_schema.fields():
         fieldname = field.getName()
         if fieldname in IGNORE_FIELDNAMES and fieldname not in kwargs:
