@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1928 Added `on_change` hook for methods in analyses listings
 - #1925 Fix sample transition in listings
 - #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
 - #1923 Use native date input fields in reports
