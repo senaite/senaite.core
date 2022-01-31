@@ -122,6 +122,7 @@ class AnalysesView(ListingView):
                 "title": _("Method"),
                 "sortable": False,
                 "ajax": True,
+                "on_change": "_on_method_change",
                 "toggle": True}),
             ("Instrument", {
                 "title": _("Instrument"),
@@ -425,7 +426,7 @@ class AnalysesView(ListingView):
             })
         return vocab
 
-    def get_instruments_vocabulary(self, analysis_brain):
+    def get_instruments_vocabulary(self, analysis, method=None):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
 
@@ -442,16 +443,19 @@ class AnalysesView(ListingView):
             {'ResultValue': <instrument_UID>,
              'ResultText': <instrument_Title>}
 
-        :param analysis_brain: A single Analysis or ReferenceAnalysis
+        :param analysis: A single Analysis or ReferenceAnalysis
         :type analysis_brain: Analysis or.ReferenceAnalysis
         :return: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
-        obj = self.get_object(analysis_brain)
+        obj = self.get_object(analysis)
         # get the allowed interfaces from the analysis service
         instruments = obj.getAllowedInstruments()
-        # get the current assigned method
-        method = obj.getMethod()
+        # if no method is passed, get the assigned method of the analyis
+        if method is None:
+            method = obj.getMethod()
+
+        # check if the analysis has a method
         if method:
             # supported instrument from the method
             method_instruments = method.getInstruments()
@@ -973,6 +977,27 @@ class AnalysesView(ListingView):
                 api.get_url(method), method_title, tabindex="-1")
             self.show_methodinstr_columns = True
 
+    def _on_method_change(self, uid=None, value=None, item=None, **kw):
+        """Update instrument and calculation when the method changes
+
+        :param uid: object UID
+        :value: UID of the new method
+        :item: old folderitem
+
+        :returns: updated folderitem
+        """
+        obj = api.get_object_by_uid(uid, None)
+        method = api.get_object_by_uid(value, None)
+
+        if not all([obj, method, item]):
+            return None
+
+        # update the available instruments
+        inst_vocab = self.get_instruments_vocabulary(obj, method=method)
+        item["choices"]["Instrument"] = inst_vocab
+
+        return item
+
     def _folder_item_instrument(self, analysis_brain, item):
         """Fills the analysis' instrument to the item passed in.
 
@@ -1386,10 +1411,10 @@ class AnalysesView(ListingView):
         """Renders the analysis conditions
         """
         analysis = self.get_object(analysis_brain)
-       
+
         if not IRoutineAnalysis.providedBy(analysis):
             return
-        
+
         conditions = analysis.getConditions()
         if conditions:
             conditions = map(lambda it: ": ".join([it["title"], it["value"]]),
