@@ -6,6 +6,8 @@ from senaite.core.schema.interfaces import IDatetimeField
 from zope.interface import implementer
 from zope.schema import Datetime
 
+DATE_FORMAT = "%Y-%m-%d"
+
 
 def localize(dt, fallback="UTC"):
     if dtime.is_timezone_naive(dt):
@@ -32,8 +34,18 @@ class DatetimeField(Datetime, BaseField):
         :param value: datetime value
         :type value: datetime
         """
-        if dtime.is_date(value):
-            value = localize(dtime.to_dt(value))
+        if dtime.is_DT(value):
+            # convert to a date string w/o zone info
+            # see doctest for further information
+            value = value.strftime(DATE_FORMAT)
+
+        # convert to localized datetime object
+        value = dtime.to_dt(value)
+        if value:
+            value = localize(value)
+        else:
+            value = None
+
         super(DatetimeField, self).set(object, value)
 
     def get(self, object):
