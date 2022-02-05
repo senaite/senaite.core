@@ -112,5 +112,12 @@ Thererfore, we must ensure that the field converts `DateTime` dates to a valid z
     datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
 
 NOTE:
-We assume that there is no difference between the `DateTime` timezone to the
-systems timezone when the field is set with a value.
+
+The Olson tz database defines Etc/GMT+N timezones which conform with the POSIX style:
+
+Those zone names beginning with "Etc/GMT" have their sign reversed from the
+standard ISO 8601 convention. In the "Etc" area, zones west of GMT have a
+positive sign and those east have a negative sign in their name (e.g
+"Etc/GMT-14" is 14 hours ahead of GMT.)
+
+https://en.wikipedia.org/wiki/Tz_database
