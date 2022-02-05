@@ -33,11 +33,6 @@ class DatetimeField(Datetime, BaseField):
         :param value: datetime value
         :type value: datetime
         """
-        if dtime.is_DT(value):
-            # convert to a date string w/o zone info
-            # see doctest for further information
-            value = value.strftime(DATE_FORMAT)
-
         # convert to localized datetime object
         value = dtime.to_dt(value)
         if value:

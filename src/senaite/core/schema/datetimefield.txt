@@ -109,7 +109,7 @@ Thererfore, we must ensure that the field converts `DateTime` dates to a valid z
     >>> content = Content()
     >>> field.set(content, DT)
     >>> field.get(content)
-    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<DstTzInfo 'CET' CET+1:00:00 STD>)
+    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
 
 NOTE:
 We assume that there is no difference between the `DateTime` timezone to the
