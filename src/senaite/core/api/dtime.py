@@ -157,7 +157,7 @@ def get_timezone(dt, default="UTC"):
     elif is_d(dt):
         tz = default
 
-    if dt is not None:
+    if tz:
         # convert DateTime `GMT` to `Etc/GMT` timezones
         # NOTE: `GMT+1` get `Etc/GMT-1`!
         if tz.startswith("GMT+0"):
@@ -165,11 +165,10 @@ def get_timezone(dt, default="UTC"):
         elif tz.startswith("GMT+"):
             tz = tz.replace("GMT+", "Etc/GMT-")
         elif tz.startswith("GMT-"):
-            tz = tz.replace("GMT+", "Etc/GMT-")
+            tz = tz.replace("GMT-", "Etc/GMT+")
         elif tz.startswith("GMT"):
             tz = tz.replace("GMT", "Etc/GMT")
-
-    if tz is None:
+    else:
         tz = default
 
     return tz
