@@ -35,7 +35,7 @@ class DatetimeField(Datetime, BaseField):
         # ensure we have a `datetime` object
         dt = dtime.to_dt(value)
         # ensure we have always a date with a valid timezone
-        if dtime.is_timezone_naive(dt):
+        if dt and dtime.is_timezone_naive(dt):
             # append default OS timezone
             tz = dtime.get_os_timezone()
             dt = dtime.to_zone(dt, tz)
