@@ -236,7 +236,7 @@ Get the timezone from `datetime.datetime` objects:
     >>> DATE = "2021-12-24 12:00"
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
     >>> dtime.get_timezone(dt)
-    'UTC'
+    'Etc/GMT'
 
     >>> dtime.get_timezone(dtime.to_zone(dt, "Europe/Berlin"))
     'CET'
@@ -244,7 +244,7 @@ Get the timezone from `datetime.datetime` objects:
 Get the timezone from `datetime.date` objects:
 
     >>> dtime.get_timezone(dt.date)
-    'UTC'
+    'Etc/GMT'
 
 
 Check if timezone is valid

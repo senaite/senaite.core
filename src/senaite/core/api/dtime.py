@@ -143,7 +143,7 @@ def to_dt(dt):
         return None
 
 
-def get_timezone(dt, default="UTC"):
+def get_timezone(dt, default="Etc/GMT"):
     """Get a valid pytz timezone of the datetime object
 
     :param dt: date object
@@ -187,12 +187,11 @@ def is_valid_timezone(timezone):
         return False
 
 
-def get_os_timezone():
+def get_os_timezone(default="Etc/GMT"):
     """Return the default timezone of the system
 
-    :returns: OS timezone or UTC
+    :returns: OS timezone or default timezone
     """
-    fallback = "UTC"
     timezone = None
     if "TZ" in os.environ.keys():
         # Timezone from OS env var
@@ -203,13 +202,12 @@ def get_os_timezone():
         if zones and len(zones) > 0:
             timezone = zones[0]
         else:
-            # Default fallback = UTC
             logger.warn(
                 "Operating system\'s timezone cannot be found. "
-                "Falling back to UTC.")
-            timezone = fallback
+                "Falling back to %s." % default)
+            timezone = default
     if not is_valid_timezone(timezone):
-        return fallback
+        return default
     return timezone
 
 
