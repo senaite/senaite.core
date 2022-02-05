@@ -26,7 +26,6 @@ class DatetimeField(Datetime, BaseField):
     def set(self, object, value):
         """Set datetime value
 
-
         NOTE: we need to ensure timzone aware datetime values,
               so that also API calls work
 
