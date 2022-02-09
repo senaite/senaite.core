@@ -10,6 +10,8 @@ from senaite.core import logger
 
 parser = argparse.ArgumentParser(
     description="Run a SENAITE script")
+parser.add_argument("-s", "--site-id", dest="site_id", default=None,
+                    help="ID of the SENAITE instance")
 parser.add_argument("-c", "--config", dest="zope_conf",
                     help="Path to ZOPE configuration file")
 parser.add_argument("-v", "--verbose", dest="verbose",
@@ -75,3 +77,7 @@ def run_it(module):
 
 def zope_passwd():
     return run_it("_zope_passwd")
+
+
+def upgrade_sites():
+    return run_it("_upgrade_sites")

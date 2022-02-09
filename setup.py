@@ -108,6 +108,7 @@ setup(
           target = plone
 
           [console_scripts]
+          upgrade-sites = senaite.core.scripts:upgrade_sites
           zope-passwd = senaite.core.scripts:zope_passwd
           """,
 )
