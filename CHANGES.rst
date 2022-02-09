@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1932 Fix cannot attach documents to individual analyses in Worksheet context
 - #1930 Ensure valid timezone in DX datetime field setter
 - #1927 Fix Analysis attachment is copied on retest
 - #1928 Added `on_change` hook for methods in analyses listings
