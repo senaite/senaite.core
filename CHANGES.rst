@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1933 Added SENAITE maintenance scripts
 - #1927 Fix Analysis attachment is copied on retest
 - #1928 Added `on_change` hook for methods in analyses listings
 - #1925 Fix sample transition in listings
