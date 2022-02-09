@@ -21,22 +21,22 @@ def get_site_ids(app):
     return map(api.get_id, sites)
 
 
-def run_upgrades_until_stuck(portal_setup,
-                             profile_id,
-                             original_steps_to_run=None,
-                             first_iteration=False):
-    steps_to_run = portal_setup.listUpgrades(profile_id)
-    if steps_to_run:
-        if first_iteration:
-            logger.debug("Running profile upgrades for {}".format(profile_id))
-        elif steps_to_run == original_steps_to_run:
-            return steps_to_run
-        portal_setup.upgradeProfile(profile_id)
-        return run_upgrades_until_stuck(
-            portal_setup,
-            profile_id,
-            steps_to_run,
-        )
+def run_last_upgrade_step(portal_setup, profile_id):
+    """Run the last upgrade step
+    """
+    upgrades = portal_setup.listUpgrades(profile_id, show_old=True)
+
+    # we always take the last upgrade step
+    if not upgrades:
+        return
+
+    upgrade = upgrades[-1]
+    step = upgrade.get("step")
+    if step:
+        sdest = upgrade.get("sdest")
+        logger.debug("Running upgrade step %s for profile %s"
+                     % (sdest, profile_id))
+        step.doStep(portal_setup)
 
 
 @retriable(sync=True)
@@ -53,13 +53,7 @@ def upgrade(site):
     for profile_id in ps.listProfilesWithUpgrades():
         if not profile_id.startswith("senaite"):
             continue
-        remaining = run_upgrades_until_stuck(
-            ps, profile_id, first_iteration=True)
-        if remaining:
-            raise Exception(
-                '[{}] Running upgrades did not finish all upgrade steps: {}'
-                .format(profile_id, remaining))
-
+        run_last_upgrade_step(ps, profile_id)
     transaction.commit()
 
 
