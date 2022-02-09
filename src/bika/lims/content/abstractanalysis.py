@@ -1024,15 +1024,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return parent.absolute_url_path()
 
     @security.public
-    def getParentTitle(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent Title
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.Title()
-
-    @security.public
     def getWorksheetUID(self):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.

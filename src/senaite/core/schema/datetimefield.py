@@ -7,15 +7,6 @@ from zope.interface import implementer
 from zope.schema import Datetime
 
 
-def localize(dt, fallback="UTC"):
-    if dtime.is_timezone_naive(dt):
-        zone = dtime.get_os_timezone()
-        if not zone:
-            zone = fallback
-        dt = dtime.to_zone(dt, zone)
-    return dt
-
-
 @implementer(IDatetimeField)
 class DatetimeField(Datetime, BaseField):
     """A field that handles date and time
@@ -24,7 +15,6 @@ class DatetimeField(Datetime, BaseField):
     def set(self, object, value):
         """Set datetime value
 
-
         NOTE: we need to ensure timzone aware datetime values,
               so that also API calls work
 
@@ -32,8 +22,7 @@ class DatetimeField(Datetime, BaseField):
         :param value: datetime value
         :type value: datetime
         """
-        if dtime.is_date(value):
-            value = localize(dtime.to_dt(value))
+        value = dtime.to_dt(value)
         super(DatetimeField, self).set(object, value)
 
     def get(self, object):
@@ -43,13 +32,14 @@ class DatetimeField(Datetime, BaseField):
         :returns: datetime or None
         """
         value = super(DatetimeField, self).get(object)
-        # bail out if value is not a known date object
-        if not dtime.is_date(value):
-            return None
         # ensure we have a `datetime` object
-        value = dtime.to_dt(value)
-        # always return localized datetime objects
-        return localize(value)
+        dt = dtime.to_dt(value)
+        # ensure we have always a date with a valid timezone
+        if dt and dtime.is_timezone_naive(dt):
+            # append default OS timezone
+            tz = dtime.get_os_timezone()
+            dt = dtime.to_zone(dt, tz)
+        return dt
 
     def _validate(self, value):
         """Validator when called from form submission

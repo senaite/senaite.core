@@ -23,6 +23,7 @@ Test preparation
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from DateTime import DateTime
 
 Helper functions:
 
@@ -74,3 +75,49 @@ Set a value through the field:
     >>> field.set(content, date)
     >>> field.get(content)
     datetime.datetime(2030, 12, 24, 0, 0, tzinfo=<DstTzInfo 'CET' CET+1:00:00 STD>)
+
+
+Handling DateTime objects
+-------------------------
+
+The `DateTime` module uses timezones based on `GMT`, e.g. `GMT+1`.
+Using the `asdatetime` method to generate a `datetime` with a static zone:
+
+
+    >>> DT = DateTime("1980-02-25 GMT+1")
+    >>> DT.asdatetime()
+    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'GMT+1'>)
+
+When we set this value on the datetime field, we get the following traecback when
+the object is loaded from the ZODB:
+
+    Traceback (innermost last):
+      ...
+      Module ZODB.Connection, line 795, in setstate
+      Module ZODB.serialize, line 633, in setGhostState
+      Module ZODB.serialize, line 626, in getState
+      Module pytz, line 307, in _p
+      Module pytz.tzinfo, line 539, in unpickler
+      Module pytz, line 188, in timezone
+    UnknownTimeZoneError: (UnknownTimeZoneError('GMT+1',), <function _p at 0x10adda450>, ('GMT+1',))
+
+Also see here for further information:
+https://community.plone.org/t/unknowntimezoneerror-pytz-quirks
+
+Thererfore, we must ensure that the field converts `DateTime` dates to a valid zone:
+
+    >>> content = Content()
+    >>> field.set(content, DT)
+    >>> field.get(content)
+    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
+
+NOTE:
+
+The Olson tz database defines Etc/GMT+N timezones which conform with the POSIX style:
+
+Those zone names beginning with "Etc/GMT" have their sign reversed from the
+standard ISO 8601 convention. In the "Etc" area, zones west of GMT have a
+positive sign and those east have a negative sign in their name (e.g
+"Etc/GMT-14" is 14 hours ahead of GMT.)
+
+https://en.wikipedia.org/wiki/Tz_database

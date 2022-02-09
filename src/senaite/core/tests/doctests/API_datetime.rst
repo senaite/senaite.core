@@ -191,7 +191,7 @@ Convert to datetime
     >>> isinstance(dt, datetime)
     True
 
-Timezone naive `DateTime` is converted w/o timezone:
+Timezone naive `DateTime` is converted with `Etc/GMT` timezone:
 
     >>> dt = DateTime(DATE)
     >>> dt
@@ -201,7 +201,7 @@ Timezone naive `DateTime` is converted w/o timezone:
     True
 
     >>> dtime.to_dt(dt)
-    datetime.datetime(2021, 8, 1, 12, 0)
+    datetime.datetime(2021, 8, 1, 12, 0, tzinfo=<StaticTzInfo 'Etc/GMT'>)
 
 Timezone aware `DateTime` is converted with timezone.
 
@@ -213,11 +213,48 @@ Timezone aware `DateTime` is converted with timezone.
     DateTime('2021/08/01 13:00:00 GMT+1')
 
     >>> dtime.to_dt(dt)
-    datetime.datetime(2021, 8, 1, 13, 0, tzinfo=<StaticTzInfo 'GMT+1'>)
+    datetime.datetime(2021, 8, 1, 13, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
+
+
+Get the timezone
+................
+
+Get the timezone from `DateTime` objects:
+
+    >>> dtime.get_timezone(DateTime("2022-02-25"))
+    'Etc/GMT'
+
+    >>> dtime.get_timezone(DateTime("2022-02-25 12:00 GMT+2"))
+    'Etc/GMT-2'
+
+    >>> dtime.get_timezone(DateTime("2022-02-25 12:00 GMT-2"))
+    'Etc/GMT+2'
+
+
+Get the timezone from `datetime.datetime` objects:
+
+    >>> DATE = "2021-12-24 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.get_timezone(dt)
+    'Etc/GMT'
+
+    >>> dtime.get_timezone(dtime.to_zone(dt, "Europe/Berlin"))
+    'CET'
+
+Get the timezone from `datetime.date` objects:
+
+    >>> dtime.get_timezone(dt.date)
+    'Etc/GMT'
 
 
 Check if timezone is valid
 ..........................
+
+    >>> dtime.is_valid_timezone("Etc/GMT-1")
+    True
+
+    >>> dtime.is_valid_timezone("Etc/GMT-0100")
+    False
 
     >>> dtime.is_valid_timezone("Europe/Berlin")
     True
