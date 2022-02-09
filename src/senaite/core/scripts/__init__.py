@@ -53,7 +53,7 @@ def run_it(module):
     configure(conf_path)
     import Zope2
     app = Zope2.app()
-    from Testing.ZopeTestCase.utils import makerequest
+    from Testing.makerequest import makerequest
     app = makerequest(app)
     app.REQUEST["PARENTS"] = [app]
     from zope.globalrequest import setRequest
