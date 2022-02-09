@@ -6,10 +6,7 @@ from bika.lims import api
 from senaite.core import logger
 from senaite.core.decorators import retriable
 from senaite.core.scripts import parser
-from zope.component.hooks import setSite
-from zope.event import notify
-from zope.globalrequest import setRequest
-from zope.traversing.interfaces import BeforeTraverseEvent
+from senaite.core.scripts.utils import setup_site
 
 __doc__ = """Run upgrade profiles on sites
 """
@@ -22,14 +19,6 @@ def get_site_ids(app):
     """
     sites = app.objectValues("Plone Site")
     return map(api.get_id, sites)
-
-
-def setup_site(site):
-    setSite(site)
-    site.clearCurrentSkin()
-    site.setupCurrentSkin(site.REQUEST)
-    notify(BeforeTraverseEvent(site, site.REQUEST))
-    setRequest(site.REQUEST)
 
 
 def run_upgrades_until_stuck(portal_setup,

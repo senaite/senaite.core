@@ -32,7 +32,7 @@ def retriable(count=3, sync=False, reraise=True, on_retry_exhausted=None):
             retried = 0
             if sync:
                 try:
-                    api.portal.get()._p_jar.sync()
+                    api.get_portal()._p_jar.sync()
                 except Exception:
                     pass
             while retried < count:
@@ -40,8 +40,10 @@ def retriable(count=3, sync=False, reraise=True, on_retry_exhausted=None):
                     return func(*args, **kwargs)
                 except ConflictError:
                     retried += 1
+                    logger.warn("DB ConflictError: Retrying %s/%s"
+                                % (retried, count))
                     try:
-                        api.portal.get()._p_jar.sync()
+                        api.get_portal()._p_jar.sync()
                     except Exception:
                         if retried >= count:
                             if on_retry_exhausted is not None:

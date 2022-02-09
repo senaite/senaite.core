@@ -81,3 +81,7 @@ def zope_passwd():
 
 def upgrade_sites():
     return run_it("_upgrade_sites")
+
+
+def reindex():
+    return run_it("_reindex")
