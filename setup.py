@@ -106,5 +106,8 @@ setup(
           # -*- Entry points: -*-
           [z3c.autoinclude.plugin]
           target = plone
+
+          [console_scripts]
+          zope-passwd = senaite.core.scripts:zope_passwd
           """,
 )
