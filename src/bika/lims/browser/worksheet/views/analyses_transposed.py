@@ -83,7 +83,7 @@ class AnalysesTransposedView(AnalysesView):
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(item["service_uid"], item["uid"]),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="overlay_panel")
 
         # remember the column headers of the first row
         if "Pos" not in self.headers:

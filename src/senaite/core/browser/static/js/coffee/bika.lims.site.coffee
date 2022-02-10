@@ -55,7 +55,7 @@ class window.SiteView
     $("body").on "keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", @on_at_integer_field_keyup
     $("body").on "keyup","input[name*='\\:float\'], .ArchetypesDecimalWidget input", @on_at_float_field_keyup
 
-    $("body").on "click", "a.service_info", @on_service_info_click
+    $("body").on "click", "a.overlay_panel", @on_overlay_panel_click
 
     # Show loader on Ajax events
     $(document).on
@@ -311,11 +311,11 @@ class window.SiteView
     return
 
 
-  on_service_info_click: (event) =>
+  on_overlay_panel_click: (event) =>
     ###
      * Eventhandler when the service info icon was clicked
     ###
-    console.debug "°°° SiteView::on_service_info_click °°°"
+    console.debug "°°° SiteView::on_overlay_panel_click °°°"
     event.preventDefault()
     el = event.currentTarget
 
