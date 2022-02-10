@@ -139,6 +139,7 @@
   <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
   <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
   <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisConditions" title="senaite.core: Field: Edit Analysis Conditions"/>
 
 
   # Behavioral Permissions

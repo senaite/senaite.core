@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -370,6 +371,21 @@ class AnalysesView(ListingView):
 
         return True
 
+    @viewcache.memoize
+    def is_analysis_conditions_edition_allowed(self, analysis_brain):
+        """Returns whether the conditions of the analysis can be edited or not
+        """
+        # Only allow to edit if result edition is allowed
+        if not self.is_result_edition_allowed(analysis_brain):
+            return False
+
+        # Check if the object has initial conditions set
+        obj = self.get_object(analysis_brain)
+        if not obj.getConditions():
+            return False
+
+        return self.has_permission(FieldEditAnalysisConditions, obj)
+
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
@@ -619,6 +635,16 @@ class AnalysesView(ListingView):
             .format(obj.getServiceUID, obj.UID),
             value="<i class='fas fa-info-circle'></i>",
             css_class="overlay_panel", tabindex="-1")
+
+        # Append conditions link before the analysis
+        # see: bika.lims.site.coffee for the attached event handler
+        if self.is_analysis_conditions_edition_allowed(obj):
+            conditions = get_link(
+                "/set_analysis_conditions_modal?uids={}".format(obj.UID),
+                value="<i class='fas fa-list'></i>",
+                css_class="overlay_panel", tabindex="-1")
+            info = item["before"]["Service"]
+            item["before"]["Service"] = "<br/>".join([info, conditions])
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
