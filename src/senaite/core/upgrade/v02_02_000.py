@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
@@ -51,6 +52,10 @@ def upgrade(tool):
     # Setup the permission for the edition of analysis conditions
     setup_edit_analysis_conditions(portal)
 
+    # Preserve all information from service conditions in Sample
+    update_analysis_conditions(portal)
+
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -76,3 +81,45 @@ def setup_edit_analysis_conditions(portal):
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
 
     logger.info("Updating role mappings for Analyses [DONE]")
+
+
+def update_analysis_conditions(portal):
+    """Walks through all analyses awaiting for result and sets all information
+    from Service Conditions to them
+    """
+    logger.info("Updating service conditions for Analyses ...")
+    query = {
+        "portal_type": "Analysis",
+        "review_state": ["registered", "unassigned", "assigned", "to_be_verified"]
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating conditions: {0}/{1}".format(num, total))
+
+        analysis = api.get_object(brain)
+        if not IRequestAnalysis.providedBy(analysis):
+            continue
+
+        # Extract the original conditions set at service level
+        service = analysis.getAnalysisService()
+        service_conditions = service.getConditions()
+        service_conditions = dict(map(lambda cond: (cond.get("title"), cond),
+                                      service_conditions))
+
+        # Extract the conditions from the analysis and update them accordingly
+        conditions = analysis.getConditions()
+        for condition in conditions:
+            title = condition.get("title")
+            orig_condition = service_conditions.get(title, {})
+            condition.update({
+                "required": orig_condition.get("required", ""),
+                "choices": orig_condition.get("choices", ""),
+                "description": orig_condition.get("description", ""),
+            })
+
+        # Reset the conditions
+        analysis.setConditions(conditions)
+
+    logger.info("Updating service conditions for Analyses [DONE]")
