@@ -639,10 +639,10 @@ class AnalysesView(ListingView):
         # Append conditions link before the analysis
         # see: bika.lims.site.coffee for the attached event handler
         if self.is_analysis_conditions_edition_allowed(obj):
-            conditions = get_link(
-                "/set_analysis_conditions_modal?uids={}".format(obj.UID),
-                value="<i class='fas fa-list'></i>",
-                css_class="overlay_panel", tabindex="-1")
+            url = api.get_url(api.get_portal())
+            url = "{}/set_analysis_conditions_modal?uids={}".format(url, obj.UID)
+            conditions = get_link(url, value="<i class='fas fa-list'></i>",
+                                  css_class="overlay_panel", tabindex="-1")
             info = item["before"]["Service"]
             item["before"]["Service"] = "<br/>".join([info, conditions])
 

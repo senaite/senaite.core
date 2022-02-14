@@ -1,41 +1,105 @@
-<div class="set-analysis-conditions modal-dialog modal-dialog-centered modal-dialog-scrollable">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" i18n:translate="">Set analysis conditions</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <form name="set-analysis-conditions-form"
-            class="form"
-            method="POST"
-            enctype="multipart/form-data"
-            tal:attributes="action string:${here/absolute_url}/set_analysis_conditions">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
 
-        <div class="form-group">
-          <textarea name="remarks" class="w-100 form-control"/>
-          <div class="form-check text-align-left">
-            <input name="overwrite" class="form-check-input" type="checkbox" value="1" id="overwrite-remarks">
-            <label class="form-check-label" for="overwrite-remarks" i18n:translate="">
-              Overwrite existing remarks
-            </label>
-          </div>
+  <body>
+    <metal:content-title fill-slot="content-title"/>
+    <metal:content-description fill-slot="content-description"/>
+    <metal:content-core fill-slot="content-core">
+      <div class="row"
+           style="width:99%"
+           tal:define="conditions python:view.get_conditions()"
+           tal:condition="nocall:conditions">
+        <div class="col-sm-12">
+          <h3>
+            <i class="fas fa-list"/>
+            <span i18n:translate="" tal:content="python:view.get_analysis_name()"/>
+          </h3>
+          <h4>
+            <span i18n:translate="">Set analysis conditions</span>
+          </h4>
+          <form name="set-analysis-conditions-form"
+                class="form"
+                method="POST"
+                enctype="multipart/form-data"
+                tal:attributes="action string:${here/absolute_url}/set_analysis_conditions">
+
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%"/>
+              </colgroup>
+              <tal:condition repeat="condition python:view.get_conditions()">
+                <tr tal:define="required python:condition.get('required') == 'on';">
+                  <td>
+                    <label class="formQuestion">
+                      <span tal:content="structure condition/title"/>
+                      <span class="fieldRequired"
+                            tal:condition="required"
+                            i18n:attributes="title title_required;"
+                            title="Required">&nbsp;</span>
+                      <span class="formHelp discreet help-block-small"
+                            tal:content="structure condition/description|nothing"/>
+                    </label>
+                  </td>
+                  <td tal:define="options condition/options|nothing">
+                    <input type="hidden"
+                           name="conditions.title:records"
+                           value="condition/title"/>
+                    <input type="hidden"
+                           name="conditions.uid:records"
+                           value="condition/uid"/>
+                    <input type="hidden"
+                           name="conditions.type:records"
+                           value="condition/type"/>
+                    <input type="hidden"
+                           name="conditions.required:records"
+                           value="condition/required"/>
+
+                    <select tal:condition="options"
+                            name="conditions.value:records">
+                      <option tal:condition="required"/>
+                      <option tal:repeat="option options"
+                              tal:content="option"/>
+                    </select>
+
+                    <tal:non_select condition="not:options">
+                      <input tal:attributes="type condition/type;
+                                             value condition/value"
+                             tal:condition="required"
+                             required="required"
+                             name="conditions.value:records"/>
+
+                      <input tal:attributes="type condition/type;
+                                             value condition/value"
+                             tal:condition="not:required"
+                             required="required"
+                             name="conditions.value:records"/>
+                    </tal:non_select>
+
+                  </td>
+                </tr>
+              </tal:condition>
+            </table>
+
+
+            <div class="form-group mt-2">
+              <input class="btn btn-sm btn-primary"
+                     type="submit"
+                     name="set_conditions"
+                     i18n:attributes="value"
+                     value="Set Conditions" />
+            </div>
+
+            <!-- hidden fields -->
+            <input type="hidden" name="submitted" value="1" />
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+          </form>
         </div>
-
-        <div class="form-group mt-2">
-          <input class="btn btn-sm btn-primary"
-                 type="submit"
-                 name="set_conditions"
-                 i18n:attributes="value"
-                 value="Set Conditions" />
-        </div>
-
-        <!-- hidden fields -->
-        <input type="hidden" name="submitted" value="1" />
-        <input tal:replace="structure context/@@authenticator/authenticator"/>
-
-      </form>
-    </div>
-  </div>
-</div>
+      </div>
+    </metal:content-core>
+  </body>
+</html>

@@ -18,15 +18,40 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
+
 from bika.lims import api
-from bika.lims.api.security import check_permission
-from bika.lims.permissions import FieldEditAnalysisRemarks
-from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core import logger
 from senaite.core.browser.modals import Modal
-from zope import event
 
 
 class SetAnalysisConditionsModal(Modal):
     template = ViewPageTemplateFile("templates/set_analysis_conditions.pt")
+    _analysis = None
+
+    def __call__(self):
+        if self.request.form.get("submitted", False):
+            self.handle_submit()
+        return self.template()
+
+    @property
+    def analysis(self):
+        if self._analysis is None:
+            uids = self.get_uids_from_request()
+            self._analysis = api.get_object_by_uid(uids[0])
+        return self._analysis
+
+    def get_analysis_name(self):
+        return api.get_title(self.analysis)
+
+    def get_conditions(self):
+        conditions = self.analysis.getConditions()
+        conditions = copy.deepcopy(conditions)
+        for condition in conditions:
+            choices = condition.get("choices", "")
+            options = filter(None, choices.split("|"))
+            condition.update({"options": options})
+        return conditions
+
+    def handle_submit(self):
+        pass
