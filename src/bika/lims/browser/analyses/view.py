@@ -641,8 +641,9 @@ class AnalysesView(ListingView):
         if self.is_analysis_conditions_edition_allowed(obj):
             url = api.get_url(self.context)
             url = "{}/set_analysis_conditions?uid={}".format(url, obj.UID)
-            conditions = get_link(url, value="<i class='fas fa-list'></i>",
-                                  css_class="overlay_panel", tabindex="-1")
+            ico = "<i class='fas fa-list' style='padding-top: 5px;'/>"
+            conditions = get_link(url, value=ico, css_class="overlay_panel",
+                                  tabindex="-1")
             info = item["before"]["Service"]
             item["before"]["Service"] = "<br/>".join([info, conditions])
 
