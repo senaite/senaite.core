@@ -45,18 +45,20 @@
                     </label>
                   </td>
                   <td tal:define="options condition/options|nothing">
-                    <input type="hidden"
-                           name="conditions.title:records"
-                           value="condition/title"/>
-                    <input type="hidden"
-                           name="conditions.uid:records"
-                           value="condition/uid"/>
-                    <input type="hidden"
-                           name="conditions.type:records"
-                           value="condition/type"/>
-                    <input type="hidden"
-                           name="conditions.required:records"
-                           value="condition/required"/>
+
+                    <!-- Hidden fields to keep original conditions info -->
+                    <input type="hidden" name="conditions.title:records"
+                           tal:attributes="value condition/title"/>
+                    <input type="hidden" name="conditions.description:records"
+                           tal:attributes="value condition/description"/>
+                    <input type="hidden" name="conditions.choices:records"
+                           tal:attributes="value condition/choices"/>
+                    <input type="hidden" name="conditions.uid:records"
+                           tal:attributes="value condition/uid"/>
+                    <input type="hidden" name="conditions.type:records"
+                           tal:attributes="value condition/type"/>
+                    <input type="hidden" name="conditions.required:records"
+                           tal:attributes="value condition/required"/>
 
                     <select tal:condition="options"
                             name="conditions.value:records">
@@ -95,6 +97,8 @@
 
             <!-- hidden fields -->
             <input type="hidden" name="submitted" value="1" />
+            <input type="hidden" name="uid"
+                   tal:attributes="value python:view.get_uid_from_request()" />
             <input tal:replace="structure context/@@authenticator/authenticator"/>
 
           </form>

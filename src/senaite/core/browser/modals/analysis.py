@@ -21,31 +21,58 @@
 import copy
 
 from bika.lims import api
+from bika.lims import FieldEditAnalysisConditions
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.api.security import check_permission
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.browser.modals import Modal
 
 
-class SetAnalysisConditionsModal(Modal):
+class SetAnalysisConditionsView(BrowserView):
+    """View for the update of analysis conditions
+    """
     template = ViewPageTemplateFile("templates/set_analysis_conditions.pt")
-    _analysis = None
 
     def __call__(self):
         if self.request.form.get("submitted", False):
-            self.handle_submit()
+            return self.handle_submit()
         return self.template()
 
-    @property
-    def analysis(self):
-        if self._analysis is None:
-            uids = self.get_uids_from_request()
-            self._analysis = api.get_object_by_uid(uids[0])
-        return self._analysis
+    def redirect(self, message=None, level="info"):
+        """Redirect with a message
+        """
+        redirect_url = api.get_url(self.context)
+        if message is not None:
+            self.context.plone_utils.addPortalMessage(message, level)
+        return self.request.response.redirect(redirect_url)
+
+    def get_analysis(self):
+        uid = self.get_uid_from_request()
+        obj = api.get_object_by_uid(uid)
+        if IRequestAnalysis.providedBy(obj):
+            # Only analyses that implement IRequestAnalysis support conditions
+            return obj
+        return None
+
+    def get_uid_from_request(self):
+        """Returns the uid from the request, if any
+        """
+        uid = self.request.form.get("uid", "")
+        if api.is_uid(uid):
+            return uid
+        uid = self.request.get("uid", "")
+        if api.is_uid(uid):
+            return uid
+        return None
 
     def get_analysis_name(self):
-        return api.get_title(self.analysis)
+        analysis = self.get_analysis()
+        return api.get_title(analysis)
 
     def get_conditions(self):
-        conditions = self.analysis.getConditions()
+        conditions = self.get_analysis().getConditions()
         conditions = copy.deepcopy(conditions)
         for condition in conditions:
             choices = condition.get("choices", "")
@@ -54,4 +81,14 @@ class SetAnalysisConditionsModal(Modal):
         return conditions
 
     def handle_submit(self):
-        pass
+        analysis = self.get_analysis()
+        title = safe_unicode(api.get_title(analysis))
+        if not check_permission(FieldEditAnalysisConditions, analysis):
+            message = _("Not allowed to update conditions: {}").format(title)
+            return self.redirect(message=message, level="error")
+
+        # Update the conditions
+        conditions = self.request.form.get("conditions", [])
+        analysis.setConditions(conditions)
+        message = _("Analysis conditions updated: {}").format(title)
+        return self.redirect(message=message)

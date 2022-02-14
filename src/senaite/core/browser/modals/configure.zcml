@@ -13,9 +13,9 @@
       />
 
   <browser:page
-      name="set_analysis_conditions_modal"
+      name="set_analysis_conditions"
       for="*"
-      class=".analysis.SetAnalysisConditionsModal"
+      class=".analysis.SetAnalysisConditionsView"
       permission="senaite.core.permissions.FieldEditAnalysisConditions"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
