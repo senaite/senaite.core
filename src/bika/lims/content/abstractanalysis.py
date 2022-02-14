@@ -452,8 +452,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
-        # Always update ResultCapture date when this field is modified
-        self.setResultCaptureDate(DateTime())
+        prev_result = self.getField("Result").get(self) or ""
 
         # Convert to list ff the analysis has result options set with multi
         if self.getResultOptions() and "multi" in self.getResultOptionsType():
@@ -497,6 +496,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                         val = self.getLowerDetectionLimit()
                     else:
                         val = self.getUpperDetectionLimit()
+
+        # Update ResultCapture date if necessary
+        if not val:
+            self.setResultCaptureDate(None)
+        elif prev_result != val:
+            self.setResultCaptureDate(DateTime())
 
         # Set the result field
         self.getField("Result").set(self, val)

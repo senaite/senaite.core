@@ -18,19 +18,16 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import alsoProvides
-
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.utils import changeWorkflowState
-from bika.lims.utils.analysis import create_analysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
+from DateTime import DateTime
+from zope.interface import alsoProvides
 
 
 def after_assign(analysis):
@@ -130,6 +127,11 @@ def after_submit(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Ensure there is a Result Capture Date even if the result was set
+    # automatically on creation because of a "DefaultResult"
+    if not analysis.getResultCaptureDate():
+        analysis.setResultCaptureDate(DateTime())
+
     # Mark this analysis as ISubmitted
     alsoProvides(analysis, ISubmitted)
 
