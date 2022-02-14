@@ -262,6 +262,12 @@
               <input type="hidden"
                      name="ServiceConditions-{{../arnum}}.required:records"
                      value="{{required}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.choices:records"
+                     value="{{choices}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.description:records"
+                     value="{{description}}"/>
               {{#if options}}
               <select name="ServiceConditions-{{../arnum}}.value:records">
                 {{#unless required}}
