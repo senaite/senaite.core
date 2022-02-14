@@ -375,16 +375,16 @@ class AnalysesView(ListingView):
     def is_analysis_conditions_edition_allowed(self, analysis_brain):
         """Returns whether the conditions of the analysis can be edited or not
         """
-        # Only allow to edit if result edition is allowed
-        if not self.is_result_edition_allowed(analysis_brain):
+        # Check if permission is granted for the given analysis
+        obj = self.get_object(analysis_brain)
+        if not self.has_permission(FieldEditAnalysisConditions, obj):
             return False
 
-        # Check if the object has initial conditions set
-        obj = self.get_object(analysis_brain)
+        # Omit analysis does not have conditions set
         if not obj.getConditions():
             return False
 
-        return self.has_permission(FieldEditAnalysisConditions, obj)
+        return True
 
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
