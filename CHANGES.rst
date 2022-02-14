@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1935 Allow to edit analysis (pre) conditions
 - #1933 Added SENAITE maintenance scripts
 - #1932 Fix cannot attach documents to individual analyses in Worksheet context
 - #1930 Ensure valid timezone in DX datetime field setter
