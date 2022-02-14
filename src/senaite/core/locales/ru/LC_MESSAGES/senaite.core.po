@@ -5,6 +5,7 @@
 # Алексей Сериков <nchrom@gmail.com>, 2020
 # alex r <aa989190f363e46d@googlemail.com>, 2021
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2021
+# Leonid Toporkov <leonid.toporkov@gmail.com>, 2022
 #
 msgid ""
 msgstr ""
@@ -2058,7 +2059,7 @@ msgstr "Адрес электронной почты"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:96
 msgid "Email Log"
-msgstr "Журнал жлектронной почты"
+msgstr "Журнал электронной почты"
 
 #: bika/lims/content/bikasetup.py:628
 msgid "Email body for Sample Invalidation notifications"
@@ -2070,11 +2071,11 @@ msgstr "Тело письма при отбраковке образца"
 
 #: bika/lims/browser/publish/emailview.py:159
 msgid "Email cancelled"
-msgstr ""
+msgstr "Письмо отменено"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:104
 msgid "Email notification"
-msgstr "Письмо отменено"
+msgstr "Уведомить по эл.почте"
 
 #: bika/lims/content/bikasetup.py:617
 msgid "Email notification on Sample invalidation"
@@ -2200,7 +2201,7 @@ msgstr "Работа с образцами"
 
 #: senaite/core/browser/dashboard/dashboard.py:522
 msgid "Evolution of Worksheets"
-msgstr "Работ с Рабочими Листами"
+msgstr "Работа с Рабочими Листами"
 
 #: senaite/core/exportimport/import.pt:166
 msgid "Example Cronjob to execute the auto import every 10 minutes"
@@ -6795,7 +6796,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:320
 msgid "days"
-msgstr ""
+msgstr "дней"
 
 #: bika/lims/browser/templates/referencesample_view.pt:123
 msgid "deactivate"
@@ -6808,11 +6809,11 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:320
 msgid "hours"
-msgstr ""
+msgstr "часов"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:147
 msgid "hours: {} minutes: {} days: {}"
-msgstr ""
+msgstr "часов: {} минут: {} дней: {}"
 
 #: bika/lims/browser/publish/templates/email.pt:180
 msgid "in"
@@ -6870,7 +6871,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:320
 msgid "minutes"
-msgstr ""
+msgstr "минут"
 
 #: bika/lims/content/instrumentcertification.py:254
 msgid "monthly"
@@ -6878,7 +6879,7 @@ msgstr "ежемесячно"
 
 #: senaite/core/browser/dashboard/dashboard.py:377
 msgid "of"
-msgstr ""
+msgstr "из"
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
@@ -6890,7 +6891,7 @@ msgstr "ежеквартально"
 
 #: bika/lims/content/instrumentscheduledtask.py:139
 msgid "repeating every"
-msgstr ""
+msgstr "повторять карждые"
 
 #: bika/lims/content/instrumentscheduledtask.py:140
 msgid "repeatperiod"
@@ -6943,7 +6944,7 @@ msgstr "обновляется каждые 2 часа"
 
 #: bika/lims/browser/analyses/view.py:1195
 msgid "verification(s) pending"
-msgstr "проверка(и) в ожидании"
+msgstr "в ожидании проверки(ок)"
 
 #: bika/lims/content/instrumentcertification.py:253
 msgid "weekly"
