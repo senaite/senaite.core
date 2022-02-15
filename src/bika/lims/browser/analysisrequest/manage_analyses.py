@@ -250,7 +250,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["before"]["Title"] = get_link(
             "analysisservice_info?service_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="overlay_panel")
 
         # Icons
         after_icons = ""

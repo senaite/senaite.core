@@ -171,7 +171,7 @@ class ReportsListingView(BikaListingView):
         item["Info"] = get_link(
             "analysisreport_info?report_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="overlay_panel")
 
         item["replace"]["AnalysisRequest"] = get_link(
             ar.absolute_url(), value=ar.Title()

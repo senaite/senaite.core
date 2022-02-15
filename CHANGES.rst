@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1935 Allow to edit analysis (pre) conditions
 - #1936 Do not display capture date when no result or default result
 - #1933 Added SENAITE maintenance scripts
 - #1932 Fix cannot attach documents to individual analyses in Worksheet context

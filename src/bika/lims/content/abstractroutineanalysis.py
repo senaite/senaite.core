@@ -467,3 +467,20 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         conditions = sample.getServiceConditions()
         conditions = filter(is_valid, conditions)
         return copy.deepcopy(conditions)
+
+    def setConditions(self, conditions):
+        """Sets the conditions of this analysis. These conditions are usually
+        set on sample registration and are stored at sample level
+        """
+        if not conditions:
+            conditions = []
+
+        sample = self.getRequest()
+        service_uid = self.getRawAnalysisService()
+        sample_conditions = sample.getServiceConditions()
+        sample_conditions = copy.deepcopy(sample_conditions)
+
+        # Keep the conditions from sample for analyses other than this one
+        other_conditions = filter(lambda c: c.get("uid") != service_uid,
+                                  sample_conditions)
+        sample.setServiceConditions(other_conditions + conditions)

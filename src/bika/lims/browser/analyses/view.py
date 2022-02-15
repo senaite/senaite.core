@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -370,6 +371,21 @@ class AnalysesView(ListingView):
 
         return True
 
+    @viewcache.memoize
+    def is_analysis_conditions_edition_allowed(self, analysis_brain):
+        """Returns whether the conditions of the analysis can be edited or not
+        """
+        # Check if permission is granted for the given analysis
+        obj = self.get_object(analysis_brain)
+        if not self.has_permission(FieldEditAnalysisConditions, obj):
+            return False
+
+        # Omit analysis does not have conditions set
+        if not obj.getConditions():
+            return False
+
+        return True
+
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
@@ -618,7 +634,18 @@ class AnalysesView(ListingView):
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(obj.getServiceUID, obj.UID),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info", tabindex="-1")
+            css_class="overlay_panel", tabindex="-1")
+
+        # Append conditions link before the analysis
+        # see: bika.lims.site.coffee for the attached event handler
+        if self.is_analysis_conditions_edition_allowed(obj):
+            url = api.get_url(self.context)
+            url = "{}/set_analysis_conditions?uid={}".format(url, obj.UID)
+            ico = "<i class='fas fa-list' style='padding-top: 5px;'/>"
+            conditions = get_link(url, value=ico, css_class="overlay_panel",
+                                  tabindex="-1")
+            info = item["before"]["Service"]
+            item["before"]["Service"] = "<br/>".join([info, conditions])
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine

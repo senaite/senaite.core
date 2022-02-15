@@ -8,7 +8,7 @@
 
   window.SiteView = (function() {
     function SiteView() {
-      this.on_service_info_click = bind(this.on_service_info_click, this);
+      this.on_overlay_panel_click = bind(this.on_overlay_panel_click, this);
       this.on_reference_definition_list_change = bind(this.on_reference_definition_list_change, this);
       this.on_numeric_field_keypress = bind(this.on_numeric_field_keypress, this);
       this.on_numeric_field_paste = bind(this.on_numeric_field_paste, this);
@@ -53,7 +53,7 @@
       $("body").on("paste", ".numeric", this.on_numeric_field_paste);
       $("body").on("keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
       $("body").on("keyup", "input[name*='\\:float\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
-      $("body").on("click", "a.service_info", this.on_service_info_click);
+      $("body").on("click", "a.overlay_panel", this.on_overlay_panel_click);
       return $(document).on({
         ajaxStart: function() {
           $("body").addClass("loading");
@@ -304,13 +304,13 @@
       });
     };
 
-    SiteView.prototype.on_service_info_click = function(event) {
+    SiteView.prototype.on_overlay_panel_click = function(event) {
 
       /*
        * Eventhandler when the service info icon was clicked
        */
       var el;
-      console.debug("°°° SiteView::on_service_info_click °°°");
+      console.debug("°°° SiteView::on_overlay_panel_click °°°");
       event.preventDefault();
       el = event.currentTarget;
       $(el).prepOverlay({

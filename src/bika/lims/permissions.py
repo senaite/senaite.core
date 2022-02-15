@@ -176,6 +176,7 @@ FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
 # edition or removal of attachment.
 FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
 FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
+FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
 
 
 # Behavioral permissions
