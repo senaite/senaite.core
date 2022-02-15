@@ -27,7 +27,7 @@
                 enctype="multipart/form-data"
                 tal:attributes="action string:${here/absolute_url}/set_analysis_conditions">
 
-            <table class="table table-condensed small">
+            <table class="table table-sm small">
               <colgroup>
                 <col style="width:20%"/>
               </colgroup>
