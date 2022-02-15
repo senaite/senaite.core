@@ -39,7 +39,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ."{{defaultContext}}:latest"
+          context: "{{defaultContext}}:latest"
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/senaite:edge
