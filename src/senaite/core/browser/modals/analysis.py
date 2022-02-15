@@ -59,10 +59,7 @@ class SetAnalysisConditionsView(BrowserView):
     def get_uid_from_request(self):
         """Returns the uid from the request, if any
         """
-        uid = self.request.form.get("uid", "")
-        if api.is_uid(uid):
-            return uid
-        uid = self.request.get("uid", "")
+        uid = self.request.form.get("uid", self.request.get("uid"))
         if api.is_uid(uid):
             return uid
         return None
