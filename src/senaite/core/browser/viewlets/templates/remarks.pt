@@ -1,0 +1,22 @@
+<div class="remarks-widget"
+     tal:condition="python:view.available()"
+     i18n:domain="senaite.core">
+
+  <!-- title and icon -->
+  <h3 tal:define="icon view/icon_name|nothing;
+                  title view/title|nothing"
+      tal:condition="title">
+    <img tal:condition="icon|nothing" tal:attributes="src string:senaite_theme/icon/${icon}"/>
+    <span i18n:translate="" tal:content="title"/>
+  </h3>
+
+  <div tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                   mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
+                   senaite_view python:context.restrictedTraverse('@@senaite_view');
+                   test nocall:senaite_view/test;
+                   field python:context.Schema()['Remarks'];
+                   errors python:{};">
+    <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+  </div>
+
+</div>

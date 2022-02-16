@@ -1,51 +1,33 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2021 by it's authors.
-# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser import BrowserView
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
+from plone.app.layout.viewlets import ViewletBase
 from plone.app.textfield import RichTextValue
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import event
 
 
-class ARResultsInterpretationView(BrowserView):
-    """ Renders the view for ResultsInterpration per Department
+class ResultsInterpretationViewlet(ViewletBase):
+    """Viewlet for results interpretation field
     """
-    template = ViewPageTemplateFile(
-        "templates/analysisrequest_results_interpretation.pt")
+    index = ViewPageTemplateFile("templates/resultsinterpretation.pt")
 
-    def __init__(self, context, request, **kwargs):
-        super(ARResultsInterpretationView, self).__init__(context, request)
-        self.request = request
-        self.context = context
+    title = _("Results interpretation")
+    icon_name = "resultsinterpretation"
 
-    def __call__(self):
+    def available(self):
+        return True
+
+    def update(self):
         if self.request.form.get("submitted", False):
             return self.handle_form_submit()
-        return self.template()
+        return self.index()
 
     def handle_form_submit(self):
         """Handle form submission
