@@ -47,7 +47,7 @@ jobs:
           file: ${{ github.workspace }}/senaite.docker/latest/Dockerfile
           no-cache: true
           push: true
-          tags: senaite/senaite:edge
+          tags: senaite/senaite:edge,senaite/senaite:${{ github.baseref }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
