@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1937 Position the user to the analysis listing after an action is triggered
 - #1935 Allow to edit analysis (pre) conditions
 - #1936 Do not display capture date when no result or default result
 - #1933 Added SENAITE maintenance scripts
