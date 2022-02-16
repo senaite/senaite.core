@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1938 Converted sample interpretation and remarks widgets into viewlets
+- #1937 Position the user to the analysis listing after an action is triggered
 - #1935 Allow to edit analysis (pre) conditions
 - #1936 Do not display capture date when no result or default result
 - #1933 Added SENAITE maintenance scripts

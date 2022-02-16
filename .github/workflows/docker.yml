@@ -4,8 +4,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the 2.x branch
   push:
     branches: [ 2.x ]
-  pull_request:
-    branches: [ 2.x ]
+  # pull_request:
+  #   branches: [ 2.x ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -47,7 +47,8 @@ jobs:
           file: ${{ github.workspace }}/senaite.docker/latest/Dockerfile
           no-cache: true
           push: true
-          tags: senaite/senaite:edge
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          tags: senaite/senaite:edge,senaite/senaite:${{ github.ref_name }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
