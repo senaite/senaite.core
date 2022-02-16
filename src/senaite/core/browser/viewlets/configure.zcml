@@ -281,6 +281,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       permission="zope2.View" />
 
+  <!-- Results interpretation viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.belowsamplesection.resultsinterpretation"
+      manager=".interfaces.IBelowSampleSection"
+      class=".resultsinterpretation.ResultsInterpretationViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
 
   <!-- Sample section viewlet: field analyses lisiting -->
   <browser:viewlet

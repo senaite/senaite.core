@@ -91,21 +91,6 @@
         </div>
       </div>
 
-      <!-- Results interpretation -->
-      <div class="row">
-        <div class="col-sm-12">
-          <h3>
-            <!-- Resultsinterpretations icon -->
-            <i class="remarks-icon" title="Results interpretation" i18n:attributes="title">
-              <svg tal:replace="structure senaite_theme/icon_data/resultsinterpretation" />
-            </i>
-            <span i18n:translate="">Results interpretation</span>
-          </h3>
-          <tal:parts replace="structure view/riview"/>
-        </div>
-      </div>
-      <!-- /Results interpretation -->
-
     </metal:content-core>
   </body>
 </html>
