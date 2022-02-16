@@ -49,27 +49,6 @@
       </div>
       <!-- /Header Table -->
 
-      <!-- Remarks Widget
-           https://github.com/senaite/senaite.core/pull/920 -->
-      <div class="row">
-        <div id="remarks-widget"
-             class="col-sm-12 remarks-widget"
-             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
-                 field python:context.Schema()['Remarks'];
-                 errors python:{};">
-          <h3>
-            <!-- Remarks icon -->
-            <i class="remarks-icon" title="Remarks" i18n:attributes="title">
-              <svg tal:replace="structure senaite_theme/icon_data/remarks" />
-            </i>
-            <span i18n:translate="">Remarks</span>
-          </h3>
-          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
-        </div>
-      </div>
-      <!-- /Remarks Widget -->
-
       <!-- Viewlet manager: above sample sections -->
       <div class="row" id="below-sample-sections">
         <div class="col-sm-12">

@@ -272,6 +272,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Remarks viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.abovesamplesection.remarks"
+      manager=".interfaces.IAboveSampleSection"
+      class=".remarks.RemarksViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
   <!-- Sample section viewlet: lab analyses lisiting -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
