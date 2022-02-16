@@ -50,7 +50,7 @@
       <!-- /Header Table -->
 
       <!-- Viewlet manager: above sample sections -->
-      <div class="row" id="below-sample-sections">
+      <div class="row" id="above-sample-sections">
         <div class="col-sm-12">
           <div tal:replace="structure provider:senaite.abovesamplesections"></div>
         </div>
