@@ -102,12 +102,13 @@
               <li role="presentation"
                   tal:define="num repeat/record/number;
                               send_date record/email_send_date"
-                  tal:attributes="class python:num==1 and 'active' or ''">
+                  class="nav-item">
                 <a href="#"
                    role="tab"
                    data-toggle="tab"
                    tal:content="python:view.ulocalized_time(send_date, 1)"
-                   tal:attributes="href string:#tab-${num};">
+                   tal:attributes="href string:#tab-${num};
+                                   class python:num==1 and 'active nav-link' or 'nav-link'">
                 </a>
               </li>
             </tal:record>
