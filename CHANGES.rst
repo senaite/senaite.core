@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1943 Support UIDs from interim fields as input values for calculations
 - #1942 Fix tab styling in email log popup
 - #1941 Fixed error with sampler mail
 - #1938 Converted sample interpretation and remarks widgets into viewlets
