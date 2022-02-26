@@ -528,17 +528,24 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Add interims to mapping
         for i in interims:
-            if 'keyword' not in i:
+
+            interim_keyword = i.get("keyword")
+            if not interim_keyword:
                 continue
+
             # skip unset values
-            if i['value'] == '':
+            interim_value = i.get("value", "")
+            if interim_value == "":
                 continue
-            try:
-                ivalue = float(i['value'])
-                mapping[i['keyword']] = ivalue
-            except (TypeError, ValueError):
-                # Interim not float, abort
+
+            # Only floatable and UIDs are supported
+            if api.is_floatable(interim_value):
+                interim_value = float(interim_value)
+
+            elif not api.is_uid(interim_value):
                 return False
+
+            mapping[interim_keyword] = interim_value
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
