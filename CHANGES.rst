@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1946 Fix conditions issue in Reference Analyses display view
 - #1944 Add handler for "content_status_modify"-like requests
 - #1943 Support UIDs from interim fields as input values for calculations
 - #1942 Fix tab styling in email log popup
