@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
 from bika.lims import WorksheetAddAttachment
 from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IReferenceAnalysis
 from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -112,6 +113,10 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         """
         analyses = set()
         for analysis in self.context.getAnalyses():
+            # Skip Reference Analysis
+            if IReferenceAnalysis.providedBy(analysis):
+                continue
+                
             # Skip non-editable analyses
             if not check_permission(FieldEditAnalysisResult, analysis):
                 continue
