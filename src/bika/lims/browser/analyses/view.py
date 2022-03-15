@@ -36,6 +36,7 @@ from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import FieldEditAnalysisHidden
@@ -377,6 +378,10 @@ class AnalysesView(ListingView):
         """
         # Check if permission is granted for the given analysis
         obj = self.get_object(analysis_brain)
+
+        if IReferenceAnalysis.providedBy(obj):
+            return False
+
         if not self.has_permission(FieldEditAnalysisConditions, obj):
             return False
 
