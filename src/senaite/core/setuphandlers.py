@@ -117,6 +117,7 @@ INDEXES = (
     ("portal_catalog", "review_state", "", "FieldIndex"),
     ("portal_catalog", "sample_uid", "", "KeywordIndex"),
     ("portal_catalog", "title", "", "FieldIndex"),
+    ("portal_catalog", "getClientID", "", "FieldIndex"),
 )
 
 COLUMNS = (
