@@ -234,11 +234,6 @@ class AnalysesView(ListingView):
              },
         ]
 
-        # This is used to display method and instrument columns if there is at
-        # least one analysis to be rendered that allows the assignment of
-        # method and/or instrument
-        self.show_methodinstr_columns = False
-
     def update(self):
         """Update hook
         """
@@ -437,6 +432,8 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         methods = obj.getAllowedMethods()
+        if not methods:
+            return [{"ResultValue": "", "ResultText": _("None")}]
         vocab = []
         for method in methods:
             vocab.append({
@@ -771,12 +768,10 @@ class AnalysesView(ListingView):
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
 
-        # Method and Instrument columns must be shown or hidden at the
-        # same time, because the value assigned to one causes
-        # a value reassignment to the other (one method can be performed
-        # by different instruments)
-        self.columns["Method"]["toggle"] = self.show_methodinstr_columns
-        self.columns["Instrument"]["toggle"] = self.show_methodinstr_columns
+        # Display method and instrument columns only if at least one of the
+        # analyses requires them to be displayed for selection
+        self.columns["Method"]["toggle"] = self.is_method_column_required()
+        self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
 
         return items
 
@@ -997,15 +992,12 @@ class AnalysesView(ListingView):
         item["Method"] = method_title or _("Manual")
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
-            if method_vocabulary:
-                item["Method"] = obj.getRawMethod()
-                item["choices"]["Method"] = method_vocabulary
-                item["allow_edit"].append("Method")
-                self.show_methodinstr_columns = True
+            item["Method"] = obj.getRawMethod()
+            item["choices"]["Method"] = method_vocabulary
+            item["allow_edit"].append("Method")
         elif method_title:
             item["replace"]["Method"] = get_link(
                 api.get_url(method), method_title, tabindex="-1")
-            self.show_methodinstr_columns = True
 
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
         """Update instrument and calculation when the method changes
@@ -1038,20 +1030,16 @@ class AnalysesView(ListingView):
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        self.show_methodinstr_columns = True
         instrument = self.get_instrument(analysis_brain)
 
         if is_editable:
             # Edition allowed
             voc = self.get_instruments_vocabulary(analysis_brain)
-            if voc:
-                # The service has at least one instrument available
-                item["Instrument"] = instrument.UID() if instrument else ""
-                item["choices"]["Instrument"] = voc
-                item["allow_edit"].append("Instrument")
-                return
+            item["Instrument"] = instrument.UID() if instrument else ""
+            item["choices"]["Instrument"] = voc
+            item["allow_edit"].append("Instrument")
 
-        if instrument:
+        elif instrument:
             # Edition not allowed
             instrument_title = instrument and instrument.Title() or ""
             instrument_link = get_link(instrument.absolute_url(),
@@ -1452,3 +1440,61 @@ class AnalysesView(ListingView):
             conditions = "<br/>".join(conditions)
             service = item["replace"].get("Service") or item["Service"]
             item["replace"]["Service"] = "{}<br/>{}".format(service, conditions)
+
+    def is_method_required(self, analysis):
+        """Returns whether the render of the selection list with methods is
+        required for the method passed-in, even if only option "None" is
+        displayed for selection
+        """
+        # Always return true if the analysis has a method assigned
+        obj = self.get_object(analysis)
+        method = obj.getMethod()
+        if method:
+            return True
+
+        methods = obj.getAllowedMethods()
+        return len(methods) > 0
+
+    def is_instrument_required(self, analysis):
+        """Returns whether the render of the selection list with instruments is
+        required for the analysis passed-in, even if only option "None" is
+        displayed for selection.
+        :param analysis: Brain or object that represents an analysis
+        """
+        # If method selection list is required, the instrument selection too
+        if self.is_method_required(analysis):
+            return True
+        
+        # Always return true if the analysis has an instrument assigned
+        if self.get_instrument(analysis):
+            return True
+
+        obj = self.get_object(analysis)
+        instruments = obj.getAllowedInstruments()
+        # There is no need to check for the instruments of the method assigned
+        # to # the analysis (if any), because the instruments rendered in the
+        # selection list are always a subset of the allowed instruments when
+        # a method is selected
+        return len(instruments) > 0
+
+    def is_method_column_required(self):
+        """Returns whether the method column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for method selection to be rendered
+        """
+        for item in self.items:
+            obj = item.get("obj")
+            if self.is_method_required(obj):
+                return True
+        return False
+
+    def is_instrument_column_required(self):
+        """Returns whether the instrument column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for instrument selection to be rendered
+        """
+        for item in self.items:
+            obj = item.get("obj")
+            if self.is_instrument_required(obj):
+                return True
+        return False
