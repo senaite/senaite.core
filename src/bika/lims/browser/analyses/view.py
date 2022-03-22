@@ -437,8 +437,6 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         methods = obj.getAllowedMethods()
-        if not methods:
-            return [{"ResultValue": "", "ResultText": _("None")}]
         vocab = []
         for method in methods:
             vocab.append({
