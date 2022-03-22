@@ -987,17 +987,17 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        method = obj.getMethod()
-        method_title = method and api.get_title(method) or ""
-        item["Method"] = method_title or _("Manual")
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
             item["Method"] = obj.getRawMethod()
             item["choices"]["Method"] = method_vocabulary
             item["allow_edit"].append("Method")
-        elif method_title:
-            item["replace"]["Method"] = get_link(
-                api.get_url(method), method_title, tabindex="-1")
+        else:
+            item["Method"] = _("Manual")
+            method = obj.getMethod()
+            if method:
+                item["Method"] = api.get_title(method)
+                item["replace"]["Method"] = get_link_for(method, tabindex="-1")
 
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
         """Update instrument and calculation when the method changes
@@ -1041,12 +1041,10 @@ class AnalysesView(ListingView):
 
         elif instrument:
             # Edition not allowed
-            instrument_title = instrument and instrument.Title() or ""
-            instrument_link = get_link(instrument.absolute_url(),
-                                       instrument_title, tabindex="-1")
-            item["Instrument"] = instrument_title
+            item["Instrument"] = api.get_title(instrument)
+            instrument_link = get_link_for(instrument, tabindex="-1")
             item["replace"]["Instrument"] = instrument_link
-            return
+
         else:
             item["Instrument"] = _("Manual")
 
