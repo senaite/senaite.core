@@ -831,14 +831,14 @@ class AnalysisSpecificationsValidator:
     name = "analysisspecs_validator"
 
     def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
-        fieldname = kwargs['field'].getName()
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        fieldname = kwargs["field"].getName()
 
         # This value in request prevents running once per subfield value.
         # self.name returns the name of the validator. This allows other
         # subfield validators to be called if defined (eg. in other add-ons)
-        key = '{}-{}-{}'.format(self.name, instance.getId(), fieldname)
+        key = "{}-{}-{}".format(self.name, instance.getId(), fieldname)
         if instance.REQUEST.get(key, False):
             return True
 
@@ -854,7 +854,7 @@ class AnalysisSpecificationsValidator:
             title = api.get_title(service)
 
             err_msg = "{}: {}".format(title, _(err_msg))
-            translate = api.get_tool('translation_service').translate
+            translate = api.get_tool("translation_service").translate
             instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
             return instance.REQUEST[key]
 
@@ -867,7 +867,7 @@ class AnalysisSpecificationsValidator:
         """
         spec_min = get_record_value(request, uid, "min")
         spec_max = get_record_value(request, uid, "max")
-        error = get_record_value(request, uid, "error", "0")
+
         warn_min = get_record_value(request, uid, "warn_min")
         warn_max = get_record_value(request, uid, "warn_max")
 
@@ -875,26 +875,31 @@ class AnalysisSpecificationsValidator:
             # Neither min nor max values have been set, dismiss
             return None
 
-        if not api.is_floatable(spec_min):
-            return "'Min' value must be numeric"
-        if not api.is_floatable(spec_max):
-            return "'Max' value must be numeric"
-        if api.to_float(spec_min) > api.to_float(spec_max):
-            return "'Max' value must be above 'Min' value"
-        if not api.is_floatable(error) or 0.0 < api.to_float(error) > 100:
-            return "% Error must be between 0 and 100"
+        # Allow to have empty min/max borders, e.g. only max being set
+        if spec_min and not api.is_floatable(spec_min):
+            return _("'Min' value must be numeric")
+        if spec_max and not api.is_floatable(spec_max):
+            return _("'Max' value must be numeric")
 
-        if warn_min:
-            if not api.is_floatable(warn_min):
-                return "'Warn Min' value must be numeric or empty"
+        # Check if min is smaller than max range
+        if spec_min and spec_max:
+            if api.to_float(spec_min) > api.to_float(spec_max):
+                return _("'Max' value must be above 'Min' value")
+
+        # Handle warn min
+        if warn_min and not api.is_floatable(warn_min):
+            return _("'Warn Min' value must be numeric or empty")
+        if warn_min and spec_min:
             if api.to_float(warn_min) > api.to_float(spec_min):
-                return "'Warn Min' value must be below 'Min' value"
+                return _("'Warn Min' value must be below 'Min' value")
 
-        if warn_max:
-            if not api.is_floatable(warn_max):
-                return "'Warn Max' value must be numeric or empty"
+        # Handle warn max
+        if warn_max and not api.is_floatable(warn_max):
+            return _("'Warn Max' value must be numeric or empty")
+        if warn_max and spec_max:
             if api.to_float(warn_max) < api.to_float(spec_max):
-                return "'Warn Max' value must be above 'Max' value"
+                return _("'Warn Max' value must be above 'Max' value")
+
         return None
 
 
