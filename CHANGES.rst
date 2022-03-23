@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1952 Open analysis specification ranges
 - #1951 Hide method and instrument columns in analysis listing when not required
 - #1947 Fix worksheet attachments viewlet
 - #1946 Fix conditions issue in Reference Analyses display view
