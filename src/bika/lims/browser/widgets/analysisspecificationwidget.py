@@ -314,12 +314,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                 s_min = 0
                 s_max = 0
 
-            # TODO: disallow this case in the UI
-            if s_min and s_max:
-                if float(s_min) > float(s_max):
-                    logger.warn("Min({}) > Max({}) is not allowed"
-                                .format(s_min, s_max))
-                    continue
             min_operator = self._get_spec_value(
                 form, uid, "min_operator", check_floatable=False)
             max_operator = self._get_spec_value(
