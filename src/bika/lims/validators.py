@@ -875,24 +875,31 @@ class AnalysisSpecificationsValidator:
             # Neither min nor max values have been set, dismiss
             return None
 
-        if not api.is_floatable(spec_min):
-            return "'Min' value must be numeric"
-        if not api.is_floatable(spec_max):
-            return "'Max' value must be numeric"
-        if api.to_float(spec_min) > api.to_float(spec_max):
-            return "'Max' value must be above 'Min' value"
+        # Allow to have empty min/max borders, e.g. only max being set
+        if spec_min and not api.is_floatable(spec_min):
+            return _("'Min' value must be numeric")
+        if spec_max and not api.is_floatable(spec_max):
+            return _("'Max' value must be numeric")
 
-        if warn_min:
-            if not api.is_floatable(warn_min):
-                return "'Warn Min' value must be numeric or empty"
+        # Check if min is smaller than max range
+        if spec_min and spec_max:
+            if api.to_float(spec_min) > api.to_float(spec_max):
+                return _("'Max' value must be above 'Min' value")
+
+        # Handle warn min
+        if warn_min and not api.is_floatable(warn_min):
+            return _("'Warn Min' value must be numeric or empty")
+        if warn_min and spec_min:
             if api.to_float(warn_min) > api.to_float(spec_min):
-                return "'Warn Min' value must be below 'Min' value"
+                return _("'Warn Min' value must be below 'Min' value")
 
-        if warn_max:
-            if not api.is_floatable(warn_max):
-                return "'Warn Max' value must be numeric or empty"
+        # Handle warn max
+        if warn_max and not api.is_floatable(warn_max):
+            return _("'Warn Max' value must be numeric or empty")
+        if warn_max and spec_max:
             if api.to_float(warn_max) < api.to_float(spec_max):
-                return "'Warn Max' value must be above 'Max' value"
+                return _("'Warn Max' value must be above 'Max' value")
+
         return None
 
 
