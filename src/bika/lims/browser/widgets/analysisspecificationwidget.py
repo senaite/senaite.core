@@ -386,10 +386,9 @@ class AnalysisSpecificationWidget(TypesWidget):
         table.update()
         table.before_render()
 
-        # This is a hack to notify read-only mode to the view
-        table.allow_edit = allow_edit
-
         if allow_edit is False:
+            # This is a hack to notify read-only mode to the view
+            table.allow_edit = allow_edit
             return table.contents_table_view()
         return table.ajax_contents_table()
 
