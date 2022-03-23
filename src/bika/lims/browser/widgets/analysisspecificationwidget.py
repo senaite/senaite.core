@@ -23,7 +23,6 @@ import collections
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
@@ -218,15 +217,24 @@ class AnalysisSpecificationView(BikaListingView):
         spec = self.specification.get(keyword, {})
 
         item["selected"] = spec and True or False
-        item["min_operator"] = spec.get("min_operator", "geq")
         item["min"] = spec.get("min", "")
-        item["max_operator"] = spec.get("max_operator", "leq")
         item["max"] = spec.get("max", "")
         item["warn_min"] = spec.get("warn_min", "")
         item["warn_max"] = spec.get("warn_max", "")
         item["hidemin"] = spec.get("hidemin", "")
         item["hidemax"] = spec.get("hidemax", "")
         item["rangecomment"] = spec.get("rangecomment", "")
+
+        # min/max operators
+        max_op = spec.get("max_operator", "leq")
+        min_op = spec.get("min_operator", "geq")
+        if self.allow_edit:
+            item["max_operator"] = max_op
+            item["min_operator"] = min_op
+        else:
+            # Render display values instead of the raw values
+            item["max_operator"] = MAX_OPERATORS.getValue(max_op)
+            item["min_operator"] = MIN_OPERATORS.getValue(min_op)
 
         # Add methods
         methods = obj.getMethods()
@@ -312,7 +320,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                     logger.warn("Min({}) > Max({}) is not allowed"
                                 .format(s_min, s_max))
                     continue
-
             min_operator = self._get_spec_value(
                 form, uid, "min_operator", check_floatable=False)
             max_operator = self._get_spec_value(
@@ -384,6 +391,9 @@ class AnalysisSpecificationWidget(TypesWidget):
         # Call listing hooks
         table.update()
         table.before_render()
+
+        # This is a hack to notify read-only mode to the view
+        table.allow_edit = allow_edit
 
         if allow_edit is False:
             return table.contents_table_view()
