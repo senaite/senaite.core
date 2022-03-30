@@ -22,7 +22,6 @@ import copy
 import math
 
 import zope.event
-from archetypes.schemaextender.interfaces import IExtensionField
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -58,7 +57,7 @@ def copy_analysis_field_values(source, analysis, **kwargs):
     IGNORE_FIELDNAMES = [
         'UID', 'id', 'allowDiscussion', 'subject', 'location', 'contributors',
         'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
-        'creation_date', 'modification_date', 'Hidden']
+        'creation_date', 'modification_date', 'Hidden', 'Attachment']
     for field in src_schema.fields():
         fieldname = field.getName()
         if fieldname in IGNORE_FIELDNAMES and fieldname not in kwargs:
@@ -73,13 +72,13 @@ def copy_analysis_field_values(source, analysis, **kwargs):
         # 'set' when the value is a string, it saves the value
         # as unicode instead of plain string.
         field = analysis.getField(fieldname)
-        if IExtensionField.providedBy(field):
-            # SchemaExtender fields don't auto-generate the accessor/mutator
-            field.set(analysis, value)
-        else:
+        mutator = getattr(field, "mutator", None)
+        if mutator:
             mutator_name = field.mutator
             mutator = getattr(analysis, mutator_name)
             mutator(value)
+        else:
+            field.set(analysis, value)
 
 
 def create_analysis(context, source, **kwargs):

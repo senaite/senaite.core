@@ -139,8 +139,8 @@ class AttachmentsView(BrowserView):
         ws = self.context
         form = self.request.form
         attachment_file = form.get("AttachmentFile_file", None)
-        analysis_uid = self.request.get("analysis_uid", None)
         service_uid = self.request.get("Service", None)
+        analysis_uid = form.get("Analysis", None)
         attachment_type = form.get("AttachmentType", "")
         attachment_keys = form.get("AttachmentKeys", "")
         report_option = form.get("ReportOption", "r")

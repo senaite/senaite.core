@@ -23,7 +23,7 @@ import collections
 
 from bika.lims import _
 from bika.lims import api
-from senaite.core.catalog import SAMPLE_CATALOG
+from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import TransitionSampleSample
@@ -33,6 +33,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISamplesView
 from zope.interface import implementer
 
@@ -65,6 +66,8 @@ class SamplesView(ListingView):
 
         # Toggle some columns if the sampling workflow is enabled
         sampling_enabled = api.get_setup().getSamplingWorkflowEnabled()
+
+        now = DateTime().strftime("%Y-%m-%d %H:%M")
 
         self.columns = collections.OrderedDict((
             ("Priority", {
@@ -102,12 +105,13 @@ class SamplesView(ListingView):
                 "title": _("Date Sampled"),
                 "toggle": True,
                 "type": "datetime",
-                "input_width": "10"}),
+                "max": now,
+                "sortable": True}),
             ("getDatePreserved", {
                 "title": _("Date Preserved"),
                 "toggle": False,
                 "type": "datetime",
-                "input_width": "10",
+                "max": now,
                 "sortable": False}),  # no datesort without index
             ("getDateReceived", {
                 "title": _("Date Received"),
@@ -506,6 +510,7 @@ class SamplesView(ListingView):
         # item['SubGroup'] = val.Title() if val else ''
 
         item["SamplingDate"] = self.str_date(obj.getSamplingDate)
+        item["getDateSampled"] = self.str_date(obj.getDateSampled)
         item["getDateReceived"] = self.str_date(obj.getDateReceived)
         item["getDueDate"] = self.str_date(obj.getDueDate)
         item["getDatePublished"] = self.str_date(obj.getDatePublished)
@@ -571,58 +576,34 @@ class SamplesView(ListingView):
         # full object to check the user permissions, so far this is
         # a performance hit.
         if obj.getSamplingWorkflowEnabled:
-            # We don't do anything with Sampling Date.
-            # User can modify Sampling date
-            # inside AR view. In this listing view,
-            # we only let the user to edit Date Sampled
-            # and Sampler if he wants to make 'sample' transaction.
-            if not obj.getDateSampled:
-                datesampled = self.ulocalized_time(
-                    DateTime(), long_format=True)
-                item["class"]["getDateSampled"] = "provisional"
-            else:
-                datesampled = self.ulocalized_time(obj.getDateSampled,
-                                                   long_format=True)
 
             sampler = obj.getSampler
             if sampler:
+                item["getSampler"] = obj.getSampler
                 item["replace"]["getSampler"] = obj.getSamplerFullName
-            if "Sampler" in self.roles and not sampler:
-                sampler = self.member.id
-                item["class"]["getSampler"] = "provisional"
+
             # sampling workflow - inline edits for Sampler and Date Sampled
-            if item["review_state"] == 'to_be_sampled':
+            if item["review_state"] == "to_be_sampled":
                 # We need to get the full object in order to check
                 # the permissions
-                full_object = obj.getObject()
-                checkPermission = \
-                    self.context.portal_membership.checkPermission
-
-                # TODO Do we really need this check?
-                if checkPermission(TransitionSampleSample, full_object):
+                full_object = api.get_object(obj)
+                if check_permission(TransitionSampleSample, full_object):
+                    # make fields required and editable
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
-                    # TODO-performance: hit performance while getting the
-                    # sample object...
-                    # TODO Can LabManagers be a Sampler?!
-                    samplers = getUsers(full_object, ["Sampler", ])
-                    username = self.member.getUserName()
+                    date = obj.getDateSampled or DateTime()
+                    # provide date and time in a valid input format
+                    item["getDateSampled"] = self.to_datetime_input_value(date)
+                    sampler_roles = ["Sampler", "LabManager", ""]
+                    samplers = getUsers(full_object, sampler_roles)
                     users = [({
                         "ResultValue": u,
                         "ResultText": samplers.getValue(u)}) for u in samplers]
-                    item['choices'] = {'getSampler': users}
-                    Sampler = sampler and sampler or (username in samplers.keys() and username) or ''
-                    sampler = Sampler
-                else:
-                    datesampled = self.ulocalized_time(obj.getDateSampled,
-                                                       long_format=True)
-                    sampler = obj.getSamplerFullName if obj.getSampler else ''
-        else:
-            datesampled = self.ulocalized_time(obj.getDateSampled,
-                                               long_format=True)
-            sampler = ""
-        item["getDateSampled"] = datesampled
-        item["getSampler"] = sampler
+                    item["choices"] = {"getSampler": users}
+                    # preselect the current user as sampler
+                    if not sampler and "Sampler" in self.roles:
+                        sampler = self.member.getUserName()
+                        item["getSampler"] = sampler
 
         # These don't exist on ARs
         # XXX This should be a list of preservers...
@@ -714,6 +695,13 @@ class SamplesView(ListingView):
         if not date:
             return default
         return self.ulocalized_time(date, long_format=long_format)
+
+    def to_datetime_input_value(self, date):
+        """Converts to a compatible datetime format
+        """
+        if not isinstance(date, DateTime):
+            return ""
+        return date.strftime("%Y-%m-%d %H:%M")
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()

@@ -19,7 +19,7 @@
     transition_with_publication_spec = function(event) {
       var element, href;
       event.preventDefault();
-      href = event.currentTarget.href.replace('content_status_modify', 'workflow_action');
+      href = event.currentTarget.href;
       element = $('#PublicationSpecification_uid');
       if (element.length > 0) {
         href = href + '&PublicationSpecification=' + $(element).val();
@@ -28,27 +28,21 @@
     };
     transition_schedule_sampling = function() {
 
-      /* Force the transition to use the "workflow_action" url instead of
-      content_status_modify.
-      It is not possible to abort a transition using "workflow_script_*".
+      /* It is not possible to abort a transition using "workflow_script_*".
       The recommended way is to set a guard instead.
-      
-      The guard expression should be able to look up a view to facilitate more complex guard code, but when a guard returns False the transition isn't even listed as available. It is listed after saving the fields.
-      
-      TODO This should be using content_status_modify!  modifying the href
-      is silly.
-       */
-      var new_url, url;
+      The guard expression should be able to look up a view to facilitate more
+      complex guard code, but when a guard returns False the transition isn't
+      even listed as available. It is listed after saving the fields.
+      */
+      var url;
       url = $('#workflow-transition-schedule_sampling').attr('href');
       if (url) {
-        new_url = url.replace('content_status_modify', 'workflow_action');
-        $('#workflow-transition-schedule_sampling').attr('href', new_url);
         $('#workflow-transition-schedule_sampling').click(function() {
           var date, message, sampler;
           date = $('#SamplingDate').val();
           sampler = $('#ScheduledSamplingSampler').val();
           if (date !== '' && date !== void 0 && date !== null && sampler !== '' && sampler !== void 0 && sampler !== null) {
-            window.location.href = new_url;
+            window.location.href = url;
           } else {
             message = '';
             if (date === '' || date === void 0 || date === null) {

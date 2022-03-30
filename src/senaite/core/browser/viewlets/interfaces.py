@@ -46,6 +46,16 @@ class IBelowListingTable(IViewletManager):
     """
 
 
+class IAboveSampleSection(IViewletManager):
+    """A viewlet manager in sample view above analyses sections
+    """
+
+
 class ISampleSection(IViewletManager):
-    """A viewlet manager responsible for sample sections below the header table
+    """A viewlet manager in sample view to show lab/field analyses sections
+    """
+
+
+class IBelowSampleSection(IViewletManager):
+    """A viewlet manager in sample view below analyses sections
     """

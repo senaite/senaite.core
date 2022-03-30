@@ -5,6 +5,29 @@ Changelog
 ------------------
 
 - #1911 Converted Container to Dexterity Contents
+- #1931 Removed archetypes.schemaextender from senaite.core
+- #1953 Allow custom id formatting regardless of portal type
+- #1952 Open analysis specification ranges
+- #1951 Hide method and instrument columns in analysis listing when not required
+- #1947 Fix worksheet attachments viewlet
+- #1946 Fix conditions issue in Reference Analyses display view
+- #1944 Add handler for "content_status_modify"-like requests
+- #1943 Support UIDs from interim fields as input values for calculations
+- #1942 Fix tab styling in email log popup
+- #1941 Fixed error with sampler mail
+- #1938 Converted sample interpretation and remarks widgets into viewlets
+- #1937 Position the user to the analysis listing after an action is triggered
+- #1935 Allow to edit analysis (pre) conditions
+- #1936 Do not display capture date when no result or default result
+- #1933 Added SENAITE maintenance scripts
+- #1932 Fix cannot attach documents to individual analyses in Worksheet context
+- #1930 Ensure valid timezone in DX datetime field setter
+- #1927 Fix Analysis attachment is copied on retest
+- #1928 Added `on_change` hook for methods in analyses listings
+- #1925 Fix sample transition in listings
+- #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
+- #1923 Use native date input fields in reports
+- #1920 Fix indexed attributes not set when adding a new index with catalog API
 - #1918 Fix stale combobox items displayed when search query changed
 - #1917 Fix wrong context in reference widget lookups
 - #1916 Provide the request record to object info adapters in the sample add form

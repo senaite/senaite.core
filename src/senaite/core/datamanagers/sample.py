@@ -28,11 +28,25 @@ class SampleDataManager(DataManager):
         """
         return field.checkPermission("set", self.context)
 
+    def get_field_by_name(self, name):
+        """Get the field by name
+        """
+        field = self.fields.get(name)
+
+        # try to fetch the field w/o the `get` prefix
+        # this might be the case is some listings
+        if field is None:
+            # ensure we do not have the field setter as column
+            name = name.split("get", 1)[-1]
+            field = self.fields.get(name)
+
+        return field
+
     def get(self, name):
         """Get sample field
         """
-        # schema field
-        field = self.fields.get(name)
+        # get the schema field
+        field = self.get_field_by_name(name)
 
         # check if the field exists
         if field is None:
@@ -56,8 +70,8 @@ class SampleDataManager(DataManager):
         # set of updated objects
         updated_objects = set()
 
-        # schema field
-        field = self.fields.get(name)
+        # get the schema field
+        field = self.get_field_by_name(name)
 
         if field is None:
             raise AttributeError("Field '{}' not found".format(name))

@@ -87,7 +87,6 @@ setup(
         # TODO: better integrate just the JS files w/o this package
         "plone.app.jquerytools",
         # "collective.js.jqueryui",
-        "archetypes.schemaextender",
         # SENAITE
         "senaite.lims",
         # openpyxl >= 3.0.0 does not support Python 2.x anymore
@@ -106,5 +105,10 @@ setup(
           # -*- Entry points: -*-
           [z3c.autoinclude.plugin]
           target = plone
+
+          [console_scripts]
+          reindex = senaite.core.scripts:reindex
+          upgrade-sites = senaite.core.scripts:upgrade_sites
+          zope-passwd = senaite.core.scripts:zope_passwd
           """,
 )

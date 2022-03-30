@@ -12,4 +12,12 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <browser:page
+      name="set_analysis_conditions"
+      for="*"
+      class=".analysis.SetAnalysisConditionsView"
+      permission="senaite.core.permissions.FieldEditAnalysisConditions"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
 </configure>

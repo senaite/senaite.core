@@ -79,6 +79,7 @@ class AnalysesView(BaseView):
             ("Method", {
                 "sortable": False,
                 "ajax": True,
+                "on_change": "_on_method_change",
                 "title": _("Method")}),
             ("Instrument", {
                 "sortable": False,

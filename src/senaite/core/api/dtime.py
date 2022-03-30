@@ -126,7 +126,12 @@ def to_dt(dt):
     :returns: datetime object
     """
     if is_DT(dt):
-        return dt.asdatetime()
+        # get a valid pytz timezone
+        tz = get_timezone(dt)
+        dt = dt.asdatetime()
+        if is_valid_timezone(tz):
+            dt = to_zone(dt, tz)
+        return dt
     elif is_str(dt):
         DT = to_DT(dt)
         return to_dt(DT)
@@ -136,6 +141,37 @@ def to_dt(dt):
         return datetime(dt.year, dt.month, dt.day)
     else:
         return None
+
+
+def get_timezone(dt, default="Etc/GMT"):
+    """Get a valid pytz timezone of the datetime object
+
+    :param dt: date object
+    :returns: timezone as string, e.g. Etc/GMT or CET
+    """
+    tz = None
+    if is_dt(dt):
+        tz = dt.tzname()
+    elif is_DT(dt):
+        tz = dt.timezone()
+    elif is_d(dt):
+        tz = default
+
+    if tz:
+        # convert DateTime `GMT` to `Etc/GMT` timezones
+        # NOTE: `GMT+1` get `Etc/GMT-1`!
+        if tz.startswith("GMT+0"):
+            tz = tz.replace("GMT+0", "Etc/GMT")
+        elif tz.startswith("GMT+"):
+            tz = tz.replace("GMT+", "Etc/GMT-")
+        elif tz.startswith("GMT-"):
+            tz = tz.replace("GMT-", "Etc/GMT+")
+        elif tz.startswith("GMT"):
+            tz = tz.replace("GMT", "Etc/GMT")
+    else:
+        tz = default
+
+    return tz
 
 
 def is_valid_timezone(timezone):
@@ -151,12 +187,11 @@ def is_valid_timezone(timezone):
         return False
 
 
-def get_os_timezone():
+def get_os_timezone(default="Etc/GMT"):
     """Return the default timezone of the system
 
-    :returns: OS timezone or UTC
+    :returns: OS timezone or default timezone
     """
-    fallback = "UTC"
     timezone = None
     if "TZ" in os.environ.keys():
         # Timezone from OS env var
@@ -167,13 +202,12 @@ def get_os_timezone():
         if zones and len(zones) > 0:
             timezone = zones[0]
         else:
-            # Default fallback = UTC
             logger.warn(
                 "Operating system\'s timezone cannot be found. "
-                "Falling back to UTC.")
-            timezone = fallback
+                "Falling back to %s." % default)
+            timezone = default
     if not is_valid_timezone(timezone):
-        return fallback
+        return default
     return timezone
 
 
