@@ -26,7 +26,6 @@ from .emailsfield import EmailsField # noqa
 from .historyawarereferencefield import HistoryAwareReferenceField # noqa
 from .interimfieldsfield import InterimFieldsField # noqa
 from .partitionsetupfield import PartitionSetupField # noqa
-from .proxyfield import ProxyField # noqa
 from .referenceresultsfield import ReferenceResultsField # noqa
 from .resultrangefield import ResultRangeField # noqa
 from .resultsrangesfield import ResultsRangesField # noqa

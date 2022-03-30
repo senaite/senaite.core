@@ -22,21 +22,27 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.fields import *
-from bika.lims.interfaces import ISubGroup, IDeactivable
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISubGroup
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ExtStringField(
-        'SortKey',
+    StringField(
+        "SortKey",
         widget=StringWidget(
             label=_("Sort Key"),
             description=_("Subgroups are sorted with this key in group views")
         )
     ),
 ))
-schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
+
+schema["description"].widget.visible = True
+schema["description"].schemata = "default"
 
 
 class SubGroup(BaseContent):
@@ -50,5 +56,6 @@ class SubGroup(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 registerType(SubGroup, PROJECTNAME)
