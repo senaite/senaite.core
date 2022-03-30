@@ -36,6 +36,7 @@
   <permission>senaite.core: Field: Edit Analysis Result</permission>
   <permission>senaite.core: Field: Edit Analysis Remarks</permission>
   <permission>senaite.core: Field: Edit Analysis Hidden</permission>
+  <permission>senaite.core: Field: Edit Analysis Conditions</permission>
 
 
   <!-- *** STATES *** -->
@@ -79,6 +80,10 @@
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -157,6 +162,11 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
@@ -230,6 +240,11 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
@@ -276,6 +291,8 @@
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -344,6 +361,8 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+    </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
@@ -388,6 +407,8 @@
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -438,6 +459,8 @@
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+    </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
@@ -485,6 +508,8 @@
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
   </state>
@@ -534,6 +559,8 @@
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
   </state>

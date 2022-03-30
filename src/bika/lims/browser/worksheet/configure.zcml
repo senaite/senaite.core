@@ -105,15 +105,6 @@
 
 
   <!-- Ajax signatures -->
-
-  <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="attachAnalyses"
-      class="bika.lims.browser.worksheet.ajax.AttachAnalyses"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="set_analyst"

@@ -2182,7 +2182,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         Returns the email of this analysis request's sampler.
         """
-        return user_email(self, self.Creator())
+        return user_email(self, self.getSampler())
 
     def getPriorityText(self):
         """

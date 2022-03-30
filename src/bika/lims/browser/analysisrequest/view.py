@@ -22,7 +22,6 @@ from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from resultsinterpretation import ARResultsInterpretationView
 
 
 class AnalysisRequestViewView(BrowserView):
@@ -41,9 +40,6 @@ class AnalysisRequestViewView(BrowserView):
     def __call__(self):
         # render header table
         self.header_table = HeaderTableView(self.context, self.request)()
-
-        # Create the ResultsInterpretation by department view
-        self.riview = ARResultsInterpretationView(self.context, self.request)
 
         return self.template()
 
