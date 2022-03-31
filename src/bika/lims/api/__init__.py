@@ -89,7 +89,7 @@ Thanks.
 
 _marker = object()
 
-UID_RX = re.compile("[a-z0-9]{32}$")
+UID_RX = re.compile("[a-zA-Z0-9\\-]{32,36}$")
 
 
 class APIError(Exception):
@@ -1236,7 +1236,7 @@ def is_uid(uid, validate=False):
         return False
     if uid == '0':
         return True
-    if len(uid) != 32:
+    if not (len(uid) >= 32 and len(uid) <= 36):
         return False
     if not UID_RX.match(uid):
         return False
