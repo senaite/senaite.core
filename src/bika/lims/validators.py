@@ -641,8 +641,8 @@ class ResultOptionsValueValidator(object):
 
     def __call__(self, value, *args, **kwargs):
         # Result Value must be floatable
-        if not api.is_floatable(value):
-            return _t(_("Result Value must be a number"))
+        # if not api.is_floatable(value):
+        #     return _t(_("Result Value must be a number"))
 
         # Get all records
         instance = kwargs['instance']
@@ -653,8 +653,8 @@ class ResultOptionsValueValidator(object):
         # Result values must be unique
         value = api.to_float(value)
         values = map(lambda ro: ro.get("ResultValue"), records)
-        values = filter(api.is_floatable, values)
-        values = map(api.to_float, values)
+        # values = filter(api.is_floatable, values)
+        # values = map(api.to_float, values)
         duplicates = filter(lambda val: val == value, values)
         if len(duplicates) > 1:
             return _t(_("Result Value must be unique"))
