@@ -589,6 +589,17 @@ class IIdServerVariables(Interface):
         """
 
 
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
+        """
+
+
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
     """
