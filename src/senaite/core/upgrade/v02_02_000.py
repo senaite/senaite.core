@@ -23,8 +23,14 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.interfaces import IContentMigrator
+from zope.component import getMultiAdapter
 
 version = "2.2.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -56,8 +62,65 @@ def upgrade(tool):
     update_analysis_conditions(portal)
 
 
+    # run import steps located in senaite.core profiles
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    # Add sample containers folder
+    add_dexterity_setup_items(portal)
+
+    # Migrate containes
+    migrate_containers_to_dx(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def migrate_containers_to_dx(portal):
+    """Converts existing containers to Dexterity
+    """
+    logger.info("Convert Containers to Dexterity ...")
+
+    old_id = "bika_containers"
+    new_id = "sample_containers"
+
+    setup = api.get_setup()
+    old = setup.get(old_id)
+    new = setup.get(new_id)
+
+    # return if the old container is already gone
+    if not old:
+        return
+
+    # uncatalog the old object
+    uncatalog_object(old)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "ContainerType": ("getContainerType", "containertype", None),
+        "Capacity": ("getCapacity", "capacity", "0 ml"),
+        "PrePreserved": ("getPrePreserved", "prepreserved", False),
+        "Preservation": ("getPreservation", "preservation", None),
+        "SecuritySealIntact": ("getSecuritySealIntact", "security_seal_intact", False),
+    }
+
+    # copy items from old -> new container
+    for src in old.objectValues():
+        target = api.create(new, "SampleContainer")
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+        migrator.migrate(schema_mapping, delete_src=False)
+
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
+    # delete the old object
+    delete_object(old)
+
+    logger.info("Convert Containers to Dexterity [DONE]")
 
 
 def setup_edit_analysis_conditions(portal):

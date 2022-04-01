@@ -149,10 +149,13 @@ class Container(BaseContent):
 registerType(Container, PROJECTNAME)
 
 
+# TODO: Refactor!
+#       This class is registered as `getcontainers` and used in artemplate to
+#       populate the combogrid field
 class ajaxGetContainers:
 
     catalog_name='senaite_catalog_setup'
-    contentFilter = {'portal_type': 'Container',
+    contentFilter = {'portal_type': 'SampleContainer',
                      'is_active': True}
 
     def __init__(self, context, request):

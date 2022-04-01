@@ -30,6 +30,7 @@ from Acquisition import aq_base
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.interfaces import IAuditable
+from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
@@ -309,6 +310,39 @@ def copy_snapshots(src, target):
     storage = api.snapshot.get_storage(target)
     storage[:] = map(json.dumps, snapshots)[:]
     alsoProvides(target, IAuditable)
+
+
+def copy_dates(src, target):
+    """copy modification/creation date
+    """
+    created = api.get_creation_date(src)
+    modified = api.get_modification_date(src)
+    target.creation_date = created
+    target.setModificationDate(modified)
+
+
+def copy_creators(src, target):
+    """Copy creators
+    """
+    target.setCreators(src.listCreators())
+
+
+def copyPermMap(old):
+    """bullet proof copy
+    """
+    new = PersistentMapping()
+    for k, v in old.items():
+        new[k] = v
+    return new
+
+
+def copy_workflow_history(src, target):
+    """Copy workflow history
+    """
+    wfh = getattr(src, "workflow_history", None)
+    if wfh:
+        wfh = copyPermMap(wfh)
+        target.workflow_history = wfh
 
 
 def uncatalog_object(obj):

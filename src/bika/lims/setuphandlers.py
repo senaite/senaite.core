@@ -24,7 +24,6 @@ from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
 from plone import api as ploneapi
-from senaite.core.upgrade.utils import temporary_allow_type
 
 PROFILE_ID = "profile-bika.lims:default"
 
@@ -106,8 +105,6 @@ def setup_handler(context):
     hide_navbar_items(portal)
     reindex_content_structure(portal)
     setup_groups(portal)
-    add_dexterity_portal_items(portal)
-    add_dexterity_setup_items(portal)
     # XXX P5: Fix HTML filtering
     # setup_html_filter(portal)
 
@@ -192,61 +189,6 @@ def setup_form_controller_actions(portal):
         button=None,
         action_type="redirect_to",
         action_arg="python:object.aq_inner.aq_parent.absolute_url()")
-
-
-def add_dexterity_portal_items(portal):
-    """Adds the Dexterity Container in the Site folder
-
-    N.B.: We do this in code, because adding this as Generic Setup Profile in
-          `profiles/default/structure` flushes the contents on every import.
-    """
-    # Tuples of ID, Title, FTI
-    items = [
-        ("samples",  # ID
-         "Samples",  # Title
-         "Samples"),  # FTI
-    ]
-    add_dexterity_items(portal, items)
-
-    # Move Samples after Clients nav item
-    position = portal.getObjectPosition("clients")
-    portal.moveObjectToPosition("samples", position + 1)
-    portal.plone_utils.reindexOnReorder(portal)
-
-
-def add_dexterity_setup_items(portal):
-    """Adds the Dexterity Container in the Setup Folder
-
-    N.B.: We do this in code, because adding this as Generic Setup Profile in
-          `profiles/default/structure` flushes the contents on every import.
-    """
-    # Tuples of ID, Title, FTI
-    items = [
-        ("dynamic_analysisspecs",  # ID
-         "Dynamic Analysis Specifications",  # Title
-         "DynamicAnalysisSpecs"),  # FTI
-
-        ("interpretation_templates",
-         "Interpretation Templates",
-         "InterpretationTemplates")
-    ]
-    setup = api.get_setup()
-    add_dexterity_items(setup, items)
-
-
-def add_dexterity_items(container, items):
-    """Adds a dexterity item, usually a folder in the container
-    :param container: container of the items to add
-    :param items: tuple of Id, Title, FTI
-    """
-    for id, title, fti in items:
-        obj = container.get(id)
-        if obj is None:
-            with temporary_allow_type(container, fti) as ct:
-                obj = api.create(ct, fti, id=id, title=title)
-        else:
-            obj.setTitle(title)
-        obj.reindexObject()
 
 
 def setup_html_filter(portal):
