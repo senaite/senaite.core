@@ -108,3 +108,8 @@ class IContentMigrator(Interface):
 class IFieldMigrator(Interface):
     """Marker interface for field migrator
     """
+
+
+class IClientContact(Interface):
+    """Marker interface for client contacts
+    """
