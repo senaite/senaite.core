@@ -28,3 +28,8 @@ class IDataGridRowWidget(IObjectWidget):
 class IDatetimeWidget(IObjectWidget):
     """Date and time widget
     """
+
+
+class IAddressWidget(IObjectWidget):
+    """Address widget
+    """

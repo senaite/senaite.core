@@ -2,6 +2,7 @@
 
 from collective.z3cform.datagridfield.interfaces import IRow
 from zope.schema.interfaces import IDatetime
+from zope.schema.interfaces import IDict
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
@@ -34,4 +35,9 @@ class IUIDReferenceField(IList):
 
 class IDatetimeField(IDatetime):
     """Senaite Datetime field
+    """
+
+
+class IAddressField(IList):
+    """Senaite address field
     """
