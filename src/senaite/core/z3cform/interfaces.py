@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collective.z3cform.datagridfield.interfaces import IDataGridField
+from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectWidget
 from z3c.form.interfaces import IWidget
 
@@ -31,5 +32,5 @@ class IDatetimeWidget(IObjectWidget):
 
 
 class IAddressWidget(IObjectWidget):
-    """Address widget
+    """Address widget for multiple addresses
     """
