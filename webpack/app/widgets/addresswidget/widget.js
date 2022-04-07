@@ -64,14 +64,12 @@ class AddressWidgetController extends React.Component {
     let self = this;
     let promise = this.api.fetch_states(country);
     promise.then(function(data){
-      // TODO Fetch the states via POST
-      states = ["State 1", "State 2", "State 3"];
+      // Store a dict with states names as keys and null as values
+      let states = Object.assign({}, ...data.map((x) => ({[x[2]]: null})));
 
       // Create a copy instead of modifying the existing dict from state var
       let geo = {...self.state.geography};
 
-      // Store the dict with states names as keys and null as values
-      states = Object.assign({}, ...states.map((x) => ({[x]: null})));
       geo[country] = states;
       self.setState({geography: geo});
     });
@@ -90,15 +88,20 @@ class AddressWidgetController extends React.Component {
       return;
     }
 
-    // TODO Fetch the districts via POST
-    districts = ["District 1", "District 2", "District 3"];
+    let self = this;
+    let promise = this.api.fetch_districts(country, country_state);
+    promise.then(function(data){
+      // Only interested on district names
+      let districts = data.map((x) => x[2])
 
-    // Create a copy instead of modifying the existing dict from state var
-    let geo = {...this.state.geography};
+      // Create a copy instead of modifying the existing dict from state var
+      let geo = {...self.state.geography};
 
-    // Store the list of districts
-    geo[country][country_state] = districts
-    this.setState({geography: geo});
+      // Store the list of districts
+      geo[country][country_state] = districts
+      self.setState({geography: geo});
+    });
+    return promise;
   }
 
   render_items() {

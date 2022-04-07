@@ -17,6 +17,8 @@ from zope.interface import Invalid
 from zope.interface import implementer
 from zope.interface import invariant
 
+from senaite.core.schema import AddressField
+
 
 class ISampleContainerSchema(model.Schema):
     """Schema interface
@@ -64,6 +66,12 @@ class ISampleContainerSchema(model.Schema):
             "Setting this will short-circuit the preservation workflow "
             "for sample partitions stored in this container."),
         required=True,
+    )
+
+    address = AddressField(
+        title=_("Addresses"),
+        description=_("Addresses of this sample container"),
+        required=False,
     )
 
     @invariant

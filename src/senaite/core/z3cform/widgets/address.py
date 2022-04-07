@@ -19,13 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-from bika.lims import logger
-from senaite.core.locales import DISTRICTS
-from senaite.core.locales import STATES
-
-from bika.lims import api
-from senaite.core.locales import COUNTRIES
 from senaite.core.interfaces import ISenaiteFormLayer
+from senaite.core.locales import get_countries
+from senaite.core.locales import get_districts
+from senaite.core.locales import get_states
 from senaite.core.schema.interfaces import IAddressField
 from senaite.core.z3cform.interfaces import IAddressWidget
 from z3c.form.browser.widget import HTMLFormElement
@@ -36,6 +33,8 @@ from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
 from zope.component import adapter
 from zope.interface import implementer
+
+from bika.lims import api
 
 
 @adapter(IAddressField, IWidget)
@@ -100,30 +99,7 @@ class AddressWidget(HTMLFormElement, Widget):
     def get_countries_names(self):
         """Returns the list of names of available countries
         """
-        countries = map(lambda country: country.get("Country"), COUNTRIES)
-        countries = sorted(filter(None, countries))
-        return countries
-
-    def get_country_iso(self, name_or_iso):
-        """Returns the iso for the country with the given name or iso
-        """
-        for country in COUNTRIES:
-            if country.get("Country") == name_or_iso:
-                return country.get("ISO")
-            elif country.get("ISO") == name_or_iso:
-                return name_or_iso
-        return None
-
-    def get_state_code(self, country, state):
-        """Returns the code of the state from the country with given name or iso
-        """
-        iso = self.get_country_iso(country)
-        for state_info in STATES:
-            if iso != state_info[0]:
-                continue
-            if state in state_info:
-                return state_info[1]
-        return None
+        return map(lambda c: c.name, get_countries())
 
     def get_geographical_hierarchy(self):
         """Returns a dict with geographical information as follows:
@@ -173,9 +149,8 @@ class AddressWidget(HTMLFormElement, Widget):
         :param country: name or iso of the country
         :return: a list of tuples as (<state_code>, <state_name>)
         """
-        iso = self.get_country_iso(country)
-        states = filter(lambda state: state[0] == iso, STATES)
-        return map(lambda state: (state[1], state[2]), states)
+        states = get_states(country)
+        return map(lambda state: (state.code, state.name), states)
 
     def get_districts(self, country, state):
         """Returns the districts for the country and state given
@@ -184,11 +159,8 @@ class AddressWidget(HTMLFormElement, Widget):
         :param state: name or code of the state
         :return: a list of districts
         """
-        iso = self.get_country_iso(country)
-        state_code = self.get_state_code(iso, state)
-        districts = filter(lambda dis: dis[0] == iso, DISTRICTS)
-        districts = filter(lambda dis: dis[1] == state_code, districts)
-        return map(lambda dis: dis[2], districts)
+        districts = get_districts(country, state)
+        return map(lambda dis: dis.name, districts)
 
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component

@@ -52,26 +52,21 @@ class AddressWidgetAPI {
   }
 
   fetch_states(country) {
-    let url = `getGeoStates`;
+    let url = `getGeoStates?country=${country}`;
     console.debug("AddressWidgetAPI::fetch_states:url=", url);
     let options = {
-      method: "POST",
-      data: {country: country},
+      method: "GET",
     }
     return this.get_json(url, options);
   }
 
   fetch_districts(country, country_state) {
-    let endpoint = "getGeoDistricts";
+    let url = `getGeoDistricts?country=${country}&state=${country_state}`;
     console.debug("AddressWidgetAPI:fetch_districts:url=", url);
     let options = {
-      method: "POST",
-      data: {
-        country: country,
-        state: country_state,
-      },
+      method: "GET",
     }
-    return this.get_json(endpoint, options);
+    return this.get_json(url, options);
   }
 
   /*

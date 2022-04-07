@@ -22,9 +22,9 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core.locales import COUNTRIES
-from senaite.core.locales import DISTRICTS
-from senaite.core.locales import STATES
+from senaite.core.locales import get_countries
+from senaite.core.locales import get_states
+from senaite.core.locales import get_districts
 from senaite.core.p3compat import cmp
 
 
@@ -48,9 +48,9 @@ class AddressWidget(TypesWidget):
     # Country Name, State Name, District Name.
 
     def getCountries(self):
-        items = []
-        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        countries = get_countries()
+        items = map(lambda item: (item.alpha_2, item.name), countries)
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return items
 
     def getDefaultCountry(self):
@@ -62,32 +62,18 @@ class AddressWidget(TypesWidget):
         items = []
         if not country:
             return items
-        # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
-        if not iso:
-            return items
-        iso = iso[0]['ISO']
-        items = [x for x in STATES if x[0] == iso]
-        items.sort(lambda x,y: cmp(x[2], y[2]))
-        return items
+
+        # Get the states
+        items = get_states(country, default=[])
+        return map(lambda sub: [sub.country_code, sub.code, sub.name], items)
 
     def getDistricts(self, country, state):
         items = []
         if not country or not state:
             return items
-        # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
-        if not iso:
-            return items
-        iso = iso[0]['ISO']
-        # get NUMBER of the state for lookup
-        snr = [s for s in STATES if s[0] == iso and s[2] == state]
-        if not snr:
-            return items
-        snr = snr[0][1]
-        items = [x for x in DISTRICTS if x[0] == iso and x[1] == snr]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return items
+        items = get_districts(country, state)
+        return map(lambda sub: [sub.country_code, sub.code, sub.name],  items)
+
 
 registerWidget(AddressWidget,
                title = 'Address Widget',
