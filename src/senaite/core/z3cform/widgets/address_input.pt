@@ -2,7 +2,7 @@
      xmlns:tal="http://xml.zope.org/namespaces/tal"
      tal:omit-tag="">
 
-  <div class="input-group senaite-addresswidget-input"
+  <div class="input-group senaite-address-widget-input"
        tal:attributes="python:view.get_input_widget_attributes()">
 
        <!-- ReactJS controlled component -->

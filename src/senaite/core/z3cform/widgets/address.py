@@ -19,6 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from bika.lims import logger
+from senaite.core.locales import DISTRICTS
+from senaite.core.locales import STATES
+
+from bika.lims import api
+from senaite.core.locales import COUNTRIES
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IAddressField
 from senaite.core.z3cform.interfaces import IAddressWidget
@@ -62,7 +68,7 @@ class AddressDataConverter(FieldDataConverter):
 class AddressWidget(HTMLFormElement, Widget):
     """SENAITE Address Widget
     """
-    klass = u"address-widget"
+    klass = u"senaite-address-widget"
 
     # Address html format for display. Wildcards accepted: {type}, {address},
     # {zip}, {district}, {city}, {state}, {country}. Use '<br/>' for newlines
@@ -91,15 +97,116 @@ class AddressWidget(HTMLFormElement, Widget):
         values = filter(None, values)
         return "<br/>".join(values)
 
+    def get_countries_names(self):
+        """Returns the list of names of available countries
+        """
+        countries = map(lambda country: country.get("Country"), COUNTRIES)
+        countries = sorted(filter(None, countries))
+        return countries
+
+    def get_country_iso(self, name_or_iso):
+        """Returns the iso for the country with the given name or iso
+        """
+        for country in COUNTRIES:
+            if country.get("Country") == name_or_iso:
+                return country.get("ISO")
+            elif country.get("ISO") == name_or_iso:
+                return name_or_iso
+        return None
+
+    def get_state_code(self, country, state):
+        """Returns the code of the state from the country with given name or iso
+        """
+        iso = self.get_country_iso(country)
+        for state_info in STATES:
+            if iso != state_info[0]:
+                continue
+            if state in state_info:
+                return state_info[1]
+        return None
+
+    def get_geographical_hierarchy(self):
+        """Returns a dict with geographical information as follows:
+
+            {<country_name_1>: {
+                <state_name_1>: [
+                    <district_name_1>,
+                    ...
+                    <district_name_n>,
+                ],
+                ...
+                <state_name_n>: [..]
+                },
+            <country_name_2>: {
+                ...
+            }
+
+        Available states and districts for each country are only considered for
+        those countries selected in current addresses
+        """
+
+        # Initialize a dict with countries names as keys and None as values
+        countries = self.get_countries_names()
+        countries = dict.fromkeys(countries)
+
+        # Fill the dict with geo information for selected countries only
+        for item in self.value:
+            country = item.get("country")
+
+            # Initialize a dict with states names as keys and None as values
+            states = self.get_states(country)
+            states = map(lambda st: st[1], states)
+            states = dict.fromkeys(states)
+
+            # Fill the dict with geo information for selected state only
+            state = item.get("state")
+            states[state] = self.get_districts(country, state)
+
+            # Set the value to the geomap
+            countries[country] = states
+
+        return countries
+
+    def get_states(self, country):
+        """Returns the states for the country with the given name or iso
+
+        :param country: name or iso of the country
+        :return: a list of tuples as (<state_code>, <state_name>)
+        """
+        iso = self.get_country_iso(country)
+        states = filter(lambda state: state[0] == iso, STATES)
+        return map(lambda state: (state[1], state[2]), states)
+
+    def get_districts(self, country, state):
+        """Returns the districts for the country and state given
+
+        :param country: name or iso of the country
+        :param state: name or code of the state
+        :return: a list of districts
+        """
+        iso = self.get_country_iso(country)
+        state_code = self.get_state_code(iso, state)
+        districts = filter(lambda dis: dis[0] == iso, DISTRICTS)
+        districts = filter(lambda dis: dis[1] == state_code, districts)
+        return map(lambda dis: dis[2], districts)
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
         attributes = {
             "data-id": self.id,
+            "data-uid": api.get_uid(self.context),
+            "data-geography": self.get_geographical_hierarchy(),
             "data-name": self.name,
-            "data-info": self.value,
+            "data-portal_url": api.get_url(api.get_portal()),
+            "data-items": self.value,
+            "data-title": self.title,
+            "data-class": self.klass,
+            "data-style": self.style,
             "data-disabled": self.disabled or False,
         }
+
+        # convert all attributes to JSON
         for key, value in attributes.items():
             attributes[key] = json.dumps(value)
 

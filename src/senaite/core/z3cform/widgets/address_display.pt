@@ -2,7 +2,7 @@
      xmlns:tal="http://xml.zope.org/namespaces/tal"
      tal:omit-tag="">
 
-  <div class="addresswidget-view">
+  <div class="senaite-addresswidget-view">
 
     <address tal:repeat="address python:view.value">
       <span tal:replace="structure python:view.get_formatted_address(address)"/>
