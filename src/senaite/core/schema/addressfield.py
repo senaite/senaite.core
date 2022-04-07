@@ -87,31 +87,9 @@ class AddressField(List, BaseField):
         :param object: the instance of this field
         :returns: list of dicts with address information for each address type
         """
-        return self.get_fake_data()
         return super(AddressField, self).get(object) or []
 
     def _validate(self, value):
         """Validator called on form submit
         """
         super(AddressField, self)._validate(value)
-
-    def get_fake_data(self):
-        return [
-            {
-                "type": PHYSICAL_ADDRESS,
-                "address": u"Avda Via Augusta 15",
-                "zip": u"08174",
-                "district": u"",
-                "city": u"Sant Cugat del Valles",
-                "state": u"Catalonia",
-                "country": u"Spain",
-            }, {
-                "type": POSTAL_ADDRESS,
-                "address": u"Domenec Oristrell 41, 2n 1a",
-                "zip": u"08173",
-                "district": u"",
-                "city": u"Sant Cugat del Valles",
-                "state": u"Catalonia",
-                "country": u"Spain",
-            },
-        ]
