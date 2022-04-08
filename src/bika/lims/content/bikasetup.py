@@ -627,16 +627,16 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         label=_("Email body for Sample Invalidation notifications"),
         default=
-        "Some non-conformities have been detected in the results report "
-        "published for Sample $sample_link. "
-        "<br/><br/> "
-        "A new Sample $retest_link has been created automatically, and the "
-        "previous request has been invalidated. "
-        "<br/><br/> "
-        "The root cause is under investigation and corrective "
-        "action has been initiated. "
-        "<br/><br/> "
-        "$lab_address",
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address",
         widget=RichWidget(
             label=_("Email body for Sample Invalidation notifications"),
             description=_("Set the text for the body of the email to be sent, "
