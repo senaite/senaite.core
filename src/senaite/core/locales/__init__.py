@@ -108,7 +108,7 @@ class ajaxGetStates(BrowserView):
         country = self.request.get('country', '')
         if not country:
             return json.dumps(items)
-        
+
         # Get the states
         items = get_states(country, default=[])
         items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
@@ -123,7 +123,7 @@ class ajaxGetDistricts(BrowserView):
         items = []
         if not all([country, state]):
             return json.dumps(items)
-        
+
         items = get_districts(country, state)
         items = map(lambda sub: [sub.country_code, sub.code, sub.name],  items)
         return json.dumps(items)
