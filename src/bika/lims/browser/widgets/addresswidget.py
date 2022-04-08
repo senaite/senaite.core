@@ -22,10 +22,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core.locales import get_countries
-from senaite.core.locales import get_subdivision
-from senaite.core.locales import get_subdivisions
-from senaite.core.p3compat import cmp
+from senaite.core.api import geo
 
 
 class AddressWidget(TypesWidget):
@@ -48,7 +45,7 @@ class AddressWidget(TypesWidget):
     # Country Name, State Name, District Name.
 
     def getCountries(self):
-        countries = get_countries()
+        countries = geo.get_countries()
         items = map(lambda item: (item.alpha_2, item.name), countries)
         return self.to_utf8(items)
 
@@ -63,7 +60,7 @@ class AddressWidget(TypesWidget):
             return items
 
         # first-level subdivisions of the country (states??)
-        items = get_subdivisions(country, default=[])
+        items = geo.get_subdivisions(country, default=[])
         items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
         return self.to_utf8(items)
 
@@ -73,8 +70,8 @@ class AddressWidget(TypesWidget):
             return items
 
         # first-level subdivisions (districts?) of this subdivision (state?)
-        state_obj = get_subdivision(state, parent=country, default=None)
-        items = get_subdivisions(state_obj, default=[])
+        state_obj = geo.get_subdivision(state, parent=country, default=None)
+        items = geo.get_subdivisions(state_obj, default=[])
         items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
         return self.to_utf8(items)
 
