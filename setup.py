@@ -94,6 +94,8 @@ setup(
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
         "collective.z3cform.datagridfield",
+        # pycountry > 18.12.8 does not support Python 2.x anymore
+        "pycountry==18.12.8",
     ],
     extras_require={
         "test": [

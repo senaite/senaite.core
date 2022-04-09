@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1962 Allow to create worksheet from samples
+- #1961 Added `geo` api  that relies on `pycountry` for retrieval of countries
 - #1911 Converted Container to Dexterity Contents
 - #1931 Removed archetypes.schemaextender from senaite.core
 - #1953 Allow custom id formatting regardless of portal type
