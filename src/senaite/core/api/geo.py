@@ -18,8 +18,10 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import pycountry
 from six import string_types
+
+import pycountry
+from bika.lims.api import to_utf8
 
 _marker = object()
 
@@ -90,12 +92,8 @@ def get_subdivision(subdivision_or_term, parent=None, default=_marker):
                 repr(subdivision_or_term)))
         return default
 
+    # Search by parent
     if parent:
-        # Search by parent
-        def to_utf8(value):
-            if isinstance(value, unicode):
-                return value.encode("utf-8")
-            return value
 
         def is_match(subdivision):
             terms = [subdivision.name, subdivision.code]
