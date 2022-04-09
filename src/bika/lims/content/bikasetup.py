@@ -58,9 +58,9 @@ from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.locales import COUNTRIES
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
@@ -920,8 +920,8 @@ class BikaSetup(folder.ATFolder):
             return portal_type
 
     def getCountries(self):
-        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items = geo.get_countries()
+        items = map(lambda country: (country.alpha_2, country.name), items)
         return items
 
     def isRejectionWorkflowEnabled(self):
