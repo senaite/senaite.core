@@ -65,7 +65,7 @@ def get_country_code(thing, default=_marker):
     :return: the 2-character (alpha2) code of the country
     :rtype: string
     """
-    thing = get_country_or_subdivision(thing, default)
+    thing = get_country_or_subdivision(thing, default=default)
     if is_country(thing):
         return thing.alpha_2
     if is_subdivision(thing):
