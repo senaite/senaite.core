@@ -33,47 +33,44 @@ def get_countries():
     return sorted(list(countries), key=lambda s: s.name)
 
 
-def get_country(country_subdivision_term, default=_marker):
+def get_country(thing, default=_marker):
     """Returns the country object
-    :param country_subdivision_term: country, subdivision object or search term
-    :type country_subdivision_term: Country/Subdivision/string
+    :param thing: country, subdivision object or search term
+    :type thing: Country/Subdivision/string
     :returns: the country that matches with the parameter passed in
     :rtype: pycountry.db.Country
     """
-    if is_country(country_subdivision_term):
-        return country_subdivision_term
+    if is_country(thing):
+        return thing
 
-    if is_subdivision(country_subdivision_term):
-        return get_country(country_subdivision_term.country_code)
+    if is_subdivision(thing):
+        return get_country(thing.country_code)
 
-    if not isinstance(country_subdivision_term, string_types):
+    if not isinstance(thing, string_types):
         if default is _marker:
-            raise TypeError("{} is not supported".format(
-                repr(country_subdivision_term)))
+            raise TypeError("{} is not supported".format(repr(thing)))
         return default
 
     try:
-        return pycountry.countries.lookup(country_subdivision_term)
+        return pycountry.countries.lookup(thing)
     except LookupError as e:
         if default is _marker:
             raise ValueError(str(e))
         return default
 
 
-def get_country_code(country_subdivision_term, default=_marker):
+def get_country_code(thing, default=_marker):
     """Returns the 2-character code (alpha2) of the country
-    :param country_subdivision_term: country, subdivision object or search term
+    :param thing: country, subdivision object or search term
     :return: the 2-character (alpha2) code of the country
     :rtype: string
     """
-    if is_country(country_subdivision_term):
-        return country_subdivision_term.alpha_2
-    if is_subdivision(country_subdivision_term):
-        return country_subdivision_term.country_code
-
-    # Try to resolve the country by term
-    country = get_country(country_subdivision_term, default=default)
-    return country.alpha_2
+    thing = get_country_or_subdivision(thing, default)
+    if is_country(thing):
+        return thing.alpha_2
+    if is_subdivision(thing):
+        return thing.country_code
+    return default
 
 
 def get_subdivision(subdivision_or_term, parent=None, default=_marker):
@@ -105,7 +102,7 @@ def get_subdivision(subdivision_or_term, parent=None, default=_marker):
             needle = to_utf8(subdivision_or_term)
             return needle in map(to_utf8, terms)
 
-        subdivisions = get_subdivisions(parent, default=_marker)
+        subdivisions = get_subdivisions(parent, default=[])
         subdivisions = filter(lambda subdiv: is_match(subdiv), subdivisions)
         if len(subdivisions) == 1:
             return subdivisions[0]
@@ -127,47 +124,80 @@ def get_subdivision(subdivision_or_term, parent=None, default=_marker):
         return default
 
 
-def is_country(something):
+def is_country(thing):
     """Returns whether the value passed in is a country object
     """
-    if not something:
+    if not thing:
         return False
     # pycountry generates the classes dynamically, we cannot use isinstance
-    return "Country" in repr(type(something))
+    return "Country" in repr(type(thing))
 
 
-def is_subdivision(something):
+def is_subdivision(thing):
     """Returns whether the value passed in is a subdivision object
     """
-    if not something:
+    if not thing:
         return False
     # pycountry generates the classes dynamically, we cannot use isinstance
-    return "Subdivision" in repr(type(something))
+    return "Subdivision" in repr(type(thing))
 
 
-def get_subdivisions(country_subdivision_term, default=_marker):
+def get_subdivisions(thing, default=_marker):
     """Returns the first-level subdivisions of the country or subdivision,
     sorted by code ascending
-    :param country_subdivision_term: country, subdivision object or search term
+    :param thing: country, subdivision object or search term
     :return: the list of first-level subdivisions of the subdivision/country
     :rtype: list of pycountry.db.Subdivision
     """
     try:
-        country_code = get_country_code(country_subdivision_term)
+        country_or_subdivision = get_country_or_subdivision(thing)
+        country_code = get_country_code(country_or_subdivision)
     except (ValueError, TypeError) as e:
         if default is _marker:
             raise e
         return default
 
-    # Exract the subdivisions
+    # Extract the subdivisions
     subdivisions = pycountry.subdivisions.get(country_code=country_code)
 
     # Bail out those that are not first-level
-    if is_subdivision(country_subdivision_term):
-        code = country_subdivision_term.code
+    if is_subdivision(country_or_subdivision):
+        code = country_or_subdivision.code
         subdivisions = filter(lambda sub: sub.parent_code == code, subdivisions)
     else:
         subdivisions = filter(lambda sub: sub.parent_code is None, subdivisions)
 
     # Sort by code
     return sorted(subdivisions, key=lambda s: s.code)
+
+
+def get_country_or_subdivision(thing, default=_marker):
+    """Returns the country or subdivision for the thing passed-in
+    :param thing: the thing or search term to look for a country or subdivision
+    :type thing: Country/Subdivision/string
+    :return: the country or subdivision for the given thing
+    """
+    if is_country(thing):
+        return thing
+    if is_subdivision(thing):
+        return thing
+
+    if not isinstance(thing, string_types):
+        if default is _marker:
+            raise TypeError("{} is not supported".format(repr(thing)))
+        return default
+
+    # Maybe a country
+    country = get_country(thing, default=None)
+    if country:
+        return country
+
+    # Maybe a subdivision
+    subdivision = get_subdivision(thing, default=None)
+    if subdivision:
+        return subdivision
+
+    if default is _marker:
+        raise ValueError("Could not find a record for '{}'".format(
+            thing.lower()))
+    return default

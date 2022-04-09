@@ -58,6 +58,23 @@ Get a non-existing country
     True
 
 
+Get a subdivision or country
+............................
+
+We can directly retrieve a subdivision or a country in a single call:
+
+    >>> geo.get_country_or_subdivision("Spain")
+    Country(alpha_2=u'ES', alpha_3=u'ESP', name=u'Spain', numeric=u'724', official_name=u'Kingdom of Spain')
+
+    >>> geo.get_country_or_subdivision("Catalunya")
+    Subdivision(code=u'ES-CT', country_code=u'ES', name=u'Catalunya', parent_code=None, type=u'Autonomous community')
+
+    >>> geo.get_country_or_subdivision("Pluto")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Could not find a record for 'pluto'
+
+
 Get subdivisions of a country
 .............................
 
@@ -166,4 +183,9 @@ So only subdivisions immediately below the specified parent are returned:
     True
 
     >>> geo.get_subdivision("Barcelona", parent=catalunya)
+    Subdivision(code=u'ES-B', country_code=u'ES', name=u'Barcelona', parent=u'CT', parent_code=u'ES-CT', type=u'Province')
+
+We can even specify a search term for the parent:
+
+    >>> geo.get_subdivision("Barcelona", parent="Catalunya")
     Subdivision(code=u'ES-B', country_code=u'ES', name=u'Barcelona', parent=u'CT', parent_code=u'ES-CT', type=u'Province')
