@@ -25,7 +25,10 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
+from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import TransitionSampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
@@ -34,6 +37,7 @@ from bika.lims.utils import t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.interfaces import ISamples
 from senaite.core.interfaces import ISamplesView
 from zope.interface import implementer
 
@@ -661,6 +665,17 @@ class SamplesView(ListingView):
         if copy_to_new:
             custom_transitions.append(copy_to_new)
 
+        # Allow to create a worksheet for the selected samples
+        if self.can_create_worksheet():
+            custom_transitions.append({
+                "id": "modal_create_worksheet",
+                "title": _("Create Worksheet"),
+                "url": "{}/create_worksheet_modal".format(
+                    api.get_url(self.context)),
+                "css_class": "btn btn-outline-secondary",
+                "help": _("Create a new worksheet for the selected samples")
+            })
+
         for rv in self.review_states:
             rv.setdefault("custom_transitions", []).extend(custom_transitions)
 
@@ -685,6 +700,22 @@ class SamplesView(ListingView):
             }
 
         return None
+
+    def can_create_worksheet(self):
+        """Checks if the create worksheet transition should be rendered or not
+        """
+        if not check_permission(EditWorksheet, self.context):
+            return False
+
+        # restrict contexts to well known places
+        if ISamples.providedBy(self.context):
+            return True
+        elif IBatch.providedBy(self.context):
+            return True
+        elif IClient.providedBy(self.context):
+            return True
+        else:
+            return False
 
     @property
     def is_printing_workflow_enabled(self):
