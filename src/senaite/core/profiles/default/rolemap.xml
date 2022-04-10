@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<rolemap>
+
+  <permissions>
+
+    <!-- Worksheet -->
+    <permission name="senaite.core: Add Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <!-- /Worksheet -->
+
+  </permissions>
+
+</rolemap>
