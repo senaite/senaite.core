@@ -28,7 +28,8 @@
 
           <div class="form-group mr-1">
             <select name="analyst"
-                    class="analyst form-control form-control-sm"
+                    class="analyst selectpicker form-control form-control-sm"
+                    data-live-search="true"
                     tal:define="alist view/getAnalysts">
               <option value="" i18n:translate="">Select analyst</option>
               <tal:options repeat="option alist">
@@ -43,7 +44,8 @@
 
           <div class="form-group mr-1">
             <select name="template"
-                    class="template form-control form-control-sm"
+                    class="template selectpicker form-control form-control-sm"
+                    data-live-search="true"
                     tal:define="wstlist view/getWorksheetTemplates">
               <option value="" i18n:translate="">Select template</option>
               <tal:options repeat="option wstlist">
@@ -56,7 +58,8 @@
 
           <div class="form-group mr-1">
             <select name="instrument"
-                    class="instrument form-control form-control-sm"
+                    class="instrument selectpicker form-control form-control-sm"
+                    data-live-search="true"
                     tal:define="instrlist view/getInstruments">
               <option value="" i18n:translate="">Select instrument</option>
               <tal:options repeat="option instrlist">
@@ -70,7 +73,7 @@
           <div class="form-group mr-1">
             <tal:add_actions repeat="add_item python:view.context_actions.keys()">
               <input type="submit"
-                     class="btn btn-primary btn-sm"
+                     class="btn btn-sm btn-primary"
                      tal:attributes="name add_item;
                            value add_item;
                            href python:view.context_actions[add_item]['url'];"/>
