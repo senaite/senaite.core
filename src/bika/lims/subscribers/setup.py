@@ -19,7 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import permissions
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
+from senaite.core.permissions import AddWorksheet
 
 
 def ObjectModifiedEventHandler(instance, event):
@@ -38,6 +40,7 @@ def update_worksheet_manage_permissions(senaite_setup):
         roles.extend(["Analyst", "LabClerk"])
 
     worksheets = api.get_portal().worksheets
-    worksheets.manage_permission(permissions.ManageWorksheets, roles, acquire=1)
-    worksheets.manage_permission(permissions.EditWorksheet, roles, acquire=1)
+    worksheets.manage_permission(AddWorksheet, roles, acquire=1)
+    worksheets.manage_permission(ManageWorksheets, roles, acquire=1)
+    worksheets.manage_permission(EditWorksheet, roles, acquire=1)
     worksheets.reindexObject()
