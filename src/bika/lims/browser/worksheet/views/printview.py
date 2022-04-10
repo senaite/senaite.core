@@ -18,27 +18,28 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import os
 import glob
+import os
 import traceback
-
 from operator import itemgetter
-from DateTime import DateTime
-from bika.lims.api.analysis import is_out_of_range
-from bika.lims.interfaces import IReferenceSample, IReferenceAnalysis
-from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import formatDecimalMark
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import format_supsub
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
+from DateTime import DateTime
+from plone.resource.utils import iterDirectoriesOfType
+from plone.resource.utils import queryResourceDirectory
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.p3compat import cmp
 
 
