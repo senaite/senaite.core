@@ -704,7 +704,7 @@ class SamplesView(ListingView):
     def can_create_worksheet(self):
         """Checks if the create worksheet transition should be rendered or not
         """
-        if not check_permission(EditWorksheet, self.context):
+        if not check_permission(EditWorksheet, self.portal):
             return False
 
         # restrict contexts to well known places
