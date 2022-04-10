@@ -343,13 +343,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
-
 
     <!-- Transition permissions -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">
