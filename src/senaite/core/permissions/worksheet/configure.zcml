@@ -8,6 +8,7 @@
   <!-- Modify permissions -->
   <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
   <permission id="senaite.core.permissions.ManageWorksheets" title="senaite.core: Manage Worksheets"/>
+  <permission id="senaite.core.permissions.WorksheetAddAttachment" title="senaite.core: Worksheet: Add Attachment"/>
 
   <!-- Workflow permissions -->
   <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>

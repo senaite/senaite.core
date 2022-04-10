@@ -8,3 +8,4 @@ from .worksheet.permissions import EditWorksheet
 from .worksheet.permissions import ManageWorksheets
 from .worksheet.permissions import TransitionRejectWorksheet
 from .worksheet.permissions import TransitionRemoveWorksheet
+from .worksheet.permissions import WorksheetAddAttachment

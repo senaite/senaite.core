@@ -124,8 +124,6 @@ SampleAddAttachment = "senaite.core: Sample: Add Attachment"
 SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
 # Displays the "Delete" checkbox
 SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
-# Makes "Add Attachment" section from worksheet context visible
-WorksheetAddAttachment = "senaite.core: Worksheet: Add Attachment"
 
 
 # Field Permissions
