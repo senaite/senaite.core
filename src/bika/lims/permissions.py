@@ -83,7 +83,6 @@ AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
 AddStorageLocation = "senaite.core: Add StorageLocation"
 AddSubGroup = "senaite.core: Add SubGroup"
 AddSupplier = "senaite.core: Add Supplier"
-AddWorksheetTemplate = "senaite.core: Add WorksheetTemplate"
 
 # Transition permissions
 # ======================

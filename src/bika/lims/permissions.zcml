@@ -54,7 +54,6 @@
   <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
   <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
   <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
-  <permission id="senaite.core.permissions.AddWorksheetTemplate" title="senaite.core: Add WorksheetTemplate"/>
 
 
   # Transition Permissions
