@@ -13,7 +13,7 @@
       </h1>
 
       <div class="worksheet_add_controls mb-2"
-           tal:condition="python:view.is_manage_allowed()">
+           tal:condition="python:view.can_add()">
 
         <form class="form form-inline"
               name="worksheet-add-form"
