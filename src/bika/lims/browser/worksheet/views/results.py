@@ -32,8 +32,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class ManageResultsView(BrowserView):
@@ -100,8 +100,7 @@ class ManageResultsView(BrowserView):
     def is_manage_allowed(self):
         """Check if manage is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     @view.memoize
     def is_assignment_allowed(self):

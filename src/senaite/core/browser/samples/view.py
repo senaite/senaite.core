@@ -28,7 +28,6 @@ from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
 from bika.lims.permissions import AddAnalysisRequest
-from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import TransitionSampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
@@ -39,6 +38,7 @@ from senaite.app.listing import ListingView
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISamples
 from senaite.core.interfaces import ISamplesView
+from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
 
 
@@ -704,7 +704,7 @@ class SamplesView(ListingView):
     def can_create_worksheet(self):
         """Checks if the create worksheet transition should be rendered or not
         """
-        if not check_permission(EditWorksheet, self.portal):
+        if not can_add_worksheet(self.portal):
             return False
 
         # restrict contexts to well known places

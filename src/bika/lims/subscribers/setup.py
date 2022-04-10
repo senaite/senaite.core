@@ -19,9 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from senaite.core.permissions import AddWorksheet
+from senaite.core.permissions import EditWorksheet
+from senaite.core.permissions import ManageWorksheets
 
 
 def ObjectModifiedEventHandler(instance, event):

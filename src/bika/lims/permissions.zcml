@@ -86,10 +86,6 @@
   <permission id="senaite.core.permissions.TransitionDispatchSample" title="senaite.core: Transition: Dispatch Sample"/>
   <permission id="senaite.core.permissions.TransitionRestoreSample" title="senaite.core: Transition: Restore Sample"/>
 
-  # Transition Permissions (Worksheet)
-  <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
-  <permission id="senaite.core.permissions.TransitionRemoveWorksheet" title="senaite.core: Transition: Remove Worksheet"/>
-
   # Object-specific permissions
   # ---------------------------
   <permission id="senaite.core.permissions.SampleAddAttachment" title="senaite.core: Sample: Add Attachment"/>
@@ -146,13 +142,11 @@
   <permission id="senaite.core.permissions.AccessJSONAPI" title="senaite.core: Access JSON API"/>
   <permission id="senaite.core.permissions.EditFieldResults" title="senaite.core: Edit Field Results"/>
   <permission id="senaite.core.permissions.EditResults" title="senaite.core: Edit Results"/>
-  <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
   <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
   <permission id="senaite.core.permissions.ManageAnalysisRequests" title="senaite.core: Manage Analysis Requests"/>
   <permission id="senaite.core.permissions.ManageInvoices" title="senaite.core: Manage Invoices"/>
   <permission id="senaite.core.permissions.ManageLoginDetails" title="senaite.core: Manage Login Details"/>
   <permission id="senaite.core.permissions.ManageReference" title="senaite.core: Manage Reference"/>
-  <permission id="senaite.core.permissions.ManageWorksheets" title="senaite.core: Manage Worksheets"/>
   <permission id="senaite.core.permissions.ViewResults" title="senaite.core: View Results"/>
 
 
