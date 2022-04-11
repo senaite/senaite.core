@@ -22,18 +22,19 @@ import re
 from operator import itemgetter
 
 from AccessControl import getSecurityManager
-
-from Products.CMFPlone import PloneMessageFactory
-from Products.CMFCore.permissions import ModifyPortalContent
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditResults
+from bika.lims.interfaces import IBatchBookView
 from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import EditResults
 from bika.lims.permissions import ManageAnalysisRequests
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFPlone import PloneMessageFactory
+from zope.interface import implementer
 
 
+@implementer(IBatchBookView)
 class BatchBookView(BikaListingView):
 
     def __init__(self, context, request):
@@ -54,8 +55,6 @@ class BatchBookView(BikaListingView):
         self.page_start_index = 0
         self.show_categories = True
         self.expand_all_categories = True
-
-        self.insert_submit_button = False
 
         request.set('disable_plone.rightcolumn', 1)
 
@@ -213,6 +212,7 @@ class BatchBookView(BikaListingView):
             keyword = d_a.getKeyword()
             short = d_a.getShortTitle()
             title = d_a.Title()
+
             self.columns[keyword] = {
                 'title':  short if short else title,
                 'sortable': True
@@ -232,8 +232,7 @@ class BatchBookView(BikaListingView):
                     calculation = analysis.getCalculation()
                     if self.allow_edit and edit and not calculation:
                         items[i]['allow_edit'].append(keyword)
-                        if not self.insert_submit_button:
-                            self.insert_submit_button = True
+                        self.columns[keyword]["ajax"] = True
 
                     value = analysis.getResult()
                     items[i][keyword] = value
@@ -246,13 +245,6 @@ class BatchBookView(BikaListingView):
 
                 if keyword not in items[i]['class']:
                     items[i]['class'][keyword] = 'empty'
-        if self.insert_submit_button:
-            transitions = self.review_states[0].get('custom_transitions', [])
-            transitions.append({
-                'id': 'submit',
-                'title': _('Submit')
-            })
-            self.review_states[0]['custom_transitions'] = transitions
 
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]
