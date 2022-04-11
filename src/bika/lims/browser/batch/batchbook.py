@@ -31,7 +31,6 @@ from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.permissions import ManageAnalysisRequests
 from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFPlone import PloneMessageFactory
 from zope.interface import implementer
 from bika.lims.utils import t
 
@@ -48,6 +47,7 @@ class BatchBookView(BikaListingView):
         self.Description = context.Description()
 
         self.show_select_column = True
+        self.show_search = False
         self.pagesize = 999999
         self.form_id = "batchbook"
         self.show_categories = True
