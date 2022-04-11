@@ -704,8 +704,15 @@ class SamplesView(ListingView):
     def can_create_worksheet(self):
         """Checks if the create worksheet transition should be rendered or not
         """
+        # check add permission for Worksheets
         if not can_add_worksheet(self.portal):
             return False
+
+        # only available for samples in received state
+        for sample in self.get_selected_samples():
+            state = api.get_workflow_status_of(sample)
+            if state not in ["sample_received"]:
+                return False
 
         # restrict contexts to well known places
         if ISamples.providedBy(self.context):
@@ -716,6 +723,13 @@ class SamplesView(ListingView):
             return True
         else:
             return False
+
+    def get_selected_samples(self):
+        """Returns the selected samples
+        """
+        payload = self.get_json()
+        uids = payload.get("selected_uids", [])
+        return map(api.get_object, uids)
 
     @property
     def is_printing_workflow_enabled(self):
