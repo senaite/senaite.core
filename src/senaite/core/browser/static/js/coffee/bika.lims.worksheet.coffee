@@ -175,7 +175,8 @@ class window.WorksheetManageResultsView
      * Return the current base url
     ###
     url = window.location.href
-    return url.split('?')[0]
+    url = url.split("?")[0]
+    return url.replace("#", "")
 
 
   get_authenticator: =>
