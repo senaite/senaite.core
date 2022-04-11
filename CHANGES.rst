@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1965 Disallow client users to create sample partitions
+- #1963 Hide custom set-remarks transition when global remarks are disabled in setup
 - #1961 Added `geo` api  that relies on `pycountry` for retrieval of countries
 - #1911 Converted Container to Dexterity Contents
 - #1931 Removed archetypes.schemaextender from senaite.core
