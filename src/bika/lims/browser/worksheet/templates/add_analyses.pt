@@ -37,7 +37,7 @@
                 <select id="ProfileSelector"
                         name="getWorksheetTemplate"
                         class="selectpicker"
-                        data-style="dropdown-toggle btn-sm btn-light rounded-0"
+                        data-style="dropdown-toggle btn-sm btn-light border rounded-0"
                         data-live-search="true"
                         tal:define="ws_templates_list view/getWorksheetTemplates">
                   <option value=""></option>
