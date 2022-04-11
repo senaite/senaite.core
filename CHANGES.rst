@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1964 Fix add samples URL in batch context for Clients
 - #1961 Added `geo` api  that relies on `pycountry` for retrieval of countries
 - #1911 Converted Container to Dexterity Contents
 - #1931 Removed archetypes.schemaextender from senaite.core
