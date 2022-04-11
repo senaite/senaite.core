@@ -60,29 +60,28 @@ class BatchBookView(BikaListingView):
         self.columns = OrderedDict((
             ("AnalysisRequest", {
                 "title": _("Sample"),
-                "index": "id",
-                "sortable": True,
+                "sortable": False,
             }),
             ("SampleType", {
                 "title": _("Sample Type"),
-                "sortable": True,
+                "sortable": False,
             }),
             ("SamplePoint", {
                 "title": _("Sample Point"),
-                "sortable": True,
+                "sortable": False,
             }),
             ("ClientOrderNumber", {
                 "title": _("Client Order Number"),
-                "sortable": True,
+                "sortable": False,
             }),
             ("created", {
-                "title": PloneMessageFactory("Date Created"),
-                "index": "created",
-                "toggle": False,
+                "title": _("Date Registered"),
+                "sortable": False,
             }),
             ("state_title", {
                 "title": _("State"),
-                "index": "review_state"
+                "index": "review_state",
+                "sortable": False,
             }),
         ))
 
