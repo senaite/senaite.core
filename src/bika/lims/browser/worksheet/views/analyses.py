@@ -157,6 +157,9 @@ class AnalysesView(BaseView):
 
         XXX: Convert maybe better to a real WF transition with a guard
         """
+        # Disable analysis remarks transition when global analysis remarks are disabled
+        if not self.is_analysis_remarks_enabled():
+            return False
         for analysis in self.context.getAnalyses():
             if check_permission(FieldEditAnalysisRemarks, analysis):
                 return True
@@ -166,7 +169,8 @@ class AnalysesView(BaseView):
     def is_analysis_remarks_enabled(self):
         """Check if analysis remarks are enabled
         """
-        return self.context.bika_setup.getEnableAnalysisRemarks()
+        setup = api.get_setup()
+        return setup.getEnableAnalysisRemarks()
 
     def isItemAllowed(self, obj):
         """Returns true if the current analysis to be rendered has a slot
