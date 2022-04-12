@@ -18,6 +18,7 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 import six
 
 from senaite.core.schema.fields import BaseField
@@ -57,6 +58,11 @@ class AddressField(List, BaseField):
             address_types = (address_types, )
         return address_types
 
+    def is_multi_address(self):
+        """Returns whether this field handles multiple addresses
+        """
+        return len(self.get_address_types()) > 1
+
     def to_list(self, value, filter_empty=True):
         """Ensure the value is a list
         """
@@ -87,7 +93,33 @@ class AddressField(List, BaseField):
         :param object: the instance of this field
         :returns: list of dicts with address information for each address type
         """
-        return super(AddressField, self).get(object) or []
+        addresses = super(AddressField, self).get(object) or []
+
+        # Sort and extend with non-existing address types
+        output = []
+        for address_type in self.get_address_types():
+            address = filter(lambda rec: rec["type"] == address_type, addresses)
+            if address:
+                address = copy.deepcopy(address[0])
+            else:
+                address = self.get_empty_address(address_type)
+            output.append(address)
+
+        # Sort address in same order as types
+        return output
+
+    def get_empty_address(self, address_type):
+        """Returns a dict that represents an empty address for the given type
+        """
+        return {
+            "type": address_type,
+            "address": "",
+            "zip": "",
+            "city": "",
+            "subdivision2": "",
+            "subdivision1": "",
+            "country": "",
+        }
 
     def _validate(self, value):
         """Validator called on form submit
