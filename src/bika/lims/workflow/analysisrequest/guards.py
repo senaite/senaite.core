@@ -19,7 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IVerified, IInternalUse
+from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IVerified
+from bika.lims.permissions import TransitionReceiveSample
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -54,6 +57,13 @@ def guard_create_partitions(analysis_request):
     if analysis_request.isPartition():
         # Do not allow the creation of partitions from partitions
         return False
+
+    # Clients have the AddAnalysisRequest permission, but should not be allowed
+    # to create partitions.  Therefore, we check here if the current user has
+    # the permission to receive a sample as well.
+    if not check_permission(TransitionReceiveSample, analysis_request):
+        return False
+
     return True
 
 

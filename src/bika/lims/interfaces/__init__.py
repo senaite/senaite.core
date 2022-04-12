@@ -1155,3 +1155,8 @@ class IListingSearchableTextProvider(Interface):
     catalog index
     """
     pass
+
+
+class IBatchBookView(Interface):
+    """Marker interface for batchbook view
+    """
