@@ -110,17 +110,11 @@ class AddressWidgetController extends React.Component {
     let html_items = [];
     let items = this.state.items;
     for (const [index, item] of items.entries()) {
-      let subdiv1 = item["subdivision1"];
-      let subdiv2 = item["subdivision2"];
-
-      // XXX Support for old-address "state" + "district"
-      //subdiv1 = subdiv1 ? subdiv1 : item["state"]
-      //subdiv2 = subdiv2 ? subdiv2 : item["district"];
       let section_title = "";
       if (items.length > 1) {
         // Only render the title if more than one address
         section_title = (
-          <strong>{item["type"]}</strong>
+          <strong>{this.state.labels[item.type]}</strong>
         )
       }
 
@@ -132,13 +126,13 @@ class AddressWidgetController extends React.Component {
             uid={this.state.uid}
             name={this.state.name}
             index={index}
-            address_type={item["type"]}
-            country={item["country"]}
-            subdivision1={subdiv1}
-            subdivision2={subdiv2}
-            city={item["city"]}
-            zip={item["zip"]}
-            address={item["address"]}
+            address_type={item.type}
+            country={item.country}
+            subdivision1={item.subdivision1}
+            subdivision2={item.subdivision2}
+            city={item.city}
+            zip={item.zip}
+            address={item.address}
             labels={this.state.labels}
             geography={this.state.geography}
             on_country_change={this.update_country_subdivisions}

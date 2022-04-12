@@ -27,12 +27,12 @@ from zope.interface import implementer
 from zope.schema import List
 from zope.schema.interfaces import IFromUnicode
 
-NAIVE_ADDRESS = "Address"
-PHYSICAL_ADDRESS = "Physical Address"
-POSTAL_ADDRESS = "Postal Address"
-BILLING_ADDRESS = "Billing Address"
-BUSINESS_ADDRESS = "Business Address"
-OTHER_ADDRESS = "Other Address"
+NAIVE_ADDRESS = "naive"
+PHYSICAL_ADDRESS = "physical"
+POSTAL_ADDRESS = "postal"
+BILLING_ADDRESS = "billing"
+BUSINESS_ADDRESS = "business"
+OTHER_ADDRESS = "other"
 
 
 @implementer(IAddressField, IFromUnicode)

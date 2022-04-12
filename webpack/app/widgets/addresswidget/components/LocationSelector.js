@@ -27,12 +27,9 @@ class LocationSelector extends React.Component {
   render() {
     return (
       <select
-        ref={this._ref}
         id={this.props.id}
-        uid={this.props.uid}
         name={this.props.name}
         value={this.props.value}
-        class={this.props.className}
         onChange={this.props.onChange}>
         {this.render_options()}
       </select>

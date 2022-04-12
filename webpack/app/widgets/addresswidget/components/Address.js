@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import AddressField from "./AddressField.js";
 import LocationSelector from "./LocationSelector.js";
 
 
@@ -147,101 +148,54 @@ class Address extends React.Component {
       <div>
         <div class="form-row mb-2">
 
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("country")}>
-                {this.props.labels.country}
-              </label>
-            </div>
-            <LocationSelector
-              id={this.get_input_id("country")}
-              name={this.get_input_name("country")}
-              uid={this.props.uid}
-              value={this.state.country}
-              placeholder="Select country ..."
-              locations={this.get_countries()}
-              onChange={this.on_country_change} />
-          </div>
+          <AddressField
+            id={this.get_input_id("country")}
+            name={this.get_input_name("country")}
+            label={this.props.labels.country}
+            value={this.state.country}
+            locations={this.get_countries()}
+            onChange={this.on_country_change} />
 
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("subdivision1")}>
-                {this.props.labels.subdivision1}
-              </label>
-            </div>
-            <LocationSelector
-              id={this.get_input_id("subdivision1")}
-              name={this.get_input_name("subdivision1")}
-              uid={this.props.uid}
-              value={this.state.subdivision1}
-              locations={this.get_subdivisions1()}
-              onChange={this.on_subdivision1_change} />
-          </div>
+          <AddressField
+            id={this.get_input_id("subdivision1")}
+            name={this.get_input_name("subdivision1")}
+            label={this.props.labels.subdivision1}
+            value={this.state.subdivision1}
+            locations={this.get_subdivisions1()}
+            onChange={this.on_subdivision1_change} />
 
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("subdivision2")}>
-                {this.props.labels.subdivision2}
-              </label>
-            </div>
-            <LocationSelector
-              id={this.get_input_id("subdivision2")}
-              name={this.get_input_name("subdivision2")}
-              uid={this.props.uid}
-              value={this.state.subdivision2}
-              locations={this.get_subdivisions2()}
-              onChange={this.on_subdivision2_change} />
-          </div>
+          <AddressField
+            id={this.get_input_id("subdivision2")}
+            name={this.get_input_name("subdivision2")}
+            label={this.props.labels.subdivision2}
+            value={this.state.subdivision2}
+            locations={this.get_subdivisions2()}
+            onChange={this.on_subdivision2_change} />
+
         </div>
 
         <div class="form-row mb-2">
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("city")}>
-                {this.props.labels.city}
-              </label>
-            </div>
-            <input type="text"
-              id={this.get_input_id("city")}
-              name={this.get_input_name("city")}
-              uid={this.props.uid}
-              value={this.state.city}
-              onChange={this.on_city_change} />
-          </div>
 
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("zip")}>
-                {this.props.labels.zip}
-              </label>
-            </div>
-            <input type="text"
-              id={this.get_input_id("zip")}
-              name={this.get_input_name("zip")}
-              uid={this.props.uid}
-              value={this.state.zip}
-              onChange={this.on_zip_change} />
-          </div>
+          <AddressField
+            id={this.get_input_id("city")}
+            name={this.get_input_name("city")}
+            label={this.props.labels.city}
+            value={this.state.city}
+            onChange={this.on_city_change} />
 
-          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-            <div class="input-group-prepend">
-              <label class="input-group-text"
-                for={this.get_input_id("address")}>
-                {this.props.labels.address}
-              </label>
-            </div>
-            <input type="text"
-              id={this.get_input_id("address")}
-              name={this.get_input_name("address")}
-              uid={this.props.uid}
-              value={this.state.address}
-              onChange={this.on_address_change} />
-          </div>
+          <AddressField
+            id={this.get_input_id("zip")}
+            name={this.get_input_name("zip")}
+            label={this.props.labels.zip}
+            value={this.state.zip}
+            onChange={this.on_zip_change} />
+
+          <AddressField
+            id={this.get_input_id("address")}
+            name={this.get_input_name("address")}
+            label={this.props.labels.address}
+            value={this.state.address}
+            onChange={this.on_address_change} />
 
           <input type="hidden"
             id={this.get_input_id("type")}

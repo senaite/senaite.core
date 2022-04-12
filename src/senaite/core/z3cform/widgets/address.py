@@ -26,6 +26,12 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from senaite.core.api import geo
 from senaite.core.interfaces import ISenaiteFormLayer
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import BUSINESS_ADDRESS
+from senaite.core.schema.addressfield import NAIVE_ADDRESS
+from senaite.core.schema.addressfield import OTHER_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.schema.interfaces import IAddressField
 from senaite.core.z3cform.interfaces import IAddressWidget
 from z3c.form.browser.widget import HTMLFormElement
@@ -101,10 +107,30 @@ class AddressWidget(HTMLFormElement, Widget):
     """
     klass = u"senaite-address-widget"
 
-    # Address html format for display. Wildcards accepted: {type}, {address},
-    # {zip}, {city}, {district}, {subdivision1}, {subdivision2}, {country}.
-    # Use '<br/>' for newlines
+    # Address html format for display. Wildcards accepted: {type},
+    # {address_type}, {zip}, {city}, {district}, {subdivision1}, {subdivision2},
+    # {country}. Use '<br/>' for newlines
     address_format = ""
+
+    address_types = [NAIVE_ADDRESS, PHYSICAL_ADDRESS, POSTAL_ADDRESS,
+                     BILLING_ADDRESS, BUSINESS_ADDRESS, OTHER_ADDRESS]
+
+    def get_address_type_name(self, address_type):
+        """Returns the human-readable name of the address type passed in
+        """
+        if address_type == NAIVE_ADDRESS:
+            return _("Address")
+        elif address_type == PHYSICAL_ADDRESS:
+            return _("Physical address")
+        elif address_type == POSTAL_ADDRESS:
+            return _("Postal address")
+        elif address_type == BILLING_ADDRESS:
+            return _("Billing address")
+        elif address_type == BUSINESS_ADDRESS:
+            return _("Business address")
+        elif address_type == OTHER_ADDRESS:
+            return _("Other address")
+        return address_type
 
     def get_address_format(self):
         """Returns the format for displaying the address
@@ -113,7 +139,7 @@ class AddressWidget(HTMLFormElement, Widget):
             return self.address_format
 
         lines = [
-            "<strong>{type}</strong>",
+            "<strong>{address_type}</strong>",
             "{address}",
             "{zip} {city}",
             "{subdivision2}, {subdivision1}",
@@ -130,6 +156,14 @@ class AddressWidget(HTMLFormElement, Widget):
         """Returns the address formatted in html
         """
         address_format = self.get_address_format()
+
+        # Inject the name of the type of address translated
+        address_type = address.get("type")
+        address_type_name = self.get_address_type_name(address_type)
+        address.update({
+            "address_type": address.get("address_type", address_type_name)
+        })
+
         lines = address_format.split("<br/>")
         values = map(lambda line: line.format(**address), lines)
         # Some extra cleanup
@@ -227,9 +261,15 @@ class AddressWidget(HTMLFormElement, Widget):
                 "subdivision2": api.to_utf8(_("District")),
                 "city": api.to_utf8(_("City")),
                 "zip": api.to_utf8(_("Postal code")),
-                "address": api.to_utf8(_("Address")),
+                "address": api.to_utf8(_("Address"))
             },
         }
+
+        # Generate the i18n labels for address types
+        for a_type in self.address_types:
+            attributes["data-labels"].update({
+                a_type: api.to_utf8(self.get_address_type_name(a_type))
+            })
 
         # convert all attributes to JSON
         for key, value in attributes.items():
