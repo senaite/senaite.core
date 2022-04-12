@@ -38,8 +38,8 @@ class AddressWidgetController extends React.Component {
     });
 
     // Bind callbacks to current context
-    this.update_states = this.update_states.bind(this);
-    this.update_districts = this.update_districts.bind(this);
+    this.update_country_subdivisions = this.update_country_subdivisions.bind(this);
+    this.update_subdivision_subdivisions = this.update_subdivision_subdivisions.bind(this);
 
     return this;
   }
@@ -53,24 +53,25 @@ class AddressWidgetController extends React.Component {
   }
 
   /**
-   * Fetch and update states for the given country
+   * Fetch and update subdivisions for the given country
    */
-  update_states(country) {
-    let states = this.state.geography[country];
-    if (states != null && states.constructor == Object) {
-      // Nothing to do. States are up-to-date
+  update_country_subdivisions(country) {
+    console.debug(`widget::update_country_subdivisions: ${country}`);
+    let subdivisions = this.state.geography[country];
+    if (subdivisions != null && subdivisions.constructor == Object) {
+      // Nothing to do. First-level subdivisions are up-to-date
       return;
     }
     let self = this;
     let promise = this.api.fetch_states(country);
     promise.then(function(data){
-      // Store a dict with states names as keys and null as values
-      let states = Object.assign({}, ...data.map((x) => ({[x[2]]: null})));
+      // Store a dict with subdivisions names as keys and null as values
+      let subdivisions = Object.assign({}, ...data.map((x) => ({[x[2]]: null})));
 
       // Create a copy instead of modifying the existing dict from state var
       let geo = {...self.state.geography};
 
-      geo[country] = states;
+      geo[country] = subdivisions;
       self.setState({geography: geo});
     });
     return promise;
@@ -78,27 +79,27 @@ class AddressWidgetController extends React.Component {
   }
 
   /**
-   * Fetch and update districts for the given country and state
+   * Fetch and update districts for the given country and top-level subdivision
    */
-  update_districts(country, country_state) {
-    console.debug(this.state);
-    let districts = this.state.geography[country][country_state];
-    if (Array.isArray(districts)) {
-      // Nothing to do. Districts are up-to-date
+  update_subdivision_subdivisions(country, subdivision) {
+    console.debug(`widget::update_subdivision_subdivisions: ${country}, ${subdivision}`);
+    let subdivisions = this.state.geography[country][subdivision];
+    if (Array.isArray(subdivisions)) {
+      // Nothing to do. Subdivisions are up-to-date
       return;
     }
 
     let self = this;
-    let promise = this.api.fetch_districts(country, country_state);
+    let promise = this.api.fetch_districts(country, subdivision);
     promise.then(function(data){
-      // Only interested on district names
-      let districts = data.map((x) => x[2])
+      // Only interested on subdivisions names
+      let subdivisions = data.map((x) => x[2])
 
       // Create a copy instead of modifying the existing dict from state var
       let geo = {...self.state.geography};
 
-      // Store the list of districts
-      geo[country][country_state] = districts
+      // Store the list of subdivisions
+      geo[country][subdivision] = subdivisions
       self.setState({geography: geo});
     });
     return promise;
@@ -108,6 +109,13 @@ class AddressWidgetController extends React.Component {
     let html_items = [];
     let items = this.state.items;
     for (let item of items) {
+      let subdiv1 = item["subdivision1"];
+      let subdiv2 = item["subdivision2"];
+
+      // XXX Support for old-address "state" + "district"
+      //subdiv1 = subdiv1 ? subdiv1 : item["state"]
+      //subdiv2 = subdiv2 ? subdiv2 : item["district"];
+
       html_items.push(
         <Address
           id={this.state.id}
@@ -115,14 +123,14 @@ class AddressWidgetController extends React.Component {
           name={this.state.name}
           type={item["type"]}
           country={item["country"]}
-          country_state={item["state"]}
-          district={item["district"]}
+          subdivision1={subdiv1}
+          subdivision2={subdiv2}
           city={item["city"]}
           zip={item["zip"]}
           address={item["address"]}
           geography={this.state.geography}
-          on_country_change={this.update_states}
-          on_country_state_change={this.update_districts}
+          on_country_change={this.update_country_subdivisions}
+          on_subdivision1_change={this.update_subdivision_subdivisions}
         />
       );
     }

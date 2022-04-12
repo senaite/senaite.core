@@ -19,10 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from senaite.core.api import geo
 from senaite.core.interfaces import ISenaiteFormLayer
-from senaite.core.locales import get_countries
-from senaite.core.locales import get_districts
-from senaite.core.locales import get_states
 from senaite.core.schema.interfaces import IAddressField
 from senaite.core.z3cform.interfaces import IAddressWidget
 from z3c.form.browser.widget import HTMLFormElement
@@ -70,7 +68,8 @@ class AddressWidget(HTMLFormElement, Widget):
     klass = u"senaite-address-widget"
 
     # Address html format for display. Wildcards accepted: {type}, {address},
-    # {zip}, {district}, {city}, {state}, {country}. Use '<br/>' for newlines
+    # {zip}, {city}, {district}, {subdivision1}, {subdivision2}, {country}.
+    # Use '<br/>' for newlines
     address_format = ""
 
     def get_address_format(self):
@@ -81,8 +80,9 @@ class AddressWidget(HTMLFormElement, Widget):
         lines = [
             "<strong>{type}</strong>",
             "{address}",
-            "{zip} {district} {city}",
-            "{state}",
+            "{zip} {city}",
+            "{subdivision2}",
+            "{subdivision1}",
             "{country}"
         ]
         return "<br/>".join(lines)
@@ -96,71 +96,49 @@ class AddressWidget(HTMLFormElement, Widget):
         values = filter(None, values)
         return "<br/>".join(values)
 
-    def get_countries_names(self):
-        """Returns the list of names of available countries
-        """
-        return map(lambda c: c.name, get_countries())
-
     def get_geographical_hierarchy(self):
         """Returns a dict with geographical information as follows:
 
             {<country_name_1>: {
-                <state_name_1>: [
-                    <district_name_1>,
+                <subdivision1_name_1>: [
+                    <subdivision2_name_1>,
                     ...
-                    <district_name_n>,
+                    <subdivision2_name_n>,
                 ],
                 ...
-                <state_name_n>: [..]
+                <subdivision1_name_n>: [..]
                 },
             <country_name_2>: {
                 ...
             }
 
-        Available states and districts for each country are only considered for
+        Available 2-level subdivisions for each country are only considered for
         those countries selected in current addresses
         """
 
         # Initialize a dict with countries names as keys and None as values
-        countries = self.get_countries_names()
+        countries = map(lambda c: c.name, geo.get_countries())
         countries = dict.fromkeys(countries)
 
         # Fill the dict with geo information for selected countries only
         for item in self.value:
             country = item.get("country")
+            subdivision1 = item.get("subdivision1")
 
-            # Initialize a dict with states names as keys and None as values
-            states = self.get_states(country)
-            states = map(lambda st: st[1], states)
-            states = dict.fromkeys(states)
+            # Init a dict with 1st level subdivision names as keys
+            subdivisions1 = geo.get_subdivisions(country, default=[])
+            subdivisions1 = map(lambda sub: sub.name, subdivisions1)
+            subdivisions1 = dict.fromkeys(subdivisions1)
 
-            # Fill the dict with geo information for selected state only
-            state = item.get("state")
-            states[state] = self.get_districts(country, state)
+            # Fill with 2nd level subdivision names
+            subdivisions2 = geo.get_subdivisions(subdivision1, default=[])
+            subdivisions2 = map(lambda sub: sub.name, subdivisions2)
+            subdivisions1[subdivision1] = subdivisions2
 
             # Set the value to the geomap
-            countries[country] = states
+            countries[country] = subdivisions1
 
         return countries
-
-    def get_states(self, country):
-        """Returns the states for the country with the given name or iso
-
-        :param country: name or iso of the country
-        :return: a list of tuples as (<state_code>, <state_name>)
-        """
-        states = get_states(country)
-        return map(lambda state: (state.code, state.name), states)
-
-    def get_districts(self, country, state):
-        """Returns the districts for the country and state given
-
-        :param country: name or iso of the country
-        :param state: name or code of the state
-        :return: a list of districts
-        """
-        districts = get_districts(country, state)
-        return map(lambda dis: dis.name, districts)
 
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component

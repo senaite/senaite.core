@@ -10,8 +10,8 @@ class Address extends React.Component {
     super(props);
     this.state = {
       country: props.country,
-      country_state: props.country_state,
-      district: props.district,
+      subdivision1: props.subdivision1,
+      subdivision2: props.subdivision2,
       city: props.city,
       zip: props.zip,
       address: props.address
@@ -19,8 +19,8 @@ class Address extends React.Component {
 
     // Event handlers
     this.on_country_change = this.on_country_change.bind(this);
-    this.on_country_state_change = this.on_country_state_change.bind(this);
-    this.on_district_change = this.on_district_change.bind(this);
+    this.on_subdivision1_change = this.on_subdivision1_change.bind(this);
+    this.on_subdivision2_change = this.on_subdivision2_change.bind(this);
   }
 
   /**
@@ -32,66 +32,80 @@ class Address extends React.Component {
   }
 
   /**
-   * Returns the list of states for the current country, sorted alphabetically
+   * Returns the list of first-level subdivisions of the current country,
+   * sorted alphabetically
    */
-  get_states() {
+  get_subdivisions1() {
     let country = this.state.country;
-    let states = this.props.geography[country];
-    if (states != null && states.constructor == Object) {
-      return Object.keys(states).sort();
+    let subdivisions = this.props.geography[country];
+    if (subdivisions != null && subdivisions.constructor == Object) {
+      return Object.keys(subdivisions).sort();
     }
     return [];
   }
 
   /**
-   * Returns the list of districts for the current country and state, sorted
-   * alphabetically
+   * Returns the list of subdivisions of the current first-level subdivision,
+   * sorted sorted alphabetically
    */
-  get_districts() {
+  get_subdivisions2() {
     let country = this.state.country;
-    let country_state = this.state.country_state;
-    let states = this.props.geography[country];
-    if (states != null && states.constructor == Object && country_state in states) {
-      let districts = states[country_state];
-      if (Array.isArray(districts)) {
-        return districts.sort();
+    let subdivision1 = this.state.subdivision1;
+    let subdivisions = this.props.geography[country];
+    if (subdivisions != null
+        && subdivisions.constructor == Object
+        && subdivision1 in subdivisions) {
+      let subdivisions2 = subdivisions[subdivision1];
+      if (Array.isArray(subdivisions2)) {
+        return subdivisions2.sort();
       }
     }
     return [];
   }
 
+  /** Event triggered when the value for Country selector changes. Updates the
+   * selector of subdivisions (e.g. states) with the list of top-level
+   * subdivisions for the selected country
+   */
   on_country_change(event) {
     event.preventDefault();
     let value = event.currentTarget.value;
-    console.debug("Address::on_country_change:value: ", value);
+    console.debug(`Address::on_country_change: ${value}`);
     if (this.props.on_country_change) {
       this.props.on_country_change(value);
     }
     this.setState({
       country: value,
-      country_state: "",
+      subdivision1: "",
     });
   }
 
-  on_country_state_change(event) {
+  /** Event triggered when the value for the Country first-level subdivision
+   * (e.g. state) selector changes. Updates the selector of subdivisions (e.g.
+   * districts) for the selected subdivision and country
+   */
+  on_subdivision1_change(event) {
     event.preventDefault();
     let value = event.currentTarget.value;
-    console.debug("Address::on_country_state_change:value: ", value);
-    if (this.props.on_country_state_change) {
+    console.debug(`Address::on_subdivision1_change: ${value}`);
+    if (this.props.on_subdivision1_change) {
       let country = this.state.country
-      this.props.on_country_state_change(country, value);
+      this.props.on_subdivision1_change(country, value);
     }
-    this.setState({country_state: value});
+    this.setState({subdivision1: value});
   }
 
-  on_district_change(event) {
+  /** Event triggered when the value for the second-level subdivision (e.g.
+   * district) selector changes
+   */
+  on_subdivision2_change(event) {
     event.preventDefault();
     let value = event.currentTarget.value;
-    console.debug("Address::on_district_change:value: ", value);
-    if (this.props.on_district_change) {
-      this.props.on_district_change(value);
+    console.debug(`Address::on_subdivision2_change: ${value}`);
+    if (this.props.on_subdivision2_change) {
+      this.props.on_subdivision2_change(value);
     }
-    this.setState({district: value});
+    this.setState({subdivision2: value});
   }
 
   render() {
@@ -128,21 +142,21 @@ class Address extends React.Component {
           />
 
           <LocationSelector
-            id={this.props.id + ":state:records"}
-            name={this.props.name + ":state:records"}
+            id={this.props.id + ":subdivision1:records"}
+            name={this.props.name + ":subdivision1:records"}
             uid={this.props.uid}
-            value={this.state.country_state}
-            locations={this.get_states()}
-            onChange={this.on_country_state_change}
+            value={this.state.subdivision1}
+            locations={this.get_subdivisions1()}
+            onChange={this.on_subdivision1_change}
           />
 
           <LocationSelector
-            id={this.props.id + ":district:records"}
-            name={this.props.name + ":district:records"}
+            id={this.props.id + ":subdivision2:records"}
+            name={this.props.name + ":subdivision2:records"}
             uid={this.props.uid}
-            value={this.state.district}
-            locations={this.get_districts()}
-            onChange={this.on_district_change}
+            value={this.state.subdivision2}
+            locations={this.get_subdivisions2()}
+            onChange={this.on_subdivision2change}
           />
         </div>
       </div>

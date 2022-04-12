@@ -10,7 +10,6 @@ class LocationSelector extends React.Component {
 
   render_options() {
     let options = [];
-    console.debug("Locations: ",this.props.locations);
     let locations = this.props.locations;
     options.push(
       <option value=''></option>
