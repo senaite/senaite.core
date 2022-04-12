@@ -14,13 +14,17 @@ class Address extends React.Component {
       subdivision2: props.subdivision2,
       city: props.city,
       zip: props.zip,
-      address: props.address
+      address: props.address,
+      address_type: props.address_type,
     }
 
     // Event handlers
     this.on_country_change = this.on_country_change.bind(this);
     this.on_subdivision1_change = this.on_subdivision1_change.bind(this);
     this.on_subdivision2_change = this.on_subdivision2_change.bind(this);
+    this.on_city_change = this.on_city_change.bind(this);
+    this.on_zip_change = this.on_zip_change.bind(this);
+    this.on_address_change = this.on_address_change.bind(this);
   }
 
   /**
@@ -68,7 +72,6 @@ class Address extends React.Component {
    * subdivisions for the selected country
    */
   on_country_change(event) {
-    event.preventDefault();
     let value = event.currentTarget.value;
     console.debug(`Address::on_country_change: ${value}`);
     if (this.props.on_country_change) {
@@ -85,7 +88,6 @@ class Address extends React.Component {
    * districts) for the selected subdivision and country
    */
   on_subdivision1_change(event) {
-    event.preventDefault();
     let value = event.currentTarget.value;
     console.debug(`Address::on_subdivision1_change: ${value}`);
     if (this.props.on_subdivision1_change) {
@@ -99,7 +101,6 @@ class Address extends React.Component {
    * district) selector changes
    */
   on_subdivision2_change(event) {
-    event.preventDefault();
     let value = event.currentTarget.value;
     console.debug(`Address::on_subdivision2_change: ${value}`);
     if (this.props.on_subdivision2_change) {
@@ -108,56 +109,145 @@ class Address extends React.Component {
     this.setState({subdivision2: value});
   }
 
+  /** Event triggered when the value for the address field changes
+   */
+  on_address_change(event) {
+    let value = event.currentTarget.value;
+    this.setState({address: value});
+  }
+
+  /** Event triggered when the value for the zip field changes
+   */
+  on_zip_change(event) {
+    let value = event.currentTarget.value;
+    this.setState({zip: value});
+  }
+
+  /** Event triggered when the value for the city field changes
+   */
+  on_city_change(event) {
+    let value = event.currentTarget.value;
+    this.setState({city: value});
+  }
+
+  get_input_id(subfield) {
+    let id = this.props.id;
+    let index = this.props.index;
+    return `${id}-${index}-${subfield}`
+  }
+
+  get_input_name(subfield) {
+    let name = this.props.name;
+    let index = this.props.index;
+    return `${name}.${index}.${subfield}`
+  }
+
   render() {
     return (
-      <div className="addresswidget-address">
-        <strong>{this.props.type}</strong>
-        <div className="input-group">
+      <div>
+        <div class="form-row mb-2">
 
-          <input type="text"
-            class="text-widget textline-field"
-            id={this.props.id + ":address:records"}
-            name={this.props.name + ":address:records"}
-            value={this.props.address}/>
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("country")}>
+                {this.props.labels.country}
+              </label>
+            </div>
+            <LocationSelector
+              id={this.get_input_id("country")}
+              name={this.get_input_name("country")}
+              uid={this.props.uid}
+              value={this.state.country}
+              placeholder="Select country ..."
+              locations={this.get_countries()}
+              onChange={this.on_country_change} />
+          </div>
 
-          <input type="text"
-            class="text-widget textline-field"
-            id={this.props.id + ":zip:records"}
-            name={this.props.name + ":zip:records"}
-            value={this.props.zip}/>
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("subdivision1")}>
+                {this.props.labels.subdivision1}
+              </label>
+            </div>
+            <LocationSelector
+              id={this.get_input_id("subdivision1")}
+              name={this.get_input_name("subdivision1")}
+              uid={this.props.uid}
+              value={this.state.subdivision1}
+              locations={this.get_subdivisions1()}
+              onChange={this.on_subdivision1_change} />
+          </div>
 
-          <input type="text"
-            class="text-widget textline-field"
-            id={this.props.id + ":city:records"}
-            name={this.props.name + ":city:records"}
-            value={this.props.city}/>
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("subdivision2")}>
+                {this.props.labels.subdivision2}
+              </label>
+            </div>
+            <LocationSelector
+              id={this.get_input_id("subdivision2")}
+              name={this.get_input_name("subdivision2")}
+              uid={this.props.uid}
+              value={this.state.subdivision2}
+              locations={this.get_subdivisions2()}
+              onChange={this.on_subdivision2_change} />
+          </div>
+        </div>
 
-          <LocationSelector
-            id={this.props.id + ":country:records"}
-            name={this.props.name + ":country:records"}
-            uid={this.props.uid}
-            value={this.state.country}
-            locations={this.get_countries()}
-            onChange={this.on_country_change}
-          />
+        <div class="form-row mb-2">
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("city")}>
+                {this.props.labels.city}
+              </label>
+            </div>
+            <input type="text"
+              id={this.get_input_id("city")}
+              name={this.get_input_name("city")}
+              uid={this.props.uid}
+              value={this.state.city}
+              onChange={this.on_city_change} />
+          </div>
 
-          <LocationSelector
-            id={this.props.id + ":subdivision1:records"}
-            name={this.props.name + ":subdivision1:records"}
-            uid={this.props.uid}
-            value={this.state.subdivision1}
-            locations={this.get_subdivisions1()}
-            onChange={this.on_subdivision1_change}
-          />
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("zip")}>
+                {this.props.labels.zip}
+              </label>
+            </div>
+            <input type="text"
+              id={this.get_input_id("zip")}
+              name={this.get_input_name("zip")}
+              uid={this.props.uid}
+              value={this.state.zip}
+              onChange={this.on_zip_change} />
+          </div>
 
-          <LocationSelector
-            id={this.props.id + ":subdivision2:records"}
-            name={this.props.name + ":subdivision2:records"}
-            uid={this.props.uid}
-            value={this.state.subdivision2}
-            locations={this.get_subdivisions2()}
-            onChange={this.on_subdivision2change}
-          />
+          <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <label class="input-group-text"
+                for={this.get_input_id("address")}>
+                {this.props.labels.address}
+              </label>
+            </div>
+            <input type="text"
+              id={this.get_input_id("address")}
+              name={this.get_input_name("address")}
+              uid={this.props.uid}
+              value={this.state.address}
+              onChange={this.on_address_change} />
+          </div>
+
+          <input type="hidden"
+            id={this.get_input_id("type")}
+            name={this.get_input_name("type")}
+            value={this.state.address_type} />
+
         </div>
       </div>
     );

@@ -24,6 +24,7 @@ class AddressWidgetController extends React.Component {
       "items",
       "geography",
       "portal_url",
+      "labels",
     ];
 
     // Query data keys and set state with parsed JSON value
@@ -108,30 +109,42 @@ class AddressWidgetController extends React.Component {
   render_items() {
     let html_items = [];
     let items = this.state.items;
-    for (let item of items) {
+    for (const [index, item] of items.entries()) {
       let subdiv1 = item["subdivision1"];
       let subdiv2 = item["subdivision2"];
 
       // XXX Support for old-address "state" + "district"
       //subdiv1 = subdiv1 ? subdiv1 : item["state"]
       //subdiv2 = subdiv2 ? subdiv2 : item["district"];
+      let section_title = "";
+      if (items.length > 1) {
+        // Only render the title if more than one address
+        section_title = (
+          <strong>{item["type"]}</strong>
+        )
+      }
 
       html_items.push(
-        <Address
-          id={this.state.id}
-          uid={this.state.uid}
-          name={this.state.name}
-          type={item["type"]}
-          country={item["country"]}
-          subdivision1={subdiv1}
-          subdivision2={subdiv2}
-          city={item["city"]}
-          zip={item["zip"]}
-          address={item["address"]}
-          geography={this.state.geography}
-          on_country_change={this.update_country_subdivisions}
-          on_subdivision1_change={this.update_subdivision_subdivisions}
-        />
+        <div class="mb-2 pt-2">
+          {section_title}
+          <Address
+            id={this.state.id}
+            uid={this.state.uid}
+            name={this.state.name}
+            index={index}
+            address_type={item["type"]}
+            country={item["country"]}
+            subdivision1={subdiv1}
+            subdivision2={subdiv2}
+            city={item["city"]}
+            zip={item["zip"]}
+            address={item["address"]}
+            labels={this.state.labels}
+            geography={this.state.geography}
+            on_country_change={this.update_country_subdivisions}
+            on_subdivision1_change={this.update_subdivision_subdivisions}
+          />
+        </div>
       );
     }
     return html_items;
