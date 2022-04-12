@@ -24,8 +24,6 @@ import json
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
@@ -35,6 +33,10 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.permissions import AddWorksheet
+from senaite.core.permissions.worksheet import can_add_worksheet
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class FolderView(BikaListingView):
@@ -64,7 +66,9 @@ class FolderView(BikaListingView):
             _("Add"): {
                 "url": "worksheet_add",
                 "icon": "++resource++bika.lims.images/add.png",
-                "class": "worksheet_add"}
+                "class": "worksheet_add",
+                "permission": AddWorksheet,
+            }
         }
 
         self.show_select_column = True
@@ -256,17 +260,20 @@ class FolderView(BikaListingView):
         self.show_select_column = True
         self.show_workflow_action_buttons = True
 
+    def can_add(self):
+        """Check if the user is allowed to add a worksheet
+        """
+        return can_add_worksheet(self.context)
+
     def is_manage_allowed(self):
         """Check if the User is allowed to manage
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(EditWorksheet, self.context)
+        return can_edit_worksheet(self.context)
 
     def get_selected_state(self):
         """Returns the current selected state

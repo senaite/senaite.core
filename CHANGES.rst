@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1962 Allow to create worksheet from samples
 - #1966 Fix to set analysis results in batchbooks
 - #1965 Disallow client users to create sample partitions
 - #1964 Fix add samples URL in batch context for Clients

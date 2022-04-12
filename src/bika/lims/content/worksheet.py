@@ -39,8 +39,6 @@ from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_int
@@ -65,6 +63,8 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.p3compat import cmp
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
@@ -1464,14 +1464,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if can_access is True:
             pm = getToolByName(self, 'portal_membership')
-            edit_allowed = pm.checkPermission(EditWorksheet, self)
-            if edit_allowed:
+            if can_edit_worksheet(self):
                 # Check if the current user is the WS's current analyst
                 member = pm.getAuthenticatedMember()
                 analyst = self.getAnalyst().strip()
                 if analyst != _c(member.getId()):
                     # Has management privileges?
-                    if pm.checkPermission(ManageWorksheets, self):
+                    if can_manage_worksheets(self):
                         granted = True
                 else:
                     granted = True

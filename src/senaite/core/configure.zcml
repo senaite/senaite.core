@@ -19,6 +19,7 @@
   <include package=".locales" />
   <include package=".migration" />
   <include package=".patches" />
+  <include package=".permissions" />
   <include package=".schema" />
   <include package=".upgrade" />
   <include package=".z3cform" />
