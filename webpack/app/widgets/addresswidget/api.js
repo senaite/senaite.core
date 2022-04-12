@@ -51,22 +51,16 @@ class AddressWidgetAPI {
     });
   }
 
-  fetch_states(country) {
-    let url = `getGeoStates?country=${country}`;
-    console.debug("AddressWidgetAPI::fetch_states:url=", url);
+  fetch_subdivisions(parent) {
+    let url = `geo_subdivisions`
+    console.debug("AddressWidgetAPI::fetch_subdivisions:url=", url);
     let options = {
-      method: "GET",
+      method: "POST",
+      data: {
+        "parent": parent,
+      }
     }
-    return this.get_json(url, options);
-  }
-
-  fetch_districts(country, country_state) {
-    let url = `getGeoDistricts?country=${country}&state=${country_state}`;
-    console.debug("AddressWidgetAPI:fetch_districts:url=", url);
-    let options = {
-      method: "GET",
-    }
-    return this.get_json(url, options);
+    return this.get_json(url, options)
   }
 
   /*

@@ -64,7 +64,7 @@ class AddressWidgetController extends React.Component {
       return;
     }
     let self = this;
-    let promise = this.api.fetch_states(country);
+    let promise = this.api.fetch_subdivisions(country);
     promise.then(function(data){
       // Store a dict with subdivisions names as keys and null as values
       let subdivisions = Object.assign({}, ...data.map((x) => ({[x[2]]: null})));
@@ -91,7 +91,7 @@ class AddressWidgetController extends React.Component {
     }
 
     let self = this;
-    let promise = this.api.fetch_districts(country, subdivision);
+    let promise = this.api.fetch_subdivisions(subdivision);
     promise.then(function(data){
       // Only interested on subdivisions names
       let subdivisions = data.map((x) => x[2])

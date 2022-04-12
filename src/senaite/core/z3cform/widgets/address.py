@@ -23,11 +23,11 @@ import six
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
 from senaite.core.api import geo
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IAddressField
 from senaite.core.z3cform.interfaces import IAddressWidget
-from six import string_types
 from z3c.form.browser.widget import HTMLFormElement
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IFieldWidget
@@ -244,3 +244,33 @@ def AddressWidgetFactory(field, request):
     """Widget factory for Address Widget
     """
     return FieldWidget(field, AddressWidget(request))
+
+
+class AjaxSubdivisions(BrowserView):
+    """Endpoint for the retrieval of geographic subdivisions
+    """
+
+    def __call__(self):
+        """Returns a json with the list of geographic subdivisions that are
+        immediately below the country or subdivision passed in with `parent`
+        parameter via POST/GET
+        """
+        items = []
+        parent = self.get_parent()
+        if not parent:
+            return json.dumps(items)
+
+        # Extract the subdivisions for this parent
+        parent = safe_unicode(parent)
+        items = geo.get_subdivisions(parent, default=[])
+        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        return json.dumps(items)
+
+    def get_parent(self):
+        """Returns the parent passed through the request
+        """
+        parent = self.request.get("parent", None)
+        if not parent:
+            values = json.loads(self.request.get("BODY", "{}"))
+            parent = values.get("parent", None)
+        return parent
