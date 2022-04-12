@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import AddressField from "./AddressField.js";
-import LocationSelector from "./LocationSelector.js";
 
 
 class Address extends React.Component {
