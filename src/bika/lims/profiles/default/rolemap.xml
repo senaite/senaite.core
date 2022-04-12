@@ -343,13 +343,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
-
 
     <!-- Transition permissions -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">
@@ -487,16 +480,6 @@
       <role name="Manager"/>
     </permission>
 
-    <!-- Transition permissions (Worksheet) -->
-    <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="senaite.core: Transition: Remove Worksheet" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-
     <!-- Type-specific permissions -->
     <permission name="senaite.core: Sample: Add Attachment" acquire="False">
       <role name="Analyst"/>
@@ -513,11 +496,6 @@
     <permission name="senaite.core: Sample: Delete Attachment" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="senaite.core: Worksheet: Add Attachment" acquire="False">
-      <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
@@ -802,11 +780,6 @@
         - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
       -->
     </permission>
-    <permission name="senaite.core: Edit Worksheet" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
     <permission name="senaite.core: Manage Bika" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -832,10 +805,6 @@
     <permission name="senaite.core: Manage Reference" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="senaite.core: Manage Worksheets" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>

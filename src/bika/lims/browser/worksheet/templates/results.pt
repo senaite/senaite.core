@@ -26,16 +26,20 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <table class="bg-light table table-sm table-borderless manage_results_header">
+          <table class="table table-sm table-borderless manage_results_header">
             <tr>
               <!-- Analyst -->
               <td>
-                <div class="form-group form-inline">
-                  <label class="required">
-                    <span class="required mr-2" i18n:translate="">Analyst</span>
-                  </label>
+                <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" i18n:translate="">
+                      Analyst
+                    </span>
+                  </div>
                   <span tal:condition="view/is_assignment_allowed">
-                    <select class="analyst form-control form-control-sm"
+                    <select class="analyst selectpicker"
+                            data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                            data-live-search="true"
                             tal:define="alist view/get_analysts">
                       <tal:options repeat="option alist">
                         <option tal:attributes="value python:option;
@@ -44,20 +48,27 @@
                       </tal:options>
                     </select>
                   </span>
-                  <span tal:condition="not: view/is_assignment_allowed"
-                        tal:content="python:view.get_analysts().getValue(context.getAnalyst())">
-                    Selected Analyst
+                  <span class="input-group-append"
+                        tal:condition="not: view/is_assignment_allowed">
+                    <span class="input-group-text"
+                          tal:content="python:view.get_analysts().getValue(context.getAnalyst())">
+                      Selected Analyst
+                    </span>
                   </span>
                 </div>
               </td>
               <!-- Instrument -->
               <td tal:define="instrument python:context.getInstrument()">
-                <div class="form-group form-inline">
-                  <label class="required">
-                    <span class="mr-2" i18n:translate="">Instrument</span>
-                  </label>
+                <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" i18n:translate="">
+                      Instrument
+                    </span>
+                  </div>
                   <span tal:condition="view/is_assignment_allowed">
-                    <select class="instrument form-control form-control-sm"
+                    <select class="instrument selectpicker"
+                            data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                            data-live-search="true"
                             tal:define="instrlist view/getInstruments">
                       <tal:options repeat="option instrlist">
                         <option tal:attributes="value python:option;
@@ -66,12 +77,19 @@
                       </tal:options>
                     </select>
                   </span>
-                  <span tal:condition="not: view/is_assignment_allowed">
-                    <span tal:condition="python:instrument"
+
+                  <span class="input-group-append"
+                        tal:condition="not: view/is_assignment_allowed">
+                    <span class="input-group-text"
+                          tal:condition="python:instrument"
                           tal:content="python:view.getInstruments().getValue(instrument.UID())"></span>
-                    <span tal:condition="python:not instrument"
-                          i18n:translate="">Not defined</span>
+                    <span class="input-group-text"
+                          tal:condition="python:not instrument"
+                          i18n:translate="">
+                      Not defined
+                    </span>
                   </span>
+
                 </div>
               </td>
               <!-- Layout -->
@@ -81,30 +99,51 @@
                       class="form-inline"
                       enctype="multipart/form-data"
                       method="post">
-                  <label for="resultslayout">
-                    <span class="mr-2" i18n:translate="">Layout</span>
-                  </label>
-                  <select id="resultslayout" class="form-control form-control-sm" name="resultslayout">
-                    <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
-                      <option selected tal:condition="python: option[0] == context.getResultsLayout()"
-                              tal:attributes="value python:option[0]"
-                              tal:content="python:option[1]">
-                      </option>
-                      <option tal:condition="python: option[0] != context.getResultsLayout()"
-                              tal:attributes="value python:option[0]"
-                              tal:content="python:option[1]"></option>
-                    </tal:layoutoption>
-                  </select>
-                  <input class="ml-2 btn btn-outline-secondary btn-sm" type="submit" id="resultslayout_button" value="Apply"/>
+                  <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" i18n:translate="">
+                        Layout
+                      </span>
+                    </div>
+                    <select id="resultslayout"
+                            data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                            class="selectpicker"
+                            name="resultslayout">
+                      <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
+                        <option selected tal:condition="python: option[0] == context.getResultsLayout()"
+                                tal:attributes="value python:option[0]"
+                                tal:content="python:option[1]">
+                        </option>
+                        <option tal:condition="python: option[0] != context.getResultsLayout()"
+                                tal:attributes="value python:option[0]"
+                                tal:content="python:option[1]"></option>
+                      </tal:layoutoption>
+                    </select>
+                    <div class="input-group input-group-append">
+                      <input class="btn btn-sm btn-outline-secondary"
+                            type="submit"
+                            id="resultslayout_button"
+                            value="Apply"/>
+                    </div>
+                  </div>
                 </form>
               </td>
               <!-- Print -->
               <td class="text-center">
-                <a tal:attributes="href python:context.absolute_url()+'/print';"
-                  i18n:translate=""
-                  class="btn btn-outline-secondary btn-sm print_button">
-                  Print
-                </a>
+                <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" i18n:translate="">
+                      Print Worksheet
+                    </span>
+                  </div>
+                  <div class="input-group input-group-append">
+                    <a tal:attributes="href python:context.absolute_url()+'/print';"
+                      i18n:translate=""
+                      class="btn btn-outline-secondary btn-sm print_button">
+                      Print
+                    </a>
+                  </div>
+                </div>
               </td>
             </tr>
           </table>

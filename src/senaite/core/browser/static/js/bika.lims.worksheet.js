@@ -207,7 +207,8 @@
        */
       var url;
       url = window.location.href;
-      return url.split('?')[0];
+      url = url.split("?")[0];
+      return url.replace("#", "");
     };
 
     WorksheetManageResultsView.prototype.get_authenticator = function() {

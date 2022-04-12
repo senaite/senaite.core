@@ -122,7 +122,7 @@ module.exports = {
             drop_console: true,
             passes: 2,
           },
-	      }
+        }
       }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
@@ -262,6 +262,7 @@ module.exports = {
         { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
         { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
+        { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
         { from: "../node_modules/react/umd", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/react-dom/umd", to: path.resolve(staticPath, "modules/react-dom") },
         { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},

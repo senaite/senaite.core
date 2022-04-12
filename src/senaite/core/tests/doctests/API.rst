@@ -1688,3 +1688,33 @@ Empty strings are returned unchanged:
     >>> text = ""
     >>> api.text_to_html(text, wrap="div")
     ''
+
+
+Converting a string to UTF8
+...........................
+
+This function encodes unicode strings to UTF8.
+
+In this test we use the German letter `ä` which is in unicode `u'\xe4'`:
+
+    >>> api.to_utf8("ä")
+    '\xc3\xa4'
+
+    >>> api.to_utf8("\xc3\xa4")
+    '\xc3\xa4'
+
+    >>> api.to_utf8(api.safe_unicode("ä"))
+    '\xc3\xa4'
+
+    >>> api.to_utf8(u"\xe4")
+    '\xc3\xa4'
+
+Unsupported types return either the default value or fail:
+
+    >>> api.to_utf8(object())
+    Traceback (most recent call last):
+    ...
+    APIError: Expected string type, got '<type 'object'>'
+
+    >>> api.to_utf8(object(), default="")
+    ''

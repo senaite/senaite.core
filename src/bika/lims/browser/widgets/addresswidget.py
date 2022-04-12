@@ -22,10 +22,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core.locales import get_countries
-from senaite.core.locales import get_states
-from senaite.core.locales import get_districts
-from senaite.core.p3compat import cmp
+from senaite.core.api import geo
 
 
 class AddressWidget(TypesWidget):
@@ -48,10 +45,9 @@ class AddressWidget(TypesWidget):
     # Country Name, State Name, District Name.
 
     def getCountries(self):
-        countries = get_countries()
+        countries = geo.get_countries()
         items = map(lambda item: (item.alpha_2, item.name), countries)
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return items
+        return self.to_utf8(items)
 
     def getDefaultCountry(self):
         portal = getToolByName(self, 'portal_url').getPortalObject()
@@ -63,16 +59,28 @@ class AddressWidget(TypesWidget):
         if not country:
             return items
 
-        # Get the states
-        items = get_states(country, default=[])
-        return map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        # first-level subdivisions of the country (states??)
+        items = geo.get_subdivisions(country, default=[])
+        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        return self.to_utf8(items)
 
     def getDistricts(self, country, state):
         items = []
         if not country or not state:
             return items
-        items = get_districts(country, state)
-        return map(lambda sub: [sub.country_code, sub.code, sub.name],  items)
+
+        # first-level subdivisions (districts?) of this subdivision (state?)
+        state_obj = geo.get_subdivision(state, parent=country, default=None)
+        items = geo.get_subdivisions(state_obj, default=[])
+        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        return self.to_utf8(items)
+
+    def to_utf8(self, value):
+        if isinstance(value, unicode):
+            return value.encode("utf-8")
+        elif isinstance(value, list):
+            return map(self.to_utf8, value)
+        return value
 
 
 registerWidget(AddressWidget,

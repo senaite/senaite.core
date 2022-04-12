@@ -19,53 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import pycountry
 from operator import itemgetter
+from senaite.core.api import geo
 from senaite.core.p3compat import cmp
-
 from bika.lims.browser import BrowserView
-
-
-_marker = object()
-
-
-def get_countries():
-    return pycountry.countries
-
-
-def get_states(country, search_by='name', fallback_historic=True, default=_marker):
-    kw = {search_by: country}
-    country = pycountry.countries.get(**kw)
-    if not country and fallback_historic:
-        # Try with historical countries
-        country = pycountry.historic_countries.get(**kw)
-
-    if not country:
-        if default is _marker:
-            raise ValueError("Country not found: '{}'".format(country))
-        return default
-
-    # Extract the first-level subdivisions of the country
-    states = pycountry.subdivisions.get(country_code=country.alpha_2)
-    states = filter(lambda sub: sub.parent_code is None, states)
-
-    # Sort by name
-    return sorted(list(states), key=lambda s: s.name)
-
-
-def get_districts(country_name, state_name):
-    states = get_states(country_name, default=[])
-    state = filter(lambda st: st.name == state_name, states)
-    if not state:
-        return []
-
-    # Extracts the districts for this state
-    state = state[0]
-    districts = pycountry.subdivisions.get(country_code=state.country_code)
-    districts = filter(lambda dis: dis.parent_code == state.code, districts)
-
-    # Sort by name
-    return sorted(list(districts), key=lambda s: s.name)
 
 
 class ajaxGetCountries(BrowserView):
@@ -79,7 +36,7 @@ class ajaxGetCountries(BrowserView):
         rows = []
 
         # lookup objects from ISO code list
-        for country in get_countries():
+        for country in geo.get_countries():
             iso = country.alpha_2
             name = country.name
             country_info = {"Code": iso, "Country": name}
@@ -110,7 +67,7 @@ class ajaxGetStates(BrowserView):
             return json.dumps(items)
 
         # Get the states
-        items = get_states(country, default=[])
+        items = geo.get_subdivisions(country, default=[])
         items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
         return json.dumps(items)
 
@@ -124,6 +81,8 @@ class ajaxGetDistricts(BrowserView):
         if not all([country, state]):
             return json.dumps(items)
 
-        items = get_districts(country, state)
+        # first-level subdivisions (districts?) of this subdivision (state?)
+        state = geo.get_subdivision(state, parent=country, default=None)
+        items = geo.get_subdivisions(state, default=[])
         items = map(lambda sub: [sub.country_code, sub.code, sub.name],  items)
         return json.dumps(items)

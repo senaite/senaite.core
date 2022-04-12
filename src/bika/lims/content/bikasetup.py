@@ -58,9 +58,9 @@ from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.locales import get_countries
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
@@ -627,16 +627,16 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         label=_("Email body for Sample Invalidation notifications"),
         default=
-        "Some non-conformities have been detected in the results report "
-        "published for Sample $sample_link. "
-        "<br/><br/> "
-        "A new Sample $retest_link has been created automatically, and the "
-        "previous request has been invalidated. "
-        "<br/><br/> "
-        "The root cause is under investigation and corrective "
-        "action has been initiated. "
-        "<br/><br/> "
-        "$lab_address",
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address",
         widget=RichWidget(
             label=_("Email body for Sample Invalidation notifications"),
             description=_("Set the text for the body of the email to be sent, "
@@ -920,7 +920,7 @@ class BikaSetup(folder.ATFolder):
             return portal_type
 
     def getCountries(self):
-        items = get_countries()
+        items = geo.get_countries()
         items = map(lambda country: (country.alpha_2, country.name), items)
         return items
 

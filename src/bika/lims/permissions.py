@@ -83,7 +83,6 @@ AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
 AddStorageLocation = "senaite.core: Add StorageLocation"
 AddSubGroup = "senaite.core: Add SubGroup"
 AddSupplier = "senaite.core: Add Supplier"
-AddWorksheetTemplate = "senaite.core: Add WorksheetTemplate"
 
 # Transition permissions
 # ======================
@@ -115,10 +114,6 @@ TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
 TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
 TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
 
-# Transition permissions (Worksheet)
-TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"
-TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
-
 
 # Type-specific permissions
 # =========================
@@ -129,8 +124,6 @@ SampleAddAttachment = "senaite.core: Sample: Add Attachment"
 SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
 # Displays the "Delete" checkbox
 SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
-# Makes "Add Attachment" section from worksheet context visible
-WorksheetAddAttachment = "senaite.core: Worksheet: Add Attachment"
 
 
 # Field Permissions
@@ -185,13 +178,11 @@ FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
 AccessJSONAPI = "senaite.core: Access JSON API"
 EditFieldResults = "senaite.core: Edit Field Results"
 EditResults = "senaite.core: Edit Results"
-EditWorksheet = "senaite.core: Edit Worksheet"
 ManageBika = "senaite.core: Manage Bika"
 ManageAnalysisRequests = "senaite.core: Manage Analysis Requests"
 ManageInvoices = "senaite.core: Manage Invoices"
 ManageLoginDetails = "senaite.core: Manage Login Details"
 ManageReference = "senaite.core: Manage Reference"
-ManageWorksheets = "senaite.core: Manage Worksheets"
 ViewResults = "senaite.core: View Results"
 
 

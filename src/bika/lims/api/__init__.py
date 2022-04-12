@@ -1454,3 +1454,16 @@ def text_to_html(text, wrap="p", encoding="utf8"):
             tag=wrap, html=html)
     # return encoded html
     return html.encode(encoding)
+
+
+def to_utf8(string, default=_marker):
+    """Encode string to UTF8
+
+    :param string: String to be encoded to UTF8
+    :returns: UTF8 encoded string
+    """
+    if not isinstance(string, six.string_types):
+        if default is _marker:
+            fail("Expected string type, got '%s'" % type(string))
+        return default
+    return safe_unicode(string).encode("utf8")
