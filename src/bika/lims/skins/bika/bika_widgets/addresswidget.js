@@ -66,7 +66,7 @@ jQuery( function($) {
 					$(target).empty();
 					$(target).append("<option value=''></option>");
 					$.each(data, function(i,v){
-						$(target).append('<option value="'+v[2]+'">'+v[2]+'</option>');
+						$(target).append('<option value="'+v['name']+'">'+v['name']+'</option>');
 					});
 					$("[id='"+field+"\\.district']").empty();
 				},
@@ -84,7 +84,7 @@ jQuery( function($) {
 					$(target).empty();
 					$(target).append("<option value=''></option>");
 					$.each(data, function(i,v){
-						$(target).append('<option value="'+v[2]+'">'+v[2]+'</option>');
+						$(target).append('<option value="'+v['name']+'">'+v['name']+'</option>');
 					});
 				},
 				dataType: "json"

@@ -22,9 +22,11 @@ class AddressWidgetController extends React.Component {
       "uid",
       "name",
       "items",
-      "geography",
       "portal_url",
       "labels",
+      "countries",
+      "subdivisions1",
+      "subdivisions2",
     ];
 
     // Query data keys and set state with parsed JSON value
@@ -39,8 +41,8 @@ class AddressWidgetController extends React.Component {
     });
 
     // Bind callbacks to current context
-    this.update_country_subdivisions = this.update_country_subdivisions.bind(this);
-    this.update_subdivision_subdivisions = this.update_subdivision_subdivisions.bind(this);
+    this.on_country_change = this.on_country_change.bind(this);
+    this.on_subdivision1_change = this.on_subdivision1_change.bind(this);
 
     return this;
   }
@@ -54,54 +56,67 @@ class AddressWidgetController extends React.Component {
   }
 
   /**
-   * Fetch and update subdivisions for the given country
+   * Event triggered when the user selects a country. Function fetches and
+   * updates the geo mapping with the first level subdivisions for the selected
+   * country if are not up-to-date yet. It also updates the label for the first
+   * level subdivision in accordance.
    */
-  update_country_subdivisions(country) {
-    console.debug(`widget::update_country_subdivisions: ${country}`);
-    let subdivisions = this.state.geography[country];
-    if (subdivisions != null && subdivisions.constructor == Object) {
-      // Nothing to do. First-level subdivisions are up-to-date
-      return;
-    }
+  on_country_change(country) {
+    console.debug(`widget::on_country_change: ${country}`);
     let self = this;
     let promise = this.api.fetch_subdivisions(country);
     promise.then(function(data){
-      // Store a dict with subdivisions names as keys and null as values
-      let subdivisions = Object.assign({}, ...data.map((x) => ({[x[2]]: null})));
+
+      // Update the label with the type of 1st-level subdivisions
+      let labels = {...self.state.labels};
+      if (data.length > 0) {
+        labels[country]["subdivision1"] = data[0].type;
+      }
 
       // Create a copy instead of modifying the existing dict from state var
-      let geo = {...self.state.geography};
+      let subdivisions = {...self.state.subdivisions1};
 
-      geo[country] = subdivisions;
-      self.setState({geography: geo});
+      // Only interested in names, sorted alphabetically
+      subdivisions[country] = data.map((x) => x.name).sort();
+
+      // Update current state with the changes
+      self.setState({
+        subdivisions1: subdivisions,
+        labels: labels,
+      });
     });
     return promise;
-
   }
 
   /**
-   * Fetch and update districts for the given country and top-level subdivision
+   * Event triggered when the user selects a first-level subdivision of a
+   * country. Function fetches and updates the geo mapping with the second level
+   * subdivisions for the selected subdivision if are not up-to-date. It also
+   * updates the label for the second level subdivision in accordance.
    */
-  update_subdivision_subdivisions(country, subdivision) {
-    console.debug(`widget::update_subdivision_subdivisions: ${country}, ${subdivision}`);
-    let subdivisions = this.state.geography[country][subdivision];
-    if (Array.isArray(subdivisions)) {
-      // Nothing to do. Subdivisions are up-to-date
-      return;
-    }
-
+  on_subdivision1_change(country, subdivision) {
+    console.debug(`widget::on_subdivision1_change: ${country}, ${subdivision}`);
     let self = this;
     let promise = this.api.fetch_subdivisions(subdivision);
     promise.then(function(data){
-      // Only interested on subdivisions names
-      let subdivisions = data.map((x) => x[2])
+
+      // Update the label with the type of 1st-level subdivisions
+      let labels = {...self.state.labels};
+      if (data.length > 0) {
+        labels[country]["subdivision2"] = data[0].type;
+      }
 
       // Create a copy instead of modifying the existing dict from state var
-      let geo = {...self.state.geography};
+      let subdivisions = {...self.state.subdivisions2};
 
-      // Store the list of subdivisions
-      geo[country][subdivision] = subdivisions
-      self.setState({geography: geo});
+      // Only interested in names, sorted alphabetically
+      subdivisions[subdivision] = data.map((x) => x.name).sort();
+
+      // Update current state with the changes
+      self.setState({
+        subdivisions2: subdivisions,
+        labels: labels,
+      });
     });
     return promise;
   }
@@ -134,9 +149,11 @@ class AddressWidgetController extends React.Component {
             zip={item.zip}
             address={item.address}
             labels={this.state.labels}
-            geography={this.state.geography}
-            on_country_change={this.update_country_subdivisions}
-            on_subdivision1_change={this.update_subdivision_subdivisions}
+            countries={this.state.countries}
+            subdivisions1={this.state.subdivisions1}
+            subdivisions2={this.state.subdivisions2}
+            on_country_change={this.on_country_change}
+            on_subdivision1_change={this.on_subdivision1_change}
           />
         </div>
       );

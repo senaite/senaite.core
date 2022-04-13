@@ -172,50 +172,6 @@ class AddressWidget(HTMLFormElement, Widget):
         values = filter(None, values)
         return "<br/>".join(values)
 
-    def get_geographical_hierarchy(self):
-        """Returns a dict with geographical information as follows:
-
-            {<country_name_1>: {
-                <subdivision1_name_1>: [
-                    <subdivision2_name_1>,
-                    ...
-                    <subdivision2_name_n>,
-                ],
-                ...
-                <subdivision1_name_n>: [..]
-                },
-            <country_name_2>: {
-                ...
-            }
-
-        Available 2-level subdivisions for each country are only considered for
-        those countries selected in current addresses
-        """
-
-        # Initialize a dict with countries names as keys and None as values
-        countries = map(lambda c: c.name, geo.get_countries())
-        countries = dict.fromkeys(countries)
-
-        # Fill the dict with geo information for selected countries only
-        for item in self.value:
-            country = item.get("country")
-            subdivision1 = item.get("subdivision1")
-
-            # Init a dict with 1st level subdivision names as keys
-            subdivisions1 = geo.get_subdivisions(country, default=[])
-            subdivisions1 = map(lambda sub: sub.name, subdivisions1)
-            subdivisions1 = dict.fromkeys(subdivisions1)
-
-            # Fill with 2nd level subdivision names
-            subdivisions2 = geo.get_subdivisions(subdivision1, default=[])
-            subdivisions2 = map(lambda sub: sub.name, subdivisions2)
-            subdivisions1[subdivision1] = subdivisions2
-
-            # Set the value to the geomap
-            countries[country] = subdivisions1
-
-        return countries
-
     def extract(self, default=NO_VALUE):
         """Extracts the value based on the request and nothing else
         """
@@ -241,13 +197,50 @@ class AddressWidget(HTMLFormElement, Widget):
 
         return records or default
 
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
+        countries = map(lambda c: c.name, geo.get_countries())
+        labels = {country: {} for country in countries}
+        labels.update({
+            "country": api.to_utf8(_("Country")),
+            "subdivision1": api.to_utf8(_("State")),
+            "subdivision2": api.to_utf8(_("District")),
+            "city": api.to_utf8(_("City")),
+            "zip": api.to_utf8(_("Postal code")),
+            "address": api.to_utf8(_("Address"))
+        })
+        sub1 = {}
+        sub2 = {}
+
+        for item in self.value:
+            country = item.get("country")
+            if country and country not in sub1:
+                subdivisions = geo.get_subdivisions(country, [])
+                sub1[country] = map(lambda sub: sub.name, subdivisions)
+
+                label = _("State")
+                if subdivisions:
+                    label = subdivisions[0].type
+                labels[country]["subdivision1"] = api.to_utf8(label)
+
+            subdivision1 = item.get("subdivision1")
+            if subdivision1 and subdivision1 not in sub2:
+                subdivisions = geo.get_subdivisions(subdivision1, [])
+                sub2[subdivision1] = map(lambda sub: sub.name, subdivisions)
+
+                label = _("District")
+                if subdivisions:
+                    label = subdivisions[0].type
+                labels[country]["subdivision2"] = api.to_utf8(label)
+
         attributes = {
             "data-id": self.id,
             "data-uid": api.get_uid(self.context),
-            "data-geography": self.get_geographical_hierarchy(),
+            "data-countries": countries,
+            "data-subdivisions1": sub1,
+            "data-subdivisions2": sub2,
             "data-name": self.name,
             "data-portal_url": api.get_url(api.get_portal()),
             "data-items": self.value,
@@ -255,14 +248,7 @@ class AddressWidget(HTMLFormElement, Widget):
             "data-class": self.klass,
             "data-style": self.style,
             "data-disabled": self.disabled or False,
-            "data-labels": {
-                "country": api.to_utf8(_("Country")),
-                "subdivision1": api.to_utf8(_("State")),
-                "subdivision2": api.to_utf8(_("District")),
-                "city": api.to_utf8(_("City")),
-                "zip": api.to_utf8(_("Postal code")),
-                "address": api.to_utf8(_("Address"))
-            },
+            "data-labels": labels,
         }
 
         # Generate the i18n labels for address types
@@ -303,7 +289,14 @@ class AjaxSubdivisions(BrowserView):
         # Extract the subdivisions for this parent
         parent = safe_unicode(parent)
         items = geo.get_subdivisions(parent, default=[])
-        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+
+        def to_dict(subdivision):
+            return {
+                "name": subdivision.name,
+                "code": subdivision.code,
+                "type": subdivision.type
+            }
+        items = map(to_dict, items)
         return json.dumps(items)
 
     def get_parent(self):

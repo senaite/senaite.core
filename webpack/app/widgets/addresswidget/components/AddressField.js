@@ -13,6 +13,14 @@ class AddressField extends React.Component {
     return Array.isArray(this.props.locations);
   }
 
+  is_visible() {
+    let visible = true;
+    if (this.is_location_selector()) {
+      visible = this.props.locations.length > 0;
+    }
+    return visible;
+  }
+
   render_element() {
     if (this.is_location_selector()) {
       return (
@@ -35,6 +43,14 @@ class AddressField extends React.Component {
   }
 
   render() {
+    if (!this.is_visible()) {
+      return (
+        <input type="hidden"
+          id={this.props.id}
+          name={this.props.name}
+          value={this.props.value} />
+      )
+    }
     return (
       <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
         <div class="input-group-prepend">

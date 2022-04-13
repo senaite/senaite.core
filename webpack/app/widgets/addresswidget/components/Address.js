@@ -27,12 +27,11 @@ class Address extends React.Component {
     this.on_address_change = this.on_address_change.bind(this);
   }
 
-  /**
-   * Returns the list of countries, sorted alphabetically
-   */
-  get_countries() {
-    let countries = this.props.geography;
-    return Object.keys(countries).sort();
+  force_array(value) {
+    if (!Array.isArray(value)) {
+      value = [];
+    }
+    return value;
   }
 
   /**
@@ -41,11 +40,7 @@ class Address extends React.Component {
    */
   get_subdivisions1() {
     let country = this.state.country;
-    let subdivisions = this.props.geography[country];
-    if (subdivisions != null && subdivisions.constructor == Object) {
-      return Object.keys(subdivisions).sort();
-    }
-    return [];
+    return this.force_array(this.props.subdivisions1[country]);
   }
 
   /**
@@ -53,18 +48,19 @@ class Address extends React.Component {
    * sorted sorted alphabetically
    */
   get_subdivisions2() {
-    let country = this.state.country;
     let subdivision1 = this.state.subdivision1;
-    let subdivisions = this.props.geography[country];
-    if (subdivisions != null
-        && subdivisions.constructor == Object
-        && subdivision1 in subdivisions) {
-      let subdivisions2 = subdivisions[subdivision1];
-      if (Array.isArray(subdivisions2)) {
-        return subdivisions2.sort();
-      }
+    return this.force_array(this.props.subdivisions2[subdivision1]);
+  }
+
+  get_label(key) {
+    let country = this.state.country;
+    let label = this.props.labels[country];
+    if (label != null && label.constructor == Object && key in label) {
+      label = label[key];
+    } else {
+      label = this.props.labels[key];
     }
-    return [];
+    return label;
   }
 
   /** Event triggered when the value for Country selector changes. Updates the
@@ -80,6 +76,7 @@ class Address extends React.Component {
     this.setState({
       country: value,
       subdivision1: "",
+      subdivision2: "",
     });
   }
 
@@ -94,7 +91,10 @@ class Address extends React.Component {
       let country = this.state.country
       this.props.on_subdivision1_change(country, value);
     }
-    this.setState({subdivision1: value});
+    this.setState({
+      subdivision1: value,
+      subdivision2: "",
+    });
   }
 
   /** Event triggered when the value for the second-level subdivision (e.g.
@@ -152,13 +152,13 @@ class Address extends React.Component {
             name={this.get_input_name("country")}
             label={this.props.labels.country}
             value={this.state.country}
-            locations={this.get_countries()}
+            locations={this.props.countries}
             onChange={this.on_country_change} />
 
           <AddressField
             id={this.get_input_id("subdivision1")}
             name={this.get_input_name("subdivision1")}
-            label={this.props.labels.subdivision1}
+            label={this.get_label("subdivision1")}
             value={this.state.subdivision1}
             locations={this.get_subdivisions1()}
             onChange={this.on_subdivision1_change} />
@@ -166,7 +166,7 @@ class Address extends React.Component {
           <AddressField
             id={this.get_input_id("subdivision2")}
             name={this.get_input_name("subdivision2")}
-            label={this.props.labels.subdivision2}
+            label={this.get_label("subdivision2")}
             value={this.state.subdivision2}
             locations={this.get_subdivisions2()}
             onChange={this.on_subdivision2_change} />
