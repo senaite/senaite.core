@@ -24,10 +24,12 @@ class SampleDataManager(DataManager):
         """
         return field.checkPermission("get", self.context)
 
-    def is_field_writeable(self, field):
+    def is_field_writeable(self, field, context=None):
         """Checks if the field is writeable
         """
-        return field.checkPermission("set", self.context)
+        if context is None:
+            context = self.context
+        return field.checkPermission("set", context)
 
     def get_field_by_name(self, name):
         """Get the field by name
@@ -81,7 +83,7 @@ class SampleDataManager(DataManager):
         fields = api.get_fields(analysis)
         field = fields.get("Result")
         # Check the permission of the field
-        if not self.is_field_writeable(field):
+        if not self.is_field_writeable(field, analysis):
             logger.error("Field '{}' not writeable!".format(name))
             return False
 
