@@ -35,7 +35,7 @@ from bika.lims.utils import t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer
 
-DESCRIPTION = _("The batch book allows to introduce analysis results of all "
+DESCRIPTION = _("The batch book allows to introduce analysis results for all "
                 "samples in this batch. Please note that submitting the "
                 "results for verification is only possible within samples or "
                 "worksheets, because additional information like e.g. the "
