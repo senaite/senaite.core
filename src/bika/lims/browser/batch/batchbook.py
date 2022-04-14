@@ -20,9 +20,11 @@
 
 import re
 from collections import OrderedDict
+from collections import defaultdict
 from operator import itemgetter
 
 from bika.lims import api
+from bika.lims.utils import get_link
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
@@ -30,9 +32,9 @@ from bika.lims.interfaces import IBatchBookView
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.utils import t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer
-from bika.lims.utils import t
 
 
 @implementer(IBatchBookView)
