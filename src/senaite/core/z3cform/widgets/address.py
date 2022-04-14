@@ -197,19 +197,19 @@ class AddressWidget(HTMLFormElement, Widget):
 
         return records or default
 
-
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
+        translate = self.context.translate
         countries = map(lambda c: c.name, geo.get_countries())
         labels = {country: {} for country in countries}
         labels.update({
-            "country": api.to_utf8(_("Country")),
-            "subdivision1": api.to_utf8(_("State")),
-            "subdivision2": api.to_utf8(_("District")),
-            "city": api.to_utf8(_("City")),
-            "zip": api.to_utf8(_("Postal code")),
-            "address": api.to_utf8(_("Address"))
+            "country": api.to_utf8(translate(_("Country"))),
+            "subdivision1": api.to_utf8(translate(_("State"))),
+            "subdivision2": api.to_utf8(translate(_("District"))),
+            "city": api.to_utf8(translate(_("City"))),
+            "zip": api.to_utf8(translate(_("Postal code"))),
+            "address": api.to_utf8(translate(_("Address")))
         })
         sub1 = {}
         sub2 = {}
@@ -222,8 +222,8 @@ class AddressWidget(HTMLFormElement, Widget):
 
                 label = _("State")
                 if subdivisions:
-                    label = subdivisions[0].type
-                labels[country]["subdivision1"] = api.to_utf8(label)
+                    label = _(subdivisions[0].type)
+                labels[country]["subdivision1"] = api.to_utf8(translate(label))
 
             subdivision1 = item.get("subdivision1")
             if subdivision1 and subdivision1 not in sub2:
@@ -232,8 +232,8 @@ class AddressWidget(HTMLFormElement, Widget):
 
                 label = _("District")
                 if subdivisions:
-                    label = subdivisions[0].type
-                labels[country]["subdivision2"] = api.to_utf8(label)
+                    label = _(subdivisions[0].type)
+                labels[country]["subdivision2"] = api.to_utf8(translate(label))
 
         attributes = {
             "data-id": self.id,
@@ -248,13 +248,14 @@ class AddressWidget(HTMLFormElement, Widget):
             "data-class": self.klass,
             "data-style": self.style,
             "data-disabled": self.disabled or False,
-            "data-labels": labels,
+            "data-labels": labels
         }
 
         # Generate the i18n labels for address types
         for a_type in self.address_types:
+            name = self.get_address_type_name(a_type)
             attributes["data-labels"].update({
-                a_type: api.to_utf8(self.get_address_type_name(a_type))
+                a_type: api.to_utf8(translate(name))
             })
 
         # convert all attributes to JSON
@@ -294,7 +295,7 @@ class AjaxSubdivisions(BrowserView):
             return {
                 "name": subdivision.name,
                 "code": subdivision.code,
-                "type": subdivision.type
+                "type": self.context.translate(_(subdivision.type)),
             }
         items = map(to_dict, items)
         return json.dumps(items)
