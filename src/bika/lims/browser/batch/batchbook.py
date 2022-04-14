@@ -114,18 +114,42 @@ class BatchBookView(BikaListingView):
         super(BatchBookView, self).update()
         # XXX: Why is this for clients?
         if self.is_copy_to_new_allowed():
-            review_states = []
-            for review_state in self.review_states:
-                custom_transitions = review_state.get("custom_transitions", [])
-                custom_transitions.extend(
-                    [{"id": "copy_to_new",
-                      "title": _("Copy to new"),
-                      "url": "workflow_action?action=copy_to_new"},
-                     ])
-                review_state["custom_transitions"] = custom_transitions
-                review_states.append(review_state)
-            self.review_states = review_states
+            self.add_copy_transition()
+            self.add_submit_transition()
         self.allow_edit = check_permission(ModifyPortalContent, self.context)
+
+    def add_copy_transition(self):
+        """Add copy transtion
+        """
+        review_states = []
+        for review_state in self.review_states:
+            custom_transitions = review_state.get("custom_transitions", [])
+            base_url = api.get_url(self.context)
+            custom_transitions.append({
+                "id": "copy_to_new",
+                "title": _("Copy to new"),
+                "url": "{}/workflow_action?action=copy_to_new".format(base_url)
+            })
+            review_state["custom_transitions"] = custom_transitions
+            review_states.append(review_state)
+        self.review_states = review_states
+
+    def add_submit_transition(self):
+        """Add submit transtion
+        """
+        review_states = []
+        for review_state in self.review_states:
+            custom_transitions = review_state.get("custom_transitions", [])
+            base_url = api.get_url(self.context)
+            custom_transitions.append({
+                "id": "submit",
+                "title": _("Submit"),
+                "css_class": "btn btn-success",
+                "url": "{}/workflow_action?action=submit".format(base_url)
+            })
+            review_state["custom_transitions"] = custom_transitions
+            review_states.append(review_state)
+        self.review_states = review_states
 
     def before_render(self):
         """Before render hook
