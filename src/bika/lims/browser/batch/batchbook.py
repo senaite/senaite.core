@@ -20,19 +20,26 @@
 
 import re
 from collections import OrderedDict
+from collections import defaultdict
 from operator import itemgetter
 
 from bika.lims import api
+from bika.lims.utils import get_link_for
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IBatchBookView
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.utils import t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer
-from bika.lims.utils import t
+
+DESCRIPTION = _("The batch book allows to introduce analysis results for all "
+                "samples in this batch. Please note that submitting the "
+                "results for verification is only possible within samples or "
+                "worksheets, because additional information like e.g. the "
+                "instrument or the method need to be set additionally.")
 
 
 @implementer(IBatchBookView)
@@ -44,7 +51,7 @@ class BatchBookView(BikaListingView):
         self.context_actions = {}
         self.contentFilter = {"sort_on": "created"}
         self.title = context.Title()
-        self.Description = context.Description()
+        self.description = t(DESCRIPTION)
 
         self.show_select_column = True
         self.show_search = False
@@ -95,9 +102,9 @@ class BatchBookView(BikaListingView):
         ]
 
     def is_copy_to_new_allowed(self):
-        if check_permission(ManageAnalysisRequests, self.context) \
-                or check_permission(ModifyPortalContent, self.context) \
-                or check_permission(AddAnalysisRequest, self.portal):
+        """Checks if it is allowed to copy the sample
+        """
+        if check_permission(AddAnalysisRequest, self.context):
             return True
         return False
 
@@ -110,20 +117,27 @@ class BatchBookView(BikaListingView):
         """Update hook
         """
         super(BatchBookView, self).update()
-        # XXX: Why is this for clients?
-        if self.is_copy_to_new_allowed():
-            review_states = []
-            for review_state in self.review_states:
-                custom_transitions = review_state.get("custom_transitions", [])
-                custom_transitions.extend(
-                    [{"id": "copy_to_new",
-                      "title": _("Copy to new"),
-                      "url": "workflow_action?action=copy_to_new"},
-                     ])
-                review_state["custom_transitions"] = custom_transitions
-                review_states.append(review_state)
-            self.review_states = review_states
+        # check if the use can modify
         self.allow_edit = check_permission(ModifyPortalContent, self.context)
+        # append copy to new transition
+        if self.is_copy_to_new_allowed():
+            self.add_copy_transition()
+
+    def add_copy_transition(self):
+        """Add copy transtion
+        """
+        review_states = []
+        for review_state in self.review_states:
+            custom_transitions = review_state.get("custom_transitions", [])
+            base_url = api.get_url(self.context)
+            custom_transitions.append({
+                "id": "copy_to_new",
+                "title": _("Copy to new"),
+                "url": "{}/workflow_action?action=copy_to_new".format(base_url)
+            })
+            review_state["custom_transitions"] = custom_transitions
+            review_states.append(review_state)
+        self.review_states = review_states
 
     def before_render(self):
         """Before render hook
@@ -138,14 +152,13 @@ class BatchBookView(BikaListingView):
         self.total = len(ars)
 
         self.categories = []
-        analyses = {}
+        analyses = defaultdict(list)
         items = []
         distinct = []  # distinct analyses (each one a different service)
         keywords = []
         for ar in ars:
-            analyses[ar.id] = []
             for analysis in ar.getAnalyses(full_objects=True):
-                analyses[ar.id].append(analysis)
+                analyses[ar.getId()].append(analysis)
                 if analysis.getKeyword() not in keywords:
                     # we use a keyword check, because versioned services are !=.
                     keywords.append(analysis.getKeyword())
@@ -154,13 +167,11 @@ class BatchBookView(BikaListingView):
             batchlink = ""
             batch = ar.getBatch()
             if batch:
-                batchlink = "<a href='%s'>%s</a>" % (
-                    batch.absolute_url(), batch.Title())
+                batchlink = get_link_for(batch)
 
-            arlink = "<a href='%s'>%s</a>" % (
-                ar.absolute_url(), ar.Title())
+            arlink = get_link_for(ar)
 
-            subgroup = ar.Schema()["SubGroup"].get(ar)
+            subgroup = ar.getSubGroup()
             sub_title = subgroup.Title() if subgroup else t(_("No Subgroup"))
             sub_sort = subgroup.getSortKey() if subgroup else "1"
             sub_class = re.sub(r"[^A-Za-z\w\d\-\_]", "", sub_title)
@@ -249,6 +260,6 @@ class BatchBookView(BikaListingView):
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]
 
-        items = sorted(items, key=itemgetter("sort_key"))
+        items = sorted(items, key=itemgetter("sort_key"), reverse=True)
 
         return items
