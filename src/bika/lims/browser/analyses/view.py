@@ -847,7 +847,9 @@ class AnalysesView(ListingView):
 
         item["Result"] = ""
 
-        if not self.has_permission(ViewResults, analysis_brain):
+        # TODO: The permission `ViewResults` is managed on the sample.
+        #       -> Change to a proper field permission!
+        if not self.has_permission(ViewResults, self.context):
             # If user has no permissions, don"t display the result but an icon
             img = get_image("to_follow.png", width="16px", height="16px")
             item["before"]["Result"] = img
