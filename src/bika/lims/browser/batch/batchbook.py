@@ -31,10 +31,15 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IBatchBookView
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.utils import t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer
+
+DESCRIPTION = _("The batch book allows to introduce analysis results of all "
+                "samples in this batch. Please note that submitting the "
+                "results for verification is only possible within samples or "
+                "worksheets, because additional information like e.g. the "
+                "instrument or the method need to be set additionally.")
 
 
 @implementer(IBatchBookView)
@@ -46,7 +51,7 @@ class BatchBookView(BikaListingView):
         self.context_actions = {}
         self.contentFilter = {"sort_on": "created"}
         self.title = context.Title()
-        self.Description = context.Description()
+        self.description = t(DESCRIPTION)
 
         self.show_select_column = True
         self.show_search = False
@@ -97,9 +102,9 @@ class BatchBookView(BikaListingView):
         ]
 
     def is_copy_to_new_allowed(self):
-        if check_permission(ManageAnalysisRequests, self.context) \
-                or check_permission(ModifyPortalContent, self.context) \
-                or check_permission(AddAnalysisRequest, self.portal):
+        """Checks if it is allowed to copy the sample
+        """
+        if check_permission(AddAnalysisRequest, self.context):
             return True
         return False
 
@@ -107,46 +112,6 @@ class BatchBookView(BikaListingView):
         """Checks if the current user can edit the analysis result
         """
         return check_permission(FieldEditAnalysisResult, analysis)
-
-    def get_selected_samples(self):
-        """Returns the selected samples
-
-        :returns: List of selected sample UIDs
-        :rtype: list
-        """
-        payload = self.get_json()
-        uids = payload.get("selected_uids", [])
-        return map(api.get_object, uids)
-
-    def can_submit_analyses(self):
-        """Checks if the analyses of the selected samples can be submitted
-
-        :returns: True if all analyses can be submitted
-        :rtype: bool
-        """
-        # only available for samples in received state
-        for sample in self.get_selected_samples():
-            state = api.get_workflow_status_of(sample)
-            if state not in ["sample_received"]:
-                return False
-            for analysis in sample.getAnalyses():
-                if not self.is_transition_allowed(analysis, "submit"):
-                    return False
-        return True
-
-    def is_transition_allowed(self, brain_or_obj, tid):
-        """Checks if the object can perform the transition passed in.
-
-        :returns: True if transition can be performed
-        :rtype: bool
-        """
-        obj = api.get_object(brain_or_obj)
-        wf_tool = api.get_tool("portal_workflow")
-        for wf_id in wf_tool.getChainFor(obj):
-            wf = wf_tool.getWorkflowById(wf_id)
-            if wf and wf.isActionSupported(obj, tid):
-                return True
-        return False
 
     def update(self):
         """Update hook
@@ -157,9 +122,6 @@ class BatchBookView(BikaListingView):
         # append copy to new transition
         if self.is_copy_to_new_allowed():
             self.add_copy_transition()
-        # append submit transition
-        if self.can_submit_analyses():
-            self.add_submit_transition()
 
     def add_copy_transition(self):
         """Add copy transtion
@@ -172,23 +134,6 @@ class BatchBookView(BikaListingView):
                 "id": "copy_to_new",
                 "title": _("Copy to new"),
                 "url": "{}/workflow_action?action=copy_to_new".format(base_url)
-            })
-            review_state["custom_transitions"] = custom_transitions
-            review_states.append(review_state)
-        self.review_states = review_states
-
-    def add_submit_transition(self):
-        """Add submit transtion
-        """
-        review_states = []
-        for review_state in self.review_states:
-            custom_transitions = review_state.get("custom_transitions", [])
-            base_url = api.get_url(self.context)
-            custom_transitions.append({
-                "id": "submit",
-                "title": _("Submit"),
-                "css_class": "btn btn-success",
-                "url": "{}/workflow_action?action=submit".format(base_url)
             })
             review_state["custom_transitions"] = custom_transitions
             review_states.append(review_state)
