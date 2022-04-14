@@ -299,8 +299,16 @@ class AnalysisRequestAddView(BrowserView):
     def get_field_value(self, field, context):
         """Get the stored value of the field
         """
+        value = None
         name = field.getName()
-        value = context.getField(name).get(context)
+        field = context.getField(name)
+        # get the field value by the accessor to handle computed fields that do
+        # not store a value
+        accessor = getattr(field, "getAccessor", None)
+        if callable(accessor):
+            value = accessor(context)()
+        else:
+            value = context.getField(name).get(context)
         logger.info("get_field_value: context={} field={} value={}".format(
             context, name, value))
         return value
