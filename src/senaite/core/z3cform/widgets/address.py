@@ -204,12 +204,12 @@ class AddressWidget(HTMLFormElement, Widget):
         countries = map(lambda c: c.name, geo.get_countries())
         labels = {country: {} for country in countries}
         labels.update({
-            "country": api.to_utf8(translate(_("Country"))),
-            "subdivision1": api.to_utf8(translate(_("State"))),
-            "subdivision2": api.to_utf8(translate(_("District"))),
-            "city": api.to_utf8(translate(_("City"))),
-            "zip": api.to_utf8(translate(_("Postal code"))),
-            "address": api.to_utf8(translate(_("Address")))
+            "country": translate(_("Country")),
+            "subdivision1": translate(_("State")),
+            "subdivision2": translate(_("District")),
+            "city": translate(_("City")),
+            "zip": translate(_("Postal code")),
+            "address": translate(_("Address"))
         })
         sub1 = {}
         sub2 = {}
@@ -223,7 +223,7 @@ class AddressWidget(HTMLFormElement, Widget):
                 label = _("State")
                 if subdivisions:
                     label = _(subdivisions[0].type)
-                labels[country]["subdivision1"] = api.to_utf8(translate(label))
+                labels[country]["subdivision1"] = translate(label)
 
             subdivision1 = item.get("subdivision1")
             if subdivision1 and subdivision1 not in sub2:
@@ -233,7 +233,7 @@ class AddressWidget(HTMLFormElement, Widget):
                 label = _("District")
                 if subdivisions:
                     label = _(subdivisions[0].type)
-                labels[country]["subdivision2"] = api.to_utf8(translate(label))
+                labels[country]["subdivision2"] = translate(label)
 
         attributes = {
             "data-id": self.id,
@@ -255,7 +255,7 @@ class AddressWidget(HTMLFormElement, Widget):
         for a_type in self.address_types:
             name = self.get_address_type_name(a_type)
             attributes["data-labels"].update({
-                a_type: api.to_utf8(translate(name))
+                a_type: translate(name)
             })
 
         # convert all attributes to JSON
