@@ -108,15 +108,58 @@ class BatchBookView(BikaListingView):
         """
         return check_permission(FieldEditAnalysisResult, analysis)
 
+    def get_selected_samples(self):
+        """Returns the selected samples
+
+        :returns: List of selected sample UIDs
+        :rtype: list
+        """
+        payload = self.get_json()
+        uids = payload.get("selected_uids", [])
+        return map(api.get_object, uids)
+
+    def can_submit_analyses(self):
+        """Checks if the analyses of the selected samples can be submitted
+
+        :returns: True if all analyses can be submitted
+        :rtype: bool
+        """
+        # only available for samples in received state
+        for sample in self.get_selected_samples():
+            state = api.get_workflow_status_of(sample)
+            if state not in ["sample_received"]:
+                return False
+            for analysis in sample.getAnalyses():
+                if not self.is_transition_allowed(analysis, "submit"):
+                    return False
+        return True
+
+    def is_transition_allowed(self, brain_or_obj, tid):
+        """Checks if the object can perform the transition passed in.
+
+        :returns: True if transition can be performed
+        :rtype: bool
+        """
+        obj = api.get_object(brain_or_obj)
+        wf_tool = api.get_tool("portal_workflow")
+        for wf_id in wf_tool.getChainFor(obj):
+            wf = wf_tool.getWorkflowById(wf_id)
+            if wf and wf.isActionSupported(obj, tid):
+                return True
+        return False
+
     def update(self):
         """Update hook
         """
         super(BatchBookView, self).update()
-        # XXX: Why is this for clients?
+        # check if the use can modify
+        self.allow_edit = check_permission(ModifyPortalContent, self.context)
+        # append copy to new transition
         if self.is_copy_to_new_allowed():
             self.add_copy_transition()
+        # append submit transition
+        if self.can_submit_analyses():
             self.add_submit_transition()
-        self.allow_edit = check_permission(ModifyPortalContent, self.context)
 
     def add_copy_transition(self):
         """Add copy transtion
