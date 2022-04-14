@@ -52,14 +52,16 @@ class AddressField extends React.Component {
       )
     }
     return (
-      <div class="col input-group input-group-sm flex-nowrap d-inline-flex w-auto">
-        <div class="input-group-prepend">
-          <label class="input-group-text"
-            for={this.props.id}>
-            {this.props.label}
-          </label>
+      <div class="form-group form-row mb-2">
+        <div class="col input-group input-group-sm">
+          <div class="input-group-prepend">
+            <label class="input-group-text"
+              for={this.props.id}>
+              {this.props.label}
+            </label>
+          </div>
+          {this.render_element()}
         </div>
-        {this.render_element()}
       </div>
     );
   }

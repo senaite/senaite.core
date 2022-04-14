@@ -145,8 +145,6 @@ class Address extends React.Component {
   render() {
     return (
       <div>
-        <div class="form-row mb-2">
-
           <AddressField
             id={this.get_input_id("country")}
             name={this.get_input_name("country")}
@@ -170,10 +168,6 @@ class Address extends React.Component {
             value={this.state.subdivision2}
             locations={this.get_subdivisions2()}
             onChange={this.on_subdivision2_change} />
-
-        </div>
-
-        <div class="form-row mb-2">
 
           <AddressField
             id={this.get_input_id("city")}
@@ -201,7 +195,6 @@ class Address extends React.Component {
             name={this.get_input_name("type")}
             value={this.state.address_type} />
 
-        </div>
       </div>
     );
   }
