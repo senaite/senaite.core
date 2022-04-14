@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1967 Fix missing client error in sample add form inside batches
 - #1962 Allow to create worksheet from samples
 - #1966 Fix to set analysis results in batchbooks
 - #1965 Disallow client users to create sample partitions
