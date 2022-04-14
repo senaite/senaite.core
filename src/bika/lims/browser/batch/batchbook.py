@@ -260,6 +260,6 @@ class BatchBookView(BikaListingView):
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]
 
-        items = sorted(items, key=itemgetter("sort_key"))
+        items = sorted(items, key=itemgetter("sort_key"), reverse=True)
 
         return items
