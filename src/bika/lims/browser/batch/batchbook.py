@@ -24,7 +24,7 @@ from collections import defaultdict
 from operator import itemgetter
 
 from bika.lims import api
-from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
@@ -167,9 +167,9 @@ class BatchBookView(BikaListingView):
             batchlink = ""
             batch = ar.getBatch()
             if batch:
-                batchlink = get_link(api.get_url(batch), api.get_title(batch))
+                batchlink = get_link_for(batch)
 
-            arlink = get_link(api.get_url(ar), api.get_title(ar))
+            arlink = get_link_for(ar)
 
             subgroup = ar.getSubGroup()
             sub_title = subgroup.Title() if subgroup else t(_("No Subgroup"))
