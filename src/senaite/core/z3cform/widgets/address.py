@@ -112,25 +112,15 @@ class AddressWidget(HTMLFormElement, Widget):
     # {country}. Use '<br/>' for newlines
     address_format = ""
 
-    address_types = [NAIVE_ADDRESS, PHYSICAL_ADDRESS, POSTAL_ADDRESS,
-                     BILLING_ADDRESS, BUSINESS_ADDRESS, OTHER_ADDRESS]
-
-    def get_address_type_name(self, address_type):
-        """Returns the human-readable name of the address type passed in
-        """
-        if address_type == NAIVE_ADDRESS:
-            return _("Address")
-        elif address_type == PHYSICAL_ADDRESS:
-            return _("Physical address")
-        elif address_type == POSTAL_ADDRESS:
-            return _("Postal address")
-        elif address_type == BILLING_ADDRESS:
-            return _("Billing address")
-        elif address_type == BUSINESS_ADDRESS:
-            return _("Business address")
-        elif address_type == OTHER_ADDRESS:
-            return _("Other address")
-        return address_type
+    # Mapping between address_types and their names for i18n
+    address_types = {
+        NAIVE_ADDRESS: _("Address"),
+        PHYSICAL_ADDRESS: _("Physical address"),
+        POSTAL_ADDRESS: _("Postal address"),
+        BILLING_ADDRESS: _("Billing address"),
+        BUSINESS_ADDRESS: _("Business address"),
+        OTHER_ADDRESS: _("Other address"),
+    }
 
     def get_address_format(self):
         """Returns the format for displaying the address
@@ -159,7 +149,7 @@ class AddressWidget(HTMLFormElement, Widget):
 
         # Inject the name of the type of address translated
         address_type = address.get("type")
-        address_type_name = self.get_address_type_name(address_type)
+        address_type_name = self.address_types.get(address_type, address_type)
         address.update({
             "address_type": address.get("address_type", address_type_name)
         })
@@ -252,8 +242,7 @@ class AddressWidget(HTMLFormElement, Widget):
         }
 
         # Generate the i18n labels for address types
-        for a_type in self.address_types:
-            name = self.get_address_type_name(a_type)
+        for a_type, name in self.address_types.items():
             attributes["data-labels"].update({
                 a_type: translate(name)
             })
