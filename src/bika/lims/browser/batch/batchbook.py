@@ -164,14 +164,13 @@ class BatchBookView(BikaListingView):
         self.total = len(ars)
 
         self.categories = []
-        analyses = {}
+        analyses = defaultdict(list)
         items = []
         distinct = []  # distinct analyses (each one a different service)
         keywords = []
         for ar in ars:
-            analyses[ar.id] = []
             for analysis in ar.getAnalyses(full_objects=True):
-                analyses[ar.id].append(analysis)
+                analyses[ar.getId()].append(analysis)
                 if analysis.getKeyword() not in keywords:
                     # we use a keyword check, because versioned services are !=.
                     keywords.append(analysis.getKeyword())
@@ -180,13 +179,11 @@ class BatchBookView(BikaListingView):
             batchlink = ""
             batch = ar.getBatch()
             if batch:
-                batchlink = "<a href='%s'>%s</a>" % (
-                    batch.absolute_url(), batch.Title())
+                batchlink = get_link(api.get_url(batch), api.get_title(batch))
 
-            arlink = "<a href='%s'>%s</a>" % (
-                ar.absolute_url(), ar.Title())
+            arlink = get_link(api.get_url(ar), api.get_title(ar))
 
-            subgroup = ar.Schema()["SubGroup"].get(ar)
+            subgroup = ar.getSubGroup()
             sub_title = subgroup.Title() if subgroup else t(_("No Subgroup"))
             sub_sort = subgroup.getSortKey() if subgroup else "1"
             sub_class = re.sub(r"[^A-Za-z\w\d\-\_]", "", sub_title)
