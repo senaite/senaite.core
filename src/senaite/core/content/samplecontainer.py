@@ -10,11 +10,7 @@ from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ISampleContainer
-from senaite.core.schema import AddressField
 from senaite.core.schema import UIDReferenceField
-from senaite.core.schema.addressfield import OTHER_ADDRESS
-from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
-from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import implementer
@@ -102,15 +98,6 @@ class ISampleContainerSchema(model.Schema):
         title=_("Security seal intact"),
         description=_(""),
         required=False,
-    )
-
-    address = AddressField(
-        title=_("Address"),
-        address_types=[
-            PHYSICAL_ADDRESS,
-            POSTAL_ADDRESS,
-            OTHER_ADDRESS,
-        ]
     )
 
 
