@@ -142,9 +142,20 @@ class AddressWidget(HTMLFormElement, Widget):
 
         return "<br/>".join(lines)
 
-    def get_formatted_address(self, address):
+    def get_formatted_address(self, data):
         """Returns the address formatted in html
         """
+        address = {
+            "address_type": "",
+            "address": "",
+            "zip": "",
+            "city": "",
+            "country": "",
+            "subdivision1": "",
+            "subdivision2": "",
+        }
+        address.update(data)
+
         address_format = self.get_address_format()
 
         # Inject the name of the type of address translated
