@@ -5,6 +5,7 @@ import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
 import UIDReferenceWidgetController from "./widgets/uidreferencewidget/widget.js"
+import AddressWidgetController from "./widgets/addresswidget/widget.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -66,6 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
   for (let widget of ref_widgets) {
     let id = widget.dataset.id;
     let controller = ReactDOM.render(<UIDReferenceWidgetController root_el={widget} />, widget);
+    window.widgets[id] = controller;
+  }
+  // AddressWidget
+  var address_widgets = document.getElementsByClassName("senaite-address-widget-input");
+  for (let widget of address_widgets) {
+    let id = widget.dataset.id;
+    let controller = ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
     window.widgets[id] = controller;
   }
 });

@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1960 AddressField and AddressWidget with React component for DX types
 - #1968 Fix default roles for client field in samples
 - #1962 Allow to create worksheet from samples
 - #1966 Fix to set analysis results in batchbooks

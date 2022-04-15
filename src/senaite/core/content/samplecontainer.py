@@ -13,8 +13,8 @@ from senaite.core.interfaces import ISampleContainer
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
-from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import Invalid
 from zope.interface import invariant
 
 

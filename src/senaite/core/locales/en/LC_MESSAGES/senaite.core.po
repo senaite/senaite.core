@@ -6952,3 +6952,9 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instruments.py:174
 msgid "{} weeks and {} day(s)"
 msgstr ""
+
+msgid "Autonomous community"
+msgstr ""
+
+msgid "County"
+msgstr ""

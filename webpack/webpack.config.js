@@ -265,7 +265,7 @@ module.exports = {
         { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
         { from: "../node_modules/react/umd", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/react-dom/umd", to: path.resolve(staticPath, "modules/react-dom") },
-        { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce") },
+        { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},
         // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
     }),

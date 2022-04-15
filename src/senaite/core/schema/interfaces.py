@@ -35,3 +35,8 @@ class IUIDReferenceField(IList):
 class IDatetimeField(IDatetime):
     """Senaite Datetime field
     """
+
+
+class IAddressField(IList):
+    """Senaite multi-address field
+    """

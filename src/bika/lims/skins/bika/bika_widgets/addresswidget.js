@@ -58,15 +58,15 @@ jQuery( function($) {
 		function populate_state_select(field){
 			$.ajax({
 				type: 'POST',
-				url: portal_url + "/getGeoStates",
-				data: {'country': $("[id='"+field+"\\.country']").val(),
+				url: portal_url + "/geo_subdivisions",
+				data: {'parent': $("[id='"+field+"\\.country']").val(),
 					   '_authenticator': $('input[name="_authenticator"]').val()},
 				success: function(data,textStatus,$XHR){
 					target = $("[id='"+field+"\\.state']");
 					$(target).empty();
 					$(target).append("<option value=''></option>");
 					$.each(data, function(i,v){
-						$(target).append('<option value="'+v[2]+'">'+v[2]+'</option>');
+						$(target).append('<option value="'+v['name']+'">'+v['name']+'</option>');
 					});
 					$("[id='"+field+"\\.district']").empty();
 				},
@@ -76,16 +76,15 @@ jQuery( function($) {
 		function populate_district_select(field){
 			$.ajax({
 				type: 'POST',
-				url: portal_url + "/getGeoDistricts",
-				data: {'country': $("[id='"+field+"\\.country']").val(),
-					  'state': $("[id='"+field+"\\.state']").val(),
+				url: portal_url + "/geo_subdivisions",
+				data: {'parent': $("[id='"+field+"\\.state']").val(),
 					   '_authenticator': $('input[name="_authenticator"]').val()},
 				success: function(data,textStatus,$XHR){
 					target = $("[id='"+field+"\\.district']");
 					$(target).empty();
 					$(target).append("<option value=''></option>");
 					$.each(data, function(i,v){
-						$(target).append('<option value="'+v[2]+'">'+v[2]+'</option>');
+						$(target).append('<option value="'+v['name']+'">'+v['name']+'</option>');
 					});
 				},
 				dataType: "json"

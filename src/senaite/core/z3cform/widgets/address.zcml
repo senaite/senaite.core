@@ -1,0 +1,46 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="z3c.form">
+
+  <!-- Address Widget -->
+  <adapter
+      factory=".address.AddressWidgetFactory"
+      for="senaite.core.schema.interfaces.IAddressField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Address data converter between field and widget -->
+  <adapter factory=".address.AddressDataConverter" />
+
+  <!-- Address input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".address.AddressWidget"
+      template="address_input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Address display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".address.AddressWidget"
+      template="address_display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Address hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".address.AddressWidget"
+      template="address_hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- POST for extraction of subdivisions -->
+  <browser:page
+      for="*"
+      name="geo_subdivisions"
+      class=".address.AjaxSubdivisions"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+</configure>
