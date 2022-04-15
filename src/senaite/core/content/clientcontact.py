@@ -77,6 +77,12 @@ class IClientContactSchema(model.Schema):
         required=True,
     )
 
+    directives.omitted("username")
+    username = schema.TextLine(
+        title=_(u"Username"),
+        required=False,
+    )
+
     email = schema.TextLine(
         title=_(u"Email"),
         required=False,
