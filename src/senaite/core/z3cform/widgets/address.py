@@ -22,9 +22,11 @@ import json
 import six
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.decorators import returns_json
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from senaite.core.api import geo
+from senaite.core.decorators import readonly_transaction
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import BUSINESS_ADDRESS
@@ -277,6 +279,8 @@ class AjaxSubdivisions(BrowserView):
     """Endpoint for the retrieval of geographic subdivisions
     """
 
+    @readonly_transaction
+    @returns_json
     def __call__(self):
         """Returns a json with the list of geographic subdivisions that are
         immediately below the country or subdivision passed in with `parent`
@@ -298,7 +302,7 @@ class AjaxSubdivisions(BrowserView):
                 "type": self.context.translate(_(subdivision.type)),
             }
         items = map(to_dict, items)
-        return json.dumps(items)
+        return items
 
     def get_parent(self):
         """Returns the parent passed through the request
