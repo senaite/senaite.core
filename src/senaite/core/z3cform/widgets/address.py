@@ -301,8 +301,7 @@ class AjaxSubdivisions(BrowserView):
                 "code": subdivision.code,
                 "type": self.context.translate(_(subdivision.type)),
             }
-        items = map(to_dict, items)
-        return items
+        return map(to_dict, items)
 
     def get_parent(self):
         """Returns the parent passed through the request
