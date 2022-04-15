@@ -24,8 +24,11 @@ from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_setup_items
+from senaite.core.setuphandlers import setup_allowed_dx_types
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -71,8 +74,11 @@ def upgrade(tool):
     # Add sample containers folder
     add_dexterity_setup_items(portal)
 
-    # Migrate containes
+    # Migrate containers
     migrate_containers_to_dx(portal)
+
+    # Migrate client contacts
+    migrate_contacts_to_dx(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -123,6 +129,96 @@ def migrate_containers_to_dx(portal):
     delete_object(old)
 
     logger.info("Convert Containers to Dexterity [DONE]")
+
+
+def migrate_contacts_to_dx(portal):
+    """Converts existing (client) contacts to Dexterity
+    """
+    logger.info("Convert Contacts to Dexterity ...")
+
+    # Ensure ClientContact DX type is an allowed type inside Client first
+    setup_allowed_dx_types(portal)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "Salutation": ("getSalutation", "salutation", ""),
+        "Firstname": ("getFirstname", "firstname", ""),
+        "Username": ("getUsername", "username", ""),
+        "EmailAddress": ("getEmailAddress", "email", ""),
+        "BusinessPhone": ("getBusinessPhone", "business_phone", ""),
+        "MobilePhone": ("getMobilePhone", "mobile_phone", ""),
+        "HomePhone": ("getHomePhone", "home_phone", ""),
+        "JobTitle": ("getJobTitle", "job_title", ""),
+        "Department": ("getDepartment", "department", ""),
+    }
+
+    def to_new_address(address_type, old_address):
+        if not old_address:
+            old_address = {}
+        return {
+            "type": address_type,
+            "address": old_address.get("address", ""),
+            "zip": old_address.get("zip", ""),
+            "city": old_address.get("city", ""),
+            "subdivision2": old_address.get("district", ""),
+            "subdivision1": old_address.get("state", ""),
+            "country": old_address.get("country", ""),
+        }
+
+    # Mapping of old uids to new uids
+    uids = {}
+
+    # Mapping of new uid to old CC uids
+    cc_uids = {}
+
+    # Search for existing ClientContact objects
+    client_contacts = []
+    query = {"portal_type": "Contact"}
+    brains = api.search(query, "portal_catalog")
+    for brain in brains:
+        src = api.get_object(brain)
+        parent = api.get_parent(src)
+        target = api.create(parent, "ClientContact")
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+        migrator.migrate(schema_mapping, delete_src=False)
+
+        # Keep track of old-new UID for later resolution of CC Contacts
+        src_uid = api.get_uid(src)
+        target_uid = api.get_uid(target)
+        uids[src_uid] = target_uid
+        cc_uids[target_uid] = src.getRawCCContact() or []
+
+        # Resolve the contact name properly
+        lastname = [src.getMiddleinitial(), src.getMiddlename(), src.getSurname()]
+        lastname = " ".join(filter(None, lastname))
+        target.setLastname(lastname)
+
+        # Resolve the address (physical + postal) properly
+        target.setAddress([
+            to_new_address(PHYSICAL_ADDRESS, src.getPhysicalAddress()),
+            to_new_address(POSTAL_ADDRESS, src.getPostalAddress())
+        ])
+
+        # Remove the old contact
+        migrator.delete_object(src)
+
+        # Append to list of new objects
+        client_contacts.append(target)
+
+    # Resolve CC Contacts
+    for obj in client_contacts:
+        uid = api.get_uid(obj)
+        ccs = cc_uids.get(uid)
+        if not ccs:
+            continue
+
+        ccs = filter(api.is_uid, ccs)
+        ccs = [uids[cc] for cc in ccs]
+        obj.setCCContacts(ccs)
+
+    logger.info("Convert Contacts to Dexterity [DONE]")
 
 
 def setup_edit_analysis_conditions(portal):

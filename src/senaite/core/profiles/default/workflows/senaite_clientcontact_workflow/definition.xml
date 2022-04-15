@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
              workflow_id="senaite_clientcontact_workflow"
-             title="Senaite Contact (from Client) type Workflow"
+             title="Senaite Client Contact type Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"

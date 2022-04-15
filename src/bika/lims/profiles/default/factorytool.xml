@@ -16,7 +16,6 @@
   <type portal_type="BikaSetup"/>
   <type portal_type="Calculation"/>
   <type portal_type="Client"/>
-  <type portal_type="Contact"/>
   <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
   <type portal_type="IdentifierType"/>

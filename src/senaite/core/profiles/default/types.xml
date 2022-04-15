@@ -10,6 +10,7 @@
   <object remove="True" name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="Container" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="Containers" meta_type="Factory-based Type Information with dynamic views"/>
+  <object remove="True" name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
 
   <!-- Samples -->
   <object name="Samples" meta_type="Dexterity FTI" />
@@ -25,4 +26,8 @@
   <!-- Sample Containers -->
   <object name="SampleContainer" meta_type="Dexterity FTI" />
   <object name="SampleContainers" meta_type="Dexterity FTI" />
+
+  <!-- Client Contact -->
+  <object name="ClientContact" meta_type="Dexterity FTI" />
+
 </object>

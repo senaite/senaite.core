@@ -285,7 +285,7 @@
     <type type_id="ClientFolder">
       <bound-workflow workflow_id="senaite_clients_workflow"/>
     </type>
-    <type type_id="Contact">
+    <type type_id="ClientContact">
       <bound-workflow workflow_id="senaite_clientcontact_workflow"/>
     </type>
     <type type_id="DuplicateAnalysis">

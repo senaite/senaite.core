@@ -162,6 +162,11 @@ CATALOG_MAPPINGS = (
     ("WorksheetTemplate", ["senaite_catalog_setup", "portal_catalog"]),
 )
 
+ALLOWED_DX_TYPES_ON_AT = (
+    # AT portal type, allowed DX type
+    ("Client", "ClientContact"),
+)
+
 
 def install(context):
     """Install handler
@@ -206,6 +211,9 @@ def install(context):
 
     # Setup markup default and allowed schemas
     setup_markup_schema(portal)
+
+    # Setup DX allowed_types for not-yet-migrated AT types
+    setup_allowed_dx_types(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -525,3 +533,19 @@ def setup_markup_schema(portal):
     settings = registry.forInterface(IMarkupSchema, prefix='plone')
     settings.default_type = u"text/html"
     settings.allowed_types = ("text/html", )
+
+
+def setup_allowed_dx_types(portal):
+    """Adds migrated DX types to the allowed types of not-yet-migrated AT types
+    """
+    logger.info("Setup allowed Dexterity types on legacy Archetypes ...")
+
+    pt = api.get_tool("portal_types")
+    for at_type, dx_type in ALLOWED_DX_TYPES_ON_AT:
+        ti = pt.getTypeInfo(at_type)
+        allowed = ti.allowed_content_types
+        if dx_type in allowed:
+            continue
+        ti.allowed_content_types = allowed + (dx_type, )
+
+    logger.info("Setup allowed Dexterity types on legacy Archetypes [DONE]")

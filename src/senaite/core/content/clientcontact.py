@@ -339,6 +339,16 @@ class ClientContact(Container):
         return self.get_string_value("department")
 
     @security.protected(permissions.ModifyPortalContent)
+    def setAddress(self, value):
+        mutator = self.mutator("address")
+        mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getAddress(self):
+        accessor = self.accessor("address")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
     def setCCContacts(self, value):
         mutator = self.mutator("cc_contacts")
         mutator(self, value)
@@ -347,7 +357,7 @@ class ClientContact(Container):
     def getCCContacts(self, as_objects=False):
         accessor = self.accessor("cc_contacts")
         uids = accessor(self, as_objects=as_objects) or []
-        return map(lambda uid: uid.encode("utf-8"), uids)
+        return [uid.encode("utf.8") for uid in uids]
 
     @security.protected(permissions.View)
     def getFullname(self):
