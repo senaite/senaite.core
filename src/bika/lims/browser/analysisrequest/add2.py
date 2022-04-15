@@ -1647,9 +1647,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     self.request,
                     record,
                 )
-            except (KeyError, RuntimeError) as e:
+            except Exception as e:
                 actions.resume()
-                errors["message"] = e.message
+                errors["message"] = str(e)
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
             # and UID to print stickers
