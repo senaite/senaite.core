@@ -23,13 +23,14 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.interfaces import IContentMigrator
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import uncatalog_object
-from senaite.core.interfaces import IContentMigrator
 from zope.component import getMultiAdapter
 
 version = "2.2.0"  # Remember version number in metadata.xml and setup.py
@@ -51,20 +52,21 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # run import steps located in bika.lims profiles
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
+
+    # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "viewlets")
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+    setup.runImportStepFromProfile(profile, "typeinfo")
 
     # Setup the permission for the edition of analysis conditions
     setup_edit_analysis_conditions(portal)
 
     # Preserve all information from service conditions in Sample
     update_analysis_conditions(portal)
-
-
-    # run import steps located in senaite.core profiles
-    setup.runImportStepFromProfile(profile, "typeinfo")
-    setup.runImportStepFromProfile(profile, "workflow")
 
     # Add sample containers folder
     add_dexterity_setup_items(portal)

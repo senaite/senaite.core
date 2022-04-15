@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<rolemap>
+
+  <permissions>
+
+    <!-- WORKSHEET -->
+    <permission name="senaite.core: Add Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Edit Worksheet" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Worksheets" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Remove Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Worksheet: Add Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <!-- /WORKSHEET -->
+
+  </permissions>
+
+</rolemap>

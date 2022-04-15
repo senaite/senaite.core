@@ -8,7 +8,10 @@ from .interfaces import IDatetimeField
 from .interfaces import IIntField
 from .uidreferencefield import IUIDReferenceField
 from .uidreferencefield import UIDReferenceField
+from .addressfield import IAddressField
+from .addressfield import AddressField
 
 classImplementsFirst(IntField, IIntField)
 classImplementsFirst(UIDReferenceField, IUIDReferenceField)
 classImplementsFirst(DatetimeField, IDatetimeField)
+classImplementsFirst(AddressField, IAddressField)

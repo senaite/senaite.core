@@ -22,10 +22,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core.locales import COUNTRIES
-from senaite.core.locales import DISTRICTS
-from senaite.core.locales import STATES
-from senaite.core.p3compat import cmp
+from senaite.core.api import geo
 
 
 class AddressWidget(TypesWidget):
@@ -48,10 +45,9 @@ class AddressWidget(TypesWidget):
     # Country Name, State Name, District Name.
 
     def getCountries(self):
-        items = []
-        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return items
+        countries = geo.get_countries()
+        items = map(lambda item: (item.alpha_2, item.name), countries)
+        return self.to_utf8(items)
 
     def getDefaultCountry(self):
         portal = getToolByName(self, 'portal_url').getPortalObject()
@@ -62,32 +58,30 @@ class AddressWidget(TypesWidget):
         items = []
         if not country:
             return items
-        # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
-        if not iso:
-            return items
-        iso = iso[0]['ISO']
-        items = [x for x in STATES if x[0] == iso]
-        items.sort(lambda x,y: cmp(x[2], y[2]))
-        return items
+
+        # first-level subdivisions of the country (states??)
+        items = geo.get_subdivisions(country, default=[])
+        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        return self.to_utf8(items)
 
     def getDistricts(self, country, state):
         items = []
         if not country or not state:
             return items
-        # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
-        if not iso:
-            return items
-        iso = iso[0]['ISO']
-        # get NUMBER of the state for lookup
-        snr = [s for s in STATES if s[0] == iso and s[2] == state]
-        if not snr:
-            return items
-        snr = snr[0][1]
-        items = [x for x in DISTRICTS if x[0] == iso and x[1] == snr]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return items
+
+        # first-level subdivisions (districts?) of this subdivision (state?)
+        state_obj = geo.get_subdivision(state, parent=country, default=None)
+        items = geo.get_subdivisions(state_obj, default=[])
+        items = map(lambda sub: [sub.country_code, sub.code, sub.name], items)
+        return self.to_utf8(items)
+
+    def to_utf8(self, value):
+        if isinstance(value, unicode):
+            return value.encode("utf-8")
+        elif isinstance(value, list):
+            return map(self.to_utf8, value)
+        return value
+
 
 registerWidget(AddressWidget,
                title = 'Address Widget',

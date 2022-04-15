@@ -1,0 +1,17 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.core">
+
+  <!-- Add permissions -->
+  <permission id="senaite.core.permissions.AddWorksheet" title="senaite.core: Add Worksheet"/>
+  <permission id="senaite.core.permissions.AddWorksheetTemplate" title="senaite.core: Add WorksheetTemplate"/>
+
+  <!-- Modify permissions -->
+  <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
+  <permission id="senaite.core.permissions.ManageWorksheets" title="senaite.core: Manage Worksheets"/>
+  <permission id="senaite.core.permissions.WorksheetAddAttachment" title="senaite.core: Worksheet: Add Attachment"/>
+
+  <!-- Workflow permissions -->
+  <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
+  <permission id="senaite.core.permissions.TransitionRemoveWorksheet" title="senaite.core: Transition: Remove Worksheet"/>
+
+</configure>

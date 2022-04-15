@@ -52,3 +52,10 @@ msgstr ""
 # senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
+
+# senaite.core.browser.modals.templates.create_worksheet.pt
+msgid "Select all"
+msgstr ""
+
+msgid "Deselect all"
+msgstr ""

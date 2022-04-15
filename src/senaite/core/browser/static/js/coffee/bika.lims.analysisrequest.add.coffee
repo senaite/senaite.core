@@ -1379,7 +1379,7 @@ class window.AnalysisRequestAdd
       if data['errors']
         msg = data.errors.message
         if msg isnt ""
-          msg = "#{msg}<br/>"
+          msg = _t("Sorry, an error occured 🙈<p class='code'>#{msg}</p>")
 
         for fieldname of data.errors.fielderrors
           field = $("##{fieldname}")
