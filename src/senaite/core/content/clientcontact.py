@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2022 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import re
 
@@ -13,7 +31,10 @@ from plone.dexterity.content import Container
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.interfaces import IClientContact
+from senaite.core.schema import AddressField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from six import string_types
 from zope import schema
@@ -84,6 +105,14 @@ class IClientContactSchema(model.Schema):
     department = schema.TextLine(
         title=_(u"Department"),
         required=False,
+    )
+
+    address = AddressField(
+        title=_(u"Address"),
+        address_types=[
+            PHYSICAL_ADDRESS,
+            POSTAL_ADDRESS,
+        ]
     )
 
     cc_contacts = UIDReferenceField(
