@@ -148,7 +148,7 @@ class IClientContactSchema(model.Schema):
         UIDReferenceWidgetFactory,
         catalog="portal_catalog",
         query="get_cc_contacts_query",
-        display_template="<a href='${url}'>${title}</a>",
+        display_template="<a href='${url}'>${firstname} ${lastname}</a>",
         columns=[
             {
                 "name": "title",
