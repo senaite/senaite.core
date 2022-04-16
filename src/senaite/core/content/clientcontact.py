@@ -275,6 +275,14 @@ class ClientContact(Container):
         return self.get_string_value("lastname")
 
     @security.protected(permissions.ModifyPortalContent)
+    def setUsername(self, value):
+        self.set_string_value("username", value)
+
+    @security.protected(permissions.View)
+    def getUsername(self):
+        return self.get_string_value("username")
+
+    @security.protected(permissions.ModifyPortalContent)
     def setEmail(self, value):
         def validate_email(email):
             if email and not is_valid_email_address(email):

@@ -303,11 +303,6 @@ class ICalculations(Interface):
     """
 
 
-class IContacts(Interface):
-    """Marker interface for Contacts
-    """
-
-
 class IContact(Interface):
     """Marker interface for a single Contact
     """

@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Client contacts listing view -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="contacts"
+      class=".contacts.ClientContactsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+</configure>

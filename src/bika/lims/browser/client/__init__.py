@@ -25,5 +25,4 @@ from views.artemplates import ClientARTemplatesView
 from views.samplepoints import ClientSamplePointsView
 from views.analysisspecs import ClientAnalysisSpecsView
 from views.attachments import ClientAttachmentsView
-from views.contacts import ClientContactsView
 from views.contacts import ClientContactVocabularyFactory
