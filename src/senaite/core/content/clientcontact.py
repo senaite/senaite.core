@@ -367,7 +367,9 @@ class ClientContact(Container):
     @security.protected(permissions.View)
     def getCCContacts(self, as_objects=False):
         accessor = self.accessor("cc_contacts")
-        uids = accessor(self, as_objects=as_objects) or []
+        uids = accessor(self) or []
+        if as_objects:
+            return [api.get_object(uid) for uid in uids]
         return [uid.encode("utf.8") for uid in uids]
 
     @security.protected(permissions.View)

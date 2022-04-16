@@ -142,7 +142,7 @@ schema = BikaSchema.copy() + Schema((
         'Contact',
         required=1,
         default_method='getContactUIDForUser',
-        allowed_types=('Contact',),
+        allowed_types=('ClientContact',),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
@@ -167,12 +167,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmail', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -180,7 +180,7 @@ schema = BikaSchema.copy() + Schema((
         'CCContact',
         multiValued=1,
         vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('Contact',),
+        allowed_types=('ClientContact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
         mode="rw",
@@ -202,12 +202,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmail', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -1869,7 +1869,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         user = mt.getAuthenticatedMember()
         user_id = user.getUserName()
         pc = getToolByName(self, 'portal_catalog')
-        r = pc(portal_type='Contact',
+        r = pc(portal_type='ClientContact',
                getUsername=user_id)
         if len(r) == 1:
             return r[0].UID

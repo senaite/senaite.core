@@ -817,10 +817,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # catalog queries for UI field filtering
         filter_queries = {
             "Contact": {
-                "getParentUID": [uid]
+                "path": {
+                    "query": api.get_path(obj),
+                    "level": 0
+                }
             },
             "CCContact": {
-                "getParentUID": [uid]
+                "path": {
+                    "query": api.get_path(obj),
+                    "level": 0
+                }
             },
             "InvoiceContact": {
                 "getParentUID": [uid]
@@ -859,10 +865,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Note: It might get a circular dependency when calling:
         #       map(self.get_contact_info, obj.getCCContact())
         cccontacts = []
-        for contact in obj.getCCContact():
+        for contact in obj.getCCContacts(as_objects=True):
             uid = api.get_uid(contact)
             fullname = contact.getFullname()
-            email = contact.getEmailAddress()
+            email = contact.getEmail()
             cccontacts.append({
                 "uid": uid,
                 "title": fullname,
