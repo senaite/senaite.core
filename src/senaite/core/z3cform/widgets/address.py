@@ -200,6 +200,18 @@ class AddressWidget(HTMLFormElement, Widget):
 
         return records or default
 
+    def get_value(self):
+        values = self.value or []
+        existing = dict([(a.get("type"), a) for a in values])
+
+        # HACK - This is necessary for when adding a new object, cause current
+        # context is the container instead of an object with the desired type
+        output = []
+        for address_type in self.field.get_address_types():
+            default = self.field.get_empty_address(address_type)
+            output.append(existing.get(address_type, default))
+        return output
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
@@ -217,7 +229,7 @@ class AddressWidget(HTMLFormElement, Widget):
         sub1 = {}
         sub2 = {}
 
-        for item in self.value:
+        for item in self.get_value():
             country = item.get("country")
             if country and country not in sub1:
                 subdivisions = geo.get_subdivisions(country, [])
@@ -240,13 +252,12 @@ class AddressWidget(HTMLFormElement, Widget):
 
         attributes = {
             "data-id": self.id,
-            "data-uid": api.get_uid(self.context),
             "data-countries": countries,
             "data-subdivisions1": sub1,
             "data-subdivisions2": sub2,
             "data-name": self.name,
             "data-portal_url": api.get_url(api.get_portal()),
-            "data-items": self.value,
+            "data-items": self.get_value(),
             "data-title": self.title,
             "data-class": self.klass,
             "data-style": self.style,

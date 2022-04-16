@@ -19,7 +19,6 @@ class AddressWidgetController extends React.Component {
     // -> initial values are set from the widget class
     const data_keys = [
       "id",
-      "uid",
       "name",
       "items",
       "portal_url",
@@ -138,7 +137,6 @@ class AddressWidgetController extends React.Component {
           {section_title}
           <Address
             id={this.state.id}
-            uid={this.state.uid}
             name={this.state.name}
             index={index}
             address_type={item.type}
