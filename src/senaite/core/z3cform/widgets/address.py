@@ -207,7 +207,7 @@ class AddressWidget(HTMLFormElement, Widget):
         # HACK - This is necessary for when adding a new object, cause current
         # context is the container instead of an object with the desired type
         output = []
-        for address_type in self.field.address_types:
+        for address_type in self.field.get_address_types():
             default = self.field.get_empty_address(address_type)
             output.append(existing.get(address_type, default))
         return output
