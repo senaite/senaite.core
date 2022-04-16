@@ -43,6 +43,17 @@ from zope.interface import Invalid
 from zope.interface import invariant
 
 
+def validate_phone(phone):
+    """Raises an error if phone is not valid
+    """
+    if not phone:
+        return
+
+    phone = phone.strip()
+    if not is_valid_phone(phone):
+        raise Invalid(_("Phone is not valid"))
+
+
 def is_valid_phone(phone):
     """Returns whether the given phone is valid or not
     """
@@ -163,10 +174,10 @@ class IClientContactSchema(model.Schema):
     )
 
     @invariant
-    def validate_email(self):
+    def validate_email(data):
         """Checks if the email is correct
         """
-        email = self.email
+        email = data.email
         if not email:
             return
 
@@ -174,31 +185,23 @@ class IClientContactSchema(model.Schema):
         if not is_valid_email_address(email):
             raise Invalid(_("Email is not valid"))
 
-    def validate_phone(self, field_name):
-        phone = getattr(self, field_name)
-        if not phone:
-            return
-
-        if not is_valid_phone(phone):
-            raise Invalid(_("Phone is not valid"))
-
     @invariant
-    def validate_business_phone(self):
+    def validate_business_phone(data):
         """Checks if the business phone is correct
         """
-        self.validate_phone("business_phone")
+        validate_phone(data.business_phone)
 
     @invariant
-    def validate_home_phone(self):
+    def validate_home_phone(data):
         """Checks if the home phone is correct
         """
-        self.validate_phone("home_phone")
+        validate_phone(data.home_phone)
 
     @invariant
-    def validate_mobile_phone(self):
+    def validate_mobile_phone(data):
         """Checks if the mobile phone is correct
         """
-        self.validate_phone("mobile_phone")
+        validate_phone(data.mobile_phone)
 
 
 @implementer(IClientContact, IClientContactSchema, IDeactivable)
