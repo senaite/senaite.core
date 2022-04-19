@@ -66,7 +66,7 @@
 
         <!-- Form -->
         <form data-pat-autotoc="levels: legend; section: fieldset; className: autotabs"
-              class="rowlike enableUnloadProtection" action="." method="post"
+              class="rowlike enableUnloadProtection" action="." method="post" name="edit_form"
               tal:define="groups view/groups | nothing;
                           form_name view/form_name | nothing;
                           form_class view/css_class | string:;
