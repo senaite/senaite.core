@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1975 Fix IndexError in Unit formatter
 - #1973 Fix AjaxEditForm does not work for default edit form of Dexterity types
 - #1970 Better error messages in sample add form
 - #1960 AddressField and AddressWidget with React component for DX types
