@@ -749,6 +749,13 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return _c(self.title)
 
     @security.public
+    def getUnit(self):
+        """Returns the Unit
+        """
+        unit = self.Schema().getField("Unit").get(self)
+        return unit.strip()
+
+    @security.public
     def getDefaultVAT(self):
         """Return default VAT from bika_setup
         """
