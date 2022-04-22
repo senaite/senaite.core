@@ -1,7 +1,10 @@
 Utility for extending Worksheet layouts
 -----------------------------
 
-First step: create utility for provide tuples custom layouts
+Use this tool if you want to create and use your own custom worksheet layout views.
+
+
+1. Create class which implements ``IWorksheetLayouts`` marker interface and returns the list of your homemade layouts (as tuple of tuples) 
 
 .. code-block:: python
 
@@ -18,7 +21,10 @@ First step: create utility for provide tuples custom layouts
                 ('my_first_ws_layout', 'My first WS layout'),
             )
 
-Second step: registration created utility in the `configure.zcml`
+Please note that each tuple which describes your layout has two elements: (``registered_view_name``, ``Title``). Title used in the drop-down menu.
+
+
+2. Register your class as an utility in ``configure.zcml``
 
 .. code-block:: xml
 
@@ -28,7 +34,7 @@ Second step: registration created utility in the `configure.zcml`
         provides="bika.lims.interfaces.IWorksheetLayouts"
     />
 
-Third step: create view for your layout
+3. Make a view for your new layout
 
 .. code-block:: python
 
@@ -41,7 +47,7 @@ Third step: create view for your layout
             super(MyFirstWSLayoutView, self).__init__(context, request)
             # some custom logic
 
-Fourth step: registration your view in the `configure.zcml`
+4. Register a fresh view file in the `configure.zcml`
 
 .. code-block:: xml
 
