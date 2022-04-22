@@ -553,6 +553,15 @@ class IWorksheetTemplate(Interface):
     """
 
 
+class IWorksheetLayouts(Interface):
+    """Marker interface for additional Worksheet layouts
+    """
+
+    def getLayoutsList(self):
+        """Returns tuples of layouts where key is the name of the view and value is name of layout
+        """
+
+
 class IBikaCatalog(Interface):
     """Marker interface for bika_catalog
     """

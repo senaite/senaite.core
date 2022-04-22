@@ -125,10 +125,11 @@ SCINOTATION_OPTIONS = DisplayList((
     ('4', 'a·10^b / a·10^-b'),
     ('5', 'a·10^b / a·10^-b (with superscript)'),
 ))
-WORKSHEET_LAYOUT_OPTIONS = DisplayList((
-    ('1', _('Classic')),
-    ('2', _('Transposed')),
-))
+WORKSHEET_LAYOUT_OPTIONS = (
+    ('analyses_classic_view', _('Classic')),
+    ('analyses_transposed_view', _('Transposed')),
+)
+DEFAULT_WORKSHEET_LAYOUT = 'analyses_classic_view'
 MULTI_VERIFICATION_TYPE = DisplayList((
     ('self_multi_enabled', _('Allow same user to verify multiple times')),
     ('self_multi_not_cons', _('Allow same user to verify multiple times, but not consecutively')),

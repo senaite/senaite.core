@@ -19,6 +19,7 @@ Table of Contents:
    license
    conventions/index
    adapters/index
+   utilities/index
    doctests
    release_notes
    changelog
