@@ -78,3 +78,4 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRemove.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorksheetApplyTemplate.rst
+.. include:: ../src/senaite/core/tests/doctests/WorksheetLayoutUtility.rst
