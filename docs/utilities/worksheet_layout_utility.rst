@@ -47,7 +47,7 @@ Please note that each tuple which describes your layout has two elements: (``reg
             super(MyFirstWSLayoutView, self).__init__(context, request)
             # some custom logic
 
-4. Register a fresh view file in the `configure.zcml`
+4. Register a fresh view file in the ``configure.zcml``
 
 .. code-block:: xml
 
