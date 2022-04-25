@@ -113,6 +113,10 @@ def guard_submit(analysis):
 
     # Cannot submit with interims without value
     for interim in analysis.getInterimFields():
+        true_values = ("true", "1", "on", "True", True, 1)
+        if interim.get("allow_empty", False) in true_values:
+            continue
+
         if not interim.get("value", ""):
             return False
 
