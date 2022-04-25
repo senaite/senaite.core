@@ -450,8 +450,11 @@ class InterimFieldsValidator:
         """
         choices = interim.get("choices")
         if not choices:
-            # No choices set, nothing to do
-            return
+            # No choices set, result type should remain empty
+            result_type = interim.get("result_type")
+            if not result_type:
+                return
+            return _t(_("Control type is not supported for empty choices"))
 
         # Choices are expressed like "value0:text0|value1:text1|..|valuen:textn"
         choices = choices.split("|") or []
