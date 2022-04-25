@@ -549,7 +549,7 @@ def format_supsub(text):
     subsup = []
     clauses = []
     insubsup = True
-    for c in str(text):
+    for c in str(text).strip():
         if c == '(':
             if insubsup is False:
                 out.append(c)
