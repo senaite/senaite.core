@@ -50,8 +50,6 @@ class ManageResultsView(BrowserView):
             "/++plone++senaite.core.static/assets/icons/worksheet.svg"
         )
 
-        self.layout_displaylist = getWorksheetLayouts()
-
     def __call__(self):
         # TODO: Refactor this function call
         showRejectionMessage(self.context)
@@ -82,6 +80,10 @@ class ManageResultsView(BrowserView):
         self.checkInstrumentsValidity()
 
         return self.template()
+
+    @property
+    def layout_displaylist(self):
+        return getWorksheetLayouts()
 
     def get_analysts(self):
         """Returns Analysts
