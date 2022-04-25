@@ -1,5 +1,5 @@
 Utility for extending Worksheet layouts
------------------------------
+---------------------------------------
 
 Use this tool if you want to create and use your own custom worksheet layout views.
 
@@ -16,7 +16,7 @@ Use this tool if you want to create and use your own custom worksheet layout vie
         """
         implements(IWorksheetLayouts)
 
-        def getLayoutsList(self):
+        def getLayouts(self):
             return (
                 ('my_first_ws_layout', 'My first WS layout'),
             )

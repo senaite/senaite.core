@@ -28,5 +28,5 @@ class DefaultWorksheetLayouts(object):
     """
     implements(IWorksheetLayouts)
 
-    def getLayoutsList(self):
+    def getLayouts(self):
         return WORKSHEET_LAYOUT_OPTIONS

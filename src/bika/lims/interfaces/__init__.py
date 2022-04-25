@@ -557,7 +557,7 @@ class IWorksheetLayouts(Interface):
     """Marker interface for additional Worksheet layouts
     """
 
-    def getLayoutsList(self):
+    def getLayouts(self):
         """Returns tuples of layouts where key is the name of the view and value is name of layout
         """
 

@@ -89,6 +89,6 @@ def getWorksheetLayouts():
     """
     layouts = ()
     for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
-        layouts += layout_utility.getLayoutsList()
+        layouts += layout_utility.getLayouts()
 
     return DisplayList(layouts)

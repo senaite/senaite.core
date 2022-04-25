@@ -1,5 +1,5 @@
 Utilities
-========
+=========
 
 Utilities are the mechanism that allows to extend the behavior of
 not only senaite.core, but also Plone and Zope. SENAITE comes with plenty of
