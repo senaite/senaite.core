@@ -19,9 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import cgi
+import copy
 import json
 import math
 from decimal import Decimal
+from six import string_types
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -1072,17 +1074,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :param keyword: the keyword of the interim
         :param value: the value for the interim
         """
-        # Ensure result integrity regards to None, empty and 0 values
-        val = str('' if not value and value != 0 else value).strip()
-        interims = self.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] == keyword:
-                interim['value'] = val
-                self.setInterimFields(interims)
-                return
+        # Ensure value format integrity
+        if value is None:
+            value = ""
+        elif isinstance(value, string_types):
+            value = value.strip()
+        elif isinstance(value, (list, tuple, set, dict)):
+            value = json.dumps(value)
 
-        logger.warning("Interim '{}' for analysis '{}' not found"
-                       .format(keyword, self.getKeyword()))
+        # Ensure result integrity regards to None, empty and 0 values
+        interims = copy.deepcopy(self.getInterimFields())
+        for interim in interims:
+            if interim.get("keyword") == keyword:
+                interim["value"] = str(value)
+        self.setInterimFields(interims)
 
     def getInterimValue(self, keyword):
         """Returns the value of an interim of this analysis

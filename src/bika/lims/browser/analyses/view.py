@@ -929,7 +929,6 @@ class AnalysesView(ListingView):
 
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
-
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
@@ -968,8 +967,20 @@ class AnalysesView(ListingView):
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
                 item.setdefault("choices", {})[interim_keyword] = dl
 
+                # Maybe the value is a multi-select/multi-choice?
+                try:
+                    val = json.loads(interim_value)
+                    if isinstance(val, (list, tuple, set)):
+                        interim_value = val
+                except ValueError:
+                    pass
+
+                if not isinstance(interim_value, (list, tuple, set)):
+                    interim_value = [interim_value]
+
                 # Set the text as the formatted value
-                text = choices.get(interim_value, "")
+                texts = [choices.get(v, "") for v in interim_value]
+                text = "<br/>".join(filter(None, texts))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:
