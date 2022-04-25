@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1980 Fix: Absent value for Unit field causes error
 - #1978 Unify field sizes in sample view
 - #1975 Fix IndexError in Unit formatter
 - #1973 Fix AjaxEditForm does not work for default edit form of Dexterity types
