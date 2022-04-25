@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #1984 Fix default roles for client field in samples (#1968 port)
 - #1954 Allow custom id formatting regardless of portal type (#1953 port)
 - #1939 Fix retracted and rejected analyses cannot be added to a Sample
 - #1906 Fix traceback in auditlog view when context is a Dexterity type
