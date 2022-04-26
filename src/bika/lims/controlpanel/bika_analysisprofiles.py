@@ -122,6 +122,7 @@ class AnalysisProfilesView(BikaListingView):
 
         item["replace"]["Title"] = get_link(url, value=title)
         item["Description"] = description
+        item["ProfileKey"] = obj.ProfileKey
 
         return item
 
