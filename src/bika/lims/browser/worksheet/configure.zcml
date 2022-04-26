@@ -4,6 +4,9 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
+  <!-- needed for moved worksheet permissions -->
+  <include package="senaite.core.permissions" />
+
   <!-- Views -->
   <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
@@ -105,15 +108,6 @@
 
 
   <!-- Ajax signatures -->
-
-  <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="attachAnalyses"
-      class="bika.lims.browser.worksheet.ajax.AttachAnalyses"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="set_analyst"

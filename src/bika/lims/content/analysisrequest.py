@@ -15,14 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import base64
+import functools
 import re
 import sys
 from decimal import Decimal
-from urlparse import urljoin
+
+from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -31,7 +33,6 @@ from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
@@ -45,10 +46,6 @@ from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -123,7 +120,12 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
@@ -272,7 +274,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            catalog_name=SAMPLE_CATALOG,
             search_fields=('listing_searchable_text',),
             base_query={'is_active': True,
                         'is_received': True,
@@ -310,7 +312,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name=BIKA_CATALOG,
+            catalog_name=SENAITE_CATALOG,
             search_fields=('listing_searchable_text',),
             base_query={"is_active": True,
                         "sort_limit": 50,
@@ -349,7 +351,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             colModel=[
                 {'columnName': 'Title', 'width': '30',
                  'label': _('Title'), 'align': 'left'},
@@ -383,7 +385,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -406,7 +408,7 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             render_own_label=True,
             visible=False,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -432,7 +434,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -533,7 +535,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -544,20 +546,24 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Container',
         required=0,
-        allowed_types='Container',
+        allowed_types='SampleContainer',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContainer,
         widget=ReferenceWidget(
             label=_("Container"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_setup_catalog',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
+            catalog_name='senaite_catalog_setup',
+            base_query={
+                "portal_type": "SampleContainer",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
             showOn=True,
         ),
     ),
@@ -571,11 +577,12 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
             label=_("Preservation"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -659,7 +666,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -712,7 +719,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "invisible",
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -736,7 +743,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -759,7 +766,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -792,6 +799,7 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -833,7 +841,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -856,7 +864,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
             },
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -911,7 +919,7 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             render_own_label=True,
             visible=False,
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -977,6 +985,10 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAttachment',
         mode="rw",
         read_permission=View,
+        # The addition and removal of attachments is governed by the specific
+        # permissions "Add Sample Attachment" and "Delete Sample Attachment",
+        # so we assume here that the write permission is the less restrictive
+        # "ModifyPortalContent"
         write_permission=ModifyPortalContent,
         widget=ComputedWidget(
             visible={
@@ -1352,6 +1364,12 @@ schema = BikaSchema.copy() + Schema((
             visible={'add': 'edit',}
         ),
     ),
+
+    # Initial conditions for analyses set on Sample registration
+    RecordsField(
+        "ServiceConditions",
+        widget=ComputedWidget(visible=False)
+    )
 )
 )
 
@@ -1690,7 +1708,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         billable_profiles = filter(
             lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
         # All services contained in the billable profiles
-        billable_profile_services = reduce(lambda a, b: a+b, map(
+        billable_profile_services = functools.reduce(lambda a, b: a+b, map(
             lambda profile: profile.getService(), billable_profiles), [])
         # Keywords of the contained services
         billable_service_keys = map(
@@ -1877,7 +1895,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # Get the worksheets that contain any of these analyses
         query = dict(getAnalysesUIDs=analyses_uids)
-        worksheets = api.search(query, CATALOG_WORKSHEET_LISTING)
+        worksheets = api.search(query, WORKSHEET_CATALOG)
         if full_objects:
             worksheets = map(api.get_object, worksheets)
         return worksheets
@@ -1894,13 +1912,13 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # Get reference qc analyses from these worksheets
         query = dict(portal_type="ReferenceAnalysis",
                      getWorksheetUID=worksheet_uids)
-        qc_analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        qc_analyses = api.search(query, ANALYSIS_CATALOG)
 
         # Extend with duplicate qc analyses from these worksheets and Sample
         query = dict(portal_type="DuplicateAnalysis",
                      getWorksheetUID=worksheet_uids,
                      getAncestorsUIDs=[api.get_uid(self)])
-        qc_analyses += api.search(query, CATALOG_ANALYSIS_LISTING)
+        qc_analyses += api.search(query, ANALYSIS_CATALOG)
 
         # Bail out analyses with a different review_state
         if review_state:
@@ -2143,7 +2161,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not idxs:
             idxs = []
         analyses = self.getAnalyses()
-        catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
+        catalog = getToolByName(self, ANALYSIS_CATALOG)
         for analysis in analyses:
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
@@ -2170,7 +2188,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         Returns the email of this analysis request's sampler.
         """
-        return user_email(self, self.Creator())
+        return user_email(self, self.getSampler())
 
     def getPriorityText(self):
         """
@@ -2328,7 +2346,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         reasons = self.getRejectionReasons()
         if not reasons:
             return []
-        return reasons[0].get("selected", [])
+
+        # Return a copy of the list to avoid accidental writes
+        reasons = reasons[0].get("selected", [])[:]
+        return filter(None, reasons)
 
     def getOtherRejectionReasons(self):
         """Returns other rejection reasons custom text, if any
@@ -2336,7 +2357,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         reasons = self.getRejectionReasons()
         if not reasons:
             return ""
-        return reasons[0].get("other", "")
+        return reasons[0].get("other", "").strip()
 
     def createAttachment(self, filedata, filename="", **kw):
         """Add a new attachment to the sample
@@ -2425,9 +2446,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             attachment.setReportOption("i")
             # remove the image data base64 prefix
             html = html.replace(data_type, "")
-            # remove the base64 image data with the attachment URL
-            html = html.replace(data, "{}/AttachmentFile".format(
-                attachment.absolute_url()))
+            # remove the base64 image data with the attachment link
+            html = html.replace(data, "resolve_attachment?uid={}".format(
+                api.get_uid(attachment)))
             size = attachment.getAttachmentFile().get_size()
             logger.info("Converted {:.2f} Kb inline image for {}"
                         .format(size/1024, api.get_url(self)))

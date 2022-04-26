@@ -15,12 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.mail import send_email
-from bika.lims.api.mail import to_email_attachment
+from bika.lims.api.snapshot import pause_snapshots_for
+from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IReceived
@@ -28,12 +28,12 @@ from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor as do_action_for
-from bika.lims.workflow import get_prev_status_from_history
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
+from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
@@ -142,8 +142,9 @@ def after_reinstate(analysis_request):
     do_action_to_analyses(analysis_request, "reinstate")
 
     # Force the transition to previous state before the request was cancelled
-    prev_status = get_prev_status_from_history(analysis_request, "cancelled")
-    changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status,
+    skip = ["cancelled"]
+    prev = api.get_previous_worfklow_status_of(analysis_request, skip=skip)
+    changeWorkflowState(analysis_request, SAMPLE_WORKFLOW, prev,
                         action="reinstate")
     analysis_request.reindexObject()
 
@@ -172,7 +173,11 @@ def after_sample(analysis_request):
     """Method triggered after "sample" transition for the Analysis Request
     passed in is performed
     """
-    analysis_request.setDateSampled(DateTime())
+    # The date might be already set by the `Sample` listing workflow action
+    date_sampled = analysis_request.getDateSampled()
+    if not date_sampled:
+        # set to current date when empty
+        analysis_request.setDateSampled(DateTime())
 
 
 def after_rollback_to_receive(analysis_request):
@@ -207,3 +212,79 @@ def after_detach(analysis_request):
     # will return all them, so no need to do the same with the detached
     analyses = parent.getAnalyses(full_objects=True)
     map(lambda an: an.reindexObject(), analyses)
+
+
+def after_dispatch(sample):
+    """Event triggered after "dispatch" transition takes place for a given sample
+    """
+    primary = sample.getParentAnalysisRequest()
+
+    def get_last_wf_comment(obj):
+        entry = api.get_review_history(obj)[0]
+        return entry.get("comments", "")
+
+    def dispatch(obj, comment=""):
+        wf = api.get_tool("portal_workflow")
+        try:
+            wf.doActionFor(obj, "dispatch", comment=comment)
+            return True
+        except WorkflowException:
+            return False
+
+    if not primary:
+        # propagate to transitions
+        partitions = sample.getDescendants(all_descendants=False)
+        for partition in partitions:
+            comment = get_last_wf_comment(sample)
+            dispatch(partition, comment)
+        return
+
+    # Return when primary sample is already dispatched
+    if api.get_workflow_status_of(primary) == "dispatched":
+        return
+
+    # Dipsatch primary sample when all partitions are dispatched
+    parts = primary.getDescendants()
+    # Partitions in some statuses won't be considered
+    skip = ["dispatched", "cancelled", "retracted", "rejected"]
+    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
+    if len(parts) == 0:
+        # There are no partitions left, transition the primary
+        comment = get_last_wf_comment(sample)
+        dispatch(primary, comment)
+
+
+def after_restore(sample):
+    """Event triggered after "restore" transition takes place for a sample
+    """
+
+    # Transition the sample to the state before it was stored
+    previous_state = api.get_previous_worfklow_status_of(
+        sample, skip=["dispatched"], default="sample_due")
+
+    # Note: we pause the snapshots here because events are fired next
+    pause_snapshots_for(sample)
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
+    resume_snapshots_for(sample)
+
+    # Reindex the sample
+    sample.reindexObject()
+
+    # If the sample is a partition, try to promote to the primary
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        # propagate to transitions
+        partitions = sample.getDescendants(all_descendants=False)
+        for partition in partitions:
+            do_action_for(partition, "restore")
+        return
+
+    # Return when primary sample is not dispatched
+    if api.get_workflow_status_of(primary) != "dispatched":
+        return
+
+    # Restore primary sample if all its partitions have been restored
+    parts = primary.getDescendants()
+    states = map(api.get_workflow_status_of, parts)
+    if "dispatched" not in states:
+        do_action_for(primary, "restore")

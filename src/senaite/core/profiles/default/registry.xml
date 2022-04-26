@@ -22,6 +22,19 @@
     <value>/++plone++senaite.core.static/images/senaite.svg</value>
   </record>
 
+  <!-- Toolbar CSS Styles -->
+  <record name="senaite.toolbar_logo_styles" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="toolbar_logo_styles">
+    <field type="plone.registry.field.Dict">
+      <title>Toolbar CSS</title>
+      <description>CSS styles for the toolbar logo</description>
+      <key_type type="plone.registry.field.ASCIILine" />
+      <value_type type="plone.registry.field.ASCIILine" />
+    </field>
+    <value>
+      <element key="height">15px</element>
+    </value>
+  </record>
+
   <!-- Types to display in navigation -->
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
@@ -31,7 +44,7 @@
         <element>ClientFolder</element>
         <element>Methods</element>
         <element>Folder</element>
-        <element>AnalysisRequestsFolder</element>
+        <element>Samples</element>
       </default>
       <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">The content types that should be shown in the navigation and site map.</description>
       <missing_value/>
@@ -43,7 +56,7 @@
     </field>
     <value>
       <!-- Work Items -->
-      <element>AnalysisRequestsFolder</element>
+      <element>Samples</element>
       <element>BatchFolder</element>
       <element>ClientFolder</element>
       <element>Folder</element>
@@ -101,29 +114,12 @@
       <element>de</element>
       <element>en</element>
       <element>es</element>
-    </value>
-  </record>
-  <record name="plone.available_languages" interface="plone.i18n.interfaces.ILanguageSchema" field="available_languages">
-    <field type="plone.registry.field.List">
-      <default>
-        <element>en</element>
-      </default>
-      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="description_available_languages">The languages in which the site should be translatable.</description>
-      <missing_value/>
-      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="heading_available_languages">Available languages</title>
-      <value_type type="plone.registry.field.Choice">
-        <vocabulary>plone.app.vocabularies.AvailableContentLanguages</vocabulary>
-      </value_type>
-    </field>
-    <value>
-      <element>de</element>
-      <element>en</element>
-      <element>es</element>
       <element>pl</element>
       <element>th</element>
       <element>zh</element>
     </value>
   </record>
+
   <!-- Use language cookie (required to display the language menu) -->
   <record name="plone.use_cookie_negotiation" interface="plone.i18n.interfaces.ILanguageSchema" field="use_cookie_negotiation">
     <field type="plone.registry.field.Bool">
@@ -134,7 +130,6 @@
     </field>
     <value>True</value>
   </record>
-
 
   <!-- Dashboard panels visibility -->
   <record name="senaite.core.dashboard_panels_visibility">
@@ -156,5 +151,21 @@
     </value>
   </record>
 
+  <record name="plone.allowed_types" interface="Products.CMFPlone.interfaces.controlpanel.IMarkupSchema" field="allowed_types">
+    <field type="plone.registry.field.Tuple">
+      <default>
+        <element>text/html</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer.</description>
+      <missing_value/>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Alternative formats</title>
+      <value_type type="plone.registry.field.Choice">
+        <vocabulary>plone.app.vocabularies.AllowableContentTypes</vocabulary>
+      </value_type>
+    </field>
+    <value>
+      <element>text/html</element>
+    </value>
+  </record>
 
 </registry>

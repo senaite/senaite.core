@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import re
@@ -28,7 +28,6 @@ from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
@@ -40,8 +39,6 @@ from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_int
@@ -64,6 +61,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.p3compat import cmp
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 ALL_ANALYSES_TYPES = "all"
@@ -237,16 +239,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         doActionFor(self, "rollback_to_open")
 
         # Reindex Analysis
-        push_reindex_to_actions_pool(analysis, idxs=["getWorksheetUID"])
+        push_reindex_to_actions_pool(analysis)
 
         # Reindex Worksheet
-        idxs = ["getAnalysesUIDs"]
-        push_reindex_to_actions_pool(self, idxs=idxs)
+        push_reindex_to_actions_pool(self)
 
         # Reindex Analysis Request, if any
         if IRequestAnalysis.providedBy(analysis):
-            idxs = ['assigned_state', 'getDueDate']
-            push_reindex_to_actions_pool(analysis.getRequest(), idxs=idxs)
+            push_reindex_to_actions_pool(analysis.getRequest())
 
         # Resume the actions pool
         actions_pool.resume()
@@ -297,7 +297,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This function returns the registered methods in the system as a
         vocabulary.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
                               is_active=True)]
@@ -314,7 +314,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if self.getMethod():
             cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
                                         "operator": "or"}
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in
             bsc(cfilter)]
@@ -363,7 +363,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         query = dict(portal_type="AnalysisService", UID=service_uids,
                      sort_on="sortable_title")
         services = filter(lambda service: api.get_uid(service) not in processed,
-                          api.search(query, "bika_setup_catalog"))
+                          api.search(query, "senaite_catalog_setup"))
 
         # Ref analyses from the same slot must have the same group id
         ref_gid = self.nextRefAnalysesGroupID(reference)
@@ -437,7 +437,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             prefix = reference.id + "-D"
-        bac = getToolByName(reference, 'bika_analysis_catalog')
+        bac = getToolByName(reference, 'senaite_catalog_analysis')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
         rr = re.compile("^" + prefix + "[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
@@ -865,7 +865,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         if not analyses:
             return
 
@@ -1008,7 +1008,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not type or type not in ['b', 'c']:
             return []
 
-        bc = api.get_tool("bika_catalog")
+        bc = api.get_tool("senaite_catalog")
         wst_type = type == 'b' and 'blank_ref' or 'control_ref'
 
         slots_sample = list()
@@ -1136,16 +1136,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if ws:
             return ws.absolute_url_path()
         return ''
-
-    def getWorksheetServices(self):
-        """get list of analysis services present on this worksheet
-        """
-        services = []
-        for analysis in self.getAnalyses():
-            service = analysis.getAnalysisService()
-            if service and service not in services:
-                services.append(service)
-        return services
 
     def getQCAnalyses(self):
         """
@@ -1458,7 +1448,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
                 # TODO Workflow - Analysis Retest transition within a Worksheet
-                changeWorkflowState(analysis, "bika_analysis_workflow", "assigned")
+                changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "assigned")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)
@@ -1474,14 +1464,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if can_access is True:
             pm = getToolByName(self, 'portal_membership')
-            edit_allowed = pm.checkPermission(EditWorksheet, self)
-            if edit_allowed:
+            if can_edit_worksheet(self):
                 # Check if the current user is the WS's current analyst
                 member = pm.getAuthenticatedMember()
                 analyst = self.getAnalyst().strip()
                 if analyst != _c(member.getId()):
                     # Has management privileges?
-                    if pm.checkPermission(ManageWorksheets, self):
+                    if can_manage_worksheets(self):
                         granted = True
                 else:
                     granted = True
@@ -1536,7 +1525,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         steps = 0
         query = dict(getWorksheetUID=api.get_uid(self))
-        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        analyses = api.search(query, ANALYSIS_CATALOG)
         max_steps = len(analyses) * 2
         for analysis in analyses:
             an_state = analysis.review_state

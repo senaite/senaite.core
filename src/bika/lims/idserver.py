@@ -15,12 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
 import re
-
+import six
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -32,7 +32,9 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
+from bika.lims.interfaces import IARReport
 from bika.lims.interfaces import IIdServer
+from bika.lims.interfaces import IIdServerTypeID
 from bika.lims.interfaces import IIdServerVariables
 from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
@@ -85,11 +87,22 @@ def get_contained_items(obj, spec):
 
 
 def get_type_id(context, **kw):
-    """Returns the type id for the context passed in
+    """Returns the type id for the context passed in, that is used for custom
+    ID formatting, regardless of the real portal type of the context passed in.
+    Thus, the function might return different type ids for two objects from
+    same portal type (e.g AnalysisRequest). This type id is used later for
+    ID server prefixes (in lowercase)
     """
     portal_type = kw.get("portal_type", None)
     if portal_type:
         return portal_type
+
+    # Look for a get_type_id adapter
+    adapter = queryAdapter(context, IIdServerTypeID)
+    if adapter:
+        type_id = adapter.get_type_id(**kw)
+        if type_id:
+            return type_id
 
     # Override by provided marker interface
     if IAnalysisRequestPartition.providedBy(context):
@@ -217,7 +230,7 @@ def get_variables(context, **kw):
     }
 
     # Augment the variables map depending on the portal type
-    if portal_type in AR_TYPES:
+    if IAnalysisRequest.providedBy(context):
         now = DateTime()
         sampling_date = context.getSamplingDate()
         sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
@@ -234,7 +247,7 @@ def get_variables(context, **kw):
         })
 
         # Partition
-        if portal_type == "AnalysisRequestPartition":
+        if IAnalysisRequestPartition.providedBy(context):
             parent_ar = context.getParentAnalysisRequest()
             parent_ar_id = api.get_id(parent_ar)
             parent_base_id = strip_suffix(parent_ar_id)
@@ -247,7 +260,7 @@ def get_variables(context, **kw):
             })
 
         # Retest
-        elif portal_type == "AnalysisRequestRetest":
+        elif IAnalysisRequestRetest.providedBy(context):
             # Note: we use "parent" instead of "invalidated" for simplicity
             parent_ar = context.getInvalidated()
             parent_ar_id = api.get_id(parent_ar)
@@ -266,7 +279,7 @@ def get_variables(context, **kw):
             })
 
         # Secondary
-        elif portal_type == "AnalysisRequestSecondary":
+        elif IAnalysisRequestSecondary.providedBy(context):
             primary_ar = context.getPrimaryAnalysisRequest()
             primary_ar_id = api.get_id(primary_ar)
             parent_base_id = strip_suffix(primary_ar_id)
@@ -278,7 +291,7 @@ def get_variables(context, **kw):
                 "secondary_count": secondary_count,
             })
 
-    elif portal_type == "ARReport":
+    elif IARReport.providedBy(context):
         variables.update({
             "clientId": context.aq_parent.getClientID(),
         })
@@ -295,7 +308,7 @@ def get_variables(context, **kw):
 def split(string, separator="-"):
     """ split a string on the given separator
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         return []
     return string.split(separator)
 
@@ -503,7 +516,7 @@ def generateUniqueId(context, **kw):
     # Interpolate the ID template
     try:
         new_id = id_template.format(**variables)
-    except KeyError, e:
+    except KeyError as e:
         logger.error('KeyError: {} not in id_template {}'.format(
             e, id_template))
         raise
@@ -518,6 +531,9 @@ def renameAfterCreation(obj):
     """
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
+
+    # unindex the object
+    obj.unindexObject()
 
     # The id returned should be normalized already
     new_id = None

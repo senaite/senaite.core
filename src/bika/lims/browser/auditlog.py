@@ -15,10 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import six
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -27,13 +28,13 @@ from bika.lims.api.snapshot import get_snapshot_by_version
 from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshot_version
 from bika.lims.api.snapshot import get_snapshots
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IAuditable
 from bika.lims.utils import t
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.app.listing import ListingView
 
 
 class HasAuditLog(BrowserView):
@@ -43,7 +44,7 @@ class HasAuditLog(BrowserView):
         return IAuditable.providedBy(self.context)
 
 
-class AuditLogView(BikaListingView):
+class AuditLogView(ListingView):
     """Audit View
     """
     diff_template = ViewPageTemplateFile("templates/auditlog_diff.pt")
@@ -55,6 +56,7 @@ class AuditLogView(BikaListingView):
         # the default settings
         self.catalog = "uid_catalog"
         self.contentFilter = {"UID": api.get_uid(context)}
+        self.context_actions = {}
 
         # TODO: Fix in senaite.app.listing.get_api_url
         #
@@ -169,7 +171,7 @@ class AuditLogView(BikaListingView):
     def translate_state(self, s):
         """Translate the given state string
         """
-        if not isinstance(s, basestring):
+        if not isinstance(s, six.string_types):
             return s
         s = s.capitalize().replace("_", " ")
         return t(_(s))

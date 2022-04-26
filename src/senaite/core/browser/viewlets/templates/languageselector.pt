@@ -8,9 +8,7 @@
        aria-haspopup="true"
        aria-expanded="false"
        i18n:domain="plone">
-      <span tal:omit-tag="" i18n:translate="">
-        <i class="fas fa-globe"></i>
-      </span>
+      <i class="fas fa-globe"></i>
     </a>
 
     <!-- Available Languages -->

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
@@ -41,8 +41,8 @@ class Report(BrowserView):
     def __call__(self):
         # get all the data into datalines
 
-        sc = getToolByName(self.context, 'bika_setup_catalog')
-        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        sc = getToolByName(self.context, 'senaite_catalog_setup')
+        bc = getToolByName(self.context, 'senaite_catalog_analysis')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parms = []
@@ -288,7 +288,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
@@ -300,7 +300,7 @@ class Report(BrowserView):
                 'Early',
                 'Average early',
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
                                 fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

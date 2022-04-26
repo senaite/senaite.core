@@ -15,16 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from collections import defaultdict
-from StringIO import StringIO
+from six import StringIO
 
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG
 from openpyxl.reader.excel import load_workbook
-from openpyxl.shared.exc import InvalidFileException
+from openpyxl.utils.exceptions import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
@@ -66,8 +66,9 @@ class IDynamicAnalysisSpec(model.Schema):
                 "the following columns defined: '{}'"
                 .format(", ".join(REQUIRED_COLUMNS))))
         try:
-            header = map(lambda c: c.value, xls.worksheets[0].rows[0])
-        except IndexError:
+            header_row = xls.worksheets[0].rows.next()
+            header = map(lambda c: c.value, header_row)
+        except (IndexError, AttributeError):
             raise Invalid(
                 _("First sheet does not contain a valid column definition"))
         for col in REQUIRED_COLUMNS:
@@ -101,10 +102,15 @@ class DynamicAnalysisSpec(Item):
         return sheets[0]
 
     def get_header(self):
+        header = []
         ps = self.get_primary_sheet()
         if ps is None:
-            return []
-        return map(lambda cell: cell.value, ps.rows[0])
+            return header
+        for num, row in enumerate(ps.rows):
+            if num > 0:
+                break
+            header = [cell.value for cell in row]
+        return header
 
     def get_specs(self):
         ps = self.get_primary_sheet()

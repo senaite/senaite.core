@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -39,7 +39,7 @@ class ServicesView(BikaListingView):
     def __init__(self, context, request):
         super(ServicesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
@@ -177,12 +177,9 @@ class ServicesView(BikaListingView):
         if obj.getAccredited():
             after_icons += get_image(
                 "accredited.png", title=_("Accredited"))
-        if obj.getAttachmentOption() == "r":
+        if obj.getAttachmentRequired():
             after_icons += get_image(
                 "attach_reqd.png", title=_("Attachment required"))
-        if obj.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
 

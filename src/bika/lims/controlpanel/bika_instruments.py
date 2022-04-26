@@ -15,13 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -31,9 +29,10 @@ from bika.lims.permissions import AddInstrument
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
-
 
 # TODO: Separate content and view into own modules!
 
@@ -43,7 +42,7 @@ class InstrumentsView(BikaListingView):
     def __init__(self, context, request):
         super(InstrumentsView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "Instrument",
             "sort_on": "sortable_title",

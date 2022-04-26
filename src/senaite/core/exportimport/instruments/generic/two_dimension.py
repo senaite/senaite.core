@@ -15,22 +15,24 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" 2-Dimensional-CSV
-"""
-from bika.lims import bikaMessageFactory as _
-from bika.lims import api
 import json
 import re
-from senaite.core.exportimport.instruments.utils import \
-    (get_instrument_import_override,
-     get_instrument_import_ar_allowed_states)
-from senaite.core.exportimport.instruments.resultsimport import \
-    InstrumentCSVResultsFileParser, AnalysisResultsImporter
 import traceback
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.resultsimport import \
+    InstrumentCSVResultsFileParser
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_ar_allowed_states
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_override
 
 title = "2-Dimensional-CSV"
 
@@ -81,7 +83,7 @@ def Import(context, request):
 
 
 def is_keyword(kw):
-    bsc = api.get_tool('bika_setup_catalog')
+    bsc = api.get_tool('senaite_catalog_setup')
     return len(bsc(getKeyword=kw))
 
 
@@ -93,7 +95,7 @@ def find_analyses(ar_or_sample):
         resultsimport.py or somewhere central where it can be used by other
         instrument interfaces.
     """
-    bc = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    bc = api.get_tool(SAMPLE_CATALOG)
     ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
     if len(ar) == 0:
         ar = bc(portal_type='AnalysisRequest', getClientSampleID=ar_or_sample)
@@ -217,7 +219,8 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
             result = self.get_result(column_name, result, line)
             quantitation[quantitation['DefaultResult']] = result
 
-            kw = re.sub(r"\W", "", self._keywords[i])
+            # remove all non alphanumeric words, except `-+.`
+            kw = re.sub(r"[^a-zA-Z0-9_\-\+\.]", "", self._keywords[i])
             if not is_keyword(kw):
                 new_kw = find_kw(quantitation['AR'], kw)
                 if new_kw:

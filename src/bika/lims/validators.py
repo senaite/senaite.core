@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import re
@@ -27,6 +27,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
@@ -263,7 +264,7 @@ class ServiceKeywordValidator:
         # check the value against all AnalysisService keywords
         # this has to be done from catalog so we don't
         # clash with ourself
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         services = bsc(portal_type='AnalysisService', getKeyword=value)
         for service in services:
             if service.UID != instance.UID():
@@ -324,7 +325,7 @@ class InterimFieldsValidator:
         interim_fields = form.get(fieldname, [])
 
         translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
 
         # We run through the validator once per form submit, and check all
         # values
@@ -449,8 +450,11 @@ class InterimFieldsValidator:
         """
         choices = interim.get("choices")
         if not choices:
-            # No choices set, nothing to do
-            return
+            # No choices set, result type should remain empty
+            result_type = interim.get("result_type")
+            if not result_type:
+                return
+            return _t(_("Control type is not supported for empty choices"))
 
         # Choices are expressed like "value0:text0|value1:text1|..|valuen:textn"
         choices = choices.split("|") or []
@@ -489,21 +493,19 @@ class FormulaValidator:
     def __call__(self, value, *args, **kwargs):
         if not value:
             return True
-        instance = kwargs['instance']
-        # fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
+        instance = kwargs["instance"]
+        request = api.get_request()
         form = request.form
-        interim_fields = form.get('InterimFields')
-
-        translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        interim_keywords = interim_fields and \
-            [f['keyword'] for f in interim_fields] or []
+        interim_fields = form.get("InterimFields", [])
+        translate = getToolByName(instance, "translation_service").translate
+        catalog = api.get_tool(SETUP_CATALOG)
+        interim_keywords = filter(None, map(
+            lambda i: i.get("keyword"), interim_fields))
         keywords = re.compile(r"\[([^\.^\]]+)\]").findall(value)
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = bsc(getKeyword=keyword, is_active=True)
+            dep_service = catalog(getKeyword=keyword, is_active=True)
             if not dep_service and keyword not in interim_keywords:
                 msg = _(
                     "Validation failed: Keyword '${keyword}' is invalid",
@@ -512,19 +514,17 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Wildcards
-        # LIMS-1769 Allow to use LDL and UDL in calculations
-        # https://jira.bikalabs.com/browse/LIMS-1769
-        allowedwds = ['LDL', 'UDL', 'BELOWLDL', 'ABOVEUDL']
+        # Allow to use Wildcards, LDL and UDL values in calculations
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL"]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
-        keysandwildcards = [k for k in keysandwildcards if '.' in k]
-        keysandwildcards = [k.split('.', 1) for k in keysandwildcards]
+        keysandwildcards = [k for k in keysandwildcards if "." in k]
+        keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
         errwilds = [k[1] for k in keysandwildcards if k[0] not in keywords]
         if len(errwilds) > 0:
             msg = _(
                 "Wildcards for interims are not allowed: ${wildcards}",
                 mapping={
-                    'wildcards': safe_unicode(', '.join(errwilds))
+                    "wildcards": safe_unicode(", ".join(errwilds))
                 })
             return to_utf8(translate(msg))
 
@@ -534,7 +534,7 @@ class FormulaValidator:
             msg = _(
                 "Invalid wildcards found: ${wildcards}",
                 mapping={
-                    'wildcards': safe_unicode(', '.join(wildcards))
+                    "wildcards": safe_unicode(", ".join(wildcards))
                 })
             return to_utf8(translate(msg))
 
@@ -712,7 +712,7 @@ class RestrictedCategoriesValidator:
         # form = request.get('form', {})
 
         translate = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        bsc = getToolByName(instance, 'senaite_catalog_setup')
         # uc = getToolByName(instance, 'uid_catalog')
 
         failures = []
@@ -770,7 +770,7 @@ class PrePreservationValidator:
             return True
 
         translate = getToolByName(instance, 'translation_service').translate
-        # bsc = getToolByName(instance, 'bika_setup_catalog')
+        # bsc = getToolByName(instance, 'senaite_catalog_setup')
 
         if not preservation:
             msg = _("Validation failed: PrePreserved containers "
@@ -834,14 +834,14 @@ class AnalysisSpecificationsValidator:
     name = "analysisspecs_validator"
 
     def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
-        fieldname = kwargs['field'].getName()
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        fieldname = kwargs["field"].getName()
 
         # This value in request prevents running once per subfield value.
         # self.name returns the name of the validator. This allows other
         # subfield validators to be called if defined (eg. in other add-ons)
-        key = '{}-{}-{}'.format(self.name, instance.getId(), fieldname)
+        key = "{}-{}-{}".format(self.name, instance.getId(), fieldname)
         if instance.REQUEST.get(key, False):
             return True
 
@@ -857,7 +857,7 @@ class AnalysisSpecificationsValidator:
             title = api.get_title(service)
 
             err_msg = "{}: {}".format(title, _(err_msg))
-            translate = api.get_tool('translation_service').translate
+            translate = api.get_tool("translation_service").translate
             instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
             return instance.REQUEST[key]
 
@@ -870,7 +870,7 @@ class AnalysisSpecificationsValidator:
         """
         spec_min = get_record_value(request, uid, "min")
         spec_max = get_record_value(request, uid, "max")
-        error = get_record_value(request, uid, "error", "0")
+
         warn_min = get_record_value(request, uid, "warn_min")
         warn_max = get_record_value(request, uid, "warn_max")
 
@@ -878,26 +878,31 @@ class AnalysisSpecificationsValidator:
             # Neither min nor max values have been set, dismiss
             return None
 
-        if not api.is_floatable(spec_min):
-            return "'Min' value must be numeric"
-        if not api.is_floatable(spec_max):
-            return "'Max' value must be numeric"
-        if api.to_float(spec_min) > api.to_float(spec_max):
-            return "'Max' value must be above 'Min' value"
-        if not api.is_floatable(error) or 0.0 < api.to_float(error) > 100:
-            return "% Error must be between 0 and 100"
+        # Allow to have empty min/max borders, e.g. only max being set
+        if spec_min and not api.is_floatable(spec_min):
+            return _("'Min' value must be numeric")
+        if spec_max and not api.is_floatable(spec_max):
+            return _("'Max' value must be numeric")
 
-        if warn_min:
-            if not api.is_floatable(warn_min):
-                return "'Warn Min' value must be numeric or empty"
+        # Check if min is smaller than max range
+        if spec_min and spec_max:
+            if api.to_float(spec_min) > api.to_float(spec_max):
+                return _("'Max' value must be above 'Min' value")
+
+        # Handle warn min
+        if warn_min and not api.is_floatable(warn_min):
+            return _("'Warn Min' value must be numeric or empty")
+        if warn_min and spec_min:
             if api.to_float(warn_min) > api.to_float(spec_min):
-                return "'Warn Min' value must be below 'Min' value"
+                return _("'Warn Min' value must be below 'Min' value")
 
-        if warn_max:
-            if not api.is_floatable(warn_max):
-                return "'Warn Max' value must be numeric or empty"
+        # Handle warn max
+        if warn_max and not api.is_floatable(warn_max):
+            return _("'Warn Max' value must be numeric or empty")
+        if warn_max and spec_max:
             if api.to_float(warn_max) < api.to_float(spec_max):
-                return "'Warn Max' value must be above 'Max' value"
+                return _("'Warn Max' value must be above 'Max' value")
+
         return None
 
 
@@ -1001,17 +1006,18 @@ class DurationValidator:
     def __call__(self, value, *args, **kwargs):
 
         instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
+        request = kwargs.get('REQUEST') or {}
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
-        value = request[fieldname]
-        for v in value.values():
-            try:
-                int(v)
-            except:
-                return to_utf8(
-                    translate(_("Validation failed: Values must be numbers")))
+        value = request.get(fieldname) or None
+        if value:
+            for v in value.values():
+                try:
+                    int(v)
+                except:
+                    return to_utf8(
+                        translate(_("Validation failed: Values must be numbers")))
         return True
 
 
@@ -1368,52 +1374,6 @@ class InlineFieldValidator:
 validation.register(InlineFieldValidator())
 
 
-class ReflexRuleValidator:
-    """
-    - The analysis service have to be related to the method
-    """
-
-    implements(IValidator)
-    name = "reflexrulevalidator"
-
-    def __call__(self, value, *args, **kwargs):
-
-        instance = kwargs['instance']
-        # fieldname = kwargs['field'].getName()
-        # request = kwargs.get('REQUEST', {})
-        # form = request.get('form', {})
-        method = instance.getMethod()
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        query = {
-            'portal_type': 'AnalysisService',
-            'method_available_uid': method.UID()
-        }
-        method_ans_uids = [b.UID for b in bsc(query)]
-        rules = instance.getReflexRules()
-        error = ''
-        pc = getToolByName(instance, 'portal_catalog')
-        for rule in rules:
-            as_uid = rule.get('analysisservice', '')
-            as_brain = pc(
-                UID=as_uid,
-                portal_type='AnalysisService',
-                is_active=True)
-            if as_brain[0] and as_brain[0].UID in method_ans_uids:
-                pass
-            else:
-                error += as_brain['title'] + ' '
-        if error:
-            translate = getToolByName(instance,
-                                      'translation_service').translate
-            msg = _("The following analysis services don't belong to the"
-                    "current method: " + error)
-            return to_utf8(translate(msg))
-        return True
-
-
-validation.register(ReflexRuleValidator())
-
-
 class NoWhiteSpaceValidator:
     """ String, not containing space(s). """
 
@@ -1458,3 +1418,112 @@ class ImportValidator(object):
 
 
 validation.register(ImportValidator())
+
+
+class DefaultResultValidator(object):
+    """Validate AnalysisService's DefaultResult field value
+    """
+    implements(IValidator)
+    name = "service_defaultresult_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs['instance']
+        request = kwargs.get('REQUEST', {})
+        field_name = kwargs['field'].getName()
+        translate = getToolByName(instance, 'translation_service').translate
+
+        default_result = request.get(field_name, None)
+        if default_result:
+            # Default result must be one of the available result options
+            options = request.get("ResultOptions", None)
+            if options:
+                values = map(lambda ro: ro.get("ResultValue"), options)
+                if default_result not in values:
+                    msg = _("Default result must be one of the following "
+                            "result options: {}").format(", ".join(values))
+                    return to_utf8(translate(msg))
+
+            elif not request.get("StringResult"):
+                # Default result must be numeric
+                if not api.is_floatable(default_result):
+                    msg = _("Default result is not numeric")
+                    return to_utf8(translate(msg))
+
+        return True
+
+
+validation.register(DefaultResultValidator())
+
+
+class ServiceConditionsValidator(object):
+    """Validate AnalysisService Conditions field
+    """
+    implements(IValidator)
+    name = "service_conditions_validator"
+
+    def __call__(self, field_value, **kwargs):
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        translate = getToolByName(instance, "translation_service").translate
+        field_name = kwargs["field"].getName()
+
+        # This value in request prevents running once per subfield value.
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = "{}-{}-{}".format(self.name, instance.getId(), field_name)
+        if instance.REQUEST.get(key, False):
+            return True
+
+        # Walk through all records set for this records field
+        field_name_value = "{}_value".format(field_name)
+        records = request.get(field_name_value, [])
+        for record in records:
+            # Validate the record
+            msg = self.validate_record(record)
+            if msg:
+                return to_utf8(translate(msg))
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_record(self, record):
+        control_type = record.get("type")
+        choices = record.get("choices")
+        required = record.get("required") == "on"
+        default = record.get("default")
+
+        if control_type == "select":
+            # choices is required, check if the value for subfield is ok
+            if not choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "required when the control type of choice is "
+                         "'Select'")
+
+            # Choices must follow the format  'choice 1|choice 2|choice 3'
+            choices_arr = filter(None, choices.split('|'))
+            if len(choices_arr) <= 1:
+                return _("Validation failed: Please use the character '|' "
+                         "to separate the available options in 'Choices' "
+                         "subfield")
+        elif control_type == "checkbox":
+            # required checkboxes need a default value to be submitted
+            if required and not default:
+                return _("Validation failed: Please set a default value "
+                         "when defining a required checkbox condition.")
+        else:
+            # choices should be left empty
+            if choices:
+                return _("Validation failed: value for Choices subfield is "
+                         "only required for when the control type of choice "
+                         "is 'Select'")
+
+        # The type of the default value must match with the selected type
+        default_value = record.get("default")
+        if default_value:
+            if control_type == "number":
+                if not api.is_floatable(default_value):
+                    return _("Validation failed: '{}' is not numeric").format(
+                        default_value)
+
+
+validation.register(ServiceConditionsValidator())

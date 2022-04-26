@@ -96,7 +96,6 @@
     <element value="ATCurrentAuthorCriterion"/>
     <element value="ATPathCriterion"/>
     <element value="ATRelativePathCriterion"/>
-    <element value="ReflexRule"/>
     <element value="AutoImportLog"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>

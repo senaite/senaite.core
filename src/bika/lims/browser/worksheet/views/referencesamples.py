@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -25,11 +25,11 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import get_link
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class ReferenceSamplesView(BikaListingView):
@@ -39,7 +39,7 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
 
-        self.catalog = "bika_catalog"
+        self.catalog = "senaite_catalog"
         self.contentFilter = {
             "portal_type": "ReferenceSample",
             "getSupportedServices": self.get_assigned_services_uids(),
@@ -145,15 +145,13 @@ class ReferenceSamplesView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(EditWorksheet, self.context)
+        return can_edit_worksheet(self.context)
 
     @view.memoize
     def is_manage_allowed(self):
         """Check if manage is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     @view.memoize
     def get_editable_columns(self):

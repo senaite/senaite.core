@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Acquisition import aq_get
@@ -29,10 +29,10 @@ from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from pkg_resources import resource_filename
 from plone.resource.utils import iterDirectoriesOfType
+from senaite.core.p3compat import cmp
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.component import getAdapters
 from zope.site.hooks import getSite
 
 import os
@@ -126,7 +126,7 @@ class BikaContentVocabulary(object):
 
 class BikaCatalogTypesVocabulary(object):
     """Vocabulary factory for really user friendly portal types,
-    filtered to return only types listed as indexed by bika_catalog
+    filtered to return only types listed as indexed by senaite_catalog
     """
     implements(IVocabularyFactory)
 
@@ -343,53 +343,6 @@ class AnalystVocabulary(UserVocabulary):
 
 
 AnalystVocabularyFactory = AnalystVocabulary()
-
-
-class AnalysisRequestWorkflowStateVocabulary(object):
-    """Vocabulary factory for workflow states.
-
-        >>> from zope.component import queryUtility
-
-        >>> portal = layer['portal']
-
-        >>> name = 'bika.lims.vocabularies.AnalysisRequestWorkflowStates'
-        >>> util = queryUtility(IVocabularyFactory, name)
-
-        >>> tool = getToolByName(portal, "portal_workflow")
-
-        >>> states = util(portal)
-        >>> states
-        <zope.schema.vocabulary.SimpleVocabulary object at ...>
-
-        >>> pub = states.by_token['published']
-        >>> pub.title, pub.token, pub.value
-        (u'Published', 'published', 'published')
-    """
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        portal = getSite()
-        wftool = getToolByName(portal, 'portal_workflow', None)
-        if wftool is None:
-            return SimpleVocabulary([])
-
-        # XXX This is evil. A vocabulary shouldn't be request specific.
-        # The sorting should go into a separate widget.
-
-        # we get REQUEST from wftool because context may be an adapter
-        request = aq_get(wftool, 'REQUEST', None)
-
-        wf = wftool.getWorkflowById('bika_ar_workflow')
-        items = wftool.listWFStatesByTitle(filter_similar=True)
-        items_dict = dict([(i[1], t(i[0])) for i in items])
-        items_list = [(k, v) for k, v in items_dict.items()]
-        items_list.sort(lambda x, y: cmp(x[1], y[1]))
-        terms = [SimpleTerm(k, title=u'%s' % v) for k, v in items_list]
-        return SimpleVocabulary(terms)
-
-
-AnalysisRequestWorkflowStateVocabularyFactory = \
-    AnalysisRequestWorkflowStateVocabulary()
 
 
 def getTemplates(bikalims_path, restype, filter_by_type=False):

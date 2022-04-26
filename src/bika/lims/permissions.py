@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """
@@ -75,7 +75,6 @@ AddMultifile = "senaite.core: Add Multifile"
 AddPreservation = "senaite.core: Add Preservation"
 AddPricelist = "senaite.core: Add Pricelist"
 AddReferenceDefinition = "senaite.core: Add ReferenceDefinition"
-AddReflexRule = "senaite.core: Add ReflexRule"
 AddSampleCondition = "senaite.core: Add SampleCondition"
 AddSampleMatrix = "senaite.core: Add SampleMatrix"
 AddSamplePoint = "senaite.core: Add SamplePoint"
@@ -84,7 +83,6 @@ AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
 AddStorageLocation = "senaite.core: Add StorageLocation"
 AddSubGroup = "senaite.core: Add SubGroup"
 AddSupplier = "senaite.core: Add Supplier"
-AddWorksheetTemplate = "senaite.core: Add WorksheetTemplate"
 
 # Transition permissions
 # ======================
@@ -113,10 +111,19 @@ TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
 TransitionRejectSample = "senaite.core: Transition: Reject Sample"
 TransitionSampleSample = "senaite.core: Transition: Sample Sample"
 TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
+TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
+TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
 
-# Transition permissions (Worksheet)
-TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"
-TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
+
+# Type-specific permissions
+# =========================
+# Makes "Add Attachment" section from sample context visible
+SampleAddAttachment = "senaite.core: Sample: Add Attachment"
+# Allows to edit "Type", "Keywords" and "Report Option" from attachments, even
+# for those attachment assigned to an analysis
+SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
+# Displays the "Delete" checkbox
+SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
 
 
 # Field Permissions
@@ -158,8 +165,11 @@ FieldEditTemplate = "senaite.core: Field: Edit Template"
 
 # Field permissions (Analysis and alike)
 FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
+# Allows the edition of the result from an Analysis, as well as the assignment,
+# edition or removal of attachment.
 FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
 FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
+FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
 
 
 # Behavioral permissions
@@ -168,13 +178,11 @@ FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 AccessJSONAPI = "senaite.core: Access JSON API"
 EditFieldResults = "senaite.core: Edit Field Results"
 EditResults = "senaite.core: Edit Results"
-EditWorksheet = "senaite.core: Edit Worksheet"
 ManageBika = "senaite.core: Manage Bika"
 ManageAnalysisRequests = "senaite.core: Manage Analysis Requests"
 ManageInvoices = "senaite.core: Manage Invoices"
 ManageLoginDetails = "senaite.core: Manage Login Details"
 ManageReference = "senaite.core: Manage Reference"
-ManageWorksheets = "senaite.core: Manage Worksheets"
 ViewResults = "senaite.core: View Results"
 
 

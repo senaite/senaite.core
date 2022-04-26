@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ Varian Vista-PRO ICP
@@ -35,6 +35,7 @@ from senaite.core.exportimport.instruments.utils import \
      get_instrument_import_ar_allowed_states)
 from senaite.core.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
+from senaite.core.p3compat import cmp
 from bika.lims import bikaMessageFactory as _
 import json
 import traceback

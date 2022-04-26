@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import cProfile
@@ -48,9 +48,9 @@ def returns_json(func):
     """
     def decorator(*args, **kwargs):
         instance = args[0]
+        result = func(*args, **kwargs)
         request = getattr(instance, 'request', None)
         request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
         return json.dumps(result)
     return decorator
 
@@ -104,10 +104,10 @@ def profileit(path=None):
             prof = cProfile.Profile()
             retval = prof.runcall(func, *args, **kwargs)
             if path is not None:
-                print prof.print_stats()
+                print(prof.print_stats())
                 prof.dump_stats(os.path.expanduser(path))
             else:
-                print prof.print_stats()
+                print(prof.print_stats())
             return retval
         return wrapper
     return inner

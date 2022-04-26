@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.Archetypes.public import DisplayList
@@ -24,6 +24,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 from bika.lims import api
@@ -31,8 +32,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class ManageResultsView(BrowserView):
@@ -99,8 +100,7 @@ class ManageResultsView(BrowserView):
     def is_manage_allowed(self):
         """Check if manage is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     @view.memoize
     def is_assignment_allowed(self):
@@ -109,13 +109,13 @@ class ManageResultsView(BrowserView):
         if not self.is_manage_allowed():
             return False
         review_state = api.get_workflow_status_of(self.context)
-        edit_states = ["open", "attachment_due", "to_be_verified"]
+        edit_states = ["open", "to_be_verified"]
         return review_state in edit_states
 
     def getInstruments(self):
         # TODO: Return only the allowed instruments for at least one contained
         # analysis
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Instrument',
                                   is_active=True)]
@@ -176,9 +176,8 @@ class ManageResultsView(BrowserView):
         invalid = []
         ans = self.context.getAnalyses()
         for an in ans:
-            valid = an.isInstrumentValid()
-            if not valid:
-                instrument = an.getInstrument()
+            instrument = an.getInstrument()
+            if instrument and not instrument.isValid():
                 inv = "%s (%s)" % (
                     safe_unicode(an.Title()), safe_unicode(instrument.Title()))
                 if inv not in invalid:

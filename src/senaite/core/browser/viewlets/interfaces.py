@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from zope.viewlet.interfaces import IViewletManager
@@ -46,6 +46,16 @@ class IBelowListingTable(IViewletManager):
     """
 
 
+class IAboveSampleSection(IViewletManager):
+    """A viewlet manager in sample view above analyses sections
+    """
+
+
 class ISampleSection(IViewletManager):
-    """A viewlet manager responsible for sample sections below the header table
+    """A viewlet manager in sample view to show lab/field analyses sections
+    """
+
+
+class IBelowSampleSection(IViewletManager):
+    """A viewlet manager in sample view below analyses sections
     """

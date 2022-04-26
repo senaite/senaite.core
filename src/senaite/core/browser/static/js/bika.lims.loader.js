@@ -34,18 +34,6 @@ window.bika.lims.controllers =  {
 
     /** JS objects to be loaded on specific views or pages **/
 
-    // Methods
-    ".portaltype-method.template-base_edit":
-        ['MethodEditView'],
-
-    // Analysis Services
-    ".portaltype-analysisservice.template-base_edit":
-        ['AnalysisServiceEditView'],
-
-    // Analysis Profile
-    ".portaltype-analysisprofile.template-base_edit":
-        ['AnalysisProfileEditView'],
-
     // Instruments
     ".portaltype-instrument.template-referenceanalyses":
         ['InstrumentReferenceAnalysesView'],
@@ -63,7 +51,6 @@ window.bika.lims.controllers =  {
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
-
 
     // Clients
     ".portaltype-client.template-base_edit":
@@ -106,10 +93,6 @@ window.bika.lims.controllers =  {
     ".portaltype-supplyorder.template-base_edit":
         ['SupplyOrderEditView'],
 
-    // Imports
-    ".portaltype-plone-site.template-import":
-        ['InstrumentImportView'],
-
     // Batches
     ".portaltype-batchfolder":
         ['BatchFolderView'],
@@ -117,15 +100,6 @@ window.bika.lims.controllers =  {
     // Worksheets
     ".portaltype-worksheetfolder":
         ['WorksheetFolderView'],
-
-    ".portaltype-worksheet.template-add_blank":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_control":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_duplicate":
-        ['WorksheetAddDuplicateAnalysesView'],
 
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
@@ -135,9 +109,6 @@ window.bika.lims.controllers =  {
 
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
-
-    ".portaltype-reflexrule.template-base_edit":
-        ['ReflexRuleEditView'],
 
     ".template-labcontacts.portaltype-department":
         ['DepartmentLabContactsView'],
@@ -155,18 +126,6 @@ window.bika.lims.controllers =  {
 };
 
 
-
-var _bika_lims_loaded_js = new Array();
-
-/**
- * Initializes only the js controllers needed for the current view.
- * Initializes the JS objects from the controllers dictionary for which
- * there is at least one match with the dict key. The JS objects are
- * loaded in the same order as defined in the controllers dict.
- */
-window.bika.lims.initview = function() {
-    return window.bika.lims.loadControllers(false, []);
-};
 /**
  * 'all' is a bool variable used to load all the controllers.
  * 'controllerKeys' is an array which contains specific controllers' keys which aren't
@@ -177,6 +136,7 @@ window.bika.lims.initview = function() {
  */
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
+    var _bika_lims_loaded_js = new Array();
     var prev = _bika_lims_loaded_js.length;
     for (var key in controllers) {
         // Check if the key have value. Also check if this key exists in the controllerKeys array.
@@ -199,17 +159,7 @@ window.bika.lims.loadControllers = function(all, controllerKeys) {
 
 };
 
-window.bika.lims.initialized = false;
-/**
- * Initializes all bika.lims js stuff
- */
-window.bika.lims.initialize = function() {
-    return window.bika.lims.initview();
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Initializes bika.lims
-    var length = window.bika.lims.initialize();
-    window.bika.lims.initialized = true;
-  console.debug("*** SENAITE LOADER INITIALIZED ***");
+document.addEventListener("DOMContentLoaded", function(event) {
+    window.bika.lims.loadControllers(false, []);
+    console.debug("*** SENAITE LOADER INITIALIZED ***");
 });

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import os
@@ -87,16 +87,24 @@ class ListingTableTitleViewlet(ViewletBase):
             return get_image(last, **kw)
         return self.theme_view.icon_tag(icon, **kw)
 
+
+class ListingTableActionsViewlet(ViewletBase):
+    """This viewlet inserts the title and context actions
+    """
+    index = ViewPageTemplateFile("templates/listingactions.pt")
+
     def get_context_actions(self, **kw):
         """Get the defined ccontex actions of the listing view
         """
+        portal = api.get_portal()
+        portal_url = api.get_url(portal)
         actions = getattr(self.view, "context_actions", {})
         for k, v in actions.items():
             url = v.get("url")
             if not url:
                 continue
-            context_url = api.get_url(self.context)
-            if not url.startswith(context_url):
+            if not url.startswith(portal_url):
+                context_url = api.get_url(self.context)
                 url = "{}/{}".format(context_url, url)
             default_perm = k == "Add" and DEFAULT_ADD_PERM or DEFAULT_PERM
             perm = v.get("permission", default_perm)

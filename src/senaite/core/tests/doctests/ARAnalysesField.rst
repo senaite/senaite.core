@@ -468,7 +468,7 @@ The Services should retain the old prices:
 Calculations and Interim Fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When an Analysis is assigned to an AR, it inherits its Calculation and Interim Fields.
+When an Analysis is assigned to a Sample, it inherits its Calculation and Interim Fields.
 
 Create some interim fields:
 
@@ -487,7 +487,7 @@ Append interim field `B` to the `Total Hardness` Analysis Service:
 
     >>> analysisservice4.setInterimFields([interim2])
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
-    ['B', 'A']
+    ['B']
 
 Now we assign the `Total Hardness` Analysis Service:
 
@@ -526,10 +526,10 @@ Change the Interim Fields of the Analysis Service to `D`:
 
     >>> analysisservice4.setInterimFields([interim4])
 
-The Analysis Service returns the interim fields from the Calculation too:
+The Analysis Service returns only local interim fields:
 
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
-    ['D', 'C']
+    ['D']
 
 Update the AR with the new Analysis Service:
 

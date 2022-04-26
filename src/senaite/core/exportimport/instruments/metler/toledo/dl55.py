@@ -15,13 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ Metler Toledo DL55
 """
 import json
 import re
+import six
 import traceback
 
 from bika.lims import api
@@ -59,7 +60,7 @@ class MetlerToledoDL55Parser(InstrumentResultsFileParser):
                 continue
 
             # If no keyword is present, this row is skipped.
-            if len(row) < 7 or not isinstance(row[6].value, basestring):
+            if len(row) < 7 or not isinstance(row[6].value, six.string_types):
                 continue
             # keyword is stripped of non-word characters
             keyword = re.sub(r"\W", "", row[6].value)

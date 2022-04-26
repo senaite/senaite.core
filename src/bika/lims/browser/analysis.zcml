@@ -4,15 +4,8 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
-    <adapter
-    factory="bika.lims.browser.analysis.JSONReadExtender"
-    provides="bika.lims.interfaces.IJSONReadExtender" />
+  <adapter
+      factory="bika.lims.browser.analysis.JSONReadExtender"
+      provides="bika.lims.interfaces.IJSONReadExtender" />
 
-    <browser:page
-      for="*"
-      name="get_method_instrument_constraints"
-      class="bika.lims.browser.analysis.ajaxGetMethodInstrumentConstraints"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
 </configure>

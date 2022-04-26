@@ -21,7 +21,7 @@ function CommonUtils() {
         window.bika.lims.AnalysisService = window.bika.lims.AnalysisService || {
             Dependants: function(service_uid){
                 var request_data = {
-                    catalog_name: "bika_setup_catalog",
+                    catalog_name: "senaite_catalog_setup",
                     UID: service_uid,
                     include_methods: 'getServiceDependantsUIDs',
                 };
@@ -39,7 +39,7 @@ function CommonUtils() {
             },
             Dependencies: function(service_uid){
                 var request_data = {
-                    catalog_name: "bika_setup_catalog",
+                    catalog_name: "senaite_catalog_setup",
                     UID: service_uid,
                     include_methods: 'getServiceDependenciesUIDs',
                 };

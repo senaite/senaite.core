@@ -15,46 +15,47 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import mimetypes
 import os
 import re
+import six
 import tempfile
-import urllib2
+from email import Encoders
+from email.MIMEBase import MIMEBase
+from six.moves.urllib.request import urlopen
+from time import time
+
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from email import Encoders
-from time import time
-
-import types
-from DateTime import DateTime
-from Products.Archetypes.interfaces.field import IComputedField
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.DCWorkflow.events import AfterTransitionEvent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
-from email.MIMEBase import MIMEBase
-from plone.memoize import ram
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClientAwareMixin
+from DateTime import DateTime
+from plone.protect.utils import addTokenToUrl
 from plone.registry.interfaces import IRegistry
 from plone.subrequest import subrequest
-from weasyprint import CSS, HTML
+from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode
+from Products.DCWorkflow.events import AfterTransitionEvent
+from senaite.core.p3compat import cmp
+from weasyprint import CSS
+from weasyprint import HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
 from zope.event import notify
 from zope.i18n import translate
 from zope.i18n.locales import locales
-
-from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -124,19 +125,6 @@ class js_warn(BrowserView):
         """Javascript sends a string for us to place into the warn log
         """
         self.logger.warning(message)
-
-
-ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
-
-
-def printfile(portal, from_addr, to_addrs, msg):
-
-    """ set the path, then the cmd 'lpr filepath'
-    temp_path = 'C:/Zope2/Products/Bika/version.txt'
-
-    os.system('lpr "%s"' %temp_path)
-    """
-    pass
 
 
 def getUsers(context, roles, allow_empty=True):
@@ -431,7 +419,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
     if css:
         if css.startswith("http://") or css.startswith("https://"):
             # Download css file in temp dir
-            u = urllib2.urlopen(css)
+            u = urlopen(css)
             _cssfile = tempfile.mktemp(suffix='.css')
             localFile = open(_cssfile, 'w')
             localFile.write(u.read())
@@ -527,7 +515,7 @@ def format_supsub(text):
     subsup = []
     clauses = []
     insubsup = True
-    for c in str(text):
+    for c in str(text).strip():
         if c == '(':
             if insubsup is False:
                 out.append(c)
@@ -656,7 +644,7 @@ def measure_time(func_to_measure):
                                                                                      finish_time - start_time,
                                                                                      start_time,
                                                                                      finish_time)
-        print log
+        print(log)
         return return_value
     return wrap
 
@@ -695,6 +683,9 @@ def get_link(href, value=None, **kwargs):
         return ""
     anchor_value = value and value or href
     attr = render_html_attributes(**kwargs)
+    # Add a CSRF token
+    if href.startswith("http"):
+        href = addTokenToUrl(href)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
@@ -813,13 +804,14 @@ def get_strings(data):
 
     # if this is a list of values, return list of string values
     if isinstance(data, list):
-        return [get_strings(item) for item in data]
+        return map(get_strings, data)
 
     # if this is a dictionary, return dictionary of string keys and values
     if isinstance(data, dict):
+
         return {
             get_strings(key): get_strings(value)
-            for key, value in data.iteritems()
+            for key, value in six.iteritems(data)
         }
     # if it's anything else, return it in its original form
     return data
@@ -843,7 +835,7 @@ def get_unicode(data):
     if isinstance(data, dict):
         return {
             get_unicode(key): get_unicode(value)
-            for key, value in data.iteritems()
+            for key, value in six.iteritems(data)
         }
     # if it's anything else, return it in its original form
     return data

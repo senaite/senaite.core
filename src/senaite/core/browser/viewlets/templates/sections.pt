@@ -12,9 +12,7 @@
        data-toggle="dropdown"
        aria-haspopup="true"
        aria-expanded="false">
-      <span tal:omit-tag="" i18n:translate="">
-        <i class="fas fa-th"></i>
-      </span>
+      <i class="fas fa-th"></i>
     </a>
 
     <ul class="dropdown-menu dropdown-menu-right"

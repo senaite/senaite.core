@@ -15,14 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from resultsinterpretation import ARResultsInterpretationView
 
 
 class AnalysisRequestViewView(BrowserView):
@@ -41,9 +40,6 @@ class AnalysisRequestViewView(BrowserView):
     def __call__(self):
         # render header table
         self.header_table = HeaderTableView(self.context, self.request)()
-
-        # Create the ResultsInterpretation by department view
-        self.riview = ARResultsInterpretationView(self.context, self.request)
 
         return self.template()
 

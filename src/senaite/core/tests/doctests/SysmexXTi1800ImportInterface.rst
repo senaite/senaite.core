@@ -21,7 +21,7 @@ Needed imports::
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
     >>> from senaite.core.exportimport.instruments.sysmex.xt.i1800 import TX1800iParser
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import UploadFileWrapper
 
 Functional helpers::
 
@@ -155,11 +155,11 @@ Load results test file and import the results::
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/2012-05-09_11-06-14-425_CBDB6A.txt',
     ...                         encoding='utf-8-sig')
-    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> test_file = UploadFileWrapper(temp_file)
     >>> tx1800i_parser = TX1800iParser(test_file)
     >>> importer = SysmexXTImporter(parser=tx1800i_parser,
     ...                             context=portal,
-    ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
+    ...                             allowed_ar_states=['sample_received', 'to_be_verified'],
     ...                             allowed_analysis_states=None,
     ...                             override=[True, True])
     >>> importer.process()
@@ -172,12 +172,8 @@ the specified file::
 
 Check the rest of the importer logs to verify that the values were correctly imported::
 
-    >>> importer.logs[1:]
-    ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
-     'Allowed Sample states: sample_received, attachment_due, to_be_verified',
-     'Allowed analysis states: unassigned, assigned, to_be_verified',
-     "H2O-0001: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
-     'Import finished successfully: 1 Samples and 4 results updated']
+    >>> importer.logs[-1]
+    'Import finished successfully: 1 Samples and 4 results updated'
 
 And finally check if indeed the analysis has the imported results::
 

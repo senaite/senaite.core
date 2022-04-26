@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import tempfile
@@ -90,13 +90,13 @@ class LoadSetupData(BrowserView):
                 try:
                     workbook = load_workbook(filename=filename)  # , use_iterators=True)
                 except AttributeError:
-                    print ""
-                    print traceback.format_exc()
-                    print "Error while loading ", path
+                    print("")
+                    print(traceback.format_exc())
+                    print("Error while loading ", path)
 
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']
-                tmp = tempfile.mktemp()
+                tmp = tempfile.mktemp(suffix='.xlsx')
                 file_content = form['file'].read()
                 open(tmp, 'wb').write(file_content)
                 workbook = load_workbook(filename=tmp)  # , use_iterators=True)
@@ -111,7 +111,7 @@ class LoadSetupData(BrowserView):
         adapters = [[name, adapter]
                     for name, adapter
                     in list(getAdapters((self.context, ), ISetupDataImporter))]
-        for sheetname in workbook.get_sheet_names():
+        for sheetname in workbook.sheetnames:
             transaction.savepoint()
             ad_name = sheetname.replace(" ", "_")
             if ad_name in [a[0] for a in adapters]:
@@ -132,16 +132,12 @@ class LoadSetupData(BrowserView):
                     len(self.deferred), self.deferred))
             check = new
 
-        logger.info("Rebuilding bika_setup_catalog")
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        logger.info("Rebuilding senaite_catalog_setup")
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         bsc.clearFindAndRebuild()
-        logger.info("Rebuilding bika_catalog")
-        bc = getToolByName(self.context, 'bika_catalog')
+        logger.info("Rebuilding senaite_catalog")
+        bc = getToolByName(self.context, 'senaite_catalog')
         bc.clearFindAndRebuild()
-        logger.info("Rebuilding bika_analysis_catalog")
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        logger.info("Rebuilding senaite_catalog_analysis")
+        bac = getToolByName(self.context, 'senaite_catalog_analysis')
         bac.clearFindAndRebuild()
-
-        message = PMF("Changes saved.")
-        self.context.plone_utils.addPortalMessage(message)
-        self.request.RESPONSE.redirect(portal.absolute_url())

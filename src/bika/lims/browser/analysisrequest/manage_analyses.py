@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -34,6 +34,8 @@ from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales
 
+DETACHED_STATES = ["cancelled", "rejected", "retracted"]
+
 
 class AnalysisRequestAnalysesView(BikaListingView):
     """AR Manage Analyses View
@@ -43,7 +45,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
@@ -62,7 +64,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.show_search = True
 
         self.categories = []
-        self.selected = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.show_categories = True
@@ -73,7 +74,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
-            ("Unit", {
+            ("ResultUnit", {
                 "title": _("Unit"),
                 "sortable": False}),
             ("Hidden", {
@@ -124,7 +125,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         super(AnalysisRequestAnalysesView, self).update()
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
-        self.selected = self.analyses.keys()
 
     @view.memoize
     def show_prices(self):
@@ -218,25 +218,27 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         if uid in self.analyses:
             analysis = self.analyses[uid]
-            # Might differ from the service keyword
-            keyword = analysis.getKeyword()
-            # Mark the row as disabled if the analysis has been submitted
-            item["disabled"] = ISubmitted.providedBy(analysis)
-            # get the hidden status of the analysis
-            hidden = analysis.getHidden()
-            # get the price of the analysis
-            price = analysis.getPrice()
+            review_state = api.get_review_status(analysis)
+            if review_state not in DETACHED_STATES:
+                # Might differ from the service keyword
+                keyword = analysis.getKeyword()
+                # Mark the row as disabled if the analysis has been submitted
+                item["disabled"] = ISubmitted.providedBy(analysis)
+                # get the hidden status of the analysis
+                hidden = analysis.getHidden()
+                # get the price of the analysis
+                price = analysis.getPrice()
+                item["selected"] = True
 
         # get the specification of this object
         rr = self.get_results_range()
         spec = rr.get(keyword, ResultsRangeDict())
 
         item["Title"] = obj.Title()
-        item["Unit"] = obj.getUnit()
+        item["ResultUnit"] = obj.getUnit()
         item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()
         item["allow_edit"] = self.get_editable_columns(obj)
-        item["selected"] = uid in self.selected
         item["min"] = str(spec.get("min", ""))
         item["max"] = str(spec.get("max", ""))
         item["warn_min"] = str(spec.get("warn_min", ""))
@@ -248,19 +250,16 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["before"]["Title"] = get_link(
             "analysisservice_info?service_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="overlay_panel")
 
         # Icons
         after_icons = ""
         if obj.getAccredited():
             after_icons += get_image(
                 "accredited.png", title=t(_("Accredited")))
-        if obj.getAttachmentOption() == "r":
+        if obj.getAttachmentRequired():
             after_icons += get_image(
                 "attach_reqd.png", title=t(_("Attachment required")))
-        if obj.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=t(_('Attachment not permitted')))
         if after_icons:
             item["after"]["Title"] = after_icons
 

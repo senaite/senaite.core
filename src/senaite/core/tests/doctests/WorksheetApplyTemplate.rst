@@ -20,7 +20,7 @@ Worksheet.
 
 
 Test Setup
-----------
+..........
 
 Running this test from the buildout directory:
 
@@ -138,7 +138,7 @@ layout with 7 slots:
 
 
 Apply Worksheet Template to a Worksheet
----------------------------------------
+.......................................
 
 Create a new Worksheet by using this worksheet template:
 
@@ -219,7 +219,7 @@ slots reserved for blank and controls are not occupied:
 
 
 Remove analyses and Apply Worksheet Template again
---------------------------------------------------
+..................................................
 
 Remove analyses located at position 2:
 
@@ -269,7 +269,7 @@ As well as in duplicate analyses:
 
 
 Remove a duplicate and add it manually
---------------------------------------
+......................................
 
 Remove all duplicate analyses from slot 5:
 
@@ -337,7 +337,7 @@ control:
 
 
 Control and blanks with Worksheet Template
-------------------------------------------
+..........................................
 
 First, create a Reference Definition for blank:
 
@@ -400,7 +400,7 @@ Control analyses at slot number 6:
 
 
 Remove Reference Analyses and add them manually
------------------------------------------------
+...............................................
 
 Remove all controls from slot 6:
 
@@ -462,12 +462,12 @@ as the rest of the slots:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
 WorksheetTemplate assignment to a non-empty Worksheet
------------------------------------------------------
+.....................................................
 
 Worksheet Template can also be used when the worksheet is not empty.
 The template has slots available for routine analyses in positions 1, 2 and 4:
@@ -583,12 +583,12 @@ While none of the analyses from new samples have been added:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
 WorksheetTemplate assignment keeps Sample natural order
--------------------------------------------------------
+.......................................................
 
 Analyses are grabbed by using their priority sort key, but samples are sorted
 in natural order in the slots.
@@ -611,7 +611,7 @@ Slots follows the natural order of the samples:
 
 
 Assignment of a WorksheetTemplate with no services
---------------------------------------------------
+..................................................
 
 Create a Worksheet Template without services assigned:
 
@@ -646,7 +646,7 @@ Worksheet remains empty:
 
 
 Assignment of Worksheet Template with Instrument
---------------------------------------------------
+................................................
 
 When a Worksheet Template has an instrument assigned, only analyses that can be
 performed with that same instrument are added in the worksheet.
@@ -683,6 +683,12 @@ Create a Worksheet Template and assign the instrument:
     ...                             Instrument=instrument,
     ...                             Service=service_uids)
 
+Reject any previous analyses awaiting for assignment:
+
+    >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
+    >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
+
 Create and receive 2 samples:
 
     >>> service_uids = [Cu]
@@ -701,50 +707,31 @@ Worksheet remains empty because the instrument is not allowed for `Cu` service:
 
 Assign the Instrument to the `Cu` service:
 
-    >>> Cu.setInstrumentEntryOfResults(True)
     >>> Cu.setInstruments([instrument,])
 
 Re-assign the worksheet template:
 
     >>> worksheet.applyWorksheetTemplate(instr_template)
 
-Worksheet still remains empty, because the analyses were created before the
-assignment of Instrument to the the `Cu` service:
+Worksheet contains now the two `Cu` analyses:
 
-    >>> worksheet.getAnalyses()
-    []
-
-Create a 2 more samples:
-
-    >>> service_uids = [Cu]
-    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(2))
-    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
-
-Re-assign the worksheet template and the worksheet now contains the two
-analyses from the new samples we've created:
-
-    >>> worksheet.applyWorksheetTemplate(instr_template)
     >>> ws_analyses = worksheet.getAnalyses()
-    >>> len(ws_analyses)
-    2
-
     >>> all(map(lambda a: a.getRequest() in samples, ws_analyses))
     True
 
 Unassign instrument from `Cu` service:
 
-    >>> Cu.setInstrumentEntryOfResults(False)
     >>> Cu.setInstruments([])
 
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
 
 
 Assignment of Worksheet Template with Method
---------------------------------------------
+............................................
 
 When a Worksheet Template has a method assigned, only analyses that can be
 performed with that same method are added in the worksheet.
@@ -799,7 +786,6 @@ Re-assign the worksheet template:
 
 The worksheet now contains the two analyses:
 
-    >>> worksheet.applyWorksheetTemplate(method_template)
     >>> ws_analyses = worksheet.getAnalyses()
     >>> len(ws_analyses)
     2
@@ -814,5 +800,5 @@ Unassign method from `Cu` service:
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
-    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)

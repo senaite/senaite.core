@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import io
@@ -34,12 +34,11 @@ from email.Utils import formataddr
 from email.Utils import parseaddr
 from smtplib import SMTPException
 from string import Template
-from StringIO import StringIO
-
-import six
+from six import StringIO
 
 from bika.lims import api
 from bika.lims import logger
+from plone.app.blob.field import BlobWrapper
 from Products.CMFPlone.utils import safe_unicode
 
 try:
@@ -126,6 +125,7 @@ def to_email_attachment(filedata, filename="", **kw):
     data = ""
     maintype = "application"
     subtype = "octet-stream"
+    mime_type = kw.pop("mime_type", None)
 
     def is_file(s):
         try:
@@ -149,9 +149,14 @@ def to_email_attachment(filedata, filename="", **kw):
     # Handle raw filedata
     elif isinstance(filedata, six.string_types):
         data = filedata
+    # Handle wrapper for zodb blob
+    elif isinstance(filedata, BlobWrapper):
+        filename = filename or filedata.getFilename()
+        mime_type = mime_type or filedata.getContentType()
+        data = filedata.data
 
     # Set MIME type from keyword arguments or guess it from the filename
-    mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
+    mime_type = mime_type or mimetypes.guess_type(filename)[0]
     if mime_type is not None:
         maintype, subtype = mime_type.split("/")
 

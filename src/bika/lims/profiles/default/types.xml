@@ -11,7 +11,6 @@
  <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisRequestsFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
@@ -29,8 +28,6 @@
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Container" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Containers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
@@ -44,8 +41,6 @@
  <object name="InstrumentScheduledTask" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentTypes" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>
@@ -67,8 +62,6 @@
  <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>

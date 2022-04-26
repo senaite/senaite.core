@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -24,10 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import get_image
 from bika.lims.utils import t
 from bika.lims.vocabularies import CatalogVocabulary
@@ -35,6 +32,9 @@ from DateTime import DateTime
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class AddAnalysesView(BikaListingView):
@@ -45,7 +45,7 @@ class AddAnalysesView(BikaListingView):
     def __init__(self, context, request):
         super(AddAnalysesView, self).__init__(context, request)
 
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
 
         self.contentFilter = {
             "portal_type": "Analysis",
@@ -178,15 +178,13 @@ class AddAnalysesView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(EditWorksheet, self.context)
+        return can_edit_worksheet(self.context)
 
     @view.memoize
     def is_manage_allowed(self):
         """Check if manage is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
@@ -230,6 +228,6 @@ class AddAnalysesView(BikaListingView):
         """Return WS Templates
         """
         vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = "bika_setup_catalog"
+        vocabulary.catalog = "senaite_catalog_setup"
         return vocabulary(
             portal_type="WorksheetTemplate", sort_on="sortable_title")

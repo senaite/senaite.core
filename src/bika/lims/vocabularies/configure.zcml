@@ -50,9 +50,4 @@
     name="bika.lims.vocabularies.StorageLocations"
     />
 
-  <utility
-    component="bika.lims.vocabularies.AnalysisRequestWorkflowStateVocabularyFactory"
-    name="bika.lims.vocabularies.AnalysisRequestWorkflowStates"
-    />
-
 </configure>

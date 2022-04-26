@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -37,6 +37,7 @@ from magnitude import mg
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
 from zope.component import adapts
 from zope.i18n.locales import locales
 from zope.interface import implements
@@ -135,6 +136,11 @@ class AnalysisServiceInfoView(BrowserView):
         if not self.can_view_logs_of(service):
             return None
         view = api.get_view("auditlog", context=service, request=self.request)
+        if not view:
+            logger.error("Could not get auditlog view for %s. "
+                         "Maybe it does not provide IAuditable interface?"
+                         % repr(service))
+            return None
         view.update()
         view.before_render()
         return view
@@ -182,7 +188,7 @@ class ajaxGetServiceInterimFields:
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         service_url = self.request['service_url']
         service_id = service_url.split('/')[-1]
         services = bsc(portal_type='AnalysisService', id=service_id)

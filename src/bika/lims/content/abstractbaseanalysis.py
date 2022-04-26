@@ -15,19 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
@@ -56,6 +53,8 @@ from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
@@ -224,19 +223,14 @@ AllowManualDetectionLimit = BooleanField(
 )
 
 # Specify attachment requirements for these analyses
-AttachmentOption = StringField(
-    'AttachmentOption',
+AttachmentRequired = BooleanField(
+    'AttachmentRequired',
     schemata="Analysis",
-    default='p',
-    vocabulary=ATTACHMENT_OPTIONS,
-    widget=SelectionWidget(
-        label=_("Attachment Option"),
-        description=_(
-            "Indicates whether file attachments, e.g. microscope images, "
-            "are required for this analysis and whether file upload function "
-            "will be available for it on data capturing screens"),
-        format='select',
-    )
+    default=False,
+    widget=BooleanWidget(
+        label=_("Attachment required for verification"),
+        description=_("Make attachments mandatory for verification")
+    ),
 )
 
 # The keyword for the service is used as an identifier during instrument
@@ -257,37 +251,27 @@ Keyword = StringField(
     )
 )
 
-# Allow/Disallow manual entry of results
-# Behavior of AnalysisServices controlled by javascript depending on
-# Instruments field:
-# - If InstrumentEntry not checked, set checked and readonly
-# - If InstrumentEntry checked, set as not readonly
-# See browser/js/bika.lims.analysisservice.edit.js
+# XXX: HIDDEN -> TO BE REMOVED
 ManualEntryOfResults = BooleanField(
-    'ManualEntryOfResults',
+    "ManualEntryOfResults",
     schemata="Method",
     default=True,
     widget=BooleanWidget(
-        label=_("Instrument assignment is not required"),
-        description=_(
-            "Select if the results for tests of this type of analysis can be "
-            "set manually. If selected, the user will be able to set a result "
-            "for a test of this type of analysis in manage results view "
-            "without the need of selecting an instrument, even though the "
-            "method selected for the test has instruments assigned."),
+        visible=False,
+        label=_("Manual entry of results"),
+        description=_("Allow to introduce analysis results manually"),
     )
 )
 
-# Allow/Disallow instrument entry of results
-# Behavior controlled by javascript depending on Instruments field:
-# - If no instruments available, hide and uncheck
-# - If at least one instrument selected, checked, but not readonly
-# See browser/js/bika.lims.analysisservice.edit.js
+# XXX Hidden and always True!
+# -> We always allow results from instruments for simplicity!
+# TODO: Remove if everywhere refactored (also the getter).
 InstrumentEntryOfResults = BooleanField(
     'InstrumentEntryOfResults',
     schemata="Method",
-    default=False,
+    default=True,
     widget=BooleanWidget(
+        visible=False,
         label=_("Instrument assignment is allowed"),
         description=_(
             "Select if the results for tests of this type of analysis can be "
@@ -298,14 +282,6 @@ InstrumentEntryOfResults = BooleanField(
     )
 )
 
-# Default instrument to be used.
-# Gets populated with the instruments selected in the Instruments field.
-# Behavior of AnalysisServices controlled by js depending on
-# ManualEntry/Instruments:
-# - Populate dynamically with selected Instruments
-# - If InstrumentEntry checked, set first selected instrument
-# - If InstrumentEntry not checked, hide and set None
-# See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
     "Instrument",
     read_permission=View,
@@ -313,53 +289,33 @@ Instrument = UIDReferenceField(
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary="_getAvailableInstrumentsDisplayList",
+    vocabulary="_default_instrument_vocabulary",
     allowed_types=("Instrument",),
     accessor="getInstrumentUID",
     widget=SelectionWidget(
         format="select",
         label=_("Default Instrument"),
-        description=_(
-            "This is the instrument that is assigned to  tests from this type "
-            "of analysis in manage results view. The method associated to "
-            "this instrument will be assigned as the default method too.Note "
-            "the instrument's method will prevail over any of the methods "
-            "choosen if the 'Instrument assignment is not required' option is "
-            "enabled.")
+        description=_("Default instrument used for analyses of this type"),
     )
 )
 
-# Default method to be used. This field is used in Analysis Service
-# Edit view, use getMethod() to retrieve the Method to be used in
-# this Analysis Service.
-# Gets populated with the methods selected in the multiselection
-# box above or with the default instrument's method.
-# Behavior controlled by js depending on ManualEntry/Instrument/Methods:
-# - If InstrumentEntry checked, set instrument's default method, and readonly
-# - If InstrumentEntry not checked, populate dynamically with
-#   selected Methods, set the first method selected and non-readonly
-# See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
     "Method",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
     schemata="Method",
     required=0,
-    searchable=True,
     allowed_types=("Method",),
-    vocabulary="_getAvailableMethodsDisplayList",
-    accessor="getMethodUID",
+    vocabulary="_default_method_vocabulary",
+    accessor="getRawMethod",
     widget=SelectionWidget(
         format="select",
         label=_("Default Method"),
-        description=_(
-            "If 'Allow instrument entry of results' is selected, the method "
-            "from the default instrument will be used. Otherwise, only the "
-            "methods selected above will be displayed.")
+        description=_("Default method used for analyses of this type"),
     )
 )
 
-# Maximum time (from sample reception) allowed for the analysis to be performed.
+# Max. time (from sample reception) allowed for the analysis to be performed.
 # After this amount of time, a late alert is printed, and the analysis will be
 # flagged in turnaround time report.
 MaxTimeAllowed = DurationField(
@@ -377,7 +333,7 @@ MaxTimeAllowed = DurationField(
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
     default='0.00',
-    schemata="Method",
+    schemata="Analysis",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),
         description=_(
@@ -391,7 +347,7 @@ DuplicateVariation = FixedPointField(
 # accreditation.
 Accredited = BooleanField(
     'Accredited',
-    schemata="Method",
+    schemata="Description",
     default=False,
     widget=BooleanWidget(
         label=_("Accredited"),
@@ -434,8 +390,13 @@ Category = UIDReferenceField(
         checkbox_bound=0,
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        showOn=True,
+        catalog_name=SETUP_CATALOG,
+        base_query={
+            'is_active': True,
+            'sort_on': 'sortable_title',
+            'sort_order': 'ascending',
+        },
     )
 )
 
@@ -734,7 +695,7 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    AttachmentOption,
+    AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
     InstrumentEntryOfResults,
@@ -786,6 +747,13 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
+
+    @security.public
+    def getUnit(self):
+        """Returns the Unit
+        """
+        unit = self.Schema().getField("Unit").get(self) or ""
+        return unit.strip()
 
     @security.public
     def getDefaultVAT(self):
@@ -868,7 +836,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getAnalysisCategories(self):
         """A vocabulary listing available (and activated) categories.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
@@ -959,8 +927,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         return self.getField("Method").get(self)
 
-    @security.public
-    def getMethodUID(self):
+    def getRawMethod(self):
         """Returns the UID of the assigned method
 
         NOTE: This is the default accessor of the `Method` schema field
@@ -969,10 +936,11 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Method UID
         """
-        method = self.getMethod()
+        field = self.getField("Method")
+        method = field.getRaw(self)
         if not method:
             return None
-        return api.get_uid(method)
+        return method
 
     @security.public
     def getMethodURL(self):
@@ -990,6 +958,17 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         return self.getField("Instrument").get(self)
 
+    def getRawInstrument(self):
+        """Returns the UID of the assigned instrument
+
+        :returns: Instrument UID
+        """
+        field = self.getField("Instrument")
+        instrument = field.getRaw(self)
+        if not instrument:
+            return None
+        return instrument
+
     @security.public
     def getInstrumentUID(self):
         """Returns the UID of the assigned instrument
@@ -1000,10 +979,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Method UID
         """
-        instrument = self.getInstrument()
-        if not instrument:
-            return None
-        return api.get_uid(instrument)
+        return self.getRawInstrument()
 
     @security.public
     def getInstrumentURL(self):

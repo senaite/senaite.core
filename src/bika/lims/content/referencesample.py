@@ -15,39 +15,36 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ReferenceSample represents a reference sample used for quality control testing
 """
 
+import sys
+import time
+
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
+from bika.lims.browser.widgets import ReferenceResultsWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IReferenceSample
+from bika.lims.utils import t
+from bika.lims.utils import to_unicode as _u
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import PMF, bikaMessageFactory as _, api
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import t
-from bika.lims.browser.fields import ReferenceResultsField
-from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import ReferenceResultsWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReferenceSample, IAnalysisService, \
-    IDeactivable
-from bika.lims.utils import sortable_title, tmpID
-from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8
+from senaite.core.p3compat import cmp
 from zope.interface import implements
-import sys, time
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ReferenceDefinition',
@@ -204,7 +201,7 @@ class ReferenceSample(BaseFolder):
 
             return title
 
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
                     is_active = True)]
@@ -217,7 +214,7 @@ class ReferenceSample(BaseFolder):
         return DisplayList(list(items))
 
     def getManufacturers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',
                                    is_active = True)]
@@ -287,7 +284,7 @@ class ReferenceSample(BaseFolder):
             return None
 
         interim_fields = service.getInterimFields()
-        analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
+        analysis = api.create(self, "ReferenceAnalysis")
         # Copy all the values from the schema
         # TODO Add Service as a param in ReferenceAnalysis constructor and do
         #      this logic there instead of here

@@ -15,20 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
-from senaite.core.interfaces import IHideActionsMenu
-from transaction import savepoint
 
-from Products.ATContentTypes.content.schemata import finalizeATCTSchema
-from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -45,6 +36,15 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.interfaces import IHideActionsMenu
+from transaction import savepoint
 from zope.i18n.locales import locales
 from zope.interface.declarations import implements
 
@@ -170,7 +170,7 @@ class AnalysisServicesView(BikaListingView):
 
         self.an_cats = None
         self.an_cats_order = None
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
 
         self.contentFilter = {
             "portal_type": "AnalysisService",
@@ -249,7 +249,6 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": False}),
             ("SortKey", {
                 "title": _("Sort Key"),
-                "attr": "getSortKey",
                 "sortable": False}),
         ))
 
@@ -396,17 +395,18 @@ class AnalysisServicesView(BikaListingView):
         unit = obj.getUnit()
         item["Unit"] = unit and format_supsub(unit) or ""
 
+        # Sort key
+        sortkey = obj.getSortKey()
+        item["SortKey"] = sortkey
+
         # Icons
         after_icons = ""
         if obj.getAccredited():
             after_icons += get_image(
                 "accredited.png", title=_("Accredited"))
-        if obj.getAttachmentOption() == "r":
+        if obj.getAttachmentRequired():
             after_icons += get_image(
                 "attach_reqd.png", title=_("Attachment required"))
-        if obj.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
 
@@ -415,7 +415,7 @@ class AnalysisServicesView(BikaListingView):
     def folderitems(self):
         """Sort by Categories
         """
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         self.an_cats = bsc(
             portal_type="AnalysisCategory",
             sort_on="sortable_title")

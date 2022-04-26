@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import re
@@ -35,6 +35,7 @@ from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.p3compat import cmp
 
 
 class ContactLoginDetailsView(BrowserView):
@@ -186,7 +187,7 @@ class ContactLoginDetailsView(BrowserView):
                 self.context.setUser(userid)
                 self.add_status_message(
                     _("User linked to this Contact"), "info")
-            except ValueError, e:
+            except ValueError as e:
                 self.add_status_message(e, "error")
         else:
             self.add_status_message(
@@ -262,7 +263,7 @@ class ContactLoginDetailsView(BrowserView):
                                    'username': username,
                                    'email': email,
                                    'fullname': username})
-        except ValueError, msg:
+        except ValueError as msg:
             return error(None, msg)
 
         # set the user to the contact

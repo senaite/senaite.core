@@ -468,12 +468,13 @@
       <div class='dashboard-section' tal:define="section_id section/id">
         <div class='dashboard-section-head'>
           <h2 tal:content="section/title" class='dashboard-section-title'></h2>
-          <div class="actions">
+          <div class="actions" tal:condition="python:False">
+            <!-- Disabled, because dysfunctional -->
 
             <!-- View permissions section -->
             <tal:roles_visibility_settings condition="python:view.is_admin_user()">
-              <a class="dashboard-visibility-link" href="#"
-                 i18n:translate="">Visibility
+              <a class="dashboard-visibility-link" href="#">
+                <span tal:omit-tag="" i18n:translate="">Visibility</span>
                 <i class="fas fa-caret-down"></i>
               </a>
               <div class="roles-visibility" style="display:none">

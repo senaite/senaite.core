@@ -23,10 +23,13 @@
 
     <metal:content-core fill-slot="content-core">
 
-      <form name="import" class="enableFormTabbing" method="POST" enctype="multipart/form-data">
-
+      <form name="import"
+            class="senaite-ajax-form"
+            ajax-submit="1"
+            method="POST" enctype="multipart/form-data">
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>
+        <input type="hidden" name="form_adapter_name" value="data_import_form"/>
 
         <ul class="nav nav-tabs mb-3" role="tablist">
           <li class="nav-item">
@@ -35,7 +38,7 @@
                class="nav-link active"
                role="tab"
                i18n:translate="">
-              Instrument Inport
+              Instrument Import
             </a>
           </li>
           <li class="nav-item"
@@ -66,8 +69,10 @@
           <div id="tab-instrumentimport"
                class="tab-pane fade show active"
                role="tabpanel">
+
+            <!-- Active instruments -->
             <select name="instrument"
-                    class="form-control form-control-sm"
+                    class="custom-select"
                     id="instrument_select"
                     tal:define="instruments view/getInstruments">
               <tal:options repeat="option instruments">
@@ -76,6 +81,7 @@
                   tal:content="python:instruments.getValue(option)"/>
               </tal:options>
             </select>
+
             <p class="form-text text-muted" i18n:translate="">
               If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
               it will use the record's identifier to find matches with Reference Sample IDs.
@@ -83,12 +89,16 @@
               Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br/>
               If no instrument selected, no Calibration Test will be created for orphan IDs.
             </p>
-            <label for="exim" i18n:translate="">Import Interface</label>
-            <select name="exim" id="exim" class="form-control form-control-sm">
-            </select>
-            <div id="import_form"></div>
-            <!-- filled by bika.lims.instrument.import.js (keep style attribute) -->
-            <div id="intermediate" style="display:none"></div>
+
+            <div class="field">
+              <label for="exim" i18n:translate="">Import Interface</label>
+              <select name="exim" id="exim" class="custom-select">
+              </select>
+            </div>
+
+            <!-- Container for instrument import template -->
+            <div id="import_form" class="pt-3"></div>
+            <div id="import_results" class="pt-3"></div>
           </div>
 
           <!-- Setup Data -->
@@ -96,7 +106,7 @@
                class="tab-pane fade"
                role="tabpanel">
             <span class="form-text text-muted" i18n:translate="">
-              Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.
+              Submit a valid Open XML (.XLSX) file containing setup records to continue.
             </span>
 
             <div class="row">
@@ -141,10 +151,48 @@
           <div id="tab-autoimport"
                class="tab-pane fade"
                role="tabpanel">
-            <label for="automimport">Auto Import</label>
-            <a id="autoimport" href="autoimportlogs">
-              <input class="btn btn-sm btn-primary" type="button" value="Show Last Results" />
-            </a>
+
+            <div class="pb-1">
+              <div class="form-text text-muted" i18n:translate="">
+                Instruments can be configured with one or multiple import data interfaces.
+              </div>
+              <div class="form-text text-muted" i18n:translate="">
+                Each import interface can define a folder, where the system
+                looks for the results files while automatically importing
+                results when calling the <code>auto_import_results</code> view.
+              </div>
+
+              <div class="py-3">
+                <div class="form-text text-muted" i18n:translate="">
+                  Example Cronjob to execute the auto import every 10 minutes
+                </div>
+                <code class="">
+                  # m h  dom mon dow   command
+                  <br/>
+                  */10 * * * * curl -u admin:secret <span tal:replace="python:context.absolute_url() + '/auto_import_results'"></span>
+                </code>
+              </div>
+            </div>
+
+            <div class="form-controls">
+              <!-- Show last results -->
+              <a class="" tal:attributes="href string:${context/absolute_url}/autoimportlogs">
+                <input type="button"
+                       class="btn btn-sm btn-outline-secondary"
+                       i18n:attributes="value"
+                       value="Show last auto import logs" />
+              </a>
+              <!-- Trigger auto import -->
+              <input type="submit"
+                     class="btn btn-sm btn-outline-secondary"
+                     name="auto_import_results"
+                     i18n:attributes="value"
+                     value="Manually trigger auto import" />
+            </div>
+
+            <!-- Auto import results -->
+            <pre class="autoimport-results pt-3"></pre>
+
           </div>
 
         </div>

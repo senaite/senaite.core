@@ -9,7 +9,7 @@
 
   <!-- Navbar Brand Icon -->
   <a class="navbar-brand" href="#" tal:attributes="href portal_state/portal_url">
-    <img alt="SENAITE" height="15px" tal:attributes="src view/get_toolbar_logo" />
+    <img tal:attributes="src python:view.get_toolbar_logo();style python:view.get_toolbar_styles()" />
   </a>
 
   <!-- Navbar Toggle Button -->
@@ -53,7 +53,7 @@
       <li class="nav-item" tal:condition="view/is_manager">
         <a class="nav-link"
            tal:attributes="href view/get_lims_setup_url">
-          <span tal:omit-tag="" i18n:translate="">
+          <span tal:omit-tag="">
             <i class="fas fa-cog"></i>
           </span>
         </a>

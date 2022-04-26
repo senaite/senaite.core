@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
@@ -72,7 +72,7 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wsfolder = self.portal.worksheets
         ws = _createObjectByType("Worksheet", wsfolder, tmpID())
         ws.processForm()
-        bsc = getToolByName(self.portal, 'bika_setup_catalog')
+        bsc = getToolByName(self.portal, 'senaite_catalog_setup')
         lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
         lab_contact = [o for o in lab_contacts if o.getUsername() == 'analyst1']
         self.assertEquals(len(lab_contact), 1)

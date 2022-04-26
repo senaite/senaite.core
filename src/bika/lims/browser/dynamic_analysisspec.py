@@ -15,10 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
+
+import six
 
 from bika.lims import _
 from bika.lims import api
@@ -68,7 +70,7 @@ class DynamicAnalysisSpecView(ListingView):
     def before_render(self):
         super(DynamicAnalysisSpecView, self).before_render()
 
-    def make_empty_item(self, **kw):
+    def make_empty_item(self, record):
         """Create a new empty item
         """
         item = {
@@ -80,11 +82,18 @@ class DynamicAnalysisSpecView(ListingView):
             "disabled": False,
             "state_class": "state-active",
         }
-        item.update(**kw)
+        for k, v in record.items():
+            # ensure keyword dictionary keys contains only strings
+            if not self.is_string(k):
+                continue
+            item[k] = v
         return item
+
+    def is_string(self, value):
+        return isinstance(value, six.string_types)
 
     def folderitems(self):
         items = []
         for record in self.specs:
-            items.append(self.make_empty_item(**record))
+            items.append(self.make_empty_item(record))
         return items

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from .datetimewidget import DateTimeWidget
@@ -38,7 +38,6 @@ from .scheduleinputwidget import ScheduleInputWidget
 from .integer import IntegerWidget
 from .decimal import DecimalWidget
 from .rejectionsetupwidget import RejectionSetupWidget
-from .reflexrulewidget import ReflexRuleWidget
 from .rejectionwidget import RejectionWidget
 from .priorityselectionwidget import  PrioritySelectionWidget
 from .comboboxwidget import ComboBoxWidget

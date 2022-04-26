@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import logging
@@ -39,17 +39,6 @@ _ = senaiteMessageFactory
 
 # import this to log messages
 logger = logging.getLogger("senaite.core")
-
-# XXX: Do we really need all of these in templates?
-allow_module("AccessControl")
-allow_module("bika.lims")
-allow_module("bika.lims.config")
-allow_module("bika.lims.permissions")
-allow_module("bika.lims.utils")
-allow_module("json")
-allow_module("zope.i18n.locales")
-allow_module("zope.component")
-allow_module("plone.registry.interfaces")
 
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
@@ -94,7 +83,6 @@ def initialize(context):
     from bika.lims.content.containertype import ContainerType  # noqa
     from bika.lims.content.department import Department  # noqa
     from bika.lims.content.duplicateanalysis import DuplicateAnalysis  # noqa
-    from bika.lims.content.identifiertype import IdentifierType  # noqa
     from bika.lims.content.instrument import Instrument  # noqa
     from bika.lims.content.instrumentcalibration import InstrumentCalibration  # noqa
     from bika.lims.content.instrumentcertification import InstrumentCertification  # noqa
@@ -120,7 +108,6 @@ def initialize(context):
     from bika.lims.content.referencedefinition import ReferenceDefinition  # noqa
     from bika.lims.content.referencesample import ReferenceSample  # noqa
     from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder  # noqa
-    from bika.lims.content.reflexrule import ReflexRule  # noqa
     from bika.lims.content.rejectanalysis import RejectAnalysis  # noqa
     from bika.lims.content.report import Report  # noqa
     from bika.lims.content.reportfolder import ReportFolder  # noqa
@@ -149,7 +136,6 @@ def initialize(context):
     from bika.lims.controlpanel.bika_containers import Containers  # noqa
     from bika.lims.controlpanel.bika_containertypes import ContainerTypes  # noqa
     from bika.lims.controlpanel.bika_departments import Departments  # noqa
-    from bika.lims.controlpanel.bika_identifiertypes import IdentifierTypes  # noqa
     from bika.lims.controlpanel.bika_instrumentlocations import InstrumentLocations  # noqa
     from bika.lims.controlpanel.bika_instruments import Instruments  # noqa
     from bika.lims.controlpanel.bika_instrumenttypes import InstrumentTypes  # noqa
@@ -158,7 +144,6 @@ def initialize(context):
     from bika.lims.controlpanel.bika_manufacturers import Manufacturers  # noqa
     from bika.lims.controlpanel.bika_preservations import Preservations  # noqa
     from bika.lims.controlpanel.bika_referencedefinitions import ReferenceDefinitions  # noqa
-    from bika.lims.controlpanel.bika_reflexrulefolder import ReflexRuleFolder  # noqa
     from bika.lims.controlpanel.bika_sampleconditions import SampleConditions  # noqa
     from bika.lims.controlpanel.bika_samplematrices import SampleMatrices  # noqa
     from bika.lims.controlpanel.bika_samplepoints import SamplePoints  # noqa
@@ -170,6 +155,7 @@ def initialize(context):
     from bika.lims.controlpanel.bika_worksheettemplates import WorksheetTemplates  # noqa
 
     from bika.lims import permissions
+    from senaite.core import permissions as core_permissions
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME), PROJECTNAME)
@@ -180,7 +166,11 @@ def initialize(context):
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PROJECTNAME, atype.portal_type)
         perm_name = "Add{}".format(atype.portal_type)
-        perm = getattr(permissions, perm_name, AddPortalContent)
+        # check first if the permission is set in senaite.core
+        perm = getattr(core_permissions, perm_name, None)
+        if perm is None:
+            # check bika.lims.permissions or use fallback permission
+            perm = getattr(permissions, perm_name, AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
                     permission=perm,

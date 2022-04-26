@@ -186,8 +186,8 @@
                                     field_id='Published',
                                     field_title='Date Published')"/>
                     <tal:x content="structure python:view.selection_macros.select_state_analysis(
-                                    workflow_id='bika_analysis_workflow',
-                                    field_id='bika_analysis_workflow',
+                                    workflow_id='senaite_analysis_workflow',
+                                    field_id='senaite_analysis_workflow',
                                     field_title='Analysis state')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
                   </fieldset>
@@ -222,8 +222,8 @@
                                     field_id='Requested',
                                     field_title='Date Requested')"/>
                     <tal:x content="structure python:view.selection_macros.select_state_analysis(
-                                    workflow_id='bika_analysis_workflow',
-                                    field_id='bika_analysis_workflow',
+                                    workflow_id='senaite_analysis_workflow',
+                                    field_id='senaite_analysis_workflow',
                                     field_title='Analysis state')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
                   </fieldset>
@@ -268,8 +268,8 @@
                                     field_id='Requested',
                                     field_title='Date Requested')"/>
                     <tal:x content="structure python:view.selection_macros.select_state_analysis(
-                                    workflow_id='bika_analysis_workflow',
-                                    field_id='bika_analysis_workflow',
+                                    workflow_id='senaite_analysis_workflow',
+                                    field_id='senaite_analysis_workflow',
                                     field_title='Analysis state')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
                   </fieldset>
@@ -373,7 +373,7 @@
                                     field_id='getDateRequested',
                                     field_title='Date Requested')"/>
                     <tal:x content="structure python:view.selection_macros.select_state_analysis(
-                                    workflow_id='bika_analysis_workflow',
+                                    workflow_id='senaite_analysis_workflow',
                                     field_id='getAnalysisState',
                                     field_title='Analysis state')"/>
                     <tal:x content="structure python:view.selection_macros.select_groupingperiod(
@@ -501,8 +501,9 @@
               <div tal:attributes="id rpt_data/id" style="display:none"
                    class="criteria">
                 <form action="createreport"
-                      tal:attributes="action string:${here/absolute_url}/createreport"
-                      method="post" tal:attributes="name string:productivity_${rpt_data/id}">
+                      tal:attributes="action string:${here/absolute_url}/createreport;
+                                      name string:productivity_${rpt_data/id}"
+                      method="post">
                   <input type="hidden"
                          name="report_id" tal:attributes="value string:productivity_${rpt_data/id}" />
                   <input type="hidden"

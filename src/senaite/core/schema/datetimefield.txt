@@ -1,0 +1,123 @@
+Datetime field
+==============
+
+The datetime field stores Python datetime values.
+
+
+Running this test from the buildout directory:
+
+    bin/test test_schema_fields -t datetimefield
+
+
+Hints
+
+- z3c.form.converter.txt (Date Data Converter)
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from DateTime import DateTime
+
+Helper functions:
+
+    >>> def commit():
+    ...    import transaction; transaction.commit()
+     
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+    >>> commit()
+
+Test fixture:
+
+    >>> import os
+    >>> os.environ["TZ"] = "CET"
+
+
+Using the field
+---------------
+
+The field can be used much like any other field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import DatetimeField
+
+    >>> class IContent(Interface):
+    ...     date = DatetimeField(title=u"Date")
+
+    >>> field = IContent['date']
+    >>> field
+    <senaite.core.schema.datetimefield.DatetimeField object at ...>
+
+    >>> from persistent import Persistent
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     def __init__(self, date=None):
+    ...         self.date = date
+
+
+    >>> from datetime import datetime
+    >>> datestring = "2030-12-24"
+    >>> date = datetime.strptime(datestring, "%Y-%m-%d")
+    >>> content = Content()
+
+
+Set a value through the field:
+
+    >>> field.set(content, date)
+    >>> field.get(content)
+    datetime.datetime(2030, 12, 24, 0, 0, tzinfo=<DstTzInfo 'CET' CET+1:00:00 STD>)
+
+
+Handling DateTime objects
+-------------------------
+
+The `DateTime` module uses timezones based on `GMT`, e.g. `GMT+1`.
+Using the `asdatetime` method to generate a `datetime` with a static zone:
+
+
+    >>> DT = DateTime("1980-02-25 GMT+1")
+    >>> DT.asdatetime()
+    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'GMT+1'>)
+
+When we set this value on the datetime field, we get the following traecback when
+the object is loaded from the ZODB:
+
+    Traceback (innermost last):
+      ...
+      Module ZODB.Connection, line 795, in setstate
+      Module ZODB.serialize, line 633, in setGhostState
+      Module ZODB.serialize, line 626, in getState
+      Module pytz, line 307, in _p
+      Module pytz.tzinfo, line 539, in unpickler
+      Module pytz, line 188, in timezone
+    UnknownTimeZoneError: (UnknownTimeZoneError('GMT+1',), <function _p at 0x10adda450>, ('GMT+1',))
+
+Also see here for further information:
+https://community.plone.org/t/unknowntimezoneerror-pytz-quirks
+
+Thererfore, we must ensure that the field converts `DateTime` dates to a valid zone:
+
+    >>> content = Content()
+    >>> field.set(content, DT)
+    >>> field.get(content)
+    datetime.datetime(1980, 2, 25, 0, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
+
+NOTE:
+
+The Olson tz database defines Etc/GMT+N timezones which conform with the POSIX style:
+
+Those zone names beginning with "Etc/GMT" have their sign reversed from the
+standard ISO 8601 convention. In the "Etc" area, zones west of GMT have a
+positive sign and those east have a negative sign in their name (e.g
+"Etc/GMT-14" is 14 hours ahead of GMT.)
+
+https://en.wikipedia.org/wiki/Tz_database

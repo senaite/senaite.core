@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -25,8 +25,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddMethod
 from bika.lims.utils import check_permission
-from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 
 
 class MethodFolderContentsView(BikaListingView):
@@ -36,7 +36,7 @@ class MethodFolderContentsView(BikaListingView):
     def __init__(self, context, request):
         super(MethodFolderContentsView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
 
         self.contentFilter = {
             "portal_type": "Method",
@@ -63,16 +63,12 @@ class MethodFolderContentsView(BikaListingView):
                 "index": "description",
                 "toggle": True,
             }),
-            ("Instrument", {
-                "title": _("Instrument"),
+            ("Instruments", {
+                "title": _("Instruments"),
                 "toggle": True,
             }),
-            ("Calculation", {
-                "title": _("Calculation"),
-                "toggle": True,
-            }),
-            ("ManualEntry", {
-                "title": _("Manual entry"),
+            ("Calculations", {
+                "title": _("Calculations"),
                 "toggle": True,
             }),
         ))
@@ -98,17 +94,17 @@ class MethodFolderContentsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
+    def update(self):
         """Before template render hook
         """
-        # Render the Add button if the user has the AddClient permission
+        super(MethodFolderContentsView, self).update()
+
+        # Render the Add button if the user has the AddMethod permission
         if check_permission(AddMethod, self.context):
             self.context_actions[_("Add")] = {
                 "url": "createObject?type_name=Method",
                 "icon": "++resource++bika.lims.images/add.png"
             }
-        # Don't allow any context actions on the Methods folder
-        self.request.set("disable_border", 1)
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Client) that is currently being
@@ -132,25 +128,20 @@ class MethodFolderContentsView(BikaListingView):
 
         instruments = obj.getInstruments()
         if instruments:
-            links = map(
-                lambda i: get_link(i.absolute_url(), i.Title()), instruments)
-            item["replace"]["Instrument"] = ", ".join(links)
+            titles = map(api.get_title, instruments)
+            links = map(get_link_for, instruments)
+            item["Insatruments"] = ",".join(titles)
+            item["replace"]["Instruments"] = ", ".join(links)
         else:
-            item["Instrument"] = ""
+            item["Instruments"] = ""
 
-        calculation = obj.getCalculation()
-        if calculation:
-            title = calculation.Title()
-            url = calculation.absolute_url()
-            item["Calculation"] = title
-            item["replace"]["Calculation"] = get_link(url, value=title)
+        calculations = obj.getCalculations()
+        if calculations:
+            titles = map(api.get_title, calculations)
+            links = map(get_link_for, calculations)
+            item["Calculations"] = ",".join(titles)
+            item["replace"]["Calculations"] = ",".join(links)
         else:
-            item["Calculation"] = ""
-
-        manual_entry_of_results_allowed = obj.getManualEntryOfResults()
-        item["ManualEntry"] = manual_entry_of_results_allowed
-        item["replace"]["ManualEntry"] = " "
-        if manual_entry_of_results_allowed:
-            item["replace"]["ManualEntry"] = get_image("ok.png")
+            item["Calculations"] = ""
 
         return item

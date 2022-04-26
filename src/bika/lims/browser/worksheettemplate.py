@@ -15,11 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.utils import DisplayList
+from senaite.core.p3compat import cmp
 from bika.lims.browser import BrowserView
 from bika.lims.browser.widgets.serviceswidget import ServicesView
 import json
@@ -37,7 +38,7 @@ class AJAXGetWorksheetTemplateInstruments(BrowserView):
                 'is_active': True,
                 'getMethodUIDs': {"query": method_uid,
                                   "operator": "or"}}
-            bsc = getToolByName(self, 'bika_setup_catalog')
+            bsc = getToolByName(self, 'senaite_catalog_setup')
             items = [{'uid': '', 'm_title': 'No instrument'}] + [
                 {'uid': o.UID, 'm_title': o.Title} for o in
                 bsc(cfilter)]

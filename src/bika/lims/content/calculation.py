@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import importlib
@@ -215,7 +215,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         if Formula is None:
             self.setDependentServices(None)
             self.getField('Formula').set(self, Formula)
@@ -350,11 +350,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         result = 'Failure'
 
         try:
-            # print "pre: {}".format(formula)
             formula = formula.format(**mapping)
-            # print "formatted: {}".format(formula)
             result = eval(formula, self._getGlobals())
-            # print "result: {}".format(result)
         except TypeError as e:
             # non-numeric arguments in interim mapping?
             result = "TypeError: {}".format(str(e.args[0]))
@@ -454,7 +451,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             raise WorkflowException
 
     def workflow_script_deactivate(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be deactivated if active services are using it.
         services = bsc(portal_type="AnalysisService", is_active=True)

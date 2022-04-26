@@ -15,22 +15,19 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import alsoProvides
-
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.utils import changeWorkflowState
-from bika.lims.utils.analysis import create_analysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
+from DateTime import DateTime
+from zope.interface import alsoProvides
 
 
 def after_assign(analysis):
@@ -130,16 +127,16 @@ def after_submit(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Ensure there is a Result Capture Date even if the result was set
+    # automatically on creation because of a "DefaultResult"
+    if not analysis.getResultCaptureDate():
+        analysis.setResultCaptureDate(DateTime())
+
     # Mark this analysis as ISubmitted
     alsoProvides(analysis, ISubmitted)
 
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
-
-    # TODO: REFLEX TO REMOVE
-    # Do all the reflex rules process
-    if IRequestAnalysis.providedBy(analysis):
-        analysis._reflex_rule_process('submit')
 
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
@@ -211,20 +208,19 @@ def after_verify(analysis):
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
 
-    # TODO: REFLEX TO REMOVE
-    # Do all the reflex rules process
-    if IRequestAnalysis.providedBy(analysis):
-        analysis._reflex_rule_process('verify')
-
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
         push_reindex_to_actions_pool(ws)
 
-    # Promote transition to Analysis Request
+    # Promote transition to Analysis Request if Sample auto-verify is enabled
     if IRequestAnalysis.providedBy(analysis):
-        doActionFor(analysis.getRequest(), 'verify')
+        setup = api.get_setup()
+        if setup.getAutoVerifySamples():
+            doActionFor(analysis.getRequest(), "verify")
+
+        # Reindex the sample (and ancestors) this analysis belongs to
         reindex_request(analysis)
 
 
@@ -244,12 +240,10 @@ def reindex_request(analysis, idxs=None):
         # Analysis not directly bound to an Analysis Request. Do nothing
         return
 
-    n_idxs = ['assigned_state', 'getDueDate']
-    n_idxs = idxs and list(set(idxs + n_idxs)) or n_idxs
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        push_reindex_to_actions_pool(ancestor, n_idxs)
+        push_reindex_to_actions_pool(ancestor)
 
 
 def remove_analysis_from_worksheet(analysis):
@@ -273,8 +267,7 @@ def remove_analysis_from_worksheet(analysis):
         doActionFor(worksheet, "rollback_to_open")
 
     # Reindex the Worksheet
-    idxs = ["getAnalysesUIDs"]
-    push_reindex_to_actions_pool(worksheet, idxs=idxs)
+    push_reindex_to_actions_pool(worksheet)
 
 
 def cascade_to_dependents(analysis, transition_id):

@@ -19,7 +19,7 @@
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
         <!-- Hazardous icon -->
-        <i class="hazardous-icon" title="Hazdardous" i18n:attributes="title"
+        <i class="hazardous-icon" title="Hazardous" i18n:attributes="title"
            tal:condition="python:view.is_hazardous()">
           <svg tal:replace="structure senaite_theme/icon_data/hazardous" />
         </i>
@@ -49,48 +49,26 @@
       </div>
       <!-- /Header Table -->
 
-      <!-- Remarks Widget
-           https://github.com/senaite/senaite.core/pull/920 -->
-      <div class="row">
-        <div id="remarks-widget"
-             class="col-sm-12 remarks-widget"
-             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
-                 field python:context.Schema()['Remarks'];
-                 errors python:{};">
-          <h3>
-            <!-- Remarks icon -->
-            <i class="remarks-icon" title="Remarks" i18n:attributes="title">
-              <svg tal:replace="structure senaite_theme/icon_data/remarks" />
-            </i>
-            <span i18n:translate="">Remarks</span>
-          </h3>
-          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+      <!-- Viewlet manager: above sample sections -->
+      <div class="row" id="above-sample-sections">
+        <div class="col-sm-12">
+          <div tal:replace="structure provider:senaite.abovesamplesections"></div>
         </div>
       </div>
-      <!-- /Remarks Widget -->
 
-      <!-- Viewlet manager for sample sections -->
+      <!-- Viewlet manager: sample sections -->
       <div class="row" id="sample-sections">
         <div class="col-sm-12">
           <div tal:replace="structure provider:senaite.samplesections"></div>
         </div>
       </div>
 
-      <!-- Results interpretation -->
-      <div class="row">
+      <!-- Viewlet manager: below sample sections -->
+      <div class="row" id="below-sample-sections">
         <div class="col-sm-12">
-          <h3>
-            <!-- Resultsinterpretations icon -->
-            <i class="remarks-icon" title="Results interpretation" i18n:attributes="title">
-              <svg tal:replace="structure senaite_theme/icon_data/resultsinterpretation" />
-            </i>
-            <span i18n:translate="">Results interpretation</span>
-          </h3>
-          <tal:parts replace="structure view/riview"/>
+          <div tal:replace="structure provider:senaite.belowsamplesections"></div>
         </div>
       </div>
-      <!-- /Results interpretation -->
 
     </metal:content-core>
   </body>

@@ -1,0 +1,15 @@
+<tal:block tal:repeat="widget view/subform/widgets/values">
+  <td tal:attributes="class python:widget.mode == 'hidden' and 'datagridwidget-hidden-data' or 'datagridwidget-cell';">
+    <div tal:condition="widget/error"
+         tal:replace="structure widget/error/render">
+      error
+    </div>
+    <div tal:replace="structure widget/render"></div>
+  </td>
+</tal:block>
+<td class="datagridwidget-hidden-data d-none">
+  <input name="field-empty-marker"
+         type="hidden"
+         value="1"
+         tal:attributes=" name string:${view/name}-empty-marker;"/>
+</td>

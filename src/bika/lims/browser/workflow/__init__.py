@@ -15,10 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import six
 import time
 
 from bika.lims import api
@@ -68,7 +69,7 @@ class RequestContextAware(object):
         """Returns a list of uids from the request
         """
         uids = self.request.get("uids", "")
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
         unique_uids = collections.OrderedDict().fromkeys(uids).keys()
         return filter(api.is_uid, unique_uids)

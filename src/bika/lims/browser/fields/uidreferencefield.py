@@ -15,8 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+import six
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import Field, StringField
@@ -209,7 +211,7 @@ class UIDReferenceField(StringField):
         # current set UIDs
         raw = self.getRaw(context) or []
         # handle single reference fields
-        if isinstance(raw, basestring):
+        if isinstance(raw, six.string_types):
             raw = [raw, ]
         cur = set(raw)
         # UIDs to be set

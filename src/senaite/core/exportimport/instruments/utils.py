@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 def get_instrument_import_override(override):
@@ -30,9 +30,9 @@ def get_instrument_import_override(override):
 
 
 def get_instrument_import_ar_allowed_states(artoapply):
-    status = ['sample_received', 'attachment_due', 'to_be_verified']
+    status = ['sample_received', 'to_be_verified']
     if artoapply == 'received':
         status = ['sample_received']
     elif artoapply == 'received_tobeverified':
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        status = ['sample_received', 'to_be_verified']
     return status

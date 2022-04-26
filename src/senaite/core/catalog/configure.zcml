@@ -1,0 +1,14 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           i18n_domain="senaite.core">
+
+  <!-- Catalog indexes -->
+  <include package=".indexer" />
+
+  <utility
+      factory=".catalog_multiplex_processor.CatalogMultiplexProcessor"
+      provides="Products.CMFCore.interfaces.IPortalCatalogQueueProcessor"
+      name="catalogmultiplex"
+      />
+
+</configure>

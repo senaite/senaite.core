@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -46,7 +46,7 @@ class AnalysisCategoriesView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisCategoriesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
 
         self.contentFilter = {
             "portal_type": "AnalysisCategory",
@@ -86,8 +86,7 @@ class AnalysisCategoriesView(BikaListingView):
             }),
             ("SortKey", {
                 "title": _("Sort Key"),
-                "attr": "getSortKey",
-                "sortable": False
+                "sortable": True
             }),
         ))
 
@@ -125,6 +124,7 @@ class AnalysisCategoriesView(BikaListingView):
 
         item["replace"]["Title"] = get_link(url, value=title)
         item["Description"] = description
+        item["SortKey"] = obj.getSortKey()
 
         department = obj.getDepartment()
         if department:

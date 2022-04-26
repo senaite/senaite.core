@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 
@@ -32,6 +32,7 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import PROJECTNAME, PRESERVATION_CATEGORIES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -74,7 +75,7 @@ registerType(Preservation, PROJECTNAME)
 
 class ajaxGetPreservations:
 
-    catalog_name='bika_setup_catalog'
+    catalog_name='senaite_catalog_setup'
     contentFilter = {'portal_type': 'Preservation',
                      'is_active': True}
 

@@ -15,30 +15,32 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import os
 import glob
+import os
 import traceback
-
 from operator import itemgetter
-from DateTime import DateTime
-from bika.lims.api.analysis import is_out_of_range
-from bika.lims.interfaces import IReferenceSample, IReferenceAnalysis
-from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import formatDecimalMark
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import format_supsub
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
+from DateTime import DateTime
+from plone.resource.utils import iterDirectoriesOfType
+from plone.resource.utils import queryResourceDirectory
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.p3compat import cmp
 
 
 class PrintView(BrowserView):
@@ -305,7 +307,7 @@ class PrintView(BrowserView):
             data['fullname'] = to_utf8(self.user_fullname(username))
             data['email'] = to_utf8(self.user_email(username))
 
-            c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+            c = [x for x in self.senaite_catalog_setup(portal_type='LabContact')
                  if x.getObject().getUsername() == username]
             if c:
                 sf = c[0].getObject().getSignature()
@@ -394,7 +396,7 @@ class PrintView(BrowserView):
             ar['analyses'] = ans
             ars[reqid] = ar
 
-        ars = [a for a in ars.itervalues()]
+        ars = ars.values()
 
         # Sort analysis requests by position
         ars.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
@@ -551,7 +553,7 @@ class PrintView(BrowserView):
             data['name'] = to_utf8(client.getName())
         return data
 
-    def _flush_pdf():
+    def _flush_pdf(self):
         """ Generates a PDF using the current layout as the template and
             returns the chunk of bytes.
         """

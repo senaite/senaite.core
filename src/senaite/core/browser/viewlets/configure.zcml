@@ -11,25 +11,43 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Listing Table Title Viewlet -->
+  <!-- Listing Table: Title Viewlet -->
   <browser:viewlet
-      name="senaite.app.listingtabletitle"
+      name="senaite.core.listings.title"
       manager=".interfaces.IListingTableTitle"
       class=".listings.ListingTableTitleViewlet"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Listing Table Description Viewlet -->
+  <!-- Listing Table: Actions Viewlet -->
   <browser:viewlet
-      name="senaite.app.listingtabledescription"
+      name="senaite.core.listings.actions"
+      manager=".interfaces.IListingTableTitle"
+      class=".listings.ListingTableActionsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Listing Table: Add Samples Viewlet -->
+  <browser:viewlet
+      name="senaite.core.listings.add_samples"
+      manager=".interfaces.IListingTableTitle"
+      class=".add_samples.AddSamplesViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Listing Table: Description Viewlet -->
+  <browser:viewlet
+      name="senaite.core.listings.description"
       manager=".interfaces.IListingTableDescription"
       class=".listings.ListingTableDescriptionViewlet"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Listing Title Viewlet Manager -->
+  <!-- Listing Table: Title Viewlet Manager -->
   <browser:viewletManager
       name="senaite.listingtabletitle"
       provides=".interfaces.IListingTableTitle"
@@ -38,7 +56,7 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Listing Description Viewlet Manager -->
+  <!-- Listing Table: Description Viewlet Manager -->
   <browser:viewletManager
       name="senaite.listingtabledescription"
       provides=".interfaces.IListingTableDescription"
@@ -47,7 +65,7 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Above Listing Viewlet Manager -->
+  <!-- Listing Table: Above Listing Viewlet Manager -->
   <browser:viewletManager
       name="senaite.abovelistingtable"
       provides=".interfaces.IAboveListingTable"
@@ -56,7 +74,7 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Below Listing Viewlet Manager -->
+  <!-- Listing Table: Below Listing Viewlet Manager -->
   <browser:viewletManager
       name="senaite.belowlistingtable"
       provides=".interfaces.IBelowListingTable"
@@ -227,6 +245,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Viewlet manager in sample view located above sample sections -->
+  <browser:viewletManager
+      name="senaite.abovesamplesections"
+      provides=".interfaces.IAboveSampleSection"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Viewlet manager that sits in the sample view content area -->
   <browser:viewletManager
       name="senaite.samplesections"
@@ -236,12 +263,39 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Viewlet manager in sample view located below sample sections -->
+  <browser:viewletManager
+      name="senaite.belowsamplesections"
+      provides=".interfaces.IBelowSampleSection"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Remarks viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.abovesamplesection.remarks"
+      manager=".interfaces.IAboveSampleSection"
+      class=".remarks.RemarksViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
   <!-- Sample section viewlet: lab analyses lisiting -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
       name="senaite.core.samplesection.lab_analyses"
       manager=".interfaces.ISampleSection"
       class=".sampleanalyses.LabAnalysesViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
+  <!-- Results interpretation viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.belowsamplesection.resultsinterpretation"
+      manager=".interfaces.IBelowSampleSection"
+      class=".resultsinterpretation.ResultsInterpretationViewlet"
       layer="senaite.core.interfaces.ISenaiteCore"
       permission="zope2.View" />
 
@@ -263,5 +317,15 @@
       class=".sampleanalyses.QCAnalysesViewlet"
       layer="senaite.core.interfaces.ISenaiteCore"
       permission="zope2.View" />
+
+  <!-- Sample dispatched viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="sample_dispatched"
+      class=".sample_dispatched.SampleDispatchedViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_dispatched_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>

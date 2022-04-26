@@ -15,11 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.public import DisplayList
+from senaite.core.p3compat import cmp
 from zope.i18n.locales import locales
 
 # Implicit module imports used by others
@@ -70,11 +71,6 @@ ANALYSIS_TYPES = DisplayList((
 STD_TYPES = DisplayList((
     ('c', _('Control')),
     ('b', _('Blank')),
-))
-ATTACHMENT_OPTIONS = DisplayList((
-    ('r', _('Required')),
-    ('p', _('Permitted')),
-    ('n', _('Not Permitted')),
 ))
 ATTACHMENT_REPORT_OPTIONS = DisplayList((
     ('r', _('Render in Report')),

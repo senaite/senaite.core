@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -43,7 +43,7 @@ class SampleConditionsView(BikaListingView):
     def __init__(self, context, request):
         super(SampleConditionsView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "SampleCondition",
             "sort_on": "sortable_title",
@@ -79,25 +79,23 @@ class SampleConditionsView(BikaListingView):
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'transitions': [{'id': 'empty'}, ],
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"is_active": True},
+                "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
-                'id': 'active',
-                'title': _('Active'),
-                'contentFilter': {'is_active': True},
-                'transitions': [{'id': 'deactivate'}, ],
+                "id": "inactive",
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
+                "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
-                'id': 'inactive',
-                'title': _('Inactive'),
-                'contentFilter': {'is_active': False},
-                'transitions': [{'id': 'activate'}, ],
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
                 "columns": self.columns.keys(),
-
-             }
+            },
         ]
 
     def folderitem(self, obj, item, index):

@@ -15,10 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
+
+import six
 
 from bika.lims import _
 from bika.lims import api
@@ -34,6 +36,7 @@ from senaite.app.supermodel import SuperModel
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
@@ -115,8 +118,6 @@ def get_version(obj):
     :returns: Current version of the object or -1
     """
     count = get_snapshot_count(obj)
-    if count == 0:
-        return -1
     return count - 1
 
 
@@ -319,6 +320,18 @@ def take_snapshot(obj, store=True, **kw):
     return snapshot
 
 
+def pause_snapshots_for(obj):
+    """Pause snapshots for the given object
+    """
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+
+def resume_snapshots_for(obj):
+    """Resume snapshots for the given object
+    """
+    noLongerProvides(obj, IDoNotSupportSnapshots)
+
+
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
     """Returns a diff of two given snapshots (dictionaries)
 
@@ -332,7 +345,7 @@ def compare_snapshots(snapshot_a, snapshot_b, raw=False):
         return {}
 
     diffs = {}
-    for key_a, value_a in snapshot_a.iteritems():
+    for key_a, value_a in six.iteritems(snapshot_a):
         # skip fieds starting with _ or __
         if key_a.startswith("_"):
             continue
@@ -393,7 +406,7 @@ def _process_value(value):
     if not value:
         value = _("Not set")
     # handle strings
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
         # XXX: bad data, e.g. in AS Method field
         if value == "None":
             value = _("Not set")
@@ -426,6 +439,8 @@ def _get_title_or_id_from_uid(uid):
     try:
         obj = api.get_object_by_uid(uid)
     except api.APIError:
+        obj = None
+    if not obj:
         return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id

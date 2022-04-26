@@ -1,0 +1,42 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.core">
+
+  <!-- Edit Form: Lab Contact -->
+  <adapter
+      for="bika.lims.interfaces.ILabContact
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".labcontact.EditForm"/>
+
+  <!-- Edit Form: Analysis Service -->
+  <!-- Edit Form: Analysis Profile -->
+  <adapter
+      for="bika.lims.interfaces.IAnalysisProfile
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisprofile.EditForm"/>
+
+  <adapter
+      for="bika.lims.interfaces.IAnalysisService
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisservice.EditForm"/>
+
+  <!-- Edit Form: Calculation
+       XXX: Fix interface import! -->
+  <adapter
+      for="bika.lims.interfaces.calculation.ICalculation
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".calculation.EditForm"/>
+
+  <!-- Edit Form: Method -->
+  <adapter
+      for="bika.lims.interfaces.IMethod
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".method.EditForm"/>
+
+  <!-- Custom Form: Instrument Import -->
+  <adapter
+      name="data_import_form"
+      for="Products.CMFCore.interfaces.ISiteRoot
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".data_import.EditForm"/>
+
+</configure>

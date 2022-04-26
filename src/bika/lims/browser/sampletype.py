@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -23,11 +23,12 @@ from operator import itemgetter
 
 import plone.protect
 from Products.CMFCore.utils import getToolByName
+from senaite.core.p3compat import cmp
 
 
 class get_sampletypes(object):
 
-    catalog_name='bika_setup_catalog'
+    catalog_name='senaite_catalog_setup'
     contentFilter = {'portal_type': 'SampleType',
                      'is_active': True}
 

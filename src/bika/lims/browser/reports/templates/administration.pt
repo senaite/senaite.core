@@ -110,8 +110,8 @@
                                     field_id='Published',
                                     field_title='Date Published')"/>
                     <tal:x content="structure python:view.selection_macros.select_state(
-                                    workflow_id='bika_analysis_workflow',
-                                    field_id='bika_analysis_workflow',
+                                    workflow_id='senaite_analysis_workflow',
+                                    field_id='senaite_analysis_workflow',
                                     field_title='Analysis state')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
                   </fieldset>

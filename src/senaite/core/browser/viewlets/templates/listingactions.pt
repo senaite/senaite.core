@@ -1,0 +1,13 @@
+<div class="listing-actions-viewlet d-inline-block align-middle">
+  <div tal:repeat="action python:view.get_context_actions()"
+       class="d-inline-block align-middle">
+    <a tal:attributes="href action/url;
+                       class python:'mx-2 btn btn-sm btn-light %s' % action.get('css_class', '')">
+      <img tal:define="icon action/icon|nothing"
+           tal:condition="icon"
+           height="16"
+           tal:attributes="src icon"/>
+      <span tal:content="action/title"></span>
+    </a>
+  </div>
+</div>

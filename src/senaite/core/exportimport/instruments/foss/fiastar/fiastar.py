@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ FOSS FIAStar
@@ -24,11 +24,12 @@ from bika.lims.browser import BrowserView
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from plone.i18n.normalizer.interfaces import IIDNormalizer
+from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from . import FOSSFIAStarCSVParser, FOSSFIAStarImporter
-from cStringIO import StringIO
+from six import StringIO
 import json
 import traceback
 import csv
@@ -48,7 +49,7 @@ class Export(BrowserView):
     def __call__(self, analyses):
         tray = 1
         now = DateTime().strftime('%Y%m%d-%H%M')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         uc = getToolByName(self.context, 'uid_catalog')
         instrument = self.context.getInstrument()
         norm = getUtility(IIDNormalizer).normalize
@@ -133,11 +134,11 @@ def Import(context, request):
 
     if parser:
         # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        status = ['sample_received', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
         elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+            status = ['sample_received', 'to_be_verified']
 
         over = [False, False]
         if override == 'nooverride':

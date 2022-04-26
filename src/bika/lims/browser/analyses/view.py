@@ -15,26 +15,28 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
 from collections import OrderedDict
 from copy import copy
 from copy import deepcopy
+from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.api.analysis import is_result_range_compliant
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import FieldEditAnalysisHidden
@@ -47,6 +49,7 @@ from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
@@ -54,15 +57,18 @@ from DateTime import DateTime
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
+from senaite.app.listing import ListingView
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
 
-class AnalysesView(BikaListingView):
+class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
 
     Visible InterimFields from all analyses are added to self.columns[].
-    Keyword arguments are passed directly to bika_analysis_catalog.
+    Keyword arguments are passed directly to senaite_catalog_analysis.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -77,7 +83,7 @@ class AnalysesView(BikaListingView):
         })
 
         # set the listing view config
-        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.catalog = ANALYSIS_CATALOG
         self.sort_order = "ascending"
         self.context_actions = {}
 
@@ -90,7 +96,7 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = OrderedDict()
         self.specs = {}
-        self.bsc = api.get_tool("bika_setup_catalog")
+        self.bsc = api.get_tool(SETUP_CATALOG)
         self.portal = api.get_portal()
         self.portal_url = api.get_url(self.portal)
         self.rc = api.get_tool(REFERENCE_CATALOG)
@@ -118,12 +124,17 @@ class AnalysesView(BikaListingView):
                 "title": _("Method"),
                 "sortable": False,
                 "ajax": True,
+                "on_change": "_on_method_change",
                 "toggle": True}),
             ("Instrument", {
                 "title": _("Instrument"),
                 "ajax": True,
                 "sortable": False,
                 "toggle": True}),
+            ("Calculation", {
+                "title": _("Calculation"),
+                "sortable": False,
+                "toggle": False}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -223,16 +234,12 @@ class AnalysesView(BikaListingView):
              },
         ]
 
-        # This is used to display method and instrument columns if there is at
-        # least one analysis to be rendered that allows the assignment of
-        # method and/or instrument
-        self.show_methodinstr_columns = False
-
     def update(self):
         """Update hook
         """
         super(AnalysesView, self).update()
         self.load_analysis_categories()
+        self.append_partition_filters()
 
     def before_render(self):
         """Before render hook
@@ -276,7 +283,7 @@ class AnalysesView(BikaListingView):
             return False
         if obj is None:
             return check_permission(permission, self.context)
-        return check_permission(permission, api.get_object(obj))
+        return check_permission(permission, self.get_object(obj))
 
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
@@ -290,7 +297,7 @@ class AnalysesView(BikaListingView):
             # inside a deactivated Analysis Request, for instance
             return False
 
-        analysis_obj = api.get_object(analysis_brain)
+        analysis_obj = self.get_object(analysis_brain)
         if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults, analysis_obj):
@@ -305,13 +312,6 @@ class AnalysesView(BikaListingView):
         # Check if the user is allowed to enter a value to to Result field
         if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
-
-        # Is the instrument out of date?
-        # The user can assign a result to the analysis if it does not have any
-        # instrument assigned or the instrument assigned is valid.
-        if not self.is_analysis_instrument_valid(analysis_brain):
-            # return if it is allowed to enter a manual result
-            return analysis_obj.getManualEntryOfResults()
 
         return True
 
@@ -328,7 +328,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Get the ananylsis object
-        obj = api.get_object(analysis_brain)
+        obj = self.get_object(analysis_brain)
 
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
@@ -355,7 +355,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Get the ananylsis object
-        obj = api.get_object(analysis_brain)
+        obj = self.get_object(analysis_brain)
 
         # Manual setting of uncertainty is not allowed
         if not obj.getAllowManualUncertainty():
@@ -368,33 +368,41 @@ class AnalysesView(BikaListingView):
         return True
 
     @viewcache.memoize
-    def is_analysis_instrument_valid(self, analysis_brain):
-        """Return if the analysis has a valid instrument.
+    def is_analysis_conditions_edition_allowed(self, analysis_brain):
+        """Returns whether the conditions of the analysis can be edited or not
+        """
+        # Check if permission is granted for the given analysis
+        obj = self.get_object(analysis_brain)
 
-        If the analysis passed in is from ReferenceAnalysis type or does not
-        have an instrument assigned, returns True
+        if IReferenceAnalysis.providedBy(obj):
+            return False
 
-        :param analysis_brain: Brain that represents an analysis
-        :return: True if the instrument assigned is valid or is None"""
-        if analysis_brain.meta_type == 'ReferenceAnalysis':
-            # If this is a ReferenceAnalysis, there is no need to check the
-            # validity of the instrument, because this is a QC analysis and by
-            # definition, it has the ability to promote an instrument to a
-            # valid state if the result is correct.
-            return True
-        instrument = self.get_instrument(analysis_brain)
-        return not instrument or instrument.isValid()
+        if not self.has_permission(FieldEditAnalysisConditions, obj):
+            return False
+
+        # Omit analysis does not have conditions set
+        if not obj.getConditions():
+            return False
+
+        return True
 
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
         :param analysis_brain: Brain that represents an analysis
-        :return: Instrument object or None"""
-        instrument_uid = analysis_brain.getInstrumentUID
-        # Note we look for the instrument by using its UID, case we want the
-        # instrument to be cached by UID so if same instrument is assigned to
-        # several analyses, a single search for instrument will be required
-        return self.get_object(instrument_uid)
+        :return: Instrument object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getInstrument()
+
+    def get_calculation(self, analysis_brain):
+        """Returns the calculation assigned to the analysis passed in, if any
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: Calculation object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getCalculation()
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
@@ -404,13 +412,8 @@ class AnalysesView(BikaListingView):
         :param brain_or_object_or_uid: UID/Catalog brain/content object
         :returns: content object
         """
-        if api.is_uid(brain_or_object_or_uid):
-            return api.get_object_by_uid(brain_or_object_or_uid, default=None)
-        if api.is_object(brain_or_object_or_uid):
-            return api.get_object(brain_or_object_or_uid)
-        return None
+        return api.get_object(brain_or_object_or_uid, default=None)
 
-    @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
@@ -427,18 +430,19 @@ class AnalysesView(BikaListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        uids = analysis_brain.getAllowedMethodUIDs
-        query = {'portal_type': 'Method',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        if not brains:
-            return [{'ResultValue': '', 'ResultText': _('None')}]
-        return map(lambda brain: {'ResultValue': brain.UID,
-                                  'ResultText': brain.Title}, brains)
+        obj = self.get_object(analysis_brain)
+        methods = obj.getAllowedMethods()
+        if not methods:
+            return [{"ResultValue": "", "ResultText": _("None")}]
+        vocab = []
+        for method in methods:
+            vocab.append({
+                "ResultValue": api.get_uid(method),
+                "ResultText": api.get_title(method),
+            })
+        return vocab
 
-    @viewcache.memoize
-    def get_instruments_vocabulary(self, analysis_brain):
+    def get_instruments_vocabulary(self, analysis, method=None):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
 
@@ -455,40 +459,62 @@ class AnalysesView(BikaListingView):
             {'ResultValue': <instrument_UID>,
              'ResultText': <instrument_Title>}
 
-        :param analysis_brain: A single Analysis or ReferenceAnalysis
+        :param analysis: A single Analysis or ReferenceAnalysis
         :type analysis_brain: Analysis or.ReferenceAnalysis
         :return: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Instrument entry of results for this analysis is not allowed
-            return list()
+        obj = self.get_object(analysis)
+        # get the allowed interfaces from the analysis service
+        instruments = obj.getAllowedInstruments()
+        # if no method is passed, get the assigned method of the analyis
+        if method is None:
+            method = obj.getMethod()
+
+        # check if the analysis has a method
+        if method:
+            # supported instrument from the method
+            method_instruments = method.getInstruments()
+            # allow only method instruments that are set in service
+            instruments = list(
+                set(instruments).intersection(method_instruments))
 
         # If the analysis is a QC analysis, display all instruments, including
         # those uncalibrated or for which the last QC test failed.
-        meta_type = analysis_brain.meta_type
-        uncalibrated = meta_type == 'ReferenceAnalysis'
-        if meta_type == 'DuplicateAnalysis':
-            base_analysis_type = analysis_brain.getAnalysisPortalType
-            uncalibrated = base_analysis_type == 'ReferenceAnalysis'
+        is_qc = api.get_portal_type(obj) == "ReferenceAnalysis"
 
-        uids = analysis_brain.getAllowedInstrumentUIDs
-        query = {'portal_type': 'Instrument',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
-        for brain in brains:
-            instrument = self.get_object(brain)
-            if uncalibrated and not instrument.isOutOfDate():
-                # Is a QC analysis, include instrument also if is not valid
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+        vocab = []
+        for instrument in instruments:
+            uid = api.get_uid(instrument)
+            title = api.safe_unicode(api.get_title(instrument))
+            # append all valid instruments
             if instrument.isValid():
-                # Only add the 'valid' instruments: certificate
-                # on-date and valid internal calibration tests
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif is_qc:
+                # Is a QC analysis, include instrument also if is not valid
+                if instrument.isOutOfDate():
+                    title = _(u"{} (Out of date)".format(title))
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif instrument.isOutOfDate():
+                # disable out of date instruments
+                title = _(u"{} (Out of date)".format(title))
+                vocab.append({
+                    "disabled": True,
+                    "ResultValue": None,
+                    "ResultText": title,
+                })
+
+        # sort the vocabulary
+        vocab = list(sorted(vocab, key=itemgetter("ResultText")))
+        # prepend empty item
+        vocab = [{"ResultValue": "", "ResultText": _("None")}] + vocab
+
         return vocab
 
     @viewcache.memoize
@@ -503,13 +529,70 @@ class AnalysesView(BikaListingView):
 
     def load_analysis_categories(self):
         # Getting analysis categories
-        bsc = api.get_tool('bika_setup_catalog')
+        bsc = api.get_tool('senaite_catalog_setup')
         analysis_categories = bsc(portal_type="AnalysisCategory",
                                   sort_on="sortable_title")
         # Sorting analysis categories
         self.analysis_categories_order = dict([
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
+
+    def append_partition_filters(self):
+        """Append additional review state filters for partitions
+        """
+
+        # view is used for instrument QC view as well
+        if not IAnalysisRequest.providedBy(self.context):
+            return
+
+        # check if the sample has partitions
+        partitions = self.context.getDescendants()
+
+        # root partition w/o partitions
+        if not partitions:
+            return
+
+        new_states = []
+        valid_states = [
+            "registered",
+            "unassigned",
+            "assigned",
+            "to_be_verified",
+            "verified",
+            "published",
+        ]
+
+        if self.context.isRootAncestor():
+            root_id = api.get_id(self.context)
+            new_states.append({
+                "id": root_id,
+                "title": root_id,
+                "contentFilter": {
+                    "getAncestorsUIDs": api.get_uid(self.context),
+                    "review_state": valid_states,
+                    "path": {
+                        "query": api.get_path(self.context),
+                        "level": 0,
+                    },
+                },
+                "columns": self.columns.keys(),
+            })
+
+        for partition in partitions:
+            part_id = api.get_id(partition)
+            new_states.append({
+                "id": part_id,
+                "title": part_id,
+                "contentFilter": {
+                    "getAncestorsUIDs": api.get_uid(partition),
+                    "review_state": valid_states,
+                },
+                "columns": self.columns.keys(),
+            })
+
+        for state in sorted(new_states, key=lambda s: s.get("id")):
+            if state not in self.review_states:
+                self.review_states.append(state)
 
     def isItemAllowed(self, obj):
         """Checks if the passed in Analysis must be displayed in the list.
@@ -543,6 +626,7 @@ class AnalysesView(BikaListingView):
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
+        item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
 
         # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler
@@ -550,7 +634,18 @@ class AnalysesView(BikaListingView):
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(obj.getServiceUID, obj.UID),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info", tabindex="-1")
+            css_class="overlay_panel", tabindex="-1")
+
+        # Append conditions link before the analysis
+        # see: bika.lims.site.coffee for the attached event handler
+        if self.is_analysis_conditions_edition_allowed(obj):
+            url = api.get_url(self.context)
+            url = "{}/set_analysis_conditions?uid={}".format(url, obj.UID)
+            ico = "<i class='fas fa-list' style='padding-top: 5px;'/>"
+            conditions = get_link(url, value=ico, css_class="overlay_panel",
+                                  tabindex="-1")
+            info = item["before"]["Service"]
+            item["before"]["Service"] = "<br/>".join([info, conditions])
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
@@ -595,14 +690,14 @@ class AnalysesView(BikaListingView):
         self._folder_item_assigned_worksheet(obj, item)
         # Fill accredited icon
         self._folder_item_accredited_icon(obj, item)
-        # Fill reflex analysis icons
-        self._folder_item_reflex_icons(obj, item)
         # Fill hidden field (report visibility)
         self._folder_item_report_visibility(obj, item)
         # Renders additional icons to be displayed
         self._folder_item_fieldicons(obj)
         # Renders remarks toggle button
         self._folder_item_remarks(obj, item)
+        # Renders the analysis conditions
+        self._folder_item_conditions(obj, item)
 
         return item
 
@@ -637,7 +732,6 @@ class AnalysesView(BikaListingView):
                     "toggle": True,
                     "ajax": True,
                 }
-
 
         if self.allow_edit:
             new_states = []
@@ -674,12 +768,10 @@ class AnalysesView(BikaListingView):
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
 
-        # Method and Instrument columns must be shown or hidden at the
-        # same time, because the value assigned to one causes
-        # a value reassignment to the other (one method can be performed
-        # by different instruments)
-        self.columns["Method"]["toggle"] = self.show_methodinstr_columns
-        self.columns["Instrument"]["toggle"] = self.show_methodinstr_columns
+        # Display method and instrument columns only if at least one of the
+        # analyses requires them to be displayed for selection
+        self.columns["Method"]["toggle"] = self.is_method_column_required()
+        self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
 
         return items
 
@@ -755,7 +847,9 @@ class AnalysesView(BikaListingView):
 
         item["Result"] = ""
 
-        if not self.has_permission(ViewResults, analysis_brain):
+        # TODO: The permission `ViewResults` is managed on the sample.
+        #       -> Change to a proper field permission!
+        if not self.has_permission(ViewResults, self.context):
             # If user has no permissions, don"t display the result but an icon
             img = get_image("to_follow.png", width="16px", height="16px")
             item["before"]["Result"] = img
@@ -819,6 +913,15 @@ class AnalysesView(BikaListingView):
 
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
 
+        # calculation
+        calculation = self.get_calculation(analysis_brain)
+        calculation_uid = api.get_uid(calculation) if calculation else ""
+        calculation_title = api.get_title(calculation) if calculation else ""
+        calculation_link = get_link_for(calculation) if calculation else ""
+        item["calculation"] = calculation_uid
+        item["Calculation"] = calculation_title
+        item["replace"]["Calculation"] = calculation_link or _("Manual")
+
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         analysis_obj = self.get_object(analysis_brain)
@@ -826,7 +929,6 @@ class AnalysesView(BikaListingView):
 
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
-
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
@@ -834,21 +936,22 @@ class AnalysesView(BikaListingView):
 
             interim_value = interim_field.get("value", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
-            interim_field['formatted_value'] = interim_formatted
+            interim_field["formatted_value"] = interim_formatted
             item[interim_keyword] = interim_field
-            item['class'][interim_keyword] = 'interim'
+            item["class"][interim_keyword] = "interim"
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
             #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
-                    item['allow_edit'].append(interim_keyword)
+                if self.has_permission(
+                        FieldEditAnalysisResult, analysis_brain):
+                    item["allow_edit"].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
-            interim_hidden = interim_field.get('hidden', False)
+            interim_hidden = interim_field.get("hidden", False)
             if not interim_hidden:
-                interim_title = interim_field.get('title')
+                interim_title = interim_field.get("title")
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
@@ -861,11 +964,23 @@ class AnalysesView(BikaListingView):
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
-                d_list = map(lambda it: dict(zip(headers, it)), choices.items())
-                item.setdefault("choices", {})[interim_keyword] = d_list
+                dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                item.setdefault("choices", {})[interim_keyword] = dl
+
+                # Maybe the value is a multi-select/multi-choice?
+                try:
+                    val = json.loads(interim_value)
+                    if isinstance(val, (list, tuple, set)):
+                        interim_value = val
+                except ValueError:
+                    pass
+
+                if not isinstance(interim_value, (list, tuple, set)):
+                    interim_value = [interim_value]
 
                 # Set the text as the formatted value
-                text = choices.get(interim_value, "")
+                texts = [choices.get(v, "") for v in interim_value]
+                text = "<br/>".join(filter(None, texts))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:
@@ -874,13 +989,8 @@ class AnalysesView(BikaListingView):
 
                 item[interim_keyword] = interim_field
 
-        item['interimfields'] = interim_fields
+        item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
-
-        # Set calculation
-        calculation_uid = analysis_brain.getCalculationUID
-        has_calculation = calculation_uid and True or False
-        item['calculation'] = has_calculation
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -888,21 +998,40 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-
+        obj = self.get_object(analysis_brain)
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        method_title = analysis_brain.getMethodTitle
-        item['Method'] = method_title or ''
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
-            if method_vocabulary:
-                item['Method'] = analysis_brain.getMethodUID
-                item['choices']['Method'] = method_vocabulary
-                item['allow_edit'].append('Method')
-                self.show_methodinstr_columns = True
-        elif method_title:
-            item['replace']['Method'] = get_link(analysis_brain.getMethodURL,
-                                                 method_title, tabindex="-1")
-            self.show_methodinstr_columns = True
+            item["Method"] = obj.getRawMethod()
+            item["choices"]["Method"] = method_vocabulary
+            item["allow_edit"].append("Method")
+        else:
+            item["Method"] = _("Manual")
+            method = obj.getMethod()
+            if method:
+                item["Method"] = api.get_title(method)
+                item["replace"]["Method"] = get_link_for(method, tabindex="-1")
+
+    def _on_method_change(self, uid=None, value=None, item=None, **kw):
+        """Update instrument and calculation when the method changes
+
+        :param uid: object UID
+        :value: UID of the new method
+        :item: old folderitem
+
+        :returns: updated folderitem
+        """
+        obj = api.get_object_by_uid(uid, None)
+        method = api.get_object_by_uid(value, None)
+
+        if not all([obj, method, item]):
+            return None
+
+        # update the available instruments
+        inst_vocab = self.get_instruments_vocabulary(obj, method=method)
+        item["choices"]["Instrument"] = inst_vocab
+
+        return item
 
     def _folder_item_instrument(self, analysis_brain, item):
         """Fills the analysis' instrument to the item passed in.
@@ -910,36 +1039,27 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        item['Instrument'] = ''
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Manual entry of results, instrument is not allowed
-            item['Instrument'] = _('Manual')
-            item['replace']['Instrument'] = \
-                '<a href="#" tabindex="-1">{}</a>'.format(t(_('Manual')))
-            return
+        item["Instrument"] = ""
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        self.show_methodinstr_columns = True
         instrument = self.get_instrument(analysis_brain)
+
         if is_editable:
             # Edition allowed
             voc = self.get_instruments_vocabulary(analysis_brain)
-            if voc:
-                # The service has at least one instrument available
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = voc
-                item['allow_edit'].append('Instrument')
-                return
+            item["Instrument"] = instrument.UID() if instrument else ""
+            item["choices"]["Instrument"] = voc
+            item["allow_edit"].append("Instrument")
 
-        if instrument:
+        elif instrument:
             # Edition not allowed
-            instrument_title = instrument and instrument.Title() or ''
-            instrument_link = get_link(instrument.absolute_url(),
-                                       instrument_title, tabindex="-1")
-            item['Instrument'] = instrument_title
-            item['replace']['Instrument'] = instrument_link
-            return
+            item["Instrument"] = api.get_title(instrument)
+            instrument_link = get_link_for(instrument, tabindex="-1")
+            item["replace"]["Instrument"] = instrument_link
+
+        else:
+            item["Instrument"] = _("Manual")
 
     def _folder_item_analyst(self, obj, item):
         is_editable = self.is_analysis_edition_allowed(obj)
@@ -963,49 +1083,26 @@ class AnalysesView(BikaListingView):
         return api.get_user(user_id)
 
     def _folder_item_attachments(self, obj, item):
-        item['Attachments'] = ''
-        attachment_uids = obj.getAttachmentUIDs
-        if not attachment_uids:
-            return
-
         if not self.has_permission(ViewResults, obj):
             return
 
+        attachments_names = []
         attachments_html = []
-        attachments = api.search({'UID': attachment_uids}, 'uid_catalog')
-        for attachment in attachments:
-            attachment = api.get_object(attachment)
-            uid = api.get_uid(attachment)
-            html = '<span class="attachment" attachment_uid="{}">'.format(uid)
-            attachments_html.append(html)
-
-            at_file = attachment.getAttachmentFile()
-
-            icon = self.senaite_theme.icon_tag("attachment", width="16")
-            attachments_html.append(icon)
-
-            url = '{}/at_download/AttachmentFile'
-            url = url.format(attachment.absolute_url())
+        analysis = self.get_object(obj)
+        for at in analysis.getAttachment():
+            at_file = at.getAttachmentFile()
+            url = "{}/at_download/AttachmentFile".format(api.get_url(at))
             link = get_link(url, at_file.filename, tabindex="-1")
             attachments_html.append(link)
-
-            if not self.is_analysis_edition_allowed(obj):
-                attachments_html.append('<br/></span>')
-                continue
-
-            img = '<img data-toggle="confirmation"' \
-                  ' class="deleteAttachmentButton"' \
-                  ' attachment_uid="{}" src="{}"/>'
-            img = img.format(
-                uid, '++plone++senaite.core.static/assets/svg/delete.svg')
-            attachments_html.append(img)
-            attachments_html.append('<br/></span>')
+            attachments_names.append(at_file.filename)
 
         if attachments_html:
-            # Remove the last <br/></span> and add only </span>
-            attachments_html = attachments_html[:-1]
-            attachments_html.append('</span>')
-            item['replace']['Attachments'] = ''.join(attachments_html)
+            item["replace"]["Attachments"] = "<br/>".join(attachments_html)
+            item["Attachments"] = ", ".join(attachments_names)
+
+        elif analysis.getAttachmentRequired():
+            img = get_image("warning.png", title=_("Attachment required"))
+            item["replace"]["Attachments"] = img
 
     def _folder_item_uncertainty(self, analysis_brain, item):
         """Fills the analysis' uncertainty to the item passed in.
@@ -1233,20 +1330,6 @@ class AnalysesView(BikaListingView):
         anchor = get_link(worksheet.absolute_url(), img, tabindex="-1")
         self._append_html_element(item, 'state_title', anchor)
 
-    def _folder_item_reflex_icons(self, analysis_brain, item):
-        """Adds an icon to the item dictionary if the analysis has been
-        automatically generated due to a reflex rule
-
-        :param analysis_brain: Brain that represents an analysis
-        :param item: analysis' dictionary counterpart that represents a row
-        """
-        if not analysis_brain.getIsReflexAnalysis:
-            # Do nothing
-            return
-        img = get_image('reflexrule.png',
-                        title=t(_('It comes form a reflex rule')))
-        self._append_html_element(item, 'Service', img)
-
     def _folder_item_accredited_icon(self, analysis_brain, item):
         """Adds an icon to the item dictionary if it is an accredited analysis
         """
@@ -1352,3 +1435,77 @@ class AnalysesView(BikaListingView):
             item[position][element] = html
             return
         item[position][element] = glue.join([original, html])
+
+    def _folder_item_conditions(self, analysis_brain, item):
+        """Renders the analysis conditions
+        """
+        analysis = self.get_object(analysis_brain)
+
+        if not IRoutineAnalysis.providedBy(analysis):
+            return
+
+        conditions = analysis.getConditions()
+        if conditions:
+            conditions = map(lambda it: ": ".join([it["title"], it["value"]]),
+                             conditions)
+            conditions = "<br/>".join(conditions)
+            service = item["replace"].get("Service") or item["Service"]
+            item["replace"]["Service"] = "{}<br/>{}".format(service, conditions)
+
+    def is_method_required(self, analysis):
+        """Returns whether the render of the selection list with methods is
+        required for the method passed-in, even if only option "None" is
+        displayed for selection
+        """
+        # Always return true if the analysis has a method assigned
+        obj = self.get_object(analysis)
+        method = obj.getMethod()
+        if method:
+            return True
+
+        methods = obj.getAllowedMethods()
+        return len(methods) > 0
+
+    def is_instrument_required(self, analysis):
+        """Returns whether the render of the selection list with instruments is
+        required for the analysis passed-in, even if only option "None" is
+        displayed for selection.
+        :param analysis: Brain or object that represents an analysis
+        """
+        # If method selection list is required, the instrument selection too
+        if self.is_method_required(analysis):
+            return True
+        
+        # Always return true if the analysis has an instrument assigned
+        if self.get_instrument(analysis):
+            return True
+
+        obj = self.get_object(analysis)
+        instruments = obj.getAllowedInstruments()
+        # There is no need to check for the instruments of the method assigned
+        # to # the analysis (if any), because the instruments rendered in the
+        # selection list are always a subset of the allowed instruments when
+        # a method is selected
+        return len(instruments) > 0
+
+    def is_method_column_required(self):
+        """Returns whether the method column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for method selection to be rendered
+        """
+        for item in self.items:
+            obj = item.get("obj")
+            if self.is_method_required(obj):
+                return True
+        return False
+
+    def is_instrument_column_required(self):
+        """Returns whether the instrument column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for instrument selection to be rendered
+        """
+        for item in self.items:
+            obj = item.get("obj")
+            if self.is_instrument_required(obj):
+                return True
+        return False

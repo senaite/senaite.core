@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
@@ -47,16 +47,16 @@ class ExportView(BrowserView):
         # exim refers to filename in instruments/
         if type(exim) == list:
             exim = exim[0]
-        exim = exim.lower()
-
-        # search instruments module for 'exim' module
-        if not instruments.getExim(exim):
+            
+        # search instruments classes for 'exim' class or module
+        exim = instruments.getExim(exim) if instruments.getExim(exim) else instruments.getExim(exim.lower())
+        
+        if not exim:
             self.context.plone_utils.addPortalMessage(
                 _("Instrument exporter not found"), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        exim = instruments.getExim(exim)
         exporter = exim.Export(self.context, self.request)
         data = exporter(self.context.getAnalyses())
         pass

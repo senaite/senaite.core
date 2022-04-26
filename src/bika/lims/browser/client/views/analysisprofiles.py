@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
@@ -31,7 +31,7 @@ class ClientAnalysisProfilesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisProfilesView, self).__init__(context, request)
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             'portal_type': 'AnalysisProfile',
             'sort_on': 'sortable_title',

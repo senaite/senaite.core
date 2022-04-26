@@ -15,11 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
+from senaite.core.interfaces.datamanager import IDataManager  # noqa (convenience import)
 from zope.interface import Interface
+from senaite.core.interfaces.catalog import *  # noqa
 
 
 class ISenaiteCore(Interface):
@@ -29,6 +31,8 @@ class ISenaiteCore(Interface):
 
 class ISenaiteFormLayer(IPloneFormLayer):
     """Used to override plone.app.z3cform forms
+
+    Inherits from `z3c.form.interfaces.IFormLayer`
     """
 
 
@@ -45,6 +49,62 @@ class IShowFactoriesMenu(Interface):
 
 
 class IHideActionsMenu(Interface):
-    """Marker interface that can be applied for conttents that should not
+    """Marker interface that can be applied for contents that should not
     display the content actions menu
+    """
+
+
+class IAjaxEditForm(Interface):
+    """Ajax edit form adapter
+    """
+
+    def initialized(data):
+        """Called once after the edit form was rendered
+
+        :param data: JSON payload of the edit form.
+                     Contains at least `form`, `name`, `value`
+        :returns: A dictionary with update instructions for the frontend logic
+        """
+
+    def modified(data):
+        """Called for each field modification
+
+        :param data: JSON payload of the edit form.
+                     Contains at least `form`, `name`, `value`
+        :returns: A dictionary with update instructions for the frontend logic
+        """
+
+
+class ISamples(Interface):
+    """Marker interface for samples main folder
+    """
+
+
+class ISamplesView(Interface):
+    """Marker interface for samples listing view
+    """
+
+
+class IHaveUIDReferences(Interface):
+    """Marker interface when the object contains UID references
+    """
+
+
+class ISampleContainers(Interface):
+    """Marker interface for sample container setup folder
+    """
+
+
+class ISampleContainer(Interface):
+    """Marker interface for sample containers
+    """
+
+
+class IContentMigrator(Interface):
+    """Marker interface for content migrator
+    """
+
+
+class IFieldMigrator(Interface):
+    """Marker interface for field migrator
     """

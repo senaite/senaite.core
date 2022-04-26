@@ -1,12 +1,10 @@
 Release notes
 =============
 
-Update from 1.3.x to 2.0.0rc1
------------------------------
+Update from 2.0.0 to 2.1.0
+--------------------------
 
-**IMPORTANT: This is a release candidate. Do not use for production**
-
-!!! This update requires at least Plone 5.2.1 and Python 2.x. !!!
+!!! This update requires at least Plone 5.2.5 and Python 2.x. !!!
 
 Please update your `buildout.cfg` configuration file to this version and re-run
 the `buildout` script.
@@ -14,11 +12,25 @@ the `buildout` script.
 You can use the Plone unified installer to install Plone 5.x first:
 https://github.com/plone/Installers-UnifiedInstaller
 
-Please make sure to pin `senaite.lims` to version `2.0.0rc1` to get the correct
+Please make sure to pin `senaite.lims` to version `2.1.0` to get the correct
+versions of all dependent SENAITE packages.
+
+
+Update from 1.3.x to 2.0.0
+--------------------------
+
+!!! This update requires at least Plone 5.2.4 and Python 2.x. !!!
+
+Please update your `buildout.cfg` configuration file to this version and re-run
+the `buildout` script.
+
+You can use the Plone unified installer to install Plone 5.x first:
+https://github.com/plone/Installers-UnifiedInstaller
+
+Please make sure to pin `senaite.lims` to version `2.0.0` to get the correct
 versions of all dependent SENAITE packages.
 
 Run first the Plone upgrade before you continue to update SENAITE to version 2.x.
-
 
 
 Update from 1.3.0 to 1.3.1

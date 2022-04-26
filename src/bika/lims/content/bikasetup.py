@@ -15,10 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
@@ -26,7 +27,6 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
-from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
@@ -52,14 +52,16 @@ from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.locales import COUNTRIES
+from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -149,16 +151,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
 
 
 schema = BikaFolderSchema.copy() + Schema((
-    IntegerField(
-        'PasswordLifetime',
-        schemata="Security",
-        required=1,
-        default=0,
-        widget=IntegerWidget(
-            label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
-        )
-    ),
     IntegerField(
         'AutoLogOff',
         schemata="Security",
@@ -344,6 +336,20 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "AutoVerifySamples",
+        schemata="Analyses",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Automatic verification of samples"),
+            description=_(
+                "When enabled, the sample is automatically verified as soon as "
+                "all results are verified. Otherwise, users with enough "
+                "privileges have to manually verify the sample afterwards. "
+                "Default: enabled"
+            )
+        )
+    ),
+    BooleanField(
         'SelfVerificationEnabled',
         schemata="Analyses",
         default=False,
@@ -384,34 +390,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "This setting can enable/disable verifying/consecutively verifying"
                 "more than once for the same user."),
             format='select',
-        )
-    ),
-    StringField(
-        'ARAttachmentOption',
-        schemata="Analyses",
-        default='p',
-        vocabulary=ATTACHMENT_OPTIONS,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Sample Attachment Option"),
-            description=_(
-                "The system wide default configuration to indicate "
-                "whether file attachments are required, permitted or not "
-                "per sample"),
-        )
-    ),
-    StringField(
-        'AnalysisAttachmentOption',
-        schemata="Analyses",
-        default='p',
-        vocabulary=ATTACHMENT_OPTIONS,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Analysis Attachment Option"),
-            description=_(
-                "Same as the above, but sets the default on analysis services. "
-                "This setting can be set per individual analysis on its "
-                "own configuration"),
         )
     ),
     StringField(
@@ -469,7 +447,7 @@ schema = BikaFolderSchema.copy() + Schema((
             "Document",
             "Client",
             "ClientFolder",
-            "AnalysisRequestsFolder",
+            "Samples",
             "WorksheetFolder",
         ),
         mode="rw",
@@ -798,7 +776,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Formatting Configuration"),
             allowDelete=True,
             description=_(
-                " <p>The Bika LIMS ID Server provides unique sequential IDs "
+                " <p>The ID Server provides unique sequential IDs "
                 "for objects such as Samples and Worksheets etc, based on a "
                 "format specified for each content type.</p>"
                 "<p>The format is constructed similarly to the Python format"
@@ -817,7 +795,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "<tr>"
                 "<th style='width:150px'>Content Type</th><th>Variables</th>"
                 "</tr>"
-                "<tr><td>Client</td><td>{client}</td></tr>"
+                "<tr><td>Client ID</td><td>{clientId}</td></tr>"
                 "<tr><td>Year</td><td>{year}</td></tr>"
                 "<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
                 "<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
@@ -829,7 +807,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "<ul>"
                 "<li>format:"
                 "<ul><li>a python format string constructed from predefined"
-                " variables like sampleId, client, sampleType.</li>"
+                " variables like sampleId, clientId, sampleType.</li>"
                 "<li>special variable 'seq' must be positioned last in the"
                 "format string</li></ul></li>"
                 "<li>sequence type: [generated|counter]</li>"
@@ -892,14 +870,26 @@ class BikaSetup(folder.ATFolder):
     schema = schema
     security = ClassSecurityInfo()
 
-    def getAttachmentsPermitted(self):
-        """Attachments permitted
+    def setAutoLogOff(self, value):
+        """set session lifetime
         """
-        if self.getARAttachmentOption() in ['r', 'p'] \
-           or self.getAnalysisAttachmentOption() in ['r', 'p']:
-            return True
-        else:
-            return False
+        value = int(value)
+        if value < 0:
+            value = 0
+        value = value * 60
+        acl = api.get_tool("acl_users")
+        session = acl.get("session")
+        if session:
+            session.timeout = value
+
+    def getAutoLogOff(self):
+        """get session lifetime
+        """
+        acl = api.get_tool("acl_users")
+        session = acl.get("session")
+        if not session:
+            return 0
+        return session.timeout // 60
 
     def getStickerTemplates(self):
         """Get the sticker templates
@@ -907,27 +897,11 @@ class BikaSetup(folder.ATFolder):
         out = [[t['id'], t['title']] for t in _getStickerTemplates()]
         return DisplayList(out)
 
-    def getARAttachmentsPermitted(self):
-        """AR attachments permitted
-        """
-        if self.getARAttachmentOption() == 'n':
-            return False
-        else:
-            return True
-
-    def getAnalysisAttachmentsPermitted(self):
-        """Analysis attachments permitted
-        """
-        if self.getAnalysisAttachmentOption() == 'n':
-            return False
-        else:
-            return True
-
     def getAnalysisServicesVocabulary(self):
         """
         Get all active Analysis Services from Bika Setup and return them as Display List.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         brains = bsc(portal_type='AnalysisService',
                      is_active=True)
         items = [(b.UID, b.Title) for b in brains]
@@ -946,8 +920,8 @@ class BikaSetup(folder.ATFolder):
             return portal_type
 
     def getCountries(self):
-        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items = geo.get_countries()
+        items = map(lambda country: (country.alpha_2, country.name), items)
         return items
 
     def isRejectionWorkflowEnabled(self):

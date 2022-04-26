@@ -13,9 +13,9 @@ Imports:
 
     >>> from operator import methodcaller
     >>> from DateTime import DateTime
-
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from plone import api as ploneapi
 
 Functional Helpers:
 
@@ -25,7 +25,7 @@ Functional Helpers:
     >>> def create_ar(client, **kw):
     ...     values = {}
     ...     services = []
-    ...     for k, v in kw.iteritems():
+    ...     for k, v in kw.items():
     ...         if k == "Services":
     ...             services = map(api.get_uid, v)
     ...         elif api.is_object(v):
@@ -45,7 +45,7 @@ Test User:
 
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
-    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> setRoles(portal, TEST_USER_ID, ['Manager', 'Sampler'])
 
 
 Prepare Test Environment
@@ -58,6 +58,7 @@ Setupitems:
     >>> samplepoints = setup.bika_samplepoints
     >>> analysiscategories = setup.bika_analysiscategories
     >>> analysisservices = setup.bika_analysisservices
+    >>> setup.setSamplingWorkflowEnabled(True)
 
 Create Clients:
 
@@ -114,18 +115,18 @@ Listing View
 ............
 
 
-    >>> from bika.lims.browser.bika_listing import BikaListingView
-    >>> context = portal.analysisrequests
+    >>> from senaite.app.listing.view import ListingView
+    >>> context = portal.samples
     >>> request = self.request
-    >>> listing = BikaListingView(context, request)
+    >>> listing = ListingView(context, request)
     >>> listing
-    <bika.lims.browser.bika_listing.BikaListingView object at 0x...>
+    <senaite.app.listing.view.ListingView object at 0x...>
 
-Setup the view to behave like the `AnalysisRequestsView`:
+Setup the view to behave like the `SamplesView`:
 
-    >>> from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
 
-    >>> listing.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+    >>> listing.catalog = SAMPLE_CATALOG
     >>> listing.contentFilter = {
     ...     'sort_on': 'created',
     ...     'sort_order': 'reverse',
@@ -147,6 +148,25 @@ Searching for a value should work:
     >>> map(lambda x: x.getObject().getSampleType().getPrefix(), results)
     ['s1', 's1', 's1']
 
-    >>> results = listing.search(searchterm="client-3")
+    >>> results = listing.search(searchterm="C3")
     >>> map(lambda x: x.getObject().getClient(), results)
     [<Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>]
+
+Create SampleView:
+
+    >>> from senaite.core.browser.samples.view import SamplesView
+    >>> samples_view = SamplesView(context, request)
+    >>> samples_view
+    <senaite.core.browser.samples.view.SamplesView object at 0x...>
+    >>> samples_view.roles = ['Manager',]
+    >>> samples_view.member = ploneapi.user.get_current()
+    >>> items = samples_view.folderitems()
+    >>> len(items)
+    9
+    >>> 'getDateSampled' in items[0]
+    True
+    >>> 'getDateSampled' in items[0]['allow_edit']
+    True
+    >>> samples_view.columns['getDateSampled']['type']
+    'datetime'
+

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -113,12 +113,16 @@ def guard_submit(analysis):
 
     # Cannot submit with interims without value
     for interim in analysis.getInterimFields():
+        true_values = ("true", "1", "on", "True", True, 1)
+        if interim.get("allow_empty", False) in true_values:
+            continue
+
         if not interim.get("value", ""):
             return False
 
     # Cannot submit if attachment not set, but is required
     if not analysis.getAttachment():
-        if analysis.getAttachmentOption() == 'r':
+        if analysis.getAttachmentRequired():
             return False
 
     # Check if can submit based on the Analysis Request state
@@ -372,7 +376,7 @@ def is_submitted_or_submittable(analysis):
     """
     if ISubmitted.providedBy(analysis):
         return True
-    if wf.isTransitionAllowed(analysis, "submit"):
+    if is_transition_allowed(analysis, "submit"):
         return True
     return False
 
@@ -382,8 +386,8 @@ def is_verified_or_verifiable(analysis):
     """
     if IVerified.providedBy(analysis):
         return True
-    if wf.isTransitionAllowed(analysis, "verify"):
+    if is_transition_allowed(analysis, "verify"):
         return True
-    if wf.isTransitionAllowed(analysis, "multi_verify"):
+    if is_transition_allowed(analysis, "multi_verify"):
         return True
     return False

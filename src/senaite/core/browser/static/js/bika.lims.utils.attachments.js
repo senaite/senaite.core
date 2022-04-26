@@ -39,57 +39,6 @@
           $('#addButton').prop('disabled', true);
         }
       });
-      $('.deleteAttachmentButton').live('click', function() {
-        var attachment_uid, options;
-        attachment_uid = $(this).attr('attachment_uid');
-        options = {
-          url: "@@ajax_attachments_view/delete_analysis_attachment",
-          type: 'POST',
-          success: function(responseText, statusText, xhr, $form) {
-            if (responseText === 'success') {
-              $("span[attachment_uid=" + attachment_uid + "]").remove();
-            }
-          },
-          data: {
-            'attachment_uid': attachment_uid,
-            '_authenticator': $('input[name="_authenticator"]').val()
-          }
-        };
-        $.ajax(options);
-      });
-      $('#Analysis').combogrid({
-        colModel: [
-          {
-            'columnName': 'analysis_uid',
-            'hidden': true
-          }, {
-            'columnName': 'slot',
-            'width': '10',
-            'label': _t('Slot')
-          }, {
-            'columnName': 'service',
-            'width': '35',
-            'label': _t('Service')
-          }, {
-            'columnName': 'parent',
-            'width': '35',
-            'label': _t('Parent')
-          }, {
-            'columnName': 'type',
-            'width': '20',
-            'label': _t('Type')
-          }
-        ],
-        url: window.location.href.replace('/manage_results', '') + '/attachAnalyses?_authenticator=' + $('input[name="_authenticator"]').val(),
-        showOn: true,
-        width: '650px',
-        select: function(event, ui) {
-          $('#Analysis').val(ui.item.service + (" (slot " + ui.item.slot + ")"));
-          $('#analysis_uid').val(ui.item.analysis_uid);
-          $(this).change();
-          return false;
-        }
-      });
     };
   };
 

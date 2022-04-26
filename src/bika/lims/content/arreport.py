@@ -15,12 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
@@ -34,6 +33,7 @@ from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
+from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.record import RecordField
 from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
@@ -60,7 +60,7 @@ schema = BikaSchema.copy() + Schema((
                 "view": "visible",
                 "add": "edit",
             },
-            catalog_name="bika_catalog_analysisrequest_listing",
+            catalog_name="senaite_catalog_sample",
             base_query={},
             showOn=True,
             colModel=[

@@ -15,10 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
+from senaite.core.events import AfterUpgradeStepEvent
+from senaite.core.events import BeforeUpgradeStepEvent
+from zope.event import notify
 
 
 def upgradestep(upgrade_product, version):
@@ -30,6 +33,11 @@ def upgradestep(upgrade_product, version):
             product = qi.get(upgrade_product)
             if product:
                 setattr(product, "installedversion", version)
-            return fn(context, *args)
+            # notify before upgrade step event
+            notify(BeforeUpgradeStepEvent(context))
+            # run upgrade step
+            fn(context, *args)
+            # notify after upgrade step event
+            notify(AfterUpgradeStepEvent(context))
         return wrap_func_args
     return wrap_func

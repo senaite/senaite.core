@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget"
+       tal:define="
+              name python:view.name;
+              value python:view.value;
+              disabled python:view.disabled;
+              readonly python:view.readonly;
+              tabindex python:view.tabindex;
+              klass python:view.klass"
+       tal:attributes="
+              id python:view.id;
+              style python:view.style;
+              title python:view.title;">
+
+    <!-- date -->
+    <input
+      type="date"
+      class="form-control form-control-sm"
+      tal:attributes="
+            python:view.attrs();
+            target name;
+            name string:${name}-date;
+            disabled disabled;
+            readonly readonly;
+            tabindex tabindex;
+            value python:view.get_date(value) if value else '';"/>
+
+    <!-- time -->
+    <input
+      type="time"
+      class="form-control form-control-sm"
+      tal:condition="python:view.show_time"
+      tal:attributes="
+            target name;
+            name string:${name}-time;
+            disabled disabled;
+            readonly readonly;
+            tabindex tabindex;
+            value python:view.get_time(value) if value else '';"/>
+  </div>
+
+  <!-- datetime value (outside to avoid style issues) -->
+  <input
+    type="hidden"
+    tal:attributes="
+          id python:view.id;
+          title python:view.title;
+          name python:view.name;
+          value python:view.value"/>
+
+  <!-- static resources -->
+  <script type="text/javascript" src="" tal:attributes="src string:${view/portal_url}/++resource++senaite.core.z3cform.static/datetimewidget.js"></script>
+  <link rel="stylesheet" href="" type="text/css" media="screen"  tal:attributes="href string:${view/portal_url}/++resource++senaite.core.z3cform.static/datetimewidget.css"/>
+
+</html>

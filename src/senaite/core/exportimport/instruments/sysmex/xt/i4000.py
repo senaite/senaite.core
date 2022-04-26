@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ Sysmex XT-4000i
@@ -48,7 +48,7 @@ def Import(context, request):
     warns = []
     status_mapping = {
         'received': ['sample_received'],
-        'received_tobeverified': ['sample_received', 'attachment_due', 'to_be_verified']
+        'received_tobeverified': ['sample_received', 'to_be_verified']
     }
     override_mapping = {
         'nooverride': [False, False],
@@ -70,7 +70,7 @@ def Import(context, request):
 
     if parser:
         # Load the importer
-        status = status_mapping.get(artoapply, ['sample_received', 'attachment_due', 'to_be_verified'])
+        status = status_mapping.get(artoapply, ['sample_received', 'to_be_verified'])
         over = override_mapping.get(override, [False, False])
         importer = SysmexXTImporter(parser=parser,
                                     context=context,

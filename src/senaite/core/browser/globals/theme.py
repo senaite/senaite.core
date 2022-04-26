@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -45,11 +45,10 @@ from .interfaces import ISenaiteTheme
 IMG_TAG = Template("""<img src="$src" $attr />""")
 
 ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
-ICON_CACHE_TIME = time.time() // 86400  # 1 day
 
 
 def icon_cache_key(method, instance):
-    return ICON_CACHE_TIME
+    return time.time() // 86400  # 1 day
 
 
 @implementer(ITraversable)

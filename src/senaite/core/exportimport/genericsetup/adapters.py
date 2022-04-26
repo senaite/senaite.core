@@ -15,10 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
+
 from datetime import datetime
 from mimetypes import guess_type
 
@@ -182,7 +184,7 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         """
         value = self.get_field_value()
 
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return value
 
         filename = safe_unicode(value.filename) or ""
@@ -313,7 +315,11 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
         value = self.field.get(self.context)
         if not value:
             return ""
-        return value.raw
+        try:
+            return value.raw
+        except AttributeError as e:
+            logger.info("Imported value has no Attribute 'raw' {}".format(str(e)))
+            return value
 
 
 class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):

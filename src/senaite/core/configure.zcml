@@ -13,9 +13,15 @@
   <!-- package includes -->
   <include package=".adapters" />
   <include package=".browser" />
+  <include package=".catalog" />
+  <include package=".datamanagers" />
   <include package=".exportimport" />
-  <include package=".locales" />
+  <include package=".migration" />
+  <include package=".patches" />
+  <include package=".permissions" />
+  <include package=".schema" />
   <include package=".upgrade" />
+  <include package=".z3cform" />
 
   <!-- portal skins -->
   <cmf:registerDirectory
@@ -41,8 +47,6 @@
       title="SENAITE CORE: Run Setup Handler"
       description="Run install handler"
       handler="senaite.core.setuphandlers.install">
-    <depends name="typeinfo"/>
-    <depends name="toolset"/>
   </genericsetup:importStep>
 
   <!-- Hidden Profiles -->

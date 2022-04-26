@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ Roche Cobas Taqman 96
@@ -28,6 +28,7 @@ from senaite.core.exportimport.instruments.resultsimport import \
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 import json
+import six
 import traceback
 
 title = "Roche Cobas - Taqman - 96"
@@ -85,7 +86,7 @@ class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
                 remarks = "".join([result, " on Order Number,", resid])
 
             rawdict = {}
-            for k, v in row.iteritems():
+            for k, v in six.iteritems(row):
                 rawdict[k] = self.parse_field(k, v)
 
             rawdict['DefaultResult'] = 'Result'
@@ -130,11 +131,11 @@ def Import(context, request):
 
     if parser:
         # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        status = ['sample_received', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
         elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+            status = ['sample_received', 'to_be_verified']
 
         over = [False, False]
         if override == 'nooverride':

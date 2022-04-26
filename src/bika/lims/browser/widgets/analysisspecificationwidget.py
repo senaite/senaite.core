@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -23,7 +23,6 @@ import collections
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
@@ -45,7 +44,7 @@ class AnalysisSpecificationView(BikaListingView):
     def __init__(self, context, request):
         super(AnalysisSpecificationView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "is_active": True,
@@ -218,15 +217,24 @@ class AnalysisSpecificationView(BikaListingView):
         spec = self.specification.get(keyword, {})
 
         item["selected"] = spec and True or False
-        item["min_operator"] = spec.get("min_operator", "geq")
         item["min"] = spec.get("min", "")
-        item["max_operator"] = spec.get("max_operator", "leq")
         item["max"] = spec.get("max", "")
         item["warn_min"] = spec.get("warn_min", "")
         item["warn_max"] = spec.get("warn_max", "")
         item["hidemin"] = spec.get("hidemin", "")
         item["hidemax"] = spec.get("hidemax", "")
         item["rangecomment"] = spec.get("rangecomment", "")
+
+        # min/max operators
+        max_op = spec.get("max_operator", "leq")
+        min_op = spec.get("min_operator", "geq")
+        if self.allow_edit:
+            item["max_operator"] = max_op
+            item["min_operator"] = min_op
+        else:
+            # Render display values instead of the raw values
+            item["max_operator"] = MAX_OPERATORS.getValue(max_op)
+            item["min_operator"] = MIN_OPERATORS.getValue(min_op)
 
         # Add methods
         methods = obj.getMethods()
@@ -244,12 +252,9 @@ class AnalysisSpecificationView(BikaListingView):
         if obj.getAccredited():
             after_icons += get_image(
                 "accredited.png", title=_("Accredited"))
-        if obj.getAttachmentOption() == "r":
+        if obj.getAttachmentRequired():
             after_icons += get_image(
                 "attach_reqd.png", title=_("Attachment required"))
-        if obj.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
 
@@ -308,13 +313,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                     continue
                 s_min = 0
                 s_max = 0
-
-            # TODO: disallow this case in the UI
-            if s_min and s_max:
-                if float(s_min) > float(s_max):
-                    logger.warn("Min({}) > Max({}) is not allowed"
-                                .format(s_min, s_max))
-                    continue
 
             min_operator = self._get_spec_value(
                 form, uid, "min_operator", check_floatable=False)
@@ -389,6 +387,8 @@ class AnalysisSpecificationWidget(TypesWidget):
         table.before_render()
 
         if allow_edit is False:
+            # This is a hack to notify read-only mode to the view
+            table.allow_edit = allow_edit
             return table.contents_table_view()
         return table.ajax_contents_table()
 

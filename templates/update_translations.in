@@ -57,36 +57,39 @@ find $LOCALES -name "*.mo" -delete
 tx_pull
 
 # Generate the senaite.core Domain
-DOMAIN=senaite.core
-echo "Processing Domain $DOMAIN"
+echo "Processing domain: senaite.core"
 # Flush the english (transifex source language) po files
-# If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
+# If we don't do this, new senaite.core-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
-# Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude $EXCLUDE --create $DOMAIN src/senaite src/bika
-# Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
+# Re-scan the source code for new strings and create a temporary senaite.core-tmp.pot
+$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "$EXCLUDE" --create senaite.core src
+# Merge the manual translations of senaite.core-manual.pot into the temporary senaite.core-tmp.pot
 $I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
-# Overwrite the existing $DOMAIN.pot
+# Overwrite the existing senaite.core.pot
 mv $LOCALES/senaite.core-tmp.pot $LOCALES/senaite.core.pot
-# Synchronize all .po files with the new $DOMAIN.pot
+# Synchronize all .po files with the new senaite.core.pot
 $I18N sync --pot $LOCALES/senaite.core.pot $LOCALES/*/LC_MESSAGES/senaite.core.po
-echo "Domain $DOMAIN [DONE]"
+echo "Processing domain: senaite.core [DONE]"
+echo ""
 
 # Generate Plone Domain
-DOMAIN=plone
-echo "Processing Domain $DOMAIN"
+echo "Processing domain: plone"
 # Flush the english (transifex source language) po files
-# If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
-echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
-# Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude $EXCLUDE --create $DOMAIN src/senaite src/bika
-# Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
-$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
-# Overwrite the existing $DOMAIN.pot
-mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
-# Synchronize all .po files with the new $DOMAIN.pot
-$I18N sync --pot $LOCALES/$DOMAIN.pot $LOCALES/*/LC_MESSAGES/$DOMAIN.po
-echo "Domain $DOMAIN [DONE]"
+# If we don't do this, new plone-manual.pot translations won't be synced.
+echo -n "" > $LOCALES/en/LC_MESSAGES/plone.po
+# Re-scan the source code for new strings and create a temporary plone-tmp.pot
+$I18N rebuild-pot --pot $LOCALES/plone-tmp.pot --exclude "$EXCLUDE" --create plone src
+# Remove those resources that already exists in senaite.core domain
+# We need this because in Python files, i18ndude simply looks for text within an
+# underscore method: _("...") without known the domain. Therefore, resources
+# from senaite.core domain are also grabbed inside plone-tmp.pot
+# Store the difference to plone.pot
+$I18N filter $LOCALES/plone-tmp.pot $LOCALES/senaite.core.pot > $LOCALES/plone.pot
+# Remove plone-tmp.pot
+rm $LOCALES/plone-tmp.pot
+# Synchronize all .po files with the new plone.pot
+$I18N sync --pot $LOCALES/plone.pot $LOCALES/*/LC_MESSAGES/plone.po
+echo "Processing domain: plone [DONE]"
 
 # Push Transifex
 tx_push

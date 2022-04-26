@@ -15,17 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import DisplayList
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.utils import tmpID
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 
 
 class AddWorksheetView(BrowserView):
@@ -36,20 +34,17 @@ class AddWorksheetView(BrowserView):
     def __call__(self):
 
         # Validation
-        form = self.request.form
         analyst = self.request.get('analyst', '')
         template = self.request.get('template', '')
         instrument = self.request.get('instrument', '')
 
         if not analyst:
             message = _("Analyst must be specified.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.context.plone_utils.addPortalMessage(message, "warning")
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        wf = getToolByName(self.context, "portal_workflow")
-        pm = getToolByName(self.context, "portal_membership")
 
         ws = _createObjectByType("Worksheet", self.context, tmpID())
         ws.processForm()

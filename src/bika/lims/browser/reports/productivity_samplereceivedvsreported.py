@@ -15,17 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
 
 
@@ -62,7 +61,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        ars = api.search(self.contentFilter, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ars = api.search(self.contentFilter, SAMPLE_CATALOG)
         if not ars:
             message = _("No samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
@@ -117,7 +116,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
@@ -126,7 +125,7 @@ class Report(BrowserView):
                 'PublishedCount',
                 'RatioPercentage',
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
                                 fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

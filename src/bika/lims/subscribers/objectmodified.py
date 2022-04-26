@@ -15,13 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-
 from bika.lims import api
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -39,8 +39,7 @@ def ObjectModifiedEventHandler(obj, event):
         backrefs = obj.getBackReferences('MethodCalculation')
         for i, target in enumerate(backrefs):
             target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" %
-                (version_id + 1,))
+            pr.save(obj=target, comment="Calculation updated to version %s" % (version_id + 1,))
             reference_versions = getattr(target, 'reference_versions', {})
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
@@ -62,9 +61,18 @@ def ObjectModifiedEventHandler(obj, event):
     elif obj.portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
-        query = dict(getCategoryUID=obj.UID())
-        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        uid = obj.UID()
+
+        # re-index all analysis services
+        query = dict(category_uid=uid, portal_type="AnalysisService")
+        brains = api.search(query, SETUP_CATALOG)
         for brain in brains:
             obj = api.get_object(brain)
-            obj.reindexObject(idxs=['getCategoryTitle'])
+            obj.reindexObject()
 
+        # re-index analyses
+        query = dict(getCategoryUID=uid)
+        brains = api.search(query, ANALYSIS_CATALOG)
+        for brain in brains:
+            obj = api.get_object(brain)
+            obj.reindexObject()

@@ -1,0 +1,12 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag="">
+
+  <textarea id="" name="" class="form-control d-none" title=""
+            tal:content="python:'\n'.join(view.get_value())"
+            tal:attributes="id view/id;
+                name view/name;
+                title view/title;">
+  </textarea>
+
+</div>

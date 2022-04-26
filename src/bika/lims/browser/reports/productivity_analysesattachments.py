@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -146,7 +146,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
@@ -157,7 +157,7 @@ class Report(BrowserView):
                 _('Size'),
                 _('Loaded'),
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:

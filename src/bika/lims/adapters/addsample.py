@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from zope.component import adapts
@@ -50,3 +50,9 @@ class AddSampleObjectInfoAdapter(object):
         See IAddSampleObjectInfo for further details
         """
         raise NotImplementedError("get_object_info not implemented")
+
+    def get_object_info_with_record(self, record):
+        """Same as get_object_record, but contains the current request record
+        """
+        # default to the base object info
+        return self.get_object_info()

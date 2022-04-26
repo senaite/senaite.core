@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -24,9 +24,9 @@ import plone.protect
 from bika.lims import api
 from bika.lims import workflow as wf
 from bika.lims.browser import BrowserView
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import SAMPLE_CATALOG
 
 
 class barcode_entry(BrowserView):
@@ -81,11 +81,10 @@ class barcode_entry(BrowserView):
         return entry
 
     def resolve_item(self, entry):
-        ar_catalog = getToolByName(
-            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
         catalogs = [
-            self.bika_catalog,
-            self.bika_setup_catalog,
+            self.senaite_catalog,
+            self.senaite_catalog_setup,
             ar_catalog,
         ]
         for catalog in catalogs:

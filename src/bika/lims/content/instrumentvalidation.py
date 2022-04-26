@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import math
@@ -169,7 +169,7 @@ class InstrumentValidation(BaseFolder):
         renameAfterCreation(self)
 
     def getLabContacts(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',

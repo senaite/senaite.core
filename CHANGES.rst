@@ -1,9 +1,196 @@
 Changelog
 =========
 
-2.0.0rc3 (unreleased)
+2.2.0 (unreleased)
+------------------
+
+- #1987 Fix: ProfileKey shown in Profiles table
+- #1981 Support for interim fields with empty values
+- #1979 Multiselect/Multichoice support for interim fields
+- #1980 Fix: Absent value for Unit field causes error
+- #1978 Unify field sizes in sample view
+- #1975 Fix IndexError in Unit formatter
+- #1973 Fix AjaxEditForm does not work for default edit form of Dexterity types
+- #1970 Better error messages in sample add form
+- #1960 AddressField and AddressWidget with React component for DX types
+- #1968 Fix default roles for client field in samples
+- #1962 Allow to create worksheet from samples
+- #1966 Fix to set analysis results in batchbooks
+- #1965 Disallow client users to create sample partitions
+- #1964 Fix add samples URL in batch context for Clients
+- #1963 Hide custom set-remarks transition when global remarks are disabled in setup
+- #1961 Added `geo` api  that relies on `pycountry` for retrieval of countries
+- #1911 Converted Container to Dexterity Contents
+- #1931 Removed archetypes.schemaextender from senaite.core
+- #1953 Allow custom id formatting regardless of portal type
+- #1952 Open analysis specification ranges
+- #1951 Hide method and instrument columns in analysis listing when not required
+- #1947 Fix worksheet attachments viewlet
+- #1946 Fix conditions issue in Reference Analyses display view
+- #1944 Add handler for "content_status_modify"-like requests
+- #1943 Support UIDs from interim fields as input values for calculations
+- #1942 Fix tab styling in email log popup
+- #1941 Fixed error with sampler mail
+- #1938 Converted sample interpretation and remarks widgets into viewlets
+- #1937 Position the user to the analysis listing after an action is triggered
+- #1935 Allow to edit analysis (pre) conditions
+- #1936 Do not display capture date when no result or default result
+- #1933 Added SENAITE maintenance scripts
+- #1932 Fix cannot attach documents to individual analyses in Worksheet context
+- #1930 Ensure valid timezone in DX datetime field setter
+- #1927 Fix Analysis attachment is copied on retest
+- #1928 Added `on_change` hook for methods in analyses listings
+- #1925 Fix sample transition in listings
+- #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
+- #1923 Use native date input fields in reports
+- #1920 Fix indexed attributes not set when adding a new index with catalog API
+- #1918 Fix stale combobox items displayed when search query changed
+- #1917 Fix wrong context in reference widget lookups
+- #1916 Provide the request record to object info adapters in the sample add form
+- #1913 Ported PR #1865 for dexterity contents
+- #1915 Support list queries in dx reference widget
+- #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets
+- #1912 Fixed typo in sample view
+- #1909 Allow to navigate and select with arrow keys in dexterity reference widget
+- #1908 Added searchable text querystring converter to catalog API
+- #1907 Fix datetime field/widget shows current date and time if empty
+- #1905 Fix empty field in sample add form when using edit accessor
+
+
+2.1.0 (2022-01-05)
+------------------
+
+- #1903 Added date and time field/widget for Dexterity contents
+- #1901 Ensure `get_tool` returns a tool when a name is set as the default param
+- #1900 Fix snapshot listing fails on orphan catalog entries
+- #1897 Support date and number fields copy in sample add form
+- #1896 Custom date and time widget
+- #1895 Disable native form validation in header table
+- #1893 Removed unused field PasswordLifeTime
+- #1892 Drop jQuery Datepicker for HTML5 native date fields
+- #1890 Fix DurationValidator when field value is empty
+- #1886 Use the current timestamp instead of the client name for report archive download
+- #1883 Fix possible XSS in remarks field
+- #1882 Fix catalog query in analysis category modified handler
+- #1878 Fix two dimension results parser for Analyses containing a dash in the name
+- #1876 Hide contents listing for dexterity containers
+- #1872 Upgrade/migrate catalogs and remove dependency to TextindexNG3
+- #1862 Fix failing instrument import for some QC analyes
+- #1875 Prevent max recursion depth error with copies of same analysis
+- #1874 Support for `%(context_uid)s` wildcard in calculations
+- #1871 Allow calculations to rely on results of tests in subsamples (partitiones)
+- #1864 Added UID reference field/widget for Dexterity Contents
+- #1867 Fix error when invalidating samples with copies of analyses
+- #1865 Fix indexing of temporary objects resulting in orphan entries in catalog
+- #1861 Fix export interface lookup when name contains uppercase letters
+- #1858 Show "copy to new" transition to Clients in samples listing
+- #1858 Cannot override behavior of Methods folder when using `before_render`
+- #1857 Allow to set default result for analyses
+- #1854 Support for analyses (pre) conditions on sample registration
+- #1856 Fix referenceanalysis popup in Worksheets
+- #1855 Fix analyses results not set after auto import
+- #1853 Fix sample progress update after instrument results import
+- #1852 Fix `{client}` is wrongly stated as a variable on ID generation
+- #1850 Add valid password for portal_setup tarball import new user creation
+- #1845 Added edit form adapter for lab contacts
+- #1846 Fix UnicodeDecodeError on Attachment upload
+- #1847 Added Analysis Profile Edit Form Adapter
+- #1844 Fix instrument results import
+- #1842 Refactor instrument results import form
+- #1841 Do not allow client user to deactivate its own client
+- #1840 Fix "+Add" buttons are not visible to client users in samples/batches
+- #1839 Allow sample partitions in submitted states
+- #1836 Redirect client users to their organization page on login
+- #1836 Cleanup `allow_module` and remove obsolete Script Python file
+- #1835 Fix 404 error on `/manage_main` (Plone 5.2.5 compatibility)
+- #1834 Fix `SamplePoint` content type does not implement `ISamplePoint`
+- #1833 Added an 'extra_inline_buttons' metal slot on edit macro
+- #1831 Added adapter for custom validation of records in Sample Add form
+- #1830 Allow to override datepicker's dateformat via locales
+
+
+2.0.0 (2021-07-26)
+------------------
+
+- #1828 Fix categories don't show up automatically on Analysis Service creation
+- #1823 Fix inconsistent behavior of Add sample form confirmation actions
+- #1824 Support html messages on Add sample custom confirmation dialog
+- #1826 Fix TypeError when creating Dynamic Analysis Specifications
+- #1821 API support for supermodel objects
+- #1820 Fix dynamic analysis specification listing error for empty excel columns
+- #1819 Fix rejection report is attached as a ".bin" file in notification email
+- #1817 Fix duplicated rejection reasons in rejection viewlet (sample view)
+- #1815 Hide unit display after fields in manage analyses listing
+- #1811 Datagrid field and widget for Dexterity types
+- #1810 Revert changes of PR #1767
+- #1806 Added base structure to implement custom dexterity fields and widgets
+- #1807 Removal of ACTIONS_TO_INDEXES mapping to ensure data integrity
+- #1804 Adapter hook for confirmation when creating a Sample
+- #1801 Updated openpyxl to latest Python 2.x compatible version
+- #1797 Fix Auto Import Log View and ID generation
+- #1795 Do not overwrite worksheet remarks per default
+- #1794 Generate proper IDs for analysis attachments on instrument results import
+- #1792 Allow to set worksheet analysis remarks in a modal popup
+- #1790 Allow multi PDF report downloads
+- #1791 Uncatalog object before renaming
+- #1785 Moved listing context actions to separate viewlets
+- #1784 Dashboard fixtures: Links, colors, visibility
+- #1782 Allow to set toolbar logo CSS styles via registry
+- #1778 Added Datamanager Adapters for Analysis and Sample
+- #1777 Allow to re-add cancelled/rejected/retracted analyses to a sample
+- #1777 Fix APIError when a retest analysis source was removed from a sample
+- #1776 Move time calculation into cache key function
+- #1775 Sample add form tal:expressions refactored
+- #1773 Integrated upgrade step notification events
+- #1772 Sample dispatch workflow
+- #1771 Fix RecordsWidget does not store hidden fields in Add form
+- #1768 Added api for measurements with physical quantities
+- #1767 Disallow results entry when sample modification is not allowed
+- #1755 Set markup schema to `html/text` as default for RichText fields
+- #1754 Fix KeyError in calculation validator
+- #1753 Fixed indexing of partitions and missing metadata generation
+- #1751 Fix typos and naming in import template
+- #1750 Auto logout timeout
+- #1748 Use six.StringIO instead of StringIO or cStringIO (py3-compat)
+- #1748 Use correct syntax for exceptions (py3-compat)
+- #1745 Use six.iteritems instead of iteritems function (py3-compat)
+- #1747 Use functools.reduce instead of reduce (p3-compat)
+- #1746 Use six.moves.urllib.parse instead of parse (p3-compat)
+- #1744 Use six.moves.urllib instead of urllib/urllib2 (p3-compat)
+- #1743 Replace print statement by print() function (py3-compat)
+- #1741 Use six to check text data types (py3-compat)
+- #1742 Use the polyfill for the `cmp` builtin function (py3-compat)
+- #1741 Use six to check text data types
+- #1739 Migrated samples folder to Dexterity
+- #1738 Resolve attachment images by UID
+- #1734 Allow to drag&drop images in tinymce
+- #1733 Allow results interpretation in sample received state
+- #1732 Readonly Transactions
+- #1731 Remove `notifyModified` method from analyses
+- #1787 Added support for DateTime fields is listings
+- #1798 Reindex AnalysisServices in an AnalysisCategory after that AC is modified
+
+
+2.0.0rc3 (2021-01-08)
 ---------------------
 
+- #1728 Remove legacy reflex rules
+- #1727 Cleanup Controlpanel Items
+- #1726 Content rules control panel templates styled
+- #1724 Purge stale metadata and indexes from analysis catalog
+- #1720 Fix UnicodeDecodeError for Instrument Import Log View
+- #1719 Service/Method/Calculation relationship handling
+- #1717 Port workflow definitions to senaite namespace
+- #1716 Fix workflow state offset in toolbar when no dropdown is rendered
+- #1715 Updated build system to Webpack 5
+- #1714 Removed add button in auditlog listing view
+- #1713 JS/CSS resources optimized to increase loading performance
+- #1712 Add "Automatic verification of samples" setting in setup
+- #1711 Make attachments viewlet to rely on permissions, not on statuses
+- #1709 Remove "attachment_due" status from Worksheet and Sample
+- #1709 Consolidated Attachment Options to a single Option
+- #1708 Remove auto versioning for Analysis Services
+- #1705 Migrated instrument locations to Dexterity
 - #1706 Add "User name" and "User groups" columns in Lab Contacts listing
 - #1702 Remove Analysis Specifications from AR Add Form
 - #1700 Better styling of header and description in content views

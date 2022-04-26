@@ -15,8 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+import six
 
 from collections import OrderedDict
 from collections import defaultdict
@@ -43,7 +45,6 @@ class PartitionMagicView(BrowserView):
         self.request = request
         self.back_url = self.context.absolute_url()
         self.analyses_to_remove = dict()
-
 
     def __call__(self):
         form = self.request.form
@@ -169,7 +170,7 @@ class PartitionMagicView(BrowserView):
         if not uids:
             # check for the `items` parammeter
             uids = self.request.form.get("items", "")
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
         unique_uids = OrderedDict().fromkeys(uids).keys()
         return filter(None, map(self.get_object_by_uid, unique_uids))
@@ -183,17 +184,17 @@ class PartitionMagicView(BrowserView):
             "sort_order": "ascending",
             "is_active": True,
         }
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     def get_containers(self):
         """Returns the available Containers of the system
         """
-        query = dict(portal_type="Container",
+        query = dict(portal_type="SampleContainer",
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     def get_preservations(self):
@@ -203,7 +204,7 @@ class PartitionMagicView(BrowserView):
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         return map(api.get_object, results)
 
     @returns_super_model

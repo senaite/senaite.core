@@ -1,0 +1,27 @@
+/* Cannot move up out of the grid */
+.datagridfield-first-filled-row > .datagridwidget-manipulator .dgf--row-moveup {
+    display: none !important;
+}
+/* Cannot move below auto-append row */
+.datagridfield-last-filled-row > .datagridwidget-manipulator .dgf--row-movedown {
+    display: none !important;
+}
+.datagridwidget-empty-row {
+	  /* Hidden row with default selection widget values */
+	  display: none;
+}
+/* Error message is displayed above the field */
+.datagridwidget-cell {
+	  vertical-align: bottom;
+	  padding: 1px;
+}
+.datagridwidget-hidden-data {
+	  display: none;
+}
+/* You cannot delete the auto-append row */
+.auto-append  > .datagridwidget-manipulator .dgf--row-delete,
+.auto-append  > .datagridwidget-manipulator .dgf--row-moveup,
+.auto-append  > .datagridwidget-manipulator .dgf--row-movedown,
+.auto-append  > .datagridwidget-manipulator .dgf--row-add {
+    display: none;
+}

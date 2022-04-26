@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -39,8 +40,8 @@ class Report(BrowserView):
     def __call__(self):
 
         # get all the data into datalines
-        sc = getToolByName(self.context, 'bika_setup_catalog')
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
+        sc = getToolByName(self.context, 'senaite_catalog_setup')
+        bac = getToolByName(self.context, 'senaite_catalog_analysis')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -78,10 +79,10 @@ class Report(BrowserView):
                  'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if 'bika_analysis_workflow' in self.request.form:
-            query['review_state'] = self.request.form['bika_analysis_workflow']
+        if ANALYSIS_WORKFLOW in self.request.form:
+            query['review_state'] = self.request.form[ANALYSIS_WORKFLOW]
             review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_analysis_workflow'], 'Analysis')
+                self.request.form[ANALYSIS_WORKFLOW], 'Analysis')
             parms.append(
                 {'title': _('Status'),
                  'value': review_state,
@@ -130,14 +131,14 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
                 'Sample Type',
                 'Analyses',
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
                                 fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

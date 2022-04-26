@@ -15,14 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from collections import OrderedDict
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
 
 
 class AutoImportLogsView(ListingView):
@@ -30,7 +32,7 @@ class AutoImportLogsView(ListingView):
     """
     def __init__(self, context, request):
         super(AutoImportLogsView, self).__init__(context, request)
-        self.catalog = CATALOG_AUTOIMPORTLOGS_LISTING
+        self.catalog = AUTOIMPORTLOG_CATALOG
         self.contentFilter = {
             "portal_type": "AutoImportLog",
             "sort_on": "created",
@@ -48,23 +50,18 @@ class AutoImportLogsView(ListingView):
             ("Instrument", {
                 "title": _("Instrument"),
                 "sortable": False,
-                "attr": "getInstrumentTitle",
-                "replace_url": "getInstrumentUrl"
             }),
             ("Interface", {
                 "title": _("Interface"),
                 "sortable": False,
-                "attr": "getInterface",
             }),
             ("ImportFile", {
                 "title": _("Imported File"),
                 "sortable": False,
-                "attr": "getImportedFile",
             }),
             ("Results", {
                 "title": _("Results"),
                 "sortable": False,
-                "attr": "getResults"
             })
         ))
 
@@ -78,5 +75,24 @@ class AutoImportLogsView(ListingView):
         ]
 
     def folderitem(self, obj, item, index):
-        item["ImportTime"] = obj.getLogTime.strftime("%Y-%m-%d H:%M:%S")
+        obj = api.get_object(obj)
+
+        logtime = obj.getLogTime()
+        if logtime:
+            item["ImportTime"] = self.ulocalized_time(logtime, long_format=1)
+
+        instrument = obj.getInstrument()
+        if instrument:
+            item["Instrument"] = instrument.Title()
+            item["replace"]["Instrument"] = get_link_for(instrument)
+
+        messages = obj.getResults()
+        if messages:
+            item["Results"] = messages
+            item["replace"]["Results"] = "<code>{}</code>".format(
+                messages.replace("\n", "<br/>"))
+
+        item["ImportFile"] = obj.getImportFile()
+        item["Interface"] = obj.getInterface()
+
         return item

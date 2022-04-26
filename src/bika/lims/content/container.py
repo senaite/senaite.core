@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 
@@ -29,10 +29,12 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IContainer
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from magnitude import mg
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -93,7 +95,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Container(BaseContent):
-    implements(IDeactivable)
+    implements(IContainer, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -124,7 +126,7 @@ class Container(BaseContent):
         return str(default)
 
     def getContainerTypes(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='ContainerType')]
         o = self.getContainerType()
@@ -134,7 +136,7 @@ class Container(BaseContent):
         return DisplayList(list(items))
 
     def getPreservations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Preservation',
                                    apiis_active = True)]
@@ -147,10 +149,13 @@ class Container(BaseContent):
 registerType(Container, PROJECTNAME)
 
 
+# TODO: Refactor!
+#       This class is registered as `getcontainers` and used in artemplate to
+#       populate the combogrid field
 class ajaxGetContainers:
 
-    catalog_name='bika_setup_catalog'
-    contentFilter = {'portal_type': 'Container',
+    catalog_name='senaite_catalog_setup'
+    contentFilter = {'portal_type': 'SampleContainer',
                      'is_active': True}
 
     def __init__(self, context, request):

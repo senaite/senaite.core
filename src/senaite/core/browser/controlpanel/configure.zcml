@@ -5,6 +5,31 @@
 
   <include package="bika.lims" file="permissions.zcml" />
 
+  <!-- Sample Containers -->
+  <browser:page
+      for="senaite.core.content.samplecontainers.ISampleContainers"
+      name="view"
+      class=".samplecontainers.SampleContainersView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <!-- Instrument Locations -->
+  <browser:page
+      for="senaite.core.content.instrumentlocations.IInstrumentLocations"
+      name="view"
+      class=".instrumentlocations.InstrumentLocationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <!-- Result Interpretation Templates View -->
+  <browser:page
+      for="senaite.core.content.interpretationtemplates.IInterpretationTemplates"
+      name="view"
+      class=".interpretationtemplates.InterpretationTemplatesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
   <!-- Control Panel Overview -->
   <browser:page
       name="overview-controlpanel"
@@ -12,7 +37,7 @@
       class=".overview.OverviewControlPanel"
       permission="plone.app.controlpanel.Overview"
       layer="senaite.core.interfaces.ISenaiteCore"/>
-      />
+
 
   <!-- SENAITE Setup View -->
   <browser:page
@@ -21,6 +46,6 @@
       class=".setupview.SetupView"
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
-      />
+
 
 </configure>

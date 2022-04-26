@@ -15,11 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IVerified, IInternalUse
+from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IVerified
+from bika.lims.permissions import TransitionReceiveSample
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -55,15 +58,13 @@ def guard_create_partitions(analysis_request):
         # Do not allow the creation of partitions from partitions
         return False
 
-    # Allow only the creation of partitions if all analyses from the Analysis
-    # Request are in unassigned state. Otherwise, we could end up with
-    # inconsistencies, because original analyses are deleted when the partition
-    # is created. Note here we exclude analyses from children (partitions).
-    analyses = analysis_request.objectValues("Analysis")
-    for analysis in analyses:
-        if api.get_workflow_status_of(analysis) != "unassigned":
-            return False
-    return analyses and True or False
+    # Clients have the AddAnalysisRequest permission, but should not be allowed
+    # to create partitions.  Therefore, we check here if the current user has
+    # the permission to receive a sample as well.
+    if not check_permission(TransitionReceiveSample, analysis_request):
+        return False
+
+    return True
 
 
 def guard_submit(analysis_request):
@@ -231,3 +232,20 @@ def guard_detach(analysis_request):
     """
     # Detach transition can only be done to partitions
     return analysis_request.isPartition()
+
+
+def guard_dispatch(sample):
+    """Checks if the dispatch transition is allowed
+
+    We prevent dispatching when one analysis is assigned to a worksheet.
+    """
+    for analysis in sample.getAnalyses():
+        if api.get_workflow_status_of(analysis) == "assigned":
+            return False
+    return True
+
+
+def guard_restore(sample):
+    """Checks if the restore transition is allowed
+    """
+    return True

@@ -15,17 +15,18 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import re
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from itertools import groupby
 
-import Missing
 import six
 
+import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
@@ -62,7 +63,6 @@ from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.event import notify
 from zope.lifecycleevent import ObjectCreatedEvent
-from zope.lifecycleevent import modified
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
 
@@ -134,41 +134,35 @@ def create(container, portal_type, *args, **kwargs):
     :returns: The new created object
     """
     from bika.lims.utils import tmpID
-    if kwargs.get("title") is None:
-        kwargs["title"] = "New {}".format(portal_type)
 
-    # generate a temporary ID
-    tmp_id = tmpID()
+    id = kwargs.pop("id", tmpID())
+    title = kwargs.pop("title", "New {}".format(portal_type))
 
     # get the fti
     types_tool = get_tool("portal_types")
     fti = types_tool.getTypeInfo(portal_type)
 
     if fti.product:
-        obj = _createObjectByType(portal_type, container, tmp_id)
+        obj = _createObjectByType(portal_type, container, id)
+        obj.processForm()
+        obj.edit(title=title, **kwargs)
     else:
         # newstyle factory
         factory = getUtility(IFactory, fti.factory)
-        obj = factory(tmp_id, *args, **kwargs)
+        obj = factory(id, *args, **kwargs)
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
+        # set the title
+        obj.title = safe_unicode(title)
+        # notify that the object was created
         notify(ObjectCreatedEvent(obj))
         # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
         # ContainerModifiedEvent
-        container._setObject(tmp_id, obj)
+        container._setObject(id, obj)
         # we get the object here with the current object id, as it might be
         # renamed already by an event handler
         obj = container._getOb(obj.getId())
 
-    # handle AT Content
-    if is_at_content(obj):
-        obj.processForm()
-
-    # Edit after processForm; processForm does AT unmarkCreationFlag.
-    obj.edit(**kwargs)
-
-    # explicit notification
-    modified(obj)
     return obj
 
 
@@ -199,6 +193,8 @@ def get_tool(name, context=None, default=_marker):
         return ploneapi.portal.get_tool(name)
     except InvalidParameterError:
         if default is not _marker:
+            if isinstance(default, six.string_types):
+                return get_tool(default)
             return default
         fail("No tool named '%s' found." % name)
 
@@ -220,6 +216,8 @@ def is_object(brain_or_object):
     """
     if is_portal(brain_or_object):
         return True
+    if is_supermodel(brain_or_object):
+        return True
     if is_at_content(brain_or_object):
         return True
     if is_dexterity_content(brain_or_object):
@@ -239,6 +237,8 @@ def get_object(brain_object_uid, default=_marker):
     """
     if is_uid(brain_object_uid):
         return get_object_by_uid(brain_object_uid)
+    elif is_supermodel(brain_object_uid):
+        return brain_object_uid.instance
     if not is_object(brain_object_uid):
         if default is _marker:
             fail("{} is not supported.".format(repr(brain_object_uid)))
@@ -268,6 +268,19 @@ def is_brain(brain_or_object):
     :rtype: bool
     """
     return ICatalogBrain.providedBy(brain_or_object)
+
+
+def is_supermodel(brain_or_object):
+    """Checks if the passed in object is a supermodel
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :returns: True if the object is a catalog brain
+    :rtype: bool
+    """
+    # avoid circular imports
+    from senaite.app.supermodel.interfaces import ISuperModel
+    return ISuperModel.providedBy(brain_or_object)
 
 
 def is_dexterity_content(brain_or_object):
@@ -763,7 +776,7 @@ def get_workflows_for(brain_or_object):
     :rtype: tuple
     """
     workflow = ploneapi.portal.get_tool("portal_workflow")
-    if isinstance(brain_or_object, basestring):
+    if isinstance(brain_or_object, six.string_types):
         return workflow.getChainFor(brain_or_object)
     obj = get_object(brain_or_object)
     return workflow.getChainFor(obj)
@@ -788,6 +801,35 @@ def get_workflow_status_of(brain_or_object, state_var="review_state"):
     workflow = get_tool("portal_workflow")
     obj = get_object(brain_or_object)
     return workflow.getInfoFor(ob=obj, name=state_var, default='')
+
+
+def get_previous_worfklow_status_of(brain_or_object, skip=None, default=None):
+    """Get the previous workflow status of the object
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :param skip: Workflow states to skip
+    :type skip: tuple/list
+    :returns: status
+    :rtype: str
+    """
+
+    skip = isinstance(skip, (list, tuple)) and skip or []
+    history = get_review_history(brain_or_object)
+
+    # Remove consecutive duplicates, some transitions might happen more than
+    # once consecutively (e.g. publish)
+    history = map(lambda i: i[0], groupby(history))
+
+    for num, item in enumerate(history):
+        # skip the current history entry
+        if num == 0:
+            continue
+        status = item.get("review_state")
+        if status in skip:
+            continue
+        return status
+    return default
 
 
 def get_creation_date(brain_or_object):
@@ -878,7 +920,7 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
     if is_object(brain_or_object):
         catalogs = archetype_tool.getCatalogsByType(
             get_portal_type(brain_or_object))
-    if isinstance(brain_or_object, basestring):
+    if isinstance(brain_or_object, six.string_types):
         catalogs = archetype_tool.getCatalogsByType(brain_or_object)
 
     if not catalogs:
@@ -911,7 +953,7 @@ def do_transition_for(brain_or_object, transition):
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: The object where the transtion was performed
     """
-    if not isinstance(transition, basestring):
+    if not isinstance(transition, six.string_types):
         fail("Transition type needs to be string, got '%s'" % type(transition))
     obj = get_object(brain_or_object)
     try:
@@ -1017,7 +1059,7 @@ def get_user(user_or_username):
     user = None
     if isinstance(user_or_username, MemberData):
         user = user_or_username
-    if isinstance(user_or_username, basestring):
+    if isinstance(user_or_username, six.string_types):
         user = get_member_by_login_name(get_portal(), user_or_username, False)
     return user
 
@@ -1166,7 +1208,7 @@ def normalize_id(string):
     :returns: Normalized ID
     :rtype: str
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         fail("Type of argument must be string, found '{}'"
              .format(type(string)))
     # get the id nomalizer utility
@@ -1182,7 +1224,7 @@ def normalize_filename(string):
     :returns: Normalized ID
     :rtype: str
     """
-    if not isinstance(string, basestring):
+    if not isinstance(string, six.string_types):
         fail("Type of argument must be string, found '{}'"
              .format(type(string)))
     # get the file nomalizer utility
@@ -1200,7 +1242,7 @@ def is_uid(uid, validate=False):
     :return: True if a valid uid
     :rtype: bool
     """
-    if not isinstance(uid, basestring):
+    if not isinstance(uid, six.string_types):
         return False
     if uid == '0':
         return True
@@ -1380,14 +1422,14 @@ def to_display_list(pairs, sort_by="key", allow_empty=True):
     """
     dl = DisplayList()
 
-    if isinstance(pairs, basestring):
+    if isinstance(pairs, six.string_types):
         pairs = [pairs, pairs]
     for pair in pairs:
         # pairs is a list of lists -> add each pair
         if isinstance(pair, (tuple, list)):
             dl.add(*pair)
         # pairs is just a single pair -> add it and stop
-        if isinstance(pair, basestring):
+        if isinstance(pair, six.string_types):
             dl.add(*pairs)
             break
 
@@ -1422,3 +1464,16 @@ def text_to_html(text, wrap="p", encoding="utf8"):
             tag=wrap, html=html)
     # return encoded html
     return html.encode(encoding)
+
+
+def to_utf8(string, default=_marker):
+    """Encode string to UTF8
+
+    :param string: String to be encoded to UTF8
+    :returns: UTF8 encoded string
+    """
+    if not isinstance(string, six.string_types):
+        if default is _marker:
+            fail("Expected string type, got '%s'" % type(string))
+        return default
+    return safe_unicode(string).encode("utf8")

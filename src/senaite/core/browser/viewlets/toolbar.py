@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.api.security import check_permission
@@ -78,16 +78,23 @@ class ToolbarViewletManager(OrderedViewletManager):
 
     def get_toolbar_logo(self):
         registry = getUtility(IRegistry)
-        settings = registry.forInterface(
-            ISiteSchema, prefix="senaite", check=False)
         portal_url = self.portal_state.portal_url()
         try:
-            logo = settings.toolbar_logo
-        except AttributeError:
+            logo = registry["senaite.toolbar_logo"]
+        except (AttributeError, KeyError):
             logo = LOGO
         if not logo:
             logo = LOGO
         return portal_url + logo
+
+    def get_toolbar_styles(self):
+        registry = getUtility(IRegistry)
+        try:
+            styles = registry["senaite.toolbar_logo_styles"]
+        except (AttributeError, KeyError):
+            return "height:15px;"
+        css = map(lambda style: "{}:{};".format(*style), styles.items())
+        return " ".join(css)
 
     def get_lims_setup_url(self):
         portal_url = self.portal_state.portal().absolute_url()

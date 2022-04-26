@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- main site/samples view -->
+  <browser:page
+      for="senaite.core.interfaces.ISamples"
+      name="view"
+      class=".view.SamplesView"
+      permission="cmf.ListFolderContents"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <!-- Dispatch samples -->
+  <browser:page
+      for="*"
+      name="dispatch_samples"
+      class=".dispatch_samples.DispatchSamplesView"
+      permission="senaite.core.permissions.TransitionDispatchSample"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
+</configure>

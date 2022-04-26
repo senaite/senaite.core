@@ -15,8 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+import six
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
@@ -54,6 +56,13 @@ schema = Organisation.schema.copy() + Schema((
         validators=("uniquefieldvalidator", "standard_id_validator"),
         widget=StringWidget(
             label=_("Client ID"),
+            description=_(
+                "Short and unique identifier of this client. Besides fast "
+                "searches by client in Samples listings, the purposes of this "
+                "field depend on the laboratory needs. For instance, the "
+                "Client ID can be included as part of the Sample identifier, "
+                "so the lab can easily know the client a given sample belongs "
+                "to by just looking to its ID.")
         ),
     ),
 
@@ -254,7 +263,7 @@ class Client(Organisation):
         """
         if ids is None:
             ids = []
-        if isinstance(ids, basestring):
+        if isinstance(ids, six.string_types):
             ids = [ids]
 
         for id in ids:
@@ -263,8 +272,9 @@ class Client(Organisation):
                 # Ignore DeleteObjects permission check
                 continue
             if not _checkPermission(permissions.DeleteObjects, item):
-                raise Unauthorized, (
-                    "Do not have permissions to remove this object")
+                msg = "Do not have permissions to remove this object"
+                raise Unauthorized(msg)
+
         return PortalFolder.manage_delObjects(self, ids, REQUEST=REQUEST)
 
 

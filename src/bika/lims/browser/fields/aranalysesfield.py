@@ -15,32 +15,31 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import Field
-from Products.Archetypes.public import ObjectField
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
+from Products.Archetypes.Registry import registerField
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
+from zope.interface import implements
+
+DETACHED_STATES = ["cancelled", "retracted", "rejected"]
+
 
 """Field to manage Analyses on ARs
 
@@ -70,7 +69,7 @@ class ARAnalysesField(ObjectField):
         """Returns a list of Analyses assigned to this AR
 
         Return a list of catalog brains unless `full_objects=True` is passed.
-        Other keyword arguments are passed to bika_analysis_catalog
+        Other keyword arguments are passed to senaite_catalog_analysis
 
         :param instance: Analysis Request object
         :param kwargs: Keyword arguments to inject in the search query
@@ -80,7 +79,7 @@ class ARAnalysesField(ObjectField):
         full_objects = kwargs.get("full_objects", False)
 
         # Bail out parameters from kwargs that don't match with indexes
-        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        catalog = api.get_tool(ANALYSIS_CATALOG)
         indexes = catalog.indexes()
         query = dict([(k, v) for k, v in kwargs.items() if k in indexes])
 
@@ -119,8 +118,7 @@ class ARAnalysesField(ObjectField):
 
         # Bail out if the AR is inactive
         if not api.is_active(instance):
-            raise Unauthorized("Inactive ARs can not be modified"
-                               .format(AddAnalysis))
+            raise Unauthorized("Inactive ARs can not be modified")
 
         # Bail out if the user has not the right permission
         if not check_permission(AddAnalysis, instance):
@@ -231,23 +229,28 @@ class ARAnalysesField(ObjectField):
         prices = kwargs.get("prices") or {}
         price = prices.get(service_uid) or service.getPrice()
 
+        # Get the default result for the service
+        default_result = service.getDefaultResult()
+
         # Gets the analysis or creates the analysis for this service
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
         analyses = self.resolve_analyses(instance, service)
+
+        # Filter out analyses in detached states
+        # This allows to re-add an analysis that was retracted or cancelled
+        analyses = filter(
+            lambda an: api.get_workflow_status_of(an) not in DETACHED_STATES,
+            analyses)
+
         if not analyses:
             # Create the analysis
-            keyword = service.getKeyword()
-            logger.info("Creating new analysis '{}'".format(keyword))
-            analysis = create_analysis(instance, service)
+            new_id = self.generate_analysis_id(instance, service)
+            logger.info("Creating new analysis '{}'".format(new_id))
+            analysis = create_analysis(instance, service, id=new_id)
             analyses.append(analysis)
 
-        skip = ["cancelled", "retracted", "rejected"]
         for analysis in analyses:
-            # Skip analyses to better not modify
-            if api.get_review_status(analysis) in skip:
-                continue
-
             # Set the hidden status
             analysis.setHidden(hidden)
 
@@ -258,10 +261,26 @@ class ARAnalysesField(ObjectField):
             parent_sample = analysis.getRequest()
             analysis.setInternalUse(parent_sample.getInternalUse())
 
+            # Set the default result to the analysis
+            if not analysis.getResult() and default_result:
+                analysis.setResult(default_result)
+                analysis.setResultCaptureDate(None)
+
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
             analysis.setResultsRange(analysis_rr)
             analysis.reindexObject()
+
+    def generate_analysis_id(self, instance, service):
+        """Generate a new analysis ID
+        """
+        count = 1
+        keyword = service.getKeyword()
+        new_id = keyword
+        while new_id in instance.objectIds():
+            new_id = "{}-{}".format(keyword, count)
+            count += 1
+        return new_id
 
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance
@@ -275,6 +294,12 @@ class ARAnalysesField(ObjectField):
         worksheet = analysis.getWorksheet()
         if worksheet:
             worksheet.removeAnalysis(analysis)
+
+        # handle retest source deleted
+        retest = analysis.getRetest()
+        if retest:
+            # unset reference link
+            retest.setRetestOf(None)
 
         # Remove the analysis
         # Note the analysis might belong to a partition
@@ -298,14 +323,18 @@ class ARAnalysesField(ObjectField):
 
         # Does the analysis exists in this instance already?
         instance_analyses = self.get_from_instance(instance, service)
+
         if instance_analyses:
             analyses.extend(instance_analyses)
 
         # Does the analysis exists in an ancestor?
         from_ancestor = self.get_from_ancestor(instance, service)
         for ancestor_analysis in from_ancestor:
-            # Move the analysis into this instance. The ancestor's
-            # analysis will be masked otherwise
+            # only move non-assigned analyses
+            state = api.get_workflow_status_of(ancestor_analysis)
+            if state != "unassigned":
+                continue
+            # Move the analysis into the partition
             analysis_id = api.get_id(ancestor_analysis)
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
             cp = ancestor_analysis.aq_parent.manage_cutObjects(analysis_id)
@@ -315,6 +344,7 @@ class ARAnalysesField(ObjectField):
         # Does the analysis exists in descendants?
         from_descendant = self.get_from_descendant(instance, service)
         analyses.extend(from_descendant)
+
         return analyses
 
     def get_analyses_from_descendants(self, instance):

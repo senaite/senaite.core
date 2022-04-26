@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.jsonapi import set_fields_from_request
@@ -25,6 +25,7 @@ from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
 import json
+import six
 import transaction
 
 
@@ -129,7 +130,7 @@ class Update(object):
         if self.request.get('obj_path', '') and not obj:
             obj_path = self.request['obj_path'].split("?")[0]
             site_path = context.portal_url.getPortalObject().getPhysicalPath()
-            if site_path and isinstance(site_path, basestring):
+            if site_path and isinstance(site_path, six.string_types):
                 site_path = site_path if site_path.startswith('/') else '/' + site_path
                 obj = context.restrictedTraverse(site_path + obj_path)
             elif site_path and len(site_path) > 1:

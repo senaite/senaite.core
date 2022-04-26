@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import sys
@@ -160,7 +160,7 @@ class LabContact(Contact):
             "portal_type": "Department",
             "is_active": True
         }
-        results = api.search(query, "bika_setup_catalog")
+        results = api.search(query, "senaite_catalog_setup")
         items = map(lambda dept: (api.get_uid(dept), api.get_title(dept)),
                     results)
         dept_uids = map(api.get_uid, results)

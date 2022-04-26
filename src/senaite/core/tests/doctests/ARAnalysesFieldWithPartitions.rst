@@ -67,6 +67,11 @@ Create some basic objects for the test:
     >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(setup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
     >>> Mg = api.create(setup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
+    >>> Ca = api.create(setup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="20", Category=category.UID())
+    >>> THCaCO3 = api.create(setup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="THCaCO3", Price="20", Category=category.UID())
+    >>> calc = api.create(setup.bika_calculations, "Calculation", title="Total Hardness")
+    >>> calc.setFormula("[Ca] + [Mg]")
+    >>> THCaCO3.setCalculation(calc)
 
 
 Creation of a Sample with a Partition
@@ -330,3 +335,32 @@ partition, nothing will happen:
     [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+
+Test calculation when dependant service assigned to a partition subsample:
+..........................................................................
+
+Create a Sample and receive:
+
+    >>> sample2 = new_sample([Ca, Mg, THCaCO3])
+
+Create a Partition containing of the Sample, containing the analysis `Ca`:
+
+    >>> ca = get_analysis_from(sample2, Ca)
+    >>> partition2 = create_partition(sample, request, [ca])
+
+Set result values to analysis (Ca, Mg)
+
+    >>> analyses = sample2.getAnalyses(full_objects=True)
+    >>> ca_analysis = filter(lambda an: an.getKeyword()=="Ca", analyses)[0]
+    >>> mg_analysis = filter(lambda an: an.getKeyword()=="Mg", analyses)[0]
+    >>> ca_analysis.setResult(10)
+    >>> mg_analysis.setResult(10)
+
+Calculate dependant result and make sure it's correct:
+    >>> th_analysis = filter(lambda an: an.getKeyword()=="THCaCO3", analyses)[0]
+    >>> th_analysis.calculateResult()
+    True
+    >>> th_analysis.getResult()
+    '20.0'
+

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -49,7 +49,7 @@ class InstrumentQCFailuresViewlet(ViewletBase):
 
         Return a dictionary with all info about expired/invalid instruments
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         insts = bsc(portal_type="Instrument", is_active=True)
         for i in insts:
             i = i.getObject()

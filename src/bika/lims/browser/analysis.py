@@ -15,18 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
-
-import plone
-from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis, IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import dicts_to_dict
-from bika.lims.utils.analysis import get_method_instrument_constraints
-from zExceptions import Forbidden
 from zope.component import adapts
 from zope.interface import implements
 
@@ -54,24 +48,3 @@ class JSONReadExtender(object):
         if not self.include_fields or "specification" in self.include_fields:
             data['specification'] = self.analysis_specification()
         return data
-
-
-class ajaxGetMethodInstrumentConstraints(BrowserView):
-
-    def __call__(self):
-        """
-            Returns a json dictionary with the constraints and rules for
-            methods, instruments and results to be applied to each of the
-            analyses specified in the request (an array of uids).
-            See docs/imm_results_entry_behaviour.png for further details
-        """
-        constraints = {}
-        try:
-            plone.protect.CheckAuthenticator(self.request)
-        except Forbidden:
-            return json.dumps(constraints)
-
-        rowuids = self.request.get('uids', '[]')
-        rowuids = json.loads(rowuids)
-        constraints = get_method_instrument_constraints(self, rowuids)
-        return json.dumps(constraints)

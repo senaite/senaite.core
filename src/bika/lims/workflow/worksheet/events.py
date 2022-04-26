@@ -15,24 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import workflow as wf
-
-
-def after_submit(obj):
-    """
-    Method triggered after a 'submit' transition for the Worksheet passed in is
-    performed.
-    This function is called automatically by
-    bika.lims.workfow.AfterTransitionEventHandler
-    """
-    # Submitting a Worksheet must never transition the analyses.
-    # In fact, a worksheet can only be transitioned to "to_be_verified" if
-    # all the analyses that contain have been submitted manually after
-    # the results input
-    wf.doActionFor(obj, 'attach')
 
 
 def after_retract(worksheet):

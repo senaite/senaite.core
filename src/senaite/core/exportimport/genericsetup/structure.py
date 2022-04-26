@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -136,10 +136,10 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
                     continue
                 user_id = cn.firstChild.nodeValue
                 user = api.user.get_user(user_id)
-                if not user:
+
+                if not user: # add new user with password
                     self._logger.info("Adding user {}".format(user_id))
-                    # add a new user with the same password as the user id
-                    user = reg_tool.addMember(user_id, user_id)
+                    user = reg_tool.addMember(user_id, '12345') 
 
                 # set the user properties
                 user.setProperties(properties={

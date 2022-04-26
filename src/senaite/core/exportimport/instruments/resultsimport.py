@@ -15,22 +15,22 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import codecs
-from datetime import datetime
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
+
+import six
+
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from senaite.core.exportimport.instruments.logger import Logger
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
+from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.exportimport.instruments.logger import Logger
 
 
 class InstrumentResultsFileParser(Logger):
@@ -358,16 +358,14 @@ class AnalysisResultsImporter(Logger):
         self._override = override
         self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
-        self.bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.ar_catalog = getToolByName(
-            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
+        self.bac = getToolByName(self.context, 'senaite_catalog_analysis')
+        self.ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
         self.pc = getToolByName(self.context, 'portal_catalog')
-        self.bc = getToolByName(self.context, 'bika_catalog')
+        self.bc = getToolByName(self.context, 'senaite_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
         if not self._allowed_ar_states:
             self._allowed_ar_states = ['sample_received',
-                                       'attachment_due',
                                        'to_be_verified']
         if not self._allowed_analysis_states:
             self._allowed_analysis_states = [
@@ -441,6 +439,7 @@ class AnalysisResultsImporter(Logger):
         importedinsts = {}
         rawacodes = self._parser.getAnalysisKeywords()
         exclude = self.getKeywordsToBeExcluded()
+        updated_analyses = []
         for acode in rawacodes:
             if acode in exclude or not acode:
                 continue
@@ -458,7 +457,7 @@ class AnalysisResultsImporter(Logger):
         attachments = {}
         infile = self._parser.getInputFile()
 
-        for objid, results in self._parser.getRawResults().iteritems():
+        for objid, results in six.iteritems(self._parser.getRawResults()):
             # Allowed more than one result for the same sample and analysis.
             # Needed for calibration tests
             for result in results:
@@ -532,13 +531,16 @@ class AnalysisResultsImporter(Logger):
                 capturedate = result.get('DateTime', {}).get('DateTime', None)
                 if capturedate:
                     del result['DateTime']
-                for acode, values in result.iteritems():
+                for acode, values in six.iteritems(result):
                     if acode not in acodes:
                         # Analysis keyword doesn't exist
                         continue
 
-                    ans = [analysis for analysis in analyses
-                           if analysis.getKeyword() == acode]
+                    ans = [
+                        a for a in analyses
+                        if a.getKeyword() == acode
+                           and api.get_workflow_status_of(a)
+                           in self._allowed_analysis_states]
 
                     if len(ans) > 1:
                         self.warn("More than one analysis found for "
@@ -577,6 +579,7 @@ class AnalysisResultsImporter(Logger):
                         values['DateTime'] = capturedate
                     processed = self._process_analysis(objid, analysis, values)
                     if processed:
+                        updated_analyses.append(analysis)
                         ancount += 1
                         if inst:
                             # Calibration Test (import to Instrument)
@@ -605,18 +608,27 @@ class AnalysisResultsImporter(Logger):
                                 "it is not assigned to a worksheet (%s)" %
                                 analysis)
 
-        for arid, acodes in importedars.iteritems():
-            acodesmsg = ["Analysis %s" % acod for acod in acodes]
-            self.log(
-                    "${request_id}: ${analysis_keywords} imported sucessfully",
-                    mapping={"request_id": arid,
-                             "analysis_keywords": acodesmsg})
+        # recalculate analyses with calculations after all results are set
+        for analysis in updated_analyses:
+            # only routine analyses can be used in calculations
+            if IRoutineAnalysis.providedBy(analysis):
+                sample_id = analysis.getRequestID()
+                self.calculateTotalResults(sample_id, analysis)
 
-        for instid, acodes in importedinsts.iteritems():
-            acodesmsg = ["Analysis %s" % acod for acod in acodes]
-            msg = "%s: %s %s" % (instid,
-                                 ", ".join(acodesmsg),
-                                 "imported sucessfully")
+        # reindex sample to update progress (and other indexes/metadata)
+        samples = set(map(api.get_parent, updated_analyses))
+        for sample in samples:
+            sample.reindexObject()
+
+        for arid, acodes in six.iteritems(importedars):
+            acodesmsg = "Analysis %s" % ', '.join(acodes)
+            self.log(
+                "${request_id}: ${analysis_keywords} imported sucessfully",
+                mapping={"request_id": arid, "analysis_keywords": acodesmsg})
+
+        for instid, acodes in six.iteritems(importedinsts):
+            acodesmsg = "Analysis %s" % ', '.join(acodes)
+            msg = "%s: %s %s" % (instid, acodesmsg, "imported sucessfully")
             self.log(msg)
 
         if self.instrument_uid:
@@ -641,7 +653,7 @@ class AnalysisResultsImporter(Logger):
                                   title=self._parser.getAttachmentFileType())
         if not attachmentType:
             folder = self.context.bika_setup.bika_attachmenttypes
-            obj = _createObjectByType("AttachmentType", folder, tmpID())
+            obj = api.create(folder, "AttachmentType")
             obj.edit(title=self._parser.getAttachmentFileType(),
                      description="Autogenerated file type")
             obj.unmarkCreationFlag()
@@ -654,10 +666,12 @@ class AnalysisResultsImporter(Logger):
     def create_attachment(self, ws, infile):
         attuid = self.create_mime_attachmenttype()
         attachment = None
+        filename = infile.filename
         if attuid and infile:
-            attachment = _createObjectByType("Attachment", ws, tmpID())
+            attachment = api.create(ws, "Attachment")
             logger.info("Creating %s in %s" % (attachment, ws))
             attachment.edit(
+                title=filename,
                 AttachmentFile=infile,
                 AttachmentType=attuid,
                 AttachmentKeys='Results, Automatic import')
@@ -682,15 +696,16 @@ class AnalysisResultsImporter(Logger):
         # current attachments
         an_atts = analysis.getAttachment()
         atts_filenames = [att.getAttachmentFile().filename for att in an_atts]
-        if attachment.getAttachmentFile().filename not in atts_filenames:
+        filename = attachment.getAttachmentFile().filename
+        if filename not in atts_filenames:
             an_atts.append(attachment)
             logger.info(
                 "Attaching %s to %s" % (attachment.UID(), analysis))
             analysis.setAttachment([att.UID() for att in an_atts])
             analysis.reindexObject()
         else:
-            self.warn("Attachment %s was not linked to analysis %s" %
-                      (attachment.UID(), analysis))
+            self.log("Attachment %s was already linked to analysis %s" %
+                     (filename, api.get_id(analysis)))
 
     def get_attachment_filenames(self, ws):
         fn_attachments = {}
@@ -865,56 +880,79 @@ class AnalysisResultsImporter(Logger):
         :param objid: AR ID or Worksheet's Reference Sample IDs
         :param analysis: Analysis Object
         """
-        analyses = self._getZODBAnalyses(objid)
-        # Filter Analyses With Calculation
-        analyses_with_calculation = filter(
-                                        lambda an: an.getCalculation(),
-                                        analyses)
-        for analysis_with_calc in analyses_with_calculation:
-            # Get the calculation to get the formula so that we can check
-            # if param analysis keyword is used on the calculation formula
-            calcultion = analysis_with_calc.getCalculation()
-            formula = calcultion.getMinifiedFormula()
-            # The analysis that we are currenly on
-            analysis_keyword = analysis.getKeyword()
-            if analysis_keyword not in formula:
+        for obj in self._getZODBAnalyses(objid):
+            # skip analyses w/o calculations
+            if not obj.getCalculation():
                 continue
-
-            # If the analysis_keyword is in the formula, it means that this
-            # analysis is a dependent on that calculated analysis
-            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
-            if calc_passed:
-                api.do_transition_for(analysis_with_calc, "submit")
+            # get the calculation
+            calculation = obj.getCalculation()
+            # get the dependent services of the calculation
+            dependencies = calculation.getDependentServices()
+            # get the analysis service of the passed in analysis
+            service = analysis.getAnalysisService()
+            # skip when service is not a dependency of the calculation
+            if service not in dependencies:
+                continue
+            # recalculate analysis result
+            success = obj.calculateResult(override=self._override[0])
+            if success:
+                self.save_submit_analysis(obj)
+                obj.reindexObject(idxs=["Result"])
                 self.log(
                     "${request_id}: calculated result for "
                     "'${analysis_keyword}': '${analysis_result}'",
                     mapping={"request_id": objid,
-                             "analysis_keyword": analysis_with_calc.getKeyword(),
-                             "analysis_result": str(analysis_with_calc.getResult())}
-                )
+                             "analysis_keyword": obj.getKeyword(),
+                             "analysis_result": str(obj.getResult())})
+                # recursively recalculate analyses that have this analysis as
+                # a dependent service
+                self.calculateTotalResults(objid, obj)
 
+    def save_submit_analysis(self, analysis):
+        """Submit analysis and ignore errors
+        """
+        try:
+            api.do_transition_for(analysis, "submit")
+        except api.APIError:
+            pass
+
+    def override_analysis_result(self, analysis):
+        """Checks if the result shall be overwritten or not
+        """
+        result = analysis.getResult()
+        override = self.getOverride()
+        # analysis has non-empty result, but it is not allowed to override
+        if result and override[0] is False:
+            return False
+        return True
 
     def _process_analysis(self, objid, analysis, values):
+        # Check if the current analysis result can be overwritten
+        if not self.override_analysis_result(analysis):
+            keyword = analysis.getKeyword()
+            result = analysis.getResult()
+            self.log(
+                "Analysis '{keyword}' has existing result of {result}, which "
+                "is kept due to the no-override option selected".format(
+                    keyword=keyword, result=result))
+            return False
+
         resultsaved = False
         acode = analysis.getKeyword()
         defresultkey = values.get("DefaultResult", "")
         capturedate = None
-        # Look for timestamp
+
         if "DateTime" in values.keys():
-            try:
-                dt = values.get('DateTime')
-                capturedate = DateTime(datetime.strptime(dt,
-                                                         '%Y%m%d %H:%M:%S'))
-            except:
-                capturedate = None
-                pass
-            del values['DateTime']
+            ts = values.get("DateTime")
+            capturedate = api.to_date(ts)
+            if capturedate is None:
+                del values["DateTime"]
 
         fields_to_reindex = []
         # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-                   and analysis.getInterimFields() or []
+            and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
@@ -941,44 +979,50 @@ class AnalysisResultsImporter(Logger):
                 resultsaved = True
             else:
                 interimsout.append(interim)
+
         # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            analysis.calculateResult(override=self._override[1])
+            resultsaved = analysis.calculateResult(override=self._override[0])
 
         # Set result if present.
         res = values.get(defresultkey, '')
-        if res or res == 0 or self._override[1] == True:
+        calc = analysis.getCalculation()
 
-            # handle non-floating values in result options
-            result_options = analysis.getResultOptions()
-            if result_options:
-                result_values = map(
-                    lambda r: r.get("ResultValue"), result_options)
-                if "{:.0f}".format(res) in result_values:
-                    res = int(res)
+        # don't set results on calculated analyses
+        if not calc:
+            if api.is_floatable(res) or self._override[1]:
+                # handle non-floating values in result options
+                result_options = analysis.getResultOptions()
+                if result_options:
+                    result_values = map(
+                        lambda r: r.get("ResultValue"), result_options)
+                    if "{:.0f}".format(res) in result_values:
+                        res = int(res)
+                analysis.setResult(res)
+                if capturedate:
+                    analysis.setResultCaptureDate(capturedate)
+                resultsaved = True
 
-            analysis.setResult(res)
-            if capturedate:
-                analysis.setResultCaptureDate(capturedate)
-            resultsaved = True
+        if resultsaved is False:
+            self.log(
+                "${request_id} result for '${analysis_keyword}' not set",
+                mapping={"request_id": objid,
+                         "analysis_keyword": acode})
 
-        if resultsaved == False:
+        if resultsaved:
+            self.save_submit_analysis(analysis)
+            fields_to_reindex.append('Result')
             self.log(
                 "${request_id} result for '${analysis_keyword}': '${result}'",
                 mapping={"request_id": objid,
                          "analysis_keyword": acode,
-                         "result": ""})
-
-        if resultsaved:
-            doActionFor(analysis, 'submit')
-            self.calculateTotalResults(objid, analysis)
-            fields_to_reindex.append('Result')
+                         "result": res})
 
         if (resultsaved) \
-            and values.get('Remarks', '') \
-            and analysis.portal_type == 'Analysis' \
-            and (analysis.getRemarks() != '' or self._override[1] == True):
+           and values.get('Remarks', '') \
+           and analysis.portal_type == 'Analysis' \
+           and (analysis.getRemarks() != '' or self._override[1] is True):
             analysis.setRemarks(values['Remarks'])
             fields_to_reindex.append('Remarks')
 

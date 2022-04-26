@@ -1,0 +1,13 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag="">
+  <input id="" name="" value="" class="hidden-widget" title=""
+         tabindex="" accesskey=""
+         type="hidden"
+         tal:attributes="id view/id;
+             name view/name;
+             title view/title;
+             tabindex view/tabindex;
+             accesskey view/accesskey;
+             value view/value" />
+</div>

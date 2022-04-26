@@ -214,6 +214,88 @@
         </table>
       </script>
 
+      <!-- Confirmation Template -->
+      <script id="confirm-template" type="text/x-handlebars-template">
+        <div title="Confirm" i18n:attributes="title">
+          {{#if message}}
+          <p i18n:translate="">
+            {{message}}
+          </p>
+          {{/if}}
+          {{#if html_message}}
+          {{{html_message}}}
+          {{/if}}
+          <p i18n:translate="">
+            Do you want to continue?
+          </p>
+        </div>
+      </script>
+
+      <!-- Service Conditions template -->
+      <script id="service-conditions" type="text/x-handlebars-template">
+        <div data-fieldname="ServiceConditions-{{arnum}}">
+        <table class="service-conditions-table table table-condensed table-bordered">
+          {{#each conditions}}
+          <tr data-subfield="{{title}}">
+            <td class="service-conditions-label">
+              <label class="formQuestion">
+                <span class="">{{{title}}}</span>
+                {{#if required}}
+                <span class="fieldRequired"
+                      i18n:attributes="title title_required;"
+                      title="Required">&nbsp;</span>
+                {{/if}}
+                <span class="formHelp discreet help-block small"
+                      id="ServiceConditions-{{arnum}}_help">{{{description}}}</span>
+              </label>
+            </td>
+            <td class="service-conditions-value">
+              <input type='hidden'
+                     name="ServiceConditions-{{../arnum}}.uid:records"
+                     value="{{../uid}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.title:records"
+                     value="{{title}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.type:records"
+                     value="{{type}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.required:records"
+                     value="{{required}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.choices:records"
+                     value="{{choices}}"/>
+              <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.description:records"
+                     value="{{description}}"/>
+              {{#if options}}
+              <select name="ServiceConditions-{{../arnum}}.value:records">
+                {{#unless required}}
+                <option></option>
+                {{/unless}}
+                {{#each options}}
+                <option>{{this}}</option>
+                {{/each}}
+              </select>
+              {{else}}
+              {{#if required}}
+              <input type="{{type}}"
+                     name="ServiceConditions-{{../arnum}}.value:records"
+                     required="required"
+                     value="{{default}}"/>
+              {{else}}
+              <input type="{{type}}"
+                     name="ServiceConditions-{{../arnum}}.value:records"
+                     value="{{default}}"/>
+              {{/if}}
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </table>
+        </div>
+      </script>
+
     </metal:block>
   </head>
 
@@ -309,11 +391,11 @@
           <!-- All edit fields with fields with add=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
             <tal:def define="fieldName python:field.getName();
-                             required field/required;
+                             required python:bool(field.required);
                              widget python:field.widget;
                              errors python:{};
-                             mode string:edit;">
-              <tr tal:attributes="fieldName fieldName;">
+                             mode python:'edit';">
+              <tr tal:attributes="fieldName python:fieldName;">
                 <td>
                   <label class="formQuestion">
                     <span
@@ -358,14 +440,14 @@
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum);
                                   val python:view.fieldvalues.get(newFieldName)"
-                      tal:attributes="arnum arnum; fieldName newFieldName">
+                      tal:attributes="arnum python:arnum; fieldName python:newFieldName">
 
                     <input type="hidden"
                            tal:attributes="value val/Title|nothing;
                                            name newFieldName;"/>
                     <input type="hidden"
                            tal:attributes="value val/UID|nothing;
-                                           name string:${newFieldName}_uid;"/>
+                                           name python:'{}_uid'.format(newFieldName);"/>
                   </td>
                 </tal:columns>
               </tr>
@@ -403,10 +485,10 @@
                                           category_title python:category.Title;">
                   <tr title="Click to expand this category"
                       i18n:attributes="title"
-                      tal:attributes="data-category category_id;
-                                      poc poc;
-                                      category string:field;
-                                      class string:${poc} category;">
+                      tal:attributes="data-category python:category_id;
+                                      poc python:poc;
+                                      category python:'field';
+                                      class python:'{} category'.format(poc);">
                     <td class="services-category-header">
                       <span class="services-category-title"
                             tal:content="category_title"
@@ -419,18 +501,18 @@
                               class="btn btn-default btn-xs service-category-toggle">+</button>
                     </td>
                     <!-- span over all sample columns -->
-                    <td tal:attributes="colspan ar_count"></td>
+                    <td tal:attributes="colspan python:ar_count"></td>
                   </tr>
 
                   <tal:services tal:repeat="service python:services[category_title];">
-                    <tr tal:define="service_uid service/UID;
-                                    service_id service/getId;
-                                    service_keyword service/getKeyword;
-                                    service_title service/Title;"
-                        tal:attributes="id string:${service_id};
-                                        class string:${category_id} ${poc} service;
-                                        poc poc;
-                                        fieldname string:Analyses;">
+                    <tr tal:define="service_uid python:service.UID;
+                                    service_id python:service.getId;
+                                    service_keyword python:service.getKeyword;
+                                    service_title python:service.Title;"
+                        tal:attributes="id python:service_id;
+                                        class python:'{} {} service'.format(category_id, poc);
+                                        poc python:poc;
+                                        fieldname python:'Analyses';">
                       <td class="service-header">
                         <div class="service-title small"
                              i18n:translate=""
@@ -442,53 +524,58 @@
                         <img class="copybutton btn-link"
                              width="16"
                              tal:condition="python:view.ar_count > 1"
-                             tal:attributes="src senaite_theme/icon_url/copy;"/>
+                             tal:attributes="src python:senaite_theme.icon_url('copy');"/>
                       </td>
 
                       <tal:columns tal:repeat="arnum python:range(ar_count)">
-                        <td tal:define="fieldname string:Analyses-${arnum};
+                        <td tal:define="fieldname python:'Analyses-{}'.format(arnum);
                                         analyses python:view.fieldvalues.get(fieldname) or [];
                                         service_uids python:map(view.get_service_uid_from, analyses);
                                         checked python:service_uid in service_uids;"
-                            tal:attributes="fieldname string:Analyses-${arnum};
-                                            uid service_uid;
-                                            class string:${service_uid}-column service-column;
-                                            arnum arnum;">
+                            tal:attributes="fieldname python:'Analyses-{}'.format(arnum);
+                                            uid python:service_uid;
+                                            class python:'{}-column service-column'.format(service_uid);
+                                            arnum python:arnum;">
 
                           <!-- Service locked button -->
-                          <div tal:attributes="uid service_uid;
-                                               arnum arnum;
-                                               id string:${service_uid}-${arnum}-lockbtn;
-                                               class string:service-lockbtn ${service_uid}-lockbtn;"
+                          <div tal:attributes="uid python:service_uid;
+                                               arnum python:arnum;
+                                               id python:'{}-{}-lockbtn'.format(service_uid, arnum);
+                                               class python:'service-lockbtn {}-lockbtn'.format(service_uid);"
                                title="Service cannot be deselected. Please click the info button for further details"
                                i18n:attributes="title">
                             &#128274;
                           </div>
 
                           <!-- Service checkbox -->
-                          <div tal:attributes="id string:${service_uid}-${arnum}-analysisservice;
-                                               class string:analysisservice ${service_uid}-analysisservice;">
+                          <div tal:attributes="id python:'{}-{}-analysisservice'.format(service_uid, arnum);
+                                               class python:'analysisservice {}-analysisservice'.format(service_uid);">
                             <input type="checkbox"
                                    style="height:auto;"
-                                   tal:attributes="name string:${fieldname}:list;
-                                                   value string:${service_uid};
-                                                   class string:analysisservice-cb analysisservice-cb-${arnum};
-                                                   id string:cb_${arnum}_${service_uid};
-                                                   alt service_title;
+                                   tal:attributes="name python:'{}:list'.format(fieldname);
+                                                   value python:service_uid;
+                                                   class python:'analysisservice-cb analysisservice-cb-{}'.format(arnum);
+                                                   id python:'cb_{}_{}'.format(arnum, service_uid);
+                                                   alt python:service_title;
                                                    checked python:checked and 'checked' or '';"/>
                           </div>
 
                           <!-- Service info button -->
-                          <div tal:attributes="uid service_uid;
-                                               arnum arnum;
-                                               id string:${service_uid}-infobtn;
-                                               class string:service-infobtn ${service_uid}-infobtn;">
+                          <div tal:attributes="uid python:service_uid;
+                                               arnum python:arnum;
+                                               id python:'{}-infobtn'.format(service_uid);
+                                               class python:'service-infobtn {}-infobtn'.format(service_uid);">
                             &#9432;
                           </div>
 
                           <!-- Service Info Box -->
-                          <div tal:attributes="id string:${service_uid}-info;
-                                               class string:${service_uid}-info service-info;">
+                          <div tal:attributes="id python:'{}-info'.format(service_uid);
+                                               class python:'{}-info service-info'.format(service_uid);">
+                          </div>
+
+                          <!-- Service conditions -->
+                          <div tal:attributes="id python:'{}-conditions'.format(service_uid);
+                                               class python:'{}-conditions service-conditions'.format(service_uid);">
                           </div>
 
                         </td>
@@ -503,19 +590,19 @@
           <!-- /POCs -->
 
           <!-- Prices -->
-          <tal:prices tal:condition="view/ShowPrices">
-            <tr tal:condition="view/getMemberDiscountApplies">
+          <tal:prices tal:condition="python:view.ShowPrices">
+            <tr tal:condition="python:view.getMemberDiscountApplies()">
               <td>
                 <span class="pricelabel discount" i18n:translate="">Discount</span>
-                <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
+                <span class="discreet">(<tal:i content="python:context.bika_setup.getMemberDiscount()"/>%)</span>
               </td>
               <td>
                 <span tal:replace="currency_symbol"/>
               </td>
               <tal:columns repeat="arnum python:range(view.ar_count)">
-                <td tal:attributes="arnum arnum">
+                <td tal:attributes="arnum python:arnum">
                   <span class="price discount noborder"
-                        tal:attributes="id string:discount-${arnum}">0.00</span>
+                        tal:attributes="id python:'discount-{}'.format(arnum)">0.00</span>
                 </td>
               </tal:columns>
             </tr>
@@ -527,9 +614,9 @@
                 <span tal:replace="currency_symbol"/>
               </td>
               <tal:columns repeat="arnum python:range(view.ar_count)">
-                <td tal:attributes="arnum arnum">
+                <td tal:attributes="arnum python:arnum">
                   <span class="price subtotal noborder"
-                        tal:attributes="id string:subtotal-${arnum}">0.00</span>
+                        tal:attributes="id python:'subtotal-{}'.format(arnum)">0.00</span>
                 </td>
               </tal:columns>
             </tr>
@@ -543,7 +630,7 @@
               <tal:columns repeat="arnum python:range(view.ar_count)">
                 <td tal:attributes="arnum arnum">
                   <span class="price vat noborder"
-                        tal:attributes="id string:vat-${arnum}">0.00</span>
+                        tal:attributes="id python:'vat-{}'.format(arnum)">0.00</span>
                 </td>
               </tal:columns>
             </tr>
@@ -557,7 +644,7 @@
               <tal:columns repeat="arnum python:range(view.ar_count)">
                 <td tal:attributes="arnum arnum">
                   <span class="price total noborder"
-                        tal:attributes="id string:total-${arnum}">0.00</span>
+                        tal:attributes="id python:'total-{}'.format(arnum)">0.00</span>
                 </td>
               </tal:columns>
             </tr>
@@ -570,6 +657,9 @@
                name="save_button"
                i18n:attributes="value"
                value="Save"/>
+
+        <input type="hidden" id="confirmed" name="confirmed" value="0"/>
+
       </form>
       <!-- /ADD Form -->
 

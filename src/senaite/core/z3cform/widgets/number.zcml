@@ -1,0 +1,42 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="z3c.form">
+
+  <class class=".number.NumberWidget">
+    <require
+        permission="zope.Public"
+        interface="senaite.core.z3cform.interfaces.INumberWidget" />
+  </class>
+
+  <!-- Widget adapter for custom integer field -->
+  <adapter
+      factory=".number.IntFieldWidget"
+      for="senaite.core.schema.interfaces.IIntField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- input template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget="senaite.core.z3cform.interfaces.INumberWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="number_input.pt"
+      />
+
+  <!-- display template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget="senaite.core.z3cform.interfaces.INumberWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="number_display.pt"
+      />
+
+  <!-- hidden template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget="senaite.core.z3cform.interfaces.INumberWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="number_hidden.pt"
+      />
+
+</configure>

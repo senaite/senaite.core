@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import types
@@ -37,6 +37,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 ACTIVE_STATES = ["active"]

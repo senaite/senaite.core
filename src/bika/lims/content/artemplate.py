@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import sys
@@ -65,7 +65,7 @@ schema = BikaSchema.copy() + Schema((
                 "edit": "visible", "view": "visible", "add": "visible",
                 "secondary": "invisible",
             },
-            catalog_name="bika_setup_catalog",
+            catalog_name="senaite_catalog_setup",
             base_query={"is_active": True},
             showOn=True,
         ),
@@ -93,7 +93,7 @@ schema = BikaSchema.copy() + Schema((
                 "edit": "visible", "view": "visible", "add": "visible",
                 "secondary": "invisible"
             },
-            catalog_name="bika_setup_catalog",
+            catalog_name="senaite_catalog_setup",
             base_query={"is_active": True},
             showOn=True,
         ),
@@ -254,7 +254,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "visible",
                 "secondary": "invisible"
             },
-            catalog_name="bika_setup_catalog",
+            catalog_name="senaite_catalog_setup",
             base_query={"is_active": True},
             showOn=True,
         ),
@@ -310,7 +310,7 @@ class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
 
     def AnalysisProfiles(self, instance=None):
         instance = instance or self
-        bsc = getToolByName(instance, "bika_setup_catalog")
+        bsc = getToolByName(instance, "senaite_catalog_setup")
         items = []
         for p in bsc(
                 portal_type="AnalysisProfile",

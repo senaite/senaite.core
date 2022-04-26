@@ -15,83 +15,35 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.utils import DT2dt
-from Products.ATContentTypes.utils import dt2DT
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.CMFCore.permissions import View
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget
-from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-
-
-# True if the analysis is created by a reflex rule
-IsReflexAnalysis = BooleanField(
-    'IsReflexAnalysis',
-    default=False,
-    required=0
-)
-
-# This field contains the original analysis which was reflected
-OriginalReflexedAnalysis = UIDReferenceField(
-    'OriginalReflexedAnalysis',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# This field contains the analysis which has been reflected following
-# a reflex rule
-ReflexAnalysisOf = UIDReferenceField(
-    'ReflexAnalysisOf',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# Which is the Reflex Rule action that has created this analysis
-ReflexRuleAction = StringField(
-    'ReflexRuleAction',
-    required=0,
-    default=0
-)
-
-# Which is the 'local_id' inside the reflex rule
-ReflexRuleLocalID = StringField(
-    'ReflexRuleLocalID',
-    required=0,
-    default=0
-)
-
-# Reflex rule triggered actions which the current analysis is responsible for.
-# Separated by '|'
-ReflexRuleActionsTriggered = StringField(
-    'ReflexRuleActionsTriggered',
-    required=0,
-    default=''
-)
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Schema import Schema
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.permissions import View
+from senaite.core.catalog.indexer.baseanalysis import sortable_title
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
@@ -117,12 +69,6 @@ HiddenManually = BooleanField(
 
 
 schema = schema.copy() + Schema((
-    IsReflexAnalysis,
-    OriginalReflexedAnalysis,
-    ReflexAnalysisOf,
-    ReflexRuleAction,
-    ReflexRuleActionsTriggered,
-    ReflexRuleLocalID,
     Uncertainty,
     HiddenManually,
 ))
@@ -250,14 +196,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return None
 
     @security.public
-    def getSamplePointUID(self):
-        """Used to populate catalog values.
-        """
-        sample_point = self.getSamplePoint()
-        if sample_point:
-            return api.get_uid(sample_point)
-
-    @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
         This calculates the difference between the time the analysis processing
@@ -347,6 +285,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
+    def getCalculation(self):
+        """Return current assigned calculation
+        """
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        return calculation
+
+    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
@@ -357,19 +305,31 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :rtype: list of IAnalysis
         """
         def is_dependent(analysis):
+            # Never consider myself as dependent
+            if analysis.UID() == self.UID():
+                return False
+
+            # Never consider analyses from same service as dependents
+            self_service_uid = self.getRawAnalysisService()
+            if analysis.getRawAnalysisService() == self_service_uid:
+                return False
+
+            # Without calculation, no dependency relationship is possible
             calculation = analysis.getCalculation()
             if not calculation:
                 return False
 
+            # Calculation must have the service I belong to
             services = calculation.getRawDependentServices()
-            if not services:
-                return False
+            return self_service_uid in services
+        
+        request = self.getRequest()
+        if request.isPartition():
+            parent = request.getParentAnalysisRequest()
+            siblings = parent.getAnalyses(full_objects=True)
+        else:
+            siblings = self.getSiblings(with_retests=with_retests)
 
-            query = dict(UID=services, getKeyword=self.getKeyword())
-            services = api.search(query, "bika_setup_catalog")
-            return len(services) > 0
-
-        siblings = self.getSiblings(with_retests=with_retests)
         dependents = filter(lambda sib: is_dependent(sib), siblings)
         if not recursive:
             return dependents
@@ -381,7 +341,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                                                   recursive=True)
             deps.extend(down_dependencies)
         return deps
-
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
@@ -400,6 +359,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # If the calculation this analysis is bound does not have analysis
         # keywords (only interims), no need to go further
         service_uids = calc.getRawDependentServices()
+
+        # Ensure we exclude ourselves
+        service_uid = self.getRawAnalysisService()
+        service_uids = filter(lambda serv: serv != service_uid, service_uids)
         if len(service_uids) == 0:
             return []
 
@@ -416,7 +379,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                                                       recursive=True)
                     dependencies.extend(up_deps)
 
-        return dependencies
+        # Exclude analyses of same service as me to prevent max recursion depth
+        return filter(lambda dep: dep.getRawAnalysisService() != service_uid,
+                      dependencies)
 
     @security.public
     def getPrioritySortkey(self):
@@ -484,65 +449,38 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         else:
             noLongerProvides(self, IInternalUse)
 
-    @security.public
-    def setReflexAnalysisOf(self, analysis):
-        """Sets the analysis that has been reflexed in order to create this
-        one, but if the analysis is the same as self, do nothing.
-        :param analysis: an analysis object or UID
+    def getConditions(self):
+        """Returns the conditions of this analysis. These conditions are usually
+        set on sample registration and are stored at sample level
         """
-        if not analysis or analysis.UID() == self.UID():
-            pass
-        else:
-            self.getField('ReflexAnalysisOf').set(self, analysis)
+        sample = self.getRequest()
+        service_uid = self.getRawAnalysisService()
 
-    @security.public
-    def addReflexRuleActionsTriggered(self, text):
-        """This function adds a new item to the string field
-        ReflexRuleActionsTriggered. From the field: Reflex rule triggered
-        actions from which the current analysis is responsible of. Separated
-        by '|'
-        :param text: is a str object with the format '<UID>.<rulename>' ->
-        '123354.1'
-        """
-        old = self.getReflexRuleActionsTriggered()
-        self.setReflexRuleActionsTriggered(old + text + '|')
+        def is_valid(condition):
+            uid = condition.get("uid")
+            if api.is_uid(uid) and uid == service_uid:
+                value = condition.get("value", None)
+                if value:
+                    return "title" in condition
+            return False
 
-    @security.public
-    def getOriginalReflexedAnalysisUID(self):
-        """
-        Returns the uid of the original reflexed analysis.
-        """
-        original = self.getOriginalReflexedAnalysis()
-        if original:
-            return original.UID()
-        return ''
+        conditions = sample.getServiceConditions()
+        conditions = filter(is_valid, conditions)
+        return copy.deepcopy(conditions)
 
-    @security.private
-    def _reflex_rule_process(self, wf_action):
-        """This function does all the reflex rule process.
-        :param wf_action: is a string containing the workflow action triggered
+    def setConditions(self, conditions):
+        """Sets the conditions of this analysis. These conditions are usually
+        set on sample registration and are stored at sample level
         """
-        # Check out if the analysis has any reflex rule bound to it.
-        # First we have get the analysis' method because the Reflex Rule
-        # objects are related to a method.
-        a_method = self.getMethod()
-        if not a_method:
-            return
-        # After getting the analysis' method we have to get all Reflex Rules
-        # related to that method.
-        all_rrs = a_method.getBackReferences('ReflexRuleMethod')
-        if not all_rrs:
-            return
-        # Once we have all the Reflex Rules with the same method as the
-        # analysis has, it is time to get the rules that are bound to the
-        # same analysis service that is using the analysis.
-        for rule in all_rrs:
-            if not api.is_active(rule):
-                continue
-            # Getting the rules to be done from the reflex rule taking
-            # in consideration the analysis service, the result and
-            # the state change
-            action_row = rule.getActionReflexRules(self, wf_action)
-            # Once we have the rules, the system has to execute its
-            # instructions if the result has the expected result.
-            doReflexRuleAction(self, action_row)
+        if not conditions:
+            conditions = []
+
+        sample = self.getRequest()
+        service_uid = self.getRawAnalysisService()
+        sample_conditions = sample.getServiceConditions()
+        sample_conditions = copy.deepcopy(sample_conditions)
+
+        # Keep the conditions from sample for analyses other than this one
+        other_conditions = filter(lambda c: c.get("uid") != service_uid,
+                                  sample_conditions)
+        sample.setServiceConditions(other_conditions + conditions)

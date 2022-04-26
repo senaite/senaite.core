@@ -1,0 +1,57 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <!-- Generic Indexer -->
+  <adapter name="is_active" factory=".generic.is_active"/>
+  <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
+  <adapter name="sortable_title" factory=".generic.sortable_title"/>
+
+  <!-- Sample Indexer -->
+  <adapter name="assigned_state" factory=".sample.assigned_state"/>
+  <adapter name="is_received" factory=".sample.is_received"/>
+  <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
+
+  <!-- Request Analysis Indexer -->
+  <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
+
+  <!-- AnalysisCategory Indexer -->
+  <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
+
+  <!-- ARReport Indexer -->
+  <adapter name="sample_uid" factory=".arreport.sample_uid"/>
+
+  <!-- Auditlog Indexer -->
+  <adapter name="action" factory=".auditlog.action"/>
+  <adapter name="actor" factory=".auditlog.actor"/>
+  <adapter name="fullname" factory=".auditlog.fullname"/>
+  <adapter name="listing_searchable_text" factory=".auditlog.listing_searchable_text"/>
+  <adapter name="modifiers" factory=".auditlog.modifiers"/>
+  <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>
+  <adapter name="snapshot_version" factory=".auditlog.snapshot_version"/>
+
+  <!-- BaseAnalysis Indexer -->
+  <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
+
+  <!-- Setup indexer -->
+  <adapter name="category_uid" factory=".senaitesetup.category_uid"/>
+  <adapter name="department_id" factory=".senaitesetup.department_id"/>
+  <adapter name="department_title" factory=".senaitesetup.department_title"/>
+  <adapter name="department_uid" factory=".senaitesetup.department_uid"/>
+  <adapter name="instrument_title" factory=".senaitesetup.instrument_title"/>
+  <adapter name="instrumenttype_title" factory=".senaitesetup.instrumenttype_title"/>
+  <adapter name="listing_searchable_text" factory=".senaitesetup.listing_searchable_text"/>
+  <adapter name="method_available_uid" factory=".senaitesetup.method_available_uid"/>
+  <adapter name="point_of_capture" factory=".senaitesetup.point_of_capture"/>
+  <adapter name="price" factory=".senaitesetup.price"/>
+  <adapter name="price_total" factory=".senaitesetup.price_total"/>
+  <adapter name="sampletype_title" factory=".senaitesetup.sampletype_title"/>
+  <adapter name="sampletype_uid" factory=".senaitesetup.sampletype_uid"/>
+
+  <!-- Contact Indexer -->
+  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+
+  <!-- Organization Indexer -->
+  <adapter name="title" factory=".organisation.title"/>
+
+</configure>

@@ -15,10 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
+
 from collections import OrderedDict
 from datetime import datetime
 
@@ -28,8 +30,10 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
+from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
@@ -45,6 +49,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.p3compat import cmp
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -219,6 +224,7 @@ class AnalysisRequestAddView(BrowserView):
         # XXX: This is a hack to make the widget available in the template
         schema._fields[new_fieldname] = new_field
         new_field.getAccessor = getAccessor
+        new_field.getEditAccessor = getAccessor
 
         # set the default value
         form = dict()
@@ -473,7 +479,7 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Category catalog results
         :rtype: brains
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         query = {
             "portal_type": "AnalysisCategory",
             "is_active": True,
@@ -503,7 +509,7 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Mapping of category -> list of services
         :rtype: dict
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        bsc = api.get_tool("senaite_catalog_setup")
         query = {
             "portal_type": "AnalysisService",
             "point_of_capture": poc,
@@ -762,7 +768,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         value = record.get(key, None)
         if value is None:
             return []
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = value.split(",")
         return filter(lambda uid: uid, value)
 
@@ -892,7 +898,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
-
+            "conditions": self.get_conditions_info(obj),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()
@@ -1057,6 +1063,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return info
 
     @cache(cache_key)
+    def get_conditions_info(self, obj):
+        conditions = obj.getConditions()
+        for condition in conditions:
+            choices = condition.get("choices", "")
+            options = filter(None, choices.split('|'))
+            if options:
+                condition.update({"options": options})
+        return conditions
+
+    @cache(cache_key)
     def to_field_value(self, obj):
         return {
             "uid": obj and api.get_uid(obj) or "",
@@ -1205,7 +1221,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     if len(uids) == 1:
                         extra_fields[field_name] = uids[0]
 
-        # Populate metadata with object info from extra fields
+        # Populate metadata with object info from extra fields (hidden fields)
         for field_name, uid in extra_fields.items():
             key = "{}_metadata".format(field_name.lower())
             if metadata.get(key):
@@ -1214,7 +1230,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj = self.get_object_by_uid(uid)
             if not obj:
                 continue
-            obj_info = self.get_object_info(obj, field_name)
+            obj_info = self.get_object_info(obj, field_name, record=extra_fields)
             if not obj_info or "uid" not in obj_info:
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
@@ -1341,18 +1357,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # can be multivalued
         uids = self.get_uids_from_record(record, key)
         objects = map(self.get_object_by_uid, uids)
-        objects = map(lambda obj: self.get_object_info(obj, key), objects)
+        objects = map(lambda obj: self.get_object_info(
+            obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key):
+    def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
         field_name = key.replace("_uid", "").lower()
         obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key])
+        return "-".join([field_name, obj_key] + kw.keys())
 
     @cache(object_info_cache_key)
-    def get_object_info(self, obj, key):
+    def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
         :param key: The key of the field from the record (e.g. Client_uid)
@@ -1363,13 +1380,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
+        # always ensure we have a record
+        if record is None:
+            record = {}
+
         # Get the info for each object
         info = callable(func) and func(obj) or self.get_base_info(obj)
 
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
             logger.info("adapter for '{}': {}".format(field_name, name))
-            ad_info = adapter.get_object_info()
+            ad_info = adapter.get_object_info_with_record(record)
             self.update_object_info(info, ad_info)
 
         return info
@@ -1476,9 +1497,30 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return prices
 
+    def check_confirmation(self):
+        """Returns a dict when user confirmation is required for the creation of
+        samples. Returns None otherwise
+        """
+        if self.request.form.get("confirmed") == "1":
+            # User pressed the "yes" button in the confirmation pane already
+            return None
+
+        # Find out if there is a confirmation adapter available
+        adapter = queryAdapter(self.request, IAddSampleConfirmation)
+        if not adapter:
+            return None
+
+        # Extract records from the request and call the adapter
+        records = self.get_records()
+        return adapter.check_confirmation(records)
+
     def ajax_submit(self):
         """Submit & create the ARs
         """
+        # Check if there is the need to display a confirmation pane
+        confirmation = self.check_confirmation()
+        if confirmation:
+            return {"confirmation": confirmation}
 
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
@@ -1546,6 +1588,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
+            # Handle required fields from Service conditions
+            for condition in record.get("ServiceConditions", []):
+                if condition.get("required") == "on":
+                    if not condition.get("value"):
+                        title = condition.get("title")
+                        if title not in missing:
+                            missing.append(title)
+
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, n)
@@ -1554,7 +1604,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Process valid record
             valid_record = dict()
-            for fieldname, fieldvalue in record.iteritems():
+            for fieldname, fieldvalue in six.iteritems(record):
                 # clean empty
                 if fieldvalue in ['', None]:
                     continue
@@ -1567,6 +1617,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if fielderrors:
             errors["fielderrors"] = fielderrors
             return {'errors': errors}
+
+        # do a custom validation of records. For instance, we may want to rise
+        # an error if a value set to a given field is not consistent with a
+        # value set to another field
+        validators = getAdapters((self.request, ), IAddSampleRecordsValidator)
+        for name, validator in validators:
+            validation_err = validator.validate(valid_records)
+            if validation_err:
+                # Not valid, return immediately with an error response
+                return {"errors": validation_err}
 
         # Process Form
         actions = ActionHandlerPool.get_instance()
@@ -1587,9 +1647,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     self.request,
                     record,
                 )
-            except (KeyError, RuntimeError) as e:
+            except Exception as e:
                 actions.resume()
-                errors["message"] = e.message
+                errors["message"] = str(e)
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
             # and UID to print stickers

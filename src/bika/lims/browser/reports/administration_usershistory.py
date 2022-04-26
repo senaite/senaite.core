@@ -15,8 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+import six
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -107,7 +109,7 @@ class Report(BrowserView):
                 {'title': _('User'), 'value': ("%s (%s)" % (userfullname, user))})
 
         # Query the catalog and store results in a dictionary
-        entities = self.bika_setup_catalog(self.contentFilter)
+        entities = self.senaite_catalog_setup(self.contentFilter)
 
         if not entities:
             message = _("No historical actions matched your query")
@@ -123,7 +125,7 @@ class Report(BrowserView):
             entitytype = _(entity.__class__.__name__)
 
             # Workflow states retrieval
-            for workflowid, workflow in entity.workflow_history.iteritems():
+            for workflowid, workflow in six.iteritems(entity.workflow_history):
                 for action in workflow:
                     actiontitle = _('Created')
                     if not action['action'] or (

@@ -25,6 +25,13 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
+    >>> from zope.lifecycleevent import modified
+    >>> from zope.component.globalregistry import getGlobalSiteManager
+    >>> from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+    >>> from bika.lims.subscribers.auditlog import ObjectModifiedEventHandler
+    >>> from zope.interface import Interface
+
+
 Functional Helpers:
 
     >>> def start_server():
@@ -46,6 +53,14 @@ Functional Helpers:
     ...     if len(ans) != 1:
     ...         return None
     ...     return ans[0]
+
+    >>> def register_event_subscribers():
+    ...     gsm = getGlobalSiteManager()
+    ...     gsm.registerHandler(ObjectModifiedEventHandler, (Interface, IObjectModifiedEvent))
+
+    >>> def unregister_event_subscribers():
+    ...     gsm = getGlobalSiteManager()
+    ...     gsm.unregisterHandler(ObjectModifiedEventHandler, (Interface, IObjectModifiedEvent))
 
 
 Environment Setup
@@ -283,14 +298,14 @@ the field `Analyses` is a `UIDReferenceField` which contained initially 3 values
 and after adding 2 analyses, 2 UID more references:
 
    >>> diff_raw = compare_snapshots(snap0, snap1, raw=True)
-   >>> diff_raw
-   {u'Analyses': [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]}
+   >>> diff_raw["Analyses"]
+   [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]
 
 It is also possible to process the values to get a more human readable diff:
 
    >>> diff = compare_snapshots(snap0, snap1, raw=False)
-   >>> diff
-   {u'Analyses': [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]}
+   >>> diff["Analyses"]
+   [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]
 
 
 To directly compare the last two snapshots taken, we can call
@@ -302,5 +317,53 @@ First we edit the sample to get a new snapshot:
    >>> snapshot = take_snapshot(sample)
 
    >>> last_diff = compare_last_two_snapshots(sample, raw=False)
-   >>> last_diff
-   {u'CCEmails': [('Not set', 'rb@ridingbytes.com')]}
+   >>> last_diff["CCEmails"]
+   [('Not set', 'rb@ridingbytes.com')]
+
+
+Pause and Resume Snapshots
+..........................
+
+
+Register event subscribers:
+
+    >>> register_event_subscribers()
+
+Pausing the snapshots will disable snapshots for a given object:
+
+    >>> pause_snapshots_for(sample)
+
+The object no longer supports snapshots now:
+
+    >>> supports_snapshots(sample)
+    False
+
+Object modification events create then no snapshots anymore:
+
+    >>> get_version(sample)
+    4
+
+    >>> modified(sample)
+
+    >>> get_version(sample)
+    4
+
+Resuming the snapshots will enable snapshots for a given object:
+
+    >>> resume_snapshots_for(sample)
+
+The object supports snapshots again:
+
+    >>> supports_snapshots(sample)
+    True
+
+Object modification events create new snapshots again:
+
+    >>> modified(sample)
+
+    >>> get_version(sample)
+    5
+
+Unregister event subscribers:
+
+    >>> unregister_event_subscribers()

@@ -15,12 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.workflow import doActionFor as do_action_for
-
-AR_WORKFLOW_ID = "bika_ar_workflow"
 
 
 def do_action_to_ancestors(analysis_request, transition_id):

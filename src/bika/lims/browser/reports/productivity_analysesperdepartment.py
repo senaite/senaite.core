@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
@@ -24,6 +24,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -54,7 +55,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         val = self.selection_macros.parse_state(self.request,
-                                                'bika_analysis_workflow',
+                                                ANALYSIS_WORKFLOW,
                                                 'getAnalysisState',
                                                 _('Analysis State'))
         if val:
@@ -63,7 +64,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        analyses = self.bika_analysis_catalog(self.contentFilter)
+        analyses = self.senaite_catalog_analysis(self.contentFilter)
         if not analyses:
             message = _("No analyses matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
@@ -184,7 +185,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
-            import StringIO
+            from six import StringIO
             import datetime
 
             fieldnames = [
@@ -194,7 +195,7 @@ class Report(BrowserView):
                 'Performed',
                 'Published',
             ]
-            output = StringIO.StringIO()
+            output = StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',
                                 fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

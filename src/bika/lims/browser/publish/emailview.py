@@ -15,9 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import functools
 import inspect
 import itertools
 from collections import OrderedDict
@@ -668,8 +669,8 @@ class EmailView(BrowserView):
 
         # Calculate the total size of the given objects starting with an
         # initial size of 0
-        return reduce(lambda x, y: x + y,
-                      map(self.get_filesize, iterate(files)), 0)
+        return functools.reduce(lambda x, y: x + y,
+                                map(self.get_filesize, iterate(files)), 0)
 
     def get_object_by_uid(self, uid):
         """Get the object by UID

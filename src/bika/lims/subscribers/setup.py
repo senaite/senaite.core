@@ -15,11 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import permissions
+from senaite.core.permissions import AddWorksheet
+from senaite.core.permissions import EditWorksheet
+from senaite.core.permissions import ManageWorksheets
 
 
 def ObjectModifiedEventHandler(instance, event):
@@ -38,6 +40,7 @@ def update_worksheet_manage_permissions(senaite_setup):
         roles.extend(["Analyst", "LabClerk"])
 
     worksheets = api.get_portal().worksheets
-    worksheets.manage_permission(permissions.ManageWorksheets, roles, acquire=1)
-    worksheets.manage_permission(permissions.EditWorksheet, roles, acquire=1)
+    worksheets.manage_permission(AddWorksheet, roles, acquire=1)
+    worksheets.manage_permission(ManageWorksheets, roles, acquire=1)
+    worksheets.manage_permission(EditWorksheet, roles, acquire=1)
     worksheets.reindexObject()

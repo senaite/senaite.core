@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import sys
@@ -44,6 +44,7 @@ from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -190,7 +191,7 @@ class WorksheetTemplate(BaseContent):
                 }
             })
 
-        instruments = api.search(query, "bika_setup_catalog")
+        instruments = api.search(query, "senaite_catalog_setup")
         items = map(lambda i: (i.UID, i.Title), instruments)
 
         instrument = self.getInstrument()
@@ -219,7 +220,7 @@ class WorksheetTemplate(BaseContent):
         methods = api.search({
             "portal_type": "Method",
             "is_active": True
-        }, "bika_setup_catalog")
+        }, "senaite_catalog_setup")
 
         items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)
         items.sort(lambda x, y: cmp(x[1], y[1]))

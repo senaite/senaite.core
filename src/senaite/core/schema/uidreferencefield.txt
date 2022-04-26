@@ -1,0 +1,167 @@
+UID reference field
+===================
+
+The main purpose of this field is to provide a light reference to one or many
+objects using the UID.
+
+Running this test from the buildout directory:
+
+    bin/test test_schema_fields -t uidreferencefield
+
+Test code taken from:
+
+    - plone.app.dexterity (nextprevious.txt)
+    - plone.app.content (basecontent.rst)
+    - plone.app.textfield (field.rst)
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+    >>> import transaction; transaction.commit()
+
+Setup:
+
+    >>> portal = self.portal
+    >>> setup = api.get_setup()
+    >>> labcontacts = setup.bika_labcontacts
+    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Contact")
+    >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
+    >>> contact1 = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
+    >>> contact2 = api.create(client, "Contact", Firstname="John", Lastname="Doe")
+    >>> contact3 = api.create(client, "Contact", Firstname="Neil", Lastname="Standard")
+    >>> import transaction; transaction.commit()
+
+Test Browser
+
+  >>> from plone.testing.z2 import Browser
+  >>> browser = Browser(self.app)
+  >>> browser.addHeader("Authorization", "Basic %s:%s" % (TEST_USER_NAME, TEST_USER_PASSWORD,))
+
+
+Using the field
+---------------
+
+The field can be used for dexterity types:
+
+    >>> from plone.dexterity.content import Item
+    >>> from plone.dexterity.content import Container
+    >>> from plone.dexterity.fti import DexterityFTI
+    >>> from senaite.core.schema import UIDReferenceField
+    >>> from zope.interface import Interface
+    >>> from zope.interface import implementer
+
+    >>> class IContentSchema(Interface):
+    ...     contact = UIDReferenceField(title=u"Contact",
+    ...                                 allowed_types=("Contact", ),
+    ...                                 multi_valued=True)
+
+    >>> @implementer(IContentSchema)
+    ... class Content(Item):
+    ...     portal_type = "Content"
+    ...     title = u""
+    ...     description = u""
+
+: When the content is created, it knows that it comes from `__builtin__.Content`.
+      Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
+
+    >>> module = sys.modules["__builtin__"]
+    >>> module.Content = Content
+    >>> module.IContentSchema = IContentSchema
+    >>> sys.modules["__builtin__"] = module
+
+Register the new type:
+
+    >>> fti = DexterityFTI("Content")
+    >>> fti.behaviors = ("plone.app.dexterity.behaviors.metadata.IBasic", )
+    >>> fti.filter_content_types = False
+    >>> fti.klass = "__builtin__.Content"
+    >>> fti.schema = "__builtin__.IContentSchema"
+    >>> fti_id = portal.portal_types._setObject("Content", fti)
+
+Now we can create our new type:
+
+    >>> newid = portal.invokeFactory("Content", "content")
+    >>> context = portal[newid]
+
+Set a reference with the field setter:
+
+    >>> field = IContentSchema["contact"]
+    >>> field.set(context, contact1)
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>]
+
+Multiple values can be also set:
+
+    >>> field.set(context, [contact1, contact2])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>, <Contact at /plone/clients/client-1/contact-2>]
+
+It is also possible to set UID values:
+
+    >>> field.set(context, [api.get_uid(contact3)])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-3>]
+
+Besides getting the full objects, it is also possible to get the UIDs instead:
+
+    >>> uids = field.get_raw(context)
+
+    >>> len(uids) == 1
+    True
+
+    >>> uids[0] == api.get_uid(contact3)
+    True
+
+Each linked object has also a backreference to the linking object:
+
+    >>> from senaite.core.schema.uidreferencefield import get_backrefs
+
+    >>> relationship = field.get_relationship_key(context)
+
+The referenced contact object should have a backreference to the current object:
+
+    >>> backrefs = get_backrefs(contact3, relationship)
+
+    >>> len(backrefs) == 1
+    True
+
+    >>> backrefs[0] == api.get_uid(context)
+    True
+
+Removing the reference should also remove the backreference:
+
+    >>> field.set(context, [])
+
+    >>> backrefs = get_backrefs(contact3, relationship)
+
+    >>> len(backrefs) == 0
+    True
+
+
+Edge cases
+----------
+
+The field only accepts valid UIDs. Invalid ones are ignored and not set:
+
+    >>> field.set(context, ['4711', contact1])
+    >>> field.get(context)
+    [<Contact at /plone/clients/client-1/contact-1>]
+
+Removed reference UIDs are also ignored:
+
+    >>> setattr(context, "contact", ["REMOVED_UID"])
+    >>> getattr(context, "contact")
+    ['REMOVED_UID']
+    >>> field.get(context)
+    []

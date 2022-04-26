@@ -1,0 +1,24 @@
+<div class="row" tal:define="results options/import_results">
+
+  <div class="col-sm-12 text-info" tal:condition="results/log">
+    <h5 i18n:translate="">Info</h5>
+    <div tal:repeat="line results/log">
+      <div tal:content="line"></div>
+    </div>
+  </div>
+
+  <div class="col-sm-12 mt-4 text-warning" tal:condition="results/warns">
+    <h5 i18n:translate="">Warnings</h5>
+    <div tal:repeat="line results/warns">
+      <div class="" tal:content="line"></div>
+    </div>
+  </div>
+
+  <div class="col-sm-12 mt-4 text-danger" tal:condition="results/errors">
+    <h5 i18n:translate="">Errors</h5>
+    <div tal:repeat="line results/errors">
+      <div class="" tal:content="line"></div>
+    </div>
+  </div>
+
+</div>

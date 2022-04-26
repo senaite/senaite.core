@@ -45,6 +45,9 @@ class window.AnalysisRequestAdd
     # recalculate records on load (needed for AR copies)
     @recalculate_records()
 
+    # initialize service conditions (needed for AR copies)
+    @init_service_conditions()
+
     # always recalculate prices in the first run
     @recalculate_prices()
 
@@ -74,7 +77,7 @@ class window.AnalysisRequestAdd
     # InvoiceExclude Checkbox clicked
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
-    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
+    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
     # Generic onchange event handler for reference fields
     $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
 
@@ -488,9 +491,11 @@ class window.AnalysisRequestAdd
     # get the combogrid options
     options = JSON.parse field.attr "combogrid_options"
 
+    # we have absolute URLs now
+    # https://github.com/senaite/senaite.core/pull/1917
+    url = options.url
+
     # prepare the new query url
-    url = @get_base_url()
-    url += "/#{options.url}"
     url += "?_authenticator=#{@get_authenticator()}"
     url += "&catalog_name=#{catalog_name}"
     url += "&colModel=#{JSON.stringify options.colModel}"
@@ -516,9 +521,11 @@ class window.AnalysisRequestAdd
     options.url = url
     options.force_all = "false"
 
-
     field.combogrid options
     field.attr "search_query", "{}"
+
+    # close on any open searchbox to force reload on the next focus
+    field.trigger("blur")
 
 
   set_reference_field: (field, uid, title) =>
@@ -661,6 +668,7 @@ class window.AnalysisRequestAdd
      * Select the checkbox of a service by UID
     ###
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
+    me = this
     # get the service checkbox element
     el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
     # avoid unneccessary event triggers if the checkbox status is unchanged
@@ -673,6 +681,8 @@ class window.AnalysisRequestAdd
     # make the element visible if the categories are visible
     if @is_poc_expanded poc
       el.closest("tr").addClass "visible"
+    # show/hide the service conditions for this analysis
+    me.set_service_conditions el
     # trigger event for price recalculation
     $(@).trigger "services:changed"
 
@@ -1025,6 +1035,8 @@ class window.AnalysisRequestAdd
 
     console.debug "°°° on_analysis_click::UID=#{uid} checked=#{checked}°°°"
 
+    # show/hide the service conditions for this analysis
+    me.set_service_conditions $el
     # trigger form:changed event
     $(me).trigger "form:changed"
     # trigger event for price recalculation
@@ -1143,6 +1155,7 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy checkbox field"
       $el = $(el)
       checked = $el.prop "checked"
+      is_service = $el.hasClass "analysisservice-cb"
       # iterate over columns, starting from column 2
       $.each [1..ar_count], (arnum) ->
         # skip the first column
@@ -1150,8 +1163,15 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
+        if is_service
+          # show/hide the service conditions for this analysis
+          uid = $el.closest("[uid]").attr "uid"
+          me.set_service_conditions $(_el)
+          # copy the conditions for this analysis
+          me.copy_service_conditions 0, arnum, uid
+
       # trigger event for price recalculation
-      if $el.hasClass "analysisservice-cb"
+      if is_service
         $(me).trigger "services:changed"
 
     # Copy <select> fields
@@ -1178,6 +1198,18 @@ class window.AnalysisRequestAdd
         _el = $(_td).find("input[type=text]")[index]
         $(_el).val value
 
+    # Copy <input type="number"> fields
+    $td1.find("input[type=number]").each (index, el) ->
+      console.debug "-> Copy text field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type=number]")[index]
+        $(_el).val value
+
     # Copy <textarea> fields
     $td1.find("textarea").each (index, el) ->
       console.debug "-> Copy textarea field"
@@ -1201,6 +1233,42 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=radio]")[index]
         $(_el).prop "checked", checked
+
+    # Copy <input type="date"> fields
+    $td1.find("input[type='date']").each (index, el) ->
+      console.debug "-> Copy date field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='date']")[index]
+        $(_el).val value
+
+    # Copy <input type="time"> fields
+    $td1.find("input[type='time']").each (index, el) ->
+      console.debug "-> Copy time field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='time']")[index]
+        $(_el).val value
+
+    # Copy <input type="hidden"> fields
+    $td1.find("input[type='hidden']").each (index, el) ->
+      console.debug "-> Copy hidden field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='hidden']")[index]
+        $(_el).val value
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -1290,6 +1358,9 @@ class window.AnalysisRequestAdd
     # get the right base url
     base_url = me.get_base_url()
 
+    # the poral url
+    portal_url = me.get_portal_url()
+
     # remove all errors
     $("div.error").removeClass("error")
     $("div.fieldErrorBox").text("")
@@ -1308,7 +1379,7 @@ class window.AnalysisRequestAdd
       if data['errors']
         msg = data.errors.message
         if msg isnt ""
-          msg = "#{msg}<br/>"
+          msg = _t("Sorry, an error occured 🙈<p class='code'>#{msg}</p>")
 
         for fieldname of data.errors.fielderrors
           field = $("##{fieldname}")
@@ -1329,6 +1400,20 @@ class window.AnalysisRequestAdd
         stickertemplate = data['stickertemplate']
         q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',')
         window.location.replace destination + q
+
+      else if data['confirmation']
+        dialog = me.template_dialog "confirm-template", data.confirmation
+        dialog.on "yes", ->
+            # Re-submit
+            $("input[name=confirmed]").val "1"
+            $("input[name=save_button]").trigger "click"
+
+        dialog.on "no", ->
+          # Don't submit and redirect user if required
+          destination = data.confirmation["destination"]
+          if destination
+            window.location.replace portal_url + '/' + destination
+
       else
         window.location.replace base_url
 
@@ -1389,3 +1474,86 @@ class window.AnalysisRequestAdd
 
     # Attach the new field to the outer div of the passed file field
     $(element).parent().parent().append file_field_div
+
+
+  set_service_conditions: (el) =>
+    ###
+     * Shows or hides the service conditions input elements for the service
+     * bound to the checkbox element passed in
+    ###
+
+    # Check whether the checkbox is selected or not
+    checked = el.prop "checked"
+
+    # Get the uid of the analysis and the column number
+    parent = el.closest("td[uid][arnum]")
+    uid = parent.attr "uid"
+    arnum = parent.attr "arnum"
+
+    # Get the div where service conditions are rendered
+    conditions = $("div.service-conditions", parent)
+    conditions.empty()
+
+    # If the service is unchecked, remove the conditions form
+    if not checked
+      conditions.hide()
+      return
+
+    # Check if this service requires conditions
+    data = conditions.data "data"
+    base_info =
+      arnum: arnum
+
+    if not data
+      @get_service(uid).done (data) ->
+        context = $.extend({}, data, base_info)
+        if context.conditions and context.conditions.length > 0
+          template = @render_template "service-conditions", context
+          conditions.append template
+          conditions.data "data", context
+          conditions.show()
+    else
+      context = $.extend({}, data, base_info)
+      if context.conditions and context.conditions.length > 0
+        template = @render_template "service-conditions", context
+        conditions.append template
+        conditions.show()
+
+
+  copy_service_conditions: (from, to, uid) =>
+    ###
+     * Copies the service conditions values from those set for the service with
+     * the specified uid and arnum_from column to the same analysis from the
+     * arnum_to column
+    ###
+    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
+
+    me = this
+
+    # Copy the values from all input fields to destination by name
+    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
+    $(source).each (idx, el) ->
+      # Extract the information from the field to look for
+      $el = $(el)
+      name = $el.attr "name"
+      subfield = $el.closest("[data-subfield]").attr "data-subfield"
+      console.debug "-> Copy service condition: #{subfield}"
+
+      # Set the value
+      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
+      dest.val($el.val())
+
+
+  init_service_conditions: =>
+    ###
+     * Updates the visibility of the conditions for the selected services
+    ###
+    console.debug "init_service_conditions"
+
+    me = this
+
+    # Find out all selected services checkboxes
+    services = $("input[type=checkbox].analysisservice-cb:checked")
+    $(services).each (idx, el) ->
+      $el = $(el)
+      me.set_service_conditions $el

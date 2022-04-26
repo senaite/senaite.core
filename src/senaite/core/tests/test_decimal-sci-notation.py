@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
@@ -347,7 +347,6 @@ class TestDecimalSciNotation(DataTestCase):
             self.assertEqual(an.getResult(), m[3])
             self.assertEqual(an.Schema().getField('Result').get(an), m[3])
             fr = an.getFormattedResult(sciformat=m[2])
-            # print '%s   %s   %s   %s  =>  \'%s\' ?= \'%s\'' % (m[0],m[1],m[2],m[3],m[4],fr)
             self.assertEqual(fr, m[4])
 
 

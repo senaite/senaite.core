@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import datetime
@@ -101,7 +101,10 @@ class WorksheetImporter:
         self.context = lsd.context
         self.workbook = workbook
         self.sheetname = self.__class__.__name__.replace("_", " ")
-        self.worksheet = workbook.get_sheet_by_name(self.sheetname)
+        try:
+            self.worksheet = workbook[self.sheetname]
+        except KeyError:
+            self.worksheet = None
         self.dataset_project = dataset_project
         self.dataset_name = dataset_name
         if self.worksheet:
@@ -376,7 +379,7 @@ class Lab_Contacts(WorksheetImporter):
             fullname = ('%s %s' % (row['Firstname'], row.get('Surname', ''))).strip()
             if username:
                 username = safe_unicode(username).encode('utf-8')
-                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                bsc = getToolByName(self.context, 'senaite_catalog_setup')
                 exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
                 if exists:
                     error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(username, str(rownum))
@@ -410,7 +413,7 @@ class Lab_Contacts(WorksheetImporter):
             if row['Department_title']:
                 self.defer(src_obj=obj,
                            src_field='Department',
-                           dest_catalog='bika_setup_catalog',
+                           dest_catalog='senaite_catalog_setup',
                            dest_query={'portal_type': 'Department',
                                        'title': row['Department_title']}
                            )
@@ -470,8 +473,8 @@ class Lab_Contacts(WorksheetImporter):
 
         # Now we have the lab contacts registered, try to assign the managers
         # to each department if required
-        sheet = self.workbook.get_sheet_by_name("Lab Departments")
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        sheet = self.workbook["Lab Departments"]
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, sheet):
             if row['title'] and row['LabContact_Username']:
                 dept = self.get_object(bsc, "Department", row.get('title'))
@@ -485,7 +488,7 @@ class Lab_Departments(WorksheetImporter):
 
     def Import(self):
         folder = self.context.bika_setup.bika_departments
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
         for row in self.get_rows(3):
             if row['title']:
@@ -584,8 +587,6 @@ class Client_Contacts(WorksheetImporter):
                 JobTitle=row.get('JobTitle', ''),
                 Department=row.get('Department', ''),
                 PublicationPreference=pub_pref,
-                AttachmentsPermitted=row[
-                    'AttachmentsPermitted'] and True or False,
             )
             self.fill_contactfields(row, contact)
             self.fill_addressfields(row, contact)
@@ -664,29 +665,26 @@ class Preservations(WorksheetImporter):
 class Containers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_containers
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        folder = self.context.bika_setup.sample_containers
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         for row in self.get_rows(3):
-            if not row['title']:
+            if not row["title"]:
                 continue
-            obj = _createObjectByType("Container", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''),
-                Capacity=row.get('Capacity', 0),
-                PrePreserved=self.to_bool(row['PrePreserved'])
-            )
-            if row['ContainerType_title']:
-                ct = self.get_object(bsc, 'ContainerType', row.get('ContainerType_title',''))
+            obj = api.create(folder, "SampleContainer")
+            obj.setTitle(row["title"])
+            obj.setDescription(row.get("description", ""))
+            obj.setCapacity(row.get("Capacity", 0))
+            obj.setPrePreserved(self.to_bool(row["PrePreserved"]))
+            if row["ContainerType_title"]:
+                ct = self.get_object(
+                    bsc, "ContainerType", row.get("ContainerType_title", ""))
                 if ct:
                     obj.setContainerType(ct)
-            if row['Preservation_title']:
-                pres = self.get_object(bsc, 'Preservation',row.get('Preservation_title',''))
+            if row["Preservation_title"]:
+                pres = self.get_object(
+                    bsc, "Preservation", row.get("Preservation_title", ""))
                 if pres:
                     obj.setPreservation(pres)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
 
 
 class Suppliers(WorksheetImporter):
@@ -719,7 +717,7 @@ class Suppliers(WorksheetImporter):
 class Supplier_Contacts(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['Supplier_Name']:
                 continue
@@ -778,7 +776,7 @@ class Instruments(WorksheetImporter):
 
     def Import(self):
         folder = self.context.bika_setup.bika_instruments
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if ('Type' not in row
@@ -857,7 +855,7 @@ class Instruments(WorksheetImporter):
 class Instrument_Validations(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row.get('instrument', None) or not row.get('title', None):
                 continue
@@ -877,7 +875,7 @@ class Instrument_Validations(WorksheetImporter):
                     ReportID=row.get('ReportID', '')
                 )
                 # Getting lab contacts
-                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                bsc = getToolByName(self.context, 'senaite_catalog_setup')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", is_active=True)]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
@@ -890,7 +888,7 @@ class Instrument_Validations(WorksheetImporter):
 class Instrument_Calibrations(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row.get('instrument', None) or not row.get('title', None):
                 continue
@@ -910,7 +908,7 @@ class Instrument_Calibrations(WorksheetImporter):
                     ReportID=row.get('ReportID', '')
                 )
                 # Gettinginstrument lab contacts
-                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                bsc = getToolByName(self.context, 'senaite_catalog_setup')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
@@ -923,7 +921,7 @@ class Instrument_Calibrations(WorksheetImporter):
 class Instrument_Certifications(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['instrument'] or not row['title']:
                 continue
@@ -960,7 +958,7 @@ class Instrument_Certifications(WorksheetImporter):
                         logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
                 # Getting lab contacts
-                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                bsc = getToolByName(self.context, 'senaite_catalog_setup')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('preparedby', ''):
@@ -975,7 +973,7 @@ class Instrument_Certifications(WorksheetImporter):
 class Instrument_Documents(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row.get('instrument', ''):
                 continue
@@ -1003,7 +1001,7 @@ def addDocument(self, row_dict, folder):
                 logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             # Obtain all created instrument documents content type
-            catalog = getToolByName(self.context, 'bika_setup_catalog')
+            catalog = getToolByName(self.context, 'senaite_catalog_setup')
             documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
             # If a the new document has the same DocumentID as a created document, this object won't be created.
             idAlreadyInUse = False
@@ -1030,7 +1028,7 @@ def addDocument(self, row_dict, folder):
 class Instrument_Maintenance_Tasks(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
@@ -1064,7 +1062,7 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
 class Instrument_Schedule(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
@@ -1129,7 +1127,7 @@ class Sample_Types(WorksheetImporter):
 
     def Import(self):
         folder = self.context.bika_setup.bika_sampletypes
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['title']:
                 continue
@@ -1165,7 +1163,7 @@ class Sample_Points(WorksheetImporter):
 
     def Import(self):
         setup_folder = self.context.bika_setup.bika_samplepoints
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
@@ -1205,7 +1203,7 @@ class Sample_Points(WorksheetImporter):
 class Sample_Point_Sample_Types(WorksheetImporter):
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             sampletype = self.get_object(bsc,
                                          'SampleType',
@@ -1224,7 +1222,7 @@ class Storage_Locations(WorksheetImporter):
 
     def Import(self):
         setup_folder = self.context.bika_setup.bika_storagelocations
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['Address']:
@@ -1269,7 +1267,7 @@ class Analysis_Categories(WorksheetImporter):
 
     def Import(self):
         folder = self.context.bika_setup.bika_analysiscategories
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             department = None
             if row.get('Department_title', None):
@@ -1297,7 +1295,7 @@ class Methods(WorksheetImporter):
 
     def Import(self):
         folder = self.context.methods
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if row['title']:
                 calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
@@ -1357,7 +1355,7 @@ class Calculations(WorksheetImporter):
     def get_interim_fields(self):
         # preload Calculation Interim Fields sheet
         sheetname = 'Calculation Interim Fields'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.interim_fields = {}
@@ -1399,7 +1397,7 @@ class Calculations(WorksheetImporter):
             for kw in dep_keywords:
                 self.defer(src_obj=obj,
                            src_field='DependentServices',
-                           dest_catalog='bika_setup_catalog',
+                           dest_catalog='senaite_catalog_setup',
                            dest_query={'portal_type': 'AnalysisService',
                                        'getKeyword': kw}
                            )
@@ -1409,8 +1407,8 @@ class Calculations(WorksheetImporter):
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods
-        sheet = self.workbook.get_sheet_by_name("Methods")
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        sheet = self.workbook["Methods"]
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, sheet):
             if row.get('title', '') and row.get('Calculation_title', ''):
                 meth = self.get_object(bsc, "Method", row.get('title'))
@@ -1426,7 +1424,7 @@ class Analysis_Services(WorksheetImporter):
     def load_interim_fields(self):
         # preload AnalysisService InterimFields sheet
         sheetname = 'AnalysisService InterimFields'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.service_interims = {}
@@ -1443,9 +1441,9 @@ class Analysis_Services(WorksheetImporter):
                 'unit': row['unit'] and row['unit'] or ''})
 
     def load_result_options(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         sheetname = 'AnalysisService ResultOptions'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
@@ -1459,9 +1457,9 @@ class Analysis_Services(WorksheetImporter):
             service.setResultOptions(sro)
 
     def load_service_uncertainties(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        sheetname = 'AnalysisService Uncertainties'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
+        sheetname = 'Analysis Service Uncertainties'
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
 
@@ -1513,7 +1511,7 @@ class Analysis_Services(WorksheetImporter):
         return self.get_relations(service_title,
                                 default_instrument,
                                 'Instrument',
-                                'bika_setup_catalog',
+                                'senaite_catalog_setup',
                                 'AnalysisService Instruments',
                                 'Instrument_title')
 
@@ -1525,7 +1523,7 @@ class Analysis_Services(WorksheetImporter):
         """
         out_objects = [default_obj] if default_obj else []
         cat = getToolByName(self.context, catalog_name)
-        worksheet = self.workbook.get_sheet_by_name(sheet_name)
+        worksheet = self.workbook[sheet_name]
         if not worksheet:
             return out_objects
         for row in self.get_rows(3, worksheet=worksheet):
@@ -1542,7 +1540,7 @@ class Analysis_Services(WorksheetImporter):
         return out_objects
 
     def write_bucket(self, bucket):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for service_uid, uncertainties in bucket.items():
             obj = bsc(UID=service_uid)[0].getObject()
             _uncert = list(obj.getUncertainties())
@@ -1552,7 +1550,7 @@ class Analysis_Services(WorksheetImporter):
     def Import(self):
         self.load_interim_fields()
         folder = self.context.bika_setup.bika_analysisservices
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
@@ -1638,7 +1636,6 @@ class Analysis_Services(WorksheetImporter):
                 PointOfCapture=row['PointOfCapture'].lower(),
                 Category=category,
                 Department=department,
-                AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 ExponentialFormatPrecision=str(self.to_int(row.get('ExponentialFormatPrecision',7),7)),
@@ -1676,7 +1673,7 @@ class Analysis_Services(WorksheetImporter):
 class Analysis_Specifications(WorksheetImporter):
 
     def resolve_service(self, row):
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         service = bsc(
             portal_type="AnalysisService",
             title=safe_unicode(row["service"])
@@ -1693,7 +1690,7 @@ class Analysis_Specifications(WorksheetImporter):
         s_t = ""
         bucket = {}
         pc = getToolByName(self.context, "portal_catalog")
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         # collect up all values into the bucket
         for row in self.get_rows(3):
             title = row.get("Title", False)
@@ -1740,11 +1737,11 @@ class Analysis_Profiles(WorksheetImporter):
 
     def load_analysis_profile_services(self):
         sheetname = 'Analysis Profile Services'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.profile_services = {}
         if not worksheet:
             return
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=worksheet):
             if not row.get('Profile','') or not row.get('Service',''):
                 continue
@@ -1782,11 +1779,11 @@ class AR_Templates(WorksheetImporter):
 
     def load_artemplate_analyses(self):
         sheetname = 'AR Template Analyses'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.artemplate_analyses = {}
         if not worksheet:
             return
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=worksheet):
             # XXX service_uid is not a uid
             service = self.get_object(bsc, 'AnalysisService',
@@ -1801,9 +1798,9 @@ class AR_Templates(WorksheetImporter):
 
     def load_artemplate_partitions(self):
         sheetname = 'AR Template Partitions'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.artemplate_partitions = {}
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
@@ -1824,7 +1821,7 @@ class AR_Templates(WorksheetImporter):
         self.load_artemplate_analyses()
         self.load_artemplate_partitions()
         folder = self.context.bika_setup.bika_artemplates
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
@@ -1867,16 +1864,16 @@ class Reference_Definitions(WorksheetImporter):
 
     def load_reference_definition_results(self):
         sheetname = 'Reference Definition Results'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             sheetname = 'Reference Definition Values'
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
         self.results = {}
         if not worksheet:
             return
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=worksheet):
             if row['ReferenceDefinition_title'] not in self.results.keys():
                 self.results[row['ReferenceDefinition_title']] = []
@@ -1911,7 +1908,7 @@ class Worksheet_Templates(WorksheetImporter):
 
     def load_wst_layouts(self):
         sheetname = 'Worksheet Template Layouts'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.wst_layouts = {}
         if not worksheet:
             return
@@ -1930,11 +1927,11 @@ class Worksheet_Templates(WorksheetImporter):
 
     def load_wst_services(self):
         sheetname = 'Worksheet Template Services'
-        worksheet = self.workbook.get_sheet_by_name(sheetname)
+        worksheet = self.workbook[sheetname]
         self.wst_services = {}
         if not worksheet:
             return
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=worksheet):
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('service'))
@@ -2099,12 +2096,12 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_sample_results(self, sample):
         sheetname = 'Reference Sample Results'
         if not hasattr(self, 'results_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.results_worksheet = worksheet
         results = []
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=self.results_worksheet):
             if row['ReferenceSample_id'] != sample.getId():
                 continue
@@ -2124,11 +2121,11 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_analyses(self, sample):
         sheetname = 'Reference Analyses'
         if not hasattr(self, 'analyses_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.analyses_worksheet = worksheet
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3, worksheet=self.analyses_worksheet):
             if row['ReferenceSample_id'] != sample.getId():
                 continue
@@ -2154,11 +2151,11 @@ class Reference_Samples(WorksheetImporter):
     def load_reference_analysis_interims(self, analysis):
         sheetname = 'Reference Analysis Interims'
         if not hasattr(self, 'interim_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.interim_worksheet = worksheet
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         interims = []
         for row in self.get_rows(3, worksheet=self.interim_worksheet):
             if row['ReferenceAnalysis_id'] != analysis.getId():
@@ -2172,7 +2169,7 @@ class Reference_Samples(WorksheetImporter):
         analysis.setInterimFields(interims)
 
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         for row in self.get_rows(3):
             if not row['id']:
                 continue
@@ -2209,12 +2206,12 @@ class Analysis_Requests(WorksheetImporter):
     def load_analyses(self, sample):
         sheetname = 'Analyses'
         if not hasattr(self, 'analyses_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.analyses_worksheet = worksheet
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        bc = getToolByName(self.context, 'bika_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
+        bc = getToolByName(self.context, 'senaite_catalog')
         for row in self.get_rows(3, worksheet=self.analyses_worksheet):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
@@ -2245,11 +2242,10 @@ class Analysis_Requests(WorksheetImporter):
     def load_analysis_interims(self, analysis):
         sheetname = 'Reference Analysis Interims'
         if not hasattr(self, 'interim_worksheet'):
-            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            worksheet = self.workbook[sheetname]
             if not worksheet:
                 return
             self.interim_worksheet = worksheet
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         interims = []
         for row in self.get_rows(3, worksheet=self.interim_worksheet):
             if row['ReferenceAnalysis_id'] != analysis.getId():
@@ -2263,8 +2259,8 @@ class Analysis_Requests(WorksheetImporter):
         analysis.setInterimFields(interims)
 
     def Import(self):
-        bc = getToolByName(self.context, 'bika_catalog')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bc = getToolByName(self.context, 'senaite_catalog')
+        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['id']:

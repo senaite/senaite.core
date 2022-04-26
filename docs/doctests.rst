@@ -4,7 +4,11 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/API.rst
 .. include:: ../src/senaite/core/tests/doctests/API_analysis.rst
 .. include:: ../src/senaite/core/tests/doctests/API_analysisservice.rst
+.. include:: ../src/senaite/core/tests/doctests/API_catalog.rst
+.. include:: ../src/senaite/core/tests/doctests/API_datetime.rst
+.. include:: ../src/senaite/core/tests/doctests/API_geo.rst
 .. include:: ../src/senaite/core/tests/doctests/API_mail.rst
+.. include:: ../src/senaite/core/tests/doctests/API_measure.rst
 .. include:: ../src/senaite/core/tests/doctests/API_security.rst
 .. include:: ../src/senaite/core/tests/doctests/API_snapshot.rst
 .. include:: ../src/senaite/core/tests/doctests/API_user.rst
@@ -51,6 +55,7 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestInvalidate.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestSample.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestToBeSampled.rst
+.. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRetest.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisUnassign.rst

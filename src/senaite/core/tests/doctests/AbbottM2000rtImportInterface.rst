@@ -22,7 +22,7 @@ Needed imports:
     >>> from senaite.core.exportimport import instruments
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
-    >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+    >>> from senaite.core.exportimport.auto_import_results import UploadFileWrapper
 
 Functional helpers:
 
@@ -159,12 +159,9 @@ AnalysisService, so not on the second server:
     ...                            'default': ''},
     ...                           ]
     >>> analysisservice.setInterimFields(service_interim_fields)
-    >>> analysisservice.getInterimFields()
-    [{'default': '', 'unit': '', 'keyword': 'ASRExpDate', 'title': 'ASRExpDate'},
-     {'default': '', 'unit': '', 'keyword': 'ASRLotNumber', 'title': 'ASRLotNumber'},
-     {'default': '', 'unit': '', 'keyword': 'AssayCalibrationTime', 'title': 'AssayCalibrationTime'},
-     {'default': '', 'unit': '', 'keyword': 'FinalResult', 'title': 'FinalResult'},
-     {'default': '', 'unit': '', 'keyword': 'Location', 'title': 'Location'}]
+    >>> interims = analysisservice.getInterimFields()
+    >>> map(lambda i: i.get("keyword"), interims)
+    ['ASRExpDate', 'ASRLotNumber', 'AssayCalibrationTime', 'FinalResult', 'Location']
 
 Create an `AnalysisRequest` with this `AnalysisService` and receive it:
 
@@ -197,11 +194,11 @@ Load results test file and import the results:
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/AbbottM2000.log.123',
     ...                         encoding='utf-8-sig')
-    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> test_file = UploadFileWrapper(temp_file)
     >>> abbott_parser = Abbottm2000rtTSVParser(test_file)
     >>> importer = Abbottm2000rtImporter(parser=abbott_parser,
     ...                                  context=portal,
-    ...                                  allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
+    ...                                  allowed_ar_states=['sample_received', 'to_be_verified'],
     ...                                  allowed_analysis_states=None,
     ...                                  override=[True, True])
     >>> importer.process()
@@ -218,8 +215,8 @@ Check the rest of the importer logs to verify that the values were correctly imp
 
 ~~ code::
 
-    >>> importer.logs[1:]
-    ['End of file reached successfully: 24 objects, 1 analyses, 24 results', 'Allowed Sample states: sample_received, attachment_due, to_be_verified', 'Allowed analysis states: unassigned, assigned, to_be_verified', "H2O-0001 result for 'HIV06ml:ASRExpDate': '20141211'", "H2O-0001 result for 'HIV06ml:ASRLotNumber': '0123456'", "H2O-0001 result for 'HIV06ml:AssayCalibrationTime': '20150423 16:37:05'", "H2O-0001 result for 'HIV06ml:FinalResult': '18'", "H2O-0001 result for 'HIV06ml:Location': 'A12'", "H2O-0001: calculated result for 'TTR': '1800.0'", "H2O-0001: [u'Analysis HIV06ml'] imported sucessfully", 'Import finished successfully: 1 Samples and 1 results updated']
+    >>> importer.logs[-1]
+    'Import finished successfully: 1 Samples and 1 results updated'
 
 And finally check if indeed the analysis has the imported results:
 

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -24,15 +24,17 @@ from operator import itemgetter
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser.analyses import AnalysesView as BaseView
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.permissions import FieldEditAnalysisRemarks
 from bika.lims.utils import get_image
 from bika.lims.utils import t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.interfaces import IDuplicateAnalysis
 
 
 class AnalysesView(BaseView):
@@ -77,6 +79,7 @@ class AnalysesView(BaseView):
             ("Method", {
                 "sortable": False,
                 "ajax": True,
+                "on_change": "_on_method_change",
                 "title": _("Method")}),
             ("Instrument", {
                 "sortable": False,
@@ -123,20 +126,51 @@ class AnalysesView(BaseView):
                 "type": "remarks"
             }
 
+        self.set_analysis_remarks_modal = {
+            "id": "modal_set_analysis_remarks",
+            "title": _("Set remarks"),
+            "url": "{}/set_analysis_remarks_modal".format(
+                api.get_url(self.context)),
+            "css_class": "btn btn-outline-secondary",
+            "help": _("Set remarks for selected analyses")
+        }
+
         self.review_states = [
             {
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
+                "custom_transitions": [],
                 "columns": self.columns.keys(),
             },
         ]
+
+    def before_render(self):
+        super(AnalysesView, self).before_render()
+
+        if self.show_analysis_remarks_transition():
+            for state in self.review_states:
+                state["custom_transitions"] = [self.set_analysis_remarks_modal]
+
+    def show_analysis_remarks_transition(self):
+        """Check if the analysis remarks transitions should be rendered
+
+        XXX: Convert maybe better to a real WF transition with a guard
+        """
+        # Disable analysis remarks transition when global analysis remarks are disabled
+        if not self.is_analysis_remarks_enabled():
+            return False
+        for analysis in self.context.getAnalyses():
+            if check_permission(FieldEditAnalysisRemarks, analysis):
+                return True
+        return False
 
     @view.memoize
     def is_analysis_remarks_enabled(self):
         """Check if analysis remarks are enabled
         """
-        return self.context.bika_setup.getEnableAnalysisRemarks()
+        setup = api.get_setup()
+        return setup.getEnableAnalysisRemarks()
 
     def isItemAllowed(self, obj):
         """Returns true if the current analysis to be rendered has a slot
@@ -480,7 +514,9 @@ class AnalysesView(BaseView):
             # item
             sample = obj.getSample()
             item_obj = sample
-            item_title = api.get_id(sample)
+            obj_id = api.get_id(obj)
+            sample_id = api.get_id(sample)
+            item_title = "%s (%s)" % (obj_id, sample_id)
             item_url = api.get_url(sample)
             item_img_url = api.get_url(sample)
             item_img = "control.png"

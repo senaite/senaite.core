@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 
@@ -23,6 +23,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IContainerType
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
@@ -33,7 +34,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class ContainerType(BaseContent):
-    implements(IDeactivable)
+    implements(IContainerType, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -57,7 +58,7 @@ registerType(ContainerType, PROJECTNAME)
 
 def ContainerTypes(self, instance=None, allow_blank=False):
     instance = instance or self
-    bsc = getToolByName(instance, 'bika_setup_catalog')
+    bsc = getToolByName(instance, 'senaite_catalog_setup')
     items = []
     for o in bsc(portal_type='ContainerType',
                  sort_on = 'sortable_title'):

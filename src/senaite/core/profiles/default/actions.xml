@@ -97,7 +97,7 @@
                type="text">{&quot;prependContent&quot;: &quot;.portalMessage&quot;}</property>
    </object>
    <!-- My Organization link -->
-   <object name="my_organization" meta_type="CMF Action" i18n:domain="plone"
+   <object name="my_organization" meta_type="CMF Action" i18n:domain="senaite.core"
            insert-before="logout">
      <property name="title" i18n:translate="">My organization</property>
      <property name="description"/>
@@ -113,8 +113,8 @@
   <!-- Portal Tabs (Located in the upper right button) -->
   <object name="portal_tabs" meta_type="CMF Action Category" purge="True">
     <!-- Reports -->
-    <object name="reports" meta_type="CMF Action" i18n:domain="plone">
-      <property name="title" i18n:translate="">Report</property>
+    <object name="reports" meta_type="CMF Action" i18n:domain="senaite.core">
+      <property name="title" i18n:translate="">Reports</property>
       <property name="description" i18n:translate=""/>
       <property name="url_expr">string:$portal_url/reports</property>
       <property name="link_target"/>
@@ -126,7 +126,7 @@
       <property name="visible">True</property>
     </object>
     <!-- Import -->
-    <object name="import" meta_type="CMF Action" i18n:domain="plone">
+    <object name="import" meta_type="CMF Action" i18n:domain="senaite.core">
       <property name="title" i18n:translate="">Import</property>
       <property name="description" i18n:translate=""/>
       <property name="url_expr">string:$portal_url/import</property>
@@ -152,7 +152,7 @@
       <property name="visible">True</property>
     </object>
     <!-- Audit Log -->
-    <object name="auditlog" meta_type="CMF Action" i18n:domain="plone">
+    <object name="auditlog" meta_type="CMF Action" i18n:domain="senaite.core">
       <property name="title" i18n:translate="">Audit Log</property>
       <property name="description" i18n:translate=""/>
       <property name="url_expr">string:$portal_url/bika_setup/auditlog</property>

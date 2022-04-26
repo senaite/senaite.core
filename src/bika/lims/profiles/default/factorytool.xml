@@ -17,7 +17,6 @@
   <type portal_type="Calculation"/>
   <type portal_type="Client"/>
   <type portal_type="Contact"/>
-  <type portal_type="Container"/>
   <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
   <type portal_type="IdentifierType"/>
@@ -27,8 +26,6 @@
   <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentScheduledTask"/>
   <type portal_type="InstrumentType"/>
-  <type portal_type="InstrumentLocation"/>
-  <type portal_type="InstrumentLocations"/>
   <type portal_type="InstrumentValidation"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
@@ -37,7 +34,6 @@
   <type portal_type="Preservation"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
-  <type portal_type="ReflexRule"/>
   <type portal_type="Pricelist"/>
   <type portal_type="SampleMatrix"/>
   <type portal_type="SampleCondition"/>

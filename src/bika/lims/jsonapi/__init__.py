@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.textfield import RichTextValue
@@ -96,9 +96,9 @@ def load_field_values(instance, include_fields):
         except AttributeError:
             # If this error is raised, make a look to the add-on content
             # expressions used to obtain their data.
-            print "AttributeError:", sys.exc_info()[1]
-            print "Unreachable object. Maybe the object comes from an Add-on"
-            print traceback.format_exc()
+            print("AttributeError:", sys.exc_info()[1])
+            print("Unreachable object. Maybe the object comes from an Add-on")
+            print(traceback.format_exc())
 
         if isinstance(val, RichTextValue):
             val = val.raw

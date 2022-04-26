@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
@@ -201,9 +201,9 @@ class SelectionMacrosView(BrowserView):
 
     def __init__(self, context, request):
         super(SelectionMacrosView, self).__init__(context, request)
-        self.bc = self.bika_catalog
-        self.bac = self.bika_analysis_catalog
-        self.bsc = self.bika_setup_catalog
+        self.bc = self.senaite_catalog
+        self.bac = self.senaite_catalog_analysis
+        self.bsc = self.senaite_catalog_setup
         self.pc = self.portal_catalog
         self.rc = self.reference_catalog
 
@@ -250,7 +250,7 @@ class SelectionMacrosView(BrowserView):
     def select_analysisspecification(self, style=None):
         self.style = style
         res = []
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
         for s in bsc(portal_type='AnalysisSpec'):
             res.append({'uid': s.UID, 'title': s.Title})
         self.specs = res

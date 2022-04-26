@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -35,6 +35,7 @@ from senaite.core.exportimport import instruments
 from senaite.core.exportimport.instruments import \
     get_instrument_import_interfaces
 from senaite.core.exportimport.load_setup_data import LoadSetupData
+from senaite.core.p3compat import cmp
 from zope.component import getAdapters
 from zope.interface import implements
 
@@ -118,69 +119,10 @@ class ImportView(BrowserView):
             return self.template()
 
     def getInstruments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self, 'senaite_catalog_setup')
         brains = bsc(portal_type='Instrument', is_active=True)
         items = [('', '...Choose an Instrument...')]
         for item in brains:
             items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
-
-
-class ajaxGetImportTemplate(BrowserView):
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        exim = self.request.get('exim').replace(".", "/")
-        # If a specific template for this instrument doesn't exist yet,
-        # use the default template for instrument results file import located
-        # at senaite.core.exportimport/instruments/instrument.pt
-        instrpath = os.path.join("exportimport", "instruments")
-        templates_dir = resource_filename("bika.lims", instrpath)
-        fname = "%s/%s_import.pt" % (templates_dir, exim)
-        if os.path.isfile(fname):
-            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
-        else:
-            return ViewPageTemplateFile("instruments/instrument.pt")(self)
-
-    def getAnalysisServicesDisplayList(self):
-        ''' Returns a Display List with the active Analysis Services
-            available. The value is the keyword and the title is the
-            text to be displayed.
-        '''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        brains = bsc(portal_type='AnalysisService')
-        items = []
-        for item in brains:
-            items.append((item.getKeyword, item.Title))
-        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-        return DisplayList(list(items))
-
-
-class ajaxGetImportInterfaces(BrowserView):
-    """ Returns a json list with the interfaces assigned to the instrument
-        with the following structure:
-        [{'id': <interface_id>,
-          'title': <interface_title>
-        ]
-    """
-    def __call__(self):
-        interfaces = []
-        try:
-            plone.protect.CheckAuthenticator(self.request)
-        except Forbidden:
-            return json.dumps(interfaces)
-
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument = bsc(
-            portal_type='Instrument',
-            UID=self.request.get('instrument_uid', ''),
-            is_active=True,)
-        if instrument and len(instrument) == 1:
-            instrument = instrument[0].getObject()
-            for i in instrument.getImportDataInterface():
-                if i:
-                    exim = instruments.getExim(i)
-                    interface = {'id': i, 'title': exim.title}
-                    interfaces.append(interface)
-        return json.dumps(interfaces)

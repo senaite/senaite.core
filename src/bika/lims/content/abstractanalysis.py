@@ -15,13 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import cgi
+import copy
 import json
 import math
 from decimal import Decimal
+from six import string_types
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -126,6 +128,8 @@ NumberOfRequiredVerifications = IntegerField(
 # the calculation at creation time.
 Calculation = HistoryAwareReferenceField(
     'Calculation',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     allowed_types=('Calculation',),
     relationship='AnalysisCalculation',
     referenceClass=HoldingReference
@@ -186,9 +190,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getServiceUID(self):
         """Return the UID of the associated service.
         """
-        service = self.getAnalysisService()
-        if service:
-            return service.UID()
+        return self.getRawAnalysisService()
 
     @security.public
     def getNumberOfVerifications(self):
@@ -452,8 +454,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
-        # Always update ResultCapture date when this field is modified
-        self.setResultCaptureDate(DateTime())
+        prev_result = self.getField("Result").get(self) or ""
+
+        # Convert to list ff the analysis has result options set with multi
+        if self.getResultOptions() and "multi" in self.getResultOptionsType():
+            if not isinstance(value, (list, tuple)):
+                value = filter(None, [value])
 
         # Handle list results
         if isinstance(value, (list, tuple)):
@@ -493,6 +499,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     else:
                         val = self.getUpperDetectionLimit()
 
+        # Update ResultCapture date if necessary
+        if not val:
+            self.setResultCaptureDate(None)
+        elif prev_result != val:
+            self.setResultCaptureDate(DateTime())
+
         # Set the result field
         self.getField("Result").set(self, val)
 
@@ -508,7 +520,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not calc:
             return False
 
-        mapping = {}
+        # Include the current context UID in the mapping, so it can be passed
+        # as a param in built-in functions, like 'get_result(%(context_uid)s)'
+        mapping = {"context_uid": '"{}"'.format(self.UID())}
 
         # Interims' priority order (from low to high):
         # Calculation < Analysis
@@ -516,17 +530,24 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Add interims to mapping
         for i in interims:
-            if 'keyword' not in i:
+
+            interim_keyword = i.get("keyword")
+            if not interim_keyword:
                 continue
+
             # skip unset values
-            if i['value'] == '':
+            interim_value = i.get("value", "")
+            if interim_value == "":
                 continue
-            try:
-                ivalue = float(i['value'])
-                mapping[i['keyword']] = ivalue
-            except (TypeError, ValueError):
-                # Interim not float, abort
+
+            # Only floatable and UIDs are supported
+            if api.is_floatable(interim_value):
+                interim_value = float(interim_value)
+
+            elif not api.is_uid(interim_value):
                 return False
+
+            mapping[interim_keyword] = interim_value
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -674,44 +695,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return -self.getEarliness()
 
     @security.public
-    def isInstrumentValid(self):
-        """Checks if the instrument selected for this analysis is valid.
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        if self.getInstrument():
-            return self.getInstrument().isValid()
-        return True
-
-    @security.public
     def isInstrumentAllowed(self, instrument):
         """Checks if the specified instrument can be set for this analysis,
-        either if the instrument was assigned directly (by using "Allows
-        instrument entry of results") or indirectly via Method ("Allows manual
-        entry of results") in Analysis Service Edit view.
-        Param instrument can be either an uid or an object
+
         :param instrument: string,Instrument
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
         """
         uid = api.get_uid(instrument)
-        return uid in self.getAllowedInstrumentUIDs()
+        return uid in map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def isMethodAllowed(self, method):
-        """Checks if the analysis can follow the method specified, either if
-        the method was assigned directly (by using "Allows manual entry of
-        results") or indirectly via Instrument ("Allows instrument entry of
-        results") in Analysis Service Edit view.
-        Param method can be either a uid or an object
+        """Checks if the analysis can follow the method specified
+
         :param method: string,Method
         :return: True if the analysis can follow the method specified
         :rtype: bool
         """
         uid = api.get_uid(method)
-        return uid in self.getAllowedMethodUIDs()
+        return uid in map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedMethods(self):
@@ -725,55 +728,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if not service:
             return []
-
-        methods = []
-        if self.getManualEntryOfResults():
-            methods = service.getMethods()
-        if self.getInstrumentEntryOfResults():
-            for instrument in service.getInstruments():
-                methods.extend(instrument.getMethods())
-
-        return list(set(methods))
-
-    @security.public
-    def getAllowedMethodUIDs(self):
-        """Used to populate getAllowedMethodUIDs metadata. Delegates to
-        method getAllowedMethods() for the retrieval of the methods allowed.
-        :return: A list with the UIDs of the methods allowed for this analysis
-        :rtype: list of strings
-        """
-        return [m.UID() for m in self.getAllowedMethods()]
+        # get the available methods of the service
+        return service.getMethods()
 
     @security.public
     def getAllowedInstruments(self):
-        """Returns the allowed instruments for this analysis, either if the
-        instrument was assigned directly (by using "Allows instrument entry of
-        results") or indirectly via Method (by using "Allows manual entry of
-        results") in Analysis Service edit view.
+        """Returns the allowed instruments from the service
+
         :return: A list of instruments allowed for this Analysis
         :rtype: list of instruments
         """
         service = self.getAnalysisService()
         if not service:
             return []
-
-        instruments = []
-        if self.getInstrumentEntryOfResults():
-            instruments = service.getInstruments()
-        if self.getManualEntryOfResults():
-            for meth in self.getAllowedMethods():
-                instruments += meth.getInstruments()
-
-        return list(set(instruments))
-
-    @security.public
-    def getAllowedInstrumentUIDs(self):
-        """Used to populate getAllowedInstrumentUIDs metadata. Delegates to
-        getAllowedInstruments() for the retrieval of the instruments allowed.
-        :return: List of instruments' UIDs allowed for this analysis
-        :rtype: list of strings
-        """
-        return [i.UID() for i in self.getAllowedInstruments()]
+        return service.getInstruments()
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):
@@ -1061,15 +1029,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return self.created()
 
     @security.public
-    def getParentUID(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent UID
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.UID()
-
-    @security.public
     def getParentURL(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent URL
@@ -1077,15 +1036,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         parent = self.aq_parent
         if parent:
             return parent.absolute_url_path()
-
-    @security.public
-    def getParentTitle(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent Title
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.Title()
 
     @security.public
     def getWorksheetUID(self):
@@ -1110,33 +1060,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return worksheet[0]
 
     @security.public
-    def getInstrumentValid(self):
-        """Used to populate catalog values. Delegates to isInstrumentValid()
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        return self.isInstrumentValid()
-
-    @security.public
-    def getAttachmentUIDs(self):
-        """Used to populate metadata, so that we don't need full objects of
-        analyses when working with their attachments.
-        """
-        attachments = self.getAttachment()
-        uids = [att.UID() for att in attachments]
-        return uids
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
-
-    @security.public
     def remove_duplicates(self, ws):
         """When this analysis is unassigned from a worksheet, this function
         is responsible for deleting DuplicateAnalysis objects from the ws.
@@ -1151,17 +1074,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :param keyword: the keyword of the interim
         :param value: the value for the interim
         """
-        # Ensure result integrity regards to None, empty and 0 values
-        val = str('' if not value and value != 0 else value).strip()
-        interims = self.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] == keyword:
-                interim['value'] = val
-                self.setInterimFields(interims)
-                return
+        # Ensure value format integrity
+        if value is None:
+            value = ""
+        elif isinstance(value, string_types):
+            value = value.strip()
+        elif isinstance(value, (list, tuple, set, dict)):
+            value = json.dumps(value)
 
-        logger.warning("Interim '{}' for analysis '{}' not found"
-                       .format(keyword, self.getKeyword()))
+        # Ensure result integrity regards to None, empty and 0 values
+        interims = copy.deepcopy(self.getInterimFields())
+        for interim in interims:
+            if interim.get("keyword") == keyword:
+                interim["value"] = str(value)
+        self.setInterimFields(interims)
 
     def getInterimValue(self, keyword):
         """Returns the value of an interim of this analysis
@@ -1199,4 +1125,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return None
         if len(back_refs) > 1:
             logger.warn("Analysis {} with multiple retests".format(self.id))
-        return api.get_object_by_uid(back_refs[0])
+        retest_uid = back_refs[0]
+        retest = api.get_object_by_uid(retest_uid, default=None)
+        if retest is None:
+            logger.error("Retest with UID {} not found".format(retest_uid))
+        return retest

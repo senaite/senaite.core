@@ -5,6 +5,14 @@
     i18n_domain="senaite.core">
 
   <browser:page
+      for="*"
+      name="resolve_attachment"
+      class=".resolve_attachment.ResolveAttachmentView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="attachments_view"
       class=".attachment.AttachmentsView"
@@ -16,24 +24,6 @@
       for="bika.lims.interfaces.IWorksheet"
       name="attachments_view"
       class=".attachment.AttachmentsView"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
-  <!-- Ajax exposed Attachments Methods -->
-
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="ajax_attachments_view"
-      class=".attachment.ajaxAttachmentsView"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
-  <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="ajax_attachments_view"
-      class=".attachment.ajaxAttachmentsView"
       permission="zope.Public"
       layer="senaite.core.interfaces.ISenaiteCore"
       />

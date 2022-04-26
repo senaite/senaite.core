@@ -13,6 +13,18 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS" />
 
+  <!-- Handler for "content_status_modify"-like requests
+  This adapter is in charge to process workflow action requests when an option
+  from actions menu header from context's view is clicked. Request is processed
+  by same handler as for "workflow_action"-like requests, so named adapters for
+  "workflow_action_<action_id>" are called too. -->
+  <browser:page
+    for="*"
+    name="content_status_modify"
+    class="bika.lims.browser.workflow.WorkflowActionHandler"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS" />
+
   <!-- Analysis Requests: "copy_to_new"
   Note this applies wide, cause at the moment, this action only exists
   for Analysis Requests and we always want this adapter to be in charge,
@@ -225,5 +237,17 @@
     factory=".client.WorkflowActionPublishSamplesAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="senaite.core.permissions.TransitionPublishResults" />
+
+  <!-- Client: "download_reports" action in the report listing
+
+  Downloads all PDFs in a single archive
+  -->
+  <adapter
+    name="workflow_action_download_reports"
+    for="bika.lims.interfaces.IClient
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".client.WorkflowActionDownloadReportsAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
 
 </configure>

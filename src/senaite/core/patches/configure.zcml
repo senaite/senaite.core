@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+  <!-- https://github.com/senaite/senaite.core/pull/1865
+       Please also note the patch of `isFactoryContained` in ´__init__´
+  -->
+  <monkey:patch
+      description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="isTemporary"
+      replacement=".archetypes.isTemporary"
+      />
+
+  <!-- Port #1865 for dexterity contents to avoid duplicate catalog entries when using `api.create` -->
+  <monkey:patch
+      description="Patch `DexterityContent.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="plone.dexterity.content.DexterityContent"
+      original="isTemporary"
+      ignoreOriginal="True"
+      replacement=".dexterity.isTemporary"
+      />
+
+</configure>

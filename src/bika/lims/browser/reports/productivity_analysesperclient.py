@@ -15,13 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import StringIO
 import csv
 import datetime
 from collections import OrderedDict
+from six import StringIO
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
@@ -31,6 +31,7 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -140,7 +141,7 @@ class Report(BrowserView):
         """Applies the filter by review_state to the search query
         """
         self.add_filter_by_wf_state(query=query, out_params=out_params,
-                                    wf_id="bika_analysis_workflow",
+                                    wf_id=ANALYSIS_WORKFLOW,
                                     index="review_state",
                                     title=_("Status"))
 
@@ -161,7 +162,7 @@ class Report(BrowserView):
             'Samples',
             'Analyses',
         ]
-        output = StringIO.StringIO()
+        output = StringIO()
         dw = csv.DictWriter(output, extrasaction='ignore',
                             fieldnames=fieldnames)
         dw.writerow(dict((fn, fn) for fn in fieldnames))

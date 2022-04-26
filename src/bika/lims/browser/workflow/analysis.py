@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -27,16 +27,25 @@ from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
 from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from senaite.core.catalog import SAMPLE_CATALOG
 
 
 class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of submission of analyses
     """
+
+    def __init__(self, context, request):
+        super(WorkflowActionSubmitAdapter, self).__init__(context, request)
+
+        form_id = self.request.get("form_id")
+        if form_id:
+            # Inject the form id as the anchor to make the browser to position
+            # down to the listing from which the action has been triggered
+            self.back_url = "{}#{}".format(self.back_url, form_id)
 
     def __call__(self, action, objects):
         # Store invalid instruments-ref.analyses
@@ -122,7 +131,7 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             query = dict(getInstrumentUID=invalid_instrument_uid,
                          portal_type=['Analysis', 'DuplicateAnalysis'],
                          review_state='to_be_verified',)
-            brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+            brains = api.search(query, SAMPLE_CATALOG)
             for brain in brains:
                 analysis = api.get_object(brain)
                 failed_msg = '{0}: {1}'.format(

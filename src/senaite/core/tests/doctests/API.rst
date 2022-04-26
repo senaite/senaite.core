@@ -30,6 +30,8 @@ so here we will assume the role of Lab Manager.
     >>> from plone.app.testing import setRoles
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
+    >>> from senaite.app.supermodel import SuperModel
+
 
 Getting the Portal
 ..................
@@ -80,8 +82,8 @@ Getting a Tool
 There are many ways to get a tool in SENAITE LIMS / Plone. This function
 centralizes this functionality and makes it painless::
 
-    >>> api.get_tool("bika_setup_catalog")
-    <BikaSetupCatalog at /plone/bika_setup_catalog>
+    >>> api.get_tool("senaite_catalog_setup")
+    <SetupCatalog at /plone/senaite_catalog_setup>
 
 Trying to fetch an non-existing tool raises a custom `APIError`.
 
@@ -96,6 +98,21 @@ This error can also be used for custom methods with the `fail` function::
     Traceback (most recent call last):
     [...]
     APIError: This failed badly
+
+When default param is specified, the system returns the tool if the parameter
+is a string:
+
+    >>> api.get_tool("NotExistingTool", default="senaite_catalog_setup")
+    <SetupCatalog at /plone/senaite_catalog_setup>
+
+but returns the default value otherwise:
+
+    >>> api.get_tool("NotExistingTool", default=None) is None
+    True
+
+    >>> catalog_setup = api.get_tool("senaite_catalog_setup")
+    >>> api.get_tool("NotExistingTool", default=catalog_setup)
+    <SetupCatalog at /plone/senaite_catalog_setup>
 
 
 Getting an Object
@@ -134,6 +151,11 @@ The function also accepts a UID:
     >>> api.get_object(api.get_uid(brain))
     <Client at /plone/clients/client-1>
 
+And also accepts `SuperModel` objects:
+
+    >>> api.get_object(SuperModel(brain))
+    <Client at /plone/clients/client-1>
+
 And returns the portal object when UID=="0"
 
     >>> api.get_object("0")
@@ -167,6 +189,9 @@ Portal object, we can use the `is_object` function::
     True
 
     >>> api.is_object(api.get_portal())
+    True
+
+    >>> api.is_object(SuperModel(client))
     True
 
     >>> api.is_object(None)
@@ -531,7 +556,7 @@ Multiple content types are also supported::
     >>> map(api.get_id, results)
     ['client-1', 'clients']
 
-Now we create some objects which are located in the `bika_setup_catalog`::
+Now we create some objects which are located in the `senaite_catalog_setup`::
 
     >>> instruments = bika_setup.bika_instruments
     >>> instrument1 = api.create(instruments, "Instrument", title="Instrument-1")
@@ -553,8 +578,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     [...]
     APIError: Multi Catalog Queries are not supported!
 
-Catalog queries w/o any `portal_type`, default to the `portal_catalog`, which
-will not find the following items::
+Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
 
     >>> analysiscategories = bika_setup.bika_analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
@@ -563,7 +587,10 @@ will not find the following items::
 
     >>> results = api.search({"id": "analysiscategory-1"})
     >>> len(results)
-    0
+    1
+    >>> res = results[0]
+    >>> res.aq_parent
+    <CatalogTool at /plone/portal_catalog>
 
 Would we add the `portal_type`, the search function would ask the
 `archetype_tool` for the right catalog, and it would return a result::
@@ -574,7 +601,7 @@ Would we add the `portal_type`, the search function would ask the
 
 We could also explicitly define a catalog to achieve the same::
 
-    >>> results = api.search({"id": "analysiscategory-1"}, catalog="bika_setup_catalog")
+    >>> results = api.search({"id": "analysiscategory-1"}, catalog="senaite_catalog_setup")
     >>> len(results)
     1
 
@@ -732,6 +759,29 @@ Reactivate the client::
     'active'
 
 
+Getting the previous Workflow Status of an Object
+........................................
+
+
+This function gives the last worflow state of an object:
+
+    >>> api.get_workflow_status_of(client)
+    'active'
+
+    >>> api.get_previous_worfklow_status_of(client)
+    'inactive'
+
+Specific states can be skipped:
+
+    >>> api.get_previous_worfklow_status_of(client, skip=['inactive'])
+    'active'
+
+A default value can be set in case no previous state was found:
+
+    >>> api.get_previous_worfklow_status_of(client, skip=['active' ,'inactive'], default='notfound')
+    'notfound'
+
+
 Getting the available transitions for an object
 ...............................................
 
@@ -880,21 +930,21 @@ for the passed in object::
 Checking if an Object is Versionable
 ....................................
 
-Some contents in SENAITE LIMS support versioning. This function checks this for you.
+NOTE: Versioning is outdated!
+      This code will be removed as soon as we drop the `HistoryAwareReferenceField`
+      reference between Calculation and Analysis.
 
 Instruments are not versionable::
 
     >>> api.is_versionable(instrument1)
     False
 
-Analysisservices are versionable::
+Calculations are versionable::
 
-    >>> analysisservices = bika_setup.bika_analysisservices
-    >>> analysisservice1 = api.create(analysisservices, "AnalysisService", title="AnalysisService-1")
-    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="AnalysisService-2")
-    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="AnalysisService-3")
+    >>> calculations = bika_setup.bika_calculations
+    >>> calc = api.create(calculations, "Calculation", title="Calculation 1")
 
-    >>> api.is_versionable(analysisservice1)
+    >>> api.is_versionable(calc)
     True
 
 
@@ -903,13 +953,13 @@ Getting the Version of an Object
 
 This function returns the version as an integer::
 
-    >>> api.get_version(analysisservice1)
+    >>> api.get_version(calc)
     0
 
 Calling `processForm` bumps the version::
 
-    >>> analysisservice1.processForm()
-    >>> api.get_version(analysisservice1)
+    >>> calc.processForm()
+    >>> api.get_version(calc)
     1
 
 
@@ -1103,8 +1153,10 @@ Try now with a valid contact::
     >>> api.get_user_client(contact1)
     <Client at /plone/clients/client-1>
 
-    >>> api.get_user_client(client_user)
-    <Client at /plone/clients/client-1>
+Unset the user again
+
+    >>> contact1.unlinkUser(client_user)
+    True
 
 
 Creating a Cache Key
@@ -1635,4 +1687,34 @@ Empty strings are returned unchanged:
 
     >>> text = ""
     >>> api.text_to_html(text, wrap="div")
+    ''
+
+
+Converting a string to UTF8
+...........................
+
+This function encodes unicode strings to UTF8.
+
+In this test we use the German letter `ä` which is in unicode `u'\xe4'`:
+
+    >>> api.to_utf8("ä")
+    '\xc3\xa4'
+
+    >>> api.to_utf8("\xc3\xa4")
+    '\xc3\xa4'
+
+    >>> api.to_utf8(api.safe_unicode("ä"))
+    '\xc3\xa4'
+
+    >>> api.to_utf8(u"\xe4")
+    '\xc3\xa4'
+
+Unsupported types return either the default value or fail:
+
+    >>> api.to_utf8(object())
+    Traceback (most recent call last):
+    ...
+    APIError: Expected string type, got '<type 'object'>'
+
+    >>> api.to_utf8(object(), default="")
     ''

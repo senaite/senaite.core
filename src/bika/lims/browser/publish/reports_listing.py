@@ -15,11 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import re
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
@@ -88,6 +87,18 @@ class ReportsListingView(BikaListingView):
             "help": help_publish_text,
         }
 
+        help_download_reports_text = _(
+            "Download selected reports")
+
+        self.download_reports_transition = {
+            "id": "download_reports",
+            "title": _("Download"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=download_reports",
+            "css_class": "btn-outline-secondary",
+            "help": help_download_reports_text,
+        }
+
         self.columns = collections.OrderedDict((
             ("Info", {
                 "title": "",
@@ -118,6 +129,7 @@ class ReportsListingView(BikaListingView):
                 "custom_transitions": [
                     self.send_email_transition,
                     self.publish_samples_transition,
+                    self.download_reports_transition,
                 ]
             },
         ]
@@ -159,7 +171,7 @@ class ReportsListingView(BikaListingView):
         item["Info"] = get_link(
             "analysisreport_info?report_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="overlay_panel")
 
         item["replace"]["AnalysisRequest"] = get_link(
             ar.absolute_url(), value=ar.Title()

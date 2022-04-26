@@ -15,20 +15,18 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .addressfield import AddressField
-from .datetimefield import DateTimeField
-from .durationfield import DurationField
-from .aranalysesfield import ARAnalysesField
-from .interimfieldsfield import InterimFieldsField
-from .referenceresultsfield import ReferenceResultsField
-from .historyawarereferencefield import HistoryAwareReferenceField
-from .coordinatefield import CoordinateField
-from .reflexrulefield import ReflexRuleField
-from .proxyfield import ProxyField
-from .uidreferencefield import UIDReferenceField
-from .emailsfield import EmailsField
-from .resultrangefield import ResultRangeField
-from .resultsrangesfield import ResultsRangesField
+from .addressfield import AddressField  # noqa
+from .aranalysesfield import ARAnalysesField # noqa
+from .coordinatefield import CoordinateField # noqa
+from .durationfield import DurationField # noqa
+from .emailsfield import EmailsField # noqa
+from .historyawarereferencefield import HistoryAwareReferenceField # noqa
+from .interimfieldsfield import InterimFieldsField # noqa
+from .partitionsetupfield import PartitionSetupField # noqa
+from .referenceresultsfield import ReferenceResultsField # noqa
+from .resultrangefield import ResultRangeField # noqa
+from .resultsrangesfield import ResultsRangesField # noqa
+from .uidreferencefield import UIDReferenceField # noqa

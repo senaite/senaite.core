@@ -15,10 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from zope.interface import Interface
+
+# BBB: Only kept for backwards compatibility
+from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 
 
 class ISenaiteSiteRoot(Interface):
@@ -80,6 +83,11 @@ class IGenerateID(Interface):
 
 class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs
+    """
+
+
+class IAutoImportLog(Interface):
+    """Auto Import Log
     """
 
 
@@ -145,11 +153,6 @@ class IAnalysisRequestSecondary(Interface):
 
 class IAnalysisRequestAddView(Interface):
     """AR Add view
-    """
-
-
-class IAnalysisRequestsFolder(Interface):
-    """AnalysisRequests Folder
     """
 
 
@@ -315,8 +318,18 @@ class IDepartments(Interface):
     """
 
 
+class IContainer(Interface):
+    """Marker interface for Container
+    """
+
+
 class IContainers(Interface):
     """Marker interface for Containers
+    """
+
+
+class IContainerType(Interface):
+    """Marker interface for Container Type
     """
 
 
@@ -454,9 +467,11 @@ class ILabProducts(Interface):
     """Marker interface for Lab Products
     """
 
+
 class ILabProduct(Interface):
     """Marker interface for a LabProduct
     """
+
 
 class ISamplePoint(Interface):
     """Marker interface for a Sample Point
@@ -532,9 +547,11 @@ class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """
 
+
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
     """
+
 
 class IBikaCatalog(Interface):
     """Marker interface for bika_catalog
@@ -542,12 +559,12 @@ class IBikaCatalog(Interface):
 
 
 class IBikaAnalysisCatalog(Interface):
-    """Marker interface for bika_analysis_catalog
+    """Marker interface for senaite_catalog_analysis
     """
 
 
 class IBikaSetupCatalog(Interface):
-    """Marker interface for bika_setup_catalog
+    """Marker interface for senaite_catalog_setup
     """
 
 
@@ -586,6 +603,17 @@ class IIdServerVariables(Interface):
 
     def get_variables(self, **kw):
         """Returns a dict with variables
+        """
+
+
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
         """
 
 
@@ -801,13 +829,15 @@ class IHeaderTableFieldRenderer(Interface):
         """
 
 
+# BBB: Backwards compatibility
 class IReflexRule(Interface):
-    """Marker interface for a Reflex Rule
+    """Removed in 2.0rc3
     """
 
 
+# BBB: Backwards compatibility
 class IReflexRuleFolder(Interface):
-    """Marker interface for the Reflex Rule Folder
+    """Removed in 2.0rc3
     """
 
 
@@ -820,6 +850,8 @@ class IProxyField(Interface):
     """A field that proxies transparently to the field of another object.
     Mainly needed for AnalysisRequest fields that are actually stored on the
     Sample.
+
+    TODO: Remove after the field manager has been removed from `senaite.jsonapi`
     """
 
 
@@ -981,6 +1013,29 @@ class IAddSampleObjectInfo(Interface):
         """
 
 
+class IAddSampleConfirmation(Interface):
+    """Marker interface for confirmation Add Sample form confirmation
+    """
+
+    def check_confirmation(self, records):
+        """Returns a dict when user confirmation is required for the creation
+        of samples when the Save button from Add Sample form is pressed. Returns
+        None otherwise
+        """
+
+
+class IAddSampleRecordsValidator(Interface):
+    """Marker interface for Add Sample Records validators
+    """
+
+    def validate(self, records):
+        """Returns None if all records are valid. Returns an error dict like
+        follows otherwise, so the error messages it contains is displayed at
+        the top of the Add Sample form view.
+            {"message": "", "fielderrors": {}}
+        """
+
+
 class IClientAwareMixin(Interface):
     """Marker interface for objects that can be bound to a Client, either
     because they can be added inside a Client folder or because it can be
@@ -1100,3 +1155,8 @@ class IListingSearchableTextProvider(Interface):
     catalog index
     """
     pass
+
+
+class IBatchBookView(Interface):
+    """Marker interface for batchbook view
+    """

@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <!-- Modal: Create Worksheet
+
+       NOTE: Instead of registering this modal for the
+       sample container, client and batch context,
+       we choose `*` to avoid any 404s when add-ons use
+       it somewhere else.
+
+       This means that the visibility of the custom transition
+       must be managed by the actual view.
+  -->
+  <browser:page
+      name="create_worksheet_modal"
+      for="*"
+      class=".sample.CreateWorksheetModal"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:page
+      name="set_analysis_remarks_modal"
+      for="bika.lims.interfaces.IWorksheet"
+      class=".remarks.SetAnalysisRemarksModal"
+      permission="senaite.core.permissions.FieldEditAnalysisRemarks"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:page
+      name="set_analysis_conditions"
+      for="*"
+      class=".analysis.SetAnalysisConditionsView"
+      permission="senaite.core.permissions.FieldEditAnalysisConditions"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

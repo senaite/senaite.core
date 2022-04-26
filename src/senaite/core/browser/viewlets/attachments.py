@@ -15,12 +15,17 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import FieldEditAnalysisResult
 from bika.lims import api
+from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IReferenceAnalysis
 from plone.app.layout.viewlets.common import ViewletBase
+from plone.memoize import view
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.permissions.worksheet import can_add_worksheet_attachment
 
 
 class AttachmentsViewlet(ViewletBase):
@@ -46,8 +51,7 @@ class AttachmentsViewlet(ViewletBase):
         # XXX: Hack to show the viewlet only on the AR base_view
         if not any(map(url.endswith, ["base_view", "manage_results"])):
             return False
-        return self.attachments_view.user_can_add_attachments() or \
-            self.attachments_view.user_can_update_attachments()
+        return True
 
     def update(self):
         """Called always before render()
@@ -75,9 +79,59 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         # XXX: Hack to show the viewlet only on the WS manage_results view
         if not self.request.getURL().endswith("manage_results"):
             return False
-        return True
+        return can_add_worksheet_attachment(self.context)
 
+    @view.memoize
     def get_services(self):
-        """Returns a list of AnalysisService objects
+        """Returns a list of dicts that represent the Analysis Services that
+        are editable and present in current Worksheet
         """
-        return self.context.getWorksheetServices()
+        services = set()
+        for analysis in self.context.getAnalyses():
+            # Skip non-editable analyses
+            if not check_permission(FieldEditAnalysisResult, analysis):
+                continue
+            service = analysis.getAnalysisService()
+            services.add(service)
+
+        # Return the
+        services = sorted(list(services), key=lambda s: api.get_title(s))
+        return map(self.get_service_info, services)
+
+    def get_service_info(self, service):
+        """Returns a dict that represents an analysis service
+        """
+        return {
+            "uid": api.get_uid(service),
+            "title": api.get_title(service),
+        }
+
+    @view.memoize
+    def get_analyses(self):
+        """Returns a list of dicts that represent the Analyses that are
+        editable and present in current Worksheet
+        """
+        analyses = set()
+        for analysis in self.context.getAnalyses():
+            # Skip Reference Analysis
+            if IReferenceAnalysis.providedBy(analysis):
+                continue
+                
+            # Skip non-editable analyses
+            if not check_permission(FieldEditAnalysisResult, analysis):
+                continue
+            analyses.add(analysis)
+
+        analyses = map(self.get_analysis_info, analyses)
+        return sorted(analyses, key=lambda s: s.get("title"))
+
+    def get_analysis_info(self, analysis):
+        """Returns a dict that represents an analysis
+        """
+        title = api.get_title(analysis)
+        sample_id = analysis.getRequestID()
+        position = self.context.get_slot_position_for(analysis)
+        return {
+            "uid": api.get_uid(analysis),
+            "title": "{}: {} - {}".format(str(position), sample_id, title)
+        }

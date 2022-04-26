@@ -1,0 +1,97 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="senaite_legacy_resources"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Dispatch samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="dispatch-samples-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form rowlike"
+                id="dispatch_samples_form"
+                name="dispatch_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <div i18n:translate="" class="mb-3 text-secondary">
+              The following sample(s) will be dispatched
+            </div>
+
+            <ul class="list mb-3" tal:repeat="sample view/get_samples_data">
+              <li class="list-item">
+                <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
+                <div class="list-group-item-heading">
+                  <a href="#" tal:attributes="href sample/url">
+                    <span tal:content="sample/title"/>
+                    <small>(<span tal:replace="sample/sample_type"/>)</small>
+                  </a>
+                </div>
+              </li>
+            </ul>
+
+            <div class="mb-3 field">
+              <label for="sample-dispatch-coment">Comment</label>
+              <span class="required"></span>
+              <textarea name="comment"
+                        class="form-control"
+                        id="sample-dispatch-coment"
+                        placeholder=""
+                        style="height: 150px"></textarea>
+              <small i18n:translate="" class="form-text text-muted">
+                Please write a comment where the listed sample(s) are dispatched
+              </small>
+            </div>
+
+            <!-- Form Controls -->
+            <div>
+              <input class="btn btn-primary btn-sm"
+                     type="submit"
+                     name="button_dispatch"
+                     i18n:attributes="value"
+                     value="Dispatch"/>
+              <input class="btn btn-secondary btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </metal:core>
+
+  </body>
+</html>

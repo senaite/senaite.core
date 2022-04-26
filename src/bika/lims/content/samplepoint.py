@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2020 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import sys
@@ -47,6 +47,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.sampletype import SampleTypeAwareMixin
 from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISamplePoint
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField(
@@ -96,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "
                           "selected, then all sample types are available."),
-            catalog_name='bika_setup_catalog',
+            catalog_name='senaite_catalog_setup',
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
@@ -131,7 +132,7 @@ schema['description'].schemata = 'default'
 
 class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin,
                   SampleTypeAwareMixin):
-    implements(IDeactivable)
+    implements(ISamplePoint, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
