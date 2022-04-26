@@ -88,8 +88,8 @@ def showRejectionMessage(worksheet):
 def getWorksheetLayouts():
     """ Getting additional layouts for Worksheet
     """
-    layouts = ()
+    layouts = []
     for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
-        layouts += layout_utility.getLayouts()
+        map(lambda entry: layouts.append(entry), layout_utility.getLayouts())
 
-    return DisplayList(layouts)
+    return DisplayList(tuple(layouts))
