@@ -1337,7 +1337,7 @@
         if (data['errors']) {
           msg = data.errors.message;
           if (msg !== "") {
-            msg = msg + "<br/>";
+            msg = _("Sorry, an error occured 🙈<p class='code'>" + msg + "</p>");
           }
           for (fieldname in data.errors.fielderrors) {
             field = $("#" + fieldname);
