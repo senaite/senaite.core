@@ -74,6 +74,9 @@ def upgrade(tool):
     # Migrate containes
     migrate_containers_to_dx(portal)
 
+    # Migrate worksheet layouts
+    migrate_worksheet_layouts(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -188,3 +191,27 @@ def update_analysis_conditions(portal):
         analysis.setConditions(conditions)
 
     logger.info("Updating service conditions for Analyses [DONE]")
+
+
+def migrate_worksheet_layouts(portal):
+    """Walks through all worksheets and migrates the layout settings like this:
+
+       1 -> analyses_classic_view
+       2 -> analyses_transposed_view
+    """
+    logger.info("Migrating worksheet layouts ...")
+    mapping = {"1": "analyses_classic_view", "2": "analyses_transposed_view"}
+    query = {"portal_type": "Worksheet"}
+    brains = api.search(query)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Migrating worksheet: {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        layout = mapping.get(obj.getLayout())
+        if layout:
+            # set the new layout
+            obj.setLayout(layout)
+
+    logger.info("Migrating worksheet layouts [DONE]")
