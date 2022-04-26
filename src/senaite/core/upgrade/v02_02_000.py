@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import _run_import_step
@@ -202,16 +203,16 @@ def migrate_worksheet_layouts(portal):
     logger.info("Migrating worksheet layouts ...")
     mapping = {"1": "analyses_classic_view", "2": "analyses_transposed_view"}
     query = {"portal_type": "Worksheet"}
-    brains = api.search(query)
+    brains = api.search(query, WORKSHEET_CATALOG)
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Migrating worksheet: {0}/{1}".format(num, total))
 
         obj = api.get_object(brain)
-        layout = mapping.get(obj.getLayout())
+        layout = mapping.get(str(obj.getResultsLayout()), None)
         if layout:
             # set the new layout
-            obj.setLayout(layout)
+            obj.setResultsLayout(layout)
 
     logger.info("Migrating worksheet layouts [DONE]")
