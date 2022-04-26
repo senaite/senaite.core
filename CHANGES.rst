@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #1985 Disallow client users to create sample partitions (#1965 port)
 - #1984 Fix default roles for client field in samples (#1968 port)
 - #1983 Better error messages in sample add form (#1970 port)
 - #1982 Fix IndexError in Unit formatter (#1975 + #1980 port)
