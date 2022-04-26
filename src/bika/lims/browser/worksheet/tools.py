@@ -18,12 +18,10 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IWorksheetLayouts
 
 from zope.component import getUtilitiesFor
-from plone.memoize.volatile import cache
 
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import DisplayList
@@ -87,7 +85,6 @@ def showRejectionMessage(worksheet):
         worksheet.plone_utils.addPortalMessage(msg)
 
 
-@cache(api.bika_cache_key_decorator)
 def getWorksheetLayouts():
     """ Getting additional layouts for Worksheet
     """
