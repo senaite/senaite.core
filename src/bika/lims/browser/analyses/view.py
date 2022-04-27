@@ -907,13 +907,9 @@ class AnalysesView(ListingView):
         result_type = interim.get("result_type", "")
         return result_type.startswith("multi")
 
-    def get_interim_value(self, interim):
-        """Returns the typed value of the interim
+    def to_list(self, value):
+        """Converts the value to a list
         """
-        value = interim.get("value", "")
-        if not self.is_multi_interim(interim):
-            return value
-        # This i a multi valued/select/choice interim
         try:
             val = json.loads(value)
             if isinstance(val, (list, tuple, set)):
@@ -980,19 +976,10 @@ class AnalysesView(ListingView):
 
             # Does interim's results list needs to be rendered?
             choices = interim_field.get("choices")
-            result_type = interim_field.get("result_type")
-            if choices or result_type in ["multivalue"]:
-                # This i a multi valued/select/choice interim
-                try:
-                    val = json.loads(interim_value)
-                    if isinstance(val, (list, tuple, set)):
-                        interim_value = val
-                except ValueError:
-                    pass
-                if not isinstance(interim_value, (list, tuple, set)):
-                    interim_value = [interim_value]
-
             if choices:
+                # Process the value as a list
+                interim_value = self.to_list(interim_value)
+
                 # Get the {value:text} dict
                 choices = choices.split("|")
                 choices = dict(map(lambda ch: ch.strip().split(":"), choices))
@@ -1014,7 +1001,9 @@ class AnalysesView(ListingView):
 
                 item[interim_keyword] = interim_field
 
-            elif result_type in ["multivalue"]:
+            elif self.is_multi_interim(interim_field):
+                # Process the value as a list
+                interim_value = self.to_list(interim_value)
 
                 # Set the text as the formatted value
                 text = "<br/>".join(filter(None, interim_value))
