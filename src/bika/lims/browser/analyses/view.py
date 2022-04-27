@@ -900,6 +900,30 @@ class AnalysesView(ListingView):
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
 
+    def is_multi_interim(self, interim):
+        """Returns whether the interim stores a list of values instead of a
+        single value
+        """
+        result_type = interim.get("result_type", "")
+        return result_type.startswith("multi")
+
+    def get_interim_value(self, interim):
+        """Returns the typed value of the interim
+        """
+        value = interim.get("value", "")
+        if not self.is_multi_interim(interim):
+            return value
+        # This i a multi valued/select/choice interim
+        try:
+            val = json.loads(value)
+            if isinstance(val, (list, tuple, set)):
+                value = val
+        except ValueError:
+            pass
+        if not isinstance(value, (list, tuple, set)):
+            value = [value]
+        return value
+
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
 
@@ -956,6 +980,18 @@ class AnalysesView(ListingView):
 
             # Does interim's results list needs to be rendered?
             choices = interim_field.get("choices")
+            result_type = interim_field.get("result_type")
+            if choices or result_type in ["multivalue"]:
+                # This i a multi valued/select/choice interim
+                try:
+                    val = json.loads(interim_value)
+                    if isinstance(val, (list, tuple, set)):
+                        interim_value = val
+                except ValueError:
+                    pass
+                if not isinstance(interim_value, (list, tuple, set)):
+                    interim_value = [interim_value]
+
             if choices:
                 # Get the {value:text} dict
                 choices = choices.split("|")
@@ -967,20 +1003,21 @@ class AnalysesView(ListingView):
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
                 item.setdefault("choices", {})[interim_keyword] = dl
 
-                # Maybe the value is a multi-select/multi-choice?
-                try:
-                    val = json.loads(interim_value)
-                    if isinstance(val, (list, tuple, set)):
-                        interim_value = val
-                except ValueError:
-                    pass
-
-                if not isinstance(interim_value, (list, tuple, set)):
-                    interim_value = [interim_value]
-
                 # Set the text as the formatted value
                 texts = [choices.get(v, "") for v in interim_value]
                 text = "<br/>".join(filter(None, texts))
+                interim_field["formatted_value"] = text
+
+                if not is_editable:
+                    # Display the text instead of the value
+                    interim_field["value"] = text
+
+                item[interim_keyword] = interim_field
+
+            elif result_type in ["multivalue"]:
+
+                # Set the text as the formatted value
+                text = "<br/>".join(filter(None, interim_value))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:
