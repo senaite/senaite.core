@@ -27,13 +27,14 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
+from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
-from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.numbergenerator import INumberGenerator
@@ -417,8 +418,8 @@ schema = BikaFolderSchema.copy() + Schema((
     StringField(
         'WorksheetLayout',
         schemata="Appearance",
-        default='1',
-        vocabulary=WORKSHEET_LAYOUT_OPTIONS,
+        default=DEFAULT_WORKSHEET_LAYOUT,
+        vocabulary=getWorksheetLayouts(),
         widget=SelectionWidget(
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "

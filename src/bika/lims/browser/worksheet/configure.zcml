@@ -7,6 +7,13 @@
   <!-- needed for moved worksheet permissions -->
   <include package="senaite.core.permissions" />
 
+  <!-- Default worksheet layouts (classic and transposed view) -->
+  <utility
+      name="default_worksheet_layouts"
+      factory=".utility.DefaultWorksheetLayouts"
+      provides="bika.lims.interfaces.IWorksheetLayouts"
+  />
+
   <!-- Views -->
   <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"

@@ -29,7 +29,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
@@ -48,6 +48,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import push_reindex_to_actions_pool
 from bika.lims.workflow import skip
+from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
@@ -135,8 +136,8 @@ schema = BikaSchema.copy() + Schema((
 
     StringField(
         'ResultsLayout',
-        default='1',
-        vocabulary=WORKSHEET_LAYOUT_OPTIONS,
+        default=DEFAULT_WORKSHEET_LAYOUT,
+        vocabulary=getWorksheetLayouts(),
     ),
 ),
 )
