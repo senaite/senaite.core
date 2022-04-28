@@ -752,7 +752,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getUnit(self):
         """Returns the Unit
         """
-        unit = self.Schema().getField("Unit").get(self)
+        unit = self.Schema().getField("Unit").get(self) or ""
         return unit.strip()
 
     @security.public

@@ -448,10 +448,13 @@ class InterimFieldsValidator:
     def validate_choices(self, interim):
         """Checks whether the choices are valid for the given interim
         """
+        result_type = interim.get("result_type", "")
         choices = interim.get("choices")
         if not choices:
-            # No choices set, nothing to do
-            return
+            # No choices set, result type should remain empty or multivalue
+            if result_type in ["", "multivalue"]:
+                return
+            return _t(_("Control type is not supported for empty choices"))
 
         # Choices are expressed like "value0:text0|value1:text1|..|valuen:textn"
         choices = choices.split("|") or []
@@ -477,6 +480,11 @@ class InterimFieldsValidator:
         if len(keys) < 2:
             return _t(_("At least, two options for choices field are required"))
 
+        # Multivalue is not supported with choices
+        if result_type in ["multivalue"]:
+            return _t(_(
+                "Multiple values control type is not supported for choices"
+            ))
 
 validation.register(InterimFieldsValidator())
 
