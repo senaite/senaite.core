@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1988 Multivalue support for interim fields
 - #1987 Fix: ProfileKey shown in Profiles table
 - #1981 Support for interim fields with empty values
 - #1979 Multiselect/Multichoice support for interim fields

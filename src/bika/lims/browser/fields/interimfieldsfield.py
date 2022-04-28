@@ -102,6 +102,7 @@ class InterimFieldsField(RecordsField):
                 ('select', _('Selection list')),
                 ('multiselect', _('Multiple selection')),
                 ('multichoice', _('Multiple choices')),
+                ('multivalue', _('Multiple values')),
             )),
         },
     })
