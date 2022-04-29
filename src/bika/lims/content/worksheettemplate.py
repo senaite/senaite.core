@@ -38,6 +38,7 @@ from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
@@ -99,7 +100,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("Method",),
         relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
-        widget=ReferenceWidget(
+        widget=SelectionWidget(
             format="select",
             label=_("Method"),
             description=_(
