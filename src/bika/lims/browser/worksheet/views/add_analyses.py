@@ -115,12 +115,6 @@ class AddAnalysesView(BikaListingView):
 
     def __call__(self):
         super(AddAnalysesView, self).__call__()
-        wst = self.context.getWorksheetTemplate()
-        if wst:
-            method = wst.getRawRestrictToMethod()
-            # restrict the available analysis services by method
-            if method:
-                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
 
         # TODO: Refactor Worfklow
         grant = self.is_edit_allowed() and self.is_manage_allowed()
@@ -156,6 +150,12 @@ class AddAnalysesView(BikaListingView):
         """Update hook
         """
         super(AddAnalysesView, self).update()
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            method = wst.getRawRestrictToMethod()
+            # restrict the available analysis services by method
+            if method:
+                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
 
     def handle_submit(self):
         """Handle form submission
