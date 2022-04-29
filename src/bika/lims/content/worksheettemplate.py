@@ -202,6 +202,11 @@ class WorksheetTemplate(BaseContent):
 
         return DisplayList(list(items))
 
+    def getRawInstruments(self):
+        """List of Instrument UIDs capable to perform this method
+        """
+        return map(api.get_uid, self.getInstruments())
+
     def getMethodUID(self):
         """Return method UID
         """
