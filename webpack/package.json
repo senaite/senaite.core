@@ -1,6 +1,6 @@
 {
   "name": "senaite.core",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "main": "app/senaite.core.js",
   "scripts": {
     "build": "mode=production webpack",
@@ -22,6 +22,7 @@
     "@fortawesome/fontawesome-free": "^5.15.4",
     "bootstrap": "^4.6.0",
     "bootstrap-confirmation2": "^4.2.1",
+    "bootstrap-select": "^1.13.18",
     "jquery": "<3",
     "jquery-form": "^4.3.0",
     "jquery-migrate": "<2",

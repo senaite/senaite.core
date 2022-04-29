@@ -118,8 +118,6 @@ def get_version(obj):
     :returns: Current version of the object or -1
     """
     count = get_snapshot_count(obj)
-    if count == 0:
-        return -1
     return count - 1
 
 
@@ -441,6 +439,8 @@ def _get_title_or_id_from_uid(uid):
     try:
         obj = api.get_object_by_uid(uid)
     except api.APIError:
+        obj = None
+    if not obj:
         return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id

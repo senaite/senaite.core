@@ -20,18 +20,18 @@
 
 import collections
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IWorksheetTemplates
-from bika.lims.permissions import AddWorksheetTemplate
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.permissions import AddWorksheetTemplate
 from zope.interface.declarations import implements
 
 

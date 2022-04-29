@@ -27,13 +27,14 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
+from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
-from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.numbergenerator import INumberGenerator
@@ -58,9 +59,9 @@ from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.locales import COUNTRIES
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
@@ -151,16 +152,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
 
 
 schema = BikaFolderSchema.copy() + Schema((
-    IntegerField(
-        'PasswordLifetime',
-        schemata="Security",
-        required=1,
-        default=0,
-        widget=IntegerWidget(
-            label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
-        )
-    ),
     IntegerField(
         'AutoLogOff',
         schemata="Security",
@@ -427,8 +418,8 @@ schema = BikaFolderSchema.copy() + Schema((
     StringField(
         'WorksheetLayout',
         schemata="Appearance",
-        default='1',
-        vocabulary=WORKSHEET_LAYOUT_OPTIONS,
+        default=DEFAULT_WORKSHEET_LAYOUT,
+        vocabulary=getWorksheetLayouts(),
         widget=SelectionWidget(
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "
@@ -930,8 +921,8 @@ class BikaSetup(folder.ATFolder):
             return portal_type
 
     def getCountries(self):
-        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items = geo.get_countries()
+        items = map(lambda country: (country.alpha_2, country.name), items)
         return items
 
     def isRejectionWorkflowEnabled(self):

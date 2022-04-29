@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 import six
 
+from bika.lims.api import APIError
 from bika.lims.api import get_tool
-from Products.ZCatalog.interfaces import IZCatalog
-from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
+from bika.lims.api import safe_unicode
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
 from Products.CMFPlone.UnicodeSplitter import Splitter
+from Products.ZCatalog.interfaces import IZCatalog
+from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
-from Products.ZCatalog.ZCatalog import ZCatalog
-from bika.lims.api import APIError
 
 
 def get_catalog(name_or_obj):
@@ -73,8 +75,8 @@ def add_index(catalog, index, index_type, indexed_attrs=None):
         return add_zc_text_index(catalog, index)
     catalog.addIndex(index, index_type)
     # set indexed attribute
-    if indexed_attrs and hasattr(index, "indexed_attrs"):
-        index_obj = get_index(index)
+    index_obj = get_index(catalog, index)
+    if indexed_attrs and hasattr(index_obj, "indexed_attrs"):
         if not isinstance(indexed_attrs, list):
             indexed_attrs = [indexed_attrs]
         index_obj.indexed_attrs = indexed_attrs
@@ -192,3 +194,78 @@ def del_column(catalog, column):
 
     catalog.delColumn(column)
     return True
+
+
+def to_searchable_text_qs(qs, op="AND", wildcard=True):
+    """Convert the query string for a searchable text index
+
+    https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html#searching-zctextindexes
+
+    NOTE: we do not support parenthesis, questionmarks or negated searches,
+          because this raises quickly parse errors for ZCTextIndexes
+
+    :param qs: search string
+    :param op: operator for token concatenation
+    :param wildcard: append `*` to the tokens
+    :returns: sarchable text string
+    """
+    OPERATORS = ["AND", "OR"]
+
+    if op not in OPERATORS:
+        op = "AND"
+    if not isinstance(qs, six.string_types):
+        return ""
+
+    def is_op(token):
+        return token.upper() in OPERATORS
+
+    def append_op_after(index, token, tokens):
+        # do not append an operator after the last token
+        if index == len(tokens) - 1:
+            return False
+        # do not append an operator if the next token is an operator
+        next_token = tokens[num + 1]
+        if is_op(next_token):
+            return False
+        # append an operator (AND/OR) after this token
+        return True
+
+    # convert to unicode
+    term = safe_unicode(qs)
+
+    # splits the string on all non alphanumeric characters
+    tokens = re.split(r"[^\w]", term, flags=re.U | re.I)
+
+    # filter out all empty tokens
+    tokens = filter(None, tokens)
+
+    # cleanup starting operators
+    while tokens and is_op(tokens[0]):
+        tokens.pop(0)
+
+    # cleanup any trailing operators
+    while tokens and is_op(tokens[-1]):
+        tokens.pop(-1)
+
+    parts = []
+
+    for num, token in enumerate(tokens):
+
+        # append operators without changes and continue
+        if is_op(token):
+            parts.append(token.upper())
+            continue
+
+        # append wildcard to token
+        if wildcard and not is_op(token):
+            token = token + "*"
+
+        # append the token
+        parts.append(token)
+
+        # check if we need to append an operator after the current token
+        if append_op_after(num, token, tokens):
+            parts.append(op)
+
+    # return the final querystring
+    return u" ".join(parts)

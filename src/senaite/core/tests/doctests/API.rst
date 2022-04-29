@@ -99,6 +99,21 @@ This error can also be used for custom methods with the `fail` function::
     [...]
     APIError: This failed badly
 
+When default param is specified, the system returns the tool if the parameter
+is a string:
+
+    >>> api.get_tool("NotExistingTool", default="senaite_catalog_setup")
+    <SetupCatalog at /plone/senaite_catalog_setup>
+
+but returns the default value otherwise:
+
+    >>> api.get_tool("NotExistingTool", default=None) is None
+    True
+
+    >>> catalog_setup = api.get_tool("senaite_catalog_setup")
+    >>> api.get_tool("NotExistingTool", default=catalog_setup)
+    <SetupCatalog at /plone/senaite_catalog_setup>
+
 
 Getting an Object
 .................
@@ -1672,4 +1687,34 @@ Empty strings are returned unchanged:
 
     >>> text = ""
     >>> api.text_to_html(text, wrap="div")
+    ''
+
+
+Converting a string to UTF8
+...........................
+
+This function encodes unicode strings to UTF8.
+
+In this test we use the German letter `ä` which is in unicode `u'\xe4'`:
+
+    >>> api.to_utf8("ä")
+    '\xc3\xa4'
+
+    >>> api.to_utf8("\xc3\xa4")
+    '\xc3\xa4'
+
+    >>> api.to_utf8(api.safe_unicode("ä"))
+    '\xc3\xa4'
+
+    >>> api.to_utf8(u"\xe4")
+    '\xc3\xa4'
+
+Unsupported types return either the default value or fail:
+
+    >>> api.to_utf8(object())
+    Traceback (most recent call last):
+    ...
+    APIError: Expected string type, got '<type 'object'>'
+
+    >>> api.to_utf8(object(), default="")
     ''

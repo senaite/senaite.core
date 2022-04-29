@@ -27,6 +27,7 @@ from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.workflow import doActionFor
+from DateTime import DateTime
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
 
@@ -60,7 +61,8 @@ class WorkflowActionDownloadReportsAdapter(RequestContextAware):
             return self.download(pdf.data, filename, type="application/pdf")
 
         with self.create_archive(pdfs) as archive:
-            archive_name = "Reports-{}.zip".format(self.context.getName())
+            timestamp = DateTime().strftime("%Y%m%d_%H%M%S")
+            archive_name = "Reports-{}.zip".format(timestamp)
             data = archive.file.read()
             return self.download(data, archive_name, type="application/zip")
 

@@ -510,8 +510,7 @@
         return;
       }
       options = JSON.parse(field.attr("combogrid_options"));
-      url = this.get_base_url();
-      url += "/" + options.url;
+      url = options.url;
       url += "?_authenticator=" + (this.get_authenticator());
       url += "&catalog_name=" + catalog_name;
       url += "&colModel=" + (JSON.stringify(options.colModel));
@@ -532,7 +531,8 @@
       options.url = url;
       options.force_all = "false";
       field.combogrid(options);
-      return field.attr("search_query", "{}");
+      field.attr("search_query", "{}");
+      return field.trigger("blur");
     };
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, uid, title) {
@@ -1163,6 +1163,25 @@
           return $(_el).val(value);
         });
       });
+      $td1.find("input[type=number]").each(function(index, el) {
+        var j, results1;
+        console.debug("-> Copy text field");
+        $el = $(el);
+        value = $el.val();
+        return $.each((function() {
+          results1 = [];
+          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          return results1;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find("td[arnum=" + arnum + "]");
+          _el = $(_td).find("input[type=number]")[index];
+          return $(_el).val(value);
+        });
+      });
       $td1.find("textarea").each(function(index, el) {
         var j, results1;
         console.debug("-> Copy textarea field");
@@ -1199,6 +1218,63 @@
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find("input[type=radio]")[index];
           return $(_el).prop("checked", checked);
+        });
+      });
+      $td1.find("input[type='date']").each(function(index, el) {
+        var j, results1;
+        console.debug("-> Copy date field");
+        $el = $(el);
+        value = $el.val();
+        return $.each((function() {
+          results1 = [];
+          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          return results1;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find("td[arnum=" + arnum + "]");
+          _el = $(_td).find("input[type='date']")[index];
+          return $(_el).val(value);
+        });
+      });
+      $td1.find("input[type='time']").each(function(index, el) {
+        var j, results1;
+        console.debug("-> Copy time field");
+        $el = $(el);
+        value = $el.val();
+        return $.each((function() {
+          results1 = [];
+          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          return results1;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find("td[arnum=" + arnum + "]");
+          _el = $(_td).find("input[type='time']")[index];
+          return $(_el).val(value);
+        });
+      });
+      $td1.find("input[type='hidden']").each(function(index, el) {
+        var j, results1;
+        console.debug("-> Copy hidden field");
+        $el = $(el);
+        value = $el.val();
+        return $.each((function() {
+          results1 = [];
+          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          return results1;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find("td[arnum=" + arnum + "]");
+          _el = $(_td).find("input[type='hidden']")[index];
+          return $(_el).val(value);
         });
       });
       return $(me).trigger("form:changed");
@@ -1301,7 +1377,7 @@
         if (data['errors']) {
           msg = data.errors.message;
           if (msg !== "") {
-            msg = msg + "<br/>";
+            msg = _t("Sorry, an error occured 🙈<p class='code'>" + msg + "</p>");
           }
           for (fieldname in data.errors.fielderrors) {
             field = $("#" + fieldname);

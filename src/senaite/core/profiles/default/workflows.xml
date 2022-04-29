@@ -75,7 +75,7 @@
     <type type_id="Calculations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="Containers">
+    <type type_id="SampleContainers">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="ContainerTypes">
@@ -188,7 +188,7 @@
     <type type_id="Calculation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
-    <type type_id="Container">
+    <type type_id="SampleContainer">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="ContainerType">

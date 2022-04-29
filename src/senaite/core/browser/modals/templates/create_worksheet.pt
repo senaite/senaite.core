@@ -1,0 +1,81 @@
+<div class="create-worksheet-modal modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" i18n:translate="">Create worksheet</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form name="create-worksheet-form"
+            class="form"
+            method="POST"
+            enctype="multipart/form-data"
+            tal:attributes="action string:${here/absolute_url}/create_worksheet_modal">
+
+        <div class="form-group form-group-sm">
+          <label i18n:translate=""
+                 class="mr-2"
+                 for="analysis-categories-select">
+            Select analysis categories
+          </label>
+          <!-- Available Categories -->
+          <select multiple
+                  id="analysis-categories-select"
+                  name="categories"
+                  tal:define="categories view/get_analysis_categories">
+            <tal:options repeat="category categories">
+              <option tal:attributes="value python:category.get('uid')"
+                      tal:content="python:category.get('title')"/>
+            </tal:options>
+          </select>
+          <small id="analysis-categories-help"
+                 i18n:translate=""
+                 class="form-text text-muted">
+            Only analyses of the selected category will be added to the worksheet
+          </small>
+        </div>
+
+        <div class="form-group mt-2">
+          <input class="btn btn-sm btn-primary"
+                 type="submit"
+                 name="create_worksheet"
+                 disabled="disabled"
+                 i18n:attributes="value"
+                 value="Create Worksheet" />
+        </div>
+
+        <!-- hidden fields -->
+        <input type="hidden" name="submitted" value="1" />
+        <input tal:replace="structure context/@@authenticator/authenticator"/>
+        <input type="hidden" name="uids" value="" tal:attributes="value request/uids" />
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Initialize multi select -->
+  <script type="text/javascript">
+   $(function() {
+     // https://developer.snapappointments.com/bootstrap-select/options
+     $("select#analysis-categories-select").selectpicker({
+       actionsBox: true,
+       liveSearch: true,
+       noneSelectedText: _t("No items selected"),
+       selectAllText: _t("Select all"),
+       deselectAllText: _t("Deselect all")
+     });
+     // callback to toggle the submit button on or off
+     $("select#analysis-categories-select").on("changed.bs.select", function (e, clickedIndex, isSelected, previousValue) {
+       let el = e.currentTarget;
+       let submit = $("input[name='create_worksheet']");
+       if (el.value) {
+         submit.attr("disabled", false);
+       } else {
+         submit.attr("disabled", true);
+       }
+     });
+
+   });
+  </script>
+</div>

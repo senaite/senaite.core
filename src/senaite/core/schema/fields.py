@@ -41,11 +41,15 @@ class BaseField(Field):
 
     def get(self, object):
         """Custom field getter
+
+        see zope.schem._bootstrapfields.Field
         """
         return super(BaseField, self).get(object)
 
     def query(self, object, default=None):
         """Custom field query
+
+        see zope.schem._bootstrapfields.Field
         """
         return super(BaseField, self).query(object, default=default)
 
@@ -54,6 +58,8 @@ class BaseField(Field):
 
         This place would theoretically allow to set custom "change" events or
         check permissions to write the field.
+
+        see zope.schem._bootstrapfields.Field
         """
         super(BaseField, self).set(object, value)
 

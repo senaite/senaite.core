@@ -19,9 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import cgi
+import copy
 import json
 import math
 from decimal import Decimal
+from six import string_types
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -452,8 +454,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
-        # Always update ResultCapture date when this field is modified
-        self.setResultCaptureDate(DateTime())
+        prev_result = self.getField("Result").get(self) or ""
 
         # Convert to list ff the analysis has result options set with multi
         if self.getResultOptions() and "multi" in self.getResultOptionsType():
@@ -498,6 +499,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     else:
                         val = self.getUpperDetectionLimit()
 
+        # Update ResultCapture date if necessary
+        if not val:
+            self.setResultCaptureDate(None)
+        elif prev_result != val:
+            self.setResultCaptureDate(DateTime())
+
         # Set the result field
         self.getField("Result").set(self, val)
 
@@ -523,17 +530,24 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Add interims to mapping
         for i in interims:
-            if 'keyword' not in i:
+
+            interim_keyword = i.get("keyword")
+            if not interim_keyword:
                 continue
+
             # skip unset values
-            if i['value'] == '':
+            interim_value = i.get("value", "")
+            if interim_value == "":
                 continue
-            try:
-                ivalue = float(i['value'])
-                mapping[i['keyword']] = ivalue
-            except (TypeError, ValueError):
-                # Interim not float, abort
+
+            # Only floatable and UIDs are supported
+            if api.is_floatable(interim_value):
+                interim_value = float(interim_value)
+
+            elif not api.is_uid(interim_value):
                 return False
+
+            mapping[interim_keyword] = interim_value
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -1024,15 +1038,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return parent.absolute_url_path()
 
     @security.public
-    def getParentTitle(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent Title
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.Title()
-
-    @security.public
     def getWorksheetUID(self):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
@@ -1069,17 +1074,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :param keyword: the keyword of the interim
         :param value: the value for the interim
         """
-        # Ensure result integrity regards to None, empty and 0 values
-        val = str('' if not value and value != 0 else value).strip()
-        interims = self.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] == keyword:
-                interim['value'] = val
-                self.setInterimFields(interims)
-                return
+        # Ensure value format integrity
+        if value is None:
+            value = ""
+        elif isinstance(value, string_types):
+            value = value.strip()
+        elif isinstance(value, (list, tuple, set, dict)):
+            value = json.dumps(value)
 
-        logger.warning("Interim '{}' for analysis '{}' not found"
-                       .format(keyword, self.getKeyword()))
+        # Ensure result integrity regards to None, empty and 0 values
+        interims = copy.deepcopy(self.getInterimFields())
+        for interim in interims:
+            if interim.get("keyword") == keyword:
+                interim["value"] = str(value)
+        self.setInterimFields(interims)
 
     def getInterimValue(self, keyword):
         """Returns the value of an interim of this analysis

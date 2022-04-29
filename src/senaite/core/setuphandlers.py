@@ -20,8 +20,6 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from bika.lims.setuphandlers import add_dexterity_portal_items
-from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
@@ -45,6 +43,7 @@ from senaite.core.catalog import SenaiteCatalog
 from senaite.core.catalog import SetupCatalog
 from senaite.core.catalog import WorksheetCatalog
 from senaite.core.config import PROFILE_ID
+from senaite.core.upgrade.utils import temporary_allow_type
 from zope.component import getUtility
 from zope.interface import implementer
 
@@ -209,6 +208,65 @@ def install(context):
     setup_markup_schema(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
+
+
+def add_dexterity_setup_items(portal):
+    """Adds the Dexterity Container in the Setup Folder
+
+    N.B.: We do this in code, because adding this as Generic Setup Profile in
+          `profiles/default/structure` flushes the contents on every import.
+    """
+    # Tuples of ID, Title, FTI
+    items = [
+        ("dynamic_analysisspecs",  # ID
+         "Dynamic Analysis Specifications",  # Title
+         "DynamicAnalysisSpecs"),  # FTI
+
+        ("interpretation_templates",
+         "Interpretation Templates",
+         "InterpretationTemplates"),
+
+        ("sample_containers",
+         "Sample Containers",
+         "SampleContainers")
+    ]
+    setup = api.get_setup()
+    add_dexterity_items(setup, items)
+
+
+def add_dexterity_portal_items(portal):
+    """Adds the Dexterity Container in the Site folder
+
+    N.B.: We do this in code, because adding this as Generic Setup Profile in
+          `profiles/default/structure` flushes the contents on every import.
+    """
+    # Tuples of ID, Title, FTI
+    items = [
+        ("samples",  # ID
+         "Samples",  # Title
+         "Samples"),  # FTI
+    ]
+    add_dexterity_items(portal, items)
+
+    # Move Samples after Clients nav item
+    position = portal.getObjectPosition("clients")
+    portal.moveObjectToPosition("samples", position + 1)
+    portal.plone_utils.reindexOnReorder(portal)
+
+
+def add_dexterity_items(container, items):
+    """Adds a dexterity item, usually a folder in the container
+    :param container: container of the items to add
+    :param items: tuple of Id, Title, FTI
+    """
+    for id, title, fti in items:
+        obj = container.get(id)
+        if obj is None:
+            with temporary_allow_type(container, fti) as ct:
+                obj = api.create(ct, fti, id=id, title=title)
+        else:
+            obj.setTitle(title)
+        obj.reindexObject()
 
 
 def setup_core_catalogs(portal, catalog_classes=None, reindex=True):

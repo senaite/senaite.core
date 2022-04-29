@@ -1,16 +1,10 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Translators:
-# Ramon Bartl <rb@ridingbytes.com>, 2018
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Peru) (https://www.transifex.com/senaite/teams/87045/es_PE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +13,7 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: plone\n"
+"Domain: DOMAIN\n"
 "Language: es_PE\n"
 
 #: senaite/core/profiles/default/registry.xml
@@ -36,6 +30,10 @@ msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
+msgstr ""
+
+#: senaite/core/browser/dexterity/templates/container.pt:29
+msgid "Contents"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
@@ -101,10 +99,6 @@ msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
-msgstr ""
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Search"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
@@ -173,6 +167,7 @@ msgstr ""
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
 msgstr ""
 
+#. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
 msgid "action_convert_legacy_portlets"
@@ -203,6 +198,8 @@ msgstr ""
 msgid "contentrules_description_description"
 msgstr ""
 
+#. only be invoked if all the rule's conditions are met. You can add new
+#. actions and conditions using the buttons below."
 #. Default: "Rules execute when a triggering event occurs. Rule actions will only be invoked if all the rule's conditions are met. You can add new actions and conditions using the buttons below."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:23
 msgid "contentrules_description_execution"
@@ -227,6 +224,9 @@ msgstr ""
 msgid "continue with the upgrade"
 msgstr ""
 
+#. Rules will automatically perform actions on content when certain triggers
+#. take place. After defining rules, you may want to go to a folder to assign
+#. them, using the \"rules\" item in the actions menu."
 #. Default: "Use the form below to define, change or remove content rules. Rules will automatically perform actions on content when certain triggers take place. After defining rules, you may want to go to a folder to assign them, using the \"rules\" item in the actions menu."
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:24
 msgid "description-contentrules-controlpanel"
@@ -257,26 +257,41 @@ msgstr ""
 msgid "description_cookie_manual_override"
 msgstr ""
 
+#. sites that are under development. This allows many configuration changes to
+#. be immediately visible, but will make your site run more slowly. To turn
+#. off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg,
+#. re-run bin/buildout and then restart the server process."
 #. Default: "You are running in \"debug mode\". This mode is intended for sites that are under development. This allows many configuration changes to be immediately visible, but will make your site run more slowly. To turn off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
 msgid "description_debug_mode"
 msgstr ""
 
+#. assigned in this context. Use the buttons on each portlet to move them up
+#. or down, delete or edit them. To add a new portlet, use the drop-down list
+#. at the top of the column."
 #. Default: "The portlet columns will first display portlets explicitly assigned in this context. Use the buttons on each portlet to move them up or down, delete or edit them. To add a new portlet, use the drop-down list at the top of the column."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:52
 msgid "description_manage_contextual_portlets"
 msgstr ""
 
+#. you can do so using the drop-down boxes. Portlets that are included by
+#. these categories are shown below the selection box."
 #. Default: "If you wish to block or unblock certain categories of portlets, you can do so using the drop-down boxes. Portlets that are included by these categories are shown below the selection box."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:59
 msgid "description_portlets_block_unblock"
 msgstr ""
 
+#. mode of operation for a live Plone site, but means that some configuration
+#. changes will not take effect until your server is restarted or a product
+#. refreshed. If this is a development instance, and you want to enable debug
+#. mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run
+#. bin/buildout and then restart the server process."
 #. Default: "You are running in \"production mode\". This is the preferred mode of operation for a live Plone site, but means that some configuration changes will not take effect until your server is restarted or a product refreshed. If this is a development instance, and you want to enable debug mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
 msgid "description_production_mode"
 msgstr ""
 
+#. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
@@ -352,7 +367,7 @@ msgid "label_add_portlet_ellipsis"
 msgstr ""
 
 #. Default: "Cancel"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:257
+#: senaite/core/skins/senaite_templates/edit_macros.pt:258
 msgid "label_cancel"
 msgstr ""
 
@@ -406,6 +421,7 @@ msgstr ""
 msgid "label_edit"
 msgstr ""
 
+#. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/edit_macros.pt:49
 msgid "label_edit_default_view_container"
@@ -426,6 +442,7 @@ msgstr ""
 msgid "label_hide_item"
 msgstr ""
 
+#. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
 msgid "label_manage_portlets_default_view_container"
@@ -437,7 +454,7 @@ msgid "label_manage_portlets_default_view_container_go_here"
 msgstr ""
 
 #. Default: "Next"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:242
+#: senaite/core/skins/senaite_templates/edit_macros.pt:243
 msgid "label_next"
 msgstr ""
 
@@ -447,7 +464,7 @@ msgid "label_no_prefs_panels_available"
 msgstr ""
 
 #. Default: "Previous"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:234
+#: senaite/core/skins/senaite_templates/edit_macros.pt:235
 msgid "label_previous"
 msgstr ""
 
@@ -462,7 +479,7 @@ msgid "label_rule_event_trigger"
 msgstr ""
 
 #. Default: "Save"
-#: bika/lims/browser/templates/header_table.pt:113
+#: bika/lims/browser/templates/header_table.pt:122
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:60
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
 msgid "label_save"
@@ -488,6 +505,9 @@ msgstr ""
 msgid "return_to_view"
 msgstr ""
 
+#. various features including contact forms, email notification and password
+#. reset will not work. Go to the ${label_mail_control_panel_link} to fix
+#. this."
 #. Default: "You have not configured a mail host or a site 'From' address, various features including contact forms, email notification and password reset will not work. Go to the ${label_mail_control_panel_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:53
 msgid "text_no_mailhost_configured"
@@ -503,6 +523,8 @@ msgstr ""
 msgid "text_no_pil_installed"
 msgstr ""
 
+#. work properly for timezone aware date/time values. Go to the
+#. ${label_mail_event_settings_link} to fix this."
 #. Default: "You have not set the portal timezone. Date/Time handling will not work properly for timezone aware date/time values. Go to the ${label_mail_event_settings_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:74
 msgid "text_no_timezone_configured"

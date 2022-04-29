@@ -20,11 +20,9 @@ def isTemporary(self):
     # Fix indexing of temporary objects resulting in orphan entries in catalog
     # https://github.com/senaite/senaite.core/pull/1865
     if is_tmp_id(self.id) or is_tmp_id(parent.id):
-        logger.debug("Object %s is temporary!" % api.get_path(self))
+        logger.debug("AT object %s is temporary!" % api.get_path(self))
         return True
     # Checks to see if we are created as temporary object by
     # portal factory.
     tmp = shasattr(parent, "meta_type") and parent.meta_type == "TempFolder"
     return tmp
-
-

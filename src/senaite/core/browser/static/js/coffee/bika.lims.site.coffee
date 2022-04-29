@@ -8,9 +8,6 @@ class window.SiteView
   load: =>
     console.debug "SiteView::load"
 
-    # initialze datepickers
-    @init_datepickers()
-
     # initialze reference definition selection
     # @init_referencedefinition()
 
@@ -58,7 +55,7 @@ class window.SiteView
     $("body").on "keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", @on_at_integer_field_keyup
     $("body").on "keyup","input[name*='\\:float\'], .ArchetypesDecimalWidget input", @on_at_float_field_keyup
 
-    $("body").on "click", "a.service_info", @on_service_info_click
+    $("body").on "click", "a.overlay_panel", @on_overlay_panel_click
 
     # Show loader on Ajax events
     $(document).on
@@ -72,73 +69,6 @@ class window.SiteView
         $("body").removeClass "loading"
         return
 
-
-  init_datepickers: =>
-    ###
-     * Initialize date pickers
-    ###
-    console.debug "SiteView::init_datepickers"
-
-    # max past year to show
-    curDate = new Date()
-    y = curDate.getFullYear()
-    yearRange = "1900:" + y
-
-    # get a translated config object
-    lang = i18n?.currentLanguage or "en"
-    lang_config = $.datepicker.regional[lang] or $.datepicker.regional[""]
-
-    # translated date format
-    dateFormat = _t("date_format_short_datepicker")
-    if dateFormat == "date_format_short_datepicker"
-      dateFormat = "yy-mm-dd"
-
-    # https://api.jqueryui.com/datepicker
-    config = Object.assign lang_config,
-      dateFormat: dateFormat
-      timeFormat: "HH:mm"
-      showOn: "focus"
-      showAnim: "fadeIn"
-      changeMonth: yes
-      changeYear: yes
-      showWeek: yes
-      yearRange: yearRange
-      numberOfMonths: 1
-
-    # returns a customizable datepicker config
-    make_datepicker_config = (options) ->
-      if options is undefined
-        options = {}
-      # create a copy of the default config
-      default_config = Object.assign {}, config
-      # update the config with the custom options
-      return Object.assign default_config, options
-
-    # date picker w/o future date
-    $("input.datepicker_nofuture").datepicker(
-      make_datepicker_config(
-        maxDate: curDate
-      )
-    )
-
-    $("input.datepicker").datepicker(
-      make_datepicker_config()
-    )
-
-    # date picker that shows two months side by side
-    $("input.datepicker_2months").datepicker(
-      make_datepicker_config(
-        maxDate: curDate
-        numberOfMonths: 2
-      )
-    )
-
-    # date and time picker w/o future date
-    $("input.datetimepicker_nofuture").datetimepicker(
-      make_datepicker_config(
-        maxDate: curDate
-      )
-    )
 
   init_referencedefinition: =>
     ###
@@ -381,11 +311,11 @@ class window.SiteView
     return
 
 
-  on_service_info_click: (event) =>
+  on_overlay_panel_click: (event) =>
     ###
      * Eventhandler when the service info icon was clicked
     ###
-    console.debug "°°° SiteView::on_service_info_click °°°"
+    console.debug "°°° SiteView::on_overlay_panel_click °°°"
     event.preventDefault()
     el = event.currentTarget
 

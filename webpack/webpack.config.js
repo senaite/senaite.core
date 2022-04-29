@@ -122,7 +122,7 @@ module.exports = {
             drop_console: true,
             passes: 2,
           },
-	      }
+        }
       }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
@@ -210,8 +210,6 @@ module.exports = {
         src: [
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
-          "../src/senaite/core/browser/static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js",
-          "../src/senaite/core/browser/static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js",
           "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
@@ -264,9 +262,10 @@ module.exports = {
         { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
         { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
+        { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
         { from: "../node_modules/react/umd", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/react-dom/umd", to: path.resolve(staticPath, "modules/react-dom") },
-        { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce") },
+        { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},
         // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
     }),

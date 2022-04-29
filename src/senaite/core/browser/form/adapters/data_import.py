@@ -4,6 +4,7 @@ import json
 import os
 import traceback
 
+import transaction
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
@@ -45,6 +46,8 @@ class EditForm(EditFormAdapterBase):
             self.add_status_message(
                 message=tb, title="Error", level="danger", flush=True)
             logger.error(tb)
+            # avoid partial transaction commit
+            transaction.abort()
             return False
         self.add_status_message(
             message=_("Data import successful"),

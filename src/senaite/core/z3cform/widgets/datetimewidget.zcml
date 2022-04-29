@@ -1,0 +1,42 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="z3c.form">
+
+  <!-- Datetime Widget -->
+  <adapter
+      factory=".datetimewidget.DatetimeWidgetFactory"
+      for="senaite.core.schema.interfaces.IDatetimeField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Datetime data converter -->
+  <adapter factory=".datetimewidget.DatetimeDataConverter" />
+
+  <!-- Datetime data validator -->
+  <adapter factory=".datetimewidget.DatetimeDataValidator" />
+
+  <!-- Datetime input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".datetimewidget.DatetimeWidget"
+      template="datetimewidget_input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Datetime display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".datetimewidget.DatetimeWidget"
+      template="datetimewidget_display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Datetime hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".datetimewidget.DatetimeWidget"
+      template="datetimewidget_hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+</configure>

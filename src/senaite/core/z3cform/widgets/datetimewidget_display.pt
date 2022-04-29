@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+
+  <span
+    tal:attributes="id view/id;
+                    class view/klass;
+                    style view/style;
+                    title view/title;">
+    <tal:block content="python:view.get_display_value()" />
+  </span>
+</html>

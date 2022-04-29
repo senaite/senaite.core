@@ -21,18 +21,24 @@
 import math
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.widgets import ComboBoxWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInstrumentCertification
 from DateTime import DateTime
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
-# Widgets
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ReferenceField
-# Schema and Fields
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
@@ -40,18 +46,7 @@ from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-# bika.lims imports
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import ComboBoxWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims import logger
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IInstrumentCertification
-from plone.app.blob.field import FileField as BlobFileField
+from senaite.core.browser.widgets import DateTimeWidget
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -103,8 +98,9 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'Date',
         widget=DateTimeWidget(
-            label=_("Date"),
+            label=_("Date granted"),
             description=_("Date when the calibration certificate was granted"),
+            show_time=True,
         ),
     ),
 
@@ -120,29 +116,27 @@ schema = BikaSchema.copy() + Schema((
             default="",
             # configures the HTML input attributes for the additional field
             field_config={"type": "number", "step": "1", "max": "99999"},
-            field_regex="\d+"
+            field_regex=r"\d+"
         )
     ),
 
     DateTimeField(
         'ValidFrom',
-        with_time=1,
-        with_date=1,
         required=1,
         widget=DateTimeWidget(
-            label=_("From"),
-            description=_("Date from which the calibration certificate is valid"),
+            label=_("Valid from"),
+            description=_("Date when the certificate is valid"),
+            show_time=True,
         ),
     ),
 
     DateTimeField(
         'ValidTo',
-        with_time=1,
-        with_date=1,
         required=1,
         widget=DateTimeWidget(
-            label=_("To"),
+            label=_("Valid to"),
             description=_("Date until the certificate is valid"),
+            show_time=True,
         ),
     ),
 
@@ -213,14 +207,13 @@ class InstrumentCertification(BaseFolder):
     implements(IInstrumentCertification)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declareProtected("Modify portal content", "setValidTo")
+    @security.protected("Modify portal content")
     def setValidTo(self, value):
         """Custom setter method to calculate a `ValidTo` date based on
         the `ValidFrom` and `ExpirationInterval` field values.
@@ -232,11 +225,13 @@ class InstrumentCertification(BaseFolder):
 
         if valid_from and interval:
             valid_to = valid_from + int(interval)
+            # convert back to date string w/o timezone
+            valid_to = valid_to.strftime("%Y-%m-%dT%H:%M")
             self.getField("ValidTo").set(self, valid_to)
             logger.debug("Set ValidTo Date to: %r" % valid_to)
         else:
             # just set the value
-            self.getField("ValidTo").set(self, valid_to)
+            self.getField("ValidTo").set(self, value)
 
     def getLabContacts(self):
         bsc = getToolByName(self, 'senaite_catalog_setup')

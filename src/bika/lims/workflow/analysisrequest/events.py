@@ -173,7 +173,11 @@ def after_sample(analysis_request):
     """Method triggered after "sample" transition for the Analysis Request
     passed in is performed
     """
-    analysis_request.setDateSampled(DateTime())
+    # The date might be already set by the `Sample` listing workflow action
+    date_sampled = analysis_request.getDateSampled()
+    if not date_sampled:
+        # set to current date when empty
+        analysis_request.setDateSampled(DateTime())
 
 
 def after_rollback_to_receive(analysis_request):

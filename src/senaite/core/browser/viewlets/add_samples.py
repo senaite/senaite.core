@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from bika.lims.interfaces import IBatch
 from bika.lims.permissions import AddAnalysisRequest
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize.instance import memoize
@@ -37,6 +38,8 @@ class AddSamplesViewlet(ViewletBase):
     def get_samples_container(self):
         """Returns the container object where new samples will be added
         """
+        if IBatch.providedBy(self.context):
+            return self.context
         return api.get_current_client() or self.context
 
     @property

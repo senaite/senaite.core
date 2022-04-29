@@ -127,15 +127,16 @@ class ReferenceResults extends React.Component {
   build_rows() {
     let rows = [];
     let results = this.get_results();
-    for (let result of results) {
+    results.forEach((result, index) => {
       let uid = this.get_result_uid(result);
       rows.push(
         <tr uid={uid}
+            className={this.props.focused == index ? "table-active": ""}
             onClick={this.on_select}>
           {this.build_columns(result)}
         </tr>
       );
-    }
+    });
     return rows
   }
 
@@ -168,10 +169,14 @@ class ReferenceResults extends React.Component {
    * @returns {String} highlighted text
    */
   highlight(text, searchterm) {
-    let rx = new RegExp(searchterm, "gi");
-    let match = text.match(rx);
-    if (match) {
-      text = text.replace(match, "<span class='font-weight-bold text-info'>"+match+"</span>");
+    if (searchterm.length == 0) return text;
+    try {
+      let rx = new RegExp(searchterm, "gi");
+      text = text.replaceAll(rx, (m) => {
+        return "<span class='font-weight-bold text-info'>"+m+"</span>";
+      });
+    } catch (error) {
+      // pass
     }
     return text
   }

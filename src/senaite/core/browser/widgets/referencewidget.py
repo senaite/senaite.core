@@ -96,12 +96,25 @@ class ReferenceWidget(StringWidget):
             uid = None
         return uid, {}
 
+    def get_search_url(self, context):
+        """Prepare an absolute search url for the combobox
+        """
+        # ensure we have an absolute url for the current context
+        url = api.get_url(context)
+        # normalize portal factory urls
+        url = url.split("portal_factory")[0]
+        # ensure the search path does not contain already the url
+        search_path = self.url.split(url)[-1]
+        # return the absolute search url
+        return "/".join([url, search_path])
+
     def get_combogrid_options(self, context, fieldName):
         colModel = self.colModel
         if "UID" not in [x["columnName"] for x in colModel]:
             colModel.append({"columnName": "UID", "hidden": True})
+
         options = {
-            "url": self.url,
+            "url": self.get_search_url(context),
             "colModel": colModel,
             "showOn": self.showOn,
             "width": self.popup_width,
@@ -120,7 +133,10 @@ class ReferenceWidget(StringWidget):
     def get_base_query(self, context, fieldName):
         base_query = self.base_query
         if callable(base_query):
-            base_query = base_query()
+            try:
+                base_query = base_query(context, self, fieldName)
+            except TypeError:
+                base_query = base_query()
         if base_query and isinstance(base_query, six.string_types):
             base_query = json.loads(base_query)
 
@@ -136,7 +152,7 @@ class ReferenceWidget(StringWidget):
             if allowed_types \
             else self.portal_types
 
-        return json.dumps(self.base_query)
+        return json.dumps(base_query)
 
     def initial_uid_field_value(self, value):
         if type(value) in (list, tuple):

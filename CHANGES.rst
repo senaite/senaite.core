@@ -1,9 +1,77 @@
 Changelog
 =========
 
-2.0.1 (unreleased)
+2.2.0 (unreleased)
 ------------------
 
+- #1977 Add custom worksheet layout feature
+- #1988 Multivalue support for interim fields
+- #1987 Fix: ProfileKey shown in Profiles table
+- #1981 Support for interim fields with empty values
+- #1979 Multiselect/Multichoice support for interim fields
+- #1980 Fix: Absent value for Unit field causes error
+- #1978 Unify field sizes in sample view
+- #1975 Fix IndexError in Unit formatter
+- #1973 Fix AjaxEditForm does not work for default edit form of Dexterity types
+- #1970 Better error messages in sample add form
+- #1960 AddressField and AddressWidget with React component for DX types
+- #1968 Fix default roles for client field in samples
+- #1962 Allow to create worksheet from samples
+- #1966 Fix to set analysis results in batchbooks
+- #1965 Disallow client users to create sample partitions
+- #1964 Fix add samples URL in batch context for Clients
+- #1963 Hide custom set-remarks transition when global remarks are disabled in setup
+- #1961 Added `geo` api  that relies on `pycountry` for retrieval of countries
+- #1911 Converted Container to Dexterity Contents
+- #1931 Removed archetypes.schemaextender from senaite.core
+- #1953 Allow custom id formatting regardless of portal type
+- #1952 Open analysis specification ranges
+- #1951 Hide method and instrument columns in analysis listing when not required
+- #1947 Fix worksheet attachments viewlet
+- #1946 Fix conditions issue in Reference Analyses display view
+- #1944 Add handler for "content_status_modify"-like requests
+- #1943 Support UIDs from interim fields as input values for calculations
+- #1942 Fix tab styling in email log popup
+- #1941 Fixed error with sampler mail
+- #1938 Converted sample interpretation and remarks widgets into viewlets
+- #1937 Position the user to the analysis listing after an action is triggered
+- #1935 Allow to edit analysis (pre) conditions
+- #1936 Do not display capture date when no result or default result
+- #1933 Added SENAITE maintenance scripts
+- #1932 Fix cannot attach documents to individual analyses in Worksheet context
+- #1930 Ensure valid timezone in DX datetime field setter
+- #1927 Fix Analysis attachment is copied on retest
+- #1928 Added `on_change` hook for methods in analyses listings
+- #1925 Fix sample transition in listings
+- #1924 Fix Login screen shows message error while rendering plone.htmlhead.socialtags
+- #1923 Use native date input fields in reports
+- #1920 Fix indexed attributes not set when adding a new index with catalog API
+- #1918 Fix stale combobox items displayed when search query changed
+- #1917 Fix wrong context in reference widget lookups
+- #1916 Provide the request record to object info adapters in the sample add form
+- #1913 Ported PR #1865 for dexterity contents
+- #1915 Support list queries in dx reference widget
+- #1914 Provide context, widget and fieldname for callable base queries in AT reference widgets
+- #1912 Fixed typo in sample view
+- #1909 Allow to navigate and select with arrow keys in dexterity reference widget
+- #1908 Added searchable text querystring converter to catalog API
+- #1907 Fix datetime field/widget shows current date and time if empty
+- #1905 Fix empty field in sample add form when using edit accessor
+
+
+2.1.0 (2022-01-05)
+------------------
+
+- #1903 Added date and time field/widget for Dexterity contents
+- #1901 Ensure `get_tool` returns a tool when a name is set as the default param
+- #1900 Fix snapshot listing fails on orphan catalog entries
+- #1897 Support date and number fields copy in sample add form
+- #1896 Custom date and time widget
+- #1895 Disable native form validation in header table
+- #1893 Removed unused field PasswordLifeTime
+- #1892 Drop jQuery Datepicker for HTML5 native date fields
+- #1890 Fix DurationValidator when field value is empty
+- #1886 Use the current timestamp instead of the client name for report archive download
 - #1883 Fix possible XSS in remarks field
 - #1882 Fix catalog query in analysis category modified handler
 - #1878 Fix two dimension results parser for Analyses containing a dash in the name

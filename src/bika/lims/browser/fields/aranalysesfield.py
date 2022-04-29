@@ -262,8 +262,9 @@ class ARAnalysesField(ObjectField):
             analysis.setInternalUse(parent_sample.getInternalUse())
 
             # Set the default result to the analysis
-            if not analysis.getResult():
+            if not analysis.getResult() and default_result:
                 analysis.setResult(default_result)
+                analysis.setResultCaptureDate(None)
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()

@@ -553,6 +553,15 @@ class IWorksheetTemplate(Interface):
     """
 
 
+class IWorksheetLayouts(Interface):
+    """Marker interface for additional Worksheet layouts
+    """
+
+    def getLayouts(self):
+        """Returns tuples of layouts where key is the name of the view and value is name of layout
+        """
+
+
 class IBikaCatalog(Interface):
     """Marker interface for bika_catalog
     """
@@ -603,6 +612,17 @@ class IIdServerVariables(Interface):
 
     def get_variables(self, **kw):
         """Returns a dict with variables
+        """
+
+
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
         """
 
 
@@ -839,6 +859,8 @@ class IProxyField(Interface):
     """A field that proxies transparently to the field of another object.
     Mainly needed for AnalysisRequest fields that are actually stored on the
     Sample.
+
+    TODO: Remove after the field manager has been removed from `senaite.jsonapi`
     """
 
 
@@ -1142,3 +1164,8 @@ class IListingSearchableTextProvider(Interface):
     catalog index
     """
     pass
+
+
+class IBatchBookView(Interface):
+    """Marker interface for batchbook view
+    """

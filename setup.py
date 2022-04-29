@@ -21,7 +21,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-version = "2.0.1"
+version = "2.2.0"
 
 setup(
     name="senaite.core",
@@ -69,7 +69,7 @@ setup(
         "Products.DataGridField",
         "Products.TextIndexNG3",
         "Products.contentmigration",
-        # XXX: Remove after 2.0.1
+        # XXX: Remove after 2.1.0
         "zopyx.txng3.ext==3.4.0",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",
@@ -87,7 +87,6 @@ setup(
         # TODO: better integrate just the JS files w/o this package
         "plone.app.jquerytools",
         # "collective.js.jqueryui",
-        "archetypes.schemaextender",
         # SENAITE
         "senaite.lims",
         # openpyxl >= 3.0.0 does not support Python 2.x anymore
@@ -95,6 +94,8 @@ setup(
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
         "collective.z3cform.datagridfield",
+        # pycountry > 18.12.8 does not support Python 2.x anymore
+        "pycountry==18.12.8",
     ],
     extras_require={
         "test": [
@@ -106,5 +107,10 @@ setup(
           # -*- Entry points: -*-
           [z3c.autoinclude.plugin]
           target = plone
+
+          [console_scripts]
+          reindex = senaite.core.scripts:reindex
+          upgrade-sites = senaite.core.scripts:upgrade_sites
+          zope-passwd = senaite.core.scripts:zope_passwd
           """,
 )

@@ -30,6 +30,10 @@ msgstr ""
 msgid "Content rule settings updated."
 msgstr ""
 
+#: senaite/core/browser/dexterity/templates/container.pt:29
+msgid "Contents"
+msgstr ""
+
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
 msgstr ""
@@ -93,10 +97,6 @@ msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
-msgstr ""
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Search"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
@@ -344,7 +344,7 @@ msgid "label_add_portlet_ellipsis"
 msgstr ""
 
 #. Default: "Cancel"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:257
+#: senaite/core/skins/senaite_templates/edit_macros.pt:258
 msgid "label_cancel"
 msgstr ""
 
@@ -429,7 +429,7 @@ msgid "label_manage_portlets_default_view_container_go_here"
 msgstr ""
 
 #. Default: "Next"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:242
+#: senaite/core/skins/senaite_templates/edit_macros.pt:243
 msgid "label_next"
 msgstr ""
 
@@ -439,7 +439,7 @@ msgid "label_no_prefs_panels_available"
 msgstr ""
 
 #. Default: "Previous"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:234
+#: senaite/core/skins/senaite_templates/edit_macros.pt:235
 msgid "label_previous"
 msgstr ""
 
@@ -454,7 +454,7 @@ msgid "label_rule_event_trigger"
 msgstr ""
 
 #. Default: "Save"
-#: bika/lims/browser/templates/header_table.pt:113
+#: bika/lims/browser/templates/header_table.pt:122
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:60
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
 msgid "label_save"

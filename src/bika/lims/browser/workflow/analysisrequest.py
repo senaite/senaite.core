@@ -295,14 +295,17 @@ class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
 
     def __call__(self, action, objects):
         # Assign the Sampler and DateSampled
-        transitioned = filter(lambda obj: self.set_sampler_info(obj), objects)
-        if not transitioned:
-            return self.redirect(message=_("No changes made"), level="warning")
+        for obj in objects:
+            try:
+                self.set_sampler_info(obj)
+            except ValueError as e:
+                return self.redirect(message=str(e), level="warning")
 
         # Trigger "sample" transition
-        transitioned = self.do_action(action, transitioned)
+        transitioned = self.do_action(action, objects)
         if not transitioned:
-            return self.redirect(message=_("No changes made"), level="warning")
+            message = _("Could not transition samples to the sampled state")
+            return self.redirect(message=message, level="warning")
 
         # Redirect the user to success page
         return self.success(transitioned)
@@ -315,13 +318,29 @@ class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
         if sample.getSampler() and sample.getDateSampled():
             # Sampler and Date Sampled already set. This is correct
             return True
-        sampler = self.get_form_value("Sampler", sample, sample.getSampler())
+
+        # Try to get the sampler and date sampled from the request.
+        # This might happen when the "Sample" transition is triggered from the
+        # samples listing view (form keys == column names of the listing)
+
+        # try to get the sampler from the request
+        sampler = self.get_form_value("getSampler", sample,
+                                      sample.getSampler())
+        if not sampler:
+            sid = api.get_id(sample)
+            raise ValueError(_("Sampler required for sample %s" % sid))
+
+        # try to get the date sampled from the request
         sampled = self.get_form_value("getDateSampled", sample,
                                       sample.getDateSampled())
-        if not all([sampler, sampled]):
-            return False
+        if not sampled:
+            sid = api.get_id(sample)
+            raise ValueError(_("Sample date required for sample %s" % sid))
+
+        # set the field values
         sample.setSampler(sampler)
-        sample.setDateSampled(DateTime(sampled))
+        sample.setDateSampled(sampled)
+
         return True
 
 

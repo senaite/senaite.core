@@ -21,13 +21,11 @@
 from .addressfield import AddressField  # noqa
 from .aranalysesfield import ARAnalysesField # noqa
 from .coordinatefield import CoordinateField # noqa
-from .datetimefield import DateTimeField # noqa
 from .durationfield import DurationField # noqa
 from .emailsfield import EmailsField # noqa
 from .historyawarereferencefield import HistoryAwareReferenceField # noqa
 from .interimfieldsfield import InterimFieldsField # noqa
 from .partitionsetupfield import PartitionSetupField # noqa
-from .proxyfield import ProxyField # noqa
 from .referenceresultsfield import ReferenceResultsField # noqa
 from .resultrangefield import ResultRangeField # noqa
 from .resultsrangesfield import ResultsRangesField # noqa

@@ -31,9 +31,10 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
-from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.permissions import ManageWorksheets
+from bika.lims.browser.worksheet.tools import getWorksheetLayouts
+from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.utils import getUsers
+from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class ManageResultsView(BrowserView):
@@ -49,29 +50,28 @@ class ManageResultsView(BrowserView):
             "/++plone++senaite.core.static/assets/icons/worksheet.svg"
         )
 
-        self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS
-
     def __call__(self):
         # TODO: Refactor this function call
         showRejectionMessage(self.context)
 
         # Save the results layout
         rlayout = self.request.get("resultslayout", "")
-        if rlayout and rlayout in WORKSHEET_LAYOUT_OPTIONS.keys() \
+        if rlayout and rlayout in self.layout_displaylist.keys() \
            and rlayout != self.context.getResultsLayout():
             self.context.setResultsLayout(rlayout)
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, "info")
 
-        # Classic/Transposed View Switch
-        if self.context.getResultsLayout() == "1":
-            view = "analyses_classic_view"
-            self.Analyses = api.get_view(
-                view, context=self.context, request=self.request)
-        else:
-            view = "analyses_transposed_view"
-            self.Analyses = api.get_view(
-                view, context=self.context, request=self.request)
+        # Classic/Transposed or additional View Switch
+        view = self.context.getResultsLayout()
+        if view not in self.layout_displaylist.keys():
+            message = _("Layout view '{}' not found. Set '{}' as layout view.".format(view, DEFAULT_WORKSHEET_LAYOUT))
+            self.context.plone_utils.addPortalMessage(message, "warning")
+            view = DEFAULT_WORKSHEET_LAYOUT
+            self.context.setResultsLayout(view)
+
+        self.Analyses = api.get_view(
+            view, context=self.context, request=self.request)
 
         self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.get_instrument_title()
@@ -80,6 +80,10 @@ class ManageResultsView(BrowserView):
         self.checkInstrumentsValidity()
 
         return self.template()
+
+    @property
+    def layout_displaylist(self):
+        return getWorksheetLayouts()
 
     def get_analysts(self):
         """Returns Analysts
@@ -100,8 +104,7 @@ class ManageResultsView(BrowserView):
     def is_manage_allowed(self):
         """Check if manage is allowed
         """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(ManageWorksheets, self.context)
+        return can_manage_worksheets(self.context)
 
     @view.memoize
     def is_assignment_allowed(self):

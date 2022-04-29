@@ -33,7 +33,6 @@ from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
@@ -121,6 +120,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -546,20 +546,24 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Container',
         required=0,
-        allowed_types='Container',
+        allowed_types='SampleContainer',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContainer,
         widget=ReferenceWidget(
             label=_("Container"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
             },
             catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
+            base_query={
+                "portal_type": "SampleContainer",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
             showOn=True,
         ),
     ),
@@ -573,6 +577,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
             label=_("Preservation"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -794,6 +799,7 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -2182,7 +2188,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         Returns the email of this analysis request's sampler.
         """
-        return user_email(self, self.Creator())
+        return user_email(self, self.getSampler())
 
     def getPriorityText(self):
         """

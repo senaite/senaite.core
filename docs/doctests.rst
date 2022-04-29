@@ -4,6 +4,9 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/API.rst
 .. include:: ../src/senaite/core/tests/doctests/API_analysis.rst
 .. include:: ../src/senaite/core/tests/doctests/API_analysisservice.rst
+.. include:: ../src/senaite/core/tests/doctests/API_catalog.rst
+.. include:: ../src/senaite/core/tests/doctests/API_datetime.rst
+.. include:: ../src/senaite/core/tests/doctests/API_geo.rst
 .. include:: ../src/senaite/core/tests/doctests/API_mail.rst
 .. include:: ../src/senaite/core/tests/doctests/API_measure.rst
 .. include:: ../src/senaite/core/tests/doctests/API_security.rst
@@ -75,3 +78,4 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRemove.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorksheetApplyTemplate.rst
+.. include:: ../src/senaite/core/tests/doctests/WorksheetLayoutUtility.rst

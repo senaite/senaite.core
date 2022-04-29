@@ -491,9 +491,11 @@ class window.AnalysisRequestAdd
     # get the combogrid options
     options = JSON.parse field.attr "combogrid_options"
 
+    # we have absolute URLs now
+    # https://github.com/senaite/senaite.core/pull/1917
+    url = options.url
+
     # prepare the new query url
-    url = @get_base_url()
-    url += "/#{options.url}"
     url += "?_authenticator=#{@get_authenticator()}"
     url += "&catalog_name=#{catalog_name}"
     url += "&colModel=#{JSON.stringify options.colModel}"
@@ -519,9 +521,11 @@ class window.AnalysisRequestAdd
     options.url = url
     options.force_all = "false"
 
-
     field.combogrid options
     field.attr "search_query", "{}"
+
+    # close on any open searchbox to force reload on the next focus
+    field.trigger("blur")
 
 
   set_reference_field: (field, uid, title) =>
@@ -1194,6 +1198,18 @@ class window.AnalysisRequestAdd
         _el = $(_td).find("input[type=text]")[index]
         $(_el).val value
 
+    # Copy <input type="number"> fields
+    $td1.find("input[type=number]").each (index, el) ->
+      console.debug "-> Copy text field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type=number]")[index]
+        $(_el).val value
+
     # Copy <textarea> fields
     $td1.find("textarea").each (index, el) ->
       console.debug "-> Copy textarea field"
@@ -1217,6 +1233,42 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=radio]")[index]
         $(_el).prop "checked", checked
+
+    # Copy <input type="date"> fields
+    $td1.find("input[type='date']").each (index, el) ->
+      console.debug "-> Copy date field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='date']")[index]
+        $(_el).val value
+
+    # Copy <input type="time"> fields
+    $td1.find("input[type='time']").each (index, el) ->
+      console.debug "-> Copy time field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='time']")[index]
+        $(_el).val value
+
+    # Copy <input type="hidden"> fields
+    $td1.find("input[type='hidden']").each (index, el) ->
+      console.debug "-> Copy hidden field"
+      $el = $(el)
+      value = $el.val()
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type='hidden']")[index]
+        $(_el).val value
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -1327,7 +1379,7 @@ class window.AnalysisRequestAdd
       if data['errors']
         msg = data.errors.message
         if msg isnt ""
-          msg = "#{msg}<br/>"
+          msg = _t("Sorry, an error occured 🙈<p class='code'>#{msg}</p>")
 
         for fieldname of data.errors.fielderrors
           field = $("##{fieldname}")
