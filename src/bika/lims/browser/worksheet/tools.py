@@ -18,7 +18,9 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IWorksheetLayouts
 
 from zope.component import getUtilitiesFor
@@ -93,3 +95,15 @@ def getWorksheetLayouts():
         map(lambda entry: layouts.append(entry), layout_utility.getLayouts())
 
     return DisplayList(tuple(layouts))
+
+
+def getServiceUidsByMethod(method):
+    query = {
+        "portal_type": "AnalysisService",
+        "ia_active": True,
+        "method_available_uid": method,
+    }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    uids = map(lambda s: s.UID, setup_catalog(query))
+
+    return uids

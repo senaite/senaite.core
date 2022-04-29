@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.browser.worksheet.tools import getServiceUidsByMethod
 from bika.lims.config import PRIORITIES
 from bika.lims.utils import get_image
 from bika.lims.utils import t
@@ -114,6 +115,12 @@ class AddAnalysesView(BikaListingView):
 
     def __call__(self):
         super(AddAnalysesView, self).__call__()
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            method = wst.getRawRestrictToMethod()
+            # restrict the available analysis services by method
+            if method:
+                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
 
         # TODO: Refactor Worfklow
         grant = self.is_edit_allowed() and self.is_manage_allowed()
