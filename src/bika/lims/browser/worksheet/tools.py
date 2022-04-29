@@ -100,7 +100,7 @@ def getWorksheetLayouts():
 def getServiceUidsByMethod(method):
     query = {
         "portal_type": "AnalysisService",
-        "ia_active": True,
+        "is_active": True,
         "method_available_uid": method,
     }
     setup_catalog = api.get_tool(SETUP_CATALOG)
