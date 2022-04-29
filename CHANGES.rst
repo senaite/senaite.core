@@ -4,7 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
-- #1990 Issue creating worksheet with method specific template
+- #1990 Fix items not filtered by Worksheet Template's method in Add analyses
 - #1977 Add custom worksheet layout feature
 - #1988 Multivalue support for interim fields
 - #1987 Fix: ProfileKey shown in Profiles table
