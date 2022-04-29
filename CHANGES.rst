@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1887 Filter instruments by the selected method on the Workshettemplate
 - #1977 Add custom worksheet layout feature
 - #1988 Multivalue support for interim fields
 - #1987 Fix: ProfileKey shown in Profiles table
