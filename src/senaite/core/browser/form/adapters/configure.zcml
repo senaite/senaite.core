@@ -37,14 +37,6 @@
       for="bika.lims.interfaces.IWorksheetTemplate
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".worksheettemplate.EditForm"/>
-  <!--
-  <adapter
-      name="validate_instruments"
-      for="bika.lims.interfaces.IWorksheetTemplate
-           bika.lims.interfaces.IMethod
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".method.ValidateInstrumentsAdapterBase"/>
-  -->
 
   <!-- Custom Form: Instrument Import -->
   <adapter
