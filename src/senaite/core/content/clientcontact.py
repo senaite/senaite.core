@@ -237,6 +237,8 @@ class ClientContact(Container):
 
     @security.private
     def set_string_value(self, field_name, value, validator=None):
+        """Stores the value for the field with the given name as unicode
+        """
         if not isinstance(value, string_types):
             value = u""
 
@@ -249,6 +251,9 @@ class ClientContact(Container):
 
     @security.private
     def get_string_value(self, field_name, default=""):
+        """Returns the value stored for the field with the given name as an
+        utf-8 encoded string
+        """
         accessor = self.accessor(field_name)
         value = accessor(self) or default
         return value.encode("utf-8")
