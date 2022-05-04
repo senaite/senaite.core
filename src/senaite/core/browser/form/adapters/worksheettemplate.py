@@ -21,8 +21,6 @@
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.browser.form.adapters import EditFormAdapterBase
-from senaite.core.interfaces import IAjaxEditForm
-from zope.component import queryMultiAdapter
 
 
 class EditForm(EditFormAdapterBase):
