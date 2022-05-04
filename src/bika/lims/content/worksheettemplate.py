@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import sys
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -37,11 +36,10 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
@@ -101,8 +99,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("Method",),
         relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
-        widget=SelectionWidget(
-            format="select",
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Method"),
             description=_(
                 "Restrict the available analysis services and instruments"
