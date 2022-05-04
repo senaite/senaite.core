@@ -36,29 +36,24 @@ class EditForm(EditFormAdapterBase):
 
         # Handle Methods Change
         if name == "RestrictToMethod" and value:
-            value = value[0]
-            empty = [{"title": _("No Instrument"), "value": [""]}]
-            if not api.is_uid(value):
-                self.add_update_field("Instruments:list", {
-                    "options": empty})
-                self.add_update_field("Instruments_options", {
-                    "options": empty})
-                self.add_update_field("Instrument", {
-                    "options": empty})
-                return self.data
-
-            # Get selected method
-            method = api.get_object_by_uid(value)
-            instruments = method.getInstruments()
-            i_opts = map(lambda o: dict(
-                title=api.get_title(o), value=api.get_uid(o)), instruments)
-
-            i_sel = map(api.get_uid, instruments)
-            self.add_update_field("Instruments_options", {
-                "options": i_opts})
-            self.add_update_field("Instruments:list", {
-                "options": i_opts, "selected": i_sel})
-            self.add_update_field("Instrument", {
-                "options": empty + i_opts})
+            method_uid = value[0]
+            options = self.get_instruments_options(method_uid)
+            self.add_update_field("Instrument", {"options": options})
 
         return self.data
+
+    def get_instruments_options(self, method):
+        """Returns a list of dicts that represent instrument options suitable
+        for a selection list, with an empty option as first item
+        """
+        options = [{"title": _("No Instrument"), "value": [""]}]
+        method = api.get_object(method, default=None)
+        instruments = method and method.getInstruments() or []
+        for instrument in instruments:
+            option = {
+                "title": api.get_title(instrument),
+                "value": api.get_uid(instrument)
+            }
+            options.append(option)
+
+        return options
