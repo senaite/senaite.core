@@ -24,7 +24,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
-from bika.lims.browser.worksheet.tools import getServiceUidsByMethod
 from bika.lims.config import PRIORITIES
 from bika.lims.utils import get_image
 from bika.lims.utils import t
@@ -33,9 +32,25 @@ from DateTime import DateTime
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
+
+
+def getServiceUidsByMethod(method):
+    if not api.is_uid(method):
+        method = api.get_uid(method)
+
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+        "method_available_uid": method,
+    }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    uids = map(lambda s: s.UID, setup_catalog(query))
+
+    return uids
 
 
 class AddAnalysesView(BikaListingView):
