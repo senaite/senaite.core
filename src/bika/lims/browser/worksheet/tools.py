@@ -90,6 +90,6 @@ def getWorksheetLayouts():
     """
     layouts = []
     for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
-        map(lambda entry: layouts.append(entry), layout_utility.getLayouts())
+	    [layouts.append(layout) for layout in layout_utility.getLayouts()]
 
     return DisplayList(tuple(layouts))
