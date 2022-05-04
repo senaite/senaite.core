@@ -214,5 +214,12 @@ def migrate_worksheet_layouts(portal):
         if layout:
             # set the new layout
             obj.setResultsLayout(layout)
+    
+    logger.info("Update default worksheet layout for BikaSetup ...")
+
+    bika_setup = api.get_bika_setup()
+    default_layout = mapping.get(str(bika_setup.getWorksheetLayout()), None)
+    if default_layout:
+        bika_setup.setWorksheetLayout(default_layout)
 
     logger.info("Migrating worksheet layouts [DONE]")
