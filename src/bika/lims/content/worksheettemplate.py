@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import sys
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -37,13 +36,13 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
@@ -100,8 +99,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("Method",),
         relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
-        widget=SelectionWidget(
-            format="select",
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Method"),
             description=_(
                 "Restrict the available analysis services and instruments"
@@ -117,7 +116,7 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
-        vocabulary="getInstruments",
+        vocabulary="getInstrumentsDisplayList",
         allowed_types=("Instrument",),
         relationship="WorksheetTemplateInstrument",
         referenceClass=HoldingReference,
@@ -178,33 +177,53 @@ class WorksheetTemplate(BaseContent):
         """
         return ANALYSIS_TYPES
 
-    def getInstruments(self):
-        """Get the allowed instruments
+    @security.public
+    def getInstrumentsDisplayList(self):
+        """Returns a display list with the instruments that are allowed for
+        this worksheet template based on the method selected, sorted by title
+        ascending. It also includes "No instrument" as the first option
         """
-        query = {"portal_type": "Instrument", "is_active": True}
+        items = []
+        for instrument in self.getInstruments():
+            uid = api.get_uid(instrument)
+            title = api.get_title(instrument)
+            items.append((uid, title))
 
-        if self.getRestrictToMethod():
-            query.update({
-                "getMethodUIDs": {
-                    "query": api.get_uid(self.getRestrictToMethod()),
-                    "operator": "or",
-                }
-            })
-
-        instruments = api.search(query, "senaite_catalog_setup")
-        items = map(lambda i: (i.UID, i.Title), instruments)
-
-        instrument = self.getInstrument()
-        if instrument:
-            instrument_uids = map(api.get_uid, instruments)
-            if api.get_uid(instrument) not in instrument_uids:
-                items.append(
-                    (api.get_uid(instrument), api.get_title(instrument)))
-
+        # Sort them alphabetically by title
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ("", _("No instrument")))
+        return DisplayList(items)
 
-        return DisplayList(list(items))
+    def getInstruments(self):
+        """Returns the list of active Instrument objects that are allowed for
+        this worksheet template based on the method selected
+        """
+        uids = self.getRawInstruments()
+        return [api.get_object_by_uid(uid) for uid in uids]
+
+    def getRawInstruments(self):
+        """Returns the list of UIDs from active instruments that are allowed
+        for this worksheet template based on the method selected, if any
+        """
+        uids = []
+        method_uid = self.getRawRestrictToMethod()
+        query = {
+            "portal_type": "Instrument",
+            "is_active": True,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        for brain in brains:
+            uid = api.get_uid(brain)
+            if not method_uid:
+                uids.append(uid)
+                continue
+
+            # Restrict available instruments to those with the selected method
+            instrument = api.get_object(brain)
+            if method_uid in instrument.getRawMethods():
+                uids.append(uid)
+
+        return uids
 
     def getMethodUID(self):
         """Return method UID
