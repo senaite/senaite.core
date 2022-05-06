@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1991 Update default worksheet layout 
+- #1887 Fix instruments not filtered by method in Worksheet Template edit view
 - #1977 Add custom worksheet layout feature
 - #1988 Multivalue support for interim fields
 - #1987 Fix: ProfileKey shown in Profiles table
