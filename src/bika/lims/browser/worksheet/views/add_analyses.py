@@ -48,7 +48,7 @@ def getServiceUidsByMethod(method):
         "method_available_uid": method,
     }
     setup_catalog = api.get_tool(SETUP_CATALOG)
-    uids = map(lambda s: s.UID, setup_catalog(query))
+    uids = map(api.get_uid, setup_catalog(query))
 
     return uids
 
