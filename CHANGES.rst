@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1990 Fix items not filtered by Worksheet Template's method in Add analyses
 - #1991 Update default worksheet layout 
 - #1887 Fix instruments not filtered by method in Worksheet Template edit view
 - #1977 Add custom worksheet layout feature

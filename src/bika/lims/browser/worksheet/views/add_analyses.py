@@ -32,9 +32,25 @@ from DateTime import DateTime
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
+
+
+def getServiceUidsByMethod(method):
+    if not api.is_uid(method):
+        method = api.get_uid(method)
+
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+        "method_available_uid": method,
+    }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    uids = map(api.get_uid, setup_catalog(query))
+
+    return uids
 
 
 class AddAnalysesView(BikaListingView):
@@ -149,6 +165,12 @@ class AddAnalysesView(BikaListingView):
         """Update hook
         """
         super(AddAnalysesView, self).update()
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            method = wst.getRawRestrictToMethod()
+            # restrict the available analysis services by method
+            if method:
+                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
 
     def handle_submit(self):
         """Handle form submission
