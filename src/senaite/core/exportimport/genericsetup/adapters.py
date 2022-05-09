@@ -41,6 +41,7 @@ from Products.Archetypes.interfaces import ITextField
 from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
+from senaite.core.api import dtime
 from senaite.core.schema.interfaces import IDataGridField
 from senaite.core.schema.interfaces import \
     IUIDReferenceField as IUIDReferenceFieldDX
@@ -289,13 +290,14 @@ class DXDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
         value = self.field.get(self.context)
         if not isinstance(value, datetime):
             return ""
-        return value.isoformat()
+        return dtime.to_iso_format(value)
 
     def parse_json_value(self, value):
         if not value:
             return None
-        dt = api.to_date(value)
-        return dt.asdatetime()
+        # Avoid `UnknownTimeZoneError` by using the date API for conversion
+        # also see https://github.com/senaite/senaite.patient/pull/29
+        return dtime.to_dt(value)
 
 
 class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
