@@ -77,10 +77,22 @@ class ATFieldNodeAdapter(NodeAdapterBase):
         super(ATFieldNodeAdapter, self).__init__(context, environ)
         self.field = field
 
+    def can_write(self):
+        """Checks if the field is writable
+        """
+        readonly = getattr(self.field, "readonly", False)
+        if readonly:
+            return False
+        return True
+
     def set_field_value(self, value, **kw):
         """Set the field value
         """
         # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        if not self.can_write():
+            logger.info("Skipping readonly field %s.%s" % (
+                self.context.__class__.__name__, self.field.__name__))
+            return
         return self.field.set(self.context, value, **kw)
 
     def get_field_value(self):
@@ -152,6 +164,18 @@ class DXFieldNodeAdapter(ATFieldNodeAdapter):
         super(DXFieldNodeAdapter, self).__init__(context, field, environ)
         self.field = field
 
+    def can_write(self):
+        """Checks if the field is writable
+        """
+        readonly = getattr(self.field, "readonly", False)
+        if readonly:
+            return False
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        writable = dm.canWrite()
+        if not writable:
+            return False
+        return True
+
     def set_node_value(self, node):
         value = self.parse_json_value(node.nodeValue)
         self.set_field_value(value)
@@ -159,6 +183,10 @@ class DXFieldNodeAdapter(ATFieldNodeAdapter):
     def set_field_value(self, value, **kw):
         """Set the field value
         """
+        if not self.can_write():
+            logger.info("Skipping readonly field %s.%s" % (
+                self.context.__class__.__name__, self.field.__name__))
+            return
         # logger.info("Set: {} -> {}".format(self.field.getName(), value))
         dm = getMultiAdapter((self.context, self.field), IDataManager)
         dm.set(value, **kw)
@@ -359,12 +387,9 @@ class DXTupleFieldNodeAdapter(DXFieldNodeAdapter):
     def set_field_value(self, value, **kw):
         """Set the field value
         """
-        if not value:
-            value = tuple
         if isinstance(value, list):
             value = tuple(value)
-        dm = getMultiAdapter((self.context, self.field), IDataManager)
-        dm.set(value, **kw)
+        super(DXTupleFieldNodeAdapter, self).set_field_value(value, **kw)
 
 
 class DXTextLineFieldNodeAdapter(DXFieldNodeAdapter):
