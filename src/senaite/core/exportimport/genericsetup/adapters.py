@@ -282,7 +282,7 @@ class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
     adapts(IBaseObject, IReferenceField, ISetupEnviron)
 
     def get_json_value(self):
-        """Returns the date as ISO string
+        """Convert referenced objects to UIDs
         """
         value = self.field.get(self.context)
         if api.is_object(value):
@@ -330,3 +330,15 @@ class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
     """
     implements(IFieldNode)
     adapts(IDexterityContent, IRichText, ISetupEnviron)
+
+
+class DXReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
+    """Import/Export DX UID Reference Fields
+    """
+    adapts(IDexterityContent, IUIDReferenceFieldDX, ISetupEnviron)
+
+
+class DXDataGridFieldNodeAdapter(ATRecordFieldNodeAdapter):
+    """Import/Export if DataGrid Fields
+    """
+    adapts(IDexterityContent, IDataGridField, ISetupEnviron)
