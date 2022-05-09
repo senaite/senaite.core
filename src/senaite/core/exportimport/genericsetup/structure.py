@@ -479,7 +479,6 @@ def create_or_get(parent, id, uid, portal_type):
         notify(ObjectCreatedEvent(obj))
         parent._setObject(tmp_id, obj)
         obj = parent._getOb(api.get_id(obj))
-        obj.reindexObject()
 
     return obj
 
