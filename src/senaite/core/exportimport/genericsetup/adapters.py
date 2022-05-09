@@ -52,6 +52,7 @@ from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField as ISchemaField
 from zope.schema.interfaces import IText
 from zope.schema.interfaces import ITextLine
+from zope.schema.interfaces import ITuple
 
 from .config import SITE_ID
 from .interfaces import IFieldNode
@@ -347,22 +348,39 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
             return value
 
 
+class DXTupleFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for DX Tuple fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, ITuple, ISetupEnviron)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        if not value:
+            value = tuple
+        if isinstance(value, list):
+            value = tuple(value)
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        dm.set(value, **kw)
+
+
 class DXTextLineFieldNodeAdapter(DXFieldNodeAdapter):
-    """Node im- and exporter for AT RichText fields.
+    """Node im- and exporter for DX TextLine fields.
     """
     implements(IFieldNode)
     adapts(IDexterityContent, ITextLine, ISetupEnviron)
 
 
 class DXTextFieldNodeAdapter(DXFieldNodeAdapter):
-    """Node im- and exporter for AT RichText fields.
+    """Node im- and exporter for DX Text fields.
     """
     implements(IFieldNode)
     adapts(IDexterityContent, IText, ISetupEnviron)
 
 
 class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
-    """Node im- and exporter for AT RichText fields.
+    """Node im- and exporter for DX RichText fields.
     """
     implements(IFieldNode)
     adapts(IDexterityContent, IRichText, ISetupEnviron)
