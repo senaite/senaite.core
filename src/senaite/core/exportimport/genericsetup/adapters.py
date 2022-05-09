@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import six
-
 from datetime import datetime
 from mimetypes import guess_type
+
+import six
 
 from bika.lims import api
 from bika.lims import logger
@@ -41,6 +41,9 @@ from Products.Archetypes.interfaces import ITextField
 from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
+from senaite.core.schema.interfaces import IDataGridField
+from senaite.core.schema.interfaces import \
+    IUIDReferenceField as IUIDReferenceFieldDX
 from zope.component import adapts
 from zope.interface import implements
 from zope.schema.interfaces import IDatetime
