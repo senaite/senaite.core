@@ -406,11 +406,24 @@ class DXTextFieldNodeAdapter(DXFieldNodeAdapter):
     adapts(IDexterityContent, IText, ISetupEnviron)
 
 
-class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
+class DXRichTextFieldNodeAdapter(DXFieldNodeAdapter):
     """Node im- and exporter for DX RichText fields.
     """
     implements(IFieldNode)
     adapts(IDexterityContent, IRichText, ISetupEnviron)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        value = self.field.get(self.context)
+        if not value:
+            return ""
+        try:
+            return value.raw
+        except AttributeError as e:
+            logger.info("Imported value has no Attribute 'raw' {}"
+                        .format(str(e)))
+            return value
 
 
 class DXReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
