@@ -44,10 +44,14 @@ from Products.GenericSetup.utils import NodeAdapterBase
 from senaite.core.schema.interfaces import IDataGridField
 from senaite.core.schema.interfaces import \
     IUIDReferenceField as IUIDReferenceFieldDX
+from z3c.form.interfaces import IDataManager
 from zope.component import adapts
+from zope.component import getMultiAdapter
 from zope.interface import implements
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField as ISchemaField
+from zope.schema.interfaces import IText
+from zope.schema.interfaces import ITextLine
 
 from .config import SITE_ID
 from .interfaces import IFieldNode
@@ -145,6 +149,23 @@ class DXFieldNodeAdapter(ATFieldNodeAdapter):
     def __init__(self, context, field, environ):
         super(DXFieldNodeAdapter, self).__init__(context, field, environ)
         self.field = field
+
+    def set_node_value(self, node):
+        value = self.parse_json_value(node.nodeValue)
+        self.set_field_value(value)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        dm.set(value, **kw)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        return dm.get()
 
 
 class ATTextFieldNodeAdapter(ATFieldNodeAdapter):
@@ -321,8 +342,23 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
         try:
             return value.raw
         except AttributeError as e:
-            logger.info("Imported value has no Attribute 'raw' {}".format(str(e)))
+            logger.info("Imported value has no Attribute 'raw' {}"
+                        .format(str(e)))
             return value
+
+
+class DXTextLineFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, ITextLine, ISetupEnviron)
+
+
+class DXTextFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, IText, ISetupEnviron)
 
 
 class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):

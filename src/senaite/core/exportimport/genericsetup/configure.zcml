@@ -33,6 +33,8 @@
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXNamedFileFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXDateTimeFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextLineFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXRichTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXReferenceFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXDataGridFieldNodeAdapter"/>
