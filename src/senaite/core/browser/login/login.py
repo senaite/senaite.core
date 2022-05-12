@@ -31,9 +31,9 @@ class LoginForm(BaseLoginForm):
 
     def updateWidgets(self):
         super(LoginForm, self).updateWidgets()
-        self.widgets["__ac_name"].addClass("form-control")
-        self.widgets["__ac_password"].addClass("form-control")
+        self.widgets["__ac_name"].addClass("form-control form-control-sm")
+        self.widgets["__ac_password"].addClass("form-control form-control-sm")
 
     def updateActions(self):
         super(LoginForm, self).updateActions()
-        self.actions["login"].addClass("btn btn-primary")
+        self.actions["login"].addClass("btn btn-primary btn-sm")
