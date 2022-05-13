@@ -24,6 +24,7 @@ from bika.lims import logger
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
+from collections import defaultdict
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -32,7 +33,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
     current traverse path
     """
 
-    _roles_in_context = {}
+    _roles_in_context = defaultdict(dict)
 
     def getRolesInContext(self, context, principal_id):
         """Returns the dynamically calculated 'local' roles for the given
@@ -62,7 +63,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             roles.extend(local_roles)
 
         # Store in cache
-        self._roles_in_context.setdefault(context_uid, {}).update({
+        self._roles_in_context[context_uid].update({
             principal_id: list(set(roles))
         })
         return self._roles_in_context[context_uid][principal_id]
