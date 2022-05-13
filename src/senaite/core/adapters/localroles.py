@@ -22,9 +22,9 @@ import six
 from bika.lims import api
 from bika.lims import logger
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
+from collections import defaultdict
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
-from collections import defaultdict
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -53,18 +53,18 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             return roles.get(principal_id)
 
         # Look for adapters
-        roles = []
+        roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
         for name, adapter in adapters:
             local_roles = adapter.getRoles(principal_id)
             logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
                                                  repr(local_roles)))
-            roles.extend(local_roles)
+            roles.update(local_roles)
 
         # Store in cache
         self._roles_in_context[context_uid].update({
-            principal_id: list(set(roles))
+            principal_id: list(roles)
         })
         return self._roles_in_context[context_uid][principal_id]
 
