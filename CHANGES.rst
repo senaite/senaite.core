@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1992 Fix Generic Setup XML export/import adapters for Dexterity fields
 - #1993 Avoid line wrapping in login form for small screens
 - #1990 Fix items not filtered by Worksheet Template's method in Add analyses
 - #1991 Update default worksheet layout 
