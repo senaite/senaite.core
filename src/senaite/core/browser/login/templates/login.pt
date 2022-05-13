@@ -13,7 +13,7 @@
         <div class="col-sm-4 offset-sm-4">
           <div id="login-form" class="card my-4">
 
-            <div class="portalMessage error pat-cookietrigger alert alert-danger" style="display:none">
+            <div class="portalMessage error pat-cookietrigger alert alert-danger m-1" style="display:none">
               <strong i18n:translate="">
                 Error
               </strong>
@@ -56,7 +56,7 @@
                           field description
                         </div>
 
-                        <div class="widget input-group">
+                        <div class="widget input-group flex-nowrap">
                           <div class="input-group-prepend">
                             <div class="input-group-text">
                               <i tal:attributes="class python:view.get_icon_class_for(widget)"></i>
@@ -91,7 +91,7 @@
               </form>
             </div>
 
-            <div class="card-footer"
+            <div class="card-footer small"
                  tal:define="portal_state context/@@plone_portal_state;
                         portal_url portal_state/portal_url">
               <p class="form-text text-muted">

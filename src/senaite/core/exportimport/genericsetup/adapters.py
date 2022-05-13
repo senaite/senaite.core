@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import six
-
 from datetime import datetime
 from mimetypes import guess_type
+
+import six
 
 from bika.lims import api
 from bika.lims import logger
@@ -41,10 +41,19 @@ from Products.Archetypes.interfaces import ITextField
 from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
+from senaite.core.api import dtime
+from senaite.core.schema.interfaces import IDataGridField
+from senaite.core.schema.interfaces import \
+    IUIDReferenceField as IUIDReferenceFieldDX
+from z3c.form.interfaces import IDataManager
 from zope.component import adapts
+from zope.component import getMultiAdapter
 from zope.interface import implements
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField as ISchemaField
+from zope.schema.interfaces import IText
+from zope.schema.interfaces import ITextLine
+from zope.schema.interfaces import ITuple
 
 from .config import SITE_ID
 from .interfaces import IFieldNode
@@ -68,10 +77,22 @@ class ATFieldNodeAdapter(NodeAdapterBase):
         super(ATFieldNodeAdapter, self).__init__(context, environ)
         self.field = field
 
+    def can_write(self):
+        """Checks if the field is writable
+        """
+        readonly = getattr(self.field, "readonly", False)
+        if readonly:
+            return False
+        return True
+
     def set_field_value(self, value, **kw):
         """Set the field value
         """
         # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        if not self.can_write():
+            logger.info("Skipping readonly field %s.%s" % (
+                self.context.__class__.__name__, self.field.__name__))
+            return
         return self.field.set(self.context, value, **kw)
 
     def get_field_value(self):
@@ -142,6 +163,39 @@ class DXFieldNodeAdapter(ATFieldNodeAdapter):
     def __init__(self, context, field, environ):
         super(DXFieldNodeAdapter, self).__init__(context, field, environ)
         self.field = field
+
+    def can_write(self):
+        """Checks if the field is writable
+        """
+        readonly = getattr(self.field, "readonly", False)
+        if readonly:
+            return False
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        writable = dm.canWrite()
+        if not writable:
+            return False
+        return True
+
+    def set_node_value(self, node):
+        value = self.parse_json_value(node.nodeValue)
+        self.set_field_value(value)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        if not self.can_write():
+            logger.info("Skipping readonly field %s.%s" % (
+                self.context.__class__.__name__, self.field.__name__))
+            return
+        # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        dm.set(value, **kw)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        dm = getMultiAdapter((self.context, self.field), IDataManager)
+        return dm.get()
 
 
 class ATTextFieldNodeAdapter(ATFieldNodeAdapter):
@@ -264,13 +318,14 @@ class DXDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
         value = self.field.get(self.context)
         if not isinstance(value, datetime):
             return ""
-        return value.isoformat()
+        return dtime.to_iso_format(value)
 
     def parse_json_value(self, value):
         if not value:
             return None
-        dt = api.to_date(value)
-        return dt.asdatetime()
+        # Avoid `UnknownTimeZoneError` by using the date API for conversion
+        # also see https://github.com/senaite/senaite.patient/pull/29
+        return dtime.to_dt(value)
 
 
 class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
@@ -279,7 +334,7 @@ class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
     adapts(IBaseObject, IReferenceField, ISetupEnviron)
 
     def get_json_value(self):
-        """Returns the date as ISO string
+        """Convert referenced objects to UIDs
         """
         value = self.field.get(self.context)
         if api.is_object(value):
@@ -318,12 +373,66 @@ class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
         try:
             return value.raw
         except AttributeError as e:
-            logger.info("Imported value has no Attribute 'raw' {}".format(str(e)))
+            logger.info("Imported value has no Attribute 'raw' {}"
+                        .format(str(e)))
             return value
 
 
-class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
-    """Node im- and exporter for AT RichText fields.
+class DXTupleFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for DX Tuple fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, ITuple, ISetupEnviron)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        if isinstance(value, list):
+            value = tuple(value)
+        super(DXTupleFieldNodeAdapter, self).set_field_value(value, **kw)
+
+
+class DXTextLineFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for DX TextLine fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, ITextLine, ISetupEnviron)
+
+
+class DXTextFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for DX Text fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, IText, ISetupEnviron)
+
+
+class DXRichTextFieldNodeAdapter(DXFieldNodeAdapter):
+    """Node im- and exporter for DX RichText fields.
     """
     implements(IFieldNode)
     adapts(IDexterityContent, IRichText, ISetupEnviron)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        value = self.field.get(self.context)
+        if not value:
+            return ""
+        try:
+            return value.raw
+        except AttributeError as e:
+            logger.info("Imported value has no Attribute 'raw' {}"
+                        .format(str(e)))
+            return value
+
+
+class DXReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
+    """Import/Export DX UID Reference Fields
+    """
+    adapts(IDexterityContent, IUIDReferenceFieldDX, ISetupEnviron)
+
+
+class DXDataGridFieldNodeAdapter(ATRecordFieldNodeAdapter):
+    """Import/Export if DataGrid Fields
+    """
+    adapts(IDexterityContent, IDataGridField, ISetupEnviron)
