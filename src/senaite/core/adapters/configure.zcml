@@ -23,4 +23,7 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Dynamic calculation of local roles for a given context and principal -->
+  <adapter factory=".localroles.DynamicLocalRoleAdapter" />
+
 </configure>

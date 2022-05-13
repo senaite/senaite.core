@@ -108,3 +108,8 @@ class IContentMigrator(Interface):
 class IFieldMigrator(Interface):
     """Marker interface for field migrator
     """
+
+
+class IDynamicLocalRoles(Interface):
+    """Marker interface for objects with dynamic assignment of local roles
+    """
