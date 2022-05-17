@@ -98,8 +98,6 @@ class ClientAwareLocalRoles(object):
     linked to a ClientContact for objects that belong to same client
     """
 
-    _user_client = {}
-
     def __init__(self, context):
         self.context = context
 

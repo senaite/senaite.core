@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1995 Dynamic assingment of "Owner" role for Client Contacts
 - #1994 Support for dynamic assignment of Local Roles for context and principal
 - #1992 Fix Generic Setup XML export/import adapters for Dexterity fields
 - #1993 Avoid line wrapping in login form for small screens
