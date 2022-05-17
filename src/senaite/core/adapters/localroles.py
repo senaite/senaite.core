@@ -21,10 +21,12 @@
 import six
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from collections import defaultdict
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
+from zope.interface import implementer
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -88,3 +90,41 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             if user_roles:
                 roles.update({principal_id: user_roles})
         return six.iteritems(roles)
+
+
+@implementer(IDynamicLocalRoles)
+class ClientAwareLocalRoles(object):
+    """Adapter for the assignment of dynamic local roles to users that are
+    linked to a ClientContact for objects that belong to same client
+    """
+
+    _user_client = {}
+
+    def __init__(self, context):
+        self.context = context
+
+    def getContactPath(self, principal_id):
+        """Returns the path of the contact object the principal belongs to
+        """
+        query = {"portal_type": "Contact", "getUsername": principal_id}
+        brains = api.search(query, catalog="portal_catalog")
+        if len(brains) != 1:
+            return ""
+        return api.get_path(brains[0])
+
+    def getRoles(self, principal_id):
+        """Returns ["Owner"] local role if the user is linked to a Client
+        Contact that belongs to the same client as the current context
+        """
+        # Get the client of current context, if any
+        client = get_client(self.context)
+        if not client:
+            return []
+
+        # Check if the user belongs to same client as context
+        client_path = api.get_path(client)
+        user_path = self.getContactPath(principal_id)
+        if not user_path.startswith(client_path):
+            return []
+
+        return ["Owner"]
