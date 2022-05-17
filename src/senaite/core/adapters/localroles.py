@@ -102,14 +102,17 @@ class ClientAwareLocalRoles(object):
     def __init__(self, context):
         self.context = context
 
-    def getContactPath(self, principal_id):
-        """Returns the path of the contact object the principal belongs to
+    def hasContact(self, client, principal_id):
+        """Returns whether the client passed in has a contact linked to a user
+        with the given principal_id
         """
-        query = {"portal_type": "Contact", "getUsername": principal_id}
+        query = {
+            "portal_type": "Contact",
+            "getUsername": principal_id,
+            "getParentUID": api.get_uid(client),
+        }
         brains = api.search(query, catalog="portal_catalog")
-        if len(brains) != 1:
-            return ""
-        return api.get_path(brains[0])
+        return len(brains) == 1
 
     def getRoles(self, principal_id):
         """Returns ["Owner"] local role if the user is linked to a Client
@@ -121,9 +124,7 @@ class ClientAwareLocalRoles(object):
             return []
 
         # Check if the user belongs to same client as context
-        client_path = api.get_path(client)
-        user_path = self.getContactPath(principal_id)
-        if not user_path.startswith(client_path):
+        if not self.hasContact(client, principal_id):
             return []
 
         return ["Owner"]
