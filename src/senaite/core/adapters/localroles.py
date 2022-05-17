@@ -60,8 +60,9 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         adapters = getAdapters((context,), IDynamicLocalRoles)
         for name, adapter in adapters:
             local_roles = adapter.getRoles(principal_id)
-            logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
-                                                 repr(local_roles)))
+            if local_roles:
+                logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
+                                                     repr(local_roles)))
             roles.update(local_roles)
 
         # Store in cache
