@@ -449,9 +449,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         else:
             noLongerProvides(self, IInternalUse)
 
-    def getConditions(self):
+    def getConditions(self, empties=False):
         """Returns the conditions of this analysis. These conditions are usually
-        set on sample registration and are stored at sample level
+        set on sample registration and are stored at sample level. Do not return
+        conditions with empty value unless `empties` is True
         """
         sample = self.getRequest()
         service_uid = self.getRawAnalysisService()
@@ -459,9 +460,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         def is_valid(condition):
             uid = condition.get("uid")
             if api.is_uid(uid) and uid == service_uid:
+                if empties:
+                    return True
                 value = condition.get("value", None)
-                if value:
-                    return "title" in condition
+                return value not in [None, ""]
             return False
 
         conditions = sample.getServiceConditions()
@@ -483,4 +485,28 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # Keep the conditions from sample for analyses other than this one
         other_conditions = filter(lambda c: c.get("uid") != service_uid,
                                   sample_conditions)
+
+        def to_condition(condition):
+            # Type and title are required
+            title = condition.get("title")
+            cond_type = condition.get("type")
+            if not all([title, cond_type]):
+                return None
+
+            condition_info = {
+                "uid": service_uid,
+                "type": cond_type,
+                "title": title,
+                "description": "",
+                "choices": "",
+                "default": "",
+                "required": "",
+                "value": "",
+            }
+            condition = dict(condition)
+            condition_info.update(condition)
+            return condition_info
+
+        # Sanitize the conditions
+        conditions = filter(None, [to_condition(cond) for cond in conditions])
         sample.setServiceConditions(other_conditions + conditions)

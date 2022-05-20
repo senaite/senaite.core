@@ -82,6 +82,9 @@ def upgrade(tool):
     # Remove explicit owner role for contacts
     remove_contacts_ownership(portal)
 
+    # Fix analyses conditions
+    fix_analyses_conditions(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -280,3 +283,52 @@ def remove_contacts_ownership(portal):
         remove_owner_role(client, usernames)
 
     logger.info("Removing Contacts explicit ownership [DONE]")
+
+
+def fix_analyses_conditions(portal):
+    """Fixes the analyses conditions
+    """
+    def to_condition(condition):
+        # UID, type and title are required
+        uid = condition.get("uid")
+        title = condition.get("title")
+        cond_type = condition.get("type")
+        if not all([api.is_uid(uid), title, cond_type]):
+            return None
+
+        condition_info = {
+            "uid": uid,
+            "title": title,
+            "type": cond_type,
+            "description": "",
+            "choices": "",
+            "default": "",
+            "required": "",
+            "value": "",
+        }
+        condition = dict(condition)
+        condition_info.update(condition)
+        return condition_info
+
+    logger.info("Reassign analyses conditions ...")
+    query = {
+        "portal_type": "Analysis",
+        "review_state": ["registered", "unassigned", "assigned",
+                         "to_be_verified"]
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    for brain in brains:
+        analysis = api.get_object(brain)
+        if not IRequestAnalysis.providedBy(analysis):
+            continue
+
+        sample = analysis.getRequest()
+        conditions = sample.getServiceConditions()
+        if not conditions:
+            continue
+
+        # Sanitize and reassign the conditions
+        conditions = filter(None, map(to_condition, conditions))
+        sample.setServiceConditions(conditions)
+
+    logger.info("Reassign analyses conditions [DONE]")
