@@ -552,6 +552,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditContainer,
         widget=ReferenceWidget(
             label=_("Container"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -576,6 +577,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
             label=_("Preservation"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -797,6 +799,7 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
+            size=20,
             render_own_label=True,
             visible={
                 'add': 'edit',

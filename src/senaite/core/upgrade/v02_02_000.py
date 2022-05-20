@@ -20,8 +20,10 @@
 
 from bika.lims import api
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from collections import defaultdict
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
@@ -30,10 +32,10 @@ from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.setuphandlers import setup_allowed_dx_types
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
 
 version = "2.2.0"  # Remember version number in metadata.xml and setup.py
@@ -79,6 +81,12 @@ def upgrade(tool):
 
     # Migrate client contacts
     migrate_contacts_to_dx(portal)
+
+    # Migrate worksheet layouts
+    migrate_worksheet_layouts(portal)
+
+    # Remove explicit owner role for contacts
+    remove_contacts_ownership(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -284,3 +292,87 @@ def update_analysis_conditions(portal):
         analysis.setConditions(conditions)
 
     logger.info("Updating service conditions for Analyses [DONE]")
+
+
+def migrate_worksheet_layouts(portal):
+    """Walks through all worksheets and migrates the layout settings like this:
+
+       1 -> analyses_classic_view
+       2 -> analyses_transposed_view
+    """
+    logger.info("Migrating worksheet layouts ...")
+    mapping = {"1": "analyses_classic_view", "2": "analyses_transposed_view"}
+    query = {"portal_type": "Worksheet"}
+    brains = api.search(query, WORKSHEET_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Migrating worksheet: {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        layout = mapping.get(str(obj.getResultsLayout()), None)
+        if layout:
+            # set the new layout
+            obj.setResultsLayout(layout)
+
+    logger.info("Update default worksheet layout for BikaSetup ...")
+
+    setup = api.get_setup()
+    default_layout = mapping.get(str(setup.getWorksheetLayout()), None)
+    if default_layout:
+        setup.setWorksheetLayout(default_layout)
+
+    logger.info("Migrating worksheet layouts [DONE]")
+
+
+def remove_contacts_ownership(portal):
+    logger.info("Removing Contacts explicit ownership ...")
+
+    def remove_owner_role(obj, usernames):
+        reindex = False
+        obj_roles = obj.get_local_roles()
+        for user, roles in obj_roles:
+            if user not in usernames:
+                continue
+            if "Owner" not in roles:
+                continue
+
+            # Need to update the local roles for this object
+            local_roles = filter(lambda r: r != "Owner", roles)
+            if local_roles:
+                obj.manage_setLocalRoles(user, local_roles)
+            else:
+                obj.manage_delLocalRoles([user])
+            reindex = True
+
+        # Iterate through children for ownership removal
+        for child in obj.objectValues():
+            remove_owner_role(child, usernames)
+
+        # Only reindex if local roles have changed
+        if reindex:
+            obj.reindexObjectSecurity()
+
+    # Extract contacts and group them by client
+    client_contacts = defaultdict(list)
+    query = {"portal_type": "Contact"}
+    for brain in api.search(query):
+        contact = api.get_object(brain)
+        username = contact.getUsername()
+        if not username:
+            continue
+
+        client = api.get_parent(contact)
+        client_uid = api.get_uid(client)
+        client_contacts[client_uid].append(username)
+
+    # Remove the owner role for all contacts at once for each client
+    client_uids = client_contacts.keys()
+    total = len(client_uids)
+    for num, client_uid in enumerate(client_uids):
+        logger.info("Removing 'Owner' roles: {0}/{1}".format(num+1, total))
+        usernames = client_contacts.get(client_uid)
+        client = api.get_object(client_uid)
+        remove_owner_role(client, usernames)
+
+    logger.info("Removing Contacts explicit ownership [DONE]")

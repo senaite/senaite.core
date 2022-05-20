@@ -86,10 +86,7 @@ class RoutineAnalysisDataManager(DataManager):
             if not self.is_field_writeable(interim_field):
                 logger.error("Interim field '{}' not writeable!".format(name))
                 return []
-            for interim in interims:
-                if interim.get("keyword") == name:
-                    interim["value"] = value
-            self.context.setInterimFields(interims)
+            self.context.setInterimValue(name, value)
 
         # recalculate dependent results for result and interim fields
         if name == "Result" or name in interim_keys:

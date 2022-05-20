@@ -23,4 +23,15 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Dynamic calculation of local roles for a given context and principal -->
+  <adapter factory=".localroles.DynamicLocalRoleAdapter" />
+
+  <!-- Dynamic assignment of local roles for objects that belong to the same
+  Client as the contact the current user is linked to -->
+  <adapter
+      for="*"
+      provides="senaite.core.interfaces.IDynamicLocalRoles"
+      factory=".localroles.ClientAwareLocalRoles"
+      name="senaite.core.adapter.localroles.clientaware" />
+
 </configure>

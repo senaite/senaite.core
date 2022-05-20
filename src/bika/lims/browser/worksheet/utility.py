@@ -18,22 +18,15 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFPlone.browser.login.login import LoginForm as BaseLoginForm
+from zope.interface import implements
+from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.interfaces import IWorksheetLayouts
 
 
-class LoginForm(BaseLoginForm):
+class DefaultWorksheetLayouts(object):
+    """ Default worksheet layouts (classic and transposed view)
+    """
+    implements(IWorksheetLayouts)
 
-    def get_icon_class_for(self, widget):
-        if widget.name == "__ac_name":
-            return "fas fa-user-lock"
-        if widget.name == "__ac_password":
-            return "fas fa-key"
-
-    def updateWidgets(self):
-        super(LoginForm, self).updateWidgets()
-        self.widgets["__ac_name"].addClass("form-control form-control-sm")
-        self.widgets["__ac_password"].addClass("form-control form-control-sm")
-
-    def updateActions(self):
-        super(LoginForm, self).updateActions()
-        self.actions["login"].addClass("btn btn-primary btn-sm")
+    def getLayouts(self):
+        return WORKSHEET_LAYOUT_OPTIONS

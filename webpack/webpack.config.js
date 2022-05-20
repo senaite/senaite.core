@@ -179,7 +179,6 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.utils.barcode.js",
           "../src/senaite/core/browser/static/js/bika.lims.worksheet.js",
           "../src/senaite/core/browser/static/js/bika.lims.worksheet.print.js",
-          "../src/senaite/core/browser/static/js/bika.lims.worksheettemplate.js",
           "../src/senaite/core/browser/static/js/bika.lims.loader.js",
         ],
         dest: code => {

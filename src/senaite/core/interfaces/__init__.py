@@ -113,3 +113,8 @@ class IFieldMigrator(Interface):
 class IClientContact(Interface):
     """Marker interface for client contacts
     """
+
+
+class IDynamicLocalRoles(Interface):
+    """Marker interface for objects with dynamic assignment of local roles
+    """

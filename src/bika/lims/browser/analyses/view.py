@@ -900,6 +900,26 @@ class AnalysesView(ListingView):
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
 
+    def is_multi_interim(self, interim):
+        """Returns whether the interim stores a list of values instead of a
+        single value
+        """
+        result_type = interim.get("result_type", "")
+        return result_type.startswith("multi")
+
+    def to_list(self, value):
+        """Converts the value to a list
+        """
+        try:
+            val = json.loads(value)
+            if isinstance(val, (list, tuple, set)):
+                value = val
+        except ValueError:
+            pass
+        if not isinstance(value, (list, tuple, set)):
+            value = [value]
+        return value
+
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
 
@@ -929,7 +949,6 @@ class AnalysesView(ListingView):
 
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
-
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
@@ -958,6 +977,9 @@ class AnalysesView(ListingView):
             # Does interim's results list needs to be rendered?
             choices = interim_field.get("choices")
             if choices:
+                # Process the value as a list
+                interim_value = self.to_list(interim_value)
+
                 # Get the {value:text} dict
                 choices = choices.split("|")
                 choices = dict(map(lambda ch: ch.strip().split(":"), choices))
@@ -969,7 +991,22 @@ class AnalysesView(ListingView):
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
-                text = choices.get(interim_value, "")
+                texts = [choices.get(v, "") for v in interim_value]
+                text = "<br/>".join(filter(None, texts))
+                interim_field["formatted_value"] = text
+
+                if not is_editable:
+                    # Display the text instead of the value
+                    interim_field["value"] = text
+
+                item[interim_keyword] = interim_field
+
+            elif self.is_multi_interim(interim_field):
+                # Process the value as a list
+                interim_value = self.to_list(interim_value)
+
+                # Set the text as the formatted value
+                text = "<br/>".join(filter(None, interim_value))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:

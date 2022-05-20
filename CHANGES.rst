@@ -4,6 +4,22 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #1995 Dynamic assingment of "Owner" role for Client Contacts
+- #1994 Support for dynamic assignment of Local Roles for context and principal
+- #1992 Fix Generic Setup XML export/import adapters for Dexterity fields
+- #1993 Avoid line wrapping in login form for small screens
+- #1990 Fix items not filtered by Worksheet Template's method in Add analyses
+- #1991 Update default worksheet layout 
+- #1887 Fix instruments not filtered by method in Worksheet Template edit view
+- #1977 Add custom worksheet layout feature
+- #1988 Multivalue support for interim fields
+- #1987 Fix: ProfileKey shown in Profiles table
+- #1981 Support for interim fields with empty values
+- #1979 Multiselect/Multichoice support for interim fields
+- #1980 Fix: Absent value for Unit field causes error
+- #1978 Unify field sizes in sample view
+- #1975 Fix IndexError in Unit formatter
+- #1973 Fix AjaxEditForm does not work for default edit form of Dexterity types
 - #1970 Better error messages in sample add form
 - #1960 AddressField and AddressWidget with React component for DX types
 - #1968 Fix default roles for client field in samples

@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.calculation import ICalculation
+from Products.Archetypes import DisplayList
 from Products.Archetypes.Registry import registerField
 from senaite.core.browser.fields.records import RecordsField
 
@@ -37,22 +38,42 @@ class InterimFieldsField(RecordsField):
         "minimalSize": 0,
         "maximalSize": 9999,
         "type": "InterimFields",
-        "subfields": ("keyword", "title", "value", "choices", "unit", "report", "hidden", "wide"),
+        "subfields": (
+            "keyword",
+            "title",
+            "value",
+            "choices",
+            "result_type",
+            "allow_empty",
+            "unit",
+            "report",
+            "hidden",
+            "wide"
+        ),
         "required_subfields": ("keyword", "title"),
         "subfield_labels": {
             "keyword": _("Keyword"),
             "title": _("Field Title"),
             "value": _("Default value"),
             "choices": _("Choices"),
+            "result_type": _("Control type"),
+            "allow_empty": _("Allow empty"),
             "unit": _("Unit"),
             "report": _("Report"),
             "hidden": _("Hidden Field"),
             "wide": _("Apply wide"),
         },
+        "subfield_descriptions": {
+            "result_type": _(
+                "Type of control to be displayed on value entry when choices "
+                "are set")
+        },
         "subfield_types": {
             "hidden": "boolean",
             "value": "float",
             "choices": "string",
+            "result_type": "selection",
+            "allow_empty": "boolean",
             "wide": "boolean",
             "report": "boolean",
         },
@@ -61,6 +82,7 @@ class InterimFieldsField(RecordsField):
             "title": 20,
             "value": 10,
             "choices": 50,
+            "result_type": 1,
             "unit": 10,
         },
         "subfield_maxlength": {
@@ -71,7 +93,17 @@ class InterimFieldsField(RecordsField):
             "title": "interimfieldsvalidator",
             "value": "interimfieldsvalidator",
             "unit": "interimfieldsvalidator",
-            "choices": "interimfieldsvalidator"
+            "choices": "interimfieldsvalidator",
+            "result_type": "interimfieldsvalidator",
+        },
+        "subfield_vocabularies": {
+            "result_type": DisplayList((
+                ('', ''),
+                ('select', _('Selection list')),
+                ('multiselect', _('Multiple selection')),
+                ('multichoice', _('Multiple choices')),
+                ('multivalue', _('Multiple values')),
+            )),
         },
     })
     security = ClassSecurityInfo()

@@ -19,7 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IWorksheetLayouts
+
+from zope.component import getUtilitiesFor
+
 from Products.CMFCore.utils import getToolByName
+from Products.Archetypes.public import DisplayList
 
 
 def checkUserAccess(worksheet, request, redirect=True):
@@ -78,3 +83,13 @@ def showRejectionMessage(worksheet):
                 "worksheet at ${ws_id}",
                 mapping={'ws_id':_ws.getId()})
         worksheet.plone_utils.addPortalMessage(msg)
+
+
+def getWorksheetLayouts():
+    """ Getting additional layouts for Worksheet
+    """
+    layouts = []
+    for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
+        [layouts.append(layout) for layout in layout_utility.getLayouts()]
+
+    return DisplayList(tuple(layouts))

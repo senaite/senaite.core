@@ -32,6 +32,12 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".method.EditForm"/>
 
+  <!-- Edit Form: WorksheetTemplate -->
+  <adapter
+      for="bika.lims.interfaces.IWorksheetTemplate
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".worksheettemplate.EditForm"/>
+
   <!-- Custom Form: Instrument Import -->
   <adapter
       name="data_import_form"
