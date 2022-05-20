@@ -14,13 +14,10 @@
            tal:define="conditions python:view.get_conditions()"
            tal:condition="nocall:conditions">
         <div class="col-sm-12">
-          <h3>
+          <h3 class="mb-4">
             <i class="fas fa-list"/>
             <span i18n:translate="" tal:content="python:view.get_analysis_name()"/>
           </h3>
-          <h4>
-            <span i18n:translate="">Set analysis conditions</span>
-          </h4>
           <form name="set-analysis-conditions-form"
                 class="form"
                 method="POST"
