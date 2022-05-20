@@ -14,13 +14,10 @@
            tal:define="conditions python:view.get_conditions()"
            tal:condition="nocall:conditions">
         <div class="col-sm-12">
-          <h3>
+          <h3 class="mb-4">
             <i class="fas fa-list"/>
             <span i18n:translate="" tal:content="python:view.get_analysis_name()"/>
           </h3>
-          <h4>
-            <span i18n:translate="">Set analysis conditions</span>
-          </h4>
           <form name="set-analysis-conditions-form"
                 class="form"
                 method="POST"
@@ -32,7 +29,9 @@
                 <col style="width:20%"/>
               </colgroup>
               <tal:condition repeat="condition python:view.get_conditions()">
-                <tr tal:define="required python:condition.get('required') == 'on';">
+                <tr tal:define="required python:condition.get('required') == 'on';
+                                is_checkbox python:condition.get('type') == 'checkbox';
+                                required python:required and not is_checkbox;">
                   <td>
                     <label class="formQuestion">
                       <span tal:content="structure condition/title"/>
@@ -61,10 +60,16 @@
                            tal:attributes="value condition/required"/>
 
                     <select tal:condition="options"
+                            tal:define="value condition/value|nothing"
                             name="conditions.value:records">
-                      <option tal:condition="required"/>
-                      <option tal:repeat="option options"
-                              tal:content="option"/>
+                      <option tal:condition="not:required"/>
+                      <tal:option repeat="option options">
+                        <option tal:content="option"
+                                tal:condition="python:option == value"
+                                selected="selected"/>
+                        <option tal:content="option"
+                                tal:condition="python:option != value" />
+                      </tal:option>
                     </select>
 
                     <tal:non_select condition="not:options">
@@ -77,7 +82,6 @@
                       <input tal:attributes="type condition/type;
                                              value condition/value"
                              tal:condition="not:required"
-                             required="required"
                              name="conditions.value:records"/>
                     </tal:non_select>
 

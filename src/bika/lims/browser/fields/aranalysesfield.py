@@ -214,6 +214,35 @@ class ARAnalysesField(ObjectField):
         value["uid"] = uid
         return value
 
+    def resolve_conditions(self, analysis):
+        """Returns the conditions to be applied to this analysis by merging
+        those already set at sample level with defaults
+        """
+        service = analysis.getAnalysisService()
+        default_conditions = service.getConditions()
+
+        # Extract the conditions set for this analysis already
+        existing = analysis.getConditions()
+        existing_titles = [cond.get("title") for cond in existing]
+
+        def is_missing(condition):
+            return condition.get("title") not in existing_titles
+
+        # Add only those conditions that are missing
+        missing = filter(is_missing, default_conditions)
+
+        # Sort them to match with same order as in service
+        titles = [condition.get("title") for condition in default_conditions]
+
+        def index(condition):
+            cond_title = condition.get("title")
+            if cond_title in titles:
+                return titles.index(cond_title)
+            return len(titles)
+
+        conditions = existing + missing
+        return sorted(conditions, key=lambda con: index(con))
+
     def add_analysis(self, instance, service, **kwargs):
         service_uid = api.get_uid(service)
 
@@ -269,6 +298,11 @@ class ARAnalysesField(ObjectField):
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
             analysis.setResultsRange(analysis_rr)
+
+            # Set default (pre)conditions
+            conditions = self.resolve_conditions(analysis)
+            analysis.setConditions(conditions)
+
             analysis.reindexObject()
 
     def generate_analysis_id(self, instance, service):

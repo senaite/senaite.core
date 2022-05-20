@@ -381,7 +381,7 @@ class AnalysesView(ListingView):
             return False
 
         # Omit analysis does not have conditions set
-        if not obj.getConditions():
+        if not obj.getConditions(empties=True):
             return False
 
         return True
