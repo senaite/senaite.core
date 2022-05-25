@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1999 Allow multi-choice/multiselect interim fields in calculations
+- #1998 Fix analisys hidden status erases when submit through worksheet 
 - #1997 Fix conditions not set when adding analyses via "Manage Analyses" view
 - #1995 Dynamic assingment of "Owner" role for Client Contacts
 - #1994 Support for dynamic assignment of Local Roles for context and principal
