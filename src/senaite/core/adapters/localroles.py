@@ -24,6 +24,7 @@ from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from plone.memoize import ram
+from senaite.core.behaviors import IClientShareableBehavior
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
 from zope.interface import implementer
@@ -126,3 +127,35 @@ class ClientAwareLocalRoles(object):
             return []
 
         return ["Owner"]
+
+
+@implementer(IDynamicLocalRoles)
+class ClientShareableLocalRoles(object):
+    """Adapter for the assignment of roles for content shared across clients
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def getRoles(self, principal_id):
+        """Returns ["Owner"] local role if the user is linked to a Client
+        Contact that belongs to the same client as the current context
+        """
+        # Get the clients this context is shared with
+        behavior = IClientShareableBehavior(self.context)
+        clients = filter(api.is_uid, behavior.getRawClients())
+        if not clients:
+            return []
+
+        # Check if the user belongs to at least one of the clients
+        # this context is shared with
+        query = {
+            "portal_type": "Contact",
+            "getUsername": principal_id,
+            "getParentUID": clients,
+        }
+        brains = api.search(query, catalog="portal_catalog")
+        if len(brains) == 0:
+            return []
+
+        return ["ClientGuest"]
