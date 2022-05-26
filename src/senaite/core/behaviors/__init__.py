@@ -18,4 +18,7 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+# Convenient imports
 from clientshareable import IClientShareable
+from clientshareable import IClientShareableBehavior
+from clientshareable import IClientShareableMarker

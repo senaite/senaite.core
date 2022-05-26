@@ -5,13 +5,21 @@
 
   <include package="plone.behavior" file="meta.zcml"/>
 
+  <!-- See https://pypi.org/project/plone.behavior/#zcml-examples -->
+
+  <!--
+  ClientShareableBehavior
+  - with `behavior = IClientShareableBehavior(context)` a ClientShareableFactory is returned
+  - `context` provides IClientShareableMarker
+  - `ClientShareableFactory` provides `IClientShareableBehavior`
+  -->
   <plone:behavior
-      name="senaite.core.behavior.clientshareable"
-      title="ClientShareable"
+      title="ClientShareableBehavior"
       description="Adds the ability to share a content across clients"
-      provides=".IClientShareable"
-      factory=".clientshareable.ClientShareable"
-      for="plone.dexterity.interfaces.IDexterityContent"
-      marker=".IClientShareable" />
+      name="senaite.core.behavior.clientshareable"
+      provides=".IClientShareableBehavior"
+      marker=".IClientShareableMarker"
+      factory=".clientshareable.ClientShareableFactory"
+      for=".IClientShareable"/>
 
 </configure>
