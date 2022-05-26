@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <include package="plone.behavior" file="meta.zcml"/>
+
+  <plone:behavior
+      name="senaite.core.behavior.clientshareable"
+      title="ClientShareable"
+      description="Adds the ability to share a content across clients"
+      provides=".IClientShareable"
+      factory=".clientshareable.ClientShareable"
+      for="plone.dexterity.interfaces.IDexterityContent"
+      marker=".IClientShareable" />
+
+</configure>
