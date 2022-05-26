@@ -1,7 +1,50 @@
 <?xml version="1.0"?>
 <rolemap>
 
+  <roles>
+    <!--
+    SENAITE Roles for users linked to a Client contact
+    TODO The assignment of this role for a given user and object is done
+         dinamically and locally. This will eventually replace the "Owner"
+         local role workaround for client users
+    - ClientManager: all rights granted for client-scope objects, including the
+         creation and edition of client-specific setup objects like templates,
+         sample types, etc.
+    - ClientClerk: creation and follow-up of samples and other non-setup objects
+    - ClientGuest: read-only user, for download of result reports, mostly.
+    -->
+    <role name="ClientManager"/>
+    <role name="ClientClerk"/>
+    <role name="ClientGuest"/>
+  </roles>
+
   <permissions>
+
+    <!-- PLONE PERMISSIONS
+    NOTE: We make only *add* (acquire="True") our permissions here -->
+    <permission name="View" acquire="True">
+      <role name="ClientManager"/>
+      <role name="ClientClerk"/>
+      <role name="ClientGuest"/>
+    </permission>
+    <permission name="Access contents information" acquire="True">
+      <role name="ClientManager"/>
+      <role name="ClientClerk"/>
+      <role name="ClientGuest"/>
+    </permission>
+    <permission name="List folder contents" acquire="True">
+      <role name="ClientManager"/>
+      <role name="ClientClerk"/>
+      <role name="ClientGuest"/>
+    </permission>
+    <permission name="Modify portal content" acquire="True">
+      <role name="ClientManager"/>
+      <role name="ClientClerk"/>
+    </permission>
+    <permission name="Add portal content" acquire="True">
+      <role name="ClientManager"/>
+      <role name="ClientClerk"/>
+    </permission>
 
     <!-- WORKSHEET -->
     <permission name="senaite.core: Add Worksheet" acquire="False">
