@@ -23,10 +23,20 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
-from collections import defaultdict
+from plone.memoize import ram
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
 from zope.interface import implementer
+
+
+def _getRolesInContext_cachekey(method, self, context, principal_id):
+    """Function that generates the key for volatile caching
+    """
+    return ".".join([
+        principal_id,
+        api.get_path(context),
+        api.get_modification_date(context).ISO(),
+    ])
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -35,8 +45,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
     current traverse path
     """
 
-    _roles_in_context = defaultdict(dict)
-
+    @ram.cache(_getRolesInContext_cachekey)
     def getRolesInContext(self, context, principal_id):
         """Returns the dynamically calculated 'local' roles for the given
         principal and context
@@ -44,17 +53,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
-        if not api.is_object(context):
-            # We only apply dynamic local roles to valid objects
-            return []
-
-        # This function is called a lot within same request, do some cache
-        context_uid = api.get_uid(context)
-        roles = self._roles_in_context.get(context_uid, {})
-        if principal_id in roles:
-            return roles.get(principal_id)
-
-        # Look for adapters
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
@@ -64,12 +62,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
                 logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
                                                      repr(local_roles)))
             roles.update(local_roles)
-
-        # Store in cache
-        self._roles_in_context[context_uid].update({
-            principal_id: list(roles)
-        })
-        return self._roles_in_context[context_uid][principal_id]
+        return list(roles)
 
     def getRoles(self, principal_id):
         """Returns both non-local and local roles for the given principal in
@@ -78,6 +71,11 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @return: list of non-local and local roles for the user and context
         """
         default_roles = self._rolemap.get(principal_id, [])
+        if not api.is_object(self.context):
+            # We only apply dynamic local roles to valid objects
+            return default_roles[:]
+
+        # Extend with dynamically computed roles
         dynamic_roles = self.getRolesInContext(self.context, principal_id)
         return list(set(default_roles + dynamic_roles))
 
