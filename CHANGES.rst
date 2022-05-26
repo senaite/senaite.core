@@ -4,6 +4,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
+- #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
 - #1998 Fix analisys hidden status erases when submit through worksheet 
 - #1997 Fix conditions not set when adding analyses via "Manage Analyses" view
 - #1995 Dynamic assingment of "Owner" role for Client Contacts
