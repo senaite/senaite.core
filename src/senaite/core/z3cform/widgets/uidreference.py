@@ -6,6 +6,7 @@ import string
 import six
 
 from bika.lims import api
+from bika.lims import logger
 from Products.CMFPlone.utils import base_hasattr
 from senaite.app.supermodel import SuperModel
 from senaite.core.interfaces import ISenaiteFormLayer
@@ -209,7 +210,13 @@ class UIDReferenceWidget(TextLinesWidget):
         """Returns a rendered HTML element for the reference
         """
         template = string.Template(self.get_display_template())
-        obj_info = self.get_obj_info(uid)
+        try:
+            obj_info = self.get_obj_info(uid)
+        except ValueError as e:
+            # Current user might not have privileges to view this object
+            logger.error(e.message)
+            return ""
+
         return template.safe_substitute(obj_info)
 
 
