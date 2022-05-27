@@ -540,12 +540,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if interim_value == "":
                 continue
 
-            # Only floatable and UIDs are supported
+            # Convert to floatable if necessary
             if api.is_floatable(interim_value):
                 interim_value = float(interim_value)
-
-            elif not api.is_uid(interim_value):
-                return False
 
             mapping[interim_keyword] = interim_value
 
