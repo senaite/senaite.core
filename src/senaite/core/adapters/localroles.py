@@ -53,6 +53,10 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
+        if not api.get_user(principal_id):
+            # principal_id can be a group name, but we consider users only
+            return []
+
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
