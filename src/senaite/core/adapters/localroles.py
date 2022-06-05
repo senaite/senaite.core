@@ -24,6 +24,7 @@ from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from plone.memoize import ram
+from senaite.core.behaviors import IClientShareableBehavior
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
 from zope.interface import implementer
@@ -32,8 +33,12 @@ from zope.interface import implementer
 def _getRolesInContext_cachekey(method, self, context, principal_id):
     """Function that generates the key for volatile caching
     """
+    # We need the cachekey to change when global roles of a given user change
+    user = api.get_user(principal_id)
+    roles = user and ":".join(sorted(user.getRoles())) or ""
     return ".".join([
         principal_id,
+        roles,
         api.get_path(context),
         api.get_modification_date(context).ISO(),
     ])
@@ -53,6 +58,10 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
+        if not api.get_user(principal_id):
+            # principal_id can be a group name, but we consider users only
+            return []
+
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
@@ -126,3 +135,36 @@ class ClientAwareLocalRoles(object):
             return []
 
         return ["Owner"]
+
+
+@implementer(IDynamicLocalRoles)
+class ClientShareableLocalRoles(object):
+    """Adapter for the assignment of roles for content shared across clients
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def getRoles(self, principal_id):
+        """Returns ["ClientGuest"] local role if the current context is
+        shareable across clients and the user for the principal_id belongs to
+        one of the clients for which the context can be shared
+        """
+        # Get the clients this context is shared with
+        behavior = IClientShareableBehavior(self.context)
+        clients = filter(api.is_uid, behavior.getRawClients())
+        if not clients:
+            return []
+
+        # Check if the user belongs to at least one of the clients
+        # this context is shared with
+        query = {
+            "portal_type": "Contact",
+            "getUsername": principal_id,
+            "getParentUID": clients,
+        }
+        brains = api.search(query, catalog="portal_catalog")
+        if len(brains) == 0:
+            return []
+
+        return ["ClientGuest"]

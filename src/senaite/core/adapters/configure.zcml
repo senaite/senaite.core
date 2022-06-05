@@ -34,4 +34,12 @@
       factory=".localroles.ClientAwareLocalRoles"
       name="senaite.core.adapter.localroles.clientaware" />
 
+  <!-- Adapter for the dynamic assignment of local and client-specific roles
+  for contents shared across clients -->
+  <adapter
+      for="senaite.core.behaviors.IClientShareable"
+      provides="senaite.core.interfaces.IDynamicLocalRoles"
+      factory=".localroles.ClientShareableLocalRoles"
+      name="senaite.core.adapter.localroles.clientshareable" />
+
 </configure>

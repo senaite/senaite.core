@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2002 Allow string results for calculation dependencies
+- #2004 Added behavior to allow sharing objects across clients users
 - #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
 - #1999 Allow multi-choice/multiselect interim fields in calculations
 - #1998 Fix analisys hidden status erases when submit through worksheet 
