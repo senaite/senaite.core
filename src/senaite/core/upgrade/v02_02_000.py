@@ -63,6 +63,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "controlpanel")
 
     # Setup the permission for the edition of analysis conditions
     setup_edit_analysis_conditions(portal)

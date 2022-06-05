@@ -167,11 +167,11 @@
     <permission>Plone Site Setup: Types</permission>
   </configlet>
 
-  <!-- Users and Groups -->
+  <!-- Users and Groups (hidden) -->
   <configlet title="Users and Groups" action_id="UsersGroups"
              appId="UsersGroups" category="plone-users" condition_expr=""
              icon_expr="string:$portal_url/group.png"
-             url_expr="string:${portal_url}/@@usergroup-userprefs" visible="True">
+             url_expr="string:${portal_url}/@@usergroup-userprefs" visible="False">
     <permission>Plone Site Setup: Users and Groups</permission>
   </configlet>
 
