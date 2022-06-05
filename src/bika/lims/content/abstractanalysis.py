@@ -546,10 +546,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
             mapping[interim_keyword] = interim_value
 
+        # get the formula from the calculation
+        formula = calc.getMinifiedFormula()
+
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
         for dependency in dependencies:
             result = dependency.getResult()
+            # check if the dependency is a string result
+            str_result = dependency.getStringResult()
+            keyword = dependency.getKeyword()
             if not result:
                 # Dependency without results found
                 if cascade:
@@ -560,7 +566,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     return False
             if result:
                 try:
-                    result = float(str(result))
+                    # we need to quote a string result because of the `eval` below
+                    result = '"%s"' % result if str_result else float(str(result))
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
@@ -575,9 +582,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 except (TypeError, ValueError):
                     return False
 
+            # replace immediately the dependency placeholder with the actual result
+            formula = formula.replace("[" + keyword +  "]", result)
+
         # Calculate
-        formula = calc.getMinifiedFormula()
-        formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
                            {"__builtins__": None,
