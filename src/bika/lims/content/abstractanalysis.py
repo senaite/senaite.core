@@ -520,6 +520,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not calc:
             return False
 
+        # get the formula from the calculation
+        formula = calc.getMinifiedFormula()
+
         # Include the current context UID in the mapping, so it can be passed
         # as a param in built-in functions, like 'get_result(%(context_uid)s)'
         mapping = {"context_uid": '"{}"'.format(self.UID())}
@@ -545,9 +548,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 interim_value = float(interim_value)
 
             mapping[interim_keyword] = interim_value
-
-        # get the formula from the calculation
-        formula = calc.getMinifiedFormula()
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -582,8 +582,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 except (TypeError, ValueError):
                     return False
 
-                # replace immediately the dependency placeholder with the actual result
-                formula = formula.replace("[" + keyword +  "]", result)
+                # replace placeholder -> formatting string
+                # https://docs.python.org/2.7/library/stdtypes.html?highlight=built#string-formatting-operations
+                converter = "s" if str_result else "f"
+                formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
+
+
+        # convert any remaining placeholders, e.g. from interims etc.
+        # NOTE: we assume remaining values are all floatable!
+        formula = formula.replace("[", "%(").replace("]", ")f")
 
         # Calculate
         try:
