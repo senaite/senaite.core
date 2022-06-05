@@ -32,8 +32,12 @@ from zope.interface import implementer
 def _getRolesInContext_cachekey(method, self, context, principal_id):
     """Function that generates the key for volatile caching
     """
+    # We need the cachekey to change when global roles of a given user change
+    user = api.get_user(principal_id)
+    roles = user and ":".join(sorted(user.getRoles())) or ""
     return ".".join([
         principal_id,
+        roles,
         api.get_path(context),
         api.get_modification_date(context).ISO(),
     ])
@@ -53,6 +57,10 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
+        if not api.get_user(principal_id):
+            # principal_id can be a group name, but we consider users only
+            return []
+
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
