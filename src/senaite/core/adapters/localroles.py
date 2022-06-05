@@ -33,8 +33,12 @@ from zope.interface import implementer
 def _getRolesInContext_cachekey(method, self, context, principal_id):
     """Function that generates the key for volatile caching
     """
+    # We need the cachekey to change when global roles of a given user change
+    user = api.get_user(principal_id)
+    roles = user and ":".join(sorted(user.getRoles())) or ""
     return ".".join([
         principal_id,
+        roles,
         api.get_path(context),
         api.get_modification_date(context).ISO(),
     ])
