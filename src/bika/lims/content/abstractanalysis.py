@@ -582,8 +582,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 except (TypeError, ValueError):
                     return False
 
-            # replace immediately the dependency placeholder with the actual result
-            formula = formula.replace("[" + keyword +  "]", result)
+                # replace immediately the dependency placeholder with the actual result
+                formula = formula.replace("[" + keyword +  "]", result)
 
         # Calculate
         try:
