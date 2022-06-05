@@ -1,26 +1,7 @@
 <?xml version="1.0"?>
 <rolemap>
 
-  <roles>
-    <!-- Never assign this role by default to users. This role is assigned
-    locally to clients users with whom the current object has been shared with
-    -->
-    <role name="ClientGuest"/>
-  </roles>
-
   <permissions>
-
-    <!-- PLONE PERMISSIONS
-    NOTE: We make only *add* (acquire="True") our permissions here -->
-    <permission name="View" acquire="True">
-      <role name="ClientGuest"/>
-    </permission>
-    <permission name="Access contents information" acquire="True">
-      <role name="ClientGuest"/>
-    </permission>
-    <permission name="List folder contents" acquire="True">
-      <role name="ClientGuest"/>
-    </permission>
 
     <!-- WORKSHEET -->
     <permission name="senaite.core: Add Worksheet" acquire="False">
