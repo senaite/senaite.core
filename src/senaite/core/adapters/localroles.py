@@ -146,8 +146,9 @@ class ClientShareableLocalRoles(object):
         self.context = context
 
     def getRoles(self, principal_id):
-        """Returns ["Owner"] local role if the user is linked to a Client
-        Contact that belongs to the same client as the current context
+        """Returns ["ClientGuest"] local role if the current context is
+        shareable across clients and the user for the principal_id belongs to
+        one of the clients for which the context can be shared
         """
         # Get the clients this context is shared with
         behavior = IClientShareableBehavior(self.context)
