@@ -13,6 +13,11 @@
     <role name="SamplingCoordinator"/>
     <role name="Verifier"/>
 
+    <!-- Never assign this role by default to users. This role is assigned
+    locally to clients users with whom the current object has been shared with
+    -->
+    <role name="ClientGuest"/>
+
     <!-- PLONE ROLES -->
     <role name="Anonymous"/>
     <role name="Authenticated"/>
@@ -33,6 +38,7 @@
     <permission name="View" acquire="True">
       <role name="Analyst"/>
       <role name="Client"/>
+      <role name="ClientGuest"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -47,6 +53,7 @@
     <permission name="Access contents information" acquire="True">
       <role name="Analyst"/>
       <role name="Client"/>
+      <role name="ClientGuest"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -61,6 +68,7 @@
     <permission name="List folder contents" acquire="True">
       <role name="Analyst"/>
       <role name="Client"/>
+      <role name="ClientGuest"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
