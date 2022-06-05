@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <include package="plone.behavior" file="meta.zcml"/>
+
+  <!-- See https://pypi.org/project/plone.behavior/#zcml-examples -->
+
+  <!--
+  ClientShareableBehavior
+  - with `behavior = IClientShareableBehavior(context)` a ClientShareableFactory is returned
+  - `context` provides IClientShareableMarker
+  - `ClientShareableFactory` provides `IClientShareableBehavior`
+  -->
+  <plone:behavior
+      title="ClientShareableBehavior"
+      description="Adds the ability to share a content across clients"
+      name="senaite.core.behavior.clientshareable"
+      provides=".IClientShareableBehavior"
+      marker=".IClientShareableMarker"
+      factory=".clientshareable.ClientShareableFactory"
+      for=".IClientShareable"/>
+
+</configure>

@@ -177,6 +177,9 @@ class UIDReferenceField(List, BaseField):
         :type value: list/tuple/str
         """
 
+        # Object might be a behavior instead of the object itself
+        object = self._get_content_object(object)
+
         # always mark the object if references are set
         # NOTE: there might be multiple UID reference field set on this object!
         if value:
@@ -222,8 +225,7 @@ class UIDReferenceField(List, BaseField):
         """
 
         # Target might be a behavior instead of the object itself
-        if IBehavior.providedBy(target):
-            target = target.context
+        target = self._get_content_object(target)
 
         # This should be actually not possible
         if self.is_initializing(target):
@@ -256,8 +258,7 @@ class UIDReferenceField(List, BaseField):
         """
 
         # Target might be a behavior instead of the object itself
-        if IBehavior.providedBy(target):
-            target = target.context
+        target = self._get_content_object(target)
 
         # Object is initializing and don't have an UID!
         # -> Postpone to set back references in event handler
@@ -304,12 +305,8 @@ class UIDReferenceField(List, BaseField):
         :returns: list of referenced UIDs
         """
 
-        # when creating a new object the context is the container
-        # which does not have the field
-        if self.interface and not self.interface.providedBy(object):
-            if self.multi_valued:
-                return []
-            return None
+        # Object might be a behavior instead of the object itself
+        object = self._get_content_object(object)
 
         uids = super(UIDReferenceField, self).get(object)
 
@@ -348,3 +345,12 @@ class UIDReferenceField(List, BaseField):
             if not types.issubset(allowed_types):
                 raise ValueError("Only the following types are allowed: %s"
                                  % ",".join(allowed_types))
+
+    def _get_content_object(self, thing):
+        """Returns the underlying content object
+        """
+        if IBehavior.providedBy(thing):
+            return self._get_content_object(thing.context)
+        if api.is_dexterity_content(thing):
+            return thing
+        raise ValueError("Not a valid object: %s" % repr(thing))
