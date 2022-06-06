@@ -83,6 +83,11 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             # We only apply dynamic local roles to valid objects
             return default_roles[:]
 
+        adapters = getAdapters((self.context,), IDynamicLocalRoles)
+        if not adapters:
+            # No adapters, no need to go any further
+            return default_roles[:]
+
         if principal_id not in self.getMemberIds():
             # We only apply dynamic local roles to existing users
             return default_roles[:]
