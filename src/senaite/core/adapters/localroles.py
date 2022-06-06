@@ -21,6 +21,7 @@
 import six
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api import user as userapi
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from plone.memoize import ram
@@ -33,11 +34,13 @@ from zope.interface import implementer
 def _getRolesInContext_cachekey(method, self, context, principal_id):
     """Function that generates the key for volatile caching
     """
-    # We need the cachekey to change when global roles of a given user change
-    user = api.get_user(principal_id)
-    roles = user and ":".join(sorted(user.getRoles())) or ""
+    # We need the cache-key to change when global groups of a given user change
+    user = userapi.get_user(principal_id)
+    groups = ":".join(sorted(user.getGroupIds()))
+    roles = ":".join(sorted(user.getRoles()))
     return ".".join([
         principal_id,
+        groups,
         roles,
         api.get_path(context),
         api.get_modification_date(context).ISO(),
@@ -58,10 +61,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
-        if not api.get_user(principal_id):
-            # principal_id can be a group name, but we consider users only
-            return []
-
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
@@ -84,6 +83,10 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             # We only apply dynamic local roles to valid objects
             return default_roles[:]
 
+        if principal_id not in self.getMemberIds():
+            # We only apply dynamic local roles to existing users
+            return default_roles[:]
+
         # Extend with dynamically computed roles
         dynamic_roles = self.getRolesInContext(self.context, principal_id)
         return list(set(default_roles + dynamic_roles))
@@ -92,12 +95,17 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         roles = {}
         # Iterate through all members to extract their dynamic local role for
         # current context
-        mtool = api.get_tool("portal_membership")
-        for principal_id in mtool.listMemberIds():
+        for principal_id in self.getMemberIds():
             user_roles = self.getRoles(principal_id)
             if user_roles:
                 roles.update({principal_id: user_roles})
         return six.iteritems(roles)
+
+    def getMemberIds(self):
+        """Return the list of user ids
+        """
+        mtool = api.get_tool("portal_membership")
+        return mtool.listMemberIds()
 
 
 @implementer(IDynamicLocalRoles)
