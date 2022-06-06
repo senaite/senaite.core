@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <subscriber
+      for="*
+           Products.PluggableAuthService.interfaces.events.IPrincipalAddedToGroupEvent"
+      handler=".users.user_added_to_group"
+  />
+  <subscriber
+      for="*
+           Products.PluggableAuthService.interfaces.events.IPrincipalRemovedFromGroupEvent"
+      handler=".users.user_removed_from_group"
+  />
+
+</configure>

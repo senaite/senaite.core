@@ -36,12 +36,9 @@ def _getRolesInContext_cachekey(method, self, context, principal_id):
     """
     # We need the cache-key to change when global groups of a given user change
     user = userapi.get_user(principal_id)
-    groups = ":".join(sorted(user.getGroupIds()))
-    roles = ":".join(sorted(user.getRoles()))
     return ".".join([
         principal_id,
-        groups,
-        roles,
+        api.get_modification_date(user).ISO(),
         api.get_path(context),
         api.get_modification_date(context).ISO(),
     ])
