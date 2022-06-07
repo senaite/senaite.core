@@ -18,23 +18,21 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import re
-from collections import OrderedDict
-from datetime import datetime
-from datetime import timedelta
-from itertools import groupby
-
-import six
-
 import Missing
+import re
+import six
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
+from collections import OrderedDict
+from datetime import datetime
 from DateTime import DateTime
+from datetime import timedelta
 from DateTime.interfaces import DateTimeError
+from itertools import groupby
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
@@ -56,11 +54,14 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from zope import globalrequest
+from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.event import notify
+from zope.interface import directlyProvides
 from zope.lifecycleevent import ObjectCreatedEvent
+from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
 
@@ -1022,6 +1023,14 @@ def get_request():
     :rtype: HTTPRequest object
     """
     return globalrequest.getRequest()
+
+
+def get_test_request():
+    """Get the TestRequest object
+    """
+    request = TestRequest()
+    directlyProvides(request, IAttributeAnnotatable)
+    return request
 
 
 def get_group(group_or_groupname):
