@@ -18,10 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import os
-
 import transaction
-from bika.lims import api
+from senaite.core.exportimport.load_setup_data import LoadSetupData
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import FunctionalTesting
@@ -30,7 +28,6 @@ from plone.app.testing import applyProfile
 from plone.app.testing import login
 from plone.app.testing import logout
 from plone.testing import zope
-from Products.GenericSetup.context import TarballImportContext
 
 
 class BaseLayer(PloneSandboxLayer):
@@ -76,30 +73,20 @@ class DataLayer(BaseLayer):
     """
 
     def setup_data_load(self, portal, request):
-        """Provision site with demo data
-        """
-        login(portal.aq_parent, SITE_OWNER_NAME)
+        login(portal.aq_parent, SITE_OWNER_NAME)  # again
 
-        setup_tool = api.get_tool("portal_setup")
-        curdir = os.path.dirname(__file__)
-        path = os.path.join(curdir, "setup_tool-demodata.tar.gz")
-
-        with open(path, "rb") as tarball:
-            context = TarballImportContext(
-                tool=setup_tool,
-                archive_bits=tarball.read(),
-                encoding="UTF-8",
-                should_purge=True)
-            setup_tool._doRunImportStep("senaite.core.import", context)
-
-        transaction.commit()
-
+        # load test data
+        request.form["setupexisting"] = 1
+        request.form["existing"] = "bika.lims:test"
+        lsd = LoadSetupData(portal, request)
+        lsd()
         logout()
 
     def setUpPloneSite(self, portal):
         super(DataLayer, self).setUpPloneSite(portal)
         # Install Demo Data
         self.setup_data_load(portal, portal.REQUEST)
+        transaction.commit()
 
 
 BASE_LAYER_FIXTURE = BaseLayer()

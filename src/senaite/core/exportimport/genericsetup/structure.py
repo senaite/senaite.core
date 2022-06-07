@@ -582,10 +582,8 @@ def import_xml(context):
 
     qi = api.get_tool("portal_quickinstaller")
     installed = qi.isProductInstalled("senaite.core")
-    request = api.get_request()
 
-    # tests call it w/o request
-    if request and not installed:
+    if not installed:
         logger.debug("Nothing to import.")
         return
 
