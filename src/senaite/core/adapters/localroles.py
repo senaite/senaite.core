@@ -46,23 +46,17 @@ def _request_lifecycle_aware_cachekey(method, *args):
     if key not in annotations:
         annotations[key] = datetime.now().isoformat()
 
-    # Extract the path of the context, from params or from the instance
-    idx = 1
-    instance = args[0]
-    if len(args) > 1 and api.is_object(args[1]):
-        path = api.get_path(args[1])
-        idx = 2
-    else:
-        try:
-            path = api.get_path(instance.context)
-        except:
-            path = "no-context"
+    # Extract the path of the context from the instance
+    try:
+        path = api.get_path(args[0].context)
+    except:
+        path = "no-context"
 
     return [
         annotations[key],
         method.__name__,
         path,
-        args[idx:],
+        args[1:],
     ]
 
 
@@ -100,11 +94,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         default_roles = self._rolemap.get(principal_id, [])
         if not api.is_object(self.context):
             # We only apply dynamic local roles to valid objects
-            return default_roles[:]
-
-        adapters = getAdapters((self.context,), IDynamicLocalRoles)
-        if not adapters:
-            # No adapters, no need to go any further
             return default_roles[:]
 
         if principal_id not in self.getMemberIds():
