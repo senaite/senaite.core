@@ -39,6 +39,7 @@
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextLineFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTupleFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXChoiceFieldNodeAdapter"/>
 
   <class class="senaite.core.browser.fields.record.RecordField">
     <implements interface=".interfaces.IRecordField" />
