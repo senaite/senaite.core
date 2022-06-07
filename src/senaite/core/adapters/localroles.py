@@ -24,29 +24,17 @@ from bika.lims import APIError
 from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
-from datetime import datetime
-from plone.memoize import ram
+from plone.memoize.request import cache
 from senaite.core.behaviors import IClientShareableBehavior
 from senaite.core.interfaces import IDynamicLocalRoles
-from zope.annotation import IAnnotations
 from zope.component import getAdapters
 from zope.interface import implementer
 
 
-def _request_lifecycle_aware_cachekey(method, *args):
+def _request_cache(method, *args):
     """Decorator that ensures the call to the given method with the given
     arguments only takes place once within same request
     """
-    # Store a timestamp in the request, so the method will only be called once
-    # within a request life-cycle. Due to request mutability, assigning
-    # attributes directly to the request is discouraged. To create cache vars
-    # for request lifecycle, use annotations
-    request = api.get_request()
-    annotations = IAnnotations(request, {})
-    key = "timestamp"
-    if key not in annotations:
-        annotations[key] = datetime.now().isoformat()
-
     # Extract the path of the context from the instance
     try:
         path = api.get_path(args[0].context)
@@ -54,7 +42,6 @@ def _request_lifecycle_aware_cachekey(method, *args):
         path = "no-context"
 
     return [
-        annotations[key],
         method.__name__,
         path,
         args[1:],
@@ -66,6 +53,11 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
     This enables giving additional permissions on items out of the user's
     current traverse path
     """
+
+    @property
+    def request(self):
+        # Fixture for tests that do not have a regular request!!!
+        return api.get_request() or api.get_test_request()
 
     def getRolesInContext(self, context, principal_id):
         """Returns the dynamically calculated 'local' roles for the given
@@ -85,7 +77,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             roles.update(local_roles)
         return list(roles)
 
-    @ram.cache(_request_lifecycle_aware_cachekey)
+    @cache(get_key=_request_cache, get_request='self.request')
     def getRoles(self, principal_id):
         """Returns both non-local and local roles for the given principal in
         current context
@@ -115,7 +107,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
                 roles.update({principal_id: user_roles})
         return six.iteritems(roles)
 
-    @ram.cache(_request_lifecycle_aware_cachekey)
+    @cache(get_key=_request_cache, get_request='self.request')
     def getMemberIds(self):
         """Return the list of user ids
         """
