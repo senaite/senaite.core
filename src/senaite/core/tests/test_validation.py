@@ -20,6 +20,7 @@
 
 import unittest
 
+from bika.lims import api
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
@@ -288,7 +289,9 @@ class Tests(DataTestCase):
     def test_CoordinateValidator(self):
         login(self.portal, TEST_USER_NAME)
 
-        sp = self.portal.bika_setup.bika_samplepoints['samplepoint-1']
+        setup = api.get_setup()
+        samplepoints = setup.bika_samplepoints
+        sp = samplepoints.objectValues()[0]
 
         latitude = {
             'degrees': '!',
