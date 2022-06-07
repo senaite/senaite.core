@@ -20,6 +20,7 @@
 
 import six
 from bika.lims import api
+from bika.lims import APIError
 from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
@@ -49,7 +50,7 @@ def _request_lifecycle_aware_cachekey(method, *args):
     # Extract the path of the context from the instance
     try:
         path = api.get_path(args[0].context)
-    except:
+    except APIError:
         path = "no-context"
 
     return [
