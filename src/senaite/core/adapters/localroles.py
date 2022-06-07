@@ -21,27 +21,49 @@
 import six
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.api import user as userapi
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
+from datetime import datetime
 from plone.memoize import ram
 from senaite.core.behaviors import IClientShareableBehavior
 from senaite.core.interfaces import IDynamicLocalRoles
+from zope.annotation import IAnnotations
 from zope.component import getAdapters
 from zope.interface import implementer
 
 
-def _getRolesInContext_cachekey(method, self, context, principal_id):
-    """Function that generates the key for volatile caching
+def _request_lifecycle_aware_cachekey(method, *args):
+    """Decorator that ensures the call to the given method with the given
+    arguments only takes place once within same request
     """
-    # We need the cache-key to change when global groups of a given user change
-    user = userapi.get_user(principal_id)
-    return ".".join([
-        principal_id,
-        api.get_modification_date(user).ISO(),
-        api.get_path(context),
-        api.get_modification_date(context).ISO(),
-    ])
+    # Store a timestamp in the request, so the method will only be called once
+    # within a request life-cycle. Due to request mutability, assigning
+    # attributes directly to the request is discouraged. To create cache vars
+    # for request lifecycle, use annotations
+    request = api.get_request()
+    annotations = IAnnotations(request, {})
+    key = "timestamp"
+    if key not in annotations:
+        annotations[key] = datetime.now().isoformat()
+
+    # Extract the path of the context, from params or from the instance
+    idx = 1
+    instance = args[0]
+    if len(args) > 1 and api.is_object(args[1]):
+        path = api.get_path(args[1])
+        idx = 2
+    else:
+        try:
+            path = api.get_path(instance.context)
+        except:
+            path = "no-context"
+
+    return [
+        annotations[key],
+        method.__name__,
+        path,
+        args[idx:],
+    ]
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -50,7 +72,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
     current traverse path
     """
 
-    @ram.cache(_getRolesInContext_cachekey)
     def getRolesInContext(self, context, principal_id):
         """Returns the dynamically calculated 'local' roles for the given
         principal and context
@@ -69,6 +90,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
             roles.update(local_roles)
         return list(roles)
 
+    @ram.cache(_request_lifecycle_aware_cachekey)
     def getRoles(self, principal_id):
         """Returns both non-local and local roles for the given principal in
         current context
@@ -103,6 +125,7 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
                 roles.update({principal_id: user_roles})
         return six.iteritems(roles)
 
+    @ram.cache(_request_lifecycle_aware_cachekey)
     def getMemberIds(self):
         """Return the list of user ids
         """
