@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2007 Fix `ConstraintNotSatisfied` error on language field import
+- #2008 Import demo data in tests with Generic Setup
 - #2002 Allow string results for calculation dependencies
 - #2004 Added behavior to allow sharing objects across clients users
 - #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
