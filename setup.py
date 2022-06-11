@@ -21,7 +21,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-version = "2.2.0"
+version = "2.3.0"
 
 setup(
     name="senaite.core",
