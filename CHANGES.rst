@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+2.2.0 (2022-06-11)
 ------------------
 
 - #2009 Fix missing keyword in analysis profile view
