@@ -27,19 +27,23 @@ contributions descending.
 - witekdev, witekdev@gmail.com
 - Anderson Smith, andersonsmith183@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
+- Leonid Toporkov, leonid.toporkov@gmail.com
 - toropok, leonid.toporkov@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Jean Jordaan, jean.jordaan@gmail.com
 - MoffatMore, 12894381+MoffatMore@users.noreply.github.com
 - krishan Chopra, krishanchopra61@yahoo.in
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
+- Anton Zhuchkov, antonzh85@gmail.com
 - Stefan Gruber, s.gruber@liscon.de
 - Siyamalan, 20146320+siyamalan@users.noreply.github.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
 - goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
+- Bugerman58, antonzh85@gmail.com
 - mimishons, shoniwam@nmrl.org.zw
+- José Manuel Pérez Lendínez, jmplz14@correo.ugr.es
 
 
 Translators
@@ -49,6 +53,7 @@ Translators
 - Lemoene Smit, lemoene@bikalabs.com, Afrikaans (af)
 - Mohammed Gaber, mohammedxp@gmail.com, Arabic (ar)
 - Omar Anwar, omaraglan91@yahoo.com, Arabic (ar)
+- Bakir Helic, bakirh@gmail.com, Bosnian (bs)
 - Jordi Puiggené, jpuiggene@naralabs.com, Catalan (ca)
 - Campbell McKellar-Basset, campbell@bikalabs.com, Catalan (ca)
 - Tomáš Ocelka, tomas.ocelka@ehss.eu, Czech (cs)
