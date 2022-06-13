@@ -5,6 +5,8 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2012 Remove stale supply order code
+
 
 
 2.2.0 (2022-06-11)
