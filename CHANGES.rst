@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2013 Fix ValueError in uidreferencefield when context is not a IBehavior
 - #2010 Fix TypeError in Analyses Listing View
 
 
