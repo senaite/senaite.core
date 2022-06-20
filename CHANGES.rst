@@ -1,9 +1,27 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+
+2.3.0 (unreleased)
 ------------------
 
+- #2012 Remove stale supply order code
+- #2011 Removed dependency to Products.TextIndexNG3
+- #2010 Fix TypeError in Analyses Listing View
+
+
+2.2.0 (2022-06-11)
+------------------
+
+- #2009 Fix missing keyword in analysis profile view
+- #2007 Fix `ConstraintNotSatisfied` error on language field import
+- #2008 Import demo data in tests with Generic Setup
+- #2002 Allow string results for calculation dependencies
+- #2004 Added behavior to allow sharing objects across clients users
+- #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
+- #1999 Allow multi-choice/multiselect interim fields in calculations
+- #1998 Fix analisys hidden status erases when submit through worksheet 
+- #1997 Fix conditions not set when adding analyses via "Manage Analyses" view
 - #1995 Dynamic assingment of "Owner" role for Client Contacts
 - #1994 Support for dynamic assignment of Local Roles for context and principal
 - #1992 Fix Generic Setup XML export/import adapters for Dexterity fields

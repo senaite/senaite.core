@@ -1,13 +1,10 @@
 #
-# Translators:
-# Bakir Helic <bakirh@gmail.com>, 2021
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Bakir Helic <bakirh@gmail.com>, 2021\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bosnian (https://www.transifex.com/senaite/teams/87045/bs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -76,12 +73,22 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: senaite/core/browser/dexterity/templates/macros.pt:26
+#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
+#: senaite/core/skins/senaite_templates/edit_macros.pt:44
+msgid "Info"
+msgstr ""
+
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
 msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
+msgstr ""
+
+#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
+msgid "More"
 msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
@@ -100,8 +107,16 @@ msgstr ""
 msgid "On"
 msgstr ""
 
+#: senaite/core/profiles/default/actions.xml
+msgid "Register"
+msgstr ""
+
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
+msgstr ""
+
+#: senaite/core/profiles/default/actions.xml
+msgid "Search"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
@@ -164,6 +179,10 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
+msgstr ""
+
+#: senaite/core/browser/controlpanel/templates/overview.pt:26
+msgid "Warning"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
@@ -482,9 +501,9 @@ msgid "label_rule_event_trigger"
 msgstr ""
 
 #. Default: "Save"
-#: bika/lims/browser/templates/header_table.pt:122
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:60
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
+#: senaite/core/skins/senaite_templates/edit_macros.pt:251
 msgid "label_save"
 msgstr ""
 

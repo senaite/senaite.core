@@ -520,6 +520,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not calc:
             return False
 
+        # get the formula from the calculation
+        formula = calc.getMinifiedFormula()
+
         # Include the current context UID in the mapping, so it can be passed
         # as a param in built-in functions, like 'get_result(%(context_uid)s)'
         mapping = {"context_uid": '"{}"'.format(self.UID())}
@@ -540,12 +543,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if interim_value == "":
                 continue
 
-            # Only floatable and UIDs are supported
+            # Convert to floatable if necessary
             if api.is_floatable(interim_value):
                 interim_value = float(interim_value)
-
-            elif not api.is_uid(interim_value):
-                return False
 
             mapping[interim_keyword] = interim_value
 
@@ -553,6 +553,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         dependencies = self.getDependencies()
         for dependency in dependencies:
             result = dependency.getResult()
+            # check if the dependency is a string result
+            str_result = dependency.getStringResult()
+            keyword = dependency.getKeyword()
             if not result:
                 # Dependency without results found
                 if cascade:
@@ -563,7 +566,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     return False
             if result:
                 try:
-                    result = float(str(result))
+                    # we need to quote a string result because of the `eval` below
+                    result = '"%s"' % result if str_result else float(str(result))
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
@@ -578,9 +582,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 except (TypeError, ValueError):
                     return False
 
+                # replace placeholder -> formatting string
+                # https://docs.python.org/2.7/library/stdtypes.html?highlight=built#string-formatting-operations
+                converter = "s" if str_result else "f"
+                formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
+
+
+        # convert any remaining placeholders, e.g. from interims etc.
+        # NOTE: we assume remaining values are all floatable!
+        formula = formula.replace("[", "%(").replace("]", ")f")
+
         # Calculate
-        formula = calc.getMinifiedFormula()
-        formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
                            {"__builtins__": None,

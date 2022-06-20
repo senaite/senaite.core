@@ -29,6 +29,7 @@ from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
 from DateTime import DateTime
 from plone.app.blob.interfaces import IBlobField
+from plone.app.dexterity.behaviors.metadata import default_language
 from plone.app.textfield.interfaces import IRichText
 from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
@@ -49,6 +50,8 @@ from z3c.form.interfaces import IDataManager
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.interface import implements
+from zope.schema.interfaces import ConstraintNotSatisfied
+from zope.schema.interfaces import IChoice
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField as ISchemaField
 from zope.schema.interfaces import IText
@@ -433,6 +436,33 @@ class DXReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
 
 
 class DXDataGridFieldNodeAdapter(ATRecordFieldNodeAdapter):
-    """Import/Export if DataGrid Fields
+    """Import/Export DataGrid Fields
     """
     adapts(IDexterityContent, IDataGridField, ISetupEnviron)
+
+
+class DXChoiceFieldNodeAdapter(DXFieldNodeAdapter):
+    """Import/Export Choice Fields
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, IChoice, ISetupEnviron)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        # Raises an ConstraintNotSatisfied error when the language is not
+        # in the vocabulary of available languages
+        if self.field.getName() == "language":
+            value = self.sanitize_language_value(value)
+        super(DXChoiceFieldNodeAdapter, self).set_field_value(value, **kw)
+
+    def sanitize_language_value(self, value):
+        """Ensure the given language is in the language vocabulary
+
+        This avoids that the validator fails
+        """
+        try:
+            self.field._validate(value)
+            return value
+        except ConstraintNotSatisfied:
+            return default_language(self.context)

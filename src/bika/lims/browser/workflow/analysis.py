@@ -108,8 +108,8 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             analysis.setInterimFields(interims)
 
             # Save Hidden
-            hidden = self.get_form_value("Hidden", uid, "")
-            analysis.setHidden(hidden == "on")
+            hidden = self.get_form_value("Hidden", uid, default=analysis.getHidden())
+            analysis.setHidden(hidden in ("on", True))
 
             # Only set result if it differs from the actual value to preserve
             # the result capture date

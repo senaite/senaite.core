@@ -381,7 +381,7 @@ class AnalysesView(ListingView):
             return False
 
         # Omit analysis does not have conditions set
-        if not obj.getConditions():
+        if not obj.getConditions(empties=True):
             return False
 
         return True
@@ -914,7 +914,7 @@ class AnalysesView(ListingView):
             val = json.loads(value)
             if isinstance(val, (list, tuple, set)):
                 value = val
-        except ValueError:
+        except (ValueError, TypeError):
             pass
         if not isinstance(value, (list, tuple, set)):
             value = [value]

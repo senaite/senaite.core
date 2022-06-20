@@ -15,32 +15,19 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl import ClassSecurityInfo
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISupplyOrderFolder
-from plone.app.folder import folder
-from plone.app.folder.folder import ATFolder
-from Products.Archetypes.public import registerType
-from Products.ATContentTypes.content import schemata
-from zope.interface import implements
+
+from plone.dexterity.utils import getAdditionalSchemata
 
 
-schema = folder.ATFolderSchema.copy()
-
-
-class SupplyOrderFolder(ATFolder):
-    """Root folder for Supply Orders
+def get_behavior_schema(context, behavior):
+    """Returns the schema of the context that is provided by the behavior
+    interface passed-in, if any
     """
-    implements(ISupplyOrderFolder)
-
-    schema = schema
-    displayContentsTab = False
-    security = ClassSecurityInfo()
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-
-registerType(SupplyOrderFolder, PROJECTNAME)
+    schemata = getAdditionalSchemata(context=context)
+    for sch in schemata:
+        if sch.isOrExtends(behavior):
+            return sch
+    raise TypeError("No behavior schema found")

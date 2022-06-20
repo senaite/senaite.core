@@ -1,13 +1,13 @@
 #
 # Translators:
-# trendspotter <jirka.p@volny.cz>, 2021
+# trendspotter <jirka.p@volny.cz>, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: trendspotter <jirka.p@volny.cz>, 2021\n"
+"Last-Translator: trendspotter <jirka.p@volny.cz>, 2022\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,7 +37,7 @@ msgstr "Aktualizace nastavení pravidel obsahu."
 
 #: senaite/core/browser/dexterity/templates/container.pt:29
 msgid "Contents"
-msgstr ""
+msgstr "Obsah"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
@@ -76,6 +76,12 @@ msgstr "Přejít na stránku aktualizace"
 msgid "Home"
 msgstr "Úvodní stránka"
 
+#: senaite/core/browser/dexterity/templates/macros.pt:26
+#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
+#: senaite/core/skins/senaite_templates/edit_macros.pt:44
+msgid "Info"
+msgstr ""
+
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
 msgstr "Přihlášení"
@@ -83,6 +89,10 @@ msgstr "Přihlášení"
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
 msgstr "Odhlášení"
+
+#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
+msgid "More"
+msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
@@ -100,9 +110,17 @@ msgstr "Vypnuto"
 msgid "On"
 msgstr "Zapnuto"
 
+#: senaite/core/profiles/default/actions.xml
+msgid "Register"
+msgstr ""
+
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
 msgstr "Relativní adresa URL pro logo panelu nástrojů SENAITE"
+
+#: senaite/core/profiles/default/actions.xml
+msgid "Search"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
@@ -165,6 +183,10 @@ msgstr "Přepínání viditelnosti postranního panelu"
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
 msgstr "WSGI:"
+
+#: senaite/core/browser/controlpanel/templates/overview.pt:26
+msgid "Warning"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
@@ -492,9 +514,9 @@ msgid "label_rule_event_trigger"
 msgstr "label_rule_event_trigger"
 
 #. Default: "Save"
-#: bika/lims/browser/templates/header_table.pt:122
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:60
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
+#: senaite/core/skins/senaite_templates/edit_macros.pt:251
 msgid "label_save"
 msgstr "label_save"
 

@@ -20,13 +20,32 @@
 
 import six
 from bika.lims import api
+from bika.lims import APIError
 from bika.lims import logger
 from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
-from collections import defaultdict
+from plone.memoize.request import cache
+from senaite.core.behaviors import IClientShareableBehavior
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
 from zope.interface import implementer
+
+
+def _request_cache(method, *args):
+    """Decorator that ensures the call to the given method with the given
+    arguments only takes place once within same request
+    """
+    # Extract the path of the context from the instance
+    try:
+        path = api.get_path(args[0].context)
+    except APIError:
+        path = "no-context"
+
+    return [
+        method.__name__,
+        path,
+        args[1:],
+    ]
 
 
 class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
@@ -35,7 +54,10 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
     current traverse path
     """
 
-    _roles_in_context = defaultdict(dict)
+    @property
+    def request(self):
+        # Fixture for tests that do not have a regular request!!!
+        return api.get_request() or api.get_test_request()
 
     def getRolesInContext(self, context, principal_id):
         """Returns the dynamically calculated 'local' roles for the given
@@ -44,17 +66,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @param principal_id: User login id
         @return List of dynamically calculated local-roles for user and context
         """
-        if not api.is_object(context):
-            # We only apply dynamic local roles to valid objects
-            return []
-
-        # This function is called a lot within same request, do some cache
-        context_uid = api.get_uid(context)
-        roles = self._roles_in_context.get(context_uid, {})
-        if principal_id in roles:
-            return roles.get(principal_id)
-
-        # Look for adapters
         roles = set()
         path = api.get_path(context)
         adapters = getAdapters((context,), IDynamicLocalRoles)
@@ -64,13 +75,9 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
                 logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
                                                      repr(local_roles)))
             roles.update(local_roles)
+        return list(roles)
 
-        # Store in cache
-        self._roles_in_context[context_uid].update({
-            principal_id: list(roles)
-        })
-        return self._roles_in_context[context_uid][principal_id]
-
+    @cache(get_key=_request_cache, get_request='self.request')
     def getRoles(self, principal_id):
         """Returns both non-local and local roles for the given principal in
         current context
@@ -78,6 +85,15 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         @return: list of non-local and local roles for the user and context
         """
         default_roles = self._rolemap.get(principal_id, [])
+        if not api.is_object(self.context):
+            # We only apply dynamic local roles to valid objects
+            return default_roles[:]
+
+        if principal_id not in self.getMemberIds():
+            # We only apply dynamic local roles to existing users
+            return default_roles[:]
+
+        # Extend with dynamically computed roles
         dynamic_roles = self.getRolesInContext(self.context, principal_id)
         return list(set(default_roles + dynamic_roles))
 
@@ -85,12 +101,18 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         roles = {}
         # Iterate through all members to extract their dynamic local role for
         # current context
-        mtool = api.get_tool("portal_membership")
-        for principal_id in mtool.listMemberIds():
+        for principal_id in self.getMemberIds():
             user_roles = self.getRoles(principal_id)
             if user_roles:
                 roles.update({principal_id: user_roles})
         return six.iteritems(roles)
+
+    @cache(get_key=_request_cache, get_request='self.request')
+    def getMemberIds(self):
+        """Return the list of user ids
+        """
+        mtool = api.get_tool("portal_membership")
+        return mtool.listMemberIds()
 
 
 @implementer(IDynamicLocalRoles)
@@ -128,3 +150,36 @@ class ClientAwareLocalRoles(object):
             return []
 
         return ["Owner"]
+
+
+@implementer(IDynamicLocalRoles)
+class ClientShareableLocalRoles(object):
+    """Adapter for the assignment of roles for content shared across clients
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def getRoles(self, principal_id):
+        """Returns ["ClientGuest"] local role if the current context is
+        shareable across clients and the user for the principal_id belongs to
+        one of the clients for which the context can be shared
+        """
+        # Get the clients this context is shared with
+        behavior = IClientShareableBehavior(self.context)
+        clients = filter(api.is_uid, behavior.getRawClients())
+        if not clients:
+            return []
+
+        # Check if the user belongs to at least one of the clients
+        # this context is shared with
+        query = {
+            "portal_type": "Contact",
+            "getUsername": principal_id,
+            "getParentUID": clients,
+        }
+        brains = api.search(query, catalog="portal_catalog")
+        if len(brains) == 0:
+            return []
+
+        return ["ClientGuest"]

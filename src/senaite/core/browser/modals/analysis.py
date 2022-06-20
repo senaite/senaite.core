@@ -69,7 +69,10 @@ class SetAnalysisConditionsView(BrowserView):
         return api.get_title(analysis)
 
     def get_conditions(self):
-        conditions = self.get_analysis().getConditions()
+        """Returns the conditions to display in the form, those with empty or
+        non-set value included
+        """
+        conditions = self.get_analysis().getConditions(empties=True)
         conditions = copy.deepcopy(conditions)
         for condition in conditions:
             choices = condition.get("choices", "")

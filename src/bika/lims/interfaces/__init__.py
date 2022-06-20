@@ -508,16 +508,6 @@ class ISuppliers(Interface):
     """
 
 
-class ISupplyOrder(Interface):
-    """Marker interface for a Supplier Order
-    """
-
-
-class ISupplyOrderFolder(Interface):
-    """Marker interface for Supply Order Folder
-    """
-
-
 class ISubGroups(Interface):
     """Sub-groups configuration folder
     """
