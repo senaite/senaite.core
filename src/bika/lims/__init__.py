@@ -54,10 +54,6 @@ from Products.Archetypes import PloneMessageFactory as PMF  # noqa
 
 def initialize(context):
     logger.info("*** Initializing BIKA.LIMS ***")
-    # DELETE AFTER 2.0.0
-    from bika.lims.content.supplyorder import SupplyOrder  # noqa
-    from bika.lims.content.supplyorderfolder import SupplyOrderFolder  # noqa
-    # /DELETE AFTER 2.0.0
     from bika.lims.content.analysis import Analysis  # noqa
     from bika.lims.content.analysiscategory import AnalysisCategory  # noqa
     from bika.lims.content.analysisprofile import AnalysisProfile  # noqa

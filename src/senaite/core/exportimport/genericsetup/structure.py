@@ -56,7 +56,6 @@ SKIP_EXPORT_TYPES = [
     "Attachment",
     "Batch",
     "ReferenceSample",
-    "SupplyOrder",
     "Worksheet",
 ]
 
