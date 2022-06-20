@@ -2,7 +2,7 @@ Listing Searchable Text Index
 -----------------------------
 
 The Listing Searchable Text Index (``listing_searchable_text``) is mostly used
-for wide searches in listings. It is a ``TextIndexNG3`` type index present in
+for wide searches in listings. It is a ``ZCTextIndex`` type index present in
 most catalogs. To fill this index, SENAITE concatenates the values from all
 fields registered as metadata columns for the given object and catalog. The
 value is then converted to unicode and stored. This is the default behavior, but
