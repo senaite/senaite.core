@@ -212,17 +212,10 @@ class DefaultReferenceWidgetVocabulary(object):
             return []
 
         meta = index.meta_type
-        if meta == "TextIndexNG3":
-            query[index.id] = "{}*".format(search_term)
-
-        elif meta == "ZCTextIndex":
-            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
-                        .format(meta, search_field))
+        if meta == "ZCTextIndex":
             query[index.id] = "{}*".format(search_term)
 
         elif meta in ["FieldIndex", "KeywordIndex"]:
-            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
-                        .format(meta, search_field))
             query[index.id] = search_term
 
         else:
