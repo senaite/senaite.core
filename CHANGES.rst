@@ -6,7 +6,7 @@ Changelog
 ------------------
 
 - #2011 Removed dependency to Products.TextIndexNG3
-
+- #2010 Fix TypeError in Analyses Listing View
 
 
 2.2.0 (2022-06-11)
