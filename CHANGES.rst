@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2015 Performance: Avoid to catalog temporary objects
 - #2013 Fix ValueError in uidreferencefield when context is not a IBehavior
 - #2012 Remove stale supply order code
 - #2011 Removed dependency to Products.TextIndexNG3
