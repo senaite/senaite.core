@@ -351,6 +351,16 @@ class UIDReferenceField(List, BaseField):
         """
         if IBehavior.providedBy(thing):
             return self._get_content_object(thing.context)
+
         if api.is_dexterity_content(thing):
             return thing
+
+        # Not all behaviors implement plone.behavior.interfaces.IBehavior
+        context = getattr(thing, "context", None)
+        if context:
+            clazz = thing.__class__
+            clazz = "{}.{}".format(clazz.__module__, clazz.__name__)
+            logger.warn("{} does not implement IBehavior".format(clazz))
+            return self._get_content_object(context)
+
         raise ValueError("Not a valid object: %s" % repr(thing))
