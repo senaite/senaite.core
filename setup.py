@@ -67,7 +67,6 @@ setup(
         "Products.ATContentTypes",
         "Products.CMFEditions",
         "Products.DataGridField",
-        "Products.TextIndexNG3",
         "Products.contentmigration",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",
