@@ -69,8 +69,6 @@ setup(
         "Products.DataGridField",
         "Products.TextIndexNG3",
         "Products.contentmigration",
-        # XXX: Remove after 2.1.0
-        "zopyx.txng3.ext==3.4.0",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",
         # Python 2/3 compatibility library: https://six.readthedocs.io/

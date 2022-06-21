@@ -6,8 +6,9 @@ Changelog
 ------------------
 
 - #2013 Fix ValueError in uidreferencefield when context is not a IBehavior
+- #2012 Remove stale supply order code
+- #2011 Removed dependency to Products.TextIndexNG3
 - #2010 Fix TypeError in Analyses Listing View
-
 
 
 2.2.0 (2022-06-11)
