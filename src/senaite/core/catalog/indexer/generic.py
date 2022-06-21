@@ -7,8 +7,8 @@ from Products.CMFPlone.CatalogTool import \
     sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
 from senaite.core.catalog import SENAITE_CATALOG
-from senaite.core.interfaces import ISenaiteCatalog
 from senaite.core.catalog.utils import get_searchable_text_tokens
+from senaite.core.interfaces import ISenaiteCatalog
 
 
 @indexer(IContentish)
