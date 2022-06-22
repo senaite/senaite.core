@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2017 Added `api.is_temporary` function for both DX and AT types
+- #2019 Performance: Avoid profile analyses assignment for temporary samples
 - #2015 Performance: Avoid to catalog temporary objects
 - #2013 Fix ValueError in uidreferencefield when context is not a IBehavior
 - #2012 Remove stale supply order code
