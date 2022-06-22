@@ -1498,7 +1498,9 @@ def is_temporary(obj):
         return True
 
     if is_at_content(obj):
-        # Checks to see if we are created inside the portal_factory
-        return isFactoryContained(obj)
+        # Checks to see if we are created inside the portal_factory. We don't
+        # rely here on AT's isFactoryContained because the function is patched
+        meta_type = getattr(aq_base(parent), "meta_type", "")
+        return meta_type == "TempFolder"
 
     return False
