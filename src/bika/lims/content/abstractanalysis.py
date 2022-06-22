@@ -1054,16 +1054,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
-        uid = get_backreferences(self, relationship="WorksheetAnalysis")
-        if not uid:
+        uids = get_backreferences(self, relationship="WorksheetAnalysis")
+        if not uids:
             return None
 
-        if len(uid) > 1:
+        if len(uids) > 1:
             path = api.get_path(self)
             logger.error("More than one worksheet: {}".format(path))
             return None
 
-        return uid
+        return uids[0]
 
     @security.public
     def getWorksheet(self):
