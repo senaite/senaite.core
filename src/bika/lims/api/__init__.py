@@ -45,7 +45,6 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
-from Products.Archetypes.utils import isFactoryContained
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
