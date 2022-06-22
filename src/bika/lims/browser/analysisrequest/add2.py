@@ -106,7 +106,7 @@ class AnalysisRequestAddView(BrowserView):
         self.ShowPrices = self.setup.getShowPrices()
         self.theme = api.get_view("senaite_theme")
         self.icon = self.theme.icon_url("Sample")
-        logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
+        logger.debug("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
     def get_view_url(self):
@@ -154,7 +154,7 @@ class AnalysisRequestAddView(BrowserView):
         """Create a temporary AR to fetch the fields from
         """
         if not self.tmp_ar:
-            logger.info("*** CREATING TEMPORARY AR ***")
+            logger.debug("*** CREATING TEMPORARY AR ***")
             self.tmp_ar = self.context.restrictedTraverse(
                 "portal_factory/AnalysisRequest/Request new analyses")
         return self.tmp_ar
@@ -162,14 +162,14 @@ class AnalysisRequestAddView(BrowserView):
     def get_ar_schema(self):
         """Return the AR schema
         """
-        logger.info("*** GET AR SCHEMA ***")
+        logger.debug("*** GET AR SCHEMA ***")
         ar = self.get_ar()
         return ar.Schema()
 
     def get_ar_fields(self):
         """Return the AR schema fields (including extendend fields)
         """
-        logger.info("*** GET AR FIELDS ***")
+        logger.debug("*** GET AR FIELDS ***")
         schema = self.get_ar_schema()
         return schema.fields()
 
@@ -230,9 +230,9 @@ class AnalysisRequestAddView(BrowserView):
         form = dict()
         form[new_fieldname] = value
         self.request.form.update(form)
-        logger.info("get_input_widget: fieldname={} arnum={} "
-                    "-> new_fieldname={} value={}".format(
-                        fieldname, arnum, new_fieldname, value))
+        logger.debug("get_input_widget: fieldname={} arnum={} "
+                     "-> new_fieldname={} value={}".format(
+                         fieldname, arnum, new_fieldname, value))
         widget = context.widget(new_fieldname, **kw)
         return widget
 
@@ -292,8 +292,8 @@ class AnalysisRequestAddView(BrowserView):
             interface=IGetDefaultFieldValueARAddHook)
         if adapter is not None:
             default = adapter(self.context)
-        logger.info("get_default_value: context={} field={} value={} arnum={}"
-                    .format(context, name, default, arnum))
+        logger.debug("get_default_value: context={} field={} value={} arnum={}"
+                     .format(context, name, default, arnum))
         return default
 
     def get_field_value(self, field, context):
@@ -301,7 +301,7 @@ class AnalysisRequestAddView(BrowserView):
         """
         name = field.getName()
         value = context.getField(name).get(context)
-        logger.info("get_field_value: context={} field={} value={}".format(
+        logger.debug("get_field_value: context={} field={} value={}".format(
             context, name, value))
         return value
 

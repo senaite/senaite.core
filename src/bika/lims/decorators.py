@@ -146,12 +146,12 @@ def synchronized(max_connections=2, verbose=0):
         @wraps(func)
         def wrapper(*args, **kwargs):
             try:
-                logger.info("==> {}::Acquire Semaphore ...".format(
+                logger.debug("==> {}::Acquire Semaphore ...".format(
                     func.__name__))
                 semaphore.acquire()
                 return func(*args, **kwargs)
             finally:
-                logger.info("<== {}::Release Semaphore ...".format(
+                logger.debug("<== {}::Release Semaphore ...".format(
                     func.__name__))
                 semaphore.release()
 

@@ -39,7 +39,7 @@ class TestAnalysisRequestRetract(DataTestCase):
     def get_services(self):
         query = {
             "portal_type": "AnalysisService",
-            "is_active": True,
+            "getKeyword": ["Ca", "Mg", "Cu"],
         }
         return api.search(query)
 
@@ -56,8 +56,7 @@ class TestAnalysisRequestRetract(DataTestCase):
             "Contact": api.get_uid(contact),
             "DateSampled": self.timestamp(),
             "SampleType": api.get_uid(sampletype)}
-
-        services = self.get_services()[:3]
+        services = self.get_services()
         service_uids = map(api.get_uid, services)
         return crar(client, self.request, values, service_uids)
 
