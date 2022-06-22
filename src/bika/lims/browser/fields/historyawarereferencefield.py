@@ -170,7 +170,6 @@ class HistoryAwareReferenceField(ReferenceField):
         existing_uids = self.get_backreferences_for(instance)
 
         if not value and not existing_uids:
-            logger.warning("Field and value is empty!")
             return
 
         if not self.multiValued and len(value) > 1:
