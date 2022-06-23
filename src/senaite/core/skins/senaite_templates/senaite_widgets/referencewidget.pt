@@ -9,33 +9,40 @@
     <!-- Reference Widget -->
     <metal:view_macro define-macro="view"
                       tal:define="kssClassesView context/@@kss_field_decorator_view;
-                                    getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+                                  getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
 
-      <!-- Single Valued Field -->
+      <!-- View Mode: Single Valued Field -->
       <tal:singlevalued tal:condition="not:field/multiValued">
         <span metal:define-macro="string-field-view"
               tal:define="kss_class python:getKssClasses(fieldName,
-                                  templateId='widgets/string', macro='string-field-view');
-                                  uid context/UID|nothing"
+                          templateId='widgets/string', macro='string-field-view');
+                          uid context/UID|nothing"
               tal:attributes="class kss_class;
-                                  id string:parent-fieldname-$fieldName-$uid">
+                              id string:parent-fieldname-$fieldName-$uid">
           <span metal:define-slot="inside"
                 tal:define="value accessor;
                             text_default python: (value and hasattr(value, 'Title')) and value.Title() or '';
                             text_attr widget/ui_item|nothing;
                             text python:text_attr and getattr(value, text_attr, text_default) or text_default;"
-                tal:attributes="value text;"
-                tal:content="text">reference</span>
+                tal:attributes="value text;">
+            <a href="#"
+               tal:condition="python:value"
+               tal:attributes="href python:value.absolute_url();
+                               class python:value.portal_type.replace(' ', '_') + ' overlay_panel'"
+               tal:content="python:value.Title() or value.absolute_url(relative=1)">
+              Target Title
+            </a>
+          </span>
         </span>
       </tal:singlevalued>
 
-      <!-- Multi Valued Field -->
+      <!-- View Mode: Multi Valued Field -->
       <tal:multivalued tal:condition="field/multiValued">
-        <ul tal:define="value accessor">
+        <ul class="list-unstyled" tal:define="value accessor">
           <li tal:repeat="obj value">
             <a href="#"
                tal:attributes="href obj/absolute_url;
-                     class python:obj.portal_type.replace(' ', '_')"
+                               class python:obj.portal_type.replace(' ', '_') + ' overlay_panel'"
                tal:content="python:obj.Title() or obj.absolute_url(relative=1)">
               Target Title
             </a>
@@ -53,6 +60,7 @@
           <metal:fill metal:fill-slot="widget_body">
             <div class="d-table-row">
 
+            <!-- Edit Mode: Multi Valued Field -->
             <div class="multiValued-listing"
                  tal:condition="python:context.Schema()[fieldName].multiValued"
                  tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
