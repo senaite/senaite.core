@@ -68,7 +68,11 @@
                       src string:${portal_url}/++plone++senaite.core.static/assets/icons/delete.svg;
                       fieldName fieldName;
                       uid value/UID"/>
-                  <span tal:replace="python:str(value.Title())"/>
+                  <a class="overlay_panel" href="#"
+                     target="blank"
+                     tal:content="python:str(value.Title())"
+                     tal:attributes="href python:value.absolute_url()">
+                  </a>
                 </div>
               </tal:repeat>
             </div>
