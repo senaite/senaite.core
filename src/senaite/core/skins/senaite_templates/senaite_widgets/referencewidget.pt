@@ -51,6 +51,8 @@
       <tal:edit_visible tal:condition="python: visibility_mode == 'visible'">
         <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
           <metal:fill metal:fill-slot="widget_body">
+            <div class="d-table-row">
+
             <div class="multiValued-listing"
                  tal:condition="python:context.Schema()[fieldName].multiValued"
                  tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
@@ -72,11 +74,12 @@
             </div>
 
             <tal:input_field define="val python:context.Schema()[fieldName].getAccessor(context)();
+                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
                                      text_default val/Title|nothing;
                                      text_attr widget/ui_item|nothing;
                                      text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
               <input type="text"
-                     class="blurrable firstToFocus referencewidget"
+                     class="blurrable firstToFocus referencewidget d-table-cell"
                      tal:condition="python:context.Schema()[fieldName].required"
                      tal:attributes="name fieldName;
                                      id fieldName;
@@ -93,11 +96,11 @@
                                      resetButton widget/resetButton;
                                      minLength python:widget.minLength;
                                      ui_item widget/ui_item;
-                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
+                                     multiValued multiValued;
                                      combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
 
               <input type="text"
-                     class="blurrable firstToFocus referencewidget"
+                     class="blurrable firstToFocus referencewidget d-table-cell"
                      tal:condition="python:not context.Schema()[fieldName].required"
                      tal:attributes="name fieldName;
                                      id fieldName;
@@ -114,7 +117,7 @@
                                      resetButton widget/resetButton;
                                      minLength widget/minLength;
                                      ui_item widget/ui_item;
-                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
+                                     multiValued multiValued;
                                      combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
 
                 <input type="hidden"
@@ -124,8 +127,19 @@
                        tal:attributes="name string:${fieldName}_uid;
                                        id string:${fieldName}_uid;
                                        value python:widget.initial_uid_field_value(val);"/>
+
+                <!-- Link to single valued object in edit mode -->
+                <tal:link tal:condition="python:val and not multiValued">
+                  <a class="pl-2 overlay_panel d-table-cell" href="#"
+                     target="blank"
+                     tal:attributes="href python:val.absolute_url()">
+                    <i class="fas fa-info-circle small text-secondary"></i>
+                  </a>
+                </tal:link>
+
               </tal:input_field>
 
+            </div>
           </metal:fill>
         </metal:use>
       </tal:edit_visible>
