@@ -76,7 +76,7 @@
                       src string:${portal_url}/++plone++senaite.core.static/assets/icons/delete.svg;
                       fieldName fieldName;
                       uid value/UID"/>
-                  <a class="overlay_panel" href="#"
+                  <a class="" href="#"
                      target="blank"
                      tal:content="python:str(value.Title())"
                      tal:attributes="href python:value.absolute_url()">
@@ -142,7 +142,7 @@
 
                 <!-- Link to single valued object in edit mode -->
                 <tal:link tal:condition="python:val and not multiValued">
-                  <a class="pl-2 overlay_panel d-table-cell" href="#"
+                  <a class="pl-2 d-table-cell" href="#"
                      target="blank"
                      tal:attributes="href python:val.absolute_url()">
                     <i class="fas fa-info-circle small text-secondary"></i>
