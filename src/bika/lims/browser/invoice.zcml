@@ -12,4 +12,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <adapter
+      name="Invoice"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory=".invoice.RenderHeaderTableInvoiceField"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      />
+
 </configure>
