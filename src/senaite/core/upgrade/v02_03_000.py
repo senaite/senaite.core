@@ -21,10 +21,11 @@
 from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
-from senaite.core.catalog import SAMPLE_CATALOG
 
 version = "2.3.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -45,6 +46,11 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # run import steps located in bika.lims profiles
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
+
+    # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
 
@@ -104,14 +110,16 @@ def is_orphan(uid):
 
 
 def fix_cannot_create_partitions(portal):
-    """Updates the role mappings of samples in received status
+    """Updates the role mappings of samples in status that are affected by the
+    issue: sample_received, verified, to_be_verified and published statuses
     """
     logger.info("Fix cannot create partitions ...")
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById("senaite_sample_workflow")
+    statuses = ["sample_received", "to_be_verified", "verified", "published"]
     query = {
         "portal_type": "AnalysisRequest",
-        "review_state": "sample_received"
+        "review_state": statuses,
     }
     brains = api.search(query, SAMPLE_CATALOG)
     total = len(brains)

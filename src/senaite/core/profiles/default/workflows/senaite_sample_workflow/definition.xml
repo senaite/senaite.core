@@ -600,7 +600,6 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
-    <exit-transition transition_id="create_partitions" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -789,7 +788,6 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
-    <exit-transition transition_id="create_partitions" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -892,7 +890,6 @@
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
     <exit-transition transition_id="dispatch" />
-    <exit-transition transition_id="create_partitions" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False"/>
