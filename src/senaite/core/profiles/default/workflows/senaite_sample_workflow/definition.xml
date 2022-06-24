@@ -1387,7 +1387,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Create partitions</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Create Partitions"</guard-permission>
+      <guard-permission>senaite.core: Transition: Create Partitions</guard-permission>
       <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
     </guard>
   </transition>
