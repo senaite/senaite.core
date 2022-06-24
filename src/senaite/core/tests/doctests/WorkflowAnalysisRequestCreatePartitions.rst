@@ -114,6 +114,34 @@ Partitions cannot be created when the status is `verified`:
     >>> isTransitionAllowed(ar, "create_partitions")
     False
 
+Partitions cannot be created when the status is `published`:
+
+    >>> success = do_action_for(ar, "publish")
+    >>> api.get_workflow_status_of(ar)
+    'published'
+
+    >>> isTransitionAllowed(ar, "create_partitions")
+    False
+
+Partitions cannot be created when the status is `invalid`:
+
+    >>> success = do_action_for(ar, "invalidate")
+    >>> api.get_workflow_status_of(ar)
+    'invalid'
+
+    >>> isTransitionAllowed(ar, "create_partitions")
+    False
+
+Partitions cannot be created when the status is `cancelled`:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> success = do_action_for(ar, "cancel")
+    >>> api.get_workflow_status_of(ar)
+    'cancelled'
+
+    >>> isTransitionAllowed(ar, "create_partitions")
+    False
+
 
 Check permissions for create_partitions transition
 ..................................................
