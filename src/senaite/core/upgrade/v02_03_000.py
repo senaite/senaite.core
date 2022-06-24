@@ -24,6 +24,7 @@ from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.catalog import SAMPLE_CATALOG
 
 version = "2.3.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -44,7 +45,11 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
     fix_worksheets_analyses(portal)
+    fix_cannot_create_partitions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -96,3 +101,23 @@ def is_orphan(uid):
     """
     obj = api.get_object_by_uid(uid, None)
     return obj is None
+
+
+def fix_cannot_create_partitions(portal):
+    """Updates the role mappings of samples in received status
+    """
+    logger.info("Fix cannot create partitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_sample_workflow")
+    query = {
+        "portal_type": "AnalysisRequest",
+        "review_state": "sample_received"
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 10 == 0:
+            logger.info("Fix cannot create partitions {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])

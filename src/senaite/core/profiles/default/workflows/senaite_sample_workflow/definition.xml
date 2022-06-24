@@ -32,6 +32,7 @@
   <permission>senaite.core: Transition: Schedule Sampling</permission>
   <permission>senaite.core: Transition: Dispatch Sample</permission>
   <permission>senaite.core: Transition: Restore Sample</permission>
+  <permission>senaite.core: Transition: Create Partitions</permission>
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Edit Field Results</permission>
@@ -90,7 +91,7 @@
   <!-- *** STATES *** -->
 
 
-  <!-- State: sample_registered (inital state) -->
+  <!-- State: sample_registered (initial state) -->
   <state state_id="sample_registered" title="Registered" i18n:attributes="title" purge="True">
     <description>Creation</description>
     <description>Sample is registered in the system</description>
@@ -124,6 +125,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
@@ -216,6 +218,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -327,6 +330,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -434,6 +438,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
@@ -527,6 +532,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="True"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
@@ -617,6 +623,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="False">
       <!-- LabClerk role has this permission  granted by default in rolemap -->
@@ -715,6 +722,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
@@ -804,6 +812,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
 
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
@@ -902,6 +911,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
@@ -988,6 +998,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
@@ -1067,6 +1078,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
@@ -1151,6 +1163,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
@@ -1230,6 +1243,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
@@ -1373,7 +1387,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Create partitions</action>
     <guard>
-      <guard-permission>senaite.core: Add AnalysisRequest</guard-permission>
+      <guard-permission>senaite.core: Transition: Create Partitions"</guard-permission>
       <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
     </guard>
   </transition>
