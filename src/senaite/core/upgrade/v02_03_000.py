@@ -18,6 +18,8 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
@@ -42,6 +44,55 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    fix_worksheets_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def fix_worksheets_analyses(portal):
+    logger.info("Fix Worksheets Analyses ...")
+    worksheets = portal.worksheets.objectValues()
+    total = len(worksheets)
+    for num, worksheet in enumerate(worksheets):
+        if num and num % 10 == 0:
+            logger.info("Processed worksheets: {}/{}".format(num, total))
+        fix_worksheet_analyses(worksheet)
+    logger.info("Fix Worksheets Analyses [DONE]")
+
+
+def fix_worksheet_analyses(worksheet):
+    """Purge worksheet analyses based on the layout and removes the obsolete
+    relationship from reference_catalog
+    """
+    # Get the referenced analyses via relationship
+    analyses = worksheet.getRefs(relationship="WorksheetAnalysis")
+    analyses_uids = [api.get_uid(an) for an in analyses]
+
+    new_layout = []
+    for slot in worksheet.getLayout():
+        uid = slot.get("analysis_uid")
+        if not api.is_uid(uid):
+            continue
+
+        if uid not in analyses_uids:
+            if is_orphan(uid):
+                continue
+
+        new_layout.append(slot)
+
+    # Re-assign the analyses
+    uids = [slot.get("analysis_uid") for slot in new_layout]
+    worksheet.setAnalyses(uids)
+    worksheet.setLayout(new_layout)
+
+    # Remove all records for this worksheet from reference catalog
+    tool = api.get_tool(REFERENCE_CATALOG)
+    tool.deleteReferences(worksheet, relationship="WorksheetAnalysis")
+
+
+def is_orphan(uid):
+    """Returns whether a counterpart object exists for the given UID
+    """
+    obj = api.get_object_by_uid(uid, None)
+    return obj is None

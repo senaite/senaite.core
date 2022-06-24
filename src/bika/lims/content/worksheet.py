@@ -88,7 +88,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # all layout info lives in Layout; Analyses is used for back references.
-    ReferenceField(
+    UIDReferenceField(
         'Analyses',
         required=1,
         multiValued=1,

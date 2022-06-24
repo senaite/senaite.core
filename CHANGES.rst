@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2023 Render hyperlinks for reference widget targets in view/edit mode
+- #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
 - #2021 Reduced logging when creating samples
 - #2017 Added `api.is_temporary` function for both DX and AT types
 - #2019 Performance: Avoid profile analyses assignment for temporary samples
