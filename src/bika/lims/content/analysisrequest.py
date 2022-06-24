@@ -1025,7 +1025,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
-        widget=ComputedWidget(
+        widget=ReferenceWidget(
             visible={
                 'edit': 'invisible',
                 'view': 'visible',
