@@ -487,6 +487,11 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <permission name="senaite.core: Transition: Create Partitions" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
+    </permission>
 
     <!-- Type-specific permissions -->
     <permission name="senaite.core: Sample: Add Attachment" acquire="False">

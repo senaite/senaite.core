@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2024 Cannot create partitions from samples in received status
 - #2023 Render hyperlinks for reference widget targets in view/edit mode
 - #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
 - #2021 Reduced logging when creating samples
