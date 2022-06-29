@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from bika.lims.utils import get_link_for
 from datetime import datetime
 
 from bika.lims import api
@@ -404,9 +405,7 @@ class ReferenceSamplesView(BikaListingView):
                 "replace_url": "aq_parent.absolute_url"}),
             ("Manufacturer", {
                 "title": _("Manufacturer"),
-                "toggle": True,
-                "attr": "getManufacturer.Title",
-                "replace_url": "getManufacturer.absolute_url"}),
+                "toggle": True}),
             ("Definition", {
                 "title": _("Reference Definition"),
                 "toggle": True,
@@ -506,6 +505,9 @@ class ReferenceSamplesView(BikaListingView):
         item["DateReceived"] = self.ulocalized_time(obj.getDateReceived())
         item["DateOpened"] = self.ulocalized_time(obj.getDateOpened())
         item["ExpiryDate"] = self.ulocalized_time(obj.getExpiryDate())
+
+        manufacturer = obj.getManufacturer()
+        item["replace"]["Manufacturer"] = get_link_for(manufacturer)
 
         # Icons
         after_icons = ''
