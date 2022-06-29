@@ -5,6 +5,8 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2025 Display full name of analyst and submitter in analyses listing
+- #2025 Fix analyst unchanged in analyses listing after worksheet reassignment
 - #2024 Cannot create partitions from samples in received status
 - #2023 Render hyperlinks for reference widget targets in view/edit mode
 - #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
