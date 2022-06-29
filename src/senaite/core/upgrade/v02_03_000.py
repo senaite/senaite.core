@@ -21,6 +21,7 @@
 from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
@@ -29,6 +30,12 @@ from senaite.core.upgrade.utils import UpgradeUtils
 
 version = "2.3.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+
+METADATA_TO_REMOVE = [
+    # No longer used, see https://github.com/senaite/senaite.core/pull/2025/
+    (ANALYSIS_CATALOG, "getAnalystName"),
+]
 
 
 @upgradestep(product, version)
@@ -129,3 +136,23 @@ def fix_cannot_create_partitions(portal):
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
+
+
+def remove_stale_metadata(portal):
+    """Remove metadata columns no longer used
+    """
+    logger.info("Removing stale metadata ...")
+    for catalog, column in METADATA_TO_REMOVE:
+        del_metadata(catalog, column)
+    logger.info("Removing stale metadata ... [DONE]")
+
+
+def del_metadata(catalog_id, column):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)
