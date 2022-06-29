@@ -34,6 +34,7 @@ profile = "profile-{0}:default".format(product)
 
 METADATA_TO_REMOVE = [
     # No longer used, see https://github.com/senaite/senaite.core/pull/2025/
+    (ANALYSIS_CATALOG, "getAnalyst"),
     (ANALYSIS_CATALOG, "getAnalystName"),
 ]
 
@@ -61,6 +62,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
 
+    remove_stale_metadata(portal)
     fix_worksheets_analyses(portal)
     fix_cannot_create_partitions(portal)
 
