@@ -1000,8 +1000,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         analyst = self.getAnalyst()
         if not analyst:
             return ""
-        user = api.get_user(analyst.strip())
-        return user and user.getProperty("fullname") or analyst
+        user = api.get_user_properties(analyst.strip())
+        return user and user.get("fullname") or analyst
 
     @security.public
     def getSubmittedBy(self):
