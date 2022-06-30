@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2026 Fix LabManager and LabClerk cannot add preservations
 - #2024 Cannot create partitions from samples in received status
 - #2023 Render hyperlinks for reference widget targets in view/edit mode
 - #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
