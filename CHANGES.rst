@@ -7,6 +7,10 @@ Changelog
 
 - #2025 Display full name of analyst and submitter in analyses listing
 - #2025 Fix analyst unchanged in analyses listing after worksheet reassignment
+- #2028 Fix Definition is not displayed in Reference Samples listing
+- #2027 Fix Manufacturer is not displayed in Reference Samples listing
+- #2027 Fix Manufacturer is not displayed in Reference Samples listing
+- #2026 Fix LabManager and LabClerk cannot add preservations
 - #2024 Cannot create partitions from samples in received status
 - #2023 Render hyperlinks for reference widget targets in view/edit mode
 - #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
