@@ -175,7 +175,8 @@ class ClientFolderContentsView(BikaListingView):
         item["replace"]["title"] = get_link(link_url, item["title"])
         item["replace"]["getClientID"] = get_link(link_url, item["getClientID"])
         # render an email link
-        item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
+        email = obj.getEmailAddress()
+        item["replace"]["EmailAddress"] = get_email_link(email)
         # translate True/FALSE values
         item["replace"]["BulkDiscount"] = obj.getBulkDiscount() and _("Yes") or _("No")
         item["replace"]["MemberDiscountApplies"] = obj.getMemberDiscountApplies() and _("Yes") or _("No")
