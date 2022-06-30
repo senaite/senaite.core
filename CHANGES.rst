@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2031 Make the "Other reasons" text area from rejection view wider
 - #2030 Fix Email address is not displayed in clients listing
 - #2029 Fix AttributeError in Manufacturer's Instruments view
 - #2025 Display full name of analyst and submitter in analyses listing
