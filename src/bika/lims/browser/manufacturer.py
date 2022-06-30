@@ -18,13 +18,13 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
+
 
 class ManufacturerInstrumentsView(InstrumentsView):
 
-    def __init__(self, context, request):
-        super(ManufacturerInstrumentsView, self).__init__(context, request)
-
     def isItemAllowed(self, obj):
-        manuf = obj.getManufacturer() if obj else None
-        return manuf.UID() == self.context.UID() if manuf else False
+        obj = api.get_object(obj)
+        uid = obj.getRawManufacturer()
+        return uid == api.get_uid(self.context)
