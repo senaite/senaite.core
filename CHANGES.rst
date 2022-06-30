@@ -5,6 +5,8 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2028 Fix Definition is not displayed in Reference Samples listing
+- #2027 Fix Manufacturer is not displayed in Reference Samples listing
 - #2027 Fix Manufacturer is not displayed in Reference Samples listing
 - #2026 Fix LabManager and LabClerk cannot add preservations
 - #2024 Cannot create partitions from samples in received status
