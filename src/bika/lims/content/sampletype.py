@@ -288,6 +288,16 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         out = [[t["id"], t["title"]] for t in _getStickerTemplates()]
         return DisplayList(out)
 
+    def getAdmittedStickerTemplates(self):
+        """Return the admitted sticker templates
+        """
+        field = self.getField("AdmittedStickerTemplates")
+        value = field.get(self)
+        if not value:
+            # NOTE: returning an empty list would render no widget at all!
+            return [{}]
+        return value
+
     def _get_sticker_subfield(self, subfield):
         values = self.getField("AdmittedStickerTemplates").get(self)
         if not values:
@@ -317,7 +327,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
         :return: An array of sticker IDs
         """
-        admitted = self._get_sticker_subfield('admitted')
+        admitted = self._get_sticker_subfield("admitted")
         if admitted:
             return admitted
         return []
@@ -335,12 +345,13 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         """
         admitted = self.getAdmittedStickers()
         if not admitted:
-            return DisplayList()
+            # allow all if none is selected
+            return self.getStickerTemplates()
         voc = DisplayList()
-        stickers = getStickerTemplates()
+        stickers = _getStickerTemplates()
         for sticker in stickers:
-            if sticker.get('id') in admitted:
-                voc.add(sticker.get('id'), sticker.get('title'))
+            if sticker.get("id") in admitted:
+                voc.add(sticker.get("id"), sticker.get("title"))
         return voc
 
     def setDefaultSmallSticker(self, value):
