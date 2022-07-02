@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2032 Fix add-on stickers not displayed in sample type admitted stickers
 - #2031 Make the "Other reasons" text area from rejection view wider
 - #2030 Fix Email address is not displayed in clients listing
 - #2029 Fix AttributeError in Manufacturer's Instruments view

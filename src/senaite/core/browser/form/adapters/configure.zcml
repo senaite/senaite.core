@@ -1,6 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="senaite.core">
 
+  <!-- Edit Form: Sample Type -->
+  <adapter
+      for="bika.lims.interfaces.ISampleType
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".sampletype.EditForm"/>
+
   <!-- Edit Form: Lab Contact -->
   <adapter
       for="bika.lims.interfaces.ILabContact
