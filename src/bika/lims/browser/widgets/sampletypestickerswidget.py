@@ -19,24 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes.Registry import registerWidget
-
 from bika.lims.browser.widgets import RecordsWidget
+from Products.Archetypes.Registry import registerWidget
 
 
 class SampleTypeStickersWidget(RecordsWidget):
     security = ClassSecurityInfo()
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        'helper_js': (
-            "senaite_widgets/recordswidget.js",
-            "bika_widgets/sampletypestickerswidget.js",),
+        "helper_js": ("senaite_widgets/recordswidget.js", ),
     })
 
 
 registerWidget(
     SampleTypeStickersWidget,
     title="Sample type stickers widget",
-    description='Defines the available stickers for a sample type.',
-    )
+    description="Defines the available stickers for a sample type.",
+)

@@ -30,32 +30,27 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
-from bika.lims.vocabularies import getStickerTemplates
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from magnitude import mg
-from Products.Archetypes.public import *
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BaseObject
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
 
-SMALL_DEFAULT_STICKER = 'small_default'
-LARGE_DEFAULT_STICKER = 'large_default'
-
-
-def sticker_templates():
-    """
-    It returns the registered stickers in the system.
-    :return: a DisplayList object
-    """
-    voc = DisplayList()
-    stickers = getStickerTemplates()
-    for sticker in stickers:
-        voc.add(sticker.get('id'), sticker.get('title'))
-    if voc.index == 0:
-        logger.warning('Sampletype: getStickerTemplates is empty!')
-    return voc
+SMALL_DEFAULT_STICKER = "small_default"
+LARGE_DEFAULT_STICKER = "large_default"
 
 
 class SampleTypeAwareMixin(BaseObject):
@@ -111,94 +106,109 @@ class SampleTypeAwareMixin(BaseObject):
 
 
 schema = BikaSchema.copy() + Schema((
-    DurationField('RetentionPeriod',
-        required = 1,
-        default_method = 'getDefaultLifetime',
-        widget = DurationWidget(
+
+    DurationField(
+        "RetentionPeriod",
+        required=1,
+        default_method="getDefaultLifetime",
+        widget=DurationWidget(
             label=_("Retention Period"),
-            description =_(
-                "The period for which un-preserved samples of this type can be kept before "
-                "they expire and cannot be analysed any further"),
+            description=_(
+                "The period for which un-preserved samples of this type can "
+                "be kept before they expire and cannot be analysed any further"
+            ),
         )
     ),
-    BooleanField('Hazardous',
-        default = False,
-        widget = BooleanWidget(
+    BooleanField(
+        "Hazardous",
+        default=False,
+        widget=BooleanWidget(
             label=_("Hazardous"),
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('SampleMatrix',
-        required = 0,
-        allowed_types = ('SampleMatrix',),
-        vocabulary = 'SampleMatricesVocabulary',
-        relationship = 'SampleTypeSampleMatrix',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+
+    ReferenceField(
+        "SampleMatrix",
+        required=0,
+        allowed_types=("SampleMatrix",),
+        vocabulary="SampleMatricesVocabulary",
+        relationship="SampleTypeSampleMatrix",
+        referenceClass=HoldingReference,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Sample Matrix"),
         ),
     ),
-    StringField('Prefix',
-        required = True,
-        validators=('no_white_space_validator'),
-        widget = StringWidget(
+
+    StringField(
+        "Prefix",
+        required=True,
+        validators=("no_white_space_validator"),
+        widget=StringWidget(
             label=_("Sample Type Prefix"),
             description=_("Prefixes can not contain spaces."),
         ),
     ),
-    StringField('MinimumVolume',
-        required = 1,
-        widget = StringWidget(
+
+    StringField(
+        "MinimumVolume",
+        required=1,
+        widget=StringWidget(
             label=_("Minimum Volume"),
-            description=_("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
+            description=_(
+                "The minimum sample volume required for analysis "
+                "eg. '10 ml' or '1 kg'."),
         ),
     ),
-    ReferenceField('ContainerType',
-        required = 0,
-        allowed_types = ('ContainerType',),
-        vocabulary = 'ContainerTypesVocabulary',
-        relationship = 'SampleTypeContainerType',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+
+    ReferenceField(
+        "ContainerType",
+        required=0,
+        allowed_types=("ContainerType",),
+        vocabulary="ContainerTypesVocabulary",
+        relationship="SampleTypeContainerType",
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Default Container Type"),
-            description =_(
+            description=_(
                 "The default container type. New sample partitions "
                 "are automatically assigned a container of this "
                 "type, unless it has been specified in more details "
                 "per analysis service"),
         ),
     ),
+
     RecordsField(
-        'AdmittedStickerTemplates',
+        "AdmittedStickerTemplates",
         subfields=(
-            'admitted',
+            "admitted",
             SMALL_DEFAULT_STICKER,
             LARGE_DEFAULT_STICKER,
             ),
         subfield_labels={
-            'admitted': _(
-                'Admitted stickers for the sample type'),
+            "admitted": _(
+                "Admitted stickers for the sample type"),
             SMALL_DEFAULT_STICKER: _(
-                'Default small sticker'),
+                "Default small sticker"),
             LARGE_DEFAULT_STICKER: _(
-                'Default large sticker')},
+                "Default large sticker")},
         subfield_sizes={
-            'admitted': 6,
+            "admitted": 6,
             SMALL_DEFAULT_STICKER: 1,
             LARGE_DEFAULT_STICKER: 1},
         subfield_types={
-            'admitted': 'selection',
-            SMALL_DEFAULT_STICKER: 'selection',
-            LARGE_DEFAULT_STICKER: 'selection'
+            "admitted": "selection",
+            SMALL_DEFAULT_STICKER: "selection",
+            LARGE_DEFAULT_STICKER: "selection"
                         },
         subfield_vocabularies={
-            'admitted': sticker_templates(),
-            SMALL_DEFAULT_STICKER: '_sticker_templates_vocabularies',
-            LARGE_DEFAULT_STICKER: '_sticker_templates_vocabularies',
+            "admitted": "getStickerTemplates",
+            SMALL_DEFAULT_STICKER: "_sticker_templates_vocabularies",
+            LARGE_DEFAULT_STICKER: "_sticker_templates_vocabularies",
         },
         required_subfields={
-            'admitted': 1,
+            "admitted": 1,
             SMALL_DEFAULT_STICKER: 1,
             LARGE_DEFAULT_STICKER: 1},
         default=[{}],
@@ -212,18 +222,16 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
+schema["description"].schemata = "default"
+schema["description"].widget.visible = True
 
 
 class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
-
     implements(ISampleType, IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -253,8 +261,8 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
     def getDefaultLifetime(self):
         """ get the default retention period """
-        settings = getToolByName(self, 'bika_setup')
-        return settings.getDefaultSampleLifetime()
+        setup = api.get_setup()
+        return setup.getDefaultSampleLifetime()
 
     def getSamplePoints(self):
         """Returns the Sample Points where current Sample Type is supported
@@ -274,10 +282,26 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         from bika.lims.content.containertype import ContainerTypes
         return ContainerTypes(self, allow_blank=True)
 
+    def getStickerTemplates(self, *args, **kwargs):
+        """Get the sticker templates
+        """
+        out = [[t["id"], t["title"]] for t in _getStickerTemplates()]
+        return DisplayList(out)
+
+    def getAdmittedStickerTemplates(self):
+        """Return the admitted sticker templates
+        """
+        field = self.getField("AdmittedStickerTemplates")
+        value = field.get(self)
+        if not value:
+            # NOTE: returning an empty list would render no widget at all!
+            return [{}]
+        return value
+
     def _get_sticker_subfield(self, subfield):
-        values = self.getField('AdmittedStickerTemplates').get(self)
+        values = self.getField("AdmittedStickerTemplates").get(self)
         if not values:
-            return ''
+            return ""
         value = values[0].get(subfield)
         return value
 
@@ -303,7 +327,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
         :return: An array of sticker IDs
         """
-        admitted = self._get_sticker_subfield('admitted')
+        admitted = self._get_sticker_subfield("admitted")
         if admitted:
             return admitted
         return []
@@ -321,12 +345,13 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         """
         admitted = self.getAdmittedStickers()
         if not admitted:
-            return DisplayList()
+            # allow all if none is selected
+            return self.getStickerTemplates()
         voc = DisplayList()
-        stickers = getStickerTemplates()
+        stickers = _getStickerTemplates()
         for sticker in stickers:
-            if sticker.get('id') in admitted:
-                voc.add(sticker.get('id'), sticker.get('title'))
+            if sticker.get("id") in admitted:
+                voc.add(sticker.get("id"), sticker.get("title"))
         return voc
 
     def setDefaultSmallSticker(self, value):
@@ -366,7 +391,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
                 " type to Sample Type '{}'"
                 .format(self.getId()))
             return
-        field = self.getField('AdmittedStickerTemplates')
+        field = self.getField("AdmittedStickerTemplates")
         stickers = field.get(self)
         stickers[0][subfield] = value
         field.set(self, stickers)
