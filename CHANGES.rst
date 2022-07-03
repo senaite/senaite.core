@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2041 Fix indexing of DX temp objects resulting in orphan entries (#1913 port)
 - #1986 Fixed error with sampler mail (#1941 port)
 - #1985 Disallow client users to create sample partitions (#1965 port)
 - #1984 Fix default roles for client field in samples (#1968 port)
@@ -14,7 +15,7 @@ Changelog
 - #1906 Fix traceback in auditlog view when context is a Dexterity type
 - #1885 Allow to re-add cancelled/rejected/retracted analyses (#1777 port)
 - #1885 Fix APIError when a retest analysis source is removed (#1777 port)
-- #1868 Fix indexing of temporary objects resulting in orphan entries in catalog
+- #1868 Fix indexing of temp objects resulting in orphan entries (#1865 port)
 - #1866 Fix error when invalidating samples with copies of analyses
 - #1851 Added readonly_transactions decorator (#1732 port)
 
