@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2042 Fix LabManager and LabClerk cannot add preservations (#2026 port)
 - #1986 Fixed error with sampler mail (#1941 port)
 - #1985 Disallow client users to create sample partitions (#1965 port)
 - #1984 Fix default roles for client field in samples (#1968 port)
