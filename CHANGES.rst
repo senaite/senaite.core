@@ -3,6 +3,8 @@ Changelog
 
 1.3.6 (unreleased)
 ------------------
+
+- #2035 Fix Attribute Error when creating invoice PDF (#1683 port)
 - #2034 Fix error in sample view when ccemails is None (#1674 port)
 - #1986 Fixed error with sampler mail (#1941 port)
 - #1985 Disallow client users to create sample partitions (#1965 port)
