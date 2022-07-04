@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2041 Fix indexing of DX temp objects resulting in orphan entries (#1913 port)
 - #2040 Fix analysis hidden status erases on results submit (#1998 port)
 - #2039 Fix items not filtered by Worksheet Template's method in (#1990 port)
 - #2038 Fix UnicodeDecodeError for Instrument Import Log View (#1720 port)
@@ -21,7 +22,7 @@ Changelog
 - #1906 Fix traceback in auditlog view when context is a Dexterity type
 - #1885 Allow to re-add cancelled/rejected/retracted analyses (#1777 port)
 - #1885 Fix APIError when a retest analysis source is removed (#1777 port)
-- #1868 Fix indexing of temporary objects resulting in orphan entries in catalog
+- #1868 Fix indexing of AT temp objects resulting in orphan entries (#1865 port)
 - #1866 Fix error when invalidating samples with copies of analyses
 - #1851 Added readonly_transactions decorator (#1732 port)
 
