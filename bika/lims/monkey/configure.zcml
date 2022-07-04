@@ -68,4 +68,13 @@
       replacement=".archetypes.isTemporary"
   />
 
+  <!-- Port #1868 for dexterity contents to avoid duplicate catalog entries when using `api.create` -->
+  <monkey:patch
+      description="Patch `DexterityContent.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="plone.dexterity.content.DexterityContent"
+      original="isTemporary"
+      ignoreOriginal="True"
+      replacement=".dexterity.isTemporary"
+  />
+
 </configure>

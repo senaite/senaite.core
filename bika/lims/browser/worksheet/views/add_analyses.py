@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
@@ -35,6 +36,19 @@ from DateTime import DateTime
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+
+
+def getServiceUidsByMethod(method):
+    method = api.get_uid(method)
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+        "method_available_uid": method,
+    }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    uids = map(api.get_uid, setup_catalog(query))
+
+    return uids
 
 
 class AddAnalysesView(BikaListingView):
@@ -149,6 +163,12 @@ class AddAnalysesView(BikaListingView):
         """Update hook
         """
         super(AddAnalysesView, self).update()
+        wst = self.context.getWorksheetTemplate()
+        if wst:
+            method = wst.getRawRestrictToMethod()
+            # restrict the available analysis services by method
+            if method:
+                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
 
     def handle_submit(self):
         """Handle form submission
