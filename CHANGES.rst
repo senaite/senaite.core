@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2040 Fix analysis hidden status erases on results submit (#1998 port)
 - #2039 Fix items not filtered by Worksheet Template's method in (#1990 port)
 - #2038 Fix UnicodeDecodeError for Instrument Import Log View (#1720 port)
 - #2037 Removed add button in auditlog listing view (#1714 port)
