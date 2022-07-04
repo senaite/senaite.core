@@ -56,6 +56,7 @@ class AuditLogView(BikaListingView):
         # the default settings
         self.catalog = "uid_catalog"
         self.contentFilter = {"UID": api.get_uid(context)}
+        self.context_actions = {}
 
         # TODO: Fix in senaite.core.listing.get_api_url
         #

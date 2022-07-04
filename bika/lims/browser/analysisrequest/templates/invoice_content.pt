@@ -1,11 +1,11 @@
 <div id="invoice"
   i18n:domain="senaite.core"
-  tal:define="sample view/sample;
-              invoice sample/Invoice;">
+  tal:define="sample nocall:view/sample;
+              invoice nocall:sample/Invoice;">
 
   <tal:css>
     <style type="text/css">
-     #invoice { font-size: 9pt; }
+     #invoice { font-size: 9pt; font-family: Helvetica, Arial, Sans-Serif; }
      #invoice table { border: none; }
      #invoice table tr { background-color: transparent; }
      #invoice table th { border-style: solid none; }
@@ -14,7 +14,12 @@
     </style>
   </tal:css>
 
-  <h1 i18n:translate="">Invoice</h1>
+  <h1>
+    <span tal:omit-tag="" i18n:translate="">Invoice</span>
+    <span tal:replace="invoice/getId|default">
+      <span tal:omit-tag="" i18n:translate="">Proforma (Not yet invoiced)</span>
+    </span>
+  </h1>
 
   <!-- Invoice Header -->
   <div class="row">
@@ -41,6 +46,17 @@
           <td>
             <span tal:content="invoice/getId|default">
               <span tal:omit-tag="" i18n:translate="">Proforma (Not yet invoiced)</span>
+            </span>
+          </td>
+        </tr>
+        <!-- Invoice Date -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice Date</label>
+          </td>
+          <td>
+            <span tal:condition="nocall:invoice">
+              <span tal:content="python:view.to_localized_time(invoice.getInvoiceDate())"/>
             </span>
           </td>
         </tr>
