@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2038 Fix UnicodeDecodeError for Instrument Import Log View (#1720 port)
 - #2037 Removed add button in auditlog listing view (#1714 port)
 - #2036 Show only active dynamic analysisspecs in reference widget (#1684 port)
 - #2035 Fix Attribute Error when creating invoice PDF (#1683 port)
