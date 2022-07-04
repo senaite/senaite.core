@@ -1025,7 +1025,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
-        widget=ComputedWidget(
+        widget=ReferenceWidget(
             visible={
                 'edit': 'invisible',
                 'view': 'visible',
@@ -1497,17 +1497,22 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # return immediately if nothing changed
         if current_profiles == uids:
             return
-        # get the profiles
-        profiles = map(api.get_object_by_uid, uids)
-        # get the current set of analyses/services
-        analyses = self.getAnalyses(full_objects=True)
-        services = map(lambda an: an.getAnalysisService(), analyses)
-        # determine all the services to add
-        services_to_add = set(services)
-        for profile in profiles:
-            services_to_add.update(profile.getService())
-        # set all analyses
-        self.setAnalyses(list(services_to_add))
+
+        # Don't add analyses from profiles during sample creation.
+        # In this case the required analyses are added afterwards explicitly.
+        if not api.is_temporary(self):
+            # get the profiles
+            profiles = map(api.get_object_by_uid, uids)
+            # get the current set of analyses/services
+            analyses = self.getAnalyses(full_objects=True)
+            services = map(lambda an: an.getAnalysisService(), analyses)
+            # determine all the services to add
+            services_to_add = set(services)
+            for profile in profiles:
+                services_to_add.update(profile.getService())
+            # set all analyses
+            self.setAnalyses(list(services_to_add))
+
         # set the profiles value
         self.getField("Profiles").set(self, value)
 
@@ -2200,13 +2205,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return ''
 
     def get_ARAttachment(self):
-        logger.warn("_ARAttachment is a virtual field used in AR Add. "
-                    "It can not hold an own value!")
         return None
 
     def set_ARAttachment(self, value):
-        logger.warn("_ARAttachment is a virtual field used in AR Add. "
-                    "It can not hold an own value!")
         return None
 
     def get_retest(self):

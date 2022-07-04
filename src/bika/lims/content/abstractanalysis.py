@@ -994,16 +994,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return worksheet.getAnalyst() or ""
 
     @security.public
-    def getAnalystName(self):
-        """Returns the name of the currently assigned analyst
-        """
-        analyst = self.getAnalyst()
-        if not analyst:
-            return ""
-        user = api.get_user(analyst.strip())
-        return user and user.getProperty("fullname") or analyst
-
-    @security.public
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the
@@ -1054,22 +1044,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
-        worksheet = self.getWorksheet()
-        if worksheet:
-            return worksheet.UID()
+        uids = get_backreferences(self, relationship="WorksheetAnalysis")
+        if not uids:
+            return None
+
+        if len(uids) > 1:
+            path = api.get_path(self)
+            logger.error("More than one worksheet: {}".format(path))
+            return None
+
+        return uids[0]
 
     @security.public
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet = self.getBackReferences('WorksheetAnalysis')
-        if not worksheet:
-            return None
-        if len(worksheet) > 1:
-            logger.error(
-                "Analysis %s is assigned to more than one worksheet."
-                % self.getId())
-        return worksheet[0]
+        worksheet_uid = self.getWorksheetUID()
+        return api.get_object_by_uid(worksheet_uid, None)
 
     @security.public
     def remove_duplicates(self, ws):

@@ -13,7 +13,7 @@ from Products.CMFPlone.CatalogTool import CatalogTool
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
-from senaite.core.interfaces import ISenaiteCatalog
+from senaite.core.interfaces import ISenaiteCatalogObject
 from zope.interface import implementer
 
 CATALOG_ID = "senaite_catalog_base"
@@ -55,7 +55,7 @@ TYPES = [
 ]
 
 
-@implementer(ISenaiteCatalog)
+@implementer(ISenaiteCatalogObject)
 class BaseCatalog(CatalogTool):
     """Parent class for Senaite catalogs
     """

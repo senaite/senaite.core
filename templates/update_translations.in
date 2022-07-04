@@ -2,7 +2,9 @@
 
 BASE=${buildout:directory}
 I18N=$BASE/bin/i18ndude
-LOCALES=$BASE/src/senaite/core/locales
+SRC=$BASE/src/senaite/core
+SRC_BIKA=$BASE/src/bika/lims
+LOCALES=$SRC/locales
 EXCLUDE="build *.html"
 
 function die() {
@@ -61,8 +63,13 @@ echo "Processing domain: senaite.core"
 # Flush the english (transifex source language) po files
 # If we don't do this, new senaite.core-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
+# Re-scan the source code for new strings and create a temporary senaite.core-bika.pot
+$I18N rebuild-pot --pot $LOCALES/senaite.core-bika.pot --exclude "$EXCLUDE" --create senaite.core $SRC_BIKA
 # Re-scan the source code for new strings and create a temporary senaite.core-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "$EXCLUDE" --create senaite.core src
+$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "$EXCLUDE" --create senaite.core $SRC
+# Merge the manual translations of senaite.core-bika.pot into the temporary senaite.core-tmp.pot
+$I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-bika.pot
+rm $LOCALES/senaite.core-bika.pot
 # Merge the manual translations of senaite.core-manual.pot into the temporary senaite.core-tmp.pot
 $I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
 # Overwrite the existing senaite.core.pot
@@ -77,8 +84,13 @@ echo "Processing domain: plone"
 # Flush the english (transifex source language) po files
 # If we don't do this, new plone-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/plone.po
-# Re-scan the source code for new strings and create a temporary plone-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/plone-tmp.pot --exclude "$EXCLUDE" --create plone src
+# Re-scan the source code for new strings and create a temporary senaite.core-bika.pot
+$I18N rebuild-pot --pot $LOCALES/plone-bika.pot --exclude "$EXCLUDE" --create plone $SRC_BIKA
+# Re-scan the source code for new strings and create a temporary senaite.core-tmp.pot
+$I18N rebuild-pot --pot $LOCALES/plone-tmp.pot --exclude "$EXCLUDE" --create plone $SRC
+# Merge the manual translations of senaite.core-bika.pot into the temporary senaite.core-tmp.pot
+$I18N merge --pot $LOCALES/plone-tmp.pot --merge $LOCALES/plone-bika.pot
+rm $LOCALES/plone-bika.pot
 # Remove those resources that already exists in senaite.core domain
 # We need this because in Python files, i18ndude simply looks for text within an
 # underscore method: _("...") without known the domain. Therefore, resources
@@ -90,6 +102,7 @@ rm $LOCALES/plone-tmp.pot
 # Synchronize all .po files with the new plone.pot
 $I18N sync --pot $LOCALES/plone.pot $LOCALES/*/LC_MESSAGES/plone.po
 echo "Processing domain: plone [DONE]"
+
 
 # Push Transifex
 tx_push

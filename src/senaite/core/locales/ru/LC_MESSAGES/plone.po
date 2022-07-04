@@ -1,13 +1,13 @@
 #
 # Translators:
-# Ragnar Lothbrok, 2022
+# Artem Kladov <artem.kladov@flant.com>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2022-06-29 10:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ragnar Lothbrok, 2022\n"
+"Last-Translator: Artem Kladov <artem.kladov@flant.com>, 2020\n"
 "Language-Team: Russian (https://www.transifex.com/senaite/teams/87045/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,11 +54,11 @@ msgstr ""
 #: senaite/core/browser/dexterity/templates/macros.pt:20
 #: senaite/core/browser/login/templates/login.pt:17
 msgid "Error"
-msgstr "Ошибка"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:78
 msgid "Filter:"
-msgstr "Фильтр:"
+msgstr ""
 
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:28
 msgid "Go to parent folder"
@@ -76,22 +76,12 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-#: senaite/core/browser/dexterity/templates/macros.pt:26
-#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
-#: senaite/core/skins/senaite_templates/edit_macros.pt:44
-msgid "Info"
+#: senaite/core/profiles/default/actions.xml
+msgid "Log in"
 msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
-msgid "Log in"
-msgstr "Войти"
-
-#: senaite/core/profiles/default/actions.xml
 msgid "Log out"
-msgstr "Выйти"
-
-#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
-msgid "More"
 msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
@@ -104,14 +94,10 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
-msgstr "Выкл."
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:144
 msgid "On"
-msgstr "Вкл."
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Register"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
@@ -128,17 +114,17 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:148
 msgid "Server:"
-msgstr "Сервер:"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:15
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/profiles/default/actions.xml
 msgid "Site Setup"
-msgstr "Настройка сайта"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
-msgstr "Заголовок сайта"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
@@ -150,7 +136,7 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "The site configuration is outdated and needs to be upgraded. Please ${link_continue_with_the_upgrade}."
-msgstr "Конфигурация сайта устарела и нуждается в обновлении. Перейдите по ссылке ${link_continue_with_the_upgrade}."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:124
 msgid "There is not any action performed by this rule. Click on Add button to setup an action."
@@ -182,10 +168,6 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
-msgstr "WSGI:"
-
-#: senaite/core/browser/controlpanel/templates/overview.pt:26
-msgid "Warning"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53

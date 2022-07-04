@@ -1,18 +1,15 @@
 #
-# Translators:
-# Fabiano Solari, 2022
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2022-06-29 10:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Fabiano Solari, 2022\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/senaite/teams/87045/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
@@ -21,102 +18,88 @@ msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Alternative formats"
-msgstr "Formatos alternativos"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
-msgstr "Aplicar regra em todo site"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:256
 msgid "Configure rule"
-msgstr "Configurar regra"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
-msgstr "Configurações de regra de conteúdo atualizadas"
+msgstr ""
 
 #: senaite/core/browser/dexterity/templates/container.pt:29
 msgid "Contents"
-msgstr "Conteúdos"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
-msgstr "Desativar globalmente"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Displayed content types"
-msgstr "Tipos de conteúdos exibidos"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
-msgstr "Habilitado"
+msgstr ""
 
 #: senaite/core/browser/dexterity/templates/macros.pt:20
 #: senaite/core/browser/login/templates/login.pt:17
 msgid "Error"
-msgstr "Erro"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:78
 msgid "Filter:"
-msgstr "Filtro:"
+msgstr ""
 
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:28
 msgid "Go to parent folder"
-msgstr "Ir para a pasta raiz"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:222
 msgid "Go to the folder where you want the rule to apply, or at the site root, click on 'rule' tab, and then locally setup the rules."
-msgstr "Vá para a pasta onde você deseja que a regra seja aplicada, ou na raiz do site, clique na guia 'regra' e configure localmente as regras."
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "Go to the upgrade page"
-msgstr "Vá para a página de atualização"
+msgstr ""
 
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
-msgstr "Origem"
-
-#: senaite/core/browser/dexterity/templates/macros.pt:26
-#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
-#: senaite/core/skins/senaite_templates/edit_macros.pt:44
-msgid "Info"
 msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
-msgstr "Conectar"
+msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
-msgstr "Desconectar"
-
-#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
-msgid "More"
 msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
-msgstr "Mover para baixo"
+msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:67
 msgid "Move up"
-msgstr "Mover para cima"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
-msgstr "Desligado"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:144
 msgid "On"
-msgstr "Ligado"
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Register"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
-msgstr "URL relativa do logotipo da barra de ferramentas do SENAITE"
+msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Search"
@@ -124,166 +107,159 @@ msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
-msgstr "Selecione quais formatos estão disponíveis para os usuários como alternativa ao formato padrão. Observe que, se novos formatos forem instalados, eles serão habilitados para campos de texto por padrão, a menos que sejam explicitamente desativados aqui ou pelo instalador."
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:148
 msgid "Server:"
-msgstr "Servidor:"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:15
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/profiles/default/actions.xml
 msgid "Site Setup"
-msgstr "Configuração do site"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
-msgstr "Título do site"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
-msgstr "Tipos de conteúdos que devem ser mostrados na navegação e no mapa do site."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:218
 msgid "The rule is enabled but will perform nothing since it is not assigned anywhere."
-msgstr "A regra está habilitada, mas não executará nada, pois não está atribuída a nenhum lugar."
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "The site configuration is outdated and needs to be upgraded. Please ${link_continue_with_the_upgrade}."
-msgstr "A configuração do site está desatualizada e precisa ser atualizada. Por favor ${link_continue_with_the_upgrade}."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:124
 msgid "There is not any action performed by this rule. Click on Add button to setup an action."
-msgstr "Não há nenhuma ação realizada por esta regra. Clique no botão Adicionar para configurar uma ação."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:39
 msgid "There is not any additional condition checked on this rule."
-msgstr "Não há nenhuma condição adicional verificada nesta regra."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:32
 msgid "There was an error saving content rules."
-msgstr "Ocorreu um erro ao salvar as regras de conteúdo."
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This must be a URL relative to the site root."
-msgstr "Este deve ser um URL relativo à raiz do site."
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:215
 msgid "This rule is not assigned to any location"
-msgstr "Esta regra não está atribuída a nenhum local"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This shows up in the title bar of browsers and in syndication feeds."
-msgstr "Isso aparece na barra de título dos navegadores e nos feeds de distribuição."
+msgstr ""
 
 #: senaite/core/browser/portlets/templates/navigation.pt:5
 msgid "Toggle sidebar visibility"
-msgstr "Alternar a visibilidade da barra lateral"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
-msgstr "WSGI:"
-
-#: senaite/core/browser/controlpanel/templates/overview.pt:26
-msgid "Warning"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
-msgstr "Se as regras de conteúdo devem ou não ser desabilitadas globalmente. Se estiver selecionado, nenhuma regra será executada em nenhum lugar do portal."
+msgstr ""
 
 #. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
-#, fuzzy
 msgid "action_convert_legacy_portlets"
-msgstr "ação_converter_portlets_legados"
+msgstr ""
 
 #. Default: "Add action"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:183
 msgid "contentrules_add_action"
-msgstr "regrasdeconteúdo_adicionar_ação"
+msgstr ""
 
 #. Default: "Add condition"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:91
 msgid "contentrules_add_condition"
-msgstr "regrasdeconteúdo_adicionar_condição"
+msgstr ""
 
 #. Default: "Shortcuts:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:228
 msgid "contentrules_assignments_shortcuts"
-msgstr "regrasdeconteúdo_atalhos_atribuições"
+msgstr ""
 
 #. Default: "The actions executed by this rule can trigger other rules"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:305
 msgid "contentrules_description_cascading"
-msgstr "regrasdeconteúdo_descrição_em_cascata"
+msgstr ""
 
 #. Default: "Enter a short description of the rule and its purpose."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:278
 msgid "contentrules_description_description"
-msgstr "regrasdeconteúdo_descrição_descrição"
+msgstr ""
 
 #. only be invoked if all the rule's conditions are met. You can add new
 #. actions and conditions using the buttons below."
 #. Default: "Rules execute when a triggering event occurs. Rule actions will only be invoked if all the rule's conditions are met. You can add new actions and conditions using the buttons below."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:23
-#, fuzzy
 msgid "contentrules_description_execution"
-msgstr "regrasdeconteúdo_descrição_execução"
+msgstr ""
 
 #. Default: "Stop evaluating content rules after this rule completes"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:296
 msgid "contentrules_description_stop"
-msgstr "regrasdeconteúdo_descrição_parar"
+msgstr ""
 
 #. Default: "The rule will execute when the following event occurs."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:287
 msgid "contentrules_description_trigger"
-msgstr "regrasdeconteúdo_descrição_acionar"
+msgstr ""
 
 #. Default: "Perform the following actions:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:117
 msgid "contentrules_perform_actions"
-msgstr "regrasdeconteúdo_realizar_ações"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "continue with the upgrade"
-msgstr "continue com a atualização"
+msgstr ""
 
 #. Rules will automatically perform actions on content when certain triggers
 #. take place. After defining rules, you may want to go to a folder to assign
 #. them, using the \"rules\" item in the actions menu."
 #. Default: "Use the form below to define, change or remove content rules. Rules will automatically perform actions on content when certain triggers take place. After defining rules, you may want to go to a folder to assign them, using the \"rules\" item in the actions menu."
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:24
-#, fuzzy
 msgid "description-contentrules-controlpanel"
-msgstr "descrição-regrasdeconteúdo-paineldecontrole"
+msgstr ""
 
 #. Default: "The languages in which the site should be translatable."
 #: senaite/core/profiles/default/registry.xml
 msgid "description_available_languages"
-msgstr "descrição_linguagens_disponíveis"
+msgstr ""
 
 #. Default: "Please set a descriptive title for the rule."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:266
 msgid "description_contentrule_title"
-msgstr "descrição_regrasdeconteúdo_título"
+msgstr ""
 
 #. Default: "This rule is assigned to the following locations:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:242
 msgid "description_contentrules_rule_assignments"
-msgstr "descrição_regrasdeconteúdo_regra_atribuição"
+msgstr ""
 
 #. Default: "Configuration area for Plone and add-on Products."
 #: senaite/core/browser/controlpanel/templates/overview.pt:19
 msgid "description_control_panel"
-msgstr "descrição_painel_controle"
+msgstr ""
 
 #. Default: "Required for the language selector viewlet to be rendered."
 #: senaite/core/profiles/default/registry.xml
 msgid "description_cookie_manual_override"
-msgstr "descrição_substituição_manual_cookie"
+msgstr ""
 
 #. sites that are under development. This allows many configuration changes to
 #. be immediately visible, but will make your site run more slowly. To turn
@@ -291,26 +267,23 @@ msgstr "descrição_substituição_manual_cookie"
 #. re-run bin/buildout and then restart the server process."
 #. Default: "You are running in \"debug mode\". This mode is intended for sites that are under development. This allows many configuration changes to be immediately visible, but will make your site run more slowly. To turn off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
-#, fuzzy
 msgid "description_debug_mode"
-msgstr "descrição_modo_depuração"
+msgstr ""
 
 #. assigned in this context. Use the buttons on each portlet to move them up
 #. or down, delete or edit them. To add a new portlet, use the drop-down list
 #. at the top of the column."
 #. Default: "The portlet columns will first display portlets explicitly assigned in this context. Use the buttons on each portlet to move them up or down, delete or edit them. To add a new portlet, use the drop-down list at the top of the column."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:52
-#, fuzzy
 msgid "description_manage_contextual_portlets"
-msgstr "descrição_gerenciar_contextual_portlets"
+msgstr ""
 
 #. you can do so using the drop-down boxes. Portlets that are included by
 #. these categories are shown below the selection box."
 #. Default: "If you wish to block or unblock certain categories of portlets, you can do so using the drop-down boxes. Portlets that are included by these categories are shown below the selection box."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:59
-#, fuzzy
 msgid "description_portlets_block_unblock"
-msgstr "descrição_portlets_bloquear_desbloquear"
+msgstr ""
 
 #. mode of operation for a live Plone site, but means that some configuration
 #. changes will not take effect until your server is restarted or a product
@@ -319,284 +292,278 @@ msgstr "descrição_portlets_bloquear_desbloquear"
 #. bin/buildout and then restart the server process."
 #. Default: "You are running in \"production mode\". This is the preferred mode of operation for a live Plone site, but means that some configuration changes will not take effect until your server is restarted or a product refreshed. If this is a development instance, and you want to enable debug mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
-#, fuzzy
 msgid "description_production_mode"
-msgstr "descrição_modo_produção"
+msgstr ""
 
 #. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
 #: senaite/core/browser/login/templates/login.pt:20
-#, fuzzy
 msgid "enable_cookies_message_before_login"
-msgstr "habilitar_cookies_mensagem_antes_conectar"
+msgstr ""
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:99
 msgid "footer_login_link_get_help"
-msgstr "rodapé_login_link_obter_ajuda"
+msgstr ""
 
 #. Default: "Sign up here"
 #: senaite/core/browser/login/templates/login.pt:104
 msgid "footer_login_link_signup"
-msgstr "rodapé_login_link_inscrever-se"
+msgstr ""
 
 #. Default: "Up to rule management"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:16
 msgid "go_to_contentrules_management"
-msgstr "vá_para_regrasdeconteúdo_gerenciador"
+msgstr ""
 
 #. Default: "Add ${itemtype}"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:24
 msgid "heading_add_item"
-msgstr "cabeçalho_adicionar_item"
+msgstr ""
 
 #. Default: "Available languages"
 #: senaite/core/profiles/default/registry.xml
 msgid "heading_available_languages"
-msgstr "cabeçalho_linguagens_disponíveis"
+msgstr ""
 
 #. Default: "Use cookie for manual override"
 #: senaite/core/profiles/default/registry.xml
 msgid "heading_cookie_manual_override"
-msgstr "cabeçalho_substituição_manual_cookie"
+msgstr ""
 
 #. Default: "Edit ${itemtype}"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:34
 msgid "heading_edit_item"
-msgstr "cabeçalho_editar_item"
+msgstr ""
 
 #. Default: "Portlets assigned here"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:40
 msgid "heading_portlets_assigned_here"
-msgstr "cabeçalho_portlets_atribuído_aqui"
+msgstr ""
 
 #. Default: "Version Overview"
 #: senaite/core/browser/controlpanel/templates/overview.pt:135
 msgid "heading_version_overview"
-msgstr "cabeçalho_versão_visãogeral"
+msgstr ""
 
 #. Default: "If all of the following conditions are met:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:31
 msgid "if_all_conditions_met"
-msgstr "se_todas_condições_coincidem"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:148
 msgid "inactive"
-msgstr "inativo"
+msgstr ""
 
 #. Default: "Add"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:105
 msgid "label_add"
-msgstr "adicionar_rótulo"
+msgstr ""
 
 #. Default: "Add portlet"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:10
 msgid "label_add_portlet"
-msgstr "rótulo_adicionar_portlet"
+msgstr ""
 
 #. Default: "Add portlet…"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:17
 msgid "label_add_portlet_ellipsis"
-msgstr "rótulo_adicionar_portlet_elipse"
+msgstr ""
 
 #. Default: "Cancel"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:258
 msgid "label_cancel"
-msgstr "rótulo_cancelar"
+msgstr ""
 
 #. Default: "Add content rule"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:189
 msgid "label_contentrule_add"
-msgstr "rótulo_regradeconteúdo_adicionar"
+msgstr ""
 
 #. Default: "Assignments"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:209
 msgid "label_contentrules_rule_assignments"
-msgstr "rótulo_regradeconteúdo_regra_atribuições"
+msgstr ""
 
 #. Default: "enabled"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:114
 msgid "label_contentrules_rule_enabled"
-msgstr "rótulo_regradeconteúdo_regra_habilitar"
+msgstr ""
 
 #. Default: "event"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:113
 msgid "label_contentrules_rule_event"
-msgstr "rótulo_regradeconteúdo_regra_evento"
+msgstr ""
 
 #. Default: "content rule"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:112
 msgid "label_contentrules_rule_listing"
-msgstr "rótulo_regradeconteúdo_regra_listagem"
+msgstr ""
 
 #. Default: "Convert portlets"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:77
 msgid "label_convert_portlets"
-msgstr "rótulo_converter_portlets"
+msgstr ""
 
 #. Default: "Delete"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:175
 msgid "label_delete"
-msgstr "rótulo_deletar"
+msgstr ""
 
 #. Default: "Description"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:272
 msgid "label_description"
-msgstr "rótulo_descrição"
+msgstr ""
 
 #. Default: "Disable"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:170
 msgid "label_disable"
-msgstr "rótulo_desabilitar"
+msgstr ""
 
 #. Default: "Edit"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:52
 msgid "label_edit"
-msgstr "rótulo_editar"
+msgstr ""
 
 #. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/edit_macros.pt:49
-#, fuzzy
 msgid "label_edit_default_view_container"
-msgstr "rótulo_editar_padrão_visualizar_recipiente"
+msgstr ""
 
 #. Default: "go here"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:49
 msgid "label_edit_default_view_container_go_here"
-msgstr "rótulo_editar_padrão_visualizar_vá_aqui"
+msgstr ""
 
 #. Default: "Enable"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:165
 msgid "label_enable"
-msgstr "rótulo_habilitar"
+msgstr ""
 
 #. Default: "Hide"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:103
 msgid "label_hide_item"
-msgstr "rótulo_ocultar_item"
+msgstr ""
 
 #. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
-#, fuzzy
 msgid "label_manage_portlets_default_view_container"
-msgstr "rótulo_gerenciar_portlets_padrão_visualizar_recipiente"
+msgstr ""
 
 #. Default: "go here"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
 msgid "label_manage_portlets_default_view_container_go_here"
-msgstr "rótulo_gerenciar_portlets_padrão_visualizar_recipiente_vá_aqui"
+msgstr ""
 
 #. Default: "Next"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:243
 msgid "label_next"
-msgstr "rótulo_próximo"
+msgstr ""
 
 #. Default: "No preference panels available."
 #: senaite/core/browser/controlpanel/templates/overview.pt:123
 msgid "label_no_prefs_panels_available"
-msgstr "rótulo_sem_preferências_painéis_disponível"
+msgstr ""
 
 #. Default: "Previous"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:235
 msgid "label_previous"
-msgstr "rótulo_anterior"
+msgstr ""
 
 #. Default: "Remove"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:55
 msgid "label_remove"
-msgstr "rótulo_remover"
+msgstr ""
 
 #. Default: "Event trigger: ${trigger}"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:285
 msgid "label_rule_event_trigger"
-msgstr "rótulo_regra_evento_acionar"
+msgstr ""
 
 #. Default: "Save"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:60
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:320
 #: senaite/core/skins/senaite_templates/edit_macros.pt:251
 msgid "label_save"
-msgstr "rótulo_salvar"
+msgstr ""
 
 #. Default: "Show"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:91
 msgid "label_show_item"
-msgstr "rótulo_mostrar_item"
+msgstr ""
 
 #. Default: "Content rules"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:73
 msgid "legend-contentrules"
-msgstr "legenda-regrasdeconteúdo"
+msgstr ""
 
 #. Default: "Need an account?"
 #: senaite/core/browser/login/templates/login.pt:103
 msgid "need_an_account"
-msgstr "precisa_uma_conta"
+msgstr ""
 
 #. Default: "Return"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:22
 msgid "return_to_view"
-msgstr "retornar_para_visualização"
+msgstr ""
 
 #. various features including contact forms, email notification and password
 #. reset will not work. Go to the ${label_mail_control_panel_link} to fix
 #. this."
 #. Default: "You have not configured a mail host or a site 'From' address, various features including contact forms, email notification and password reset will not work. Go to the ${label_mail_control_panel_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:53
-#, fuzzy
 msgid "text_no_mailhost_configured"
-msgstr "texto_sem_mailhost_configurado"
+msgstr ""
 
 #. Default: "Mail control panel"
 #: senaite/core/browser/controlpanel/templates/overview.pt:54
 msgid "text_no_mailhost_configured_control_panel_link"
-msgstr "texto_sem_mailhost_configurado_painel_de_controle_link"
+msgstr ""
 
 #. Default: "PIL is not installed properly, image scaling will not work."
 #: senaite/core/browser/controlpanel/templates/overview.pt:90
 msgid "text_no_pil_installed"
-msgstr "texto_sem_pilha_instalada"
+msgstr ""
 
 #. work properly for timezone aware date/time values. Go to the
 #. ${label_mail_event_settings_link} to fix this."
 #. Default: "You have not set the portal timezone. Date/Time handling will not work properly for timezone aware date/time values. Go to the ${label_mail_event_settings_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:74
-#, fuzzy
 msgid "text_no_timezone_configured"
-msgstr "text_sem_fuso_horário_configurado"
+msgstr ""
 
 #. Default: "Date and Time Settings control panel"
 #: senaite/core/browser/controlpanel/templates/overview.pt:75
 msgid "text_no_timezone_configured_control_panel_link"
-msgstr "texto_sem_fuso_horário_configurado_painel_de_controle_link"
+msgstr ""
 
 #. Default: "Edit content rule"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:13
 msgid "title_edit_contentrule"
-msgstr "título_editar_regradeconteúdo"
+msgstr ""
 
 #. Default: "Legacy portlets"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:67
 msgid "title_legacy_portlets"
-msgstr "título_legado_portlets"
+msgstr ""
 
 #. Default: "Content Rules"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:21
 msgid "title_manage_contentrules"
-msgstr "título_gerenciar_regrasdeconteúdo"
+msgstr ""
 
 #. Default: "Manage portlets for ${context_title}"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:14
 msgid "title_manage_contextual_portlets"
-msgstr "título_gerenciar_contextual_porlets"
+msgstr ""
 
 #. Default: "Trouble logging in?"
 #: senaite/core/browser/login/templates/login.pt:98
 msgid "trouble_logging_in"
-msgstr "problema_logando"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:153
 msgid "unassigned"
-msgstr "Não atribuído"
+msgstr ""

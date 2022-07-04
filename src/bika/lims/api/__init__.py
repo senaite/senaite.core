@@ -23,6 +23,8 @@ import re
 import six
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
@@ -1476,3 +1478,28 @@ def to_utf8(string, default=_marker):
             fail("Expected string type, got '%s'" % type(string))
         return default
     return safe_unicode(string).encode("utf8")
+
+
+def is_temporary(obj):
+    """Returns whether the given object is temporary or not
+
+    :param obj: the object to evaluate
+    :returns: True if the object is temporary
+    """
+    if UID_RX.match(obj.id):
+        return True
+
+    parent = aq_parent(aq_inner(obj))
+    if not parent:
+        return True
+
+    if UID_RX.match(parent.id):
+        return True
+
+    if is_at_content(obj):
+        # Checks to see if we are created inside the portal_factory. We don't
+        # rely here on AT's isFactoryContained because the function is patched
+        meta_type = getattr(aq_base(parent), "meta_type", "")
+        return meta_type == "TempFolder"
+
+    return False

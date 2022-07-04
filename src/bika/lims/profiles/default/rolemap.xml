@@ -293,6 +293,12 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="senaite.core: Add Preservation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
     <permission name="senaite.core: Add Pricelist" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -486,6 +492,11 @@
     <permission name="senaite.core: Transition: Restore Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Create Partitions" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
     </permission>
 
     <!-- Type-specific permissions -->

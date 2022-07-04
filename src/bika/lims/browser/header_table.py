@@ -18,7 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl.Permissions import view
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -131,12 +130,6 @@ class HeaderTableView(BrowserView):
         return check_permission(ModifyPortalContent, self.context)
 
     @cache(field_type_cache_key, get_cache=store_on_portal)
-    def is_reference_field(self, field):
-        """Check if the field is a reference field
-        """
-        return field.getType().find("Reference") > -1
-
-    @cache(field_type_cache_key, get_cache=store_on_portal)
     def is_boolean_field(self, field):
         """Check if the field is a boolean
         """
@@ -158,53 +151,6 @@ class HeaderTableView(BrowserView):
             "fieldName": fieldname,
             "mode": "structure",
             "html": t(_("Yes")) if value else t(_("No"))
-        }
-
-    def get_reference_field_data(self, field):
-        """Get reference field view data for the template
-        """
-        targets = None
-        fieldname = field.getName()
-
-        accessor = getattr(self.context, "get%s" % fieldname, None)
-        if accessor and callable(accessor):
-            targets = accessor()
-        else:
-            targets = field.get(self.context)
-
-        if targets:
-            if not isinstance(targets, list):
-                targets = [targets, ]
-
-            if all([check_permission(view, target) for target in targets]):
-                elements = [
-                    "<div id='{id}' class='field reference'>"
-                    "  <a class='link' uid='{uid}' href='{url}'>"
-                    "    {title}"
-                    "  </a>"
-                    "</div>"
-                    .format(id=target.getId(),
-                            uid=target.UID(),
-                            url=target.absolute_url(),
-                            title=target.Title())
-                    for target in targets]
-
-                return {
-                    "fieldName": fieldname,
-                    "mode": "structure",
-                    "html": "".join(elements),
-                }
-            else:
-                return {
-                    "fieldName": fieldname,
-                    "mode": "structure",
-                    "html": ", ".join([ta.Title() for ta in targets]),
-                }
-
-        return {
-            "fieldName": fieldname,
-            "mode": "structure",
-            "html": ""
         }
 
     def get_date_field_data(self, field):
@@ -262,8 +208,6 @@ class HeaderTableView(BrowserView):
 
         if self.is_boolean_field(field):
             data = self.get_boolean_field_data(field)
-        elif self.is_reference_field(field):
-            data = self.get_reference_field_data(field)
         elif self.is_date_field(field):
             data = self.get_date_field_data(field)
 

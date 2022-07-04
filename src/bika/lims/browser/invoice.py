@@ -21,7 +21,25 @@
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IInvoiceView
+from bika.lims.utils import get_link_for
 from zope.interface import implements
+
+
+class RenderHeaderTableInvoiceField(object):
+    """Render invoice link in header table view
+
+    NOTE: Reference fields generate an overlay to show the referenced content.
+          This is not possible for invoices, because the base_view returns a
+          PDF to download.
+    """
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, field):
+        invoice = field.get(self.context)
+        if not invoice:
+            return ""
+        return get_link_for(invoice, target="_blank")
 
 
 class InvoiceView(BrowserView):

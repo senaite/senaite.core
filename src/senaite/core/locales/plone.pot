@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2022-06-29 10:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,22 +71,12 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-#: senaite/core/browser/dexterity/templates/macros.pt:26
-#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
-#: senaite/core/skins/senaite_templates/edit_macros.pt:44
-msgid "Info"
-msgstr ""
-
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
 msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
-msgstr ""
-
-#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
-msgid "More"
 msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
@@ -103,10 +93,6 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:144
 msgid "On"
-msgstr ""
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Register"
 msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
@@ -177,10 +163,6 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
-msgstr ""
-
-#: senaite/core/browser/controlpanel/templates/overview.pt:26
-msgid "Warning"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53

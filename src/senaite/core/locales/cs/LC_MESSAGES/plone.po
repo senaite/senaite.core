@@ -1,13 +1,13 @@
 #
 # Translators:
-# trendspotter <jirka.p@volny.cz>, 2022
+# trendspotter <jirka.p@volny.cz>, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2022-06-29 10:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: trendspotter <jirka.p@volny.cz>, 2022\n"
+"Last-Translator: trendspotter <jirka.p@volny.cz>, 2021\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,7 +37,7 @@ msgstr "Aktualizace nastavení pravidel obsahu."
 
 #: senaite/core/browser/dexterity/templates/container.pt:29
 msgid "Contents"
-msgstr "Obsah"
+msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
@@ -76,12 +76,6 @@ msgstr "Přejít na stránku aktualizace"
 msgid "Home"
 msgstr "Úvodní stránka"
 
-#: senaite/core/browser/dexterity/templates/macros.pt:26
-#: senaite/core/browser/portlets/templates/manage-contextual.pt:38
-#: senaite/core/skins/senaite_templates/edit_macros.pt:44
-msgid "Info"
-msgstr ""
-
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
 msgstr "Přihlášení"
@@ -89,10 +83,6 @@ msgstr "Přihlášení"
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
 msgstr "Odhlášení"
-
-#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:286
-msgid "More"
-msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
@@ -109,10 +99,6 @@ msgstr "Vypnuto"
 #: senaite/core/browser/controlpanel/templates/overview.pt:144
 msgid "On"
 msgstr "Zapnuto"
-
-#: senaite/core/profiles/default/actions.xml
-msgid "Register"
-msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
@@ -183,10 +169,6 @@ msgstr "Přepínání viditelnosti postranního panelu"
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
 msgstr "WSGI:"
-
-#: senaite/core/browser/controlpanel/templates/overview.pt:26
-msgid "Warning"
-msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."

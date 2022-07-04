@@ -5,6 +5,25 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2043 Fix printed time does not get updated on re-Print
+- #2033 Fix blurry Barcode and QRCode in stickers
+- #2032 Fix add-on stickers not displayed in sample type admitted stickers
+- #2031 Make the "Other reasons" text area from rejection view wider
+- #2030 Fix Email address is not displayed in clients listing
+- #2029 Fix AttributeError in Manufacturer's Instruments view
+- #2025 Display full name of analyst and submitter in analyses listing
+- #2025 Fix analyst unchanged in analyses listing after worksheet reassignment
+- #2028 Fix Definition is not displayed in Reference Samples listing
+- #2027 Fix Manufacturer is not displayed in Reference Samples listing
+- #2026 Fix LabManager and LabClerk cannot add preservations
+- #2024 Cannot create partitions from samples in received status
+- #2023 Render hyperlinks for reference widget targets in view/edit mode
+- #2022 Replace Worksheet's Analysis ReferenceField by UIDReferenceField
+- #2021 Reduced logging when creating samples
+- #2017 Added `api.is_temporary` function for both DX and AT types
+- #2019 Performance: Avoid profile analyses assignment for temporary samples
+- #2015 Performance: Avoid to catalog temporary objects
+- #2013 Fix ValueError in uidreferencefield when context is not a IBehavior
 - #2012 Remove stale supply order code
 - #2011 Removed dependency to Products.TextIndexNG3
 - #2010 Fix TypeError in Analyses Listing View

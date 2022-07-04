@@ -46,15 +46,6 @@
       provides="bika.lims.interfaces.IMultiCatalogBehavior"
       />
 
-  <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
-  <browser:page
-      for="*"
-      name="barcode_entry"
-      class="bika.lims.barcode.barcode_entry"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- XXX: to be removed
        Put javascript errors in Plone log -->
   <browser:page
