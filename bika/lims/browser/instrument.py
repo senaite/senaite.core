@@ -743,8 +743,9 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
             "sort_order": "descending",
         }
 
+        instrument = self.context.Title()
         self.title = self.context.translate(
-            _("Auto Import Logs of %s" % self.context.Title()))
+            _(u"Auto Import Logs of %s" % api.safe_unicode(instrument)))
         self.icon = "{}/{}".format(
             self.portal_url,
             "++resource++bika.lims.images/instrumentcertification_big.png"
