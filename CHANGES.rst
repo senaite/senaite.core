@@ -5,6 +5,13 @@ Changelog
 ------------------
 
 - #2041 Fix indexing of DX temp objects resulting in orphan entries (#1913 port)
+- #2040 Fix analysis hidden status erases on results submit (#1998 port)
+- #2039 Fix items not filtered by Worksheet Template's method in (#1990 port)
+- #2038 Fix UnicodeDecodeError for Instrument Import Log View (#1720 port)
+- #2037 Removed add button in auditlog listing view (#1714 port)
+- #2036 Show only active dynamic analysisspecs in reference widget (#1684 port)
+- #2035 Fix Attribute Error when creating invoice PDF (#1683 port)
+- #2034 Fix error in sample view when ccemails is None (#1674 port)
 - #1986 Fixed error with sampler mail (#1941 port)
 - #1985 Disallow client users to create sample partitions (#1965 port)
 - #1984 Fix default roles for client field in samples (#1968 port)
