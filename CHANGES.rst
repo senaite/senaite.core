@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2043 Fix printed time does not get updated on re-Print
 - #2033 Fix blurry Barcode and QRCode in stickers
 - #2032 Fix add-on stickers not displayed in sample type admitted stickers
 - #2031 Make the "Other reasons" text area from rejection view wider
