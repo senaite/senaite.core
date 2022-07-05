@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Clients Groups listing view -->
+  <browser:page
+      for="senaite.core.interfaces.IClientsGroups"
+      name="view"
+      class=".view.ClientsGroupsListingView"
+      permission="zope2.View" />
+
+</configure>

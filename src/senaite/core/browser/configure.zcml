@@ -15,6 +15,7 @@
   <!-- Package includes -->
   <include package=".attachment"/>
   <include package=".bootstrap"/>
+  <include package=".clientsgroups"/>
   <include package=".contentmenu"/>
   <include package=".contentrules"/>
   <include package=".controlpanel"/>
