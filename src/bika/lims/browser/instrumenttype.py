@@ -18,19 +18,27 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.controlpanel.bika_instruments import InstrumentsView
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.controlpanel.bika_instruments import InstrumentsView
+
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
+    """Display instruments assigned to this instrument type
+    """
 
     def __init__(self, context, request):
         super(InstrumentTypeInstrumentsView, self).__init__(context, request)
         url = self.portal.absolute_url()
         url += "/bika_setup/bika_instruments/"
-        self.context_actions = {_('Add'):
-                                {'url': url+'createObject?type_name=Instrument',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+
+        self.context_actions = {
+            _("Add"): {
+                "url": url+"createObject?type_name=Instrument",
+                "icon": "++resource++bika.lims.images/add.png",
+            }}
 
     def isItemAllowed(self, obj):
+        obj = api.get_object(obj)
         itype = obj.getInstrumentType() if obj else None
         return itype.UID() == self.context.UID() if itype else False
