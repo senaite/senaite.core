@@ -162,6 +162,12 @@ CATALOG_MAPPINGS = (
     ("WorksheetTemplate", ["senaite_catalog_setup", "portal_catalog"]),
 )
 
+PORTAL_DEXTERITY_ITEMS = (
+    # id, title, fti
+    ("samples", "Samples",  "Samples"),
+    ("clientsgroups", "Clients groups", "ClientsGroups"),
+)
+
 
 def install(context):
     """Install handler
@@ -241,16 +247,26 @@ def add_dexterity_portal_items(portal):
           `profiles/default/structure` flushes the contents on every import.
     """
     # Tuples of ID, Title, FTI
-    items = [
-        ("samples",  # ID
-         "Samples",  # Title
-         "Samples"),  # FTI
-    ]
-    add_dexterity_items(portal, items)
+    add_dexterity_items(portal, PORTAL_DEXTERITY_ITEMS)
 
     # Move Samples after Clients nav item
     position = portal.getObjectPosition("clients")
     portal.moveObjectToPosition("samples", position + 1)
+
+    # Move Clients groups after Clients nav item
+    position = portal.getObjectPosition("clients")
+    portal.moveObjectToPosition("clientsgroups", position + 1)
+
+    registry = getUtility(IRegistry)
+    key = "plone.displayed_types"
+    display_types = registry.get(key, ())
+
+    # Set new types for navigation
+    nav_types = [item[2] for item in PORTAL_DEXTERITY_ITEMS]
+    new_display_types = set(display_types)
+    new_display_types.update(nav_types)
+    registry[key] = tuple(new_display_types)
+
     portal.plone_utils.reindexOnReorder(portal)
 
 

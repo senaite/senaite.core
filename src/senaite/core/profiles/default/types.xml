@@ -25,4 +25,9 @@
   <!-- Sample Containers -->
   <object name="SampleContainer" meta_type="Dexterity FTI" />
   <object name="SampleContainers" meta_type="Dexterity FTI" />
+
+  <!-- Clients Groups -->
+  <object name="ClientsGroup" meta_type="Dexterity FTI"/>
+  <object name="ClientsGroups" meta_type="Dexterity FTI"/>
+
 </object>

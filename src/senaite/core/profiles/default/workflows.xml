@@ -188,7 +188,7 @@
     <type type_id="Calculation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
-    <type type_id="SampleContainer">
+    <type type_id="ClientsGroup">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="ContainerType">
@@ -234,6 +234,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SampleCondition">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SampleContainer">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SampleMatrix">
@@ -284,6 +287,9 @@
     </type>
     <type type_id="ClientFolder">
       <bound-workflow workflow_id="senaite_clients_workflow"/>
+    </type>
+    <type type_id="ClientsGroups">
+      <bound-workflow workflow_id="senaite_clientsgroups_workflow"/>
     </type>
     <type type_id="Contact">
       <bound-workflow workflow_id="senaite_clientcontact_workflow"/>

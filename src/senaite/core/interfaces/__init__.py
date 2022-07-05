@@ -113,3 +113,13 @@ class IFieldMigrator(Interface):
 class IDynamicLocalRoles(Interface):
     """Marker interface for objects with dynamic assignment of local roles
     """
+
+
+class IClientsGroups(Interface):
+    """Marker interface for folder containing ClientsGroup objects
+    """
+
+
+class IClientsGroup(Interface):
+    """Marker interface for ClientsGroup
+    """

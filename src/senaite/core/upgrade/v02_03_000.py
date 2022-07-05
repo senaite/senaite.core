@@ -25,6 +25,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
+from senaite.core.setuphandlers import add_dexterity_portal_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -59,12 +60,15 @@ def upgrade(tool):
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
 
     # run import steps located in senaite.core profiles
+    setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
 
     remove_stale_metadata(portal)
     fix_worksheets_analyses(portal)
     fix_cannot_create_partitions(portal)
+    fix_clients_icon(portal)
+    add_dexterity_portal_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -158,3 +162,11 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def fix_clients_icon(portal):
+    """Replaces the clients icon expr for ClientFolder portal type
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("ClientFolder")
+    fti.icon_expr = 'string:${portal_url}/senaite_theme/icon/client'
