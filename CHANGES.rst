@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2046 Support for sharing objects across groups of clients
+- #2045 Fix instrument types instruments view
 - #2044 Skip Invoice for content exports
 - #2043 Fix printed time does not get updated on re-Print
 - #2033 Fix blurry Barcode and QRCode in stickers
