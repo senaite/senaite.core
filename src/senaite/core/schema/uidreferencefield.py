@@ -365,5 +365,5 @@ class UIDReferenceField(List, BaseField):
 
         raise ValueError("Not a valid object: %s" % repr(thing))
 
-    # Convenient accessor for legacy compliance
+    # Legacy convenient accessor
     getRaw = get_raw

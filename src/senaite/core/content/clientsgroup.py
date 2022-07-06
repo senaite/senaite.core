@@ -87,9 +87,10 @@ class ClientsGroup(Container):
         schema = api.get_schema(self)
         if fieldname not in schema:
             return None
+        field = schema[fieldname]
         if raw:
-            return schema[fieldname].getRaw
-        return schema[fieldname].get
+            return field.getRaw
+        return field.get
 
     @security.private
     def mutator(self, fieldname):
@@ -101,15 +102,15 @@ class ClientsGroup(Container):
         return schema[fieldname].set
 
     @security.protected(permissions.View)
-    def getClients(self, as_objects=True):  # noqa CamelCase
+    def getClients(self):  # noqa CamelCase
         """Returns the clients assigned to this group
         """
-        raw = not as_objects
         accessor = self.accessor("clients")
-        return accessor(self, raw=raw)
+        return accessor(self)
 
     @security.protected(permissions.View)
     def getRawClients(self):  # noqa CamelCase
         """Returns the UIDs of the clients assigned to this group
         """
-        return self.getClients(as_objects=False)
+        accessor = self.accessor("clients", raw=True)
+        return accessor(self)
