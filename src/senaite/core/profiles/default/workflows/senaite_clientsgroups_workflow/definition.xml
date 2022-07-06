@@ -2,7 +2,7 @@
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
              workflow_id="senaite_clientsgroups_workflow"
              title="Senaite clients groups folder Workflow"
-             description="A one-state (actie) workflow for clientsgroups folder"
+             description="A one-state (active) workflow for clientsgroups folder"
              state_variable="review_state"
              initial_state="active"
              manager_bypass="False"
@@ -30,7 +30,6 @@
     <permission-map name="Access contents information" acquired="False">
       <!-- All except Anonymous and Client -->
       <permission-role>Analyst</permission-role>
-      <permission-role>ClientGuest</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>
@@ -47,7 +46,6 @@
     <permission-map name="List folder contents" acquired="False">
       <!-- All except Anonymous and Client -->
       <permission-role>Analyst</permission-role>
-      <permission-role>ClientGuest</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>
@@ -71,7 +69,6 @@
     <permission-map name="View" acquired="False">
       <!-- All except Anonymous and Client -->
       <permission-role>Analyst</permission-role>
-      <permission-role>ClientGuest</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>

@@ -8,6 +8,7 @@
       for="senaite.core.interfaces.IClientsGroups"
       name="view"
       class=".view.ClientsGroupsListingView"
-      permission="zope2.View" />
+      permission="cmf.ListFolderContents"
+      layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>

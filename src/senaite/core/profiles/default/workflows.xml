@@ -14,6 +14,7 @@
   <object name="senaite_client_workflow" meta_type="Workflow"/>
   <object name="senaite_clientcontact_workflow" meta_type="Workflow" />
   <object name="senaite_clients_workflow" meta_type="Workflow"/>
+  <object name="senaite_clientsgroups_workflow" meta_type="Workflow"/>
   <object name="senaite_duplicateanalysis_workflow" meta_type="Workflow"/>
   <object name="senaite_instruments_workflow" meta_type="Workflow" />
   <object name="senaite_labcontact_workflow" meta_type="Workflow" />
