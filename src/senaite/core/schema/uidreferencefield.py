@@ -364,3 +364,6 @@ class UIDReferenceField(List, BaseField):
             return self._get_content_object(context)
 
         raise ValueError("Not a valid object: %s" % repr(thing))
+
+    # Convenient accessor for legacy compliance
+    getRaw = get_raw

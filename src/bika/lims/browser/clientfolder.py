@@ -32,6 +32,7 @@ from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims.utils import get_registry_value
 
 
@@ -103,6 +104,10 @@ class ClientFolderContentsView(BikaListingView):
                 "toggle": False,
                 "sortable": False,
                 "title": _("Member Discount")}),
+            ("Groups", {
+                "toggle": False,
+                "sortable": False,
+                "title": _("Groups")}),
         ))
 
         self.review_states = [
@@ -184,6 +189,12 @@ class ClientFolderContentsView(BikaListingView):
         phone = obj.getPhone()
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
+
+        # Render the links of groups
+        groups = obj.getClientGroups()
+        groups = sorted(groups, key=lambda group: api.get_title(group))
+        links = [get_link_for(group) for group in groups]
+        item["replace"]["Groups"] = ", ".join(links)
 
         return item
 

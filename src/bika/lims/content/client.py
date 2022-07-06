@@ -48,6 +48,9 @@ from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IDeactivable
 
+from senaite.core.schema.uidreferencefield import get_backrefs
+
+
 schema = Organisation.schema.copy() + Schema((
     StringField(
         "ClientID",
@@ -245,6 +248,17 @@ class Client(Organisation):
         physical_address = self.getPhysicalAddress().get("district", default)
         postal_address = self.getPostalAddress().get("district", default)
         return physical_address or postal_address
+
+    def getClientGroups(self, as_objects=True):
+        """Returns the ClientGroup objects this client is assigned to
+        """
+        return get_backrefs(self, "ClientsGroup.clients", as_objects=as_objects)
+
+    def getRawClientGroups(self):
+        """Returns the UIDs of the ClientGroup objects this client is assigned
+        """
+        return self.getClientGroups(as_objects=False)
+
 
     # TODO Security Make Attachments live inside ARs (instead of Client)
     # Since the Attachments live inside Client, we are forced here to overcome
