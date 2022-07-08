@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2047 Make resultsinterpretation.pt to retrieve departments from viewlet
 - #2045 Fix instrument types instruments view
 - #2044 Skip Invoice for content exports
 - #2043 Fix printed time does not get updated on re-Print
