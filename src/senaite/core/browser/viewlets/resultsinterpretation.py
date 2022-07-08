@@ -29,6 +29,12 @@ class ResultsInterpretationViewlet(ViewletBase):
             return self.handle_form_submit()
         return self.index()
 
+    def get_panels(self):
+        """Returns the objects for which an specific free text area has to be
+        rendered for the introduction of results interpretations
+        """
+        return self.context.getDepartments()
+
     def handle_form_submit(self):
         """Handle form submission
         """
