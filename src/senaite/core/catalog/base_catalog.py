@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from threading import RLock
+
 import transaction
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import \
@@ -18,6 +20,8 @@ from zope.interface import implementer
 
 CATALOG_ID = "senaite_catalog_base"
 CATALOG_TITLE = "Senaite Base Catalog"
+
+progress_rlock = RLock()
 
 INDEXES = [
     # id, indexed attribute, type
@@ -65,6 +69,7 @@ class BaseCatalog(CatalogTool):
     def __init__(self, id, title="", **kw):
         # CatalogTool does not take any parameters in __init__
         ZCatalog.__init__(self, id, title=title, **kw)
+        self.progress_counter = 0
 
     @property
     def mapped_catalog_types(self):
@@ -104,6 +109,19 @@ class BaseCatalog(CatalogTool):
         mapped_at_types = self.get_mapped_at_types()
         return mapped_catalog_types + mapped_at_types
 
+    def log_progress(self):
+        """Log reindex progress
+        """
+        with progress_rlock:
+            self.progress_counter += 1
+
+        if self.progress_counter % 100 == 0:
+            logger.info("Progress: {} objects have been cataloged for {}."
+                        .format(self.progress_counter, self.id))
+
+        if self.progress_counter % 10000 == 0:
+            transaction.savepoint(optimistic=True)
+
     @security.protected(ManageZCatalogEntries)
     def clearFindAndRebuild(self):
         """Considers only mapped types when reindexing the whole catalog
@@ -130,14 +148,14 @@ class BaseCatalog(CatalogTool):
                     #       catalog, but does not take DX multiplexing into
                     #       consideration.
                     self._reindexObject(obj, idxs=idxs)  # bypass queue
-                    self.counter += 1
+                    self.log_progress()
                 elif api.is_dexterity_content(obj):
                     # NOTE: Catalog multiplexing is only available for DX types
                     #       and stores the catalogs in a variable `_catalogs`.
                     multiplex_catalogs = getattr(obj, "_catalogs", [])
                     if self.id in multiplex_catalogs:
                         self._reindexObject(obj, idxs=idxs)  # bypass queue
-                        self.counter += 1
+                        self.log_progress()
                 else:
                     return
             except TypeError:
@@ -145,13 +163,10 @@ class BaseCatalog(CatalogTool):
                 # take different args, and will fail
                 pass
 
-            if self.counter and self.counter % 100 == 0:
-                logger.info("Progress: {} objects have been cataloged for {}."
-                            .format(self.counter, self.id))
-                transaction.savepoint(optimistic=True)
+        # reset the progress counter
+        self.progress_counter = 0
 
         logger.info("Cleaning and rebuilding catalog '%s'..." % self.id)
-        self.counter = 0
         self.manage_catalogClear()
         portal = aq_parent(aq_inner(self))
         portal.ZopeFindAndApply(
