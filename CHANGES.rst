@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2055 Fix Email address is not displayed in clients listing (#2030 port)
 - #2054 Fix AttributeError in Manufacturer's Instruments view (#2029 port)
 - #2053 Fix Manufacturer not displayed in Reference Samples listing (#2027 port)
 - #2052 Fix analyst unchanged after worksheet reassignment (#2025 port)
