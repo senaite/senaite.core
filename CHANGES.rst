@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2058 Allow to filter 'Interpretation templates' by sample template and type
 - #2048 Fix catalog logging counter duplicates
 - #2047 Make resultsinterpretation.pt to retrieve departments from viewlet
 - #2045 Fix instrument types instruments view
