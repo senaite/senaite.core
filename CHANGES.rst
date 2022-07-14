@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2056 Fix printed time does not get updated on re-print (#2043 port)
 - #2055 Fix Email address is not displayed in clients listing (#2030 port)
 - #2054 Fix AttributeError in Manufacturer's Instruments view (#2029 port)
 - #2053 Fix Manufacturer not displayed in Reference Samples listing (#2027 port)
