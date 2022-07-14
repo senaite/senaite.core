@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2050 Fix ProfileKey is not shown in Profiles table
 - #2049 Fix Sample's header table fields not validated on submit (#1687 port)
 - #2042 Fix LabManager and LabClerk cannot add preservations (#2026 port)
 - #2041 Fix indexing of DX temp objects resulting in orphan entries (#1913 port)
