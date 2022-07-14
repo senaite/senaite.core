@@ -224,6 +224,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
         item["selected"] = False
         item["Hidden"] = hidden
         item["selected"] = uid in self.configuration
+        item["Keyword"] = obj.getKeyword()
 
         # Add methods
         methods = obj.getMethods()
