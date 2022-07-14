@@ -167,6 +167,5 @@ def fix_interface_interpretation_template(portal):
     logger.info("Fix interface for InterpretationTemplate FTI ...")
     pt = api.get_tool("portal_types")
     fti = pt.get("InterpretationTemplate")
-    import pdb;pdb.set_trace()
     fti.schema = "senaite.core.content.interpretationtemplate.IInterpretationTemplateSchema"
     logger.info("Fix interface for InterpretationTemplate FTI ...")
