@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2052 Fix analyst unchanged after worksheet reassignment (#2025 port)
 - #2051 Fix missing keyword in analysis profile view (#2009 port)
 - #2050 Fix ProfileKey is not shown in Profiles table
 - #2049 Fix Sample's header table fields not validated on submit (#1687 port)
