@@ -93,10 +93,10 @@
 
                       <!-- Other rejection reasons -->
                       <div class="col-sm-12">
-                        <div class="form-group field">
+                        <div class="form-group">
                           <label tal:condition="reasons" i18n:translate="">Other reasons</label>
                           <label tal:condition="python: not reasons" i18n:translate="">Rejection reasons</label>
-                          <textarea cols="5"
+                          <textarea rows="5" class="form-control"
                             tal:attributes="name string:samples.other_reasons:records"></textarea>
                         </div>
                       </div>
