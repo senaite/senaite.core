@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2054 Fix AttributeError in Manufacturer's Instruments view (#2029 port)
 - #2053 Fix Manufacturer not displayed in Reference Samples listing (#2027 port)
 - #2052 Fix analyst unchanged after worksheet reassignment (#2025 port)
 - #2051 Fix missing keyword in analysis profile view (#2009 port)
