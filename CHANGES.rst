@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2052 Fix analyst unchanged after worksheet reassignment (#2025 port)
 - #2042 Fix LabManager and LabClerk cannot add preservations (#2026 port)
 - #2041 Fix indexing of DX temp objects resulting in orphan entries (#1913 port)
 - #2040 Fix analysis hidden status erases on results submit (#1998 port)
