@@ -30,6 +30,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
@@ -407,9 +408,7 @@ class ReferenceSamplesView(BikaListingView):
                 "replace_url": "aq_parent.absolute_url"}),
             ("Manufacturer", {
                 "title": _("Manufacturer"),
-                "toggle": True,
-                "attr": "getManufacturer.Title",
-                "replace_url": "getManufacturer.absolute_url"}),
+                "toggle": True}),
             ("Definition", {
                 "title": _("Reference Definition"),
                 "toggle": True,
@@ -511,6 +510,8 @@ class ReferenceSamplesView(BikaListingView):
         item["DateReceived"] = self.ulocalized_time(obj.getDateReceived())
         item["DateOpened"] = self.ulocalized_time(obj.getDateOpened())
         item["ExpiryDate"] = self.ulocalized_time(obj.getExpiryDate())
+        manufacturer = obj.getManufacturer()
+        item["replace"]["Manufacturer"] = get_link_for(manufacturer)
 
         # Icons
         after_icons = ''
