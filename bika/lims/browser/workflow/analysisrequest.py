@@ -277,14 +277,14 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         """
         if api.get_workflow_status_of(sample) != "published":
             return False
-        reports = sample.objectValues("ARReport")
-        reports = sorted(reports, key=lambda report: report.getDatePublished())
+
+        reports = sample.objectIds("ARReport")
         if not reports:
             return False
-        last_report = reports[-1]
-        if not last_report.getDatePrinted():
-            last_report.setDatePrinted(DateTime())
-            sample.reindexObject(idxs=["getPrinted"])
+
+        last_report = sample.get(reports[-1])
+        last_report.setDatePrinted(DateTime())
+        sample.reindexObject(idxs=["getPrinted"])
         return True
 
 
