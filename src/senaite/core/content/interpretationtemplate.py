@@ -18,25 +18,173 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from AccessControl import ClassSecurityInfo
+from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
-
+from bika.lims.interfaces import IDeactivable
+from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.supermodel import model
-
+from Products.CMFCore import permissions
+from senaite.core.interfaces import IInterpretationTemplate
+from senaite.core.schema import UIDReferenceField
+from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope.interface import implementer
 
 
-class IInterpretationTemplate(model.Schema):
+class IInterpretationTemplateSchema(model.Schema):
     """Results Interpretation Template content interface
     """
     # The behavior IRichTextBehavior applies to this content type, so it
     # already provides the "text" field that renders the TinyMCE's Wsiwyg
-    pass
+
+    analysis_templates = UIDReferenceField(
+        title=_(u"Analysis templates"),
+        description=_(
+            u"If set, this interpretation template will only be available for "
+            u"selection on samples that have assigned any of these analysis "
+            u"templates",
+        ),
+        allowed_types=("ARTemplate", ),
+        multi_valued=True,
+        required=False,
+    )
+
+    sample_types = UIDReferenceField(
+        title=_(u"Sample types"),
+        description=_(
+            u"If set, this interpretation template will only be available for "
+            u"selection on samples from these types",
+        ),
+        allowed_types=("SampleType", ),
+        multi_valued=True,
+        required=False,
+    )
+
+    directives.widget(
+        "analysis_templates",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "ARTemplate",
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${title}</a>",
+        columns=[
+            {
+                "name": "title",
+                "width": "30",
+                "align": "left",
+                "label": _(u"Title"),
+            }, {
+                "name": "description",
+                "width": "70",
+                "align": "left",
+                "label": _(u"Description"),
+            },
+        ],
+        limit=15,
+    )
+
+    directives.widget(
+        "sample_types",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "SampleType",
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${title}</a>",
+        columns=[
+            {
+                "name": "title",
+                "width": "30",
+                "align": "left",
+                "label": _(u"Title"),
+            }, {
+                "name": "description",
+                "width": "70",
+                "align": "left",
+                "label": _(u"Description"),
+            },
+        ],
+        limit=15,
+    )
 
 
-@implementer(IInterpretationTemplate)
+@implementer(IInterpretationTemplate, IInterpretationTemplateSchema,
+             IDeactivable)
 class InterpretationTemplate(Item):
     """Results Interpretation Template content
     """
     # Catalogs where this type will be catalogued
     _catalogs = [SETUP_CATALOG]
+
+    security = ClassSecurityInfo()
+    exclude_from_nav = True
+
+    @security.private
+    def accessor(self, fieldname, raw=False):
+        """Return the field accessor for the fieldname
+        """
+        schema = api.get_schema(self)
+        if fieldname not in schema:
+            return None
+        field = schema[fieldname]
+        if raw:
+            if hasattr(field, "get_raw"):
+                return field.get_raw
+            return field.getRaw
+        return field.get
+
+    @security.private
+    def mutator(self, fieldname):
+        """Return the field mutator for the fieldname
+        """
+        schema = api.get_schema(self)
+        if fieldname not in schema:
+            return None
+        return schema[fieldname].set
+
+    @security.protected(permissions.View)
+    def getAnalysisTemplates(self):  # noqa CamelCase
+        """Return the ARTemplate objects assigned to this template, if any
+        """
+        accessor = self.accessor("analysis_templates")
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRawAnalysisTemplates(self):  # noqa CamelCase
+        """Return the UIDs of ARTemplate objects assigned, if any
+        """
+        accessor = self.accessor("analysis_templates", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAnalysisTemplates(self, value):  # noqa CamelCase
+        mutator = self.mutator("analysis_templates")
+        mutator(self.context, value)
+
+    @security.protected(permissions.View)
+    def getSampleTypes(self):  # noqa CamelCase
+        """Return the SampleType objects assigned to this template, if any
+        """
+        accessor = self.accessor("sample_types")
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRawSampleTypes(self):  # noqa CamelCase
+        """Return the UIDs of the SampleType objects assigned, if any
+        """
+        accessor = self.accessor("sample_types", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleTypes(self, value):  # noqa CamelCase
+        mutator = self.mutator("sample_types")
+        mutator(self.context, value)

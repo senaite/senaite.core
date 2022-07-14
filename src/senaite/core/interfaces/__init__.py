@@ -113,3 +113,8 @@ class IFieldMigrator(Interface):
 class IDynamicLocalRoles(Interface):
     """Marker interface for objects with dynamic assignment of local roles
     """
+
+
+class IInterpretationTemplate(Interface):
+    """Marker interface for interpretation template objects
+    """

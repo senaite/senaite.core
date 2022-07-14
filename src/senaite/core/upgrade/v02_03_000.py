@@ -65,6 +65,7 @@ def upgrade(tool):
     remove_stale_metadata(portal)
     fix_worksheets_analyses(portal)
     fix_cannot_create_partitions(portal)
+    fix_interface_interpretation_template(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -158,3 +159,13 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def fix_interface_interpretation_template(portal):
+    """Applies IInterpretationTempalteSchema to InterpretationTemplate FTI
+    """
+    logger.info("Fix interface for InterpretationTemplate FTI ...")
+    pt = api.get_tool("portal_types")
+    fti = pt.get("InterpretationTemplate")
+    fti.schema = "senaite.core.content.interpretationtemplate.IInterpretationTemplateSchema"
+    logger.info("Fix interface for InterpretationTemplate FTI ...")
