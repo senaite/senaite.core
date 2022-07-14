@@ -94,8 +94,6 @@ _columns_list = [
     "getMethodTitle",
     "getMethodURL",
     "getAllowedMethodUIDs",
-    "getAnalyst",
-    "getAnalystName",
     "getNumberOfRequiredVerifications",
     "getNumberOfVerifications",
     "isSelfVerificationEnabled",
