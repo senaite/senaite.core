@@ -18,13 +18,22 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
 version = "1.3.6"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+
+METADATA_TO_REMOVE = [
+    # No longer used, see https://github.com/senaite/senaite.core/pull/2051/
+    (CATALOG_ANALYSIS_LISTING, "getAnalyst"),
+    (CATALOG_ANALYSIS_LISTING, "getAnalystName"),
+]
 
 
 @upgradestep(product, version)
@@ -44,5 +53,27 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, "rolemap")
 
+    remove_stale_metadata(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_stale_metadata(portal):
+    """Remove metadata columns no longer used
+    """
+    logger.info("Removing stale metadata ...")
+    for catalog, column in METADATA_TO_REMOVE:
+        del_metadata(catalog, column)
+    logger.info("Removing stale metadata ... [DONE]")
+
+
+def del_metadata(catalog_id, column):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)
