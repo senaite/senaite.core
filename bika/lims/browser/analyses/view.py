@@ -484,16 +484,6 @@ class AnalysesView(BikaListingView):
                               'ResultText': instrument.Title()})
         return vocab
 
-    @viewcache.memoize
-    def get_analysts(self):
-        analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
-        analysts = analysts.sortedByKey()
-        results = list()
-        for analyst_id, analyst_name in analysts.items():
-            results.append({'ResultValue': analyst_id,
-                            'ResultText': analyst_name})
-        return results
-
     def load_analysis_categories(self):
         # Getting analysis categories
         bsc = api.get_tool('bika_setup_catalog')
@@ -923,25 +913,21 @@ class AnalysesView(BikaListingView):
             return
 
     def _folder_item_analyst(self, obj, item):
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if not is_editable:
-            item['Analyst'] = obj.getAnalystName
-            return
-
-        # Analyst is editable
-        item['Analyst'] = obj.getAnalyst or api.get_current_user().id
-        item['choices']['Analyst'] = self.get_analysts()
+        obj = self.get_object(obj)
+        analyst = obj.getAnalyst()
+        item["Analyst"] = self.get_user_name(analyst)
 
     def _folder_item_submitted_by(self, obj, item):
-        submitted_by = obj.getSubmittedBy
-        if submitted_by:
-            user = self.get_user_by_id(submitted_by)
-            user_name = user and user.getProperty("fullname") or submitted_by
-            item['SubmittedBy'] = user_name
+        obj = self.get_object(obj)
+        submitted_by = obj.getSubmittedBy()
+        item["SubmittedBy"] = self.get_user_name(submitted_by)
 
     @viewcache.memoize
-    def get_user_by_id(self, user_id):
-        return api.get_user(user_id)
+    def get_user_name(self, user_id):
+        if not user_id:
+            return ""
+        user = api.get_user_properties(user_id)
+        return user and user.get("fullname") or user_id
 
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
