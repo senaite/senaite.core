@@ -77,4 +77,11 @@
       replacement=".dexterity.isTemporary"
   />
 
+  <monkey:patch
+      description=""
+      class="Products.CMFPlone.CatalogTool.CatalogTool"
+      original="catalog_object"
+      replacement=".catalog.catalog_object"
+  />
+
 </configure>
