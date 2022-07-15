@@ -26,6 +26,8 @@ from datetime import timedelta
 import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
@@ -1421,3 +1423,27 @@ def text_to_html(text, wrap="p", encoding="utf8"):
             tag=wrap, html=html)
     # return encoded html
     return html.encode(encoding)
+
+
+def is_temporary(obj):
+    """Returns whether the given object is temporary or not
+    :param obj: the object to evaluate
+    :returns: True if the object is temporary
+    """
+    if UID_RX.match(obj.id):
+        return True
+
+    parent = aq_parent(aq_inner(obj))
+    if not parent:
+        return True
+
+    if UID_RX.match(parent.id):
+        return True
+
+    if is_at_content(obj):
+        # Checks to see if we are created inside the portal_factory. We don't
+        # rely here on AT's isFactoryContained because the function is patched
+        meta_type = getattr(aq_base(parent), "meta_type", "")
+        return meta_type == "TempFolder"
+
+    return False

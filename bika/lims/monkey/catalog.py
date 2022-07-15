@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.ZCatalog import ZCatalog
 from zope.component import queryMultiAdapter
@@ -8,13 +9,9 @@ from zope.component import queryMultiAdapter
 def catalog_object(self, object, uid=None, idxs=None,
                    update_metadata=1, pghandler=None):
 
-    try:
-        # Never catalog temporary objects
-        temporary = object.isTemporary()
-        if temporary is True:
-            return
-    except AttributeError:
-        pass
+    # Never catalog temporary objects
+    if api.is_temporary(object):
+        return
 
     if idxs is None:
         idxs = []
