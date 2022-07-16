@@ -4,6 +4,8 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2059 Fix Definition not displayed in Reference Samples listing (#2028 port)
+- #2059 Fix Supplier not displayed in Reference Samples listing (#2028 port)
 - #2057 Make "Other reasons" text area from rejection view wider (#2031 port)
 - #2056 Fix printed time does not get updated on re-print (#2043 port)
 - #2055 Fix Email address is not displayed in clients listing (#2030 port)

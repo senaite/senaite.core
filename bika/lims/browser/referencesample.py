@@ -403,17 +403,13 @@ class ReferenceSamplesView(BikaListingView):
                 "toggle": True}),
             ("Supplier", {
                 "title": _("Supplier"),
-                "toggle": True,
-                "attr": "aq_parent.Title",
-                "replace_url": "aq_parent.absolute_url"}),
+                "toggle": True}),
             ("Manufacturer", {
                 "title": _("Manufacturer"),
                 "toggle": True}),
             ("Definition", {
                 "title": _("Reference Definition"),
-                "toggle": True,
-                "attr": "getReferenceDefinition.Title",
-                "replace_url": "getReferenceDefinition.absolute_url"}),
+                "toggle": True}),
             ("DateSampled", {
                 "title": _("Date Sampled"),
                 "index": "getDateSampled",
@@ -512,6 +508,12 @@ class ReferenceSamplesView(BikaListingView):
         item["ExpiryDate"] = self.ulocalized_time(obj.getExpiryDate())
         manufacturer = obj.getManufacturer()
         item["replace"]["Manufacturer"] = get_link_for(manufacturer)
+
+        supplier = api.get_parent(obj)
+        item["replace"]["Supplier"] = get_link_for(supplier)
+
+        ref_definition = obj.getReferenceDefinition()
+        item["replace"]["Definition"] = get_link_for(ref_definition)
 
         # Icons
         after_icons = ''
