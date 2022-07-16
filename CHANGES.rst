@@ -6,6 +6,8 @@ Changelog
 
 - #2060 Added `api.is_temporary` function for both DX and AT types (#2018 port)
 - #2060 Performance: Avoid to catalog temporary objects (#2015 port)
+- #2059 Fix Definition not displayed in Reference Samples listing (#2028 port)
+- #2059 Fix Supplier not displayed in Reference Samples listing (#2028 port)
 - #2057 Make "Other reasons" text area from rejection view wider (#2031 port)
 - #2056 Fix printed time does not get updated on re-print (#2043 port)
 - #2055 Fix Email address is not displayed in clients listing (#2030 port)
