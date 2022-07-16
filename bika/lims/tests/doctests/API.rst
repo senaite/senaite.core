@@ -1644,3 +1644,87 @@ Empty strings are returned unchanged:
     >>> text = ""
     >>> api.text_to_html(text, wrap="div")
     ''
+
+Check if an object is temporary
+...............................
+
+This function checks if the given object is temporary. This is the object is
+being created and is not yet ready.
+
+Check the client we created earlier is not temporary:
+
+    >>> api.is_temporary(client)
+    False
+
+Check with a step-by-step DX content type:
+
+    >>> import uuid
+    >>> from bika.lims.utils import tmpID
+    >>> from zope.component import getUtility
+    >>> from zope.component.interfaces import IFactory
+    >>> from zope.event import notify
+    >>> from zope.lifecycleevent import ObjectCreatedEvent
+    >>> portal_types = api.get_tool("portal_types")
+    >>> fti = portal_types.getTypeInfo("DynamicAnalysisSpec")
+    >>> factory = getUtility(IFactory, fti.factory)
+    >>> tmp_obj_id = tmpID()
+    >>> tmp_obj = factory(tmp_obj_id)
+    >>> tmp_obj._setPortalTypeName(fti.getId())
+    >>> api.is_temporary(tmp_obj)
+    True
+    >>> tmp_obj.title = u'Test dynamic analysis spec'
+    >>> notify(ObjectCreatedEvent(tmp_obj))
+    >>> api.is_temporary(tmp_obj)
+    True
+
+The DX object is no longer temporary when is assigned to the parent folder and
+the the definitive id is set:
+
+    >>> folder = api.get_setup().dynamic_analysisspecs
+    >>> uid = folder._setObject(tmp_obj_id, tmp_obj)
+    >>> api.is_temporary(tmp_obj)
+    True
+    >>> tmp_obj = folder._getOb(tmp_obj.getId())
+    >>> api.is_temporary(tmp_obj)
+    False
+
+But even if we don't use a non-UID id as the temporary id on creation. System
+will still consider the object as temporary until is assigned to its parent
+folder:
+
+    >>> tmp_obj_id = "non-uid-temp-id"
+    >>> tmp_obj = factory(tmp_obj_id)
+    >>> tmp_obj._setPortalTypeName(fti.getId())
+    >>> api.is_temporary(tmp_obj)
+    True
+    >>> tmp_obj.title = u'Test dynamic specs 2'
+    >>> notify(ObjectCreatedEvent(tmp_obj))
+    >>> api.is_temporary(tmp_obj)
+    True
+    >>> folder = api.get_setup().dynamic_analysisspecs
+    >>> uid = folder._setObject(tmp_obj_id, tmp_obj)
+    >>> api.is_temporary(tmp_obj)
+    True
+    >>> tmp_obj = folder._getOb(tmp_obj.getId())
+    >>> api.is_temporary(tmp_obj)
+    False
+
+On the other hand, an object with a UID id is always considered as temporary:
+
+    >>> tmp_obj.id = uuid.uuid4().hex
+    >>> api.is_temporary(tmp_obj)
+    True
+
+If we use `api.create`, the object returned is not temporary:
+
+    >>> obj = api.create(setup.dynamic_analysisspecs, "DynamicAnalysisSpec", title="Another dynamic spec")
+    >>> api.is_temporary(obj)
+    False
+
+AT content types are considered temporary while being created inside
+portal_factory:
+
+    >>> tmp_path = "portal_factory/Client/{}".format(tmpID())
+    >>> tmp_client = portal.clients.restrictedTraverse(tmp_path)
+    >>> api.is_temporary(tmp_client)
+    True

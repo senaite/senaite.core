@@ -4,6 +4,8 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2060 Added `api.is_temporary` function for both DX and AT types (#2018 port)
+- #2060 Performance: Avoid to catalog temporary objects (#2015 port)
 - #2059 Fix Definition not displayed in Reference Samples listing (#2028 port)
 - #2059 Fix Supplier not displayed in Reference Samples listing (#2028 port)
 - #2057 Make "Other reasons" text area from rejection view wider (#2031 port)
