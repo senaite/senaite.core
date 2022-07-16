@@ -1,5 +1,6 @@
 <div id="results-interpretation"
      tal:condition="python:view.available()"
+     tal:define="panels python:view.get_panels"
      i18n:domain="senaite.core">
 
   <!-- title and icon -->
@@ -15,34 +16,32 @@
     tal:define="fieldName string:ResultsInterpretationDepts"
     tal:condition="python:not view.is_edit_allowed()">
 
-    <div class="resultsinterpretations"
-         tal:define="departments python:context.getDepartments()">
+    <div class="resultsinterpretations">
 
-      <!-- General Department Results Interpreation -->
+      <!-- General Results Interpretation -->
       <tal:general>
         <table class="table-borderless w-100"
                tal:define="text python:view.get_text(None, 'raw')">
           <tr>
-            <th i18n:translate="">General Department</th>
+            <th i18n:translate="">General</th>
           </tr>
           <tr>
-            <td tal:content="structure python:text or default">-</td>
+            <td tal:content="structure python:text or default"/>
           </tr>
         </table>
       </tal:general>
 
-
-      <tal:department repeat="dept departments">
+      <tal:panel repeat="panel panels">
         <table class="table-borderless w-100"
-               tal:define="text python:view.get_text(dept, 'raw')">
+               tal:define="text python:view.get_text(panel, 'raw')">
           <tr>
-            <th tal:content="dept/Title">Department</th>
+            <th tal:content="panel/Title"/>
           </tr>
           <tr>
-            <td tal:content="structure python:text or default">-</td>
+            <td tal:content="structure python:text or default"/>
           </tr>
         </table>
-      </tal:department>
+      </tal:panel>
 
     </div>
   </tal:readonly>
@@ -91,12 +90,11 @@
         </div>
       </div>
 
-      <div class="arresultsinterpretation-container mb-2"
-           tal:define="departments python:context.getDepartments()">
-        <!-- Tabs for departments -->
+      <div class="arresultsinterpretation-container mb-2">
+        <!-- Tabs for panels (departments) -->
         <ul class="nav nav-tabs" roles="tablist">
           <li class="nav-item">
-            <a class="department-tab nav-link active"
+            <a class="nav-link active"
                data-toggle="tab"
                href="#"
                role="tab"
@@ -105,23 +103,23 @@
                       data-uid string:${fieldName}-general;"
                i18n:translate="">General</a>
           </li>
-          <tal:depts repeat="dep departments">
+          <tal:panels repeat="panel panels">
             <li class="nav-item">
-              <a class="department-tab nav-link"
+              <a class="nav-link"
                  data-toggle="tab"
                  href="#"
                  role="tab"
-                 tal:attributes="id dep/Title;
-                        href string:#${fieldName}-${dep/UID};
-                        data-uid python:fieldName+'-'+dep.UID();"
-                 tal:content="dep/Title"></a>
+                 tal:attributes="id panel/Title;
+                        href string:#${fieldName}-${panel/UID};
+                        data-uid python:fieldName+'-'+panel.UID();"
+                 tal:content="panel/Title"/>
             </li>
-          </tal:depts>
+          </tal:panels>
         </ul>
 
         <!-- TextAreas (RichText) for results interpretation -->
         <div class="tab-content p-2 border-left border-bottom border-right">
-          <div class="department-area tab-pane fade show active"
+          <div class="tab-pane fade show active"
                role="tabpanel"
                tal:attributes="id string:${fieldName}-general;">
             <input type="hidden"
@@ -135,22 +133,22 @@
             </textarea>
           </div>
 
-          <tal:department repeat="dept departments">
-            <div class="department-area tab-pane fade"
+          <tal:panel repeat="panel panels">
+            <div class="tab-pane fade"
                  role="tabpanel"
-                 tal:define="uid dept/UID"
+                 tal:define="uid panel/UID"
                  tal:attributes="id string:${fieldName}-${uid};">
               <input type="hidden"
                      tal:attributes="name string:${fieldName}.uid:records:ignore_empty;
-                           id string:${fieldName}-uid-${repeat/dept/number};
+                           id string:${fieldName}-uid-${repeat/panel/number};
                            value string:${uid};"/>
               <textarea class="my-2 mce_editable"
                         tal:attributes="name string:${fieldName}.richtext:records:ignore_empty;
-                               id string:${fieldName}-richtext-${repeat/dept/number};"
-                        tal:content="python:view.get_text(dept, 'raw')">
+                               id string:${fieldName}-richtext-${repeat/panel/number};"
+                        tal:content="python:view.get_text(panel, 'raw')">
               </textarea>
             </div>
-          </tal:department>
+          </tal:panel>
         </div>
       </div>
       <button type="submit" class="btn btn-primary btn-sm" i18n:translate="">Save</button>

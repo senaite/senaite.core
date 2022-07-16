@@ -69,6 +69,7 @@ def upgrade(tool):
     fix_cannot_create_partitions(portal)
     fix_clients_icon(portal)
     add_dexterity_portal_items(portal)
+    fix_interface_interpretation_template(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -170,3 +171,13 @@ def fix_clients_icon(portal):
     types_tool = api.get_tool("portal_types")
     fti = types_tool.getTypeInfo("ClientFolder")
     fti.icon_expr = 'string:${portal_url}/senaite_theme/icon/client'
+
+
+def fix_interface_interpretation_template(portal):
+    """Applies IInterpretationTempalteSchema to InterpretationTemplate FTI
+    """
+    logger.info("Fix interface for InterpretationTemplate FTI ...")
+    pt = api.get_tool("portal_types")
+    fti = pt.get("InterpretationTemplate")
+    fti.schema = "senaite.core.content.interpretationtemplate.IInterpretationTemplateSchema"
+    logger.info("Fix interface for InterpretationTemplate FTI ...")

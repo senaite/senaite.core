@@ -29,6 +29,12 @@ class ResultsInterpretationViewlet(ViewletBase):
             return self.handle_form_submit()
         return self.index()
 
+    def get_panels(self):
+        """Returns the objects for which an specific free text area has to be
+        rendered for the introduction of results interpretations
+        """
+        return self.context.getDepartments()
+
     def handle_form_submit(self):
         """Handle form submission
         """
@@ -67,8 +73,24 @@ class ResultsInterpretationViewlet(ViewletBase):
     def get_interpretation_templates(self):
         """Return a list of datainfo dicts representing interpretation templates
         """
-        query = {"portal_type": "InterpretationTemplate",
-                 "review_state": "active"}
+        sample_type_uid = self.context.getRawSampleType()
+        template_uid = self.context.getRawTemplate()
+
+        def is_suitable(obj):
+            """Returns whether the interpretation passed-in suits well with
+            the underlying sample object
+            """
+            obj = api.get_object(obj)
+            sample_types = obj.getRawSampleTypes() or [sample_type_uid]
+            if sample_type_uid not in sample_types:
+                return False
+
+            analysis_templates = obj.getRawAnalysisTemplates()
+            if analysis_templates:
+                if template_uid not in analysis_templates:
+                    return False
+
+            return True
 
         def get_data_info(item):
             return {
@@ -76,5 +98,13 @@ class ResultsInterpretationViewlet(ViewletBase):
                 "title": api.get_title(item)
             }
 
+        # Get all available templates
+        query = {"portal_type": "InterpretationTemplate",
+                 "review_state": "active",
+                 "sort_on": "sortable_title",
+                 "sort_order": "ascending"}
         brains = api.search(query, SETUP_CATALOG)
+
+        # Purge the templates that do not suit well with current sample
+        brains = filter(is_suitable, brains)
         return map(get_data_info, brains)

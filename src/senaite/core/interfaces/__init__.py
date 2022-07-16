@@ -123,3 +123,8 @@ class IClientsGroups(Interface):
 class IClientsGroup(Interface):
     """Marker interface for ClientsGroup
     """
+
+
+class IInterpretationTemplate(Interface):
+    """Marker interface for interpretation template objects
+    """

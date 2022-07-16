@@ -6,6 +6,9 @@ Changelog
 ------------------
 
 - #2046 Support for sharing objects across groups of clients
+- #2058 Filter 'Interpretation templates' in sample view by template and type
+- #2048 Fix catalog logging counter duplicates
+- #2047 Make resultsinterpretation.pt to retrieve departments from viewlet
 - #2045 Fix instrument types instruments view
 - #2044 Skip Invoice for content exports
 - #2043 Fix printed time does not get updated on re-Print
