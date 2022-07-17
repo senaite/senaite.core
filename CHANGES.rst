@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2061 Fire notifications when UID references are created/destroyed
 - #2058 Filter 'Interpretation templates' in sample view by template and type
 - #2048 Fix catalog logging counter duplicates
 - #2047 Make resultsinterpretation.pt to retrieve departments from viewlet
