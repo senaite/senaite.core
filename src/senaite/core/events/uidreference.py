@@ -18,6 +18,12 @@ class IUIDReferenceDestroyedEvent(IObjectEvent):
 class UIDReferenceCreated(object):
 
     def __init__(self, field, source, target):
+        """Reference Created Event
+
+        :param field: The field on the source object
+        :param source: The context object holding the UID reference field
+        :param target: The context object being referenced
+        """
         self.field = field
         self.source = source
         self.target = target
@@ -31,6 +37,12 @@ class UIDReferenceCreated(object):
 class UIDReferenceDestroyed(object):
 
     def __init__(self, field, source, target):
+        """Reference Destroyed Event
+
+        :param field: The field on the source object
+        :param source: The context object holding the UID reference field
+        :param target: The context object being referenced
+        """
         self.field = field
         self.source = source
         self.target = target
