@@ -3,6 +3,9 @@
     i18n_domain="senaite.core">
 
   <!-- Event subscribers -->
-  <subscriber handler=".uidreferencefield.on_object_created" />
+  <subscriber
+      for="senaite.core.interfaces.IHaveUIDReferences
+           zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+      handler=".uidreferencefield.on_object_created" />
 
 </configure>
