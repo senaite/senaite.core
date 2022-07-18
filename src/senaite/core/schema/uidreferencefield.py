@@ -9,21 +9,33 @@ from persistent.list import PersistentList
 from plone.behavior.interfaces import IBehavior
 from plone.uuid.interfaces import ATTRIBUTE_NAME
 from senaite.core import logger
+from senaite.core.events.uidreference import UIDReferenceCreated
+from senaite.core.events.uidreference import UIDReferenceDestroyed
 from senaite.core.interfaces import IHaveUIDReferences
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IUIDReferenceField
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapter
+from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.lifecycleevent.interfaces import IObjectCreatedEvent
 from zope.schema import ASCIILine
 from zope.schema import List
 
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
 
 
-@adapter(IHaveUIDReferences, IObjectCreatedEvent)
+def notify_reference_created(field, source, target):
+    """Notify that a reference between two objects was created
+    """
+    notify(UIDReferenceCreated(field, source, target))
+
+
+def notify_reference_destroyed(field, source, target):
+    """Notify that a reference between two objects was destroyed
+    """
+    notify(UIDReferenceDestroyed(field, source, target))
+
+
 def on_object_created(object, event):
     """Link backreferences after the object was created
 
@@ -41,17 +53,19 @@ def on_object_created(object, event):
         value = field.get(object)
         # handle single valued reference fields
         if api.is_object(value):
-            field.link_backref(value, object)
             logger.info(
                 "Adding back reference from %s -> %s" % (
                     value, object))
+            if field.link_backref(value, object):
+                notify_reference_created(field, object, value)
         # handle multi valued reference fields
         elif isinstance(value, list):
             for ref in value:
                 logger.info(
                     "Adding back reference from %s -> %s" % (
                         ref, object))
-                field.link_backref(ref, object)
+                if field.link_backref(ref, object):
+                    notify_reference_created(field, object, ref)
 
 
 def get_backrefs(context, relationship, as_objects=False):
@@ -208,11 +222,13 @@ class UIDReferenceField(List, BaseField):
 
         # link backreferences of new uids
         for added_obj in added_objs:
-            self.link_backref(added_obj, object)
+            if self.link_backref(added_obj, object):
+                notify_reference_created(self, object, added_obj)
 
         # unlink backreferences of removed UIDs
         for removed_obj in removed_objs:
-            self.unlink_backref(removed_obj, object)
+            if self.unlink_backref(removed_obj, object):
+                notify_reference_destroyed(self, object, removed_obj)
 
         super(UIDReferenceField, self).set(object, uids)
 
