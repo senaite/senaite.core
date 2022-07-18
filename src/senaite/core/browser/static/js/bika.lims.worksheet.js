@@ -274,7 +274,7 @@
       }
       base_url = this.get_base_url();
       url = base_url.replace("/manage_results", "") + "/set_instrument";
-      return this.ajax_submit({
+      this.ajax_submit({
         url: url,
         data: {
           value: instrument_uid,
@@ -282,9 +282,7 @@
         },
         dataType: "json"
       }).done(function(data) {
-        bika.lims.SiteView.notify_in_panel(_t("Changes saved."), "succeed");
-        $("select[column_key='Instrument'] option[value='" + instrument_uid + "']").parent().find("option[value='" + instrument_uid + "']").prop("selected", false);
-        return $("select[column_key='Instrument'] option[value='" + instrument_uid + "']").prop("selected", true);
+        window.location.href = base_url;
       }).fail(function() {
         return bika.lims.SiteView.notify_in_panel(_t("Unable to apply the selected instrument"), "error");
       });
