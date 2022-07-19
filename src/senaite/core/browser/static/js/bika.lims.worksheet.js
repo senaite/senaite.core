@@ -118,6 +118,8 @@
       this.on_instrument_change = bind(this.on_instrument_change, this);
       this.on_layout_change = bind(this.on_layout_change, this);
       this.on_analyst_change = bind(this.on_analyst_change, this);
+      this.reload_analyses_listing = bind(this.reload_analyses_listing, this);
+      this.get_analyses_listing = bind(this.get_analyses_listing, this);
       this.get_authenticator = bind(this.get_authenticator, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
@@ -219,6 +221,28 @@
       return $("input[name='_authenticator']").val();
     };
 
+    WorksheetManageResultsView.prototype.get_analyses_listing = function() {
+
+      /*
+       * Returns the root element of the analysis listing for results entry
+       */
+      var listing, selector;
+      selector = "#analyses_form div.ajax-contents-table";
+      listing = document.querySelector(selector);
+      return listing;
+    };
+
+    WorksheetManageResultsView.prototype.reload_analyses_listing = function() {
+
+      /*
+       * Reloads the analyses listing for results entry
+       */
+      var event, listing;
+      listing = this.get_analyses_listing();
+      event = new Event("reload");
+      return listing.dispatchEvent(event);
+    };
+
 
     /* EVENT HANDLER */
 
@@ -282,9 +306,7 @@
         },
         dataType: "json"
       }).done(function(data) {
-        bika.lims.SiteView.notify_in_panel(_t("Changes saved."), "succeed");
-        $("select[column_key='Instrument'] option[value='" + instrument_uid + "']").parent().find("option[value='" + instrument_uid + "']").prop("selected", false);
-        return $("select[column_key='Instrument'] option[value='" + instrument_uid + "']").prop("selected", true);
+        return this.reload_analyses_listing();
       }).fail(function() {
         return bika.lims.SiteView.notify_in_panel(_t("Unable to apply the selected instrument"), "error");
       });

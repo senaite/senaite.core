@@ -186,6 +186,24 @@ class window.WorksheetManageResultsView
     return $("input[name='_authenticator']").val()
 
 
+  get_analyses_listing: =>
+    ###
+     * Returns the root element of the analysis listing for results entry
+    ###
+    selector = "#analyses_form div.ajax-contents-table";
+    listing = document.querySelector selector
+    return listing
+
+
+  reload_analyses_listing: () =>
+    ###
+     * Reloads the analyses listing for results entry
+    ###
+    listing = @get_analyses_listing()
+    event = new Event "reload"
+    listing.dispatchEvent event
+
+
   ### EVENT HANDLER ###
 
   on_analyst_change: (event) =>
@@ -243,12 +261,7 @@ class window.WorksheetManageResultsView
         _authenticator: @get_authenticator()
       dataType: "json"
     .done (data) ->
-      bika.lims.SiteView.notify_in_panel _t("Changes saved."), "succeed"
-      # Set the selected instrument to all the analyses which that can be done
-      # using that instrument. The rest of of the instrument picklist will not
-      # be changed
-      $("select[column_key='Instrument'] option[value='#{instrument_uid}']").parent().find("option[value='#{instrument_uid}']").prop "selected", no
-      $("select[column_key='Instrument'] option[value='#{instrument_uid}']").prop "selected", yes
+      @reload_analyses_listing()
     .fail () ->
         bika.lims.SiteView.notify_in_panel _t("Unable to apply the selected instrument"), "error"
 
