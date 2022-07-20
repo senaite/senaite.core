@@ -3,11 +3,11 @@
 from bika.lims import api
 from plone.autoform import directives
 from senaite.impress import senaiteMessageFactory as _
-from zope import schema
 from zope.interface import Interface
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.schema.registry import RichTextField
 
 
 @provider(IContextAwareDefaultFactory)
@@ -25,7 +25,7 @@ class ISenaiteRegistry(Interface):
     """
 
     directives.widget("email_body_sample_publication", klass="richTextWidget")
-    email_body_sample_publication = schema.Text(
+    email_body_sample_publication = RichTextField(
         title=_(u"Publication Email Text"),
         description=_(
             "The default text that is used for the publication email. "
