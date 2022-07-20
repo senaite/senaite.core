@@ -14,8 +14,10 @@ from senaite.core.schema.registry import RichTextField
 def default_email_body_sample_publication(context):
     """Returns the default body text for publication emails
     """
-    # Workaround to use page templates
     view = api.get_view("senaite_view")
+    if view is None:
+        # Test fixture
+        return ""
     tpl = ViewPageTemplateFile("templates/email_body_sample_publication.pt")
     return tpl(view)
 
