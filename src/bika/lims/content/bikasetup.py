@@ -988,7 +988,12 @@ class BikaSetup(folder.ATFolder):
     def getEmailBodySamplePublication(self):
         """Get the value from the senaite registry
         """
-        return senaite_registry.get("email_body_sample_publication")
+        value = senaite_registry.get("email_body_sample_publication")
+        if not value:
+            # Workaround for bypassed defaultFactory
+            from senaite.core import registry
+            return registry.schema.default_email_body_sample_publication(self)
+        return value
 
     def setEmailBodySamplePublication(self, value):
         """Set the value in the senaite registry
