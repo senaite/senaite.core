@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
+<object name="portal_controlpanel"
+        meta_type="Plone Control Panel Tool"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- SENAITE Registry -->
+  <configlet
+      title="SENAITE Registry"
+      action_id="senaite.core.registry"
+      appId="senaite.core"
+      category="Products"
+      condition_expr=""
+      icon_expr="string:++plone++senaite.core.static/assets/svg/setup.svg"
+      url_expr="string:${portal_url}/@@senaite-controlpanel"
+      visible="True"
+      i18n:domain="senaite.core"
+      i18n:attributes="title">
+    <permission>senaite.core: Manage Bika</permission>
+  </configlet>
 
   <!-- Actions -->
   <configlet title="Actions" action_id="ActionSettings" appId="Plone"
