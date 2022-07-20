@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collective.z3cform.datagridfield.interfaces import IRow
+from plone.app.textfield.interfaces import IRichText
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
@@ -39,4 +40,9 @@ class IDatetimeField(IDatetime):
 
 class IAddressField(IList):
     """Senaite multi-address field
+    """
+
+
+class IRichTextField(IRichText):
+    """Senaite rich text field
     """
