@@ -30,8 +30,7 @@ class ISenaiteRegistry(Interface):
     email_body_sample_publication = RichTextField(
         title=_(u"Publication Email Text"),
         description=_(
-            "The default text that is used for the publication email. "
-            " sending publication reports."),
+            "The default text that is used for the publication email."),
         defaultFactory=default_email_body_sample_publication,
         required=False,
     )
