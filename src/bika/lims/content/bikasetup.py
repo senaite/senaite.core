@@ -30,11 +30,11 @@ from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
+from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
-from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.numbergenerator import INumberGenerator
@@ -53,12 +53,12 @@ from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
+from senaite.core import registry as senaite_registry
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
@@ -575,6 +575,25 @@ schema = BikaFolderSchema.copy() + Schema((
                 "in the sample types setup"),
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    TextField(
+        "EmailBodySamplePublication",
+        default_content_type="text/html",
+        default_output_type="text/x-html-safe",
+        schemata="Notifications",
+        # Needed to fetch the default value from the registry
+        edit_accessor="getEmailBodySamplePublication",
+        widget=RichWidget(
+            label=_("Email body for Sample publication notifications"),
+            description=_(
+                "The default text that is used for the publication email. "
+                " sending publication reports."),
+            default_mime_type="text/x-html",
+            output_mime_type="text/x-html",
+            allow_file_upload=False,
+            rows=15,
+        ),
+    ),
     BooleanField(
         'NotifyOnSampleRejection',
         schemata="Notifications",
@@ -965,6 +984,17 @@ class BikaSetup(folder.ATFolder):
         for i in range(len(keys)):
             results.append('%s: %s' % (keys[i], values[i]))
         return "\n".join(results)
+
+    def getEmailBodySamplePublication(self):
+        """Get the value from the senaite registry
+        """
+        return senaite_registry.get("email_body_sample_publication")
+
+    def setEmailBodySamplePublication(self, value):
+        """Set the value in the senaite registry
+        """
+        text = api.safe_unicode(value)
+        return senaite_registry.set("email_body_sample_publication", text)
 
 
 registerType(BikaSetup, PROJECTNAME)
