@@ -106,7 +106,12 @@ def to_email_body_text(body, **kw):
     :returns: MIMEText
     """
     body_template = Template(safe_unicode(body)).safe_substitute(**kw)
-    return MIMEText(body_template, _subtype="plain", _charset="utf8")
+    subtype = "plain"
+    # Allow to send HTML messages
+    # https://docs.python.org/2/library/email-examples.html#id5
+    if kw.get("html", False):
+        subtype = "html"
+    return MIMEText(body_template, _subtype=subtype, _charset="utf8")
 
 
 def to_email_attachment(filedata, filename="", **kw):
