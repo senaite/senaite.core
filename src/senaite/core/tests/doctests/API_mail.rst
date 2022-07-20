@@ -69,6 +69,9 @@ This function coverts a given text to a text/plain MIME document:
     >>> email_body
     <email.mime.text.MIMEText instance at ...>
 
+    >>> email_body.get_content_type()
+    'text/plain'
+
     >>> print(email_body)
     From ...
     MIME-Version: 1.0
@@ -76,6 +79,26 @@ This function coverts a given text to a text/plain MIME document:
     Content-Transfer-Encoding: quoted-printable
     <BLANKLINE>
     Check out SENAITE LIMS: https://www.senaite.com
+
+
+This function coverts a given text to a text/html MIME document:
+
+    >>> html = "<p>Check out <strong>SENAITE LIMS:</strong> $url"
+    >>> email_body = to_email_body_text(html, url="https://www.senaite.com", html=True)
+
+    >>> email_body
+    <email.mime.text.MIMEText instance at ...>
+
+    >>> email_body.get_content_type()
+    'text/html'
+
+    >>> print(email_body)
+    From ...
+    MIME-Version: 1.0
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: quoted-printable
+    <BLANKLINE>
+    <p>Check out <strong>SENAITE LIMS:</strong> https://www.senaite.com
 
 
 Email Attachment
