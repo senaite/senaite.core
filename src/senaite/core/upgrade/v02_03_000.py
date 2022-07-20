@@ -61,6 +61,8 @@ def upgrade(tool):
     # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+    setup.runImportStepFromProfile(profile, "controlpanel")
 
     remove_stale_metadata(portal)
     fix_worksheets_analyses(portal)
