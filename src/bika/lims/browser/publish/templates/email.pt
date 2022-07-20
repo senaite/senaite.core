@@ -114,8 +114,8 @@
 
           <div class="form-group">
             <label i18n:translate="" for="body">Text</label>
-            <textarea name="body" class="form-control" rows="12"
-                      tal:content="view/email_body">
+            <textarea name="body" class="richTextWidget form-control" rows="12"
+                      tal:content="structure view/email_body">
             </textarea>
             <p i18n:translate="" class="help-block discreet">
               The variable <code i18n:name="recipients">$recipients</code> will

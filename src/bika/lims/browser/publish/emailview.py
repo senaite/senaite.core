@@ -56,7 +56,6 @@ class EmailView(BrowserView):
     implements(IPublishTraverse)
 
     template = ViewPageTemplateFile("templates/email.pt")
-    email_template = ViewPageTemplateFile("templates/email_template.pt")
 
     def __init__(self, context, request):
         super(EmailView, self).__init__(context, request)
@@ -300,7 +299,13 @@ class EmailView(BrowserView):
         body = self.request.get("body", None)
         if body is not None:
             return body
-        return self.context.translate(_(self.email_template(self)))
+        setup = api.get_setup()
+        body = setup.getEmailBodySamplePublication()
+        template_context = {
+            "client_name": self.client_name,
+        }
+        rendered_body = self.render_email_template(body, template_context=template_context)
+        return rendered_body
 
     @property
     def email_attachments(self):
@@ -468,7 +473,7 @@ class EmailView(BrowserView):
         except WorkflowException as e:
             logger.error(e)
 
-    def render_email_template(self, template):
+    def render_email_template(self, template, template_context=None):
         """Return the rendered email template
 
         This method interpolates the $recipients variable with the selected
@@ -479,9 +484,10 @@ class EmailView(BrowserView):
         """
 
         recipients = self.email_recipients_and_responsibles
-        template_context = {
-            "recipients": "\n".join(recipients)
-        }
+        if template_context is None:
+            template_context = {
+                "recipients": "\n".join(recipients),
+            }
 
         email_template = Template(safe_unicode(template)).safe_substitute(
             **template_context)
