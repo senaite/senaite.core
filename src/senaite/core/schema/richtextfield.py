@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from plone.app.textfield import RichText
 from senaite.core.schema.fields import BaseField
-from zope.interface import implementer
 from senaite.core.schema.interfaces import IRichTextField
+from zope.interface import implementer
 
 
 @implementer(IRichTextField)
@@ -17,13 +18,16 @@ class RichTextField(RichText, BaseField):
         :param object: the instance of the field
         :param value: value to set
         """
+        # always ensure unicode
+        if isinstance(value, str):
+            value = api.safe_unicode(value)
         super(RichTextField, self).set(object, value)
 
     def get(self, object):
         """Get the field value
 
         :param object: the instance of the field
-        :returns: field value
+        :returns: RichTextValue
         """
         value = super(RichTextField, self).get(object)
         return value
