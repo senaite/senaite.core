@@ -25,7 +25,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
-from senaite.core.setuphandlers import add_dexterity_portal_items
+from senaite.core.setuphandlers import add_senaite_setup
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -67,7 +67,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "controlpanel")
 
     # Add new setup folder to portal
-    add_dexterity_portal_items(portal)
+    add_senaite_setup(portal)
 
     remove_stale_metadata(portal)
     fix_worksheets_analyses(portal)

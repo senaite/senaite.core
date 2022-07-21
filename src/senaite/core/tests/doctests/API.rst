@@ -60,6 +60,14 @@ The Setup object gives access to all of the SENAITE configuration settings::
     True
 
 
+Since version 2.3.0 we provide a Dexterity based setup folder to hold configuration values:
+
+
+    >>> senaite_setup = api.get_senaite_setup()
+    >>> senaite_setup
+    <Setup at /plone/setup>
+
+
 Creating new Content
 ....................
 

@@ -172,6 +172,9 @@ def install(context):
     logger.info("SENAITE CORE install handler [BEGIN]")
     portal = context.getSite()
 
+    # Used in bika_setup, therefore it has to be added here
+    add_senaite_setup(portal)
+
     # Run required import steps
     _run_import_step(portal, "skins")
     _run_import_step(portal, "browserlayer")
@@ -234,6 +237,22 @@ def add_dexterity_setup_items(portal):
     add_dexterity_items(setup, items)
 
 
+def add_senaite_setup(portal):
+    """Add the new SENAITE Setup container
+    """
+    items = [
+        # ID, Title, FTI
+        ("setup", "SENAITE Setup", "Setup"),
+    ]
+    add_dexterity_items(portal, items)
+
+    # Move Setup at the beginning
+    portal.moveObjectToPosition("setup", 0)
+
+    # Reindex order
+    portal.plone_utils.reindexOnReorder(portal)
+
+
 def add_dexterity_portal_items(portal):
     """Adds the Dexterity Container in the Site folder
 
@@ -242,18 +261,10 @@ def add_dexterity_portal_items(portal):
     """
     # Tuples of ID, Title, FTI
     items = [
-        ("samples",  # ID
-         "Samples",  # Title
-         "Samples"),  # FTI
-
-        ("setup",
-         "SENAITE Setup",
-         "Setup")
+        # ID, Title, FTI
+        ("samples", "Samples", "Samples"),
     ]
     add_dexterity_items(portal, items)
-
-    # Move Setup at the beginning
-    portal.moveObjectToPosition("setup", 0)
 
     # Move Samples after Clients nav item
     position = portal.getObjectPosition("clients")
