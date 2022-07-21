@@ -1,5 +1,5 @@
 <tal:template
-  tal:define="laboratory python:context.bika_setup.laboratory"
+  tal:define="laboratory python:context.laboratory"
   i18n:domain="senaite.core">
 
   <p i18n:translate="">

@@ -120,6 +120,13 @@ def get_bika_setup():
     return get_setup()
 
 
+def get_senaite_setup():
+    """Fetch the new DX `setup` folder.
+    """
+    portal = get_portal()
+    return portal.get("setup")
+
+
 def create(container, portal_type, *args, **kwargs):
     """Creates an object in Bika LIMS
 

@@ -245,12 +245,21 @@ def add_dexterity_portal_items(portal):
         ("samples",  # ID
          "Samples",  # Title
          "Samples"),  # FTI
+
+        ("setup",
+         "SENAITE Setup",
+         "Setup")
     ]
     add_dexterity_items(portal, items)
+
+    # Move Setup at the beginning
+    portal.moveObjectToPosition("setup", 0)
 
     # Move Samples after Clients nav item
     position = portal.getObjectPosition("clients")
     portal.moveObjectToPosition("samples", position + 1)
+
+    # Reindex order
     portal.plone_utils.reindexOnReorder(portal)
 
 

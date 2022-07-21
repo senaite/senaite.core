@@ -2,14 +2,8 @@
 <object name="portal_types" meta_type="Plone Types Tool">
   <property name="title">Controls available content types in senaite</property>
 
-  <!-- remove old AT based types -->
-  <object remove="True" name="AnalysisRequestsFolder" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="Container" meta_type="Factory-based Type Information with dynamic views"/>
-  <object remove="True" name="Containers" meta_type="Factory-based Type Information with dynamic views"/>
+  <!-- SENAITE Setup -->
+  <object name="Setup" meta_type="Dexterity FTI" />
 
   <!-- Samples -->
   <object name="Samples" meta_type="Dexterity FTI" />
