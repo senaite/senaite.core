@@ -304,7 +304,8 @@ class EmailView(BrowserView):
         template_context = {
             "client_name": self.client_name,
         }
-        rendered_body = self.render_email_template(body, template_context=template_context)
+        rendered_body = self.render_email_template(
+            body, template_context=template_context)
         return rendered_body
 
     @property
@@ -483,6 +484,8 @@ class EmailView(BrowserView):
         :returns: Rendered email template
         """
 
+        # allow to add translation for initial template
+        template = self.context.translate(template)
         recipients = self.email_recipients_and_responsibles
         if template_context is None:
             template_context = {

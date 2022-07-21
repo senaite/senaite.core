@@ -989,7 +989,7 @@ class BikaSetup(folder.ATFolder):
         """Get the value from the senaite setup
         """
         setup = api.get_senaite_setup()
-        return setup.getRawEmailBodySamplePublication()
+        return setup.getEmailBodySamplePublication()
 
     def setEmailBodySamplePublication(self, value):
         """Set the value in the senaite setup

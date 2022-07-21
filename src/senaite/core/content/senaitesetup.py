@@ -64,19 +64,22 @@ class Setup(Container):
     security = ClassSecurityInfo()
 
     @security.protected(permissions.View)
-    def getRawEmailBodySamplePublication(self):
+    def getEmailBodySamplePublication(self):
+        """Returns the transformed email body text for publication emails
+        """
         accessor = self.accessor("email_body_sample_publication")
         value = accessor(self)
         if IRichTextValue.providedBy(value):
-            value = value.raw
+            # Transforms the raw value to the output mimetype
+            value = value.output_relative_to(self)
+        if not value:
+            # Always fallback to default value
+            value = default_email_body_sample_publication(self)
         return value
-
-    @security.protected(permissions.View)
-    def getEmailBodySamplePublication(self):
-        accessor = self.accessor("email_body_sample_publication")
-        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmailBodySamplePublication(self, value):
+        """Set email body text for publication emails
+        """
         mutator = self.mutator("email_body_sample_publication")
         return mutator(self, value)
