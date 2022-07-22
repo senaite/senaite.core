@@ -1,0 +1,29 @@
+<tal:template
+  tal:define="laboratory python:context.laboratory"
+  i18n:domain="senaite.core">
+
+  <p i18n:translate="">
+    Thank you for your analysis request.
+  </p>
+
+  <p i18n:translate="">
+    Please find attached the analysis result(s) for
+    <tal:client i18n:name="client_name" tal:content="options/client_name|default">$client_name</tal:client>
+  </p>
+
+  <p i18n:translate="">
+    This report was sent to the following contacts:
+  </p>
+
+  $recipients
+
+  <p i18n:translate="">
+    With best regards
+  </p>
+  <tal:laboratory tal:replace="python:laboratory.getName() or 'SENAITE LIMS'"/>
+
+  <p i18n:translate="">
+    *** This is an automatically generated email, please do not reply to this message. ***
+  </p>
+
+</tal:template>

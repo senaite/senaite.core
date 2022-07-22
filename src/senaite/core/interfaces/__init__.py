@@ -75,6 +75,21 @@ class IAjaxEditForm(Interface):
         """
 
 
+class IContainer(Interface):
+    """SENAITE Base Container
+    """
+
+
+class IItem(Interface):
+    """SENAITE Base Item
+    """
+
+
+class ISetup(Interface):
+    """Marker interface for setup folder
+    """
+
+
 class ISamples(Interface):
     """Marker interface for samples main folder
     """

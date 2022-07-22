@@ -1,0 +1,66 @@
+<!-- SENAITE TinyMCE editor support
+
+   - Customized class to richTextWidget for tinyMCE initializatio
+     see senaite.core.js in webpack/app folder
+
+   - NOTE: This macro is used by plone.app.textfield.widget_input.pt
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+
+<div metal:define-macro="wysiwygEditorBox">
+  <textarea name="description"
+            rows="25"
+            class="richTextWidget"
+            tal:content="inputvalue"
+            tal:attributes="name inputname;
+                            id inputname;"></textarea>
+</div>
+
+
+<div metal:define-macro="textFormatSelector"
+     class="field"
+     tal:define="text_format python:request.get('text_format', getattr(here,'text_format','structured-text'))">
+
+    <label for="text_format" i18n:translate="label_format">Format</label>
+
+    <div class="formHelp" i18n:translate="help_format_wysiwyg">
+    If you are unsure of which format to use, just select Plain
+    Text and type the document as you usually do.
+    </div>
+
+    <input class="noborder"
+           type="radio"
+           name="text_format"
+           value="structured-text"
+           id="cb_structuredtext"
+           tal:attributes="checked python:test(text_format=='structured-text', 1, None);"
+           />
+    <label for="cb_structuredtext" i18n:translate="structured_text">Structured Text</label> <br />
+
+    <input class="noborder"
+           type="radio"
+           name="text_format"
+           value="html"
+           id="cb_html"
+           tal:attributes="checked python:test(text_format=='html', 1, None);"
+           />
+    <label for="cb_html" i18n:translate="html">HTML</label> <br />
+
+    <input class="noborder"
+           type="radio"
+           name="text_format"
+           value="plain"
+           id="cb_plain"
+           tal:attributes="checked python:test(text_format=='plain', 1, None);"
+           />
+    <label for="cb_plain" i18n:translate="plain_text">Plain Text</label>
+
+</div>
+
+
+</html>

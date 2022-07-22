@@ -279,6 +279,9 @@
     <type type_id="BikaSetup">
       <bound-workflow workflow_id="senaite_setup_workflow"/>
     </type>
+    <type type_id="Setup">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
     <type type_id="Client">
       <bound-workflow workflow_id="senaite_client_workflow"/>
     </type>
