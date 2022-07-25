@@ -172,9 +172,6 @@ def install(context):
     logger.info("SENAITE CORE install handler [BEGIN]")
     portal = context.getSite()
 
-    # Used in bika_setup, therefore it has to be added here
-    add_senaite_setup(portal)
-
     # Run required import steps
     _run_import_step(portal, "skins")
     _run_import_step(portal, "browserlayer")
@@ -200,6 +197,7 @@ def install(context):
     setup_catalog_mappings(portal)
     setup_auditlog_catalog_mappings(portal)
     setup_content_structure(portal)
+    add_senaite_setup(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
 

@@ -989,13 +989,17 @@ class BikaSetup(folder.ATFolder):
         """Get the value from the senaite setup
         """
         setup = api.get_senaite_setup()
-        return setup.getEmailBodySamplePublication()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEmailBodySamplePublication()
 
     def setEmailBodySamplePublication(self, value):
         """Set the value in the senaite setup
         """
         setup = api.get_senaite_setup()
-        setup.setEmailBodySamplePublication(value)
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEmailBodySamplePublication(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
