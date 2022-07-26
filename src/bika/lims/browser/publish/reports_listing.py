@@ -106,6 +106,8 @@ class ReportsListingView(BikaListingView):
             ("AnalysisRequest", {
                 "title": _("Primary Sample"),
                 "index": "sortable_title"},),
+            ("Batch", {
+                "title": _("Batch")},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
@@ -176,6 +178,15 @@ class ReportsListingView(BikaListingView):
         item["replace"]["AnalysisRequest"] = get_link(
             ar.absolute_url(), value=ar.Title()
         )
+
+        # Include Batch information of the primary Sample
+        batch_id = ar.getBatchID()
+        item["Batch"] = batch_id
+        if batch_id:
+            batch = ar.getBatch()
+            item["replace"]["Batch"] = get_link(
+                batch.absolute_url(), value=batch.Title()
+            )
 
         pdf = self.get_pdf(obj)
         filesize = self.get_filesize(pdf)
