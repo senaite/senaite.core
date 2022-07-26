@@ -1243,7 +1243,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'ParentAnalysisRequest',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestParentAnalysisRequest',
