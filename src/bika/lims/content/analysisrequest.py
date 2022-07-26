@@ -24,6 +24,8 @@ import re
 import sys
 from decimal import Decimal
 
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from Products.Archetypes.config import UID_CATALOG
 from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
@@ -2247,31 +2249,32 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         :param all_descendants: recursively include all descendants
         """
 
-        # N.B. full objects returned here from
-        #      `Products.Archetypes.Referenceable.getBRefs`
-        #      -> don't add this method into Metadata
-        children = self.getBackReferences(
-            "AnalysisRequestParentAnalysisRequest")
+        uids = self.getDescendantsUIDs()
+        if not uids:
+            return []
 
+        # Extract the descendant objects
         descendants = []
-
-        # recursively include all children
-        if all_descendants:
-            for child in children:
-                descendants.append(child)
-                descendants += child.getDescendants(all_descendants=True)
-        else:
-            descendants = children
+        cat = api.get_tool(UID_CATALOG)
+        for brain in cat(UID=uids):
+            descendant = api.get_object(brain)
+            descendants.append(descendant)
+            if all_descendants:
+                # Extend with grandchildren
+                descendants += descendant.getDescendants(all_descendants=True)
 
         return descendants
 
-    def getDescendantsUIDs(self, all_descendants=False):
+    def getDescendantsUIDs(self):
         """Returns the UIDs of the descendant Analysis Requests
 
         This method is used as metadata
         """
-        descendants = self.getDescendants(all_descendants=all_descendants)
-        return map(api.get_uid, descendants)
+        rel_id = "AnalysisRequestParentAnalysisRequest"
+        uids = get_backreferences(self, relationship=rel_id)
+        if not uids:
+            return []
+        return uids
 
     def isPartition(self):
         """Returns true if this Analysis Request is a partition

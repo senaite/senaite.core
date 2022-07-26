@@ -93,18 +93,23 @@ def fix_samples_primary(portal):
         if num and num % 10 == 0:
             logger.info("Processed samples: {}/{}".format(num, total))
 
-        # Extract the primary from this sample
+        # Extract the parent(s) from this sample
         sample = api.get_object(sample)
-        primary = sample.getRefs(relationship=ref_id)
-        if not primary:
+        parents = sample.getRefs(relationship=ref_id)
+        if not parents:
             # Processed already
             continue
 
-        # Re-assign the primary sample
-        sample.setPrimaryAnalysisRequest(primary)
+        # Re-assign the parent sample(s)
+        sample.setParentAnalysisRequest(parents)
 
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(sample, relationship=ref_id)
+
+        # Reindex both the partition and parent(s)
+        sample.reindexObject()
+        for primary_sample in parents:
+            primary_sample.reindexObject()
 
     logger.info("Fix AnalysisRequests PrimaryAnalysisRequest [DONE]")
 
