@@ -19,8 +19,12 @@ def assigned_state(instance):
     """
     assigned = False
     skip_statuses = ["retracted", "rejected", "cancelled"]
-    for analysis in instance.getAnalyses():
-        analysis = api.get_object(analysis)
+
+    # Retrieve analyses directly from the instance container instead of relying
+    # on ARAnalysesField getter, that performs a catalog query. Reason is, that
+    # we never know if the sample is indexed before the analyses or any other
+    # dependent catalog
+    for analysis in instance.objectValues(spec="Analysis"):
         status = api.get_review_status(analysis)
 
         if status == "unassigned":
@@ -33,6 +37,21 @@ def assigned_state(instance):
 
         if analysis.getWorksheetUID():
             # At least one analysis with a worksheet assigned
+            assigned = True
+
+    # ARAnalysesField getter returns all the analyses from the sample, those
+    # from partitions included. Since we do not rely on the getter, we need to
+    # manually extract the analyses from the partitions
+    # Pity is, that for the retrieval of partitions we need to rely on
+    # getBackReferences, that is a query against reference_catalog
+    for partition in instance.getDescendants():
+        # Note we call this same index, but for the partition
+        partition_status = assigned_state(partition)()
+        if partition_status == "unassigned":
+            # One of the partitions with unassigned, no need to go further
+            return "unassigned"
+
+        elif partition_status == "assigned":
             assigned = True
 
     if assigned:
