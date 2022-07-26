@@ -6,6 +6,8 @@ Changelog
 ------------------
 
 - #2072 Refactor report filename generation to own method
+- #2070 Fix typo/duplicate translation key in colophon
+- #2067 Replace ParentAnalysisRequest ReferenceField by UIDReferenceField
 - #2066 Fix samples w/o active analyses are displayed under "unassigned" filter
 - #2065 Fix "Create Worksheet" modal visible for samples w/o unassigned analyses
 - #2063 Allow to customize email publication template in setup
