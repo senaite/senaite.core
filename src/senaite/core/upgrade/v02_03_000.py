@@ -74,6 +74,7 @@ def upgrade(tool):
     fix_worksheets_analyses(portal)
     fix_cannot_create_partitions(portal)
     fix_interface_interpretation_template(portal)
+    fix_unassigned_samples(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -212,3 +213,30 @@ def fix_interface_interpretation_template(portal):
     fti = pt.get("InterpretationTemplate")
     fti.schema = "senaite.core.content.interpretationtemplate.IInterpretationTemplateSchema"
     logger.info("Fix interface for InterpretationTemplate FTI ...")
+
+
+def fix_unassigned_samples(portal):
+    """Reindex the 'assigned_state' index for samples
+    """
+    logger.info("Fix unassigned samples ...")
+    indexes = ["assigned_state"]
+    query = {
+        "portal_type": "AnalysisRequest",
+        "assigned_state": "unassigned",
+    }
+    cat = api.get_tool(SAMPLE_CATALOG)
+    samples = api.search(query, SAMPLE_CATALOG)
+    total = len(samples)
+    for num, sample in enumerate(samples):
+
+        if num and num % 100 == 0:
+            logger.info("Fix unassigned samples {0}/{1}".format(num, total))
+
+        obj = api.get_object(sample)
+        obj_url = api.get_path(sample)
+        cat.catalog_object(obj, obj_url, idxs=indexes, update_metadata=1)
+
+        # Flush the object from memory
+        obj._p_deactivate()  # noqa
+
+    logger.info("Fix unassigned samples ...")
