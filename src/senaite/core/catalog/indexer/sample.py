@@ -10,19 +10,37 @@ from senaite.core.interfaces import ISampleCatalog
 
 @indexer(IAnalysisRequest)
 def assigned_state(instance):
-    """Returns `assigned` or `unassigned` depending on the state of the
-    analyses the analysisrequest contains. Return `unassigned` if the Analysis
-    Request has at least one analysis in `unassigned` state.
-    Otherwise, returns `assigned`
+    """Returns `assigned`, `unassigned` or 'not_applicable' depending on the
+    state of the analyses the analysisrequest contains. Return `unassigned` if
+    the Analysis Request has at least one 'active' analysis in `unassigned`
+    status. Returns 'assigned' if all 'active' analyses of the sample are
+    assigned to a Worksheet. Returns 'not_applicable' if no 'active' analyses
+    for the given sample exist
     """
-    analyses = instance.getAnalyses()
-    if not analyses:
-        return "unassigned"
-    for analysis in analyses:
-        analysis_object = api.get_object(analysis)
-        if not analysis_object.getWorksheet():
+    assigned = False
+    skip_statuses = ["retracted", "rejected", "cancelled"]
+    for analysis in instance.getAnalyses():
+        analysis = api.get_object(analysis)
+        status = api.get_review_status(analysis)
+
+        if status == "unassigned":
+            # One unassigned found, no need to go further
             return "unassigned"
-    return "assigned"
+
+        if status in skip_statuses:
+            # Skip "inactive" analyses
+            continue
+
+        if analysis.getWorksheetUID():
+            # At least one analysis with a worksheet assigned
+            assigned = True
+
+    if assigned:
+        # All "active" analyses assigned to a worksheet
+        return "assigned"
+
+    # Sample without "active" assigned/unassigned analyses
+    return "not_applicable"
 
 
 @indexer(IAnalysisRequest)
