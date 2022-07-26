@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2071 Include batch in report listing and move ARReports to report catalog
 - #2066 Fix samples w/o active analyses are displayed under "unassigned" filter
 - #2065 Fix "Create Worksheet" modal visible for samples w/o unassigned analyses
 - #2063 Allow to customize email publication template in setup
