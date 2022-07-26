@@ -73,6 +73,7 @@ def upgrade(tool):
     add_senaite_setup(portal)
 
     remove_stale_metadata(portal)
+    fix_samples_primary(portal)
     fix_worksheets_analyses(portal)
     fix_cannot_create_partitions(portal)
     fix_interface_interpretation_template(portal)
@@ -81,6 +82,41 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def fix_samples_primary(portal):
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest ...")
+    ref_id = "AnalysisRequestParentAnalysisRequest"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    query = {
+        "portal_type": "AnalysisRequest",
+        "isRootAncestor": False
+    }
+    samples = api.search(query, SAMPLE_CATALOG)
+    total = len(samples)
+    for num, sample in enumerate(samples):
+        if num and num % 10 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this sample
+        sample = api.get_object(sample)
+        parents = sample.getRefs(relationship=ref_id)
+        if not parents:
+            # Processed already
+            continue
+
+        # Re-assign the parent sample(s)
+        sample.setParentAnalysisRequest(parents)
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(sample, relationship=ref_id)
+
+        # Reindex both the partition and parent(s)
+        sample.reindexObject()
+        for primary_sample in parents:
+            primary_sample.reindexObject()
+
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest [DONE]")
 
 
 def fix_worksheets_analyses(portal):
