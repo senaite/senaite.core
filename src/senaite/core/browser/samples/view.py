@@ -734,8 +734,8 @@ class SamplesView(ListingView):
         'unassigned' status
         """
         for analysis in sample.getAnalyses():
-            analysis = api.get_object(analysis)
-            if api.get_review_status(analysis) == "unassigned":
+            status = api.get_review_status(analysis)
+            if status == "unassigned":
                 return True
         return False
 
