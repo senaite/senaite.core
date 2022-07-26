@@ -708,10 +708,15 @@ class SamplesView(ListingView):
         if not can_add_worksheet(self.portal):
             return False
 
-        # only available for samples in received state
+        # only available for samples in received state and with at least one
+        # analysis in unassigned status
         for sample in self.get_selected_samples():
             state = api.get_workflow_status_of(sample)
             if state not in ["sample_received"]:
+                return False
+
+            # At least one analysis in unassigned status
+            if not self.has_unassigned_analyses(sample):
                 return False
 
         # restrict contexts to well known places
@@ -723,6 +728,16 @@ class SamplesView(ListingView):
             return True
         else:
             return False
+
+    def has_unassigned_analyses(self, sample):
+        """Returns whether the sample passed in has at least one analysis in
+        'unassigned' status
+        """
+        for analysis in sample.getAnalyses():
+            status = api.get_review_status(analysis)
+            if status == "unassigned":
+                return True
+        return False
 
     def get_selected_samples(self):
         """Returns the selected samples
