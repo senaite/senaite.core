@@ -119,6 +119,8 @@ class ReportsListingView(BikaListingView):
                 "title": _("Published Date")},),
             ("PublishedBy", {
                 "title": _("Published By")},),
+            ("Sent", {
+                "title": _("Email sent")},),
             ("Recipients", {
                 "title": _("Recipients")},),
         ))
@@ -202,6 +204,10 @@ class ReportsListingView(BikaListingView):
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
+
+        item["Sent"] = _("No")
+        if obj.getSendLog():
+            item["Sent"] = _("Yes")
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.
