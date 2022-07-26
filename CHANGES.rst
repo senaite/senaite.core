@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2067 Replace ParentAnalysisRequest ReferenceField by UIDReferenceField
 - #2066 Fix samples w/o active analyses are displayed under "unassigned" filter
 - #2065 Fix "Create Worksheet" modal visible for samples w/o unassigned analyses
 - #2063 Allow to customize email publication template in setup
