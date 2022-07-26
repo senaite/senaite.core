@@ -22,10 +22,13 @@ from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_senaite_setup
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -74,6 +77,7 @@ def upgrade(tool):
     fix_cannot_create_partitions(portal)
     fix_interface_interpretation_template(portal)
     fix_unassigned_samples(portal)
+    move_arreports_to_report_catalog(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -204,3 +208,40 @@ def fix_unassigned_samples(portal):
         obj._p_deactivate()  # noqa
 
     logger.info("Fix unassigned samples ...")
+
+
+def move_arreports_to_report_catalog(portal):
+    """Move ARReport objects to report catalog
+    """
+    # Check if ARReport is already in archetype_tool mapped
+    at = api.get_tool("archetype_tool")
+    portal_type = "ARReport"
+    report_catalog = api.get_tool(REPORT_CATALOG)
+    catalogs = at.getCatalogsByType(portal_type)
+    if report_catalog in catalogs:
+        # we assume that the upgrade step already ran
+        return
+
+    logger.info("Move ARReports to SENAITE Report Catalog ...")
+    # Ensure all new indexes are in place
+    setup_core_catalogs(portal, catalog_classes=(ReportCatalog,))
+
+    # setup catalogs
+    existing_catalogs = list(map(lambda c: c.getId(), catalogs))
+    new_catalogs = existing_catalogs + [REPORT_CATALOG]
+    at.setCatalogsByType(portal_type, new_catalogs)
+
+    # reindex arreports
+    brains = api.search({"portal_type": portal_type}, catalog="portal_catalog")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Reindexed {0}/{1} sample reports".format(num, total))
+
+        obj = api.get_object(brain)
+        obj.reindexObject()
+
+        # Flush the object from memory
+        obj._p_deactivate()  # noqa
+
+    logger.info("Move ARReports to SENAITE Report Catalog [DONE]")

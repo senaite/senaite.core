@@ -27,6 +27,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import REPORT_CATALOG
 from ZODB.POSException import POSKeyError
 
 
@@ -37,7 +38,7 @@ class ReportsListingView(BikaListingView):
     def __init__(self, context, request):
         super(ReportsListingView, self).__init__(context, request)
 
-        self.catalog = "portal_catalog"
+        self.catalog = REPORT_CATALOG
         self.contentFilter = {
             "portal_type": "ARReport",
             "path": {

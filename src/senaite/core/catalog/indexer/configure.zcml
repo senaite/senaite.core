@@ -20,6 +20,7 @@
 
   <!-- ARReport Indexer -->
   <adapter name="sample_uid" factory=".arreport.sample_uid"/>
+  <adapter name="arreport_searchable_text" factory=".arreport.arreport_searchable_text"/>
 
   <!-- Auditlog Indexer -->
   <adapter name="action" factory=".auditlog.action"/>
