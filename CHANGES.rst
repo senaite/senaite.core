@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2066 Fix samples w/o active analyses are displayed under "unassigned" filter
+- #2065 Fix "Create Worksheet" modal visible for samples w/o unassigned analyses
 - #2063 Allow to customize email publication template in setup
 - #2062 Fix listing not updated after instrument assignment in Worksheet's view
 - #2061 Fire notifications when UID references are created/destroyed
