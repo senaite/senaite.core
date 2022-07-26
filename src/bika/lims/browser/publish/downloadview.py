@@ -35,7 +35,7 @@ class DownloadView(BrowserView):
         self.download(pdf.data, filename)
 
     def get_report_filename(self, report):
-        """Generate the filename for the sample PFD
+        """Generate the filename for the sample PDF
         """
         sample = report.getAnalysisRequest()
         return "{}.pdf".format(api.get_id(sample))
