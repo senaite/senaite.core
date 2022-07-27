@@ -200,6 +200,21 @@ schema = BikaFolderSchema.copy() + Schema((
                           "this option will be checked and readonly.")
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "EnableGlobalAuditlog",
+        schemata="Security",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable global Auditlog"),
+            description=_(
+                "The global Auditlog shows all modifications of the system. "
+                "When enabled, all entities will be indexed in a separate "
+                "catalog. This will increase the time when objects are "
+                "created or modified."
+            )
+        )
+    ),
     BooleanField(
         'ShowPrices',
         schemata="Accounting",
@@ -1000,6 +1015,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setEmailBodySamplePublication(value)
+
+    def getEnableGlobalAuditlog(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableGlobalAuditlog()
+        return False
+
+    def setEnableGlobalAuditlog(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableGlobalAuditlog(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
