@@ -81,6 +81,10 @@ class SetupView(BrowserView):
         # filter out items
         items = filter(lambda item: not item.exclude_from_nav, items)
 
+        if self.setup.getEnableGlobalAuditlog() is False:
+            # remove the Auditlog tail
+            items = filter(lambda item: api.get_id(item) != "auditlog", items)
+
         # sort by (translated) title
         def cmp_by_translated_title(brain1, brain2):
             title1 = t(api.get_title(brain1))
