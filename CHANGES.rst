@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2074 Allow to disable global Auditlogging
 - #2072 Refactor report filename generation to own method
 - #2071 Move sample reports to report catalog, add batch ID and email sent flag to listing
 - #2070 Fix typo/duplicate translation key in colophon
