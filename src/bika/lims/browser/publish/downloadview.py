@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from Products.Five.browser import BrowserView
 
 
@@ -29,10 +30,15 @@ class DownloadView(BrowserView):
         super(DownloadView, self).__init__(context, request)
 
     def __call__(self):
-        ar = self.context.getAnalysisRequest()
-        filename = "{}.pdf".format(ar.getId())
+        filename = self.get_report_filename(self.context)
         pdf = self.context.getPdf()
         self.download(pdf.data, filename)
+
+    def get_report_filename(self, report):
+        """Generate the filename for the sample PDF
+        """
+        sample = report.getAnalysisRequest()
+        return "{}.pdf".format(api.get_id(sample))
 
     def download(self, data, filename, content_type="application/pdf"):
         """Download the PDF

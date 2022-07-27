@@ -319,8 +319,7 @@ class EmailView(BrowserView):
                 logger.error("Skipping empty PDF for report {}"
                              .format(report.getId()))
                 continue
-            sample = report.getAnalysisRequest()
-            filename = "{}.pdf".format(api.get_id(sample))
+            filename = self.get_report_filename(report)
             filedata = pdf.data
             attachments.append(
                 mailapi.to_email_attachment(filedata, filename))
@@ -550,7 +549,7 @@ class EmailView(BrowserView):
         attachments_data = map(self.get_attachment_data, attachments)
         pdf = self.get_pdf(report)
         filesize = "{} Kb".format(self.get_filesize(pdf))
-        filename = "{}.pdf".format(sample.getId())
+        filename = self.get_report_filename(report)
 
         return {
             "sample": sample,
@@ -699,6 +698,12 @@ class EmailView(BrowserView):
             return float("%.2f" % (filesize / 1024))
         except (POSKeyError, TypeError, AttributeError):
             return 0.0
+
+    def get_report_filename(self, report):
+        """Generate the filename for the sample PDF
+        """
+        sample = report.getAnalysisRequest()
+        return "{}.pdf".format(api.get_id(sample))
 
     def get_pdf(self, obj):
         """Get the report PDF
