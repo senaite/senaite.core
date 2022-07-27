@@ -2,17 +2,19 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
+from plone.app.textfield import IRichTextValue
+from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
 from plone.supermodel import model
-from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
-from plone.app.textfield import IRichTextValue
 from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import ISetup
 from senaite.core.schema import RichTextField
 from senaite.impress import senaiteMessageFactory as _
+from zope import schema
 from zope.interface import implementer
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
@@ -42,6 +44,17 @@ class ISetupSchema(model.Schema):
             "The default text that is used for the publication email."),
         defaultFactory=default_email_body_sample_publication,
         required=False,
+    )
+
+    enable_global_auditlog = schema.Bool(
+        title=_(u"Enable global Auditlog"),
+        description=_(
+            "The global Auditlog shows all modifications of the system. "
+            "When enabled, all entities will be indexed in a separate "
+            "catalog. This will increase the time when objects are "
+            "created or modified."
+        ),
+        default=False,
     )
 
     ###
@@ -82,4 +95,22 @@ class Setup(Container):
         """Set email body text for publication emails
         """
         mutator = self.mutator("email_body_sample_publication")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getEnableGlobalAuditlog(self):
+        """Returns if the global Auditlog is enabled
+        """
+        accessor = self.accessor("enable_global_auditlog")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setEnableGlobalAuditlog(self, value):
+        """Enable/Disable global Auditlogging
+        """
+        if value is False:
+            # clear the auditlog catalog
+            catalog = api.get_tool(AUDITLOG_CATALOG)
+            catalog.manage_catalogClear()
+        mutator = self.mutator("enable_global_auditlog")
         return mutator(self, value)
