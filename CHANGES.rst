@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2072 Refactor report filename generation to own method
+- #2071 Move sample reports to report catalog, add batch ID and email sent flag to listing
 - #2070 Fix typo/duplicate translation key in colophon
 - #2067 Replace ParentAnalysisRequest ReferenceField by UIDReferenceField
 - #2066 Fix samples w/o active analyses are displayed under "unassigned" filter

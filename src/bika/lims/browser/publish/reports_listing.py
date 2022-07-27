@@ -27,6 +27,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import REPORT_CATALOG
 from ZODB.POSException import POSKeyError
 
 
@@ -37,7 +38,7 @@ class ReportsListingView(BikaListingView):
     def __init__(self, context, request):
         super(ReportsListingView, self).__init__(context, request)
 
-        self.catalog = "portal_catalog"
+        self.catalog = REPORT_CATALOG
         self.contentFilter = {
             "portal_type": "ARReport",
             "path": {
@@ -106,6 +107,8 @@ class ReportsListingView(BikaListingView):
             ("AnalysisRequest", {
                 "title": _("Primary Sample"),
                 "index": "sortable_title"},),
+            ("Batch", {
+                "title": _("Batch")},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
@@ -116,6 +119,8 @@ class ReportsListingView(BikaListingView):
                 "title": _("Published Date")},),
             ("PublishedBy", {
                 "title": _("Published By")},),
+            ("Sent", {
+                "title": _("Email sent")},),
             ("Recipients", {
                 "title": _("Recipients")},),
         ))
@@ -177,6 +182,15 @@ class ReportsListingView(BikaListingView):
             ar.absolute_url(), value=ar.Title()
         )
 
+        # Include Batch information of the primary Sample
+        batch_id = ar.getBatchID()
+        item["Batch"] = batch_id
+        if batch_id:
+            batch = ar.getBatch()
+            item["replace"]["Batch"] = get_link(
+                batch.absolute_url(), value=batch.Title()
+            )
+
         pdf = self.get_pdf(obj)
         filesize = self.get_filesize(pdf)
         if filesize > 0:
@@ -190,6 +204,10 @@ class ReportsListingView(BikaListingView):
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
+
+        item["Sent"] = _("No")
+        if obj.getSendLog():
+            item["Sent"] = _("Yes")
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.

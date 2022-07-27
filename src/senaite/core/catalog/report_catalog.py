@@ -13,6 +13,7 @@ CATALOG_TITLE = "Senaite Report Catalog"
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("getClientUID", "", "FieldIndex"),
+    ("arreport_searchable_text", "", "ZCTextIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
@@ -26,6 +27,7 @@ COLUMNS = BASE_COLUMNS + [
 TYPES = [
     # portal_type name
     "Report",
+    "ARReport",
 ]
 
 

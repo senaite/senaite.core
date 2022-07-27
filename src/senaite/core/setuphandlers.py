@@ -128,6 +128,7 @@ COLUMNS = (
 
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
+    ("ARReport", ["senaite_catalog_report", "portal_catalog"]),
     ("ARTemplate", ["senaite_catalog_setup", "portal_catalog"]),
     ("AnalysisCategory", ["senaite_catalog_setup", "portal_catalog"]),
     ("AnalysisProfile", ["senaite_catalog_setup", "portal_catalog"]),
