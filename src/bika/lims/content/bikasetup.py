@@ -206,7 +206,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable global Auditlog"),
+            label=_("Enable global Audit Log"),
             description=_(
                 "The global Auditlog shows all modifications of the system. "
                 "When enabled, all entities will be indexed in a separate "
