@@ -328,4 +328,14 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+  <!-- Auditlog viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAuditLog"
+      name="auditlog_disabled"
+      class=".auditlog.AuditlogDisabledViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/auditlog_disabled.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
 </configure>

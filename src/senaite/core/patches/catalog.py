@@ -3,7 +3,15 @@
 from bika.lims import api
 from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.ZCatalog import ZCatalog
+from senaite.core.catalog import AUDITLOG_CATALOG
 from zope.component import queryMultiAdapter
+
+
+def is_auditlog_enabled():
+    setup = api.get_senaite_setup()
+    if not setup:
+        return False
+    return setup.getEnableGlobalAuditlog()
 
 
 def catalog_object(self, object, uid=None, idxs=None,
@@ -12,6 +20,11 @@ def catalog_object(self, object, uid=None, idxs=None,
     # Never catalog temporary objects
     if api.is_temporary(object):
         return
+
+    # skip indexing auditlog catalog if disabled
+    if self.id == AUDITLOG_CATALOG:
+        if not is_auditlog_enabled():
+            return
 
     if idxs is None:
         idxs = []
