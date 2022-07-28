@@ -5,6 +5,7 @@ from bika.lims import api
 from plone.app.textfield import IRichTextValue
 from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
+from plone.formwidget.namedfile.widget import NamedFileFieldWidget
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -57,17 +58,46 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    # NOTE:
+    # We use the `NamedFileFieldWidget` instead of `NamedImageFieldWidget`
+    # by purpose! Using the latter rises this PIL error (appears only in log):
+    # IOError: cannot identify image file <cStringIO.StringI object at ...>
+    directives.widget("site_logo", NamedFileFieldWidget)
+    site_logo = schema.Bytes(
+        title=_(u"Site Logo"),
+        description=_(u"This shows a custom logo on your SENAITE site."),
+        required=False,
+    )
+
+    site_logo_css = schema.ASCII(
+        title=_(u"Site Logo CSS"),
+        description=_(
+            u"Add custom CSS rules for the Logo, "
+            u"e.g. height:15px; width:150px;"
+        ),
+        required=False,
+    )
+
     ###
     # Fieldsets
     ###
 
-    # model.fieldset(
-    #     "notifications",
-    #     label=_(u"Notifications"),
-    #     fields=[
-    #         "email_body_sample_publication",
-    #     ]
-    # )
+    model.fieldset(
+        "notifications",
+        label=_(u"Notifications"),
+        fields=[
+            "email_body_sample_publication",
+        ]
+    )
+
+    model.fieldset(
+        "appearance",
+        label=_(u"Appearance"),
+        fields=[
+            "site_logo",
+            "site_logo_css",
+        ]
+    )
 
 
 @implementer(ISetup, ISetupSchema, IHideActionsMenu)
@@ -113,4 +143,32 @@ class Setup(Container):
             catalog = api.get_tool(AUDITLOG_CATALOG)
             catalog.manage_catalogClear()
         mutator = self.mutator("enable_global_auditlog")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSiteLogo(self):
+        """Returns the global site logo
+        """
+        accessor = self.accessor("site_logo")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSiteLogo(self, value):
+        """Set the site logo
+        """
+        mutator = self.mutator("site_logo")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSiteLogoCSS(self):
+        """Returns the global site logo
+        """
+        accessor = self.accessor("site_logo_css")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSiteLogoCSS(self, value):
+        """Set the site logo
+        """
+        mutator = self.mutator("site_logo_css")
         return mutator(self, value)
