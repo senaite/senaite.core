@@ -82,9 +82,9 @@ class ToolbarViewletManager(OrderedViewletManager):
         """
         portal_url = self.portal_state.portal_url()
 
-        # Try to get the logo from the SENAITE setup
+        # Try to (gracefully) get the logo from the SENAITE setup
         setup = api.get_senaite_setup()
-        site_logo = setup.getSiteLogo()
+        site_logo = setup.getSiteLogo() if setup else None
         if site_logo:
             filename, data = b64decode_file(site_logo)
             return '{}/@@site-logo/{}'.format(
@@ -103,9 +103,9 @@ class ToolbarViewletManager(OrderedViewletManager):
     def get_toolbar_styles(self):
         """Return the CSS for the toolbar logo
         """
-        # Try to get the logo CSS from the SENAITE setup
+        # Try to (gracefully) get the logo CSS from the SENAITE setup
         setup = api.get_senaite_setup()
-        site_logo_css = setup.getSiteLogoCSS()
+        site_logo_css = setup.getSiteLogoCSS() if setup else None
         if site_logo_css:
             return site_logo_css
 
