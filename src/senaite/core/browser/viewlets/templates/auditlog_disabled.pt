@@ -1,0 +1,22 @@
+<div tal:omit-tag=""
+     tal:condition="python:view.is_disabled()"
+     i18n:domain="senaite.core">
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-warning alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p class="title">
+        <strong i18n:translate="">
+          Global Audit Log is disabled
+        </strong>
+      </p>
+      <p class="description" i18n:translate="">
+        You can enable the global Audit Log again in the
+        <a href="#" tal:attributes="href python:view.get_setup_url()">Setup</a>
+      </p>
+    </div>
+  </div>
+
+</div>
