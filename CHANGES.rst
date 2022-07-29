@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2078 Replace dynamic code execution with dynamic import in reports
 - #2074 Allow to disable global Auditlogging
 - #2072 Refactor report filename generation to own method
 - #2071 Move sample reports to report catalog, add batch ID and email sent flag to listing
