@@ -38,16 +38,16 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
 
     def _parseline(self, line):
         # Process the line differenly if it pertains at header or results block
-        if self._end_header == False:
+        if self._end_header:
+            return self.parse_resultline(line)
+        else:
             sline = line.strip(',')
             return self.parse_headerline(sline)
-        else:
-            return self.parse_resultline(line)
 
     def splitLine(self, line):
         # If pertains at header it split the line by ':' and then remove ','
         # Else split by ',' and remove blank spaces
-        if self._end_header == False:
+        if not self._end_header:
             sline = line.split(':')
             return [token.strip(',') for token in sline]
 
@@ -184,11 +184,11 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
     def _parseline(self, line):
         # Process the line differenly if it pertains at header or results block
-        if self._end_header == False:
+        if self._end_header:
+            return self.parse_resultline(line)
+        else:
             sline = line.strip(',')
             return self.parse_headerline(sline)
-        else:
-            return self.parse_resultline(line)
 
     def csvDate2BikaDate(self,DateTime):
     #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
@@ -198,7 +198,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
     def splitLine(self, line):
         # If pertains at header it split the line by ':' and then remove ','
         # Else split by ',' and remove blank spaces
-        if self._end_header == False:
+        if not self._end_header:
             sline = line.split(':')
             return [token.strip(',') for token in sline]
 
