@@ -20,5 +20,5 @@ install:
 before_script:
   - bin/pip install flake8
 script:
-  - flake8 --config travis_ci_flake8.cfg src/
+  - bin/flake8 --config travis_ci_flake8.cfg src/
   - bin/test -s senaite.core.tests
