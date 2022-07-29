@@ -45,10 +45,20 @@ class RequestContextAware(object):
         """Redirect with a message
         """
         if redirect_url is None:
-            redirect_url = self.back_url
+            redirect_url = self.get_redirect_url()
         if message is not None:
             self.add_status_message(message, level)
         return self.request.response.redirect(redirect_url)
+
+    def get_redirect_url(self):
+        """Lookup the redirect URL
+        """
+        # Allow to set redirect_url in the request
+        redirect_url = self.request.get("redirect_url")
+        if not redirect_url:
+            # fall back to view attribute
+            return self.back_url
+        return redirect_url
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
