@@ -20,7 +20,6 @@
 
 """ Seal Analytics AQ2
 """
-from datetime import datetime
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 

@@ -21,8 +21,6 @@
 """ Life Technologies QuBit
 """
 from datetime import datetime
-from bika.lims.utils import to_unicode
-from bika.lims import bikaMessageFactory as _
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
