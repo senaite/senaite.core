@@ -17,5 +17,8 @@ before_install:
   - bin/buildout -N -t 3 annotate
 install:
   - bin/buildout -N -t 3
+before_script:
+  - bin/pip install flake8
 script:
+  - bin/flake8 --config travis_ci_flake8.cfg src/
   - bin/test -s senaite.core.tests
