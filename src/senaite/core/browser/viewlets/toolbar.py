@@ -23,7 +23,6 @@ from plone.app.layout.viewlets.common import PersonalBarViewlet
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
-from Products.CMFPlone.interfaces.controlpanel import ISiteSchema
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.viewlets.languageselector import LanguageSelector
 from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
