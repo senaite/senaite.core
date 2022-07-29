@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2082 Include sample ID in form ID for lab, field and qc analyses listings
 - #2074 Allow to disable global Auditlogging
 - #2072 Refactor report filename generation to own method
 - #2071 Move sample reports to report catalog, add batch ID and email sent flag to listing
