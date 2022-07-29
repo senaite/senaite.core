@@ -18,4 +18,5 @@ before_install:
 install:
   - bin/buildout -N -t 3
 script:
+  - flake8 --config travis_ci_flake8.cfg src/
   - bin/test -s senaite.core.tests
