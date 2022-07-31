@@ -921,6 +921,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
+        ldl = api.to_float(ldl, 0.0)
         if result < ldl:
             # LDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
@@ -930,6 +931,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
+        udl = api.to_float(udl, 0.0)
         if result > udl:
             # UDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
