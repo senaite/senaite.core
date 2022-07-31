@@ -388,7 +388,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         if api.is_floatable(result):
-            return api.to_float(result) < self.getLowerDetectionLimit()
+            ldl = self.getLowerDetectionLimit()
+            return api.to_float(result) < api.to_float(ldl, 0.0)
 
         return False
 
@@ -405,7 +406,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         if api.is_floatable(result):
-            return api.to_float(result) > self.getUpperDetectionLimit()
+            udl = self.getUpperDetectionLimit()
+            return api.to_float(result) > api.to_float(udl, 0.0)
 
         return False
 
