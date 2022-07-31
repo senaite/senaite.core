@@ -409,6 +409,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         return False
 
+    # TODO: REMOVE:  nowhere used
+    @deprecated("This Method will be removed in version 2.5")
     @security.public
     def getDetectionLimits(self):
         """Returns a two-value array with the limits of detection (LDL and
@@ -416,7 +418,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the analysis service doesn't allow manual input of detection limits,
         returns the value set by default in the Analysis Service
         """
-        return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
+        ldl = self.getLowerDetectionLimit()
+        udl = self.getUpperDetectionLimit()
+        return [api.to_float(ldl), api.to_float(udl)]
 
     @security.public
     def isLowerDetectionLimit(self):
