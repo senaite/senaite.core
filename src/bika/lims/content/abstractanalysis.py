@@ -422,7 +422,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         ldl = self.getLowerDetectionLimit()
         udl = self.getUpperDetectionLimit()
-        return [api.to_float(ldl), api.to_float(udl)]
+        return [api.to_float(ldl, 0.0), api.to_float(udl, 0.0)]
 
     @security.public
     def isLowerDetectionLimit(self):
