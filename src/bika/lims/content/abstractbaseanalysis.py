@@ -846,26 +846,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return DisplayList(list(items))
 
     @security.public
-    def getLowerDetectionLimit(self):
-        """Returns the Lower Detection Limit for this service as a floatable
-        """
-        ldl = self.getField('LowerDetectionLimit').get(self)
-        try:
-            return float(ldl)
-        except ValueError:
-            return 0
-
-    @security.public
-    def getUpperDetectionLimit(self):
-        """Returns the Upper Detection Limit for this service as a floatable
-        """
-        udl = self.getField('UpperDetectionLimit').get(self)
-        try:
-            return float(udl)
-        except ValueError:
-            return 0
-
-    @security.public
     def isSelfVerificationEnabled(self):
         """Returns if the user that submitted a result for this analysis must
         also be able to verify the result
