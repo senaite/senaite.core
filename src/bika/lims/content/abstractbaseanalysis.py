@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
@@ -136,14 +137,16 @@ ExponentialFormatPrecision = IntegerField(
     )
 )
 
+# TODO: Use a plain string field when converting to DX!
+#
 # If the value is below this limit, it means that the measurement lacks
 # accuracy and this will be shown in manage_results and also on the final
 # report.
 LowerDetectionLimit = FixedPointField(
-    'LowerDetectionLimit',
+    "LowerDetectionLimit",
     schemata="Analysis",
-    default='0.0',
-    precision=7,
+    default="0.0",
+    precision=1000,  # avoid precision cut-off done by the field
     widget=DecimalWidget(
         label=_("Lower Detection Limit (LDL)"),
         description=_(
@@ -154,14 +157,16 @@ LowerDetectionLimit = FixedPointField(
     )
 )
 
+# TODO: Use a plain string field when converting to DX!
+#
 # If the value is above this limit, it means that the measurement lacks
 # accuracy and this will be shown in manage_results and also on the final
 # report.
 UpperDetectionLimit = FixedPointField(
-    'UpperDetectionLimit',
+    "UpperDetectionLimit",
     schemata="Analysis",
-    default='1000000000.0',
-    precision=7,
+    default="1000000000.0",
+    precision=1000,  # avoid precision cut-off done by the field
     widget=DecimalWidget(
         label=_("Upper Detection Limit (UDL)"),
         description=_(
@@ -844,6 +849,32 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    @security.public
+    def getLowerDetectionLimit(self):
+        """Get the lower detection limit without trailing zeros
+        """
+        field = self.getField("LowerDetectionLimit")
+        value = field.get(self)
+        # NOTE: This is a workaround to avoid the cut-off done by the field
+        #       if the value is lower than the precision
+        #       => we should use a string instead
+        # remove trailing zeros and possible trailing dot
+        value = value.rstrip("0").rstrip(".")
+        return value
+
+    @security.public
+    def getUpperDetectionLimit(self):
+        """Get the upper detection limit without trailing zeros
+        """
+        field = self.getField("UpperDetectionLimit")
+        value = field.get(self)
+        # NOTE: This is a workaround to avoid the cut-off done by the field
+        #       if the value is lower than the precision
+        #       => we should use a string instead
+        # remove trailing zeros and possible trailing dot
+        value = value.rstrip("0").rstrip(".")
+        return value
 
     @security.public
     def isSelfVerificationEnabled(self):
