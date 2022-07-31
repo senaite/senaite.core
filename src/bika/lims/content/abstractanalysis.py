@@ -581,8 +581,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     adl = dependency.isAboveUpperDetectionLimit()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
-                    mapping['%s.%s' % (key, 'LDL')] = ldl
-                    mapping['%s.%s' % (key, 'UDL')] = udl
+                    mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
+                    mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
                 except (TypeError, ValueError):
