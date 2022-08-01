@@ -35,6 +35,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
+from senaite.core.api import dtime
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISamples
 from senaite.core.interfaces import ISamplesView
@@ -761,7 +762,7 @@ class SamplesView(ListingView):
         """
         if not isinstance(date, DateTime):
             return ""
-        return date.strftime("%Y-%m-%d %H:%M")
+        return dtime.date_to_string("%Y-%m-%d %H:%M")
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()

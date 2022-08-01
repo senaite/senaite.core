@@ -388,6 +388,12 @@ Check if the `ValueError: strftime() methods require year >= 1900` is handled gr
     >>> dtime.date_to_string(dt, fmt="%Y-%m-%dT%H:%M")
     '1010-11-12T22:23'
 
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '1010-11-12 22:23'
+
+    >>> dtime.date_to_string(dt, fmt="%Y/%m/%d %H:%M")
+    '1010/11/12 22:23'
+
 Check the same with `DateTime` objects:
 
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
@@ -400,6 +406,12 @@ Check the same with `DateTime` objects:
 
     >>> dtime.date_to_string(DT, fmt="%Y-%m-%dT%H:%M")
     '1010-11-12T22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y-%m-%d %H:%M")
+    '1010-11-12 22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y/%m/%d %H:%M")
+    '1010/11/12 22:23'
 
 Check illegal format:
 
