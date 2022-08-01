@@ -328,7 +328,7 @@ class RecordField(ObjectField):
                 log('WARNING: Unknow validation %s. Disabling!' % current_validators)
                 validators = ()
 
-            if not subfield in self.required_subfields:
+            if subfield not in self.required_subfields:
                 if validators == ():
                     validators = ValidationChain(chainname)
                 if len(validators):

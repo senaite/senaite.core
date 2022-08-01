@@ -54,7 +54,7 @@ class BioDropCSVParser(InstrumentCSVResultsFileParser):
             for d in (row_values, self.file_header):
                 raw_result.update(d)
             raw_result['DefaultResult'] = 'Concentration'
-            raw_result = {self.analysiskey: raw_result};
+            raw_result = {self.analysiskey: raw_result}
 
             sample_id = row_values['Sample Name']
             self._addRawResult(sample_id, raw_result)
