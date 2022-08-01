@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+from types import ClassType
 from types import DictType
 from types import ListType
 from types import StringType
@@ -241,7 +243,7 @@ class RecordField(ObjectField):
         ObjectField.set(self, instance, value, **kwargs)
 
     def _to_dict(self, value):
-        if type(value) != type({}) and hasattr(value, 'keys'):
+        if not isinstance(value, dict) and hasattr(value, 'keys'):
             new_value = {}
             new_value.update(value)
             return new_value
@@ -250,8 +252,8 @@ class RecordField(ObjectField):
     def _decode_strings(self, value, instance, **kwargs):
         new_value = value
         for k, v in value.items():
-            if type(v) is type(''):
-                nv =  decode(v, instance, **kwargs)
+            if isinstance(v, six.string_types):
+                nv = decode(v, instance, **kwargs)
                 try:
                     new_value[k] = nv
                 except AttributeError: # Records don't provide __setitem__
@@ -277,7 +279,7 @@ class RecordField(ObjectField):
     def _encode_strings(self, value, instance, **kwargs):
         new_value = value
         for k, v in value.items():
-            if type(v) is type(u''):
+            if isinstance(v, six.text_type):
                 nv = encode(v, instance, **kwargs)
                 try:
                     new_value[k] = nv
