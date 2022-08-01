@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2075 Allow to override logo and styles in new SENAITE Setup
+- #2076 Fix style of selected language in dropdown
 - #2074 Allow to disable global Auditlogging
 - #2072 Refactor report filename generation to own method
 - #2071 Move sample reports to report catalog, add batch ID and email sent flag to listing
