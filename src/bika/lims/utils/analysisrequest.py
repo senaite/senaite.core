@@ -276,8 +276,7 @@ def create_retest(ar):
 
     if not ar.isInvalid():
         # Analysis Request must be in 'invalid' state
-        raise ValueError("Cannot do a retest from an invalid Analysis Request"
-                         .format(repr(ar)))
+        raise ValueError("Cannot do a retest from an invalid Analysis Request")
 
     # Open the actions pool
     actions_pool = ActionHandlerPool.get_instance()

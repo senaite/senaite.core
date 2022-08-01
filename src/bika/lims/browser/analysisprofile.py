@@ -18,7 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.jsonapi import load_field_values
 from bika.lims.interfaces import IJSONReadExtender, IAnalysisProfile
 from zope.component import adapts
 from zope.interface import implements

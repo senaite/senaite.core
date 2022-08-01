@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
-from bika.lims import senaiteMessageFactory as _
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from bika.lims.vocabularies import getStickerTemplates
 

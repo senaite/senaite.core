@@ -23,13 +23,10 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from plone.app.blob.field import FileField as BlobFileField
-from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.utils import t
-from bika.lims.browser import ulocalized_time
 from bika.lims.utils import user_fullname
 
 schema = BikaSchema.copy() + Schema((

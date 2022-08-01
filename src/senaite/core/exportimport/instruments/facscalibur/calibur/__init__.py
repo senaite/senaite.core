@@ -20,7 +20,6 @@
 
 """ Facs Calibur
 """
-from datetime import datetime
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 

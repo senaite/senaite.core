@@ -147,16 +147,23 @@ class RecordsField(RecordField):
         if errors and errors.has_key(name):
             return True
 
-        result = None
-        for record in value:
-            result = RecordField.validate(self,
-                                          record,
-                                          instance,
-                                          errors={},
-                                          **kwargs
-            )
-            if result: return result
-        return result
+        validation_results = (
+            RecordField.validate(
+                self,
+                record,
+                instance,
+                errors={},
+                **kwargs
+                )
+            for record
+            in value
+        )
+        return next((
+            result
+            for result
+            in validation_results
+            if result is not None
+        ), None)
 
 
 InitializeClass(RecordsField)
