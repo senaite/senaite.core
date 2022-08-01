@@ -413,14 +413,26 @@ Check the same with `DateTime` objects:
     >>> dtime.date_to_string(DT, fmt="%Y/%m/%d %H:%M")
     '1010/11/12 22:23'
 
-Check illegal format:
+Check paddings in hour/minute:
 
-    >>> DATE = "2022-08-01 12:00"
+    >>> DATE = "2022-08-01 01:02"
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
-    >>> dtime.date_to_string(dt, fmt="%Y-%K-%O")
-    '2022-K-O'
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '2022-08-01 01:02'
 
-    >>> DATE = "1010-11-12 22:23"
+    >>> DATE = "1755-08-01 01:02"
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
-    >>> dtime.date_to_string(dt, fmt="%Y-%K-%O")
-    '1010-${K}-${O}'
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '1755-08-01 01:02'
+
+Check 24h vs 12h format:
+
+    >>> DATE = "2022-08-01 23:01"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
+    '2022-08-01 11:01 PM'
+
+    >>> DATE = "1755-08-01 23:01"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
+    '1755-08-01 11:01 PM'
