@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2078 Replace dynamic code execution with dynamic import in reports
 - #2083 Lookup workflow action redirect URL from request first
 - #2082 Include sample ID in form ID for lab, field and qc analyses listings
 - #2075 Allow to override logo and styles in new SENAITE Setup
