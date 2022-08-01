@@ -28,7 +28,6 @@ from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
 from zope.component._api import getAdapters
 
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 
 

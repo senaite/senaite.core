@@ -20,11 +20,8 @@
 
 """ Biodrop
 """
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from senaite.core.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
-from datetime import datetime
 
 class BioDropCSVParser(InstrumentCSVResultsFileParser):
     """

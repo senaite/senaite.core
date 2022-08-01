@@ -20,7 +20,6 @@
 
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
-import plone
 import json
 
 

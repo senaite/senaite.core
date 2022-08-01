@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import logger, to_utf8
+from bika.lims import logger
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from plone.jsonapi.core import router

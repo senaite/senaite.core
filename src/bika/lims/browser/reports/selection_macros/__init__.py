@@ -24,7 +24,6 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
 from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF
 from plone.memoize import ram
 from time import time
 

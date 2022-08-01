@@ -18,13 +18,11 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.jsonapi.read import read
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 from zope import interface
-import json
 import transaction
 
 

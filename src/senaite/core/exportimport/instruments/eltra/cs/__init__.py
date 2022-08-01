@@ -23,7 +23,6 @@
 from datetime import datetime
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
-from bika.lims import bikaMessageFactory as _
 
 
 class EltraCSTSVParser(InstrumentCSVResultsFileParser):
