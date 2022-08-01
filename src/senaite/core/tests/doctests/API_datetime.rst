@@ -356,3 +356,59 @@ Convert to ISO format
 
     >>> dtime.to_iso_format(dtime.to_DT(dt_local))
     '2021-08-01T12:00:00+02:00'
+
+
+Convert date to string
+......................
+
+
+Check with valid date:
+
+    >>> DATE = "2022-08-01 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt)
+    '2022-08-01'
+
+    >>> dtime.date_to_string(dt, fmt="%H:%M")
+    '12:00'
+
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%dT%H:%M")
+    '2022-08-01T12:00'
+
+Check if the `ValueError: strftime() methods require year >= 1900` is handled gracefully:
+
+    >>> DATE = "1010-11-12 22:23"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt)
+    '1010-11-12'
+
+    >>> dtime.date_to_string(dt, fmt="%H:%M")
+    '22:23'
+
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%dT%H:%M")
+    '1010-11-12T22:23'
+
+Check the same with `DateTime` objects:
+
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> DT = dtime.to_DT(dt)
+    >>> dtime.date_to_string(DT)
+    '1010-11-12'
+
+    >>> dtime.date_to_string(DT, fmt="%H:%M")
+    '22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y-%m-%dT%H:%M")
+    '1010-11-12T22:23'
+
+Check illegal format:
+
+    >>> DATE = "2022-08-01 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%K-%O")
+    '2022-K-O'
+
+    >>> DATE = "1010-11-12 22:23"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%K-%O")
+    '1010-${K}-${O}'

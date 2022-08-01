@@ -27,6 +27,7 @@ from DateTime.interfaces import DateTimeError
 from Products.Archetypes.Registry import registerPropertyType
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
+from senaite.core.api import dtime
 
 
 class DateTimeWidget(TypesWidget):
@@ -68,29 +69,20 @@ class DateTimeWidget(TypesWidget):
         """
         dt = self.to_tz_date(time)
         if self.show_time:
-            return dt.strftime("%Y-%m-%dT%H:%M")
-        return dt.strftime("%Y-%m-%d")
+            return dtime.date_to_string(dt, "%Y-%m-%dT%H:%M")
+        return dtime.date_to_string(dt, "%Y-%m-%d")
 
     def get_date(self, value):
         if not value:
             return ""
         dt = self.to_tz_date(value)
-        try:
-            return dt.strftime("%Y-%m-%d")
-        except ValueError as exc:
-            #  ValueError: year=1111 is before 1900;
-            #              the datetime strftime() methods require year >= 1900
-            #  => Parsing from ISO format
-            logger.warn("Invalid date detected: '%s' "
-                        "Parsing now from ISO format!" % (exc))
-            iso_fmt = dt.ISO()
-            return iso_fmt.split("T")[0]
+        return dtime.date_to_string(dt, "%Y-%m-%d")
 
     def get_time(self, value):
         if not value:
             return ""
         dt = self.to_tz_date(value)
-        return dt.strftime("%H:%M")
+        return dtime.date_to_string(dt, "%H:%M")
 
     def get_max(self):
         now = DateTime()

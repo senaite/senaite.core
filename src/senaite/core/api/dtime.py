@@ -4,6 +4,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
+from string import Template
 
 import six
 
@@ -269,3 +270,38 @@ def to_iso_format(dt):
         DT = to_DT(dt)
         return to_iso_format(DT)
     return None
+
+
+def date_to_string(dt, fmt="%Y-%m-%d"):
+    """Format the date to string
+    """
+    try:
+        return dt.strftime(fmt)
+    except ValueError:
+        #  Fix ValueError: year=1111 is before 1900;
+        #  the datetime strftime() methods require year >= 1900
+        iso_fmt = to_iso_format(dt)
+
+        # convert format string to be something like "${Y}-${m}-${d}"
+        new_fmt = ""
+        var = False
+        for x in fmt:
+            if x == "%":
+                var = True
+                new_fmt += "${"
+                continue
+            if var:
+                new_fmt += x
+                new_fmt += "}"
+                var = False
+            else:
+                new_fmt += x
+
+        date_part, time_part = iso_fmt.split("T")
+
+        # Manually parse out relevant parts
+        Y, m, d = date_part.split("-")[0:3]
+        H, M = time_part.split(":")[0:2]
+
+        data = {"Y": Y, "m": m, "d": d, "H": H, "M": M}
+        return Template(new_fmt).safe_substitute(data)
