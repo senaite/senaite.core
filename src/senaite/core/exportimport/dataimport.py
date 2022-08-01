@@ -19,12 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import os.path
 
-from pkg_resources import resource_filename
 from pkg_resources import resource_listdir
 
-import plone
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import ISetupDataSetList
 from plone.app.layout.globals.interfaces import IViewView

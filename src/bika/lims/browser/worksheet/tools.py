@@ -38,7 +38,7 @@ def checkUserAccess(worksheet, request, redirect=True):
     """
     # Deny access to foreign analysts
     allowed = worksheet.checkUserAccess()
-    if allowed == False and redirect == True:
+    if not allowed and redirect:
         msg =  _('You do not have sufficient privileges to view '
                  'the worksheet ${worksheet_title}.',
                  mapping={"worksheet_title": worksheet.Title()})
@@ -57,7 +57,7 @@ def checkUserManage(worksheet, request, redirect=True):
         /manage_results view. Otherwise, does nothing
     """
     allowed = worksheet.checkUserManage()
-    if allowed == False and redirect == True:
+    if not allowed and redirect:
         # Redirect to /manage_results view
         destination_url = worksheet.absolute_url() + "/manage_results"
         request.response.redirect(destination_url)

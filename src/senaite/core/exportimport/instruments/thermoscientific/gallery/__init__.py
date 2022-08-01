@@ -20,8 +20,7 @@
 
 """ Thermo Scientific 'Gallery'
 """
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 

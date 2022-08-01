@@ -54,7 +54,7 @@ from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
-from varian.vistapro import icp
+from varian.vistapro import icp as icp_2
 from cobasintegra.model_400_plus import model_400_plus
 from facscalibur.calibur import model_e9750
 

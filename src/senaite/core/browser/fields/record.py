@@ -21,13 +21,10 @@
 import six
 from types import ClassType
 from types import DictType
-from types import FileType
-from types import IntType
 from types import ListType
 from types import StringType
 from types import StringTypes
 from types import TupleType
-from types import UnicodeType
 
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
@@ -43,7 +40,6 @@ from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import createExprContext
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
-from senaite.core.browser.fields.utils import getDisplayList
 from senaite.core.browser.widgets.recordwidget import RecordWidget
 
 # we have to define our own validation handling

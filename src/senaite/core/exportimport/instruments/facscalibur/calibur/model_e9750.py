@@ -26,7 +26,6 @@ from bika.lims.utils import t
 from . import FacsCaliburCSVParser, FacsCaliburImporter
 import json
 import traceback
-import logging
 
 title = "FACS Calibur"
 
