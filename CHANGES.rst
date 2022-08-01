@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2075 Allow to override logo and styles in new SENAITE Setup
 - #2076 Fix style of selected language in dropdown
 - #2074 Allow to disable global Auditlogging
 - #2072 Refactor report filename generation to own method

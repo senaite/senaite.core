@@ -18,12 +18,13 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.api.security import check_permission
 from plone.app.layout.viewlets.common import PersonalBarViewlet
 from plone.app.viewletmanager.manager import OrderedViewletManager
+from plone.formwidget.namedfile.converter import b64decode_file
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
-from Products.CMFPlone.interfaces.controlpanel import ISiteSchema
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.viewlets.languageselector import LanguageSelector
 from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
@@ -77,8 +78,20 @@ class ToolbarViewletManager(OrderedViewletManager):
         return viewlet
 
     def get_toolbar_logo(self):
-        registry = getUtility(IRegistry)
+        """Return the toolbar logo
+        """
         portal_url = self.portal_state.portal_url()
+
+        # Try to (gracefully) get the logo from the SENAITE setup
+        setup = api.get_senaite_setup()
+        site_logo = setup.getSiteLogo() if setup else None
+        if site_logo:
+            filename, data = b64decode_file(site_logo)
+            return '{}/@@site-logo/{}'.format(
+                portal_url, filename)
+
+        # Check if an URL is given in the registry
+        registry = getUtility(IRegistry)
         try:
             logo = registry["senaite.toolbar_logo"]
         except (AttributeError, KeyError):
@@ -88,6 +101,15 @@ class ToolbarViewletManager(OrderedViewletManager):
         return portal_url + logo
 
     def get_toolbar_styles(self):
+        """Return the CSS for the toolbar logo
+        """
+        # Try to (gracefully) get the logo CSS from the SENAITE setup
+        setup = api.get_senaite_setup()
+        site_logo_css = setup.getSiteLogoCSS() if setup else None
+        if site_logo_css:
+            return site_logo_css
+
+        # Fall back to registry
         registry = getUtility(IRegistry)
         try:
             styles = registry["senaite.toolbar_logo_styles"]
