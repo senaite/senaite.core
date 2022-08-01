@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import six
-from types import ClassType
 from types import DictType
 from types import ListType
 from types import StringType
