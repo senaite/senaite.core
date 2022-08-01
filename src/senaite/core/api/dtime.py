@@ -274,9 +274,11 @@ def to_iso_format(dt):
     return None
 
 
-def date_to_string(dt, fmt="%Y-%m-%d"):
+def date_to_string(dt, fmt="%Y-%m-%d", default=""):
     """Format the date to string
     """
+    if not is_date(dt):
+        return default
     try:
         return dt.strftime(fmt)
     except ValueError:
@@ -298,6 +300,11 @@ def date_to_string(dt, fmt="%Y-%m-%d"):
             else:
                 new_fmt += x
 
+        def pad(val):
+            """Add a zero if val is a single digit
+            """
+            return "{:0>2}".format(val)
+
         # Manually extract relevant date and time parts
         dt = to_DT(dt)
         data = {
@@ -305,9 +312,9 @@ def date_to_string(dt, fmt="%Y-%m-%d"):
             "y": dt.yy(),
             "m": dt.mm(),
             "d": dt.dd(),
-            "H": dt.h_24(),
-            "I": dt.h_12(),
-            "M": dt.minute(),
+            "H": pad(dt.h_24()),
+            "I": pad(dt.h_12()),
+            "M": pad(dt.minute()),
             "p": dt.ampm().upper(),
             "S": dt.second(),
         }

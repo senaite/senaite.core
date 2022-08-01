@@ -76,6 +76,7 @@ class DateTimeWidget(TypesWidget):
         if not value:
             return ""
         dt = self.to_tz_date(value)
+
         return dtime.date_to_string(dt, "%Y-%m-%d")
 
     def get_time(self, value):
