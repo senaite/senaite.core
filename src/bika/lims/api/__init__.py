@@ -1400,7 +1400,8 @@ def to_searchable_text_metadata(value):
     if isinstance(value, dict):
         return to_searchable_text_metadata(value.values())
     if is_date(value):
-        return value.strftime("%Y-%m-%d")
+        from senaite.core.api.dtime import date_to_string
+        return date_to_string(value, "%Y-%m-%d")
     if is_at_content(value):
         return to_searchable_text_metadata(get_title(value))
     if not isinstance(value, six.string_types):
