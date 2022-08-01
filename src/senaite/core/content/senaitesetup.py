@@ -172,3 +172,4 @@ class Setup(Container):
         """
         mutator = self.mutator("site_logo_css")
         return mutator(self, value)
+    
