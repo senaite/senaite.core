@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import logger
 from bika.lims.browser import ulocalized_time as ut
 from DateTime import DateTime
 from DateTime.DateTime import safelocaltime
@@ -74,7 +75,16 @@ class DateTimeWidget(TypesWidget):
         if not value:
             return ""
         dt = self.to_tz_date(value)
-        return dt.strftime("%Y-%m-%d")
+        try:
+            return dt.strftime("%Y-%m-%d")
+        except ValueError as exc:
+            #  ValueError: year=1111 is before 1900;
+            #              the datetime strftime() methods require year >= 1900
+            #  => Parsing from ISO format
+            logger.warn("Invalid date detected: '%s' "
+                        "Parsing now from ISO format!" % (exc))
+            iso_fmt = dt.ISO()
+            return iso_fmt.split("T")[0]
 
     def get_time(self, value):
         if not value:
