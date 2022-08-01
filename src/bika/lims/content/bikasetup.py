@@ -58,7 +58,6 @@ from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core import registry as senaite_registry
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu

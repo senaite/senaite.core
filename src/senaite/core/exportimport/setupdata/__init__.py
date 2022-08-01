@@ -430,9 +430,10 @@ class Lab_Contacts(WorksheetImporter):
                 username = safe_unicode(row['Username']).encode('utf-8')
                 passw = row['Password']
                 if not passw:
-                    warn = "Lab Contact: No password defined for user '{0}' in row {1}. Password established automatically to '{3}'".format(username, str(rownum), username)
-                    logger.warning(warn)
                     passw = username
+                    warn = ("Lab Contact: No password defined for user '{0}' in row {1}."
+                            " Password established automatically to '{2}'").format(username, str(rownum), passw)
+                    logger.warning(warn)
 
                 try:
                     member = portal_registration.addMember(

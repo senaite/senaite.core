@@ -21,9 +21,6 @@
 """ReferenceSample represents a reference sample used for quality control testing
 """
 
-import sys
-import time
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _

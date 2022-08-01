@@ -22,7 +22,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
-from plone import api
 from Acquisition import aq_base
 from zope.component import getAdapters
 

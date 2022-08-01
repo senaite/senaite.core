@@ -34,9 +34,9 @@ from zope.interface import implements
 # this comment twice.
 from .view import AnalysisRequestViewView
 
-from .add2 import AnalysisRequestAddView  # noqa: F401
-from .add2 import AnalysisRequestManageView  # noqa: F401
-from .add2 import ajaxAnalysisRequestAddView  # noqa: F401
+from .add2 import AnalysisRequestAddView
+from .add2 import AnalysisRequestManageView
+from .add2 import ajaxAnalysisRequestAddView
 from .analysisrequests import AnalysisRequestsView
 from .invoice import InvoicePrintView
 from .invoice import InvoiceView

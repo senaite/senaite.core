@@ -50,7 +50,6 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
-from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
