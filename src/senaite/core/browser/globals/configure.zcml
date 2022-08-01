@@ -19,4 +19,12 @@
       allowed_interface=".interfaces.ISenaiteTheme"
       />
 
+  <browser:page
+      for="*"
+      name="site-logo"
+      class=".sitelogo.SiteLogo"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>
