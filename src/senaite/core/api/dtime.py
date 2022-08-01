@@ -15,6 +15,8 @@ from DateTime import DateTime
 from DateTime.DateTime import DateError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
+from Products.CMFPlone.i18nl10n import ulocalized_time
+from zope.i18n import translate
 
 
 def is_str(obj):
@@ -280,7 +282,6 @@ def date_to_string(dt, fmt="%Y-%m-%d"):
     except ValueError:
         #  Fix ValueError: year=1111 is before 1900;
         #  the datetime strftime() methods require year >= 1900
-        iso_fmt = to_iso_format(dt)
 
         # convert format string to be something like "${Y}-${m}-${d}"
         new_fmt = ""
@@ -297,11 +298,67 @@ def date_to_string(dt, fmt="%Y-%m-%d"):
             else:
                 new_fmt += x
 
-        date_part, time_part = iso_fmt.split("T")
+        # Manually extract relevant date and time parts
+        dt = to_DT(dt)
+        data = {
+            "Y": dt.year(),
+            "y": dt.yy(),
+            "m": dt.mm(),
+            "d": dt.dd(),
+            "H": dt.h_24(),
+            "I": dt.h_12(),
+            "M": dt.minute(),
+            "p": dt.ampm().upper(),
+            "S": dt.second(),
+        }
 
-        # Manually parse out relevant parts
-        Y, m, d = date_part.split("-")[0:3]
-        H, M = time_part.split(":")[0:2]
-
-        data = {"Y": Y, "m": m, "d": d, "H": H, "M": M}
         return Template(new_fmt).safe_substitute(data)
+
+
+def to_localized_time(dt, long_format=None, time_only=None,
+                      context=None, request=None, default=""):
+    """Convert a date object to a localized string
+
+    :param dt: The date/time to localize
+    :type dt: str/datetime/DateTime
+    :param long_format: Return long date/time if True
+    :type portal_type: boolean/null
+    :param time_only: If True, only returns time.
+    :type title: boolean/null
+    :param context: The current context
+    :type context: ATContentType
+    :param request: The current request
+    :type request: HTTPRequest object
+    :returns: The formatted date as string
+    :rtype: string
+    """
+    dt = to_DT(dt)
+    if not dt:
+        return default
+
+    try:
+        time_str = ulocalized_time(
+            dt, long_format, time_only, context, "senaite.core", request)
+    except ValueError:
+        # Handle dates < 1900
+
+        # code taken from Products.CMFPlone.i18nl110n.ulocalized_time
+        if time_only:
+            msgid = "time_format"
+        elif long_format:
+            msgid = "date_format_long"
+        else:
+            msgid = "date_format_short"
+
+        formatstring = translate(msgid, "senaite.core", {}, request)
+        if formatstring == msgid:
+            if msgid == "date_format_long":
+                formatstring = "%Y-%m-%d %H:%M"  # 2038-01-19 03:14
+            elif msgid == "date_format_short":
+                formatstring = "%Y-%m-%d"  # 2038-01-19
+            elif msgid == "time_format":
+                formatstring = "%H:%M"  # 03:14
+            else:
+                formatstring = "[INTERNAL ERROR]"
+        time_str = date_to_string(dt, formatstring)
+    return time_str
