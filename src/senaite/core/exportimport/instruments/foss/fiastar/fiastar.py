@@ -69,7 +69,7 @@ class Export(BrowserView):
             a_uid = layout[x]['analysis_uid']
             p_uid = uc(UID=a_uid)[0].getObject().aq_parent.UID()
             layout[x]['parent_uid'] = p_uid
-            if not p_uid in parent_to_slot.keys():
+            if p_uid not in parent_to_slot.keys():
                 parent_to_slot[p_uid] = int(layout[x]['position'])
 
         # write rows, one per PARENT

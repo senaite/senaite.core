@@ -21,8 +21,6 @@
 """ TESCAN TIMA
 """
 from . import TimaCSVParser, TimaImporter
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter
 import json
 import traceback
 

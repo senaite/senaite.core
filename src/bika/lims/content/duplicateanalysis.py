@@ -28,7 +28,6 @@ from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import logger
 from bika.lims.workflow import in_state

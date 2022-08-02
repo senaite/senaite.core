@@ -18,15 +18,12 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from types import ClassType
+import six
 from types import DictType
-from types import FileType
-from types import IntType
 from types import ListType
 from types import StringType
 from types import StringTypes
 from types import TupleType
-from types import UnicodeType
 
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
@@ -42,7 +39,6 @@ from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import createExprContext
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
-from senaite.core.browser.fields.utils import getDisplayList
 from senaite.core.browser.widgets.recordwidget import RecordWidget
 
 # we have to define our own validation handling
@@ -246,7 +242,7 @@ class RecordField(ObjectField):
         ObjectField.set(self, instance, value, **kwargs)
 
     def _to_dict(self, value):
-        if type(value) != type({}) and hasattr(value, 'keys'):
+        if not isinstance(value, dict) and hasattr(value, 'keys'):
             new_value = {}
             new_value.update(value)
             return new_value
@@ -255,8 +251,8 @@ class RecordField(ObjectField):
     def _decode_strings(self, value, instance, **kwargs):
         new_value = value
         for k, v in value.items():
-            if type(v) is type(''):
-                nv =  decode(v, instance, **kwargs)
+            if isinstance(v, six.string_types):
+                nv = decode(v, instance, **kwargs)
                 try:
                     new_value[k] = nv
                 except AttributeError: # Records don't provide __setitem__
@@ -282,7 +278,7 @@ class RecordField(ObjectField):
     def _encode_strings(self, value, instance, **kwargs):
         new_value = value
         for k, v in value.items():
-            if type(v) is type(u''):
+            if isinstance(v, six.text_type):
                 nv = encode(v, instance, **kwargs)
                 try:
                     new_value[k] = nv
@@ -332,7 +328,7 @@ class RecordField(ObjectField):
                 log('WARNING: Unknow validation %s. Disabling!' % current_validators)
                 validators = ()
 
-            if not subfield in self.required_subfields:
+            if subfield not in self.required_subfields:
                 if validators == ():
                     validators = ValidationChain(chainname)
                 if len(validators):

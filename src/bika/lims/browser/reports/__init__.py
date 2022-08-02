@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import importlib
 import os
 
 from bika.lims import bikaMessageFactory as _
@@ -257,11 +258,11 @@ class SubmitForm(BrowserView):
         else:
             module = "bika.lims.browser.reports.%s" % report_id
         try:
-            exec ("from %s import Report" % module)
+            Report = getattr(importlib.import_module(module), "Report")
             # required during error redirect: the report must have a copy of
             # additional_reports, because it is used as a surrogate view.
             Report.additional_reports = self.additional_reports
-        except ImportError:
+        except (ImportError, AttributeError):
             message = "Report %s.Report not found (shouldn't happen)" % module
             self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')

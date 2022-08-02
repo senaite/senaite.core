@@ -23,7 +23,6 @@ from plone.app.layout.viewlets import ViewletBase
 
 from bika.lims import FieldEditSpecification
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.api.analysis import is_result_range_compliant
 from bika.lims.api.security import check_permission
 

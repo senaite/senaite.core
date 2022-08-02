@@ -20,12 +20,10 @@
 
 import thread
 import logging
-import datetime
 from bika.lims.interfaces import INumberGenerator
 from BTrees.OIBTree import OIBTree
 from plone import api
 from zope.annotation.interfaces import IAnnotations
-from zope.component import getGlobalSiteManager
 from zope.interface import implements
 
 

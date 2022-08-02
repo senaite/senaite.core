@@ -398,7 +398,7 @@ class TestCalculations(DataTestCase):
             for k,v in f['interims'].items():
                 interims.append({'keyword': k, 'title':k, 'value': v,
                                  'hidden': False, 'type': 'int',
-                                 'unit': ''});
+                                 'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
