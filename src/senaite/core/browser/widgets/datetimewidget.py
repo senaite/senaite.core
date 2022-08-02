@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import logger
 from bika.lims.browser import ulocalized_time as ut
 from DateTime import DateTime
 from DateTime.DateTime import safelocaltime
