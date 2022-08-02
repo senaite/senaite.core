@@ -20,7 +20,7 @@
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import *
+from bika.lims.permissions import AddAnalysisProfile
 from Products.CMFCore.utils import getToolByName
 
 

@@ -29,13 +29,13 @@ from bika.lims import logger
 import json
 import Missing
 import six
-import sys, traceback
+import sys
+import traceback
 
 
 def handle_errors(f):
     """ simple JSON error handler
     """
-    import traceback
     from plone.jsonapi.core.helpers import error
 
     def decorator(*args, **kwargs):
