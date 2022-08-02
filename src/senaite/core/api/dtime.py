@@ -279,6 +279,13 @@ def date_to_string(dt, fmt="%Y-%m-%d", default=""):
     """
     if not is_date(dt):
         return default
+
+    # NOTE: The function `is_date` evaluates also string dates as `True`.
+    #       We ensure in such a case to have a `DateTime` object and leave
+    #       possible `datetime` objects unchanged.
+    if isinstance(dt, six.string_types):
+        dt = to_DT(dt)
+
     try:
         return dt.strftime(fmt)
     except ValueError:
