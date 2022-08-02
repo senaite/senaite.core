@@ -388,7 +388,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         if api.is_floatable(result):
-            return api.to_float(result) < self.getLowerDetectionLimit()
+            ldl = self.getLowerDetectionLimit()
+            return api.to_float(result) < api.to_float(ldl, 0.0)
 
         return False
 
@@ -405,10 +406,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         if api.is_floatable(result):
-            return api.to_float(result) > self.getUpperDetectionLimit()
+            udl = self.getUpperDetectionLimit()
+            return api.to_float(result) > api.to_float(udl, 0.0)
 
         return False
 
+    # TODO: REMOVE:  nowhere used
+    @deprecated("This Method will be removed in version 2.5")
     @security.public
     def getDetectionLimits(self):
         """Returns a two-value array with the limits of detection (LDL and
@@ -416,7 +420,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the analysis service doesn't allow manual input of detection limits,
         returns the value set by default in the Analysis Service
         """
-        return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
+        ldl = self.getLowerDetectionLimit()
+        udl = self.getUpperDetectionLimit()
+        return [api.to_float(ldl, 0.0), api.to_float(udl, 0.0)]
 
     @security.public
     def isLowerDetectionLimit(self):
@@ -575,8 +581,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     adl = dependency.isAboveUpperDetectionLimit()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
-                    mapping['%s.%s' % (key, 'LDL')] = ldl
-                    mapping['%s.%s' % (key, 'UDL')] = udl
+                    mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
+                    mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
                 except (TypeError, ValueError):
@@ -915,6 +921,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
+        ldl = api.to_float(ldl, 0.0)
         if result < ldl:
             # LDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
@@ -924,6 +931,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
+        udl = api.to_float(udl, 0.0)
         if result > udl:
             # UDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal

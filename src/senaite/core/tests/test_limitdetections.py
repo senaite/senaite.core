@@ -382,8 +382,8 @@ class TestLimitDetections(DataTestCase):
         for a in ans:
             an = a.getObject()
             idx = asidxs[an.id]
-            self.assertEqual(an.getLowerDetectionLimit(), float(self.lds[idx]['min']))
-            self.assertEqual(an.getUpperDetectionLimit(), float(self.lds[idx]['max']))
+            self.assertEqual(an.getLowerDetectionLimit(), self.lds[idx]['min'])
+            self.assertEqual(an.getUpperDetectionLimit(), self.lds[idx]['max'])
             self.assertEqual(an.getAllowManualDetectionLimit(), self.lds[idx]['manual'])
 
             # Empty result
