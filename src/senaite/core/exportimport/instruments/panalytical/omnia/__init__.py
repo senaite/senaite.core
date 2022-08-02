@@ -495,7 +495,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
-        if not 'DateTime' in raw:
+        if 'DateTime' not in raw:
             try:
                 raw['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
                                    'DefaultValue':'DateTime'}

@@ -50,10 +50,10 @@ class PartitionSetupWidget(RecordsWidget):
         newvalue = []
         for v in value:
             v = dict(v)
-            if v.get('separate', '') == 'on' and not 'preservation' in v:
-                container_uid = v.get('container', [''])[0];
+            if v.get('separate', '') == 'on' and 'preservation' not in v:
+                container_uid = v.get('container', [''])[0]
                 if container_uid:
-                    container = bsc(UID=container_uid)[0].getObject();
+                    container = bsc(UID=container_uid)[0].getObject()
                     if container.getPrePreserved():
                         pres = container.getPreservation()
                         if pres:
