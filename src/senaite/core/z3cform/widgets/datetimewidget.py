@@ -190,7 +190,7 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         dt = self.to_datetime(value)
         if not dt:
             return u""
-        return dt.strftime(DATE_FORMAT)
+        return dtime.date_to_string(dt, DATE_FORMAT)
 
     def get_time(self, value):
         """Return only the time part of the value
@@ -200,7 +200,7 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         dt = self.to_datetime(value)
         if not dt:
             return u""
-        return dt.strftime(HOUR_FORMAT)
+        return dtime.date_to_string(dt, HOUR_FORMAT)
 
     def date_now(self, offset=0):
         """Get the current date without time component

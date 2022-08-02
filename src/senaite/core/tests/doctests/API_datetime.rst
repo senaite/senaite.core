@@ -356,3 +356,83 @@ Convert to ISO format
 
     >>> dtime.to_iso_format(dtime.to_DT(dt_local))
     '2021-08-01T12:00:00+02:00'
+
+
+Convert date to string
+......................
+
+
+Check with valid date:
+
+    >>> DATE = "2022-08-01 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt)
+    '2022-08-01'
+
+    >>> dtime.date_to_string(dt, fmt="%H:%M")
+    '12:00'
+
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%dT%H:%M")
+    '2022-08-01T12:00'
+
+Check if the `ValueError: strftime() methods require year >= 1900` is handled gracefully:
+
+    >>> DATE = "1010-11-12 22:23"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt)
+    '1010-11-12'
+
+    >>> dtime.date_to_string(dt, fmt="%H:%M")
+    '22:23'
+
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%dT%H:%M")
+    '1010-11-12T22:23'
+
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '1010-11-12 22:23'
+
+    >>> dtime.date_to_string(dt, fmt="%Y/%m/%d %H:%M")
+    '1010/11/12 22:23'
+
+Check the same with `DateTime` objects:
+
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> DT = dtime.to_DT(dt)
+    >>> dtime.date_to_string(DT)
+    '1010-11-12'
+
+    >>> dtime.date_to_string(DT, fmt="%H:%M")
+    '22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y-%m-%dT%H:%M")
+    '1010-11-12T22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y-%m-%d %H:%M")
+    '1010-11-12 22:23'
+
+    >>> dtime.date_to_string(DT, fmt="%Y/%m/%d %H:%M")
+    '1010/11/12 22:23'
+
+Check paddings in hour/minute:
+
+    >>> DATE = "2022-08-01 01:02"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '2022-08-01 01:02'
+
+    >>> DATE = "1755-08-01 01:02"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M")
+    '1755-08-01 01:02'
+
+Check 24h vs 12h format:
+
+    >>> DATE = "2022-08-01 23:01"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
+    '2022-08-01 11:01 PM'
+
+    >>> DATE = "1755-08-01 23:01"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
+    '1755-08-01 11:01 PM'

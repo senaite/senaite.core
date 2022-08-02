@@ -18,54 +18,15 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import traceback
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import logger
-from DateTime.DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.i18nl10n import ulocalized_time as _ut
 from Products.Five.browser import BrowserView as BaseBrowserView
+from senaite.core.api.dtime import to_localized_time as ulocalized_time
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
-
-
-def ulocalized_time(time, long_format=None, time_only=None, context=None,
-                    request=None):
-    """
-    This function gets ans string as time or a DateTime objects and returns a
-    string with the time formatted
-
-    :param time: The time to process
-    :type time: str/DateTime
-    :param long_format:  If True, return time in ling format
-    :type portal_type: boolean/null
-    :param time_only: If True, only returns time.
-    :type title: boolean/null
-    :param context: The current context
-    :type context: ATContentType
-    :param request: The current request
-    :type request: HTTPRequest object
-    :returns: The formatted date as string
-    :rtype: string
-    """
-    # if time is a string, we'll try pass it through strptime with the various
-    # formats defined.
-    time = api.to_date(time)
-    if not time or not isinstance(time, DateTime):
-        return ''
-
-    try:
-        time_str = _ut(time, long_format, time_only, context, 'senaite.core', request)
-    except ValueError:
-        err_msg = traceback.format_exc() + '\n'
-        logger.warn(
-            err_msg + '\n' +
-            "Error converting '{}' time to string in {}."
-            .format(time, context))
-        time_str = ''
-    return time_str
 
 
 class BrowserView(BaseBrowserView):
