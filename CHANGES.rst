@@ -6,6 +6,7 @@ Changelog
 ------------------
 
 - #2090 Add support for dates before 1900
+- #2089 Fix LDL/UDL cut-off and exponential float conversion
 - #2078 Replace dynamic code execution with dynamic import in reports
 - #2083 Lookup workflow action redirect URL from request first
 - #2082 Include sample ID in form ID for lab, field and qc analyses listings
