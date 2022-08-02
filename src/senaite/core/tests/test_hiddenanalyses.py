@@ -103,7 +103,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Calcium in profile
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         sets = [{'uid': uid}]
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
@@ -119,7 +119,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Cooper in profile
-        uid = self.services[1].UID();
+        uid = self.services[1].UID()
         sets = [{'uid': uid}]
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
@@ -134,7 +134,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Iron in profile
-        uid = self.services[2].UID();
+        uid = self.services[2].UID()
         sets = [{'uid': uid}]
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
@@ -154,7 +154,7 @@ class TestHiddenAnalyses(DataTestCase):
     def test_service_hidden_artemplate(self):
         # Template
         # For Calcium (unset)
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
@@ -172,7 +172,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Calcium in template
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         sets = [{'uid': uid}]
         self.artemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
@@ -188,7 +188,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Cooper in template
-        uid = self.services[1].UID();
+        uid = self.services[1].UID()
         sets = [{'uid': uid}]
         self.artemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
@@ -203,7 +203,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Iron in template
-        uid = self.services[2].UID();
+        uid = self.services[2].UID()
         sets = [{'uid': uid}]
         self.artemplate.setAnalysisServicesSettings(sets)
         self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))

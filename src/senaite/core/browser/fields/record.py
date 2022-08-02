@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import six
-from types import ClassType
 from types import DictType
 from types import ListType
 from types import StringType
@@ -329,7 +328,7 @@ class RecordField(ObjectField):
                 log('WARNING: Unknow validation %s. Disabling!' % current_validators)
                 validators = ()
 
-            if not subfield in self.required_subfields:
+            if subfield not in self.required_subfields:
                 if validators == ():
                     validators = ValidationChain(chainname)
                 if len(validators):
