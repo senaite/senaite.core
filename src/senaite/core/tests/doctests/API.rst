@@ -1558,10 +1558,19 @@ Values below zero get converted by the `float` class to the exponential notation
     >>> float_value
     1.23e-10
 
+    >>> other_value = "0.0000001"
+    >>> other_float_value = float(other_value)
+
+    >>> other_float_value
+    1e-7
+
 Converting it back to a string would keep this notation:
 
     >>> str(float_value)
     '1.23e-10'
+
+    >>> str(other_float_value)
+    '1e-07'
 
 The function `float_to_string` converts the float value without exponential notation:
 

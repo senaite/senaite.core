@@ -1403,8 +1403,13 @@ def float_to_string(value, default=_marker):
     value = float(value)
     str_value = str(value)
 
-    # might be something like 1.23e-26
-    front, back = str_value.split(".")
+    if "." in str_value:
+        # might be something like 1.23e-26
+        front, back = str_value.split(".")
+    else:
+        # or 1e-07 for 0.0000001
+        back = str_value
+
     if "e-" in back:
         fraction, zeros = back.split("e-")
         # we want to cover the faction and the zeros
