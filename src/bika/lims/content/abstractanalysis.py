@@ -288,14 +288,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Sets the uncertainty for this analysis
 
         If the result is a Detection Limit or the value is below LDL or upper
-        UDL, sets the uncertainty value to 0
+        UDL, set the uncertainty to None``
         """
         # Uncertainty calculation on DL
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit():
-            unc = 0
+            unc = None
         if self.isBelowLowerDetectionLimit():
-            unc = 0
+            unc = None
 
         field = self.getField("Uncertainty")
         field.set(self, api.float_to_string(unc, default=None))
