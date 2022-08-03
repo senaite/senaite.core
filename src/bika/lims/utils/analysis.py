@@ -286,6 +286,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     except ValueError:
         pass
 
+    uncertainty = None
     if result == objres:
         # To avoid problems with DLs
         uncertainty = analysis.getUncertainty()
@@ -295,12 +296,21 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     if not uncertainty:
         return ""
 
+    precision = -1
+    # always get full precision of the uncertainty if user entered manually
+    # => avoids rounding and cut-off
+    allow_manual = analysis.getAllowManualUncertainty()
+    if allow_manual:
+        precision = uncertainty[::-1].find(".")
+
+    if precision == -1:
+        precision = analysis.getPrecision(result)
+
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = analysis.getExponentialFormatPrecision()
-    precision = analysis.getPrecision(result)
-    formatted = _format_decimal_or_sci(uncertainty, precision, threshold,
-                                       sciformat)
+    formatted = _format_decimal_or_sci(
+        uncertainty, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
 
 
