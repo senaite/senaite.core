@@ -22,6 +22,9 @@ class CatalogMultiplexProcessor(object):
         """Check if the global auditlogging is enabled
         """
         setup = api.get_senaite_setup()
+        # might happen during installation
+        if not setup:
+            return False
         return setup.getEnableGlobalAuditlog()
 
     def get_catalogs_for(self, obj):
