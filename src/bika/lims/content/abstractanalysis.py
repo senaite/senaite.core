@@ -239,56 +239,68 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 return None
 
             for d in uncertainties:
-                _min = float(d['intercept_min'])
-                _max = float(d['intercept_max'])
-                if _min <= res and res <= _max:
-                    if str(d['errorvalue']).strip().endswith('%'):
+                _min = d["intercept_min"].strip()
+                _max = d["intercept_max"].strip()
+                _err = d["errorvalue"].strip()
+
+                # convert to min/max
+                unc_min = api.to_float(_min, default=0)
+                unc_max = api.to_float(_max, default=0)
+
+                if unc_min <= res and res <= unc_max:
+                    if _err.endswith("%"):
                         try:
-                            percvalue = float(d['errorvalue'].replace('%', ''))
+                            percvalue = float(_err.replace("%", ""))
                         except ValueError:
                             return None
+                        # calculate uncertainty from result
                         uncertainty = res / 100 * percvalue
                     else:
-                        uncertainty = float(d['errorvalue'])
+                        uncertainty = api.to_float(_err, default=0)
 
-                    return uncertainty
+                    # convert back to string value
+                    return api.float_to_string(uncertainty)
         return None
 
     @security.public
     def getUncertainty(self, result=None):
         """Returns the uncertainty for this analysis and result.
-        Returns the value from Schema's Uncertainty field if the Service has
-        the option 'Allow manual uncertainty'. Otherwise, do a callback to
-        getDefaultUncertainty(). Returns None if no result specified and the
-        current result for this analysis is below or above detections limits.
-        """
-        uncertainty = self.getField('Uncertainty').get(self)
-        if result is None and (self.isAboveUpperDetectionLimit() or
-                               self.isBelowLowerDetectionLimit()):
-            return None
 
-        if uncertainty and self.getAllowManualUncertainty() is True:
-            try:
-                uncertainty = float(uncertainty)
-                return uncertainty
-            except (TypeError, ValueError):
-                # if uncertainty is not a number, return default value
-                pass
+        Returns the value from Schema's Uncertainty field if the Service has
+        the option 'Allow manual uncertainty'.
+        Otherwise, do a callback to getDefaultUncertainty().
+
+        Returns empty string if no result specified and the current result for this
+        analysis is below or above detections limits.
+        """
+        uncertainty = self.getField("Uncertainty").get(self)
+        if result is None:
+            if self.isAboveUpperDetectionLimit():
+                return None
+            if self.isBelowLowerDetectionLimit():
+                return None
+
+        if uncertainty and self.getAllowManualUncertainty():
+            return api.float_to_string(uncertainty)
+
         return self.getDefaultUncertainty(result)
 
     @security.public
     def setUncertainty(self, unc):
-        """Sets the uncertainty for this analysis. If the result is a
-        Detection Limit or the value is below LDL or upper UDL, sets the
-        uncertainty value to 0
+        """Sets the uncertainty for this analysis
+
+        If the result is a Detection Limit or the value is below LDL or upper
+        UDL, sets the uncertainty value to 0
         """
         # Uncertainty calculation on DL
         # https://jira.bikalabs.com/browse/LIMS-1808
-        if self.isAboveUpperDetectionLimit() or \
-                self.isBelowLowerDetectionLimit():
-            self.getField('Uncertainty').set(self, None)
-        else:
-            self.getField('Uncertainty').set(self, unc)
+        if self.isAboveUpperDetectionLimit():
+            unc = 0
+        if self.isBelowLowerDetectionLimit():
+            unc = 0
+
+        field = self.getField("Uncertainty")
+        field.set(self, api.float_to_string(unc))
 
     @security.public
     def setDetectionLimitOperand(self, value):
