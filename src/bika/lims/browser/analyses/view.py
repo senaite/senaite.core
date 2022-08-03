@@ -1121,24 +1121,30 @@ class AnalysesView(ListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-
         item["Uncertainty"] = ""
 
         if not self.has_permission(ViewResults, analysis_brain):
             return
 
-        result = analysis_brain.getResult
-
+        # Wake up the Analysis object
         obj = self.get_object(analysis_brain)
-        formatted = format_uncertainty(obj, result, decimalmark=self.dmk,
-                                       sciformat=int(self.scinot))
+
+        # NOTE: When we allow to edit the uncertainty, we want to have the raw
+        #       uncertainty value and not the formatted (and possibly rounded)!
+        #       This ensures that not the rounded value get stored
+        allow_edit = self.is_uncertainty_edition_allowed(analysis_brain)
+        if allow_edit:
+            item["Uncertainty"] = obj.getUncertainty()
+            item["allow_edit"].append("Uncertainty")
+            return
+
+        result = obj.getResult()
+        formatted = format_uncertainty(
+            obj, result, decimalmark=self.dmk, sciformat=int(self.scinot))
         if formatted:
-            item["Uncertainty"] = formatted
+            item["replace"]["Uncertainty"] = formatted
             item["before"]["Uncertainty"] = "± "
             item["after"]["Uncertainty"] = obj.getUnit()
-
-        if self.is_uncertainty_edition_allowed(analysis_brain):
-            item["allow_edit"].append("Uncertainty")
 
     def _folder_item_detection_limits(self, analysis_brain, item):
         """Fills the analysis' detection limits to the item passed in.
