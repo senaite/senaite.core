@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2095 Fix rounded uncertainty value is stored in the database
 - #2094 Skip Auditlog catalog if disabled for DX types catalog multiplexer
 - #2090 Add support for dates before 1900
 - #2089 Fix LDL/UDL cut-off and exponential float conversion
