@@ -300,7 +300,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             unc = 0
 
         field = self.getField("Uncertainty")
-        field.set(self, api.float_to_string(unc))
+        field.set(self, api.float_to_string(unc, default=None))
 
     @security.public
     def setDetectionLimitOperand(self, value):
