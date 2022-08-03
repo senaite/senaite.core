@@ -1393,7 +1393,7 @@ def float_to_string(value, default=_marker):
     """
     if not is_floatable(value):
         if default is not _marker:
-            return to_float(default)
+            return default
         fail("Value %s is not floatable" % repr(value))
 
     # Leave floatable string values unchanged
