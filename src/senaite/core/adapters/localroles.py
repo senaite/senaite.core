@@ -72,8 +72,8 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         for name, adapter in adapters:
             local_roles = adapter.getRoles(principal_id)
             if local_roles:
-                logger.info(u"{}::{}::{}: {}".format(name, path, principal_id,
-                                                     repr(local_roles)))
+                logger.debug(u"{}::{}::{}: {}".format(name, path, principal_id,
+                                                      repr(local_roles)))
             roles.update(local_roles)
         return list(roles)
 
