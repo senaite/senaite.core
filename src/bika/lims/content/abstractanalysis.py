@@ -239,15 +239,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 return None
 
             for d in uncertainties:
-                _min = d["intercept_min"].strip()
-                _max = d["intercept_max"].strip()
-                _err = d["errorvalue"].strip()
 
                 # convert to min/max
-                unc_min = api.to_float(_min, default=0)
-                unc_max = api.to_float(_max, default=0)
+                unc_min = api.to_float(d["intercept_min"], default=0)
+                unc_max = api.to_float(d["intercept_max"], default=0)
 
                 if unc_min <= res and res <= unc_max:
+                    _err = str(d["errorvalue"]).strip()
                     if _err.endswith("%"):
                         try:
                             percvalue = float(_err.replace("%", ""))
