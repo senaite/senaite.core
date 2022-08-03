@@ -1562,7 +1562,7 @@ Values below zero get converted by the `float` class to the exponential notation
     >>> other_float_value = float(other_value)
 
     >>> other_float_value
-    1e-7
+    1e-07
 
 Converting it back to a string would keep this notation:
 
@@ -1602,7 +1602,6 @@ The function also ensures that floatable string values remain unchanged:
     >>> str_value = "1.99887766554433221100"
     >>> api.float_to_string(str_value) == str_value
     True
-
 
 
 Convert to minutes
