@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2094 Skip Auditlog catalog if disabled for DX types catalog multiplexer
 - #2090 Add support for dates before 1900
 - #2089 Fix LDL/UDL cut-off and exponential float conversion
 - #2078 Replace dynamic code execution with dynamic import in reports
