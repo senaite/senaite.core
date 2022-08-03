@@ -51,7 +51,6 @@ from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
 from DateTime import DateTime
 from Products.Archetypes.Field import DateTimeField
-from Products.Archetypes.Field import FixedPointField
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.references import HoldingReference
@@ -109,7 +108,7 @@ Analyst = StringField(
 
 # The actual uncertainty for this analysis' result, populated from the ranges
 # specified in the analysis service when the result is submitted.
-Uncertainty = FixedPointField(
+Uncertainty = StringField(
     'Uncertainty',
     read_permission=View,
     write_permission="Field: Edit Result",
