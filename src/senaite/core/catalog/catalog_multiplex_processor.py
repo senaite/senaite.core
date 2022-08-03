@@ -18,12 +18,26 @@ class CatalogMultiplexProcessor(object):
     """A catalog multiplex processor
     """
 
+    def is_global_auditlog_enabled(self):
+        """Check if the global auditlogging is enabled
+        """
+        setup = api.get_senaite_setup()
+        # might happen during installation
+        if not setup:
+            return False
+        return setup.getEnableGlobalAuditlog()
+
     def get_catalogs_for(self, obj):
         catalogs = getattr(obj, "_catalogs", [])
         for rc in REQUIRED_CATALOGS:
             if rc in catalogs:
                 continue
             catalogs.append(rc)
+
+        # remove auditlog catalog if disabled
+        if not self.is_global_auditlog_enabled():
+            catalogs = filter(lambda cid: cid != AUDITLOG_CATALOG, catalogs)
+
         return map(api.get_tool, catalogs)
 
     def supports_multi_catalogs(self, obj):
