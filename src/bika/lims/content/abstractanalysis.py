@@ -259,7 +259,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                         uncertainty = api.to_float(_err, default=0)
 
                     # convert back to string value
-                    return api.float_to_string(uncertainty)
+                    return api.float_to_string(uncertainty, default=None)
         return None
 
     @security.public
@@ -281,7 +281,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 return None
 
         if uncertainty and self.getAllowManualUncertainty():
-            return api.float_to_string(uncertainty)
+            return api.float_to_string(uncertainty, default=None)
 
         return self.getDefaultUncertainty(result)
 
