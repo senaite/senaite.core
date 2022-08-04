@@ -324,9 +324,9 @@ Import the required function:
 Setup uncertainty settings in the service:
 
     >>> uncertainties = [
-    ...    {"intercept_min":  0, "intercept_max":  5, "errorvalue": 0.00015},
-    ...    {"intercept_min":  5, "intercept_max": 10, "errorvalue": "1%"},
-    ...    {"intercept_min": 10, "intercept_max": 20, "errorvalue": "2%"},
+    ...    {"intercept_min":  "0", "intercept_max":  "5", "errorvalue": "0.00015"},
+    ...    {"intercept_min":  "5", "intercept_max": "10", "errorvalue": "1%"},
+    ...    {"intercept_min": "10", "intercept_max": "20", "errorvalue": "5%"},
     ... ]
 
     >>> Au.setUncertainties(uncertainties)
@@ -369,3 +369,19 @@ range, we always show all digits:
     >>> au.setUncertainty("0.00000123")
     >>> format_uncertainty(au, au.getResult())
     '0.00000123'
+
+The uncertainty can be also defined as a percentage of the result and is then
+calculated for the given range automaticall (if no manual uncertainty was set).
+
+Test the range 5-10 with an unertainty value of 1% of the result:
+
+    >>> au.setUncertainty(None)
+    >>> au.setResult(7)
+    >>> au.getUncertainty()
+    '0.07'
+
+Test the range 10-20 with an unertainty value of 5% of the result:
+
+    >>> au.setResult(15)
+    >>> au.getUncertainty()
+    '0.75'
