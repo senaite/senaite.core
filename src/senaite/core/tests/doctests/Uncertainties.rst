@@ -1,11 +1,8 @@
 Uncertainties
 -------------
 
-This doctest is based on the following unit tests:
-
-  - test_manualuncertainty.py
-  - test_manualuncertainty.py
-
+Since version 2.3 uncertainties are stored in a String field instead of a FixedPoint field.
+This ensures that we always maintain the original (user entered) value in the database.
 
 Running this test from the buildout directory::
 
