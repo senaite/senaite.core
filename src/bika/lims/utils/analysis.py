@@ -223,7 +223,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
 
-    a) If the the non-decimal number of digits of the result is above
+    a) If the non-decimal number of digits of the result is above
        the service's ExponentialFormatPrecision, the uncertainty will
        be formatted in scientific notation. The uncertainty exponential
        value used will be the same as the one used for the result. The
@@ -300,7 +300,8 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     # always get full precision of the uncertainty if user entered manually
     # => avoids rounding and cut-off
     allow_manual = analysis.getAllowManualUncertainty()
-    if allow_manual:
+    default_uncertainty = analysis.getDefaultUncertainty()
+    if allow_manual and default_uncertainty is None:
         precision = uncertainty[::-1].find(".")
 
     if precision == -1:
@@ -311,6 +312,11 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     threshold = analysis.getExponentialFormatPrecision()
     formatted = _format_decimal_or_sci(
         uncertainty, precision, threshold, sciformat)
+
+    # strip off trailing zeros and the orphane dot
+    if "." in formatted:
+        formatted = formatted.rstrip("0").rstrip(".")
+
     return formatDecimalMark(formatted, decimalmark)
 
 

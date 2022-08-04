@@ -981,9 +981,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
             if uncertainty is None:
-                return self.getField('Precision').get(self)
+                return self.getField("Precision").get(self)
             if api.to_float(uncertainty) == 0 and result is None:
-                return self.getField('Precision').get(self)
+                return self.getField("Precision").get(self)
             if api.to_float(uncertainty) == 0:
                 strres = str(result)
                 numdecimals = strres[::-1].find('.')
