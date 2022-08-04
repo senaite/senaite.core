@@ -300,8 +300,8 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     # always get full precision of the uncertainty if user entered manually
     # => avoids rounding and cut-off
     allow_manual = analysis.getAllowManualUncertainty()
-    default_uncertainty = analysis.getDefaultUncertainty()
-    if allow_manual and default_uncertainty is None:
+    manual_value = analysis.getField("Uncertainty").get(analysis)
+    if allow_manual and manual_value:
         precision = uncertainty[::-1].find(".")
 
     if precision == -1:

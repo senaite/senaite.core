@@ -341,7 +341,6 @@ Create a new sample:
     >>> sample = new_sample([Cu, Fe, Au])
     >>> au = get_analysis(sample, Au)
 
-
 Since we have neither specified a precision in the analysis service, nor did we allow to
 set the precision from uncertainty, we get a precision of 0:
 
@@ -364,3 +363,12 @@ XXX: Why is it not rounded to 0.0002?
     >>> au.setPrecision(6)
     >>> format_uncertainty(au, au.getResult())
     '0.00015'
+
+When the user manually entered an uncertainty and overrides an uncertainty
+range, we always show all digits:
+
+    >>> au.setPrecision(None)
+    >>> au.setAllowManualUncertainty(True)
+    >>> au.setUncertainty("0.00000123")
+    >>> format_uncertainty(au, au.getResult())
+    '0.00000123'
