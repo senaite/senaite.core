@@ -385,3 +385,75 @@ Test the range 10-20 with an unertainty value of 5% of the result:
     >>> au.setResult(15)
     >>> au.getUncertainty()
     '0.75'
+
+
+Test floating point arithmetic
+..............................
+
+Currently, we convert all values internally to `float` values.
+These values loose precision as more digits in the fractional part are:
+
+    >>> 0.0005
+    0.0005
+
+    >>> 0.00005
+    5e-05
+
+    >>> 1.00005
+    1.00005
+
+
+    >>> 1.00000000000000000005
+    1.0
+
+This means, that storing values as `float` values would loose precision ins ome
+cases and no longer match the value entered by the user.
+
+Therefore, we store the uncertainty as string values:
+
+    >>> sample = new_sample([Cu, Fe, Au])
+    >>> au = get_analysis(sample, Au)
+
+    >>> au.setAllowManualUncertainty(True)
+    >>> au.setResult(10)
+
+Python returns the exponential notation for this value (see above):
+
+    >>> au.setUncertainty("0.00005")
+    >>> au.getUncertainty()
+    '0.00005'
+
+Define it as an uncertainty as percentage of the result:
+
+    >>> uncertainties = [
+    ...    {"intercept_min": "0", "intercept_max": "10", "errorvalue": "0.00001%"},
+    ... ]
+
+    >>> au.setUncertainties(uncertainties)
+    >>> au.setUncertainty(None)
+    >>> au.getUncertainty()
+    '0.0000010'
+
+    >>> format_uncertainty(au, au.getResult())
+    '0.000001'
+
+
+    >>> uncertainties = [
+    ...    {"intercept_min": "0", "intercept_max": "10", "errorvalue": "0.00000000000000000001%"},
+    ... ]
+
+    >>> au.setUncertainties(uncertainties)
+
+    >>> au.getUncertainty()
+    '0.0000000000000000000010'
+
+Because it exceeded the Exponential format precision, it is returned with the scientific notation:
+
+    >>> format_uncertainty(au, au.getResult())
+    '1.0e-21'
+
+Change to a higher precision threshold:
+
+    >>> au.setExponentialFormatPrecision(30)
+    >>> format_uncertainty(au, au.getResult())
+    '0.000000000000000000001'
