@@ -9,7 +9,6 @@ Running this test from the buildout directory::
     bin/test test_textual_doctests -t Uncertainties
 
 
-
 Test Setup
 ..........
 
@@ -56,7 +55,6 @@ Functional Helpers:
     ...         analysis.setResult(result)
     ...         do_action_for(analysis, "submit")
 
-
 Variables:
 
     >>> portal = self.portal
@@ -102,7 +100,6 @@ Create an Analysis Request and submit results:
     >>> au = get_analysis(sample, Au)
     >>> au.getAllowManualUncertainty()
     True
-
 
 Enter manual uncertainties to the analyses:
 
