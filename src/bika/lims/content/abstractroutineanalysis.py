@@ -35,7 +35,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
 from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.ATContentTypes.utils import DT2dt
 from Products.ATContentTypes.utils import dt2DT
@@ -47,7 +47,7 @@ from zope.interface import noLongerProvides
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
-Uncertainty = FixedPointField(
+Uncertainty = StringField(
     'Uncertainty',
     read_permission=View,
     write_permission="Field: Edit Result",

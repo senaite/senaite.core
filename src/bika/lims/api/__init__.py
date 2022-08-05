@@ -18,9 +18,15 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import Missing
 import re
+from collections import OrderedDict
+from datetime import datetime
+from datetime import timedelta
+from itertools import groupby
+
 import six
+
+import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from Acquisition import aq_inner
@@ -29,12 +35,8 @@ from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
-from collections import OrderedDict
-from datetime import datetime
 from DateTime import DateTime
-from datetime import timedelta
 from DateTime.interfaces import DateTimeError
-from itertools import groupby
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
@@ -1377,6 +1379,44 @@ def to_float(value, default=_marker):
             return to_float(default)
         fail("Value %s is not floatable" % repr(value))
     return float(value)
+
+
+def float_to_string(value, default=_marker):
+    """Convert a float value to string without exponential notation
+
+    This function preserves the whole fraction
+
+    :param value: The float value to be converted to a string
+    :type value: str, float, int
+    :returns: String representation of the float w/o exponential notation
+    :rtype: str
+    """
+    if not is_floatable(value):
+        if default is not _marker:
+            return default
+        fail("Value %s is not floatable" % repr(value))
+
+    # Leave floatable string values unchanged
+    if isinstance(value, six.string_types):
+        return value
+
+    value = float(value)
+    str_value = str(value)
+
+    if "." in str_value:
+        # might be something like 1.23e-26
+        front, back = str_value.split(".")
+    else:
+        # or 1e-07 for 0.0000001
+        back = str_value
+
+    if "e-" in back:
+        fraction, zeros = back.split("e-")
+        # we want to cover the faction and the zeros
+        precision = len(fraction) + int(zeros)
+        template = "{:.%df}" % precision
+        str_value = template.format(value)
+    return str_value
 
 
 def to_searchable_text_metadata(value):

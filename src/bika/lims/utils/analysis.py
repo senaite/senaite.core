@@ -175,7 +175,7 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     if sci:
         # First, cut the extra decimals according to the precision
         prec = precision if precision and precision > 0 else 0
-        nresult = str("%%.%sf" % prec) % result
+        nresult = str("%%.%sf" % prec) % api.to_float(result, 0)
 
         if sign:
             # 0.0012345 -> 1.2345
@@ -208,7 +208,7 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     else:
         # Decimal notation
         prec = precision if precision and precision > 0 else 0
-        formatted = str("%%.%sf" % prec) % result
+        formatted = str("%%.%sf" % prec) % api.to_float(result, 0)
         if float(formatted) == 0 and '-' in formatted:
             # We don't want things like '-0.00'
             formatted = formatted.replace('-', '')
@@ -223,7 +223,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
 
-    a) If the the non-decimal number of digits of the result is above
+    a) If the non-decimal number of digits of the result is above
        the service's ExponentialFormatPrecision, the uncertainty will
        be formatted in scientific notation. The uncertainty exponential
        value used will be the same as the one used for the result. The
@@ -286,21 +286,37 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     except ValueError:
         pass
 
+    uncertainty = None
     if result == objres:
         # To avoid problems with DLs
         uncertainty = analysis.getUncertainty()
     else:
         uncertainty = analysis.getUncertainty(result)
 
-    if uncertainty is None or uncertainty == 0:
+    if not uncertainty:
         return ""
+
+    precision = -1
+    # always get full precision of the uncertainty if user entered manually
+    # => avoids rounding and cut-off
+    allow_manual = analysis.getAllowManualUncertainty()
+    manual_value = analysis.getField("Uncertainty").get(analysis)
+    if allow_manual and manual_value:
+        precision = uncertainty[::-1].find(".")
+
+    if precision == -1:
+        precision = analysis.getPrecision(result)
 
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = analysis.getExponentialFormatPrecision()
-    precision = analysis.getPrecision(result)
-    formatted = _format_decimal_or_sci(uncertainty, precision, threshold,
-                                       sciformat)
+    formatted = _format_decimal_or_sci(
+        uncertainty, precision, threshold, sciformat)
+
+    # strip off trailing zeros and the orphane dot
+    if "." in formatted:
+        formatted = formatted.rstrip("0").rstrip(".")
+
     return formatDecimalMark(formatted, decimalmark)
 
 

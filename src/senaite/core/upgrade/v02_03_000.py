@@ -79,6 +79,7 @@ def upgrade(tool):
     fix_interface_interpretation_template(portal)
     fix_unassigned_samples(portal)
     move_arreports_to_report_catalog(portal)
+    migrate_analyses_fields(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -281,3 +282,56 @@ def move_arreports_to_report_catalog(portal):
         obj._p_deactivate()  # noqa
 
     logger.info("Move ARReports to SENAITE Report Catalog [DONE]")
+
+
+def migrate_analyses_fields(portal):
+    """return all analyses
+    """
+    logger.info("Migrate Analyses Fields ...")
+    cat = api.get_tool(ANALYSIS_CATALOG)
+    query = {"portal_type": ["Analysis", "ReferenceAnalysis"]}
+    brains = cat.search(query)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Migrated {0}/{1} analyses fields".format(num, total))
+
+        analysis = api.get_object(brain)
+
+        # Migrate Uncertainty FixedPointField -> StringField
+        migrate_uncertainty_field_to_string(analysis)
+
+        # Flush the object from memory
+        analysis._p_deactivate()  # noqa
+
+    logger.info("Migrate Analyses Fields [DONE]")
+
+
+def migrate_uncertainty_field_to_string(analysis):
+    """Migrate the uncertainty field to string
+    """
+    field = analysis.getField("Uncertainty")
+    value = field.get(analysis)
+
+    # Leave any other value type unchanged
+    if isinstance(value, tuple):
+        value = fixed_point_value_to_string(value)
+
+    # set the new value
+    field.set(analysis, value)
+
+
+def fixed_point_value_to_string(value):
+    """Code taken and modified from FixedPointField get method
+    """
+    template = "%%s%%d.%%0%dd" % 10
+    front, fra = value
+    sign = ""
+    # Numbers between -1 and 0 are store with a negative fraction.
+    if fra < 0:
+        sign = "-"
+        fra = abs(fra)
+    str_value = template % (sign, front, fra)
+    # strip off trailing zeros and possible dot
+    return str_value.rstrip("0").rstrip(".")

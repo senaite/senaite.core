@@ -1547,6 +1547,63 @@ With default fallback:
     2
 
 
+Convert float to string
+.......................
+
+Values below zero get converted by the `float` class to the exponential notation, e.g.
+
+    >>> value = "0.000000000123"
+    >>> float_value = float(value)
+
+    >>> float_value
+    1.23e-10
+
+    >>> other_value = "0.0000001"
+    >>> other_float_value = float(other_value)
+
+    >>> other_float_value
+    1e-07
+
+Converting it back to a string would keep this notation:
+
+    >>> str(float_value)
+    '1.23e-10'
+
+    >>> str(other_float_value)
+    '1e-07'
+
+The function `float_to_string` converts the float value without exponential notation:
+
+    >>> api.float_to_string(float_value)
+    '0.000000000123'
+
+    >>> api.float_to_string(float_value) == value
+    True
+
+Passing in the string value should convert it to the same value:
+
+    >>> api.float_to_string(value) == value
+    True
+
+When the fraction contains more digits, it will retain them all and takes care of the trailing zero:
+
+    >>> new_value = 0.000000000123777
+    >>> api.float_to_string(new_value)
+    '0.000000000123777'
+
+Converting integers work as well:
+
+    >>> int_value = 123
+    >>> api.float_to_string(int_value)
+    '123.0'
+
+The function also ensures that floatable string values remain unchanged:
+
+    >>> str_value = "1.99887766554433221100"
+    >>> api.float_to_string(str_value) == str_value
+    True
+
+
 Convert to minutes
 ..................
 
