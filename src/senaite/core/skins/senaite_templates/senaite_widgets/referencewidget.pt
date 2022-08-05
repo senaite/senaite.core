@@ -141,7 +141,7 @@
                                        value python:widget.initial_uid_field_value(val);"/>
 
                 <!-- Link to single valued object in edit mode -->
-                <tal:link tal:condition="python:val and not multiValued">
+                <tal:link tal:condition="python:hasattr(val, 'absolute_url') and not multiValued">
                   <a class="pl-2 d-table-cell" href="#"
                      target="blank"
                      tal:attributes="href python:val.absolute_url()">
