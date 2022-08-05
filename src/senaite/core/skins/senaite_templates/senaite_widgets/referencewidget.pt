@@ -91,7 +91,7 @@
                                      text_attr widget/ui_item|nothing;
                                      text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
               <input type="text"
-                     class="blurrable firstToFocus referencewidget d-table-cell"
+                     class="blurrable firstToFocus referencewidget"
                      tal:condition="python:context.Schema()[fieldName].required"
                      tal:attributes="name fieldName;
                                      id fieldName;
@@ -112,7 +112,7 @@
                                      combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
 
               <input type="text"
-                     class="blurrable firstToFocus referencewidget d-table-cell"
+                     class="blurrable firstToFocus referencewidget"
                      tal:condition="python:not context.Schema()[fieldName].required"
                      tal:attributes="name fieldName;
                                      id fieldName;
