@@ -107,7 +107,7 @@ def Import(context, request, instrumentname='sysmex_xs_500i'):
         tbex = ''
         try:
             importer.process()
-        except:
+        except Exception:
             tbex = traceback.format_exc()
         errors = importer.errors
         logs = importer.logs

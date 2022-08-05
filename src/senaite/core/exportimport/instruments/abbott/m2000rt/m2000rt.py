@@ -94,7 +94,7 @@ def Import(context, request):
         try:
             # run the parser and save results
             importer.process()
-        except:
+        except Exception:
             tbex = traceback.format_exc()
         errors = importer.errors
         logs = importer.logs

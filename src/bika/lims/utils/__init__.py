@@ -202,7 +202,7 @@ def formatDecimalMark(value, decimalmark='.'):
     rawval = str(value)
     try:
         return decimalmark.join(rawval.split('.'))
-    except:
+    except Exception:
         return rawval
 
 
@@ -479,7 +479,7 @@ def getHiddenAttributesForClass(classname):
             for alist in hiddenattributes:
                 if alist[0] == classname:
                     return alist[1:]
-    except:
+    except Exception:
         logger.warning(
             'Probem accessing optionally hidden attributes in registry')
 

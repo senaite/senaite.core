@@ -78,7 +78,7 @@ def Import(context, request):
         tbex = ''
         try:
             importer.process()
-        except:
+        except Exception:
             tbex = traceback.format_exc()
         errors = importer.errors
         logs = importer.logs
@@ -143,7 +143,7 @@ class WinescanFT120CSVParser(WinescanCSVParser):
                 from datetime import datetime
                 dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M %p')
                 dateTime = dtobj.strftime("%Y%m%d %H:%M")
-            except:
+            except Exception:
                 pass
             del values['Date']
             del values['Time']

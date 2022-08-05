@@ -74,7 +74,7 @@ def GenericImport(context, request, parser, importer=None):
         tbex = ''
         try:
             imp.process()
-        except:
+        except Exception:
             tbex = traceback.format_exc()
         errors = imp.errors
         logs = imp.logs

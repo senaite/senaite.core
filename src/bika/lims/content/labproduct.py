@@ -108,7 +108,7 @@ class LabProduct(BaseContent):
         """
         try:
             vatamount = self.getTotalPrice() - Decimal(self.getPrice())
-        except:
+        except Exception:
             vatamount = Decimal('0.00')
         return vatamount.quantize(Decimal('0.00'))
 

@@ -75,7 +75,7 @@ def load_brain_metadata(proxy, include_fields):
         if val != Missing.Value:
             try:
                 json.dumps(val)
-            except:
+            except Exception:
                 continue
             ret[index] = val
     return ret
@@ -128,7 +128,7 @@ def load_field_values(instance, include_fields):
 
         try:
             json.dumps(val)
-        except:
+        except Exception:
             val = str(val)
         ret[fieldname] = val
     return ret
@@ -238,7 +238,7 @@ def set_fields_from_request(obj, request):
                            'senaite.core.browser.fields.record.RecordField']:
             try:
                 value = eval(value)
-            except:
+            except Exception:
                 logger.warning(
                     "JSONAPI: " + fieldname + ": Invalid "
                     "JSON/Python variable")

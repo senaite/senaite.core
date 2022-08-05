@@ -62,7 +62,7 @@ class TimaCSVParser(InstrumentCSVResultsFileParser):
                 dtstr = '%s %s' % (_values['Date'], _values['Time'])
                 dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M:%S')
                 vals['DateTime'] = dtobj.strftime("%Y%m%d %H:%M:%S")
-            except:
+            except Exception:
                 pass
             rawdict = {acode: vals}
 

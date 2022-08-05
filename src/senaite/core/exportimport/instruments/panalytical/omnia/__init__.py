@@ -159,7 +159,7 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         try:
             rawdict['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
                                    'DefaultValue':'DateTime'}
-        except:
+        except Exception:
             pass
         if not rid:
             self.err("No Sample defined", numline=self._numline)
@@ -499,7 +499,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             try:
                 raw['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
                                    'DefaultValue':'DateTime'}
-            except:
+            except Exception:
                 pass
             
         self._addRawResult(rid, raw, True)

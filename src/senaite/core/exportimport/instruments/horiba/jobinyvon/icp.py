@@ -73,7 +73,7 @@ class Importer:
             exception_string = ''
             try:
                 importer.process()
-            except:
+            except Exception:
                 exception_string = traceback.format_exc()
             self.errors = importer.errors
             self.logs = importer.logs

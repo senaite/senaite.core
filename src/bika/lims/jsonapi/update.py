@@ -152,7 +152,7 @@ class Update(object):
                 return ret
             for field in fields:
                 self.used(field)
-        except:
+        except Exception:
             savepoint.rollback()
             raise
 
@@ -238,7 +238,7 @@ class Update(object):
                 else:
                     this_ret['success'] = True
                     this_ret['error'] = False
-            except:
+            except Exception:
                 savepoint.rollback()
                 raise
             ret['updates'].append(this_ret)

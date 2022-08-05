@@ -1831,7 +1831,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except:  # noqa FIXME: remove blind except!
+        except Exception:  # noqa FIXME: remove blind except!
             return 'access denied'
 
         if not review_history:
@@ -2117,7 +2117,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except:  # noqa FIXME: remove blind except!
+        except Exception:  # noqa FIXME: remove blind except!
             return None
         for items in review_history:
             action = items.get('action')

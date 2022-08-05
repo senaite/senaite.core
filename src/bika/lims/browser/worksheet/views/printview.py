@@ -143,7 +143,7 @@ class PrintView(BrowserView):
         reptemplate = ""
         try:
             reptemplate = embed(self)
-        except:
+        except Exception:
             tbex = traceback.format_exc()
             wsid = self._worksheets[self._current_ws_index].id
             reptemplate = "<div class='error-print'>%s - %s '%s':<pre>%s</pre></div>" % (wsid, _("Unable to load the template"), embedt, tbex)

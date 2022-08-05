@@ -209,7 +209,7 @@ class Create(object):
             obj.aq_parent.reindexObject()
             event.notify(ObjectInitializedEvent(obj))
             obj.at_post_create_script()
-        except:
+        except Exception:
             savepoint.rollback()
             raise
 
