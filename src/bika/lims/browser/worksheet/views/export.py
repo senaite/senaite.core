@@ -27,9 +27,6 @@ class ExportView(BrowserView):
     """
     """
     def __call__(self):
-
-        translate = self.context.translate
-
         instrument = self.context.getInstrument()
         if not instrument:
             self.context.plone_utils.addPortalMessage(
@@ -58,5 +55,5 @@ class ExportView(BrowserView):
             return
 
         exporter = exim.Export(self.context, self.request)
-        data = exporter(self.context.getAnalyses())
+        exporter(self.context.getAnalyses())
         pass

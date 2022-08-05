@@ -34,7 +34,6 @@ def getResultsInputFile(request):
 
 def GenericImport(context, request, parser, importer=None):
     infile = getResultsInputFile(request)
-    fileformat = getFileFormat(request)
     artoapply = request.form['artoapply']
     override = request.form['results_override']
 

@@ -37,9 +37,7 @@ class ScheduleInputWidget(TypesWidget):
     security = ClassSecurityInfo()
     
     def process_form(self, instance, field, form, empty_marker=None, emptyReturnsMarker=False):
-        
-        values = len(instance.getScheduleCriteria())>0 and instance.getScheduleCriteria() or []
-        
+
         if "form.button.save" in form:
             value = []            
             fn = form['fieldName']
