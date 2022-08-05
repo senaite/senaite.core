@@ -144,7 +144,7 @@ class RecordsField(RecordField):
         result returned by validator
         """
         name = self.getName()
-        if errors and errors.has_key(name):
+        if errors and name in errors:
             return True
 
         validation_results = (
