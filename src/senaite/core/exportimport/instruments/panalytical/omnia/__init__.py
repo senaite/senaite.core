@@ -203,7 +203,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
     def parse_headerline(self, line):
         #Process incoming header line
-        """
+        r"""
         29/11/2013 10:15:44
         PANalytical
         "Quantification of sample ESFERA CINZA - 1g H3BO3 -  1:0,5 - NO PPC",

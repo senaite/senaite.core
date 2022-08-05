@@ -328,7 +328,7 @@ def slice(string, separator="-", start=None, end=None):
     """
     # split by wildcards/keywords first
     # AR-{sampleType}-{parentId}{alpha:3a2d}
-    segments = filter(None, re.split('(\{.+?\})', string))
+    segments = filter(None, re.split(r'(\{.+?})', string))
     # ['AR-', '{sampleType}', '-', '{parentId}', '{alpha:3a2d}']
     if separator:
         # Keep track of singleton separators as empties
