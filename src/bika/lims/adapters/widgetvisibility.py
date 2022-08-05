@@ -156,7 +156,7 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
         # If object has been already created, get SWF statues from it.
         swf_enabled = False
         if hasattr(self.context, 'getSamplingWorkflowEnabled') and \
-                self.context.getSamplingWorkflowEnabled() is not '':
+                self.context.getSamplingWorkflowEnabled() != '':
             swf_enabled = self.context.getSamplingWorkflowEnabled()
         else:
             swf_enabled = self.context.bika_setup.getSamplingWorkflowEnabled()
