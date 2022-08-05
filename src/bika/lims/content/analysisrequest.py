@@ -1828,10 +1828,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         mtool = getToolByName(self, 'portal_membership')
 
         verifier = None
-        # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except Exception:  # noqa FIXME: remove blind except!
+        except Exception:
             return 'access denied'
 
         if not review_history:
@@ -2114,10 +2113,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
-        # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except Exception:  # noqa FIXME: remove blind except!
+        except Exception:
             return None
         for items in review_history:
             action = items.get('action')
