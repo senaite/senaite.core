@@ -370,7 +370,7 @@ def migrate_ldl_field_to_string(obj):
     if isinstance(value, tuple):
         migrated_value = fixed_point_value_to_string(value, 7)
         logger.info("Migrating LDL field of %s: %s -> %s" % (
-            api.get_pat(obj), value, migrated_value))
+            api.get_path(obj), value, migrated_value))
         value = migrated_value
 
     # set the new value
