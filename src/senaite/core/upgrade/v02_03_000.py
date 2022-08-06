@@ -343,62 +343,63 @@ def migrate_analyses_fields(portal):
     logger.info("Migrate Analyses Fields [DONE]")
 
 
-def migrate_udl_field_to_string(analysis):
+def migrate_udl_field_to_string(obj):
     """Migrate the UDL field to string
     """
-    field = analysis.getField("UpperDetectionLimit")
-    value = field.get(analysis)
+    field = obj.getField("UpperDetectionLimit")
+    value = field.get(obj)
 
     # Leave any other value type unchanged
     if isinstance(value, tuple):
-        migrated_value = fixed_point_value_to_string(value, precision=7)
+        migrated_value = fixed_point_value_to_string(value, 7)
         logger.info("Migrating UDL field of %s: %s -> %s" % (
-            api.get_path(analysis), value, migrated_value))
+            api.get_path(obj), value, migrated_value))
         value = migrated_value
 
     # set the new value
-    field.set(analysis, value)
+    field.set(obj, value)
 
 
-def migrate_ldl_field_to_string(analysis):
+def migrate_ldl_field_to_string(obj):
     """Migrate the LDL field to string
     """
-    field = analysis.getField("LowerDetectionLimit")
-    value = field.get(analysis)
+    field = obj.getField("LowerDetectionLimit")
+    value = field.get(obj)
 
     # Leave any other value type unchanged
     if isinstance(value, tuple):
-        migrated_value = fixed_point_value_to_string(value, precision=7)
+        migrated_value = fixed_point_value_to_string(value, 7)
         logger.info("Migrating LDL field of %s: %s -> %s" % (
-            api.get_pat(analysis), value, migrated_value))
+            api.get_pat(obj), value, migrated_value))
         value = migrated_value
 
     # set the new value
-    field.set(analysis, value)
+    field.set(obj, value)
 
 
-def migrate_uncertainty_field_to_string(analysis):
+def migrate_uncertainty_field_to_string(obj):
     """Migrate the uncertainty field to string
     """
-    field = analysis.getField("Uncertainty")
-    value = field.get(analysis)
+    field = obj.getField("Uncertainty")
+    value = field.get(obj)
 
     # Leave any other value type unchanged
     if isinstance(value, tuple):
-        migrated_value = fixed_point_value_to_string(value, precision=10)
+        migrated_value = fixed_point_value_to_string(value, 10)
         logger.info("Migrating Uncertainty field of %s: %s -> %s" % (
-            api.get_pat(analysis), value, migrated_value))
+            api.get_pat(obj), value, migrated_value))
         value = migrated_value
 
     # set the new value
-    field.set(analysis, value)
+    field.set(obj, value)
 
 
-def fixed_point_value_to_string(value, precision=10):
+def fixed_point_value_to_string(value, precision):
     """Code taken and modified from FixedPointField get method
 
     IMPORTANT: The precision has to be the same as it was initially
                defined in the field when the value was set!
+               Otherwise, values > 0, e.g. 0.0005 are converted wrong!
     """
     template = "%%s%%d.%%0%dd" % precision
     front, fra = value
