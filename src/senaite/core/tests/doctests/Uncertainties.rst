@@ -429,7 +429,7 @@ Define it as an uncertainty as percentage of the result:
     >>> au.setUncertainties(uncertainties)
     >>> au.setUncertainty(None)
     >>> au.getUncertainty()
-    '0.0000010'
+    '0.000001'
 
     >>> format_uncertainty(au, au.getResult())
     '0.000001'
@@ -442,7 +442,7 @@ Define it as an uncertainty as percentage of the result:
     >>> au.setUncertainties(uncertainties)
 
     >>> au.getUncertainty()
-    '0.0000000000000000000010'
+    '0.000000000000000000001'
 
 Because it exceeded the Exponential format precision, it is returned with the scientific notation:
 
