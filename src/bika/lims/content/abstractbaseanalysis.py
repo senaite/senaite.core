@@ -849,6 +849,9 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         field = self.getField("LowerDetectionLimit")
         value = field.get(self)
+        # cut off trailing zeros
+        if "." in value:
+            value = value.rstrip("0").rstrip(".")
         return value
 
     @security.public
@@ -857,6 +860,9 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         field = self.getField("UpperDetectionLimit")
         value = field.get(self)
+        # cut off trailing zeros
+        if "." in value:
+            value = value.rstrip("0").rstrip(".")
         return value
 
     @security.public
