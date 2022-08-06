@@ -24,6 +24,7 @@ from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
@@ -79,6 +80,7 @@ def upgrade(tool):
     fix_interface_interpretation_template(portal)
     fix_unassigned_samples(portal)
     move_arreports_to_report_catalog(portal)
+    migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
@@ -284,8 +286,35 @@ def move_arreports_to_report_catalog(portal):
     logger.info("Move ARReports to SENAITE Report Catalog [DONE]")
 
 
+def migrate_analysis_services_fields(portal):
+    """Migrate fields in AnalysisService objects
+    """
+    logger.info("Migrate Analysis Services Fields ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    query = {"portal_type": ["AnalysisService"]}
+    brains = cat.search(query)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Migrated {0}/{1} analyses fields".format(num, total))
+
+        obj = api.get_object(brain)
+
+        # Migrate UDL FixedPointField -> StringField
+        migrate_udl_field_to_string(obj)
+
+        # Migrate LDL FixedPointField -> StringField
+        migrate_ldl_field_to_string(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()  # noqa
+
+    logger.info("Migrate Analysis Services [DONE]")
+
+
 def migrate_analyses_fields(portal):
-    """return all analyses
+    """Migrate fields in Analysis/ReferenceAnalysis objects
     """
     logger.info("Migrate Analyses Fields ...")
     cat = api.get_tool(ANALYSIS_CATALOG)
@@ -297,15 +326,55 @@ def migrate_analyses_fields(portal):
         if num and num % 100 == 0:
             logger.info("Migrated {0}/{1} analyses fields".format(num, total))
 
-        analysis = api.get_object(brain)
+        obj = api.get_object(brain)
 
         # Migrate Uncertainty FixedPointField -> StringField
-        migrate_uncertainty_field_to_string(analysis)
+        migrate_uncertainty_field_to_string(obj)
+
+        # Migrate UDL FixedPointField -> StringField
+        migrate_udl_field_to_string(obj)
+
+        # Migrate LDL FixedPointField -> StringField
+        migrate_ldl_field_to_string(obj)
 
         # Flush the object from memory
-        analysis._p_deactivate()  # noqa
+        obj._p_deactivate()  # noqa
 
     logger.info("Migrate Analyses Fields [DONE]")
+
+
+def migrate_udl_field_to_string(analysis):
+    """Migrate the UDL field to string
+    """
+    field = analysis.getField("UpperDetectionLimit")
+    value = field.get(analysis)
+
+    # Leave any other value type unchanged
+    if isinstance(value, tuple):
+        migrated_value = fixed_point_value_to_string(value, precision=7)
+        logger.info("Migrating UDL field of %s: %s -> %s" % (
+            api.get_path(analysis), value, migrated_value))
+        value = migrated_value
+
+    # set the new value
+    field.set(analysis, value)
+
+
+def migrate_ldl_field_to_string(analysis):
+    """Migrate the LDL field to string
+    """
+    field = analysis.getField("LowerDetectionLimit")
+    value = field.get(analysis)
+
+    # Leave any other value type unchanged
+    if isinstance(value, tuple):
+        migrated_value = fixed_point_value_to_string(value, precision=7)
+        logger.info("Migrating LDL field of %s: %s -> %s" % (
+            api.get_pat(analysis), value, migrated_value))
+        value = migrated_value
+
+    # set the new value
+    field.set(analysis, value)
 
 
 def migrate_uncertainty_field_to_string(analysis):
@@ -316,16 +385,22 @@ def migrate_uncertainty_field_to_string(analysis):
 
     # Leave any other value type unchanged
     if isinstance(value, tuple):
-        value = fixed_point_value_to_string(value)
+        migrated_value = fixed_point_value_to_string(value, precision=10)
+        logger.info("Migrating Uncertainty field of %s: %s -> %s" % (
+            api.get_pat(analysis), value, migrated_value))
+        value = migrated_value
 
     # set the new value
     field.set(analysis, value)
 
 
-def fixed_point_value_to_string(value):
+def fixed_point_value_to_string(value, precision=10):
     """Code taken and modified from FixedPointField get method
+
+    IMPORTANT: The precision has to be the same as it was initially
+               defined in the field when the value was set!
     """
-    template = "%%s%%d.%%0%dd" % 10
+    template = "%%s%%d.%%0%dd" % precision
     front, fra = value
     sign = ""
     # Numbers between -1 and 0 are store with a negative fraction.
