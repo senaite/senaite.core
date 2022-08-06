@@ -563,14 +563,6 @@ def format_supsub(text):
     return ''.join(out)
 
 
-def drop_trailing_zeros_decimal(num):
-    """ Drops the trailinz zeros from decimal value.
-        Returns a string
-    """
-    out = str(num)
-    return out.rstrip('0').rstrip('.') if '.' in out else out
-
-
 def checkPermissions(permissions=[], obj=None):
     """
     Checks if a user has permissions for a given object.

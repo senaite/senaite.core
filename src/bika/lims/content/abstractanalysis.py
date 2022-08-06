@@ -43,7 +43,6 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
@@ -865,8 +864,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                res = float(result)  # required, check if floatable
-                res = drop_trailing_zeros_decimal(res)
+                res = api.float_to_string(float(result))
                 fdm = formatDecimalMark(res, decimalmark)
                 hdl = cgi.escape(dl) if html else dl
                 return '%s %s' % (hdl, fdm)
@@ -933,8 +931,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         ldl = api.to_float(ldl, 0.0)
         if result < ldl:
             # LDL must not be formatted according to precision, etc.
-            # Drop trailing zeros from decimal
-            ldl = drop_trailing_zeros_decimal(ldl)
+            ldl = api.float_to_string(ldl)
             fdm = formatDecimalMark('< %s' % ldl, decimalmark)
             return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
@@ -943,8 +940,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         udl = api.to_float(udl, 0.0)
         if result > udl:
             # UDL must not be formatted according to precision, etc.
-            # Drop trailing zeros from decimal
-            udl = drop_trailing_zeros_decimal(udl)
+            udl = api.float_to_string(udl)
             fdm = formatDecimalMark('> %s' % udl, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
