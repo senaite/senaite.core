@@ -844,6 +844,22 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return DisplayList(list(items))
 
     @security.public
+    def getLowerDetectionLimit(self):
+        """Get the lower detection limit
+        """
+        field = self.getField("LowerDetectionLimit")
+        value = field.get(self)
+        return value
+
+    @security.public
+    def getUpperDetectionLimit(self):
+        """Get the upper detection limit
+        """
+        field = self.getField("UpperDetectionLimit")
+        value = field.get(self)
+        return value
+
+    @security.public
     def isSelfVerificationEnabled(self):
         """Returns if the user that submitted a result for this analysis must
         also be able to verify the result
