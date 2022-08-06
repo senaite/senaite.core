@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2104 Fix result formatting when result is below LDL or above UDL
 - #2103 Convert LDL/UDL fields to string
 - #2097 Fix Attribute Error in Multi- Sample Add form when current user is linked to a client contact
 - #2096 Convert uncertainty field to string
