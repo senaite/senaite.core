@@ -619,7 +619,7 @@ class Instrument(ATFolder):
                 cand = int(grid.split('-')[2])
                 if cand >= postfix:
                     postfix = cand + 1
-            except:
+            except Exception:
                 pass
         postfix = str(postfix).zfill(int(3))
         refgid = 'I%s-%s' % (reference.id, postfix)

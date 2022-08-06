@@ -175,7 +175,7 @@ class WorksheetImporter:
                     self.dataset_project,
                     "setupdata/%s/%s" % (self.dataset_name, filename))
                 file_data = open(path, "rb").read()
-            except:
+            except Exception:
                 file_data = None
         else:
             file_data = None
@@ -188,15 +188,15 @@ class WorksheetImporter:
 
         try:
             value = value.lower()
-        except:
+        except Exception:
             pass
         try:
             value = value.encode('utf-8')
-        except:
+        except Exception:
             pass
         try:
             value = int(value)
-        except:
+        except Exception:
             pass
         if value in ('true', 1):
             return True
@@ -211,7 +211,7 @@ class WorksheetImporter:
         except ValueError:
             try:
                 return int(default)
-            except:
+            except Exception:
                 return 0
 
     def to_float(self, value, default=0):
@@ -222,7 +222,7 @@ class WorksheetImporter:
         except ValueError:
             try:
                 return float(default)
-            except:
+            except Exception:
                 return 0.0
 
     def defer(self, **kwargs):
@@ -275,7 +275,7 @@ class WorksheetImporter:
         for fieldname in fieldnames:
             try:
                 field = fields[fieldname]
-            except:
+            except Exception:
                 if fieldname in row:
                     logger.info("Address field %s not found on %s"%(fieldname,obj))
                 continue
@@ -1038,7 +1038,7 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
                 obj = _createObjectByType("InstrumentMaintenanceTask", folder, tmpID())
                 try:
                     cost = "%.2f" % (row.get('cost', 0))
-                except:
+                except Exception:
                     cost = row.get('cost', '0.0')
 
                 obj.edit(
@@ -1970,7 +1970,7 @@ class Setup(WorksheetImporter):
         }
         try:
             return converters.get(field.type, None)(field, value)
-        except:
+        except Exception:
             logger.error("No valid type for Setup.{} ({}): {}"
                          .format(field.getName(), field.type, value))
 
@@ -2050,7 +2050,7 @@ class Setup(WorksheetImporter):
             try:
                 obj_field = bsetup.getField(field_name)
                 obj_field.set(bsetup, str(value))
-            except:
+            except Exception:
                 logger.error("No valid type for Setup.{} ({}): {}"
                              .format(field_name, field.type, value))
 

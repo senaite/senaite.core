@@ -60,7 +60,7 @@ class LoadSetupData(BrowserView):
             tool = getToolByName(self.context, d['dest_catalog'])
             try:
                 proxies = tool(d['dest_query'])
-            except:
+            except Exception:
                 continue
             if len(proxies) > 0:
                 obj = proxies[0].getObject()

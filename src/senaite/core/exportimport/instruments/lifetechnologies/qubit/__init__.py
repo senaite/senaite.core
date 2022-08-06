@@ -55,7 +55,7 @@ class QuBitCSVParser(InstrumentCSVResultsFileParser):
             dtstr = '%s %s' % (_values['Date'], _values['Time'])
             dtobj = datetime.strptime(dtstr, '%Y/%m/%d %H:%M %p')
             values[self.analysiskey]['DateTime'] = dtobj.strftime("%Y%m%d %H:%M:%S")
-        except:
+        except Exception:
             pass
 
         # add result

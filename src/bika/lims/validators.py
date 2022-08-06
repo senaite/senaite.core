@@ -1020,7 +1020,7 @@ class DurationValidator:
             for v in value.values():
                 try:
                     int(v)
-                except:
+                except Exception:
                     return to_utf8(
                         translate(_("Validation failed: Values must be numbers")))
         return True
@@ -1103,7 +1103,7 @@ class PercentValidator:
 
         try:
             value = float(value)
-        except:
+        except Exception:
             msg = _("Validation failed: percent values must be numbers")
             return to_utf8(translate(msg))
 
@@ -1329,7 +1329,7 @@ class SortKeyValidator:
         translate = getToolByName(instance, 'translation_service').translate
         try:
             value = float(value)
-        except:
+        except Exception:
             msg = _("Validation failed: value must be float")
             return to_utf8(translate(msg))
 

@@ -24,7 +24,7 @@ from Products.Archetypes.Widget import TypesWidget
 
 try:
     from zope.component.hooks import getSite
-except:
+except Exception:
     # Plone < 4.3
     from zope.app.component.hooks import getSite
 

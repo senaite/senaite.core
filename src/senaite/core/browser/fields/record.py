@@ -235,7 +235,7 @@ class RecordField(ObjectField):
             try:
                 value = eval(value)
                 # more checks to add?
-            except: # what to catch here?
+            except Exception: # what to catch here?
                 pass
         value = self._to_dict(value)
         value = self._decode_strings(value, instance, **kwargs)
@@ -262,7 +262,7 @@ class RecordField(ObjectField):
             if self.subfield_types.get(k, None) == 'datetime':
                 try:
                     val = DateTime(v)
-                except:
+                except Exception:
                     val = None
 
                 new_value[k] = val

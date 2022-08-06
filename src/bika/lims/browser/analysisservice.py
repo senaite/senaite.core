@@ -164,7 +164,7 @@ class ajaxGetContainers(BrowserView):
         try:
             minvol = minvol.split()
             minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
-        except:
+        except Exception:
             minvol = mg(0)
 
         containers = getContainers(
