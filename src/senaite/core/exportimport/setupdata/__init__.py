@@ -515,7 +515,6 @@ class Lab_Departments(WorksheetImporter):
 class Lab_Products(WorksheetImporter):
 
     def Import(self):
-        context = self.context
         # Refer to the default folder
         folder = self.context.bika_setup.bika_labproducts
         # Iterate through the rows
@@ -609,7 +608,7 @@ class Client_Contacts(WorksheetImporter):
             password = safe_unicode(row['Password']).encode('utf-8')
             if(username):
                 try:
-                    member = self.context.portal_registration.addMember(
+                    self.context.portal_registration.addMember(
                         username,
                         password,
                         properties={
@@ -1223,8 +1222,6 @@ class Storage_Locations(WorksheetImporter):
 
     def Import(self):
         setup_folder = self.context.bika_setup.bika_storagelocations
-        bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['Address']:
                 continue
@@ -1688,7 +1685,6 @@ class Analysis_Specifications(WorksheetImporter):
         return service
 
     def Import(self):
-        s_t = ""
         bucket = {}
         pc = getToolByName(self.context, "portal_catalog")
         bsc = getToolByName(self.context, "senaite_catalog_setup")
@@ -2156,7 +2152,6 @@ class Reference_Samples(WorksheetImporter):
             if not worksheet:
                 return
             self.interim_worksheet = worksheet
-        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         interims = []
         for row in self.get_rows(3, worksheet=self.interim_worksheet):
             if row['ReferenceAnalysis_id'] != analysis.getId():
@@ -2260,8 +2255,6 @@ class Analysis_Requests(WorksheetImporter):
         analysis.setInterimFields(interims)
 
     def Import(self):
-        bc = getToolByName(self.context, 'senaite_catalog')
-        bsc = getToolByName(self.context, 'senaite_catalog_setup')
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['id']:

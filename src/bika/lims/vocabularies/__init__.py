@@ -18,7 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import is_active
 from bika.lims.utils import t
@@ -59,7 +58,6 @@ class CatalogVocabulary(object):
 
     def __call__(self, **kwargs):
         site = getSite()
-        request = aq_get(site, 'REQUEST', None)
         catalog = getToolByName(site, self.catalog)
         allow_blank = False
         if 'allow_blank' in kwargs:
@@ -106,9 +104,7 @@ class BikaContentVocabulary(object):
 
     def __call__(self, context):
         site = getSite()
-        request = aq_get(site, 'REQUEST', None)
         items = []
-        wf = site.portal_workflow
         for folder in self.folders:
             folder = site.restrictedTraverse(folder)
             for portal_type in self.portal_types:
@@ -321,7 +317,6 @@ class ClientContactVocabulary(object):
 
     def __call__(self, context):
         site = getSite()
-        request = aq_get(site, 'REQUEST', None)
         items = []
         for client in site.clients.objectValues('Client'):
             objects = list(client.objectValues('Contact'))

@@ -663,7 +663,6 @@ class DashboardView(BrowserView):
         elif period == PERIODICITY_MONTHLY:
             created = '%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2))
         elif period == PERIODICITY_WEEKLY:
-            d = (((created.day()-1)/7)*7)+1
             year, weeknum, dow = created.asdatetime().isocalendar()
             created = created - dow
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))

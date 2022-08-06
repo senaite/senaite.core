@@ -22,7 +22,6 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -170,7 +169,6 @@ class InstrumentMaintenanceTask(BaseFolder):
         return safe_unicode(_(self.getCurrentState()).encode('utf-8'))
 
     def getCurrentState(self):
-        workflow = getToolByName(self, 'portal_workflow')
         if self.getClosed():
             return InstrumentMaintenanceTaskStatuses.CLOSED
         elif not api.is_active(self):
