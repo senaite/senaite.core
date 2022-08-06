@@ -706,6 +706,10 @@ class AnalysesView(ListingView):
                 if field not in item:
                     item[field] = ""
 
+            # Graceful handling of new item key introduced in
+            # https://github.com/senaite/senaite.app.listing/pull/81
+            item["help"] = item.get("help", {})
+
         # XXX order the list of interim columns
         interim_keys = self.interim_columns.keys()
         interim_keys.reverse()
