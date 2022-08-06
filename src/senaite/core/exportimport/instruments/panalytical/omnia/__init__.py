@@ -129,8 +129,6 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         # Split by ","
         splitted = self.splitLine(line.strip(";"))
 
-        errors = ''
-
         # Adjunt separated values from split by ','
         for idx, result in enumerate(splitted):
             if result.startswith('"'):

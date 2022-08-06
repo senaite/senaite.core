@@ -82,8 +82,7 @@ class TestAddDuplicateAnalysis(DataTestCase):
         # Add analyses into the worksheet
         self.request['context_uid'] = ws.UID()
         for analysis in ar.getAnalyses():
-            an = analysis.getObject()
-            ws.addAnalysis(an)
+            ws.addAnalysis(analysis.getObject())
         self.assertEquals(len(ws.getAnalyses()), 3)
 
         # Add a duplicate for slot 1 (there's only one slot)
@@ -137,8 +136,7 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wf.doActionFor(ar, 'receive')
         # Add analyses into the worksheet
         for analysis in ar.getAnalyses():
-            an = analysis.getObject()
-            ws.addAnalysis(an)
+            ws.addAnalysis(analysis.getObject())
         ans = ws.getAnalyses()
         reg = [an for an in ans if an.portal_type == 'Analysis']
         regkeys = [an.getKeyword() for an in reg]

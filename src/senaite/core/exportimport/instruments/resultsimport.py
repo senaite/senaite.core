@@ -443,8 +443,8 @@ class AnalysisResultsImporter(Logger):
         for acode in rawacodes:
             if acode in exclude or not acode:
                 continue
-            service = self.bsc(getKeyword=acode)
-            if not service:
+            analysis_service = self.bsc(getKeyword=acode)
+            if not analysis_service:
                 self.warn('Service keyword ${analysis_keyword} not found',
                           mapping={"analysis_keyword": acode})
             else:

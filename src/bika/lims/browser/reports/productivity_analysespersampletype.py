@@ -44,7 +44,6 @@ class Report(BrowserView):
         bac = getToolByName(self.context, 'senaite_catalog_analysis')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
-        parm_lines = {}
         parms = []
         headings = {}
         headings['header'] = _("Analyses per sample type")

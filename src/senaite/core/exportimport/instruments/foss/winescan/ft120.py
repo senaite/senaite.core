@@ -158,7 +158,6 @@ class WinescanFT120CSVParser(WinescanCSVParser):
         # First, we must find if already exists a row with results for
         # the same date, in order to take into account replicas, Mean
         # and Standard Deviation
-        dtidx = values.get('Calibration',{}).get('Calibration',0)
         rows = self.getRawResults().get(resid, [])
         row, rows = self._extractrowbycalibration(rows, self._calibration)
         is_std = values.get('Rep #',{}).get('Rep #','') == 'Sd'

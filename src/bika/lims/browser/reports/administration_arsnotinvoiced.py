@@ -41,7 +41,6 @@ class Report(BrowserView):
     def __call__(self):
         bc = getToolByName(self.context, 'senaite_catalog')
         self.report_content = {}
-        parm_lines = {}
         parms = []
         headings = {}
         headings['header'] = _("Samples not invoiced")
@@ -86,11 +85,6 @@ class Report(BrowserView):
         }
 
         datalines = []
-        clients = {}
-        sampletypes = {}
-        samplepoints = {}
-        categories = {}
-        services = {}
 
         for ar_proxy in bc(query):
             ar = ar_proxy.getObject()
