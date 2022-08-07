@@ -1416,6 +1416,14 @@ def float_to_string(value, default=_marker):
         precision = len(fraction) + int(zeros)
         template = "{:.%df}" % precision
         str_value = template.format(value)
+    elif "e+" in back:
+        # positive numbers, e.g. 1e+16 don't need a fractional part
+        str_value = "{:.0f}".format(value)
+
+    # cut off trailing zeros
+    if "." in str_value:
+        str_value = str_value.rstrip("0").rstrip(".")
+
     return str_value
 
 

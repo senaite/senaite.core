@@ -5,7 +5,11 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
-- #2097 Fix Attribute Error in Multi- Sample Add form when current user is linked to a client contact
+- #2104 Fix result formatting when result is below LDL or above UDL
+- #2103 Convert LDL/UDL fields to string
+- #2101 Add help text for numeric result
+- #2097 Fix Attribute Error in Multi- Sample Add form when current user is a client contact
+- #2096 Convert uncertainty field to string
 - #2095 Fix rounded uncertainty value is stored in the database
 - #2094 Skip Auditlog catalog if disabled for DX types catalog multiplexer
 - #2090 Add support for dates before 1900
