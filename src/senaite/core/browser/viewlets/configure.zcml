@@ -245,6 +245,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Viewlet manager in sample view above all sections -->
+  <browser:viewletManager
+      name="senaite.sampleheader"
+      provides=".interfaces.ISampleHeader"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Viewlet manager in sample view located above sample sections -->
   <browser:viewletManager
       name="senaite.abovesamplesections"
@@ -272,7 +281,25 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Remarks viewlet -->
+  <!-- Viewlet manager in sample view below all sections -->
+  <browser:viewletManager
+      name="senaite.samplefooter"
+      provides=".interfaces.ISampleHeader"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Sample header viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.sampleheader"
+      manager=".interfaces.ISampleHeader"
+      class=".sampleheader.SampleHeaderViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
+  <!-- Sample Remarks viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
       name="senaite.core.abovesamplesection.remarks"
