@@ -2,7 +2,51 @@
      i18n:domain="senaite.core">
 
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12">
+
+      <!-- SAMPLE HEADER FORM -->
+      <tal:comment condition="python:False">
+        <!--
+             Note: the `novalidate` attribute is needed to avoid browser validation
+             when e.g. the "expected sampling date" has passed and another value
+             wants to be changed.
+
+             https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Constraint_validation
+        -->
+      </tal:comment>
+      <form name="sampleheader_form"
+            method="post"
+            novalidate
+            tal:define="fields python:view.get_header_fields()">
+        <!-- Hidden fields -->
+        <input type="hidden" name="sampleheader_form_submitted" value="1" />
+        <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+        <!-- Prominent fields -->
+        <div class="row no-gutters">
+          <div class="border col-sm-2">col</div>
+          <div class="border col">col</div>
+        </div>
+
+        <!-- Standard fields -->
+        <div class="row no-gutters">
+          <div class="border col">col</div>
+          <div class="border col">col</div>
+          <div class="border col">col</div>
+          <div class="border col">col</div>
+          <div class="border col">col</div>
+          <div class="border col">col</div>
+        </div>
+
+        <!-- Save Button -->
+        <input tal:condition="view/is_edit_allowed"
+               class="context btn btn-sm btn-primary"
+               type="submit"
+               name="form.button.save"
+               value="Save"
+               i18n:attributes="value label_save;"/>
+      </form>
+
 
     </div>
   </div>
