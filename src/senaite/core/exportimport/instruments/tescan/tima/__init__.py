@@ -59,7 +59,7 @@ class TimaCSVParser(InstrumentCSVResultsFileParser):
             vals['DefaultResult']='Conc (Samp)'
             try:
                 # 12/11/2003 20:49:24
-                dtstr = '%s %s' % (_values['Date'], _values['Time'])
+                dtstr = '%s %s' % (vals['Date'], vals['Time'])
                 dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M:%S')
                 vals['DateTime'] = dtobj.strftime("%Y%m%d %H:%M:%S")
             except Exception:
