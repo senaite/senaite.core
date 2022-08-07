@@ -1595,13 +1595,39 @@ Converting integers work as well:
 
     >>> int_value = 123
     >>> api.float_to_string(int_value)
-    '123.0'
+    '123'
 
 The function also ensures that floatable string values remain unchanged:
 
     >>> str_value = "1.99887766554433221100"
     >>> api.float_to_string(str_value) == str_value
     True
+
+When a scientific notation is passed in, the function will return the decimals:
+
+    >>> api.float_to_string(1e-1)
+    '0.1'
+
+    >>> api.float_to_string(1e0)
+    '1'
+
+    >>> api.float_to_string(1e1)
+    '10'
+
+    >>> api.float_to_string(1e-16)
+    '0.0000000000000001'
+
+    >>> api.float_to_string(1e+16)
+    '10000000000000000'
+
+    >>> api.float_to_string(1e16)
+    '10000000000000000'
+
+    >>> api.float_to_string(-1e-1)
+    '-0.1'
+
+    >>> api.float_to_string(-1e+1)
+    '-10'
 
 
 Convert to minutes
