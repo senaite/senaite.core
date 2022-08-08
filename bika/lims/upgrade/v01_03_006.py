@@ -20,10 +20,12 @@
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import REFERENCE_CATALOG
 
 version = "1.3.6"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -55,6 +57,8 @@ def upgrade(tool):
 
     remove_stale_metadata(portal)
 
+    fix_samples_primary(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -77,3 +81,38 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def fix_samples_primary(portal):
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest ...")
+    ref_id = "AnalysisRequestParentAnalysisRequest"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    query = {
+        "portal_type": "AnalysisRequest",
+        "isRootAncestor": False
+    }
+    samples = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(samples)
+    for num, sample in enumerate(samples):
+        if num and num % 10 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this sample
+        sample = api.get_object(sample)
+        parents = sample.getRefs(relationship=ref_id)
+        if not parents:
+            # Processed already
+            continue
+
+        # Re-assign the parent sample(s)
+        sample.setParentAnalysisRequest(parents)
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(sample, relationship=ref_id)
+
+        # Reindex both the partition and parent(s)
+        sample.reindexObject()
+        for primary_sample in parents:
+            primary_sample.reindexObject()
+
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest [DONE]")
