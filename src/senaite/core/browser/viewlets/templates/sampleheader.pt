@@ -29,20 +29,36 @@
 
         <!-- Prominent fields -->
         <div id="sampleheader-prominent-fields" class="table-responsive">
-          <table class="table table-sm mb-0">
+          <table class="table table-sm table-bordered mb-0">
             <tr tal:repeat="field python:fields['prominent']">
-              <td class="bg-light border-right border-left"
+              <td class="bg-light text-truncate"
                   style="min-width:200px;width:200px;">
                 <!-- Widget Label -->
-                <span tal:replace="structure python:view.render_widget_label(field)"></span>
+                <span class="text-truncate" tal:replace="structure python:view.render_widget_label(field)"></span>
               </td>
-              <td class="border-right">
-                <!-- Widget Input -->
-                <metal:field use-macro="python:view.render_widget(field)"/>
+              <td tal:define="widget python:view.render_widget(field)">
+                <div class="form-row"
+                     tal:condition="python:view.is_simple_widget(widget)">
+                  <div class="col-auto">
+                    <!-- Render widget HTML -->
+                    <div tal:content="structure widget"/>
+                  </div>
+                </div>
+                <div class="form-row"
+                     tal:condition="python:view.is_macro_widget(widget)">
+                  <div class="col-auto">
+                    <!-- Render widget macro -->
+                    <metal:field use-macro="python:view.render_widget(field)"/>
+                  </div>
+                </div>
               </td>
             </tr>
           </table>
-        </div>
+      </div>
+
+      <div class="w100 text-center border-left border-right small">
+        <!-- Toggle standard fields -->
+      </div>
 
         <!-- Standard fields -->
         <div id="sampleheader-standard-fields" class="table-responsive">
@@ -54,9 +70,21 @@
                   <!-- Widget Label -->
                   <span class="text-truncate" tal:replace="structure python:view.render_widget_label(field)"></span>
                 </td>
-                <td class="">
-                  <!-- Widget Input -->
-                  <metal:field use-macro="python:view.render_widget(field)"/>
+                <td tal:define="widget python:view.render_widget(field)">
+                  <div class="form-row"
+                       tal:condition="python:view.is_simple_widget(widget)">
+                    <div class="col-auto">
+                      <!-- Render widget HTML -->
+                      <div tal:content="structure widget"/>
+                    </div>
+                  </div>
+                  <div class="form-row"
+                       tal:condition="python:view.is_macro_widget(widget)">
+                    <div class="col-auto">
+                      <!-- Render widget macro -->
+                      <metal:field use-macro="python:view.render_widget(field)"/>
+                    </div>
+                  </div>
                 </td>
               </tal:field>
             </tr>

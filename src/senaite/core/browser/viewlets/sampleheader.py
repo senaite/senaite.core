@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 
+from itertools import islice
+
+import six
+
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from itertools import islice
 from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IHeaderTableFieldRenderer
+from chameleon.zpt.template import Macro
 from plone.app.layout.viewlets import ViewletBase
 from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
+from zope.component import queryAdapter
 from zope.schema.interfaces import IField as IDXField
 
 
@@ -28,12 +34,34 @@ class SampleHeaderViewlet(ViewletBase):
         """Render the label for the fields' widget
         """
         mode = self.get_field_mode(field)
+
+        # Lookup custom view adapter
+        if mode == "view":
+            # lookup custom render adapter
+            adapter = queryAdapter(self.context,
+                                   interface=IHeaderTableFieldRenderer,
+                                   name=field.getName())
+            # return immediately if we have an adapter
+            if adapter is not None:
+                return adapter(field)
+
         return self.context.widget(field.getName(), mode=mode)
+
+    def is_macro_widget(self, widget):
+        """Checks if the widget is a Chameleon Macro
+        """
+        return isinstance(widget, Macro)
+
+    def is_simple_widget(self, widget):
+        """Checks if the widget is a simple structure based widget
+        """
+        return isinstance(widget, six.string_types)
 
     def render_widget_label(self, field):
         """Render the label for the fields' widget
         """
-        return field.widget.label
+        widget = self.get_widget(field)
+        return widget.label
 
     @property
     def fields(self):
