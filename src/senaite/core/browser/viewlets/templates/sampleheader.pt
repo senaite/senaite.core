@@ -23,24 +23,43 @@
         <span tal:replace="structure context/@@authenticator/authenticator"/>
 
         <!-- Prominent fields -->
-        <div class="row no-gutters">
-          <div class="border col-sm-2">col</div>
-          <div class="border col">col</div>
-        </div>
+        <table class="table table-sm table-borderless border border-light rounded table-responsive">
+          <tr tal:repeat="field python:fields['prominent']">
+            <td class="bg-light">
+              <span class="align-middle font-weight-bold"
+                    tal:content="python:field.widget.label">
+              </span>
+            </td>
+            <td>
+              <span>
+                  <metal:field use-macro="python:context.widget(field.getName(), mode='view')"/>
+              </span>
+            </td>
+          </tr>
+        </table>
 
-        <!-- Standard fields -->
-        <div class="row no-gutters">
-          <div class="border col">col</div>
-          <div class="border col">col</div>
-          <div class="border col">col</div>
-          <div class="border col">col</div>
-          <div class="border col">col</div>
-          <div class="border col">col</div>
-        </div>
+        <!-- Other fields -->
+        <table class="table table-sm table-borderless border border-light rounded table-responsive">
+          <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
+            <tal:field tal:repeat="field python:group">
+              <td class="bg-light">
+                <span class="align-middle font-weight-bold"
+                      tal:attributes="title python:field.widget.description"
+                      tal:content="python:field.widget.label">
+                </span>
+              </td>
+              <td>
+                <span>
+                  <metal:field use-macro="python:context.widget(field.getName(), mode='view')"/>
+                </span>
+              </td>
+            </tal:field>
+          </tr>
+        </table>
 
         <!-- Save Button -->
         <input tal:condition="view/is_edit_allowed"
-               class="context btn btn-sm btn-primary"
+               class="btn btn-sm btn-primary mt-2"
                type="submit"
                name="form.button.save"
                value="Save"
