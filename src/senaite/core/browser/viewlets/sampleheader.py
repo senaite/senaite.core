@@ -24,11 +24,16 @@ class SampleHeaderViewlet(ViewletBase):
             self.request.response.redirect(self.context.absolute_url())
         return self.template()
 
-    def render_field(self, field):
-        """Render the field
+    def render_widget(self, field):
+        """Render the label for the fields' widget
         """
         mode = self.get_field_mode(field)
         return self.context.widget(field.getName(), mode=mode)
+
+    def render_widget_label(self, field):
+        """Render the label for the fields' widget
+        """
+        return field.widget.label
 
     @property
     def fields(self):
