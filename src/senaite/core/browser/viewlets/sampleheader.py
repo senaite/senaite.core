@@ -2,18 +2,17 @@
 
 from itertools import islice
 
-import six
-
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IHeaderTableFieldRenderer
-from chameleon.zpt.template import Macro
 from plone.app.layout.viewlets import ViewletBase
 from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
+from senaite.core.api import dtime
+from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
 from zope.component import queryAdapter
 from zope.schema.interfaces import IField as IDXField
 
@@ -29,39 +28,6 @@ class SampleHeaderViewlet(ViewletBase):
             self.add_status_message(_("Changes saved"))
             self.request.response.redirect(self.context.absolute_url())
         return self.template()
-
-    def render_widget(self, field):
-        """Render the label for the fields' widget
-        """
-        mode = self.get_field_mode(field)
-
-        # Lookup custom view adapter
-        if mode == "view":
-            # lookup custom render adapter
-            adapter = queryAdapter(self.context,
-                                   interface=IHeaderTableFieldRenderer,
-                                   name=field.getName())
-            # return immediately if we have an adapter
-            if adapter is not None:
-                return adapter(field)
-
-        return self.context.widget(field.getName(), mode=mode)
-
-    def is_macro_widget(self, widget):
-        """Checks if the widget is a Chameleon Macro
-        """
-        return isinstance(widget, Macro)
-
-    def is_simple_widget(self, widget):
-        """Checks if the widget is a simple structure based widget
-        """
-        return isinstance(widget, six.string_types)
-
-    def render_widget_label(self, field):
-        """Render the label for the fields' widget
-        """
-        widget = self.get_widget(field)
-        return widget.label
 
     @property
     def fields(self):
@@ -87,9 +53,53 @@ class SampleHeaderViewlet(ViewletBase):
             mode = self.get_field_mode(field)
             if mode not in ["view", "edit"]:
                 continue
-            header_fields[vis].append(field)
+            html = self.render_field_html(field, mode=mode)
+            label = self.render_field_label(field, mode=mode)
+            header_fields[vis].append({
+                "name": name,
+                "mode": mode,
+                "html": html,
+                "field": field,
+                "label": label,
+            })
 
         return header_fields
+
+    def render_field_html(self, field, mode="view"):
+        """Render field HTML
+        """
+        if mode == "view":
+            # Lookup custom view adapter
+            adapter = queryAdapter(self.context,
+                                   interface=IHeaderTableFieldRenderer,
+                                   name=field.getName())
+            # return immediately if we have an adapter
+            if adapter is not None:
+                return adapter(field)
+
+            if self.is_datetime_field(field):
+                value = field.get(self.context)
+                if not value:
+                    return None
+                return dtime.ulocalized_time(value,
+                                             long_format=True,
+                                             context=self.context,
+                                             request=self.request)
+
+        return None
+
+    def render_field_label(self, field, mode="view"):
+        """Render field label
+
+        In edit mode, render the required dot as well
+        """
+        widget = self.get_widget(field)
+        return widget.label
+
+    def render_widget(self, field, mode="view"):
+        """Render the field widget
+        """
+        return self.context.widget(field.getName(), mode=mode)
 
     def get_field_visibility(self, field, default="hidden"):
         """Returns the field visibility in the header
@@ -97,7 +107,7 @@ class SampleHeaderViewlet(ViewletBase):
         Possible values are:
 
           - prominent: Rendered as a promient field
-          - visible: Rendered as a standard field
+          - visible: Rendered as a odestandard field
           - hidden: Not displayed
         """
         widget = self.get_widget(field)
@@ -141,9 +151,9 @@ class SampleHeaderViewlet(ViewletBase):
     def get_widget(self, field):
         """Returns the widget of the field
         """
-        if IATField.providedBy(field):
+        if self.is_at_field(field):
             return field.widget
-        elif IDXField.providedBy(field):
+        elif self.is_dx_field(field):
             raise NotImplementedError("DX widgets not yet needed")
         raise TypeError("Field %r is neither a DX nor an AT field")
 
@@ -156,3 +166,21 @@ class SampleHeaderViewlet(ViewletBase):
         """Check permission 'ModifyPortalContent' on the context
         """
         return check_permission(ModifyPortalContent, self.context)
+
+    def is_datetime_field(self, field):
+        """Check if the field is a date field
+        """
+        if self.is_at_field(field):
+            widget = self.get_widget(field)
+            return isinstance(widget, DateTimeWidget)
+        return False
+
+    def is_at_field(self, field):
+        """Check if the field is an AT field
+        """
+        return IATField.providedBy(field)
+
+    def is_dx_field(self, field):
+        """Check if the field is an DX field
+        """
+        return IDXField.providedBy(field)
