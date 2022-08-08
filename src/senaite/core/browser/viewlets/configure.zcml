@@ -284,7 +284,7 @@
   <!-- Viewlet manager in sample view below all sections -->
   <browser:viewletManager
       name="senaite.samplefooter"
-      provides=".interfaces.ISampleHeader"
+      provides=".interfaces.ISampleFooter"
       class="plone.app.viewletmanager.manager.OrderedViewletManager"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
