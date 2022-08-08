@@ -1,8 +1,8 @@
 <div id="senaite-sampleheader"
      tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
-         test nocall:senaite_view/test;
-         errors python:request.get('errors', {});
-         fields python:view.get_header_fields();"
+                 test nocall:senaite_view/test;
+                 errors python:request.get('errors', {});
+                 fields python:view.get_header_fields();"
      i18n:domain="senaite.core">
 
   <div class="row">
@@ -31,15 +31,21 @@
         <div id="sampleheader-prominent-fields" class="table-responsive">
           <table class="table table-sm table-bordered mb-1">
             <tr tal:repeat="fielddata python:fields['prominent']">
-              <tal:fielddata tal:define="name  python:fielddata.get('name');
-                                         mode  python:fielddata.get('mode');
-                                         html  python:fielddata.get('html');
-                                         field python:fielddata.get('field');
-                                         label python:fielddata.get('label');">
+              <tal:fielddata tal:define="name     python:fielddata.get('name');
+                                         mode     python:fielddata.get('mode');
+                                         html     python:fielddata.get('html');
+                                         field    python:fielddata.get('field');
+                                         label    python:fielddata.get('label');
+                                         required python:fielddata.get('required');">
                 <td class="bg-light"
                     style="min-width:200px;width:200px;">
                   <!-- Widget Label -->
-                  <span tal:replace="structure label"/>
+                  <span tal:replace="label"/>
+                  <!-- Display Required Marker -->
+                  <span class="required"
+                        tal:condition="python:required"
+                        title="Required"
+                        i18n:attributes="title title_required;"> </span>
                 </td>
                 <td>
                   <div class="form-row" tal:condition="python:html">
@@ -65,15 +71,21 @@
           <table class="table table-sm table-bordered">
             <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
               <tal:batch tal:repeat="fielddata python:group">
-                <tal:fielddata tal:define="name  python:fielddata.get('name');
-                                           mode  python:fielddata.get('mode');
-                                           html  python:fielddata.get('html');
-                                           field python:fielddata.get('field');
-                                           label python:fielddata.get('label');">
+                <tal:fielddata tal:define="name     python:fielddata.get('name');
+                                           mode     python:fielddata.get('mode');
+                                           html     python:fielddata.get('html');
+                                           field    python:fielddata.get('field');
+                                           label    python:fielddata.get('label');
+                                           required python:fielddata.get('required');">
                   <td class="bg-light"
                       style="min-width:200px;width:200px;">
                     <!-- Widget Label -->
                     <span tal:replace="structure label"/>
+                    <!-- Display Required Marker -->
+                    <span class="required"
+                          tal:condition="python:required"
+                          title="Required"
+                          i18n:attributes="title title_required;"> </span>
                   </td>
                   <td>
                     <div class="form-row" tal:condition="python:html">

@@ -23,6 +23,8 @@ class SampleHeaderViewlet(ViewletBase):
     template = ViewPageTemplateFile("templates/sampleheader.pt")
 
     def render(self):
+        """Renders the viewlet and handles form submission
+        """
         submitted = self.request.form.get("sampleheader_form_submitted", False)
         if submitted:
             self.add_status_message(_("Changes saved"))
@@ -35,7 +37,9 @@ class SampleHeaderViewlet(ViewletBase):
         """
         return api.get_fields(self.context)
 
-    def grouper(self, iterable, n):
+    def grouper(self, iterable, n=3):
+        """Splits an iterable into chunks of `n` items
+        """
         for chunk in iter(lambda it=iter(iterable): list(islice(it, n)), []):
             yield chunk
 
@@ -55,12 +59,14 @@ class SampleHeaderViewlet(ViewletBase):
                 continue
             html = self.render_field_html(field, mode=mode)
             label = self.render_field_label(field, mode=mode)
+            required = self.is_field_required(field, mode=mode)
             header_fields[vis].append({
                 "name": name,
                 "mode": mode,
                 "html": html,
                 "field": field,
                 "label": label,
+                "required": required,
             })
 
         return header_fields
@@ -77,6 +83,8 @@ class SampleHeaderViewlet(ViewletBase):
             if adapter is not None:
                 return adapter(field)
 
+            # TODO: Refactor to adapter
+            # Returns the localized date
             if self.is_datetime_field(field):
                 value = field.get(self.context)
                 if not value:
@@ -89,7 +97,7 @@ class SampleHeaderViewlet(ViewletBase):
         return None
 
     def render_field_label(self, field, mode="view"):
-        """Render field label
+        """Renders the field label
 
         In edit mode, render the required dot as well
         """
@@ -166,6 +174,13 @@ class SampleHeaderViewlet(ViewletBase):
         """Check permission 'ModifyPortalContent' on the context
         """
         return check_permission(ModifyPortalContent, self.context)
+
+    def is_field_required(self, field, mode="edit"):
+        """Check if the field is required
+        """
+        if mode == "view":
+            return False
+        return field.required
 
     def is_datetime_field(self, field):
         """Check if the field is a date field
