@@ -21,6 +21,7 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_AUDITLOG
 from bika.lims.config import USE_COLLECTIVE_INDEXING
 from bika.lims.interfaces import IMultiCatalogBehavior
 from zope.interface import implements
@@ -39,12 +40,26 @@ class CatalogMultiplexProcessor(object):
     if USE_COLLECTIVE_INDEXING:
         implements(IIndexQueueProcessor)
 
+    def is_global_auditlog_enabled(self):
+        """Check if the global auditlogging is enabled
+        """
+        setup = api.get_setup()
+        # might happen during installation
+        if not setup:
+            return False
+        return setup.getEnableGlobalAuditlog()
+
     def get_catalogs_for(self, obj):
         catalogs = getattr(obj, "_catalogs", [])
         for rc in REQUIRED_CATALOGS:
             if rc in catalogs:
                 continue
             catalogs.append(rc)
+
+        # remove auditlog catalog if disabled
+        if not self.is_global_auditlog_enabled():
+            catalogs = filter(lambda cid: cid != CATALOG_AUDITLOG, catalogs)
+
         return map(api.get_tool, catalogs)
 
     def supports_multi_catalogs(self, obj):
