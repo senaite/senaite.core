@@ -2,11 +2,13 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from plone.memoize import view as viewcache
 from plone.protect import PostOnly
 from Products.Archetypes.interfaces import IField as IATField
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
+from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField as IDXField
 
 
@@ -23,8 +25,26 @@ class ManageSampleFieldsView(BrowserView):
         submitted = self.request.form.get("submitted", False)
         if submitted:
             self.handle_form_submit(request=self.request)
-            self.request.response.redirect(self.context.absolute_url())
+            self.request.response.redirect(self.page_url)
         return self.template()
+
+    def handle_form_submit(self, request=None):
+        """Handle form submission
+        """
+        PostOnly(request)
+        message = _("Changes saved.")
+        self.add_status_message(message)
+
+    @property
+    @viewcache.memoize
+    def context_state(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="plone_context_state")
+
+    @property
+    def page_url(self):
+        return self.context_state.current_page_url()
 
     @property
     def fields(self):
@@ -66,7 +86,8 @@ class ManageSampleFieldsView(BrowserView):
           - hidden: Not displayed
         """
         widget = self.get_widget(field)
-        visibility = widget.isVisible(self.context, mode="header_table", field=field)
+        visibility = widget.isVisible(
+            self.context, mode="header_table", field=field)
         if visibility not in ["prominent", "visible"]:
             return default
         return visibility
@@ -106,13 +127,6 @@ class ManageSampleFieldsView(BrowserView):
         """Check if the field is an DX field
         """
         return IDXField.providedBy(field)
-
-    def handle_form_submit(self, request=None):
-        """Handle form submission
-        """
-        PostOnly(request)
-        message = _("Changes saved.")
-        self.add_status_message(message)
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
