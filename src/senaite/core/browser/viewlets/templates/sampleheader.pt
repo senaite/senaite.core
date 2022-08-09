@@ -42,16 +42,27 @@
           <table class="sampleheader-table table table-sm table-bordered mb-1">
             <tr tal:repeat="group python:view.grouper(fields['prominent'], 1)">
               <tal:batch tal:repeat="fielddata python:group">
-                <tal:fielddata tal:define="name     python:fielddata.get('name');
-                                           mode     python:fielddata.get('mode');
-                                           html     python:fielddata.get('html');
-                                           field    python:fielddata.get('field');
-                                           label    python:fielddata.get('label');
-                                           required python:fielddata.get('required');">
+                <tal:fielddata tal:define="name        python:fielddata.get('name');
+                                           mode        python:fielddata.get('mode');
+                                           html        python:fielddata.get('html');
+                                           field       python:fielddata.get('field');
+                                           label       python:fielddata.get('label');
+                                           description python:fielddata.get('description');
+                                           required    python:fielddata.get('required');">
                   <td class="bg-light text-truncate"
                       style="width:200px;max-width:200px;">
                     <!-- Widget Label -->
-                    <span tal:replace="label"/>
+                    <span tal:attributes="title description"
+                          data-toggle="tooltip"
+                          tal:content="structure label"/>
+                    <!-- Display a notification icon if the field is primary bound
+                         (if changes propagate to partitions) -->
+                    <tal:primary_bound condition="python:mode == 'edit' and view.is_primary_bound(field)">
+                      <i class="fas fa-sitemap small"
+                         data-toggle="tooltip"
+                         title="Changes will be propagated to partitions"
+                         i18n:attributes="title"></i>
+                    </tal:primary_bound>
                     <!-- Display Required Marker -->
                     <span class="required"
                           tal:condition="python:required"
@@ -83,16 +94,27 @@
           <table class="sampleheader-table table table-sm table-bordered">
             <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
               <tal:batch tal:repeat="fielddata python:group">
-                <tal:fielddata tal:define="name     python:fielddata.get('name');
-                                           mode     python:fielddata.get('mode');
-                                           html     python:fielddata.get('html');
-                                           field    python:fielddata.get('field');
-                                           label    python:fielddata.get('label');
-                                           required python:fielddata.get('required');">
+                <tal:fielddata tal:define="name        python:fielddata.get('name');
+                                           mode        python:fielddata.get('mode');
+                                           html        python:fielddata.get('html');
+                                           field       python:fielddata.get('field');
+                                           label       python:fielddata.get('label');
+                                           description python:fielddata.get('description');
+                                           required    python:fielddata.get('required');">
                   <td class="sampleheader-table-label bg-light text-truncate"
                       style="width:200px;max-width:200px;">
                     <!-- Widget Label -->
-                    <span tal:content="structure label"/>
+                    <span tal:attributes="title description"
+                          data-toggle="tooltip"
+                          tal:content="structure label"/>
+                    <!-- Display a notification icon if the field is primary bound
+                         (if changes propagate to partitions) -->
+                    <tal:primary_bound condition="python:mode == 'edit' and view.is_primary_bound(field)">
+                      <i class="fas fa-sitemap small"
+                         data-toggle="tooltip"
+                         title="Changes will be propagated to partitions"
+                         i18n:attributes="title"></i>
+                    </tal:primary_bound>
                     <!-- Display Required Marker -->
                     <span class="required"
                           tal:condition="python:required"

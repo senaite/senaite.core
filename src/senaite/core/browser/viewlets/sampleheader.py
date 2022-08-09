@@ -5,8 +5,10 @@ from itertools import islice
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
+from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from plone.app.layout.viewlets import ViewletBase
+from plone.memoize import view as viewcache
 from plone.protect import PostOnly
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.interfaces import IField as IATField
@@ -123,6 +125,7 @@ class SampleHeaderViewlet(ViewletBase):
                 continue
             html = self.render_field_html(field, mode=mode)
             label = self.render_field_label(field, mode=mode)
+            description = self.render_field_description(field, mode=mode)
             required = self.is_field_required(field, mode=mode)
             header_fields[vis].append({
                 "name": name,
@@ -130,6 +133,7 @@ class SampleHeaderViewlet(ViewletBase):
                 "html": html,
                 "field": field,
                 "label": label,
+                "description": description,
                 "required": required,
             })
 
@@ -162,11 +166,15 @@ class SampleHeaderViewlet(ViewletBase):
 
     def render_field_label(self, field, mode="view"):
         """Renders the field label
-
-        In edit mode, render the required dot as well
         """
         widget = self.get_widget(field)
-        return widget.label
+        return getattr(widget, "label", "")
+
+    def render_field_description(self, field, mode="view"):
+        """Renders the field description
+        """
+        widget = self.get_widget(field)
+        return getattr(widget, "description", "")
 
     def render_widget(self, field, mode="view"):
         """Render the field widget
@@ -233,6 +241,19 @@ class SampleHeaderViewlet(ViewletBase):
         """Set a portal status message
         """
         return self.context.plone_utils.addPortalMessage(message, level)
+
+    @viewcache.memoize
+    def is_primary_with_partitions(self):
+        """Check if the Sample is a primary with partitions
+        """
+        return IAnalysisRequestWithPartitions.providedBy(self.context)
+
+    def is_primary_bound(self, field):
+        """Checks if the field is primary bound
+        """
+        if not self.is_primary_with_partitions():
+            return False
+        return getattr(field, "primary_bound", False)
 
     def is_edit_allowed(self):
         """Check permission 'ModifyPortalContent' on the context
