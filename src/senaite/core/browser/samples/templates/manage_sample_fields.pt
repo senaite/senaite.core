@@ -54,6 +54,10 @@
                                  label python:fielddata.get('label');">
                   <li class="list-group-item">
 
+                    <!-- Prominent Fields -->
+                    <input type="hidden"
+                           tal:attributes="name string:promient:list;
+                                           value string:${name}"/>
                     <!-- Field Order -->
                     <input type="hidden"
                            tal:attributes="name string:order:list;
@@ -66,7 +70,7 @@
                            tal:attributes="name string:visibility.${name}:record:boolean;
                                           value python:True;
                                           checked python:True;
-                                          disabled python:required and 'disabled' or ''"/>
+                                          "/>
 
                     <span tal:replace="structure label"/>
                     <span class="fieldRequired"
@@ -96,6 +100,11 @@
                                  label python:fielddata.get('label');">
                   <li class="list-group-item">
 
+                    <!-- Standard Fields -->
+                    <input type="hidden"
+                           tal:attributes="name string:standard:list;
+                                           value string:${name}"/>
+
                     <!-- Field Order -->
                     <input type="hidden"
                            tal:attributes="name string:order:list;
@@ -106,9 +115,9 @@
                                            value python:False"/>
                     <input type="checkbox"
                            tal:attributes="name string:visibility.${name}:record:boolean;
-                                          value python:True;
-                                          checked python:True;
-                                          disabled python:required and 'disabled' or ''"/>
+                                           value python:True;
+                                           checked python:True;
+                                          "/>
 
                     <span tal:replace="structure label"/>
                     <span class="fieldRequired"
@@ -143,7 +152,26 @@
          document.addEventListener("DOMContentLoaded", function(event) {
            // https://jqueryui.com/sortable/#connect-lists
            $("#fieldlist-prominent,#fieldlist-visible").sortable({
-             connectWith: ".fieldlist"
+             connectWith: ".fieldlist",
+             receive: function(event, ui) {
+               let item = ui.item;
+               let sender = ui.sender;
+               let sid = sender.attr("id");
+
+               var source = "standard"
+               var target = "prominent";
+
+               if (sid == 'fieldlist-prominent') {
+                 source = "prominent";
+                 target = "standard";
+               }
+
+
+               let input = item.context.querySelector("input[name='" + source + ":list']");
+               if (input) {
+                 input.name = target + ":list";
+               }
+             }
            }).disableSelection();
          });
         </script>
