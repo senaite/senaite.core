@@ -19,4 +19,14 @@
       permission="senaite.core.permissions.TransitionDispatchSample"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+
+  <!-- Manage Sample Fields -->
+  <browser:page
+      for="*"
+      name="manage-sample-fields"
+      class=".manage_sample_fields.ManageSampleFieldsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

@@ -1,0 +1,163 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head> </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Sample Form Fields
+      </h1>
+    </metal:title>
+
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        Manage the order and visibility of the fields displayed in analysis
+        request add forms.
+      </p>
+      <p i18n:translate="" class="discreet">
+        Note: The settings apply to all Sample Add forms; Required fields can not be deselected.
+      </p>
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <form id="senaite-sampleheader-manage-form"
+                tal:define="fields python:view.get_header_fields()"
+                name="sampleheader_manage_form"
+                class="senaite-form"
+                method="post">
+
+            <!-- Hidden fields -->
+            <input type="hidden" name="submitted" value="1" />
+            <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <!-- Prominent fields -->
+            <div class="font-weight-bold small" i18n:translate="">Prominent fields</div>
+            <small class="text-secondary" i18n:translate="">
+              The fields are always listed on top and can not be faded out.
+              You can drag and drop any fields to the lower list to change their state.
+            </small>
+            <br/>
+            <small class="text-secondary" i18n:translate="">
+              You can change the visibility of a field by selecting or unselecting the checkbox.
+            </small>
+            <ul class="fieldlist list-group mb-3" id="fieldlist-prominent">
+              <tal:prominent tal:repeat="fielddata python:fields['prominent']">
+                <tal:def define="name python:fielddata.get('name');
+                                 required python:fielddata.get('required');
+                                 label python:fielddata.get('label');">
+                  <li class="list-group-item">
+
+                    <!-- Field Order -->
+                    <input type="hidden"
+                           tal:attributes="name string:order:list;
+                                           value string:${name}"/>
+                    <!-- Field Visibility -->
+                    <input type="hidden"
+                           tal:attributes="name string:visibility.${name}:record:boolean:default;
+                                           value python:False"/>
+                    <input type="checkbox"
+                           tal:attributes="name string:visibility.${name}:record:boolean;
+                                          value python:True;
+                                          checked python:True;
+                                          disabled python:required and 'disabled' or ''"/>
+
+                    <span tal:replace="structure label"/>
+                    <span class="fieldRequired"
+                          tal:condition="required"
+                          title="Required"
+                          i18n:attributes="title title_required;">&nbsp;</span>
+                  </li>
+                </tal:def>
+              </tal:prominent>
+            </ul>
+
+
+            <!-- Standard fields -->
+            <div class="font-weight-bold small" i18n:translate="">Standard fields</div>
+            <small class="text-secondary" i18n:translate="">
+              The fields are listed below the promient fields and can be faded out.
+              You can drag and drop any fields to the upper list to change their state.
+            </small>
+            <br/>
+            <small class="text-secondary" i18n:translate="">
+              You can change the visibility of a field by selecting or unselecting the checkbox.
+            </small>
+            <ul class="fieldlist list-group mb-3" id="fieldlist-visible">
+              <tal:field tal:repeat="fielddata python:fields['visible']">
+                <tal:def define="name python:fielddata.get('name');
+                                 required python:fielddata.get('required');
+                                 label python:fielddata.get('label');">
+                  <li class="list-group-item">
+
+                    <!-- Field Order -->
+                    <input type="hidden"
+                           tal:attributes="name string:order:list;
+                                           value string:${name}"/>
+                    <!-- Field Visibility -->
+                    <input type="hidden"
+                           tal:attributes="name string:visibility.${name}:record:boolean:default;
+                                           value python:False"/>
+                    <input type="checkbox"
+                           tal:attributes="name string:visibility.${name}:record:boolean;
+                                          value python:True;
+                                          checked python:True;
+                                          disabled python:required and 'disabled' or ''"/>
+
+                    <span tal:replace="structure label"/>
+                    <span class="fieldRequired"
+                          tal:condition="required"
+                          title="Required"
+                          i18n:attributes="title title_required;">&nbsp;</span>
+                  </li>
+                </tal:def>
+              </tal:field>
+            </ul>
+
+            <!-- Save Button -->
+            <input class="btn btn-success btn-sm"
+                type="submit"
+                name="save"
+                i18n:attributes="value"
+                value="Save"/>
+
+            <!-- Reset Button -->
+            <input class="btn btn-warning btn-sm"
+                   type="submit"
+                   name="reset"
+                   i18n:attributes="value"
+                   value="Reset"/>
+          </form>
+        </div>
+      </div>
+
+      <!--  -->
+      <tal:js tal:define="portal context/@@plone_portal_state/portal;">
+        <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function(event) {
+           // https://jqueryui.com/sortable/#connect-lists
+           $("#fieldlist-prominent,#fieldlist-visible").sortable({
+             connectWith: ".fieldlist"
+           }).disableSelection();
+         });
+        </script>
+      </tal:js>
+      <tal:css tal:define="portal context/@@plone_portal_state/portal;">
+        <style type="text/css" media="screen">
+         ul#fieldlist-prominent li { background-color: #b8daff; }
+         ul#fieldlist-visible li { background-color: #fdfdfe; }
+         ul.fieldlist li { cursor: ns-resize; }
+         ul.fieldlist li input { vertical-align: middle; }
+         #list-group
+        </style>
+      </tal:css>
+
+    </div>
+  </body>
+</html>
