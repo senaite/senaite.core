@@ -25,7 +25,6 @@
 
         <!-- Hidden fields -->
         <input type="hidden" name="sampleheader_form_submitted" value="1" />
-        <span tal:replace="structure context/@@authenticator/authenticator"/>
 
         <!-- Prominent fields -->
         <div id="sampleheader-prominent-fields" class="table-responsive">

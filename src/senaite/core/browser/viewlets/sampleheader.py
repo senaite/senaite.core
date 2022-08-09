@@ -7,12 +7,16 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from plone.app.layout.viewlets import ViewletBase
+from plone.protect import PostOnly
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
+from senaite.core.interfaces import IDataManager
+from zope import event
 from zope.component import queryAdapter
 from zope.schema.interfaces import IField as IDXField
 
@@ -27,15 +31,75 @@ class SampleHeaderViewlet(ViewletBase):
         """
         submitted = self.request.form.get("sampleheader_form_submitted", False)
         if submitted:
-            self.add_status_message(_("Changes saved"))
+            self.handle_form_submit(request=self.request)
             self.request.response.redirect(self.context.absolute_url())
         return self.template()
+
+    def handle_form_submit(self, request=None):
+        """Handle form submission
+        """
+        PostOnly(request)
+
+        errors = {}
+        field_values = {}
+        form = request.form
+
+        for name, field in self.fields.items():
+            value = self.get_field_value(field, form)
+            if value is None:
+                continue
+
+            # Keep track of field-values
+            field_values.update({name: value})
+
+            # Validate the field values
+            error = field.validate(value, self.context)
+            if error:
+                errors.update({name: error})
+
+        if errors:
+            request["errors"] = errors
+            message = _("Please correct the indicated errors")
+            self.add_status_message(message, level="error")
+        else:
+            # we want to set the fields with the data manager
+            dm = IDataManager(self.context)
+
+            # Store the field values
+            for name, value in field_values.items():
+                dm.set(name, value)
+
+            message = _("Changes saved.")
+            # reindex the object after save to update all catalog metadata
+            self.context.reindexObject()
+            # notify object edited event
+            event.notify(ObjectEditedEvent(self.context))
+            self.add_status_message(message, level="info")
 
     @property
     def fields(self):
         """Returns an ordered dict of all schema fields
         """
         return api.get_fields(self.context)
+
+    def get_field_value(self, field, form):
+        """Returns the submitted value for the given field
+        """
+        fieldname = field.getName()
+        if fieldname not in form:
+            return None
+
+        # Handle (multiValued) reference fields
+        # https://github.com/bikalims/bika.lims/issues/2270
+        uid_fieldname = "{}_uid".format(fieldname)
+        if uid_fieldname in form:
+            value = form[uid_fieldname]
+            if field.multiValued:
+                value = filter(None, value.split(","))
+            return value
+
+        # other fields
+        return form[fieldname]
 
     def grouper(self, iterable, n=3):
         """Splits an iterable into chunks of `n` items
