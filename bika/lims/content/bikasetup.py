@@ -209,6 +209,20 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        "EnableGlobalAuditlog",
+        schemata="Security",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable global Audit Log"),
+            description=_(
+                "The global Auditlog shows all modifications of the system. "
+                "When enabled, all entities will be indexed in a separate "
+                "catalog. This will increase the time when objects are "
+                "created or modified."
+            )
+        )
+    ),
+    BooleanField(
         'ShowPrices',
         schemata="Accounting",
         default=True,
