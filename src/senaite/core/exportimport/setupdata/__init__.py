@@ -35,6 +35,7 @@ from bika.lims.utils import getFromString
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode
+from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName

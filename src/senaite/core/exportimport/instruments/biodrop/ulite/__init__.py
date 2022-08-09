@@ -46,7 +46,7 @@ class BioDropCSVParser(InstrumentCSVResultsFileParser):
             this_row = line.split(",")
             # if less values are found than headers, it's an error
             if len(this_row) != len(self.data_header):
-                self.err("Data row number " + item_nr + " has the wrong number of items")
+                self.err("Data row number " + self._numline + " has the wrong number of items")
                 return 0
             row_values = dict(zip(self.data_header, this_row))
 
