@@ -26,8 +26,19 @@
         <!-- Hidden fields -->
         <input type="hidden" name="sampleheader_form_submitted" value="1" />
 
+        <!-- Display Controls -->
+        <div class="sampleheader-controls float-right">
+          <!-- Toggle standard fields visibility -->
+          <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
+            <span i18n:translate="" class="text-secondary">
+              <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
+              <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
+            </span>
+          </a>
+        </div>
+
         <!-- Prominent fields -->
-        <div id="sampleheader-prominent-fields" class="table-responsive">
+        <div id="sampleheader-prominent-fields" class="table-responsive collapse show">
           <table class="table table-sm table-bordered mb-1">
             <tr tal:repeat="group python:view.grouper(fields['prominent'], 1)">
               <tal:batch tal:repeat="fielddata python:group">
@@ -68,7 +79,7 @@
       </div>
 
         <!-- Standard fields -->
-        <div id="sampleheader-standard-fields" class="table-responsive">
+        <div id="sampleheader-standard-fields" class="table-responsive collapse show">
           <table class="table table-sm table-bordered">
             <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
               <tal:batch tal:repeat="fielddata python:group">
@@ -124,6 +135,25 @@
   <tal:js tal:define="portal context/@@plone_portal_state/portal;">
     <script type="text/javascript"
             tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/referencewidget.js'"></script>
+    <script type="text/javascript">
+     document.addEventListener("DOMContentLoaded", function(event) {
+       let show_icon = document.getElementById("toggle-show-icon");
+       let hide_icon = document.getElementById("toggle-hide-icon");
+       // Event handler when the standard fields are hidden
+       $("#sampleheader-standard-fields").on("hide.bs.collapse", function () {
+         console.log("Hide standard fields");
+         $(show_icon).toggleClass("d-none", true);
+         $(hide_icon).toggleClass("d-none", false)
+       });
+       // Event handler when the standard fields are shown
+       $("#sampleheader-standard-fields").on("show.bs.collapse", function () {
+         console.log("Show standard fields");
+         $(show_icon).toggleClass("d-none", false);
+         $(hide_icon).toggleClass("d-none", true)
+       });
+
+     });
+    </script>
   </tal:js>
   <tal:css tal:define="portal context/@@plone_portal_state/portal;">
     <style type="text/css" media="screen">
