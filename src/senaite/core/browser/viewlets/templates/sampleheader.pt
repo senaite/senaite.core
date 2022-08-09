@@ -39,7 +39,7 @@
 
         <!-- Prominent fields -->
         <div id="sampleheader-prominent-fields" class="table-responsive collapse show">
-          <table class="table table-sm table-bordered mb-1">
+          <table class="sampleheader-table table table-sm table-bordered mb-1">
             <tr tal:repeat="group python:view.grouper(fields['prominent'], 1)">
               <tal:batch tal:repeat="fielddata python:group">
                 <tal:fielddata tal:define="name     python:fielddata.get('name');
@@ -80,7 +80,7 @@
 
         <!-- Standard fields -->
         <div id="sampleheader-standard-fields" class="table-responsive collapse show">
-          <table class="table table-sm table-bordered">
+          <table class="sampleheader-table table table-sm table-bordered">
             <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
               <tal:batch tal:repeat="fielddata python:group">
                 <tal:fielddata tal:define="name     python:fielddata.get('name');
@@ -89,7 +89,7 @@
                                            field    python:fielddata.get('field');
                                            label    python:fielddata.get('label');
                                            required python:fielddata.get('required');">
-                  <td class="bg-light text-truncate"
+                  <td class="sampleheader-table-label bg-light text-truncate"
                       style="width:200px;max-width:200px;">
                     <!-- Widget Label -->
                     <span tal:content="structure label"/>
@@ -99,7 +99,7 @@
                           title="Required"
                           i18n:attributes="title title_required;"> </span>
                   </td>
-                  <td>
+                  <td class="sampleheader-table-field">
                     <div class="form-row" tal:condition="python:html">
                       <div class="col-auto">
                         <!-- Render widget HTML -->
