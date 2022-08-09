@@ -29,38 +29,40 @@
         <!-- Prominent fields -->
         <div id="sampleheader-prominent-fields" class="table-responsive">
           <table class="table table-sm table-bordered mb-1">
-            <tr tal:repeat="fielddata python:fields['prominent']">
-              <tal:fielddata tal:define="name     python:fielddata.get('name');
-                                         mode     python:fielddata.get('mode');
-                                         html     python:fielddata.get('html');
-                                         field    python:fielddata.get('field');
-                                         label    python:fielddata.get('label');
-                                         required python:fielddata.get('required');">
-                <td class="bg-light"
-                    style="min-width:200px;width:200px;">
-                  <!-- Widget Label -->
-                  <span tal:replace="label"/>
-                  <!-- Display Required Marker -->
-                  <span class="required"
-                        tal:condition="python:required"
-                        title="Required"
-                        i18n:attributes="title title_required;"> </span>
-                </td>
-                <td>
-                  <div class="form-row" tal:condition="python:html">
-                    <div class="col-auto">
-                      <!-- Render widget HTML -->
-                      <div tal:content="structure html"/>
+            <tr tal:repeat="group python:view.grouper(fields['prominent'], 1)">
+              <tal:batch tal:repeat="fielddata python:group">
+                <tal:fielddata tal:define="name     python:fielddata.get('name');
+                                           mode     python:fielddata.get('mode');
+                                           html     python:fielddata.get('html');
+                                           field    python:fielddata.get('field');
+                                           label    python:fielddata.get('label');
+                                           required python:fielddata.get('required');">
+                  <td class="bg-light"
+                      style="min-width:200px;width:200px;">
+                    <!-- Widget Label -->
+                    <span tal:replace="label"/>
+                    <!-- Display Required Marker -->
+                    <span class="required"
+                          tal:condition="python:required"
+                          title="Required"
+                          i18n:attributes="title title_required;"> </span>
+                  </td>
+                  <td>
+                    <div class="form-row" tal:condition="python:html">
+                      <div class="col-auto">
+                        <!-- Render widget HTML -->
+                        <div tal:content="structure html"/>
+                      </div>
                     </div>
-                  </div>
-                  <div class="form-row" tal:condition="python:not html">
-                    <div class="col-auto">
-                      <!-- Render widget macro -->
-                      <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
+                    <div class="form-row" tal:condition="python:not html">
+                      <div class="col-auto">
+                        <!-- Render widget macro -->
+                        <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tal:fielddata>
+                  </td>
+                </tal:fielddata>
+              </tal:batch>
             </tr>
           </table>
       </div>
