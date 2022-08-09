@@ -37,6 +37,7 @@ from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
@@ -115,6 +116,7 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
+from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.public import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Widget import RichWidget
@@ -1231,7 +1233,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'ParentAnalysisRequest',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestParentAnalysisRequest',
@@ -2200,32 +2202,29 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         :param all_descendants: recursively include all descendants
         """
+        uids = self.getDescendantsUIDs()
+        if not uids:
+            return []
 
-        # N.B. full objects returned here from
-        #      `Products.Archetypes.Referenceable.getBRefs`
-        #      -> don't add this method into Metadata
-        children = self.getBackReferences(
-            "AnalysisRequestParentAnalysisRequest")
-
+        # Extract the descendant objects
         descendants = []
-
-        # recursively include all children
-        if all_descendants:
-            for child in children:
-                descendants.append(child)
-                descendants += child.getDescendants(all_descendants=True)
-        else:
-            descendants = children
+        cat = api.get_tool(UID_CATALOG)
+        for brain in cat(UID=uids):
+            descendant = api.get_object(brain)
+            descendants.append(descendant)
+            if all_descendants:
+                # Extend with grandchildren
+                descendants += descendant.getDescendants(all_descendants=True)
 
         return descendants
 
-    def getDescendantsUIDs(self, all_descendants=False):
+    def getDescendantsUIDs(self):
         """Returns the UIDs of the descendant Analysis Requests
 
         This method is used as metadata
         """
-        descendants = self.getDescendants(all_descendants=all_descendants)
-        return map(api.get_uid, descendants)
+        rel_id = "AnalysisRequestParentAnalysisRequest"
+        return get_backreferences(self, relationship=rel_id)
 
     def isPartition(self):
         """Returns true if this Analysis Request is a partition
