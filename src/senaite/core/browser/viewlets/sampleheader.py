@@ -124,8 +124,8 @@ class SampleHeaderViewlet(ViewletBase):
             mode = self.get_field_mode(field)
             if mode not in ["view", "edit"]:
                 continue
-            html = self.render_field_html(field, mode=mode)
-            label = self.render_field_label(field, mode=mode)
+            html = self.get_field_html(field, mode=mode)
+            label = self.get_field_label(field, mode=mode)
             description = self.render_field_description(field, mode=mode)
             required = self.is_field_required(field, mode=mode)
             header_fields[vis].append({
@@ -140,7 +140,7 @@ class SampleHeaderViewlet(ViewletBase):
 
         return header_fields
 
-    def render_field_html(self, field, mode="view"):
+    def get_field_html(self, field, mode="view"):
         """Render field HTML
         """
         if mode == "view":
@@ -165,7 +165,7 @@ class SampleHeaderViewlet(ViewletBase):
 
         return None
 
-    def render_field_label(self, field, mode="view"):
+    def get_field_label(self, field, mode="view"):
         """Renders the field label
         """
         widget = self.get_widget(field)
