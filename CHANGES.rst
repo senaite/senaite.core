@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2107 Replace Worksheet's Analysis ReferenceField by UIDReferenceField (#2022 port)
 - #2106 Skip Auditlog catalog if disabled for DX types multiplexer (#2094 port)
 - #2106 Allow to disable global Auditlogging (#2074 port)
 - #2060 Added `api.is_temporary` function for both DX and AT types (#2018 port)
