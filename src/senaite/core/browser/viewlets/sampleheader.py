@@ -5,6 +5,7 @@ from itertools import islice
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
+from bika.lims.api.security import get_roles
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from plone.app.layout.viewlets import ViewletBase
@@ -284,3 +285,15 @@ class SampleHeaderViewlet(ViewletBase):
         """Check if the field is an DX field
         """
         return IDXField.providedBy(field)
+
+    def can_manage_sample_fields(self):
+        """Checks if the user is allowed to manage the sample fields
+
+        TODO: Better use custom permission (same as used for view)
+        """
+        roles = get_roles()
+        if "Manager" in roles:
+            return True
+        elif "LabManager" in roles:
+            return True
+        return False

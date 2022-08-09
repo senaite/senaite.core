@@ -27,14 +27,21 @@
         <input type="hidden" name="sampleheader_form_submitted" value="1" />
 
         <!-- Display Controls -->
-        <div class="sampleheader-controls float-right">
+        <div class="sampleheader-controls d-flex justify-content-end">
+          <div class="pr-3" tal:condition="python:view.can_manage_sample_fields()">
+            <a class="text-decoration-none"
+               target="_blank"
+               tal:attributes="href python:context.absolute_url() + '/manage-sample-fields'">
+              <i class="fas fa-tasks"></i>
+            </a>
+          </div>
           <!-- Toggle standard fields visibility -->
-          <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
-            <span i18n:translate="" class="text-secondary">
+          <div>
+            <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
               <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
               <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
-            </span>
-          </a>
+            </a>
+          </div>
         </div>
 
         <!-- Prominent fields -->
