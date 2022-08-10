@@ -110,10 +110,10 @@
               You can change the visibility of a field by selecting or unselecting the checkbox.
             </small>
             <ul class="fieldlist list-group mb-3" id="fieldlist-prominent">
-              <tal:prominent tal:repeat="fielddata python:fields['prominent']">
-                <tal:def define="name python:fielddata.get('name');
-                                 required python:fielddata.get('required');
-                                 label python:fielddata.get('label');
+              <tal:prominent tal:repeat="name python:prominent_fields">
+                <tal:def define="fieldinfo python:view.get_field_info(name);
+                                 required python:fieldinfo.get('required');
+                                 label python:fieldinfo.get('label');
                                  visible python:visibility.get(name);">
                   <li class="list-group-item">
 
@@ -156,10 +156,10 @@
               You can change the visibility of a field by selecting or unselecting the checkbox.
             </small>
             <ul class="fieldlist list-group mb-3" id="fieldlist-visible">
-              <tal:field tal:repeat="fielddata python:fields['visible']">
-                <tal:def define="name python:fielddata.get('name');
-                                 required python:fielddata.get('required');
-                                 label python:fielddata.get('label');
+              <tal:field tal:repeat="name python:standard_fields">
+                <tal:def define="fieldinfo python:view.get_field_info(name);
+                                 required python:fieldinfo.get('required');
+                                 label python:fieldinfo.get('label');
                                  visible python:visibility.get(name);">
                   <li class="list-group-item">
 

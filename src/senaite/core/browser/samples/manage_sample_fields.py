@@ -37,6 +37,17 @@ class ManageSampleFieldsView(BrowserView):
             self.request.response.redirect(self.page_url)
         return self.template()
 
+    @property
+    @viewcache.memoize
+    def context_state(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="plone_context_state")
+
+    @property
+    def page_url(self):
+        return self.context_state.current_page_url()
+
     def handle_form_submit(self, request=None):
         """Handle form submission
         """
@@ -52,6 +63,42 @@ class ManageSampleFieldsView(BrowserView):
             self.set_config(key, new_value)
         message = _("Changes saved.")
         self.add_status_message(message)
+
+    @property
+    def fields(self):
+        """Returns an ordered dict of all schema fields
+        """
+        return api.get_fields(self.context)
+
+    def get_header_fields(self):
+        """Return the (re-arranged) fields
+        """
+        header_fields = {
+            "prominent": [],
+            "visible": [],
+            "hidden": [],
+        }
+
+        for name, field in self.fields.items():
+            vis = self.get_field_visibility(field)
+            header_fields[vis].append(name)
+
+        return header_fields
+
+    def get_field_info(self, name):
+        """Return field information required for the template
+        """
+        field = self.fields.get(name)
+        label = self.get_field_label(field)
+        description = self.get_field_description(field)
+        required = self.is_field_required(field)
+        return {
+            "name": name,
+            "field": field,
+            "label": label,
+            "description": description,
+            "required": required,
+        }
 
     def set_config(self, name, value):
         """Lookup name in the config, otherwise return default
@@ -105,47 +152,6 @@ class ManageSampleFieldsView(BrowserView):
         """
         message = _("Configuration restored to default values.")
         self.add_status_message(message)
-
-    @property
-    @viewcache.memoize
-    def context_state(self):
-        return getMultiAdapter(
-            (self.context, self.request),
-            name="plone_context_state")
-
-    @property
-    def page_url(self):
-        return self.context_state.current_page_url()
-
-    @property
-    def fields(self):
-        """Returns an ordered dict of all schema fields
-        """
-        return api.get_fields(self.context)
-
-    def get_header_fields(self):
-        """Return the (re-arranged) fields
-        """
-        header_fields = {
-            "prominent": [],
-            "visible": [],
-            "hidden": [],
-        }
-
-        for name, field in self.fields.items():
-            vis = self.get_field_visibility(field)
-            label = self.get_field_label(field)
-            description = self.get_field_description(field)
-            required = self.is_field_required(field)
-            header_fields[vis].append({
-                "name": name,
-                "field": field,
-                "label": label,
-                "description": description,
-                "required": required,
-            })
-
-        return header_fields
 
     def get_field_visibility(self, field, default="hidden"):
         """Returns the field visibility in the header
