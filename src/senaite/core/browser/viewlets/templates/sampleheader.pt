@@ -2,11 +2,12 @@
      tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
                  test nocall:senaite_view/test;
                  errors python:request.get('errors', {});
-                 fields python:view.get_header_fields();
                  config python:view.get_configuration();
-                 prominent_columns python:config.get('prominent_columns', 1);
-                 standard_columns python:config.get('standard_columns', 1);
-                 show_standard_fields python:config.get('show_standard_fields', True);
+                 prominent_columns python:config.get('prominent_columns');
+                 standard_columns python:config.get('standard_columns');
+                 prominent_fields python:config.get('prominent_fields');
+                 standard_fields python:config.get('standard_fields');
+                 show_standard_fields python:config.get('show_standard_fields');
                  toggle_css python:'collapse show' if show_standard_fields else 'collapse';"
      i18n:domain="senaite.core">
 
@@ -58,15 +59,15 @@
         <!-- Prominent fields -->
         <div id="sampleheader-prominent-fields" class="table-responsive">
           <table class="sampleheader-table table table-sm table-bordered mb-1">
-            <tr tal:repeat="group python:view.grouper(fields['prominent'], prominent_columns)">
-              <tal:batch tal:repeat="fielddata python:group">
-                <tal:fielddata tal:define="name        python:fielddata.get('name');
-                                           mode        python:fielddata.get('mode');
-                                           html        python:fielddata.get('html');
-                                           field       python:fielddata.get('field');
-                                           label       python:fielddata.get('label');
-                                           description python:fielddata.get('description');
-                                           required    python:fielddata.get('required');">
+            <tr tal:repeat="group python:view.grouper(prominent_fields, prominent_columns)">
+              <tal:batch tal:repeat="name python:group">
+                <tal:fielddata tal:define="fieldinfo python:view.get_field_info(name);
+                                           mode python:fieldinfo.get('mode');
+                                           html python:fieldinfo.get('html');
+                                           field python:fieldinfo.get('field');
+                                           label python:fieldinfo.get('label');
+                                           description python:fieldinfo.get('description');
+                                           required python:fieldinfo.get('required');">
                   <td class="bg-light text-truncate"
                       style="width:200px;max-width:200px;">
                     <!-- Widget Label -->
@@ -95,7 +96,7 @@
                       </div>
                     </div>
                     <div class="form-row" tal:condition="python:not html">
-                      <div class="col-auto">
+                      <div class="col-auto" tal:condition="python:mode in ['view', 'edit']">
                         <!-- Render widget macro -->
                         <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
                       </div>
@@ -111,15 +112,15 @@
         <div id="sampleheader-standard-fields" class="table-responsive"
              tal:attributes="class string:table-responsive ${toggle_css}">
           <table class="sampleheader-table table table-sm table-bordered">
-            <tr tal:repeat="group python:view.grouper(fields['visible'], standard_columns)">
-              <tal:batch tal:repeat="fielddata python:group">
-                <tal:fielddata tal:define="name        python:fielddata.get('name');
-                                           mode        python:fielddata.get('mode');
-                                           html        python:fielddata.get('html');
-                                           field       python:fielddata.get('field');
-                                           label       python:fielddata.get('label');
-                                           description python:fielddata.get('description');
-                                           required    python:fielddata.get('required');">
+            <tr tal:repeat="group python:view.grouper(standard_fields, standard_columns)">
+              <tal:batch tal:repeat="name python:group">
+                <tal:fielddata tal:define="fieldinfo python:view.get_field_info(name);
+                                           mode python:fieldinfo.get('mode');
+                                           html python:fieldinfo.get('html');
+                                           field python:fieldinfo.get('field');
+                                           label python:fieldinfo.get('label');
+                                           description python:fieldinfo.get('description');
+                                           required python:fieldinfo.get('required');">
                   <td class="sampleheader-table-label bg-light text-truncate"
                       style="width:200px;max-width:200px;">
                     <!-- Widget Label -->
@@ -148,7 +149,7 @@
                       </div>
                     </div>
                     <div class="form-row" tal:condition="python:not html">
-                      <div class="col-auto">
+                      <div class="col-auto" tal:condition="python:mode in ['view', 'edit']">
                         <!-- Render widget macro -->
                         <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
                       </div>

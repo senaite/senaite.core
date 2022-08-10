@@ -116,35 +116,24 @@ class SampleHeaderViewlet(ViewletBase):
         for chunk in iter(lambda it=iter(iterable): list(islice(it, n)), []):
             yield chunk
 
-    def get_header_fields(self):
-        """Return the (re-arranged) fields
+    def get_field_info(self, name):
+        """Return field information required for the template
         """
-        header_fields = {
-            "prominent": [],
-            "visible": [],
-            "hidden": [],
+        field = self.fields.get(name)
+        mode = self.get_field_mode(field)
+        html = self.get_field_html(field, mode=mode)
+        label = self.get_field_label(field, mode=mode)
+        description = self.render_field_description(field, mode=mode)
+        required = self.is_field_required(field, mode=mode)
+        return {
+            "name": name,
+            "mode": mode,
+            "html": html,
+            "field": field,
+            "label": label,
+            "description": description,
+            "required": required,
         }
-
-        for name, field in self.fields.items():
-            vis = self.get_field_visibility(field)
-            mode = self.get_field_mode(field)
-            if mode not in ["view", "edit"]:
-                continue
-            html = self.get_field_html(field, mode=mode)
-            label = self.get_field_label(field, mode=mode)
-            description = self.render_field_description(field, mode=mode)
-            required = self.is_field_required(field, mode=mode)
-            header_fields[vis].append({
-                "name": name,
-                "mode": mode,
-                "html": html,
-                "field": field,
-                "label": label,
-                "description": description,
-                "required": required,
-            })
-
-        return header_fields
 
     def get_field_html(self, field, mode="view"):
         """Render field HTML
