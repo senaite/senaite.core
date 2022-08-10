@@ -34,7 +34,7 @@
                             standard_columns python:config.get('standard_columns');
                             prominent_fields python:config.get('prominent_fields');
                             standard_fields python:config.get('standard_fields');
-                            visibility python:config.get('field_visibility'); "
+                            visibility python:config.get('field_visibility');"
                 name="sampleheader_manage_form"
                 class="senaite-form"
                 method="post">

@@ -114,7 +114,9 @@ class ManageSampleFieldsView(BrowserView):
         set_registry_record(registry_name, value)
 
     def get_config(self, name, default=None):
-        """Lookup name in the config, otherwise return default
+        """Lookup registry record value
+
+        NOTE: This method returns
         """
         registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
         record = get_registry_record(registry_name, default=_marker)
@@ -125,12 +127,20 @@ class ManageSampleFieldsView(BrowserView):
     def get_configuration(self):
         """Return the header fields configuration
         """
-        show_standard_fields = self.get_config("show_standard_fields", True)
-        prominent_columns = self.get_config("prominent_columns", 1)
-        standard_columns = self.get_config("standard_columns", 3)
+        show_standard_fields = self.get_config("show_standard_fields")
+        prominent_columns = self.get_config("prominent_columns")
+        standard_columns = self.get_config("standard_columns")
         prominent_fields = self.get_config("prominent_fields")
         standard_fields = self.get_config("standard_fields")
         field_visibility = self.get_config("field_visibility")
+
+        # Handle flushed or not set registry keys
+        if show_standard_fields is None:
+            show_standard_fields = True
+        if prominent_columns is None:
+            prominent_columns = 1
+        if standard_columns is None:
+            standard_columns = 3
 
         if not all([prominent_fields, standard_fields, field_visibility]):
             fields = self.get_header_fields()

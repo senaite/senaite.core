@@ -83,7 +83,22 @@ class SampleHeaderViewlet(ViewletBase):
         """Return header configuration
         """
         mv = api.get_view(name="manage-sample-fields", context=self.context)
-        return mv.get_configuration()
+        settings = mv.get_configuration()
+        visibility = settings.get("field_visibility")
+
+        def is_visible(name):
+            return visibility.get(name, True)
+
+        # filter out fields that are configured as invisible
+        prominent_fields = filter(is_visible, settings.get("prominent_fields"))
+        standard_fields = filter(is_visible, settings.get("standard_fields"))
+
+        config = {}
+        config.update(settings)
+        config["prominent_fields"] = prominent_fields
+        config["standard_fields"] = standard_fields
+
+        return config
 
     @property
     def fields(self):
