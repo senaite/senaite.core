@@ -14,11 +14,10 @@
 
     <metal:description fill-slot="content-description">
       <p i18n:translate="">
-        Manage the order and visibility of the fields displayed in analysis
-        request add forms.
+        Manage the order and visibility of the sample fields.
       </p>
       <p i18n:translate="" class="discreet">
-        Note: The settings apply to all Sample Add forms; Required fields can not be deselected.
+        Note: The settings are global and to all sample views.
       </p>
     </metal:description>
 
@@ -28,7 +27,8 @@
       <div class="row">
         <div class="col-sm-12">
           <form id="senaite-sampleheader-manage-form"
-                tal:define="fields python:view.get_header_fields()"
+                tal:define="fields python:view.get_header_fields();
+                            config python:view.get_configuration();"
                 name="sampleheader_manage_form"
                 class="senaite-form"
                 method="post">
@@ -37,11 +37,67 @@
             <input type="hidden" name="submitted" value="1" />
             <span tal:replace="structure context/@@authenticator/authenticator"/>
 
+            <!-- Number of prominent columns -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="columns-prominent">
+                  Number of prominent columns
+                </label>
+              </div>
+              <div class="col">
+                <input type="number"
+                       min="0" max="10"
+                       id="columns-prominent"
+                       class="form-control form-control-sm"
+                       name="columns_prominent:int"
+                       tal:attributes="value python:config.get('prominent_columns')" />
+              </div>
+            </div>
+
+            <!-- Number of standard columns -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="columns-standard">
+                  Number of standard columns
+                </label>
+              </div>
+              <div class="col">
+                <input type="number"
+                       min="0" max="10"
+                       id="columns-standard"
+                       class="form-control form-control-sm"
+                       name="columns_standard:int"
+                       tal:attributes="value python:config.get('standard_columns')" />
+              </div>
+            </div>
+
+            <!-- Display standard columns -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="show-standard-columns">
+                  Always show standard columns
+                </label>
+              </div>
+              <div class="col">
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                  <input type="hidden"
+                         name="show_standard_columns:boolean:default"
+                         tal:attributes="value python:False"/>
+                  <input type="checkbox"
+                         id="show-standard-columns"
+                         class="form control form-control-sm"
+                         name="show_standard_columns:boolean"
+                         tal:attributes="checked python:config.get('show_standard_fields')"
+                  />
+                </div>
+              </div>
+            </div>
+
             <!-- Prominent fields -->
             <div class="font-weight-bold small" i18n:translate="">Prominent fields</div>
             <small class="text-secondary" i18n:translate="">
               The fields are always listed on top and can not be faded out.
-              You can drag and drop any fields to the lower list to change their state.
+              You can drag and drop any fields to the lower list to change thier visibility.
             </small>
             <br/>
             <small class="text-secondary" i18n:translate="">
@@ -87,7 +143,7 @@
             <div class="font-weight-bold small" i18n:translate="">Standard fields</div>
             <small class="text-secondary" i18n:translate="">
               The fields are listed below the promient fields and can be faded out.
-              You can drag and drop any fields to the upper list to change their state.
+              You can drag and drop any fields to the upper list to change their visibility.
             </small>
             <br/>
             <small class="text-secondary" i18n:translate="">

@@ -7,9 +7,11 @@ from plone.protect import PostOnly
 from Products.Archetypes.interfaces import IField as IATField
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core import logger
+from senaite.core.registry import get_registry_record
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField as IDXField
+
+_marker = object
 
 
 class ManageSampleFieldsView(BrowserView):
@@ -34,6 +36,39 @@ class ManageSampleFieldsView(BrowserView):
         PostOnly(request)
         message = _("Changes saved.")
         self.add_status_message(message)
+
+    def get_config(self, name, default=None):
+        """Lookup name in the config, otherwise return default
+        """
+        registry_name = "sampleheader_{}".format(name)
+        record = get_registry_record(registry_name, default=_marker)
+        if record is _marker:
+            return default
+        return record
+
+    def get_configuration(self):
+        """
+        """
+        fields = self.get_header_fields()
+
+        show_standard_fields = self.get_config("show_standard_fields", True)
+        prominent_columns = self.get_config("prominent_columns", 1)
+        standard_columns = self.get_config("standard_columns", 3)
+        prominent_fields = self.get_config("prominent_fields")
+        standard_fields = self.get_config("standard_fields")
+        field_visibility = self.get_config("field_visibility", True)
+
+        config = {
+            "show_standard_fields": show_standard_fields,
+            "prominent_columns": prominent_columns,
+            "standard_columns": standard_columns,
+            "prominent_fields": prominent_fields,
+            "standard_fields": standard_fields,
+            "field_visibility": field_visibility,
+        }
+
+        return config
+
 
     @property
     @viewcache.memoize
