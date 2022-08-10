@@ -37,6 +37,7 @@ class ManageSampleFieldsView(BrowserView):
         message = _("Changes saved.")
         self.add_status_message(message)
 
+    @viewcache.memoize
     def get_config(self, name, default=None):
         """Lookup name in the config, otherwise return default
         """
@@ -68,7 +69,6 @@ class ManageSampleFieldsView(BrowserView):
         }
 
         return config
-
 
     @property
     @viewcache.memoize

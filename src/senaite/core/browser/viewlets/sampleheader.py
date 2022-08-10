@@ -79,6 +79,12 @@ class SampleHeaderViewlet(ViewletBase):
             event.notify(ObjectEditedEvent(self.context))
             self.add_status_message(message, level="info")
 
+    def get_configuration(self):
+        """Return header configuration
+        """
+        mv = api.get_view(name="manage-sample-fields", context=self.context)
+        return mv.get_configuration()
+
     @property
     def fields(self):
         """Returns an ordered dict of all schema fields

@@ -2,7 +2,12 @@
      tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
                  test nocall:senaite_view/test;
                  errors python:request.get('errors', {});
-                 fields python:view.get_header_fields();"
+                 fields python:view.get_header_fields();
+                 config python:view.get_configuration();
+                 prominent_columns python:config.get('prominent_columns', 1);
+                 standard_columns python:config.get('standard_columns', 1);
+                 show_standard_fields python:config.get('show_standard_fields', True);
+                 toggle_css python:'collapse show' if show_standard_fields else 'collapse';"
      i18n:domain="senaite.core">
 
   <div class="row">
@@ -38,16 +43,22 @@
           <!-- Toggle standard fields visibility -->
           <div>
             <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
-              <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
-              <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
+              <tal:toggleicons tal:condition="python:show_standard_fields">
+                <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
+                <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
+              </tal:toggleicons>
+              <tal:toggleicons tal:condition="python:not show_standard_fields">
+                <i id="toggle-show-icon" class="fas fa-window-maximize d-none"></i>
+                <i id="toggle-hide-icon" class="fas fa-window-minimize"></i>
+              </tal:toggleicons>
             </a>
           </div>
         </div>
 
         <!-- Prominent fields -->
-        <div id="sampleheader-prominent-fields" class="table-responsive collapse show">
+        <div id="sampleheader-prominent-fields" class="table-responsive">
           <table class="sampleheader-table table table-sm table-bordered mb-1">
-            <tr tal:repeat="group python:view.grouper(fields['prominent'], 1)">
+            <tr tal:repeat="group python:view.grouper(fields['prominent'], prominent_columns)">
               <tal:batch tal:repeat="fielddata python:group">
                 <tal:fielddata tal:define="name        python:fielddata.get('name');
                                            mode        python:fielddata.get('mode');
@@ -97,9 +108,10 @@
       </div>
 
         <!-- Standard fields -->
-        <div id="sampleheader-standard-fields" class="table-responsive collapse show">
+        <div id="sampleheader-standard-fields" class="table-responsive"
+             tal:attributes="class string:table-responsive ${toggle_css}">
           <table class="sampleheader-table table table-sm table-bordered">
-            <tr tal:repeat="group python:view.grouper(fields['visible'], 3)">
+            <tr tal:repeat="group python:view.grouper(fields['visible'], standard_columns)">
               <tal:batch tal:repeat="fielddata python:group">
                 <tal:fielddata tal:define="name        python:fielddata.get('name');
                                            mode        python:fielddata.get('mode');
