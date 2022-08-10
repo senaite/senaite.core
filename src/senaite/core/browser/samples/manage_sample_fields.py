@@ -82,6 +82,8 @@ class ManageSampleFieldsView(BrowserView):
         }
 
         for name, field in self.fields.items():
+            if not self.is_field_visible(field):
+                continue
             vis = self.get_field_visibility(field)
             header_fields[vis].append(name)
 
@@ -191,6 +193,14 @@ class ManageSampleFieldsView(BrowserView):
         elif self.is_dx_field(field):
             raise NotImplementedError("DX widgets not yet needed")
         raise TypeError("Field %r is neither a DX nor an AT field")
+
+    def is_field_visible(self, field):
+        """Checks if the field is visible in view mode
+        """
+        widget = self.get_widget(field)
+        visibility = widget.isVisible(self.context, mode="view", field=field)
+        return visibility == "visible"
+
 
     def is_field_required(self, field):
         """Check if the field is required
