@@ -8,8 +8,10 @@ from Products.Archetypes.interfaces import IField as IATField
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.registry import get_registry_record
+from senaite.core.registry import set_registry_record
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField as IDXField
+from ZPublisher.HTTPRequest import record as RequestRecord
 
 _marker = object
 
@@ -25,8 +27,13 @@ class ManageSampleFieldsView(BrowserView):
 
     def __call__(self):
         submitted = self.request.form.get("submitted", False)
-        if submitted:
+        save = self.request.form.get("save", False)
+        reset = self.request.form.get("reset", False)
+        if submitted and save:
             self.handle_form_submit(request=self.request)
+            self.request.response.redirect(self.page_url)
+        elif submitted and reset:
+            self.reset_configuration()
             self.request.response.redirect(self.page_url)
         return self.template()
 
@@ -34,10 +41,24 @@ class ManageSampleFieldsView(BrowserView):
         """Handle form submission
         """
         PostOnly(request)
+        config = self.get_configuration()
+        for key, old_value in config.items():
+            new_value = request.form.get(key)
+            if not new_value:
+                continue
+            # convert request records to plain dictionaries
+            if isinstance(new_value, RequestRecord):
+                new_value = dict(new_value)
+            self.set_config(key, new_value)
         message = _("Changes saved.")
         self.add_status_message(message)
 
-    @viewcache.memoize
+    def set_config(self, name, value):
+        """Lookup name in the config, otherwise return default
+        """
+        registry_name = "sampleheader_{}".format(name)
+        set_registry_record(registry_name, value)
+
     def get_config(self, name, default=None):
         """Lookup name in the config, otherwise return default
         """
@@ -48,16 +69,25 @@ class ManageSampleFieldsView(BrowserView):
         return record
 
     def get_configuration(self):
+        """Return the header fields configuration
         """
-        """
-        fields = self.get_header_fields()
-
         show_standard_fields = self.get_config("show_standard_fields", True)
         prominent_columns = self.get_config("prominent_columns", 1)
         standard_columns = self.get_config("standard_columns", 3)
         prominent_fields = self.get_config("prominent_fields")
         standard_fields = self.get_config("standard_fields")
-        field_visibility = self.get_config("field_visibility", True)
+        field_visibility = self.get_config("field_visibility")
+
+        fields = self.get_header_fields()
+
+        if field_visibility is None:
+            field_visibility = dict.fromkeys(self.fields.keys(), True)
+
+        if prominent_fields is None:
+            prominent_fields = fields["prominent"]
+
+        if standard_fields is None:
+            standard_fields = fields["visible"]
 
         config = {
             "show_standard_fields": show_standard_fields,
@@ -69,6 +99,12 @@ class ManageSampleFieldsView(BrowserView):
         }
 
         return config
+
+    def reset_configuration(self):
+        """Reset configuration to default values
+        """
+        message = _("Configuration restored to default values.")
+        self.add_status_message(message)
 
     @property
     @viewcache.memoize

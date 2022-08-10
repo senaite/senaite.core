@@ -28,7 +28,13 @@
         <div class="col-sm-12">
           <form id="senaite-sampleheader-manage-form"
                 tal:define="fields python:view.get_header_fields();
-                            config python:view.get_configuration();"
+                            config python:view.get_configuration();
+                            show_standard_fields python:config.get('show_standard_fields');
+                            prominent_columns python:config.get('prominent_columns');
+                            standard_columns python:config.get('standard_columns');
+                            prominent_fields python:config.get('prominent_fields');
+                            standard_fields python:config.get('standard_fields');
+                            visibility python:config.get('field_visibility'); "
                 name="sampleheader_manage_form"
                 class="senaite-form"
                 method="post">
@@ -40,24 +46,24 @@
             <!-- Number of prominent columns -->
             <div class="form-row align-items-center mb-2">
               <div class="col-sm-3">
-                <label class="" for="columns-prominent">
+                <label class="" for="prominent-columns">
                   Number of prominent columns
                 </label>
               </div>
               <div class="col">
                 <input type="number"
                        min="0" max="10"
-                       id="columns-prominent"
+                       id="prominent-columns"
                        class="form-control form-control-sm"
-                       name="columns_prominent:int"
-                       tal:attributes="value python:config.get('prominent_columns')" />
+                       name="prominent_columns:int"
+                       tal:attributes="value python:prominent_columns" />
               </div>
             </div>
 
             <!-- Number of standard columns -->
             <div class="form-row align-items-center mb-2">
               <div class="col-sm-3">
-                <label class="" for="columns-standard">
+                <label class="" for="standard-columns">
                   Number of standard columns
                 </label>
               </div>
@@ -66,28 +72,28 @@
                        min="0" max="10"
                        id="columns-standard"
                        class="form-control form-control-sm"
-                       name="columns_standard:int"
-                       tal:attributes="value python:config.get('standard_columns')" />
+                       name="standard_columns:int"
+                       tal:attributes="value python:standard_columns" />
               </div>
             </div>
 
-            <!-- Display standard columns -->
+            <!-- Show standard fields -->
             <div class="form-row align-items-center mb-2">
               <div class="col-sm-3">
-                <label class="" for="show-standard-columns">
-                  Always show standard columns
+                <label class="" for="show-standard-fields">
+                  Always show standard fields
                 </label>
               </div>
               <div class="col">
                 <div class="custom-control custom-checkbox my-1 mr-sm-2">
                   <input type="hidden"
-                         name="show_standard_columns:boolean:default"
+                         name="show_standard_fields:boolean:default"
                          tal:attributes="value python:False"/>
                   <input type="checkbox"
-                         id="show-standard-columns"
+                         id="show-standard-fields"
                          class="form control form-control-sm"
-                         name="show_standard_columns:boolean"
-                         tal:attributes="checked python:config.get('show_standard_fields')"
+                         name="show_standard_fields:boolean"
+                         tal:attributes="checked python:show_standard_fields"
                   />
                 </div>
               </div>
@@ -107,32 +113,32 @@
               <tal:prominent tal:repeat="fielddata python:fields['prominent']">
                 <tal:def define="name python:fielddata.get('name');
                                  required python:fielddata.get('required');
-                                 label python:fielddata.get('label');">
+                                 label python:fielddata.get('label');
+                                 visible python:visibility.get(name);">
                   <li class="list-group-item">
 
                     <!-- Prominent Fields -->
                     <input type="hidden"
-                           tal:attributes="name string:promient:list;
+                           tal:attributes="name string:prominent_fields:list;
                                            value string:${name}"/>
-                    <!-- Field Order -->
-                    <input type="hidden"
-                           tal:attributes="name string:order:list;
-                                           value string:${name}"/>
-                    <!-- Field Visibility -->
-                    <input type="hidden"
-                           tal:attributes="name string:visibility.${name}:record:boolean:default;
-                                           value python:False"/>
-                    <input type="checkbox"
-                           tal:attributes="name string:visibility.${name}:record:boolean;
-                                          value python:True;
-                                          checked python:True;
-                                          "/>
 
-                    <span tal:replace="structure label"/>
+                    <!-- Field Visibility -->
+                    <input type="checkbox"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean;
+                                          value python:True;
+                                          checked python:visible;"/>
+                    <input type="hidden"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean:default;
+                                           value python:False"/>
+
+
+                    <!-- Field Label -->
+                    <span class="label" tal:content="structure label"/>
                     <span class="fieldRequired"
                           tal:condition="required"
                           title="Required"
-                          i18n:attributes="title title_required;">&nbsp;</span>
+                          i18n:attributes="title title_required;">
+                    </span>
                   </li>
                 </tal:def>
               </tal:prominent>
@@ -153,27 +159,23 @@
               <tal:field tal:repeat="fielddata python:fields['visible']">
                 <tal:def define="name python:fielddata.get('name');
                                  required python:fielddata.get('required');
-                                 label python:fielddata.get('label');">
+                                 label python:fielddata.get('label');
+                                 visible python:visibility.get(name);">
                   <li class="list-group-item">
 
                     <!-- Standard Fields -->
                     <input type="hidden"
-                           tal:attributes="name string:standard:list;
+                           tal:attributes="name string:standard_fields:list;
                                            value string:${name}"/>
 
-                    <!-- Field Order -->
-                    <input type="hidden"
-                           tal:attributes="name string:order:list;
-                                           value string:${name}"/>
                     <!-- Field Visibility -->
-                    <input type="hidden"
-                           tal:attributes="name string:visibility.${name}:record:boolean:default;
-                                           value python:False"/>
                     <input type="checkbox"
-                           tal:attributes="name string:visibility.${name}:record:boolean;
+                           tal:attributes="name string:field_visibility.${name}:record:boolean;
                                            value python:True;
-                                           checked python:True;
-                                          "/>
+                                           checked python:visible;"/>
+                    <input type="hidden"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean:default;
+                                           value python:False"/>
 
                     <span tal:replace="structure label"/>
                     <span class="fieldRequired"

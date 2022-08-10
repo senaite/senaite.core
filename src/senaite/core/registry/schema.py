@@ -40,6 +40,8 @@ class ISampleHeaderRegistry(ISenaiteRegistry):
         description=_("Number of prominent columns"),
         default=1,
         required=False,
+        min=0,
+        max=10,
     )
 
     sampleheader_standard_columns = schema.Int(
@@ -47,6 +49,8 @@ class ISampleHeaderRegistry(ISenaiteRegistry):
         description=_("Number of standard columns"),
         default=3,
         required=False,
+        min=0,
+        max=10,
     )
 
     sampleheader_prominent_fields = schema.List(
@@ -66,7 +70,7 @@ class ISampleHeaderRegistry(ISenaiteRegistry):
     sampleheader_field_visibility = schema.Dict(
         title=_("Field visibility"),
         description=_("Visible fields"),
-        key_type=schema.ASCIILine(),
-        value_type=schema.Bool(),
+        key_type=schema.ASCIILine(title=_("Field Name"),),
+        value_type=schema.Bool(title=_("Field visibility"), default=True),
         required=False,
     )
