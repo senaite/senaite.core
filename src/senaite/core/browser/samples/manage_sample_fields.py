@@ -7,8 +7,11 @@ from plone.protect import PostOnly
 from Products.Archetypes.interfaces import IField as IATField
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
+from senaite.core.registry import get_registry
 from senaite.core.registry import get_registry_record
 from senaite.core.registry import set_registry_record
+from senaite.core.registry.schema import ISampleHeaderRegistry
 from zope.component import getMultiAdapter
 from zope.schema.interfaces import IField as IDXField
 from ZPublisher.HTTPRequest import record as RequestRecord
@@ -129,16 +132,17 @@ class ManageSampleFieldsView(BrowserView):
         standard_fields = self.get_config("standard_fields")
         field_visibility = self.get_config("field_visibility")
 
-        fields = self.get_header_fields()
+        if not all([prominent_fields, standard_fields, field_visibility]):
+            fields = self.get_header_fields()
 
-        if field_visibility is None:
-            field_visibility = dict.fromkeys(self.fields.keys(), True)
+            if prominent_fields is None:
+                prominent_fields = fields["prominent"]
 
-        if prominent_fields is None:
-            prominent_fields = fields["prominent"]
+            if standard_fields is None:
+                standard_fields = fields["visible"]
 
-        if standard_fields is None:
-            standard_fields = fields["visible"]
+            if field_visibility is None:
+                field_visibility = dict.fromkeys(self.fields.keys(), True)
 
         config = {
             "show_standard_fields": show_standard_fields,
@@ -154,6 +158,12 @@ class ManageSampleFieldsView(BrowserView):
     def reset_configuration(self):
         """Reset configuration to default values
         """
+        identifier = ISampleHeaderRegistry.__identifier__
+        registry = get_registry()
+        for key in registry.records:
+            if key.startswith(identifier):
+                logger.info("Flushing registry key %s" % key)
+                registry.records[key].value = None
         message = _("Configuration restored to default values.")
         self.add_status_message(message)
 
