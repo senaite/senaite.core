@@ -216,12 +216,12 @@
                let sender = ui.sender;
                let sid = sender.attr("id");
 
-               var source = "standard"
-               var target = "prominent";
+               var source = "standard_fields"
+               var target = "prominent_fields";
 
                if (sid == 'fieldlist-prominent') {
-                 source = "prominent";
-                 target = "standard";
+                 source = "prominent_fields";
+                 target = "standard_fields";
                }
 
 

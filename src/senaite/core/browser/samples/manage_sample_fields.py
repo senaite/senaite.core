@@ -15,6 +15,8 @@ from ZPublisher.HTTPRequest import record as RequestRecord
 
 _marker = object
 
+REGISTRY_KEY_PREFIX = "sampleheader"
+
 
 class ManageSampleFieldsView(BrowserView):
     """Manage Sample Fields
@@ -54,8 +56,8 @@ class ManageSampleFieldsView(BrowserView):
         PostOnly(request)
         config = self.get_configuration()
         for key, old_value in config.items():
-            new_value = request.form.get(key)
-            if not new_value:
+            new_value = request.form.get(key, _marker)
+            if new_value is _marker:
                 continue
             # convert request records to plain dictionaries
             if isinstance(new_value, RequestRecord):
@@ -103,13 +105,13 @@ class ManageSampleFieldsView(BrowserView):
     def set_config(self, name, value):
         """Lookup name in the config, otherwise return default
         """
-        registry_name = "sampleheader_{}".format(name)
+        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
         set_registry_record(registry_name, value)
 
     def get_config(self, name, default=None):
         """Lookup name in the config, otherwise return default
         """
-        registry_name = "sampleheader_{}".format(name)
+        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
         record = get_registry_record(registry_name, default=_marker)
         if record is _marker:
             return default
