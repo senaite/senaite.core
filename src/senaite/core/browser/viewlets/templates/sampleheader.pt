@@ -7,9 +7,10 @@
                  standard_columns python:config.get('standard_columns');
                  prominent_fields python:config.get('prominent_fields');
                  standard_fields python:config.get('standard_fields');
+                 render_prominent_fields python:prominent_columns > 0 and len(prominent_fields) > 0;
+                 render_standard_fields python:standard_columns > 0 and len(standard_fields) > 0;
                  show_standard_fields python:config.get('show_standard_fields');
                  toggle_css python:'collapse show' if show_standard_fields else 'collapse';"
-     tal:condition="python:prominent_columns and standard_columns"
      i18n:domain="senaite.core">
 
   <div class="row">
@@ -43,7 +44,7 @@
             </a>
           </div>
           <!-- Toggle standard fields visibility -->
-          <div>
+          <div tal:condition="python:render_standard_fields">
             <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
               <tal:toggleicons tal:condition="python:show_standard_fields">
                 <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
@@ -58,7 +59,8 @@
         </div>
 
         <!-- Prominent fields -->
-        <div id="sampleheader-prominent-fields" class="table-responsive">
+        <div id="sampleheader-prominent-fields" class="table-responsive"
+             tal:condition="python:render_prominent_fields">
           <table class="sampleheader-table table table-sm table-bordered mb-1">
             <tr tal:repeat="group python:view.grouper(prominent_fields, prominent_columns)">
               <tal:batch tal:repeat="name python:group">
@@ -111,6 +113,7 @@
 
         <!-- Standard fields -->
         <div id="sampleheader-standard-fields" class="table-responsive"
+             tal:condition="python:render_standard_fields"
              tal:attributes="class string:table-responsive ${toggle_css}">
           <table class="sampleheader-table table table-sm table-bordered">
             <tr tal:repeat="group python:view.grouper(standard_fields, standard_columns)">
@@ -162,13 +165,15 @@
           </table>
         </div>
 
-        <!-- Save Button -->
-        <input tal:condition="python:view.is_edit_allowed()"
-               class="btn btn-sm btn-primary mt-2"
-               type="submit"
-               name="form.button.save"
-               value="Save"
-               i18n:attributes="value label_save;"/>
+        <tal:controls condition="python:render_prominent_fields and render_standard_fields">
+          <!-- Save Button -->
+          <input tal:condition="python:view.is_edit_allowed()"
+                class="btn btn-sm btn-primary mt-2"
+                type="submit"
+                name="form.button.save"
+                value="Save"
+                i18n:attributes="value label_save;"/>
+        </tal:controls>
       </form>
 
 
