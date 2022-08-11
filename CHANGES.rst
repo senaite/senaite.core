@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2111 Replace header table with customizable sample header viewlet
 - #2104 Fix result formatting when result is below LDL or above UDL
 - #2103 Convert LDL/UDL fields to string
 - #2101 Add help text for numeric result
