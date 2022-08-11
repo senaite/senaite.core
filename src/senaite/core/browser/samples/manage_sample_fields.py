@@ -237,11 +237,14 @@ class ManageSampleFieldsView(BrowserView):
     def get_field_visibility(self, field, default="hidden"):
         """Returns the field visibility in the header
 
-        Possible values are:
+        Possible return values are:
 
           - prominent: Rendered as a promient field
           - visible: Rendered as a odestandard field
           - hidden: Not displayed
+
+        :param field: Field object
+        :returns: Visibility string
         """
         widget = self.get_widget(field)
         visibility = widget.isVisible(
@@ -252,18 +255,27 @@ class ManageSampleFieldsView(BrowserView):
 
     def get_field_label(self, field):
         """Get the field label
+
+        :param field: Field object
+        :returns: Label of the fields' widget
         """
         widget = self.get_widget(field)
         return getattr(widget, "label", "")
 
     def get_field_description(self, field):
         """Get the field description
+
+        :param field: Field object
+        :returns: Description of the fields' widget
         """
         widget = self.get_widget(field)
         return getattr(widget, "description", "")
 
     def get_widget(self, field):
         """Returns the widget of the field
+
+        :param field: Field object
+        :returns: Widget object
         """
         if self.is_at_field(field):
             return field.widget
@@ -273,28 +285,42 @@ class ManageSampleFieldsView(BrowserView):
 
     def is_field_visible(self, field):
         """Checks if the field is visible in view mode
+
+        :param field: Field object
+        :returns: True if field is visible, otherwise False
         """
         widget = self.get_widget(field)
         visibility = widget.isVisible(self.context, mode="view", field=field)
         return visibility == "visible"
 
-
     def is_field_required(self, field):
         """Check if the field is required
+
+        :param field: Field object
+        :returns: True if field is set to required, otherwise False
         """
         return getattr(field, "required", False)
 
     def is_at_field(self, field):
         """Check if the field is an AT field
+
+        :param field: Field object
+        :returns: True if field is an AT based field
         """
         return IATField.providedBy(field)
 
     def is_dx_field(self, field):
         """Check if the field is an DX field
+
+        :param field: Field object
+        :returns: True if field is an DX based field
         """
         return IDXField.providedBy(field)
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
+
+        :param message: The status message to render
+        :returns: None
         """
-        return self.context.plone_utils.addPortalMessage(message, level)
+        self.context.plone_utils.addPortalMessage(message, level)
