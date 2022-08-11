@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import traceback
+
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.memoize import view as viewcache
@@ -53,8 +55,14 @@ class ManageSampleFieldsView(BrowserView):
     def page_url(self):
         return self.context_state.current_page_url()
 
+    @property
+    def fields(self):
+        """Returns an ordered dict of all schema fields
+        """
+        return api.get_fields(self.context)
+
     def handle_form_submit(self, request=None):
-        """Handle form submission
+        """Handle form submission and save values to registry
         """
         PostOnly(request)
         config = self.get_configuration()
@@ -65,15 +73,41 @@ class ManageSampleFieldsView(BrowserView):
             # convert request records to plain dictionaries
             if isinstance(new_value, RequestRecord):
                 new_value = dict(new_value)
-            self.set_config(key, new_value)
+            success = self.set_config(key, new_value)
+            # return immediately if a record could not be set
+            if not success:
+                message = _("Failed to update registry records. "
+                            "Please check the server log for details.")
+                return self.add_status_message(message, level="warning")
         message = _("Changes saved.")
-        self.add_status_message(message)
+        return self.add_status_message(message)
 
-    @property
-    def fields(self):
-        """Returns an ordered dict of all schema fields
+    def set_config(self, name, value):
+        """Lookup name in the config, otherwise return default
         """
-        return api.get_fields(self.context)
+        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
+        logger.info("Set registry record '{}' to value '{}'"
+                    .format(registry_name, value))
+        try:
+            set_registry_record(registry_name, value)
+        except (NameError, TypeError):
+            exc = traceback.format_exc()
+            logger.error("Failed to set registry record '{}' -> '{}'"
+                         "\nTraceback: {}\nForgot to run the migration steps?"
+                         .format(name, value, exc))
+            return False
+        return True
+
+    def get_config(self, name, default=None):
+        """Lookup registry record value
+
+        NOTE: This method returns
+        """
+        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
+        record = get_registry_record(registry_name, default=_marker)
+        if record is _marker:
+            return default
+        return record
 
     def get_header_fields(self):
         """Return the (re-arranged) fields
@@ -106,23 +140,6 @@ class ManageSampleFieldsView(BrowserView):
             "description": description,
             "required": required,
         }
-
-    def set_config(self, name, value):
-        """Lookup name in the config, otherwise return default
-        """
-        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
-        set_registry_record(registry_name, value)
-
-    def get_config(self, name, default=None):
-        """Lookup registry record value
-
-        NOTE: This method returns
-        """
-        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
-        record = get_registry_record(registry_name, default=_marker)
-        if record is _marker:
-            return default
-        return record
 
     def get_configuration(self):
         """Return the header fields configuration

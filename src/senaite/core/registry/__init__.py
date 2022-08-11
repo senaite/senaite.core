@@ -78,3 +78,5 @@ def set_registry_record(name, value):
                         of_class=str(field_type.__class__),
                         of_type=type(value),
                     ))
+
+    raise NameError("No registry record found for name '{}'".format(name))
