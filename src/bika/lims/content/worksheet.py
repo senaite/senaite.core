@@ -1362,10 +1362,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state in ['published', 'verified', 'retracted']:
                 old_ws_analyses.append(analysis.UID())
-
-                # XXX where does position come from?
-                old_layout.append({'position': position,
-                                   'type': 'a',
+                old_layout.append({'type': 'a',
                                    'analysis_uid': analysis.UID(),
                                    'container_uid': analysis.aq_parent.UID()})
                 continue

@@ -24,6 +24,9 @@ from . import TimaCSVParser, TimaImporter
 import json
 import traceback
 
+from bika.lims import _
+from bika.lims.utils import t
+
 title = "Tescan - TIMA"
 
 def Import(context, request):
