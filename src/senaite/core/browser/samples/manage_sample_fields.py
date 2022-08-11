@@ -38,11 +38,11 @@ class ManageSampleFieldsView(BrowserView):
         reset = self.request.form.get("reset", False)
         # Handle form save action
         if submitted and save:
-            self.handle_form_submit(request=self.request)
+            self.handle_form_save(request=self.request)
             self.request.response.redirect(self.page_url)
         # Handle form reset action
         elif submitted and reset:
-            self.reset_configuration()
+            self.handle_form_reset(request=self.request)
             self.request.response.redirect(self.page_url)
         return self.template()
 
@@ -63,8 +63,10 @@ class ManageSampleFieldsView(BrowserView):
         """
         return api.get_fields(self.context)
 
-    def handle_form_submit(self, request=None):
-        """Handle form submission and save values to registry
+    def handle_form_save(self, request=None):
+        """Handle form submission -> save
+
+        Update all known registry records with the values from the request
         """
         PostOnly(request)
         config = self.get_configuration()
@@ -83,6 +85,21 @@ class ManageSampleFieldsView(BrowserView):
                 return self.add_status_message(message, level="warning")
         message = _("Changes saved.")
         return self.add_status_message(message)
+
+    def handle_form_reset(self, request=None):
+        """Handle form submission -> reset
+
+        Set all known registry record values to `None`
+        """
+        PostOnly(request)
+        identifier = ISampleHeaderRegistry.__identifier__
+        registry = get_registry()
+        for key in registry.records:
+            if key.startswith(identifier):
+                logger.info("Flushing registry key %s" % key)
+                registry.records[key].value = None
+        message = _("Configuration restored to default values.")
+        self.add_status_message(message)
 
     def set_config(self, name, value, prefix=REGISTRY_KEY_PREFIX):
         """Set registry record by name
@@ -216,18 +233,6 @@ class ManageSampleFieldsView(BrowserView):
         }
 
         return config
-
-    def reset_configuration(self):
-        """Reset configuration to default values
-        """
-        identifier = ISampleHeaderRegistry.__identifier__
-        registry = get_registry()
-        for key in registry.records:
-            if key.startswith(identifier):
-                logger.info("Flushing registry key %s" % key)
-                registry.records[key].value = None
-        message = _("Configuration restored to default values.")
-        self.add_status_message(message)
 
     def get_field_visibility(self, field, default="hidden"):
         """Returns the field visibility in the header
