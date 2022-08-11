@@ -36,9 +36,11 @@ class ManageSampleFieldsView(BrowserView):
         submitted = self.request.form.get("submitted", False)
         save = self.request.form.get("save", False)
         reset = self.request.form.get("reset", False)
+        # Handle form save action
         if submitted and save:
             self.handle_form_submit(request=self.request)
             self.request.response.redirect(self.page_url)
+        # Handle form reset action
         elif submitted and reset:
             self.reset_configuration()
             self.request.response.redirect(self.page_url)
@@ -82,14 +84,19 @@ class ManageSampleFieldsView(BrowserView):
         message = _("Changes saved.")
         return self.add_status_message(message)
 
-    def set_config(self, name, value):
-        """Lookup name in the config, otherwise return default
+    def set_config(self, name, value, prefix=REGISTRY_KEY_PREFIX):
+        """Set registry record by name
+
+        :param name: Name of the registry record to update
+        :param value: Value to set
+        :returns: True if the record was updated successfully, otherwise False
         """
-        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
+        if prefix:
+            name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
         logger.info("Set registry record '{}' to value '{}'"
-                    .format(registry_name, value))
+                    .format(name, value))
         try:
-            set_registry_record(registry_name, value)
+            set_registry_record(name, value)
         except (NameError, TypeError):
             exc = traceback.format_exc()
             logger.error("Failed to set registry record '{}' -> '{}'"
@@ -98,19 +105,24 @@ class ManageSampleFieldsView(BrowserView):
             return False
         return True
 
-    def get_config(self, name, default=None):
-        """Lookup registry record value
+    def get_config(self, name, prefix=REGISTRY_KEY_PREFIX, default=None):
+        """Get registry record value by name
 
-        NOTE: This method returns
+        :param name: Name of the registry record to fetch
+        :returns: Value of the registry record, otherwise the default
         """
-        registry_name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
-        record = get_registry_record(registry_name, default=_marker)
+        if prefix:
+            name = "{}_{}".format(REGISTRY_KEY_PREFIX, name)
+        # only return the default when the registry record is not set
+        record = get_registry_record(name, default=_marker)
         if record is _marker:
             return default
         return record
 
     def get_header_fields(self):
         """Return the (re-arranged) fields
+
+        :returns: Dictionary with ordered lists of field names
         """
         header_fields = {
             "prominent": [],
@@ -128,6 +140,9 @@ class ManageSampleFieldsView(BrowserView):
 
     def get_field_info(self, name):
         """Return field information required for the template
+
+        :param name: Name of the field
+        :returns: Dictionary with template specific data
         """
         field = self.fields.get(name)
         label = self.get_field_label(field)
@@ -143,6 +158,11 @@ class ManageSampleFieldsView(BrowserView):
 
     def get_configuration(self):
         """Return the header fields configuration
+
+        NOTE: This method is used in the sample header viewlet to render the
+              fields according to their order and visibility.
+
+        :returns: Field configuration dictionary for the sample header viewlet
         """
         show_standard_fields = self.get_config("show_standard_fields")
         prominent_columns = self.get_config("prominent_columns")
