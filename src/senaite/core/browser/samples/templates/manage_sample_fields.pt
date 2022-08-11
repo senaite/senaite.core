@@ -17,7 +17,7 @@
         Manage the order and visibility of the sample fields.
       </p>
       <p i18n:translate="" class="discreet">
-        Note: The settings are global and to all sample views.
+        Note: The settings are global and apply to all sample views.
       </p>
     </metal:description>
 
