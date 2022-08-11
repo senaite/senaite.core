@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="senaite_legacy_resources"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div class="card mb-3"
+           tal:define="portal context/@@plone_portal_state/portal;
+                       portal_url python:portal.absolute_url()"
+           tal:repeat="sample python:view.get_samples()">
+        <div class="card-header">
+          <h3>
+            <img tal:attributes="src string:${portal_url}/senaite_theme/icon/sample"/>
+            <a href="#"
+               tal:content="python: sample.Title()"
+               tal:attributes="href python:sample.absolute_url()">
+            </a>
+          </h3>
+        </div>
+        <div class="card-body">
+
+          <!-- Field analyses -->
+          <div class="field-analyses pb-1">
+            <h5>
+              <img tal:attributes="src string:${portal_url}/senaite_theme/icon/analysisservice"/>
+              <span i18n:translate="">Field Analysis</span>
+            </h5>
+            <span tal:replace="structure python:view.contents_table(sample, 'field')"/>
+          </div>
+
+          <!-- Lab analyses -->
+          <div tal:condition="python: False" class="lab-analyses">
+            <h5>
+              <img tal:attributes="src string:${portal_url}/senaite_theme/icon/analysisservice"/>
+              <span i18n:translate="">Lab Analysis</span>
+            </h5>
+            <span tal:replace="structure python:view.contents_table(sample, 'lab')"/>
+          </div>
+
+        </div>
+      </div>
+    </metal:core>
+
+  </body>
+</html>
