@@ -32,8 +32,10 @@ class SampleHeaderViewlet(ViewletBase):
     def render(self):
         """Renders the viewlet and handles form submission
         """
-        submitted = self.request.form.get("sampleheader_form_submitted", False)
-        if submitted:
+        request = self.request
+        submitted = request.form.get("sampleheader_form_submitted", False)
+        save = request.form.get("sampleheader_form_save", False)
+        if submitted and save:
             self.handle_form_submit(request=self.request)
             self.request.response.redirect(self.context.absolute_url())
         return self.template()
@@ -81,6 +83,11 @@ class SampleHeaderViewlet(ViewletBase):
 
     def get_configuration(self):
         """Return header configuration
+
+        This method retrieves the customized field and column configuration from
+        the management view directly.
+
+        :returns: Field and columns configuration dictionary
         """
         mv = api.get_view(name="manage-sample-fields", context=self.context)
         settings = mv.get_configuration()

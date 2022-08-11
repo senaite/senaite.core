@@ -168,11 +168,11 @@
         <tal:controls condition="python:render_prominent_fields and render_standard_fields">
           <!-- Save Button -->
           <input tal:condition="python:view.is_edit_allowed()"
-                class="btn btn-sm btn-primary mt-2"
-                type="submit"
-                name="form.button.save"
-                value="Save"
-                i18n:attributes="value label_save;"/>
+                 class="btn btn-sm btn-primary mt-2"
+                 type="submit"
+                 name="sampleheader_form_save"
+                 value="Save"
+                 i18n:attributes="value label_save;"/>
         </tal:controls>
       </form>
 
