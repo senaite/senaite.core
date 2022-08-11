@@ -171,6 +171,9 @@ class ManageSampleFieldsView(BrowserView):
         standard_fields = self.get_config("standard_fields")
         field_visibility = self.get_config("field_visibility")
 
+        # all available fields looked up from schema
+        fields = self.get_header_fields()
+
         # Handle flushed or not set registry keys
         if show_standard_fields is None:
             show_standard_fields = True
@@ -178,18 +181,30 @@ class ManageSampleFieldsView(BrowserView):
             prominent_columns = 1
         if standard_columns is None:
             standard_columns = 3
+        if prominent_fields is None:
+            prominent_fields = fields["prominent"]
+        if standard_fields is None:
+            standard_fields = fields["visible"]
+        if field_visibility is None:
+            field_visibility = dict.fromkeys(self.fields.keys(), True)
 
-        if not all([prominent_fields, standard_fields, field_visibility]):
-            fields = self.get_header_fields()
+        # Always update added or removed fields, e.g. when the sampling
+        # workflow was activated or deactivated in the setup
+        default_fields = fields["prominent"] + fields["visible"]
+        configured_fields = prominent_fields + standard_fields
 
-            if prominent_fields is None:
-                prominent_fields = fields["prominent"]
+        added = set(default_fields).difference(configured_fields)
+        removed = set(configured_fields).difference(default_fields)
 
-            if standard_fields is None:
-                standard_fields = fields["visible"]
+        # add new appeard fields always to the standard fields
+        standard_fields += added
 
-            if field_visibility is None:
-                field_visibility = dict.fromkeys(self.fields.keys(), True)
+        # remove fields from prominent and standard fields
+        prominent_fields = filter(lambda f: f not in removed, prominent_fields)
+        standard_fields = filter(lambda f: f not in removed, standard_fields)
+
+        # make new fields visible
+        field_visibility.update(dict.fromkeys(added, True))
 
         config = {
             "show_standard_fields": show_standard_fields,
