@@ -199,21 +199,6 @@ class SampleHeaderViewlet(ViewletBase):
         """
         return self.context.widget(field.getName(), mode=mode)
 
-    def get_field_visibility(self, field, default="hidden"):
-        """Returns the field visibility in the header
-
-        Possible values are:
-
-          - prominent: Rendered as a promient field
-          - visible: Rendered as a odestandard field
-          - hidden: Not displayed
-        """
-        widget = self.get_widget(field)
-        visibility = widget.isVisible(self.context, mode="header_table", field=field)
-        if visibility not in ["prominent", "visible"]:
-            return default
-        return visibility
-
     def get_field_mode(self, field, default="hidden"):
         """Returns the field mode in the header
 
