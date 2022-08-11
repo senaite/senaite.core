@@ -142,6 +142,12 @@ class AnalysesView(BaseView):
                 "contentFilter": {},
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
+                "confirm_messages": {
+                    "reject": _(
+                        "This operation can not be undone. Are you sure "
+                        "you want to reject the selected analyses?"
+                    )
+                }
             },
         ]
 
