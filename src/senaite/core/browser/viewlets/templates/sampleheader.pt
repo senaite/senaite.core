@@ -9,6 +9,7 @@
                  standard_fields python:config.get('standard_fields');
                  show_standard_fields python:config.get('show_standard_fields');
                  toggle_css python:'collapse show' if show_standard_fields else 'collapse';"
+     tal:condition="python:prominent_columns and standard_columns"
      i18n:domain="senaite.core">
 
   <div class="row">
@@ -162,7 +163,7 @@
         </div>
 
         <!-- Save Button -->
-        <input tal:condition="view/is_edit_allowed"
+        <input tal:condition="python:view.is_edit_allowed()"
                class="btn btn-sm btn-primary mt-2"
                type="submit"
                name="form.button.save"
