@@ -17,3 +17,16 @@ class WorkflowActionDispatchAdapter(RequestContextAware):
         url = "{}/dispatch_samples?uids={}".format(
             api.get_url(self.context), ",".join(uids))
         return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionMultiResultsAdapter(RequestContextAware):
+    """Multi results edit sample adapter
+    """
+
+    def __call__(self, action, uids):
+        """Redirects the user to the dispatch form
+        """
+        url = "{}/multi_results?uids={}".format(
+            api.get_url(self.context), ",".join(uids))
+        return self.redirect(redirect_url=url)
