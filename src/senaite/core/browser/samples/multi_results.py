@@ -34,6 +34,8 @@ class MultiResultsView(BrowserView):
     def contents_table(self, sample, poc):
         view_name = "table_{}_analyses".format(poc)
         view = api.get_view(view_name, context=sample, request=self.request)
+        # Inject additional hidden field in the listing form for redirect
+        # https://github.com/senaite/senaite.app.listing/pull/80
         view.additional_hidden_fields = [{
             "name": "redirect_url",
             "value": self.context_state.current_page_url(),
@@ -41,6 +43,18 @@ class MultiResultsView(BrowserView):
         view.update()
         view.before_render()
         return view.contents_table()
+
+    def show_lab_analyses(self):
+        """Show/Hide lab analyses
+        """
+        lab_analyses = self.request.get("lab_analyses", True)
+        return lab_analyses
+
+    def show_field_analyses(self):
+        """Show/Hide field analyses
+        """
+        field_analyses = self.request.get("field_analyses", True)
+        return field_analyses
 
     def get_samples(self):
         """Extract the samples from the request UIDs

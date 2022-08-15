@@ -24,33 +24,59 @@
            tal:define="portal context/@@plone_portal_state/portal;
                        portal_url python:portal.absolute_url()"
            tal:repeat="sample python:view.get_samples()">
+
+        <!-- Sample Results -->
         <div class="card-header">
           <h3>
             <img tal:attributes="src string:${portal_url}/senaite_theme/icon/sample"/>
             <a href="#"
-               tal:content="python: sample.Title()"
+               tal:content="python:sample.Title()"
                tal:attributes="href python:sample.absolute_url()">
             </a>
           </h3>
         </div>
-        <div class="card-body">
+        <div class="card-body"
+             tal:define="sample_id python:sample.getId();
+                         sample_uid python:sample.UID();
+                         sample_title python:sample.Title();">
 
-          <!-- Field analyses -->
-          <div class="field-analyses pb-1">
-            <h5>
-              <img tal:attributes="src string:${portal_url}/senaite_theme/icon/analysisservice"/>
-              <span i18n:translate="">Field Analysis</span>
-            </h5>
-            <span tal:replace="structure python:view.contents_table(sample, 'field')"/>
-          </div>
+          <!-- Navigation tabs -->
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link active"
+                      tal:attributes="data-target string:#field-analyses-${sample_uid}"
+                      data-toggle="tab"
+                      type="button"
+                      role="tab"
+                      i18n:translate="">
+                Field Analyses
+              </button>
+              <button class="nav-link"
+                      id="nav-profile-tab"
+                      data-toggle="tab"
+                      tal:attributes="data-target string:#lab-analyses-${sample_uid}"
+                      type="button"
+                      role="tab"
+                      i18n:translate="">
+                Lab Analyses
+              </button>
+            </div>
+          </nav>
 
-          <!-- Lab analyses -->
-          <div tal:condition="python: False" class="lab-analyses">
-            <h5>
-              <img tal:attributes="src string:${portal_url}/senaite_theme/icon/analysisservice"/>
-              <span i18n:translate="">Lab Analysis</span>
-            </h5>
-            <span tal:replace="structure python:view.contents_table(sample, 'lab')"/>
+          <div class="tab-content">
+            <!-- Field analyses -->
+            <div class="field-analyses tab-pane fade show active"
+                 tal:condition="python:view.show_field_analyses()"
+                 tal:attributes="id string:field-analyses-${sample_uid}">
+              <div class="pt-2" tal:content="structure python:view.contents_table(sample, 'field')"/>
+            </div>
+
+            <!-- Lab analyses -->
+            <div class="lab-analyses tab-pane fade"
+                 tal:condition="python:view.show_lab_analyses()"
+                 tal:attributes="id string:lab-analyses-${sample_uid}">
+              <div class="pt-2" tal:content="structure python:view.contents_table(sample, 'lab')"/>
+            </div>
           </div>
 
         </div>
