@@ -2,10 +2,10 @@
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
   <!-- SENAITE Registry -->
-  <records
-      interface="senaite.core.registry.schema.ISenaiteRegistry"
-      prefix="senaite.core" />
+  <records interface="senaite.core.registry.schema.ISenaiteRegistry" />
 
+  <!-- Registry for sample header configuration -->
+  <records interface="senaite.core.registry.schema.ISampleHeaderRegistry" />
 
   <!-- Site Title -->
   <record name="plone.site_title" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="site_title">

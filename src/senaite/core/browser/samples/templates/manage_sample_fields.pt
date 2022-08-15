@@ -1,0 +1,249 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head> </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Sample Form Fields
+      </h1>
+    </metal:title>
+
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        Manage the order and visibility of the sample fields.
+      </p>
+      <p i18n:translate="" class="discreet">
+        Note: The settings are global and apply to all sample views.
+      </p>
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <form id="senaite-sampleheader-manage-form"
+                tal:define="fields python:view.get_header_fields();
+                            config python:view.get_configuration();
+                            show_standard_fields python:config.get('show_standard_fields');
+                            prominent_columns python:config.get('prominent_columns');
+                            standard_columns python:config.get('standard_columns');
+                            prominent_fields python:config.get('prominent_fields');
+                            standard_fields python:config.get('standard_fields');
+                            visibility python:config.get('field_visibility');"
+                name="sampleheader_manage_form"
+                class="senaite-form"
+                method="post">
+
+            <!-- Hidden fields -->
+            <input type="hidden" name="submitted" value="1" />
+            <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <!-- Number of prominent columns -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="prominent-columns">
+                  Number of prominent columns
+                </label>
+              </div>
+              <div class="col">
+                <input type="number"
+                       min="0" max="10"
+                       id="prominent-columns"
+                       class="form-control form-control-sm"
+                       name="prominent_columns:int"
+                       tal:attributes="value python:prominent_columns" />
+              </div>
+            </div>
+
+            <!-- Number of standard columns -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="standard-columns">
+                  Number of standard columns
+                </label>
+              </div>
+              <div class="col">
+                <input type="number"
+                       min="0" max="10"
+                       id="columns-standard"
+                       class="form-control form-control-sm"
+                       name="standard_columns:int"
+                       tal:attributes="value python:standard_columns" />
+              </div>
+            </div>
+
+            <!-- Show standard fields -->
+            <div class="form-row align-items-center mb-2">
+              <div class="col-sm-3">
+                <label class="" for="show-standard-fields">
+                  Always show standard fields
+                </label>
+              </div>
+              <div class="col">
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                  <input type="hidden"
+                         name="show_standard_fields:boolean:default"
+                         tal:attributes="value python:False"/>
+                  <input type="checkbox"
+                         id="show-standard-fields"
+                         class="form control form-control-sm"
+                         name="show_standard_fields:boolean"
+                         tal:attributes="checked python:show_standard_fields"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Prominent fields -->
+            <div class="font-weight-bold small" i18n:translate="">Prominent fields</div>
+            <small class="text-secondary" i18n:translate="">
+              The fields are always listed on top and can not be faded out.
+              You can drag and drop any fields to the lower list to change thier visibility.
+            </small>
+            <br/>
+            <small class="text-secondary" i18n:translate="">
+              You can change the visibility of a field by selecting or unselecting the checkbox.
+            </small>
+            <ul class="fieldlist list-group mb-3" id="fieldlist-prominent">
+              <tal:prominent tal:repeat="name python:prominent_fields">
+                <tal:def define="fieldinfo python:view.get_field_info(name);
+                                 required python:fieldinfo.get('required');
+                                 label python:fieldinfo.get('label');
+                                 visible python:visibility.get(name);">
+                  <li class="list-group-item">
+
+                    <!-- Prominent Fields -->
+                    <input type="hidden"
+                           tal:attributes="name string:prominent_fields:list;
+                                           value string:${name}"/>
+
+                    <!-- Field Visibility -->
+                    <input type="checkbox"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean;
+                                          value python:True;
+                                          checked python:visible;"/>
+                    <input type="hidden"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean:default;
+                                           value python:False"/>
+
+
+                    <!-- Field Label -->
+                    <span class="label" tal:content="structure label"/>
+                    <span class="fieldRequired"
+                          tal:condition="required"
+                          title="Required"
+                          i18n:attributes="title title_required;">
+                    </span>
+                  </li>
+                </tal:def>
+              </tal:prominent>
+            </ul>
+
+
+            <!-- Standard fields -->
+            <div class="font-weight-bold small" i18n:translate="">Standard fields</div>
+            <small class="text-secondary" i18n:translate="">
+              The fields are listed below the promient fields and can be faded out.
+              You can drag and drop any fields to the upper list to change their visibility.
+            </small>
+            <br/>
+            <small class="text-secondary" i18n:translate="">
+              You can change the visibility of a field by selecting or unselecting the checkbox.
+            </small>
+            <ul class="fieldlist list-group mb-3" id="fieldlist-visible">
+              <tal:field tal:repeat="name python:standard_fields">
+                <tal:def define="fieldinfo python:view.get_field_info(name);
+                                 required python:fieldinfo.get('required');
+                                 label python:fieldinfo.get('label');
+                                 visible python:visibility.get(name);">
+                  <li class="list-group-item">
+
+                    <!-- Standard Fields -->
+                    <input type="hidden"
+                           tal:attributes="name string:standard_fields:list;
+                                           value string:${name}"/>
+
+                    <!-- Field Visibility -->
+                    <input type="checkbox"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean;
+                                           value python:True;
+                                           checked python:visible;"/>
+                    <input type="hidden"
+                           tal:attributes="name string:field_visibility.${name}:record:boolean:default;
+                                           value python:False"/>
+
+                    <span tal:replace="structure label"/>
+                    <span class="fieldRequired"
+                          tal:condition="required"
+                          title="Required"
+                          i18n:attributes="title title_required;">&nbsp;</span>
+                  </li>
+                </tal:def>
+              </tal:field>
+            </ul>
+
+            <!-- Save Button -->
+            <input class="btn btn-success btn-sm"
+                type="submit"
+                name="save"
+                i18n:attributes="value"
+                value="Save"/>
+
+            <!-- Reset Button -->
+            <input class="btn btn-warning btn-sm"
+                   type="submit"
+                   name="reset"
+                   i18n:attributes="value"
+                   value="Reset"/>
+          </form>
+        </div>
+      </div>
+
+      <!-- JS/CSS -->
+      <tal:js tal:define="portal context/@@plone_portal_state/portal;">
+        <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function(event) {
+           // https://jqueryui.com/sortable/#connect-lists
+           $("#fieldlist-prominent,#fieldlist-visible").sortable({
+             connectWith: ".fieldlist",
+             receive: function(event, ui) {
+               let item = ui.item;
+               let sender = ui.sender;
+               let sid = sender.attr("id");
+
+               var source = "standard_fields"
+               var target = "prominent_fields";
+
+               if (sid == 'fieldlist-prominent') {
+                 source = "prominent_fields";
+                 target = "standard_fields";
+               }
+
+
+               let input = item.context.querySelector("input[name='" + source + ":list']");
+               if (input) {
+                 input.name = target + ":list";
+               }
+             }
+           }).disableSelection();
+         });
+        </script>
+      </tal:js>
+      <tal:css tal:define="portal context/@@plone_portal_state/portal;">
+        <style type="text/css" media="screen">
+         ul#fieldlist-prominent li { background-color: #b8daff; }
+         ul#fieldlist-visible li { background-color: #fdfdfe; }
+         ul.fieldlist li { cursor: ns-resize; }
+         ul.fieldlist li input { vertical-align: middle; }
+         #list-group
+        </style>
+      </tal:css>
+
+    </div>
+  </body>
+</html>

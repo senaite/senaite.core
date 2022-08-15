@@ -1,0 +1,224 @@
+<div id="senaite-sampleheader"
+     tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
+                 test nocall:senaite_view/test;
+                 errors python:request.get('errors', {});
+                 config python:view.get_configuration();
+                 prominent_columns python:config.get('prominent_columns');
+                 standard_columns python:config.get('standard_columns');
+                 prominent_fields python:config.get('prominent_fields');
+                 standard_fields python:config.get('standard_fields');
+                 render_prominent_fields python:prominent_columns > 0 and len(prominent_fields) > 0;
+                 render_standard_fields python:standard_columns > 0 and len(standard_fields) > 0;
+                 show_standard_fields python:config.get('show_standard_fields');
+                 toggle_css python:'collapse show' if show_standard_fields else 'collapse';"
+     i18n:domain="senaite.core">
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <!-- SAMPLE HEADER FORM -->
+      <tal:comment condition="python:False">
+        <!--
+             Note: the `novalidate` attribute is needed to avoid browser validation
+             when e.g. the "expected sampling date" has passed and another value
+             wants to be changed.
+
+             https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Constraint_validation
+        -->
+      </tal:comment>
+      <form id="senaite-sampleheader-form"
+            name="sampleheader_form"
+            class="senaite-form"
+            method="post" novalidate>
+
+        <!-- Hidden fields -->
+        <input type="hidden" name="sampleheader_form_submitted" value="1" />
+
+        <!-- Display Controls -->
+        <div class="sampleheader-controls d-flex justify-content-end">
+          <div class="pr-3" tal:condition="python:view.can_manage_sample_fields()">
+            <a class="text-decoration-none"
+               target="_blank"
+               tal:attributes="href python:context.absolute_url() + '/manage-sample-fields'">
+              <i class="fas fa-tasks"></i>
+            </a>
+          </div>
+          <!-- Toggle standard fields visibility -->
+          <div tal:condition="python:render_standard_fields">
+            <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
+              <tal:toggleicons tal:condition="python:show_standard_fields">
+                <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
+                <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
+              </tal:toggleicons>
+              <tal:toggleicons tal:condition="python:not show_standard_fields">
+                <i id="toggle-show-icon" class="fas fa-window-maximize d-none"></i>
+                <i id="toggle-hide-icon" class="fas fa-window-minimize"></i>
+              </tal:toggleicons>
+            </a>
+          </div>
+        </div>
+
+        <!-- Prominent fields -->
+        <div id="sampleheader-prominent-fields" class="table-responsive"
+             tal:condition="python:render_prominent_fields">
+          <table class="sampleheader-table table table-sm table-bordered mb-1">
+            <tr tal:repeat="group python:view.grouper(prominent_fields, prominent_columns)">
+              <tal:batch tal:repeat="name python:group">
+                <tal:fielddata tal:define="fieldinfo python:view.get_field_info(name);
+                                           mode python:fieldinfo.get('mode');
+                                           html python:fieldinfo.get('html');
+                                           field python:fieldinfo.get('field');
+                                           label python:fieldinfo.get('label');
+                                           description python:fieldinfo.get('description');
+                                           required python:fieldinfo.get('required');">
+                  <td class="bg-light text-truncate"
+                      style="width:200px;max-width:200px;">
+                    <!-- Widget Label -->
+                    <span tal:attributes="title description"
+                          data-toggle="tooltip"
+                          tal:content="structure label"/>
+                    <!-- Display a notification icon if the field is primary bound
+                         (if changes propagate to partitions) -->
+                    <tal:primary_bound condition="python:mode == 'edit' and view.is_primary_bound(field)">
+                      <i class="fas fa-sitemap small"
+                         data-toggle="tooltip"
+                         title="Changes will be propagated to partitions"
+                         i18n:attributes="title"></i>
+                    </tal:primary_bound>
+                    <!-- Display Required Marker -->
+                    <span class="required"
+                          tal:condition="python:required"
+                          title="Required"
+                          i18n:attributes="title title_required;"> </span>
+                  </td>
+                  <td>
+                    <div class="form-row" tal:condition="python:html">
+                      <div class="col-auto">
+                        <!-- Render widget HTML -->
+                        <div tal:content="structure html"/>
+                      </div>
+                    </div>
+                    <div class="form-row" tal:condition="python:not html">
+                      <div class="col-auto" tal:condition="python:mode in ['view', 'edit']">
+                        <!-- Render widget macro -->
+                        <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
+                      </div>
+                    </div>
+                  </td>
+                </tal:fielddata>
+              </tal:batch>
+            </tr>
+          </table>
+      </div>
+
+        <!-- Standard fields -->
+        <div id="sampleheader-standard-fields" class="table-responsive"
+             tal:condition="python:render_standard_fields"
+             tal:attributes="class string:table-responsive ${toggle_css}">
+          <table class="sampleheader-table table table-sm table-bordered">
+            <tr tal:repeat="group python:view.grouper(standard_fields, standard_columns)">
+              <tal:batch tal:repeat="name python:group">
+                <tal:fielddata tal:define="fieldinfo python:view.get_field_info(name);
+                                           mode python:fieldinfo.get('mode');
+                                           html python:fieldinfo.get('html');
+                                           field python:fieldinfo.get('field');
+                                           label python:fieldinfo.get('label');
+                                           description python:fieldinfo.get('description');
+                                           required python:fieldinfo.get('required');">
+                  <td class="sampleheader-table-label bg-light text-truncate"
+                      style="width:200px;max-width:200px;">
+                    <!-- Widget Label -->
+                    <span tal:attributes="title description"
+                          data-toggle="tooltip"
+                          tal:content="structure label"/>
+                    <!-- Display a notification icon if the field is primary bound
+                         (if changes propagate to partitions) -->
+                    <tal:primary_bound condition="python:mode == 'edit' and view.is_primary_bound(field)">
+                      <i class="fas fa-sitemap small"
+                         data-toggle="tooltip"
+                         title="Changes will be propagated to partitions"
+                         i18n:attributes="title"></i>
+                    </tal:primary_bound>
+                    <!-- Display Required Marker -->
+                    <span class="required"
+                          tal:condition="python:required"
+                          title="Required"
+                          i18n:attributes="title title_required;"> </span>
+                  </td>
+                  <td class="sampleheader-table-field">
+                    <div class="form-row" tal:condition="python:html">
+                      <div class="col-auto">
+                        <!-- Render widget HTML -->
+                        <div tal:content="structure html"/>
+                      </div>
+                    </div>
+                    <div class="form-row" tal:condition="python:not html">
+                      <div class="col-auto" tal:condition="python:mode in ['view', 'edit']">
+                        <!-- Render widget macro -->
+                        <metal:field use-macro="python:view.render_widget(field, mode=mode)"/>
+                      </div>
+                    </div>
+                  </td>
+                </tal:fielddata>
+              </tal:batch>
+            </tr>
+          </table>
+        </div>
+
+        <tal:controls condition="python:render_prominent_fields and render_standard_fields">
+          <!-- Save Button -->
+          <input tal:condition="python:view.is_edit_allowed()"
+                 class="btn btn-sm btn-primary mt-2"
+                 type="submit"
+                 name="sampleheader_form_save"
+                 value="Save"
+                 i18n:attributes="value label_save;"/>
+        </tal:controls>
+      </form>
+
+
+    </div>
+  </div>
+
+  <tal:js tal:define="portal context/@@plone_portal_state/portal;">
+    <!-- needed for reference fields -->
+    <script type="text/javascript"
+            tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/referencewidget.js'"></script>
+    <!-- needed for datetime fields -->
+    <script type="text/javascript"
+        tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/datetimewidget.js'"></script>
+
+    <script type="text/javascript">
+     document.addEventListener("DOMContentLoaded", function(event) {
+       let show_icon = document.getElementById("toggle-show-icon");
+       let hide_icon = document.getElementById("toggle-hide-icon");
+       // Event handler when the standard fields are hidden
+       $("#sampleheader-standard-fields").on("hide.bs.collapse", function () {
+         console.log("Hide standard fields");
+         $(show_icon).toggleClass("d-none", true);
+         $(hide_icon).toggleClass("d-none", false)
+       });
+       // Event handler when the standard fields are shown
+       $("#sampleheader-standard-fields").on("show.bs.collapse", function () {
+         console.log("Show standard fields");
+         $(show_icon).toggleClass("d-none", false);
+         $(hide_icon).toggleClass("d-none", true)
+       });
+
+     });
+    </script>
+  </tal:js>
+  <tal:css tal:define="portal context/@@plone_portal_state/portal;">
+    <style type="text/css" media="screen">
+     /* TODO: Check why this margin is defined in the loader.scss => reduce gap */
+     article#content header { margin-bottom: 0; }
+     form[name="sampleheader_form"] div.field { margin-bottom: 0; }
+     /* Increase fields for better editing experience */
+     form[name="sampleheader_form"] select             { width: 220px!important; }
+     form[name="sampleheader_form"] input[type="text"] { width: 220px!important; }
+     form[name="sampleheader_form"] input[type="date"] { width: 130px!important; }
+     form[name="sampleheader_form"] input[type="time"] { width: 90px!important; }
+    </style>
+  </tal:css>
+
+</div>
