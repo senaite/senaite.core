@@ -33,6 +33,7 @@
   <permission>senaite.core: Transition: Dispatch Sample</permission>
   <permission>senaite.core: Transition: Restore Sample</permission>
   <permission>senaite.core: Transition: Create Partitions</permission>
+  <permission>senaite.core: Transition: Multi Results</permission>
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Edit Field Results</permission>
@@ -99,6 +100,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="to_be_sampled"/>
     <exit-transition transition_id="no_sampling_workflow"/>
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -192,6 +194,7 @@
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="sample"/>
     <exit-transition transition_id="reject"/>
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -303,6 +306,7 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="schedule_sampling"/>
     <exit-transition transition_id="reject"/>
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -413,6 +417,7 @@
     <exit-transition transition_id="receive"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -509,6 +514,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -600,6 +606,7 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -699,6 +706,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -788,6 +796,7 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -890,6 +899,7 @@
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False"/>
@@ -977,6 +987,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1057,6 +1068,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1142,6 +1154,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1221,6 +1234,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="restore" />
+    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1574,6 +1588,16 @@
   <transition transition_id="restore" title="Restore" new_state="" trigger="USER"
               before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Restore</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("restore")</guard-expression>
+      <guard-permission>senaite.core: Transition: Restore Sample</guard-permission>
+    </guard>
+  </transition>
+
+  <!-- Transition: Multi Results -->
+  <transition transition_id="listing_multi_results" title="Multi Results" new_state="" trigger="USER"
+              allowed="False" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Multi Results</action>
     <guard>
       <guard-expression>python:here.guard_handler("restore")</guard-expression>
       <guard-permission>senaite.core: Transition: Restore Sample</guard-permission>

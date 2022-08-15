@@ -3,6 +3,21 @@
 
   <permissions>
 
+    <!-- SAMPLE -->
+    <permission name="senaite.core: Transition: Multi Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <!-- /SAMPLE -->
+
     <!-- WORKSHEET -->
     <permission name="senaite.core: Add Worksheet" acquire="False">
       <role name="LabManager"/>
