@@ -46,6 +46,11 @@ class IBelowListingTable(IViewletManager):
     """
 
 
+class ISampleHeader(IViewletManager):
+    """A viewlet manager in sample view above the sections
+    """
+
+
 class IAboveSampleSection(IViewletManager):
     """A viewlet manager in sample view above analyses sections
     """
@@ -58,4 +63,9 @@ class ISampleSection(IViewletManager):
 
 class IBelowSampleSection(IViewletManager):
     """A viewlet manager in sample view below analyses sections
+    """
+
+
+class ISampleFooter(IViewletManager):
+    """A viewlet manager in sample view below the sections
     """

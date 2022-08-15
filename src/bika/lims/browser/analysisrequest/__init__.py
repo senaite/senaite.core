@@ -112,7 +112,7 @@ class JSONReadExtender(object):
 class mailto_link_from_contacts(object):
     """Custom header table field adapter
 
-    see: bika.lims.browser.header_table
+    see: senaite.core.browser.viewlets.sampleheader
     """
 
     def __init__(self, context):
@@ -134,7 +134,7 @@ class mailto_link_from_contacts(object):
 class mailto_link_from_ccemails(object):
     """Custom header table field adapter
 
-    see: bika.lims.browser.header_table
+    see: senaite.core.browser.viewlets.sampleheader
     """
 
     def __init__(self, context):

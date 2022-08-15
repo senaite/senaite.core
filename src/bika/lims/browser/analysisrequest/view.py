@@ -20,7 +20,6 @@
 
 from bika.lims import api
 from bika.lims.browser import BrowserView
-from bika.lims.browser.header_table import HeaderTableView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
@@ -38,9 +37,6 @@ class AnalysisRequestViewView(BrowserView):
         )
 
     def __call__(self):
-        # render header table
-        self.header_table = HeaderTableView(self.context, self.request)()
-
         return self.template()
 
     def is_hazardous(self):
