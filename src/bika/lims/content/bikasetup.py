@@ -526,6 +526,19 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "ImmediateResultsEntry",
+        schemata="Sampling",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Immediate results entry"),
+            description=_(
+                "Allow the user to directly enter results after sample "
+                "creation, e.g. to enter field results immediately, or lab "
+                "results, when the automatic sample reception is activated."
+            ),
+        ),
+    ),
+    BooleanField(
         'ShowPartitions',
         schemata="Appearance",
         default=False,
@@ -1031,6 +1044,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setEnableGlobalAuditlog(value)
+
+    def getImmediateResultsEntry(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getImmediateResultsEntry()
+        return False
+
+    def setImmediateResultsEntry(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setImmediateResultsEntry(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
