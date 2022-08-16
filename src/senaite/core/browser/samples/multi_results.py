@@ -10,6 +10,8 @@ from bika.lims.interfaces import IAnalysisRequest
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 
+OFF_VALUES = ["0", "off", "no"]
+
 
 class MultiResultsView(BrowserView):
     """Allows to edit results of multiple samples
@@ -50,7 +52,9 @@ class MultiResultsView(BrowserView):
         analyses = sample.getAnalyses(getPointOfCapture="lab")
         if len(analyses) == 0:
             return False
-        lab_analyses = self.request.get("lab_analyses", True)
+        lab_analyses = self.request.get("lab_analyses")
+        if lab_analyses in OFF_VALUES:
+            return False
         return lab_analyses
 
     def show_field_analyses(self, sample):
@@ -60,6 +64,8 @@ class MultiResultsView(BrowserView):
         if len(analyses) == 0:
             return False
         field_analyses = self.request.get("field_analyses", True)
+        if field_analyses in OFF_VALUES:
+            return False
         return field_analyses
 
     def get_samples(self):

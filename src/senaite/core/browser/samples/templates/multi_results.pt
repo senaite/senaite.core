@@ -75,8 +75,15 @@
               </div>
             </div>
             <div class="card-body collapse"
-                tal:attributes="id string:sample-${sample_uid};
-                                data-uid python:sample_uid;">
+                 tal:condition="python:not any([show_lab_analyses, show_field_analyses])"
+                 tal:attributes="id string:sample-${sample_uid};
+                                 data-uid python:sample_uid;">
+              <div i18n:translate="">No visible analyses for this sample</div>
+            </div>
+            <div class="card-body collapse"
+                 tal:condition="python:any([show_lab_analyses, show_field_analyses])"
+                 tal:attributes="id string:sample-${sample_uid};
+                                 data-uid python:sample_uid;">
 
               <!-- Navigation tabs -->
               <nav>
@@ -172,9 +179,13 @@
                continue;
              }
              let done = sample.querySelector("input.done_checkbox");
-             done.checked = false;
              let card = sample.querySelector("div.card-body")
-             card.classList.add("show");
+             if (done) {
+               done.checked = false;
+             }
+             if (card) {
+               card.classList.add("show");
+             }
            }
 
          });
