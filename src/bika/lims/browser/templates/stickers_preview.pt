@@ -6,13 +6,7 @@
       tal:attributes="lang default_language|default;
                       xml:lang default_language|default;"
       i18n:domain="senaite.core"
-      tal:define="portal_state context/@@plone_portal_state;
-                  portal_url portal_state/portal_url;
-                  plone_view context/@@plone;
-                  portal portal_state/portal;
-                  portal_type python:context.portal_type;
-                  anchor_self python:('Client','AnalysisRequest', 'Samples', 'Batch');
-                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
+      tal:define="goback_url  python:view.get_back_url();">
   <head>
     <div tal:replace="structure provider:plone.htmlhead" />
 

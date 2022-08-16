@@ -109,6 +109,22 @@ class Sticker(BrowserView):
 
         return self.template()
 
+    def get_back_url(self):
+        """Calculate the Back URL
+        """
+        url = api.get_url(self.context)
+        portal_type = api.get_portal_type(self.context)
+        redirect_contexts = ['Client', 'AnalysisRequest', 'Samples', 'Batch']
+        if portal_type not in redirect_contexts:
+            parent = api.get_parent(self.context)
+            url = api.get_url(parent)
+        # redirect to direct results entry
+        setup = api.get_setup()
+        if setup.getImmediateResultsEntry():
+            url = "{}/multi_results?uids={}".format(
+                url, ",".join(self.get_uids()))
+        return url
+
     def get_items(self):
         """Returns a list of SuperModel items
         """
