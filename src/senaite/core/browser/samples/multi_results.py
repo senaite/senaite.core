@@ -55,7 +55,7 @@ class MultiResultsView(BrowserView):
         lab_analyses = self.request.get("lab_analyses")
         if lab_analyses in OFF_VALUES:
             return False
-        return lab_analyses
+        return True
 
     def show_field_analyses(self, sample):
         """Show/Hide field analyses
@@ -66,7 +66,7 @@ class MultiResultsView(BrowserView):
         field_analyses = self.request.get("field_analyses", True)
         if field_analyses in OFF_VALUES:
             return False
-        return field_analyses
+        return True
 
     def get_samples(self):
         """Extract the samples from the request UIDs
