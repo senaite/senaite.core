@@ -12,14 +12,29 @@
 
     <!-- Title -->
     <metal:title fill-slot="content-title">
+      <h2 i18n:translate="">
+        Manage Analyses Results
+      </h2>
     </metal:title>
 
     <!-- Description -->
     <metal:description fill-slot="content-description">
+      <p class="text-secondary" i18n:translate="">
+        Enter or view the analyses results of multiple samples.
+      </p>
     </metal:description>
 
     <!-- Content -->
     <metal:core fill-slot="content-core">
+
+      <div class="d-flex mb-3">
+        <a href="#"
+           tal:attributes="href python:context.absolute_url()"
+           class="btn btn-outline-secondary"
+           i18n:translate="">
+          &larr; Go back to see all samples
+        </a>
+      </div>
 
       <div class="multi-results-container">
         <div class="sample"
