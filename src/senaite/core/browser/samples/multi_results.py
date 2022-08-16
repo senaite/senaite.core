@@ -44,15 +44,21 @@ class MultiResultsView(BrowserView):
         view.before_render()
         return view.contents_table()
 
-    def show_lab_analyses(self):
+    def show_lab_analyses(self, sample):
         """Show/Hide lab analyses
         """
+        analyses = sample.getAnalyses(getPointOfCapture="lab")
+        if len(analyses) == 0:
+            return False
         lab_analyses = self.request.get("lab_analyses", True)
         return lab_analyses
 
-    def show_field_analyses(self):
+    def show_field_analyses(self, sample):
         """Show/Hide field analyses
         """
+        analyses = sample.getAnalyses(getPointOfCapture="field")
+        if len(analyses) == 0:
+            return False
         field_analyses = self.request.get("field_analyses", True)
         return field_analyses
 
