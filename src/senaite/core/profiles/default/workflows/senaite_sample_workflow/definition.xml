@@ -194,7 +194,6 @@
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="sample"/>
     <exit-transition transition_id="reject"/>
-    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -306,7 +305,6 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="schedule_sampling"/>
     <exit-transition transition_id="reject"/>
-    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1154,7 +1152,6 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
-    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1234,7 +1231,6 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="restore" />
-    <exit-transition transition_id="listing_multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
