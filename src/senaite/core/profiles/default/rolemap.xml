@@ -5,22 +5,21 @@
 
     <!-- SAMPLE -->
 
-    <!-- Note: we add all roles here, because otherwise we get an insufficient privileges
-               error when a new sample is added from one of the roles and the setup
-               option for immediate results entry is activated.
+    <!-- Note: We need the roles for `senaite.core: Add AnalysisRequest` to
+               avoid insufficient privileges when the immediate results entry
+               option is activated.
+               Additionally, we add the Sampler to edit field results, the Analyst
+               for field and lab results, the Verifier to allow batch verification
+               of multiple analyses.
     -->
     <permission name="senaite.core: Transition: Multi Results" acquire="False">
       <role name="Analyst"/>
-      <role name="Client"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
-      <role name="Preserver"/>
-      <role name="Publisher"/>
-      <role name="RegulatoryInspector"/>
-      <role name="Sampler"/>
-      <role name="SamplingCoordinator"/>
-      <role name="Verifier"/>
+      <role name="Manager"/>
       <role name="Owner"/>
+      <role name="Sampler"/>
+      <role name="Verifier"/>
     </permission>
     <!-- /SAMPLE -->
 
