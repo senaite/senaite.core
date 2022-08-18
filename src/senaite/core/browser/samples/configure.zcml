@@ -24,7 +24,7 @@
       for="*"
       name="multi_results"
       class=".multi_results.MultiResultsView"
-      permission="cmf.ModifyPortalContent"
+      permission="senaite.core.permissions.TransitionMultiResults"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
   <!-- Manage Sample Fields -->
