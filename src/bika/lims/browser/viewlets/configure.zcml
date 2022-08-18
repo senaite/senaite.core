@@ -9,7 +9,7 @@
       class="bika.lims.browser.viewlets.InstrumentQCFailuresViewlet"
       manager="plone.app.layout.viewlets.interfaces.IAboveContent"
       template="templates/instrument_qc_failures_viewlet.pt"
-      permission="senaite.core.permissions.ManageBika"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
