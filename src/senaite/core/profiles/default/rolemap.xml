@@ -4,11 +4,22 @@
   <permissions>
 
     <!-- SAMPLE -->
+
+    <!-- Note: we add all roles here, because otherwise we get an insufficient privileges
+               error when a new sample is added from one of the roles and the setup
+               option for immediate results entry is activated.
+    -->
     <permission name="senaite.core: Transition: Multi Results" acquire="False">
       <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
       <role name="LabManager"/>
-      <role name="Manager"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
       <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
       <role name="Owner"/>
     </permission>
     <!-- /SAMPLE -->
