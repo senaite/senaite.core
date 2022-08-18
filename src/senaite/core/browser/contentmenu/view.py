@@ -49,11 +49,8 @@ class ContentMenuProvider(Base):
             """Checks if the WF items is visible or not
             """
             extra = item.get("extra", {})
-            wfid = extra.get("id", "deadbeef")
+            wfid = extra.get("id")
             if wfid in HIDE_WF_ITEMS:
-                return False
-            # Hide listing only actions
-            elif wfid.startswith("workflow-transition-listing_"):
                 return False
             return True
 

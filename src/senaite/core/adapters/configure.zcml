@@ -23,12 +23,12 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Sample: "listing_multi_results"
+  <!-- Sample: "multi_results"
   Note this applies wide, cause at the moment, this action only exists
   for Analysis Requests and we always want this adapter to be in charge,
   regardless of the context (Analysis Requests listing, Client folder, etc.) -->
   <adapter
-    name="workflow_action_listing_multi_results"
+    name="workflow_action_multi_results"
     for="*
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".sample.WorkflowActionMultiResultsAdapter"
