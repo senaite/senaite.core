@@ -81,7 +81,8 @@ class ISetupSchema(model.Schema):
     immediate_results_entry = schema.Bool(
         title=_(u"Immediate results entry"),
         description=_(
-            "Allow the user to directly enter results after sample "
+            "description_senaitesetup_immediateresultsentry",
+            default=u"Allow the user to directly enter results after sample "
             "creation, e.g. to enter field results immediately, or lab "
             "results, when the automatic sample reception is activated."
         ),
@@ -91,8 +92,8 @@ class ISetupSchema(model.Schema):
     # Fieldsets
     ###
     model.fieldset(
-        "sampling",
-        label=_(u"Sampling"),
+        "analyses",
+        label=_("label_senaitesetup_fieldset_analyses", default=u"Analyses"),
         fields=[
             "immediate_results_entry",
         ]

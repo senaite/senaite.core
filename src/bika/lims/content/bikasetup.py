@@ -339,6 +339,22 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        "ImmediateResultsEntry",
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("label_bikasetup_immediateresultsentry",
+                    default=u"Immediate results entry"),
+            description=_(
+                "description_bikasetup_immediateresultsentry",
+                default=u"Allow the user to directly enter results after "
+                "sample creation, e.g. to enter field results immediately, or "
+                "lab results, when the automatic sample reception is "
+                "activated."
+            ),
+        ),
+    ),
+    BooleanField(
         'EnableAnalysisRemarks',
         schemata="Analyses",
         default=False,
@@ -522,19 +538,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Select to receive the samples automatically when created by "
                 "lab personnel and sampling workflow is disabled. Samples "
                 "created by client contacts won't be received automatically"
-            ),
-        ),
-    ),
-    BooleanField(
-        "ImmediateResultsEntry",
-        schemata="Sampling",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Immediate results entry"),
-            description=_(
-                "Allow the user to directly enter results after sample "
-                "creation, e.g. to enter field results immediately, or lab "
-                "results, when the automatic sample reception is activated."
             ),
         ),
     ),
