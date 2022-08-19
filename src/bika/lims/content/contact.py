@@ -246,7 +246,7 @@ class Contact(Person):
         if IClient.providedBy(self.aq_parent):
             # Add user to "Clients" group
             self._addUserToGroup(username, group="Clients")
-            self._recursive_reindex_object_security(self.aq_parent)
+            self._recursive_reindex_object(self.aq_parent)
 
         return True
 
@@ -283,7 +283,7 @@ class Contact(Person):
         if IClient.providedBy(self.aq_parent):
             # Remove user from "Clients" group
             self._delUserFromGroup(username, group="Clients")
-            self._recursive_reindex_object_security(self.aq_parent)
+            self._recursive_reindex_object(self.aq_parent)
 
         return True
 
@@ -303,15 +303,15 @@ class Contact(Person):
         group = portal_groups.getGroupById(group)
         group.removeMember(username)
 
-    def _recursive_reindex_object_security(self, obj):
-        """Reindex object security after user linking
+    def _recursive_reindex_object(self, obj):
+        """Reindex object after user linking
         """
         if hasattr(aq_base(obj), "objectValues"):
             for child_obj in obj.objectValues():
-                self._recursive_reindex_object_security(child_obj)
+                self._recursive_reindex_object(child_obj)
 
-        logger.debug("Reindexing object security for {}".format(repr(obj)))
-        obj.reindexObjectSecurity()
+        logger.debug("Reindexing object {}".format(repr(obj)))
+        obj.reindexObject()
 
 
 atapi.registerType(Contact, PROJECTNAME)
