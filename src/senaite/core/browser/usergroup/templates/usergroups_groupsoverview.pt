@@ -45,10 +45,10 @@
           <a class="active"
              href="${portal_url}/@@usergroup-groupprefs"
              i18n:translate="label_groups">Groups</a>
-          <a href="${portal_url}/@@usergroup-controlpanel"
-             i18n:translate="label_usergroup_settings">Settings</a>
-          <a href="${portal_url}/@@member-fields"
-             i18n:translate="label_member_fields">Member fields</a>
+          <!-- <a href="${portal_url}/@@usergroup-controlpanel"
+               i18n:translate="label_usergroup_settings">Settings</a>
+               <a href="${portal_url}/@@member-fields"
+               i18n:translate="label_member_fields">Member fields</a> -->
         </div>
 
         <p class="discreet">
