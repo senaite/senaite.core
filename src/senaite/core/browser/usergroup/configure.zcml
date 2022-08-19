@@ -3,6 +3,15 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
+
+  <browser:page
+      name="user-information"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".userdatapanel.UserDataConfiglet"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Users Controlpanel -->
   <browser:page
       name="usergroup-userprefs"
