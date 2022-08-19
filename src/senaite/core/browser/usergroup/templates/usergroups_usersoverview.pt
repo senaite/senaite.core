@@ -69,7 +69,7 @@
           </a>
         </p>
         <form action=""
-              class="pat-formautofocus"
+              class="pat-formautofocus form-inline"
               name="users_search"
               method="post"
               tal:attributes="action string:$portal_url/$template_id"
@@ -82,7 +82,10 @@
 
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <div class="input-group-text" for="quickSearch" i18n:translate="label_user_search">User Search</div>
+              <div class="input-group-text"
+                   i18n:translate="label_user_search">
+                User Search
+              </div>
             </div>
             <input class="quickSearch form-control"
                    id="quickSearch"
@@ -109,97 +112,98 @@
               />
             </div>
           </div>
+
           <table class="table table-bordered table-hover table-sm" summary="User Listing">
-              <tbody>
-                  <tal:block tal:condition="portal_users" >
-                  <tr class="odd">
-                      <th rowspan="" i18n:translate="listingheader_user_name">User name</th>
-                      <th tal:repeat="portal_role portal_roles" tal:content="portal_role" i18n:translate="">Role</th>
-                      <th rowspan="" i18n:translate="listingheader_reset_password">Reset Password</th>
-                      <!-- <th rowspan="" i18n:translate="listingheader_remove">Remove</th> -->
-                  </tr>
-                  </tal:block>
-                  <tal:block repeat="user batch">
-                    <tr tal:define="oddrow repeat/user/odd;
-                                    userid user/userid;
-                                    userquery python:view.makeQuery(userid=userid);"
-                        tal:attributes="class python:oddrow and 'odd' or 'even'">
+            <tbody>
+              <tal:block tal:condition="portal_users" >
+                <tr class="odd">
+                  <th rowspan="" i18n:translate="listingheader_user_name">User name</th>
+                  <th tal:repeat="portal_role portal_roles" tal:content="portal_role" i18n:translate="">Role</th>
+                  <th rowspan="" i18n:translate="listingheader_reset_password">Reset Password</th>
+                  <!-- <th rowspan="" i18n:translate="listingheader_remove">Remove</th> -->
+                </tr>
+              </tal:block>
+              <tal:block repeat="user batch">
+                <tr tal:define="oddrow repeat/user/odd;
+                                userid user/userid;
+                                userquery python:view.makeQuery(userid=userid);"
+                    tal:attributes="class python:oddrow and 'odd' or 'even'">
 
-                        <td>
-                            <a href="@@user-information"
-                               tal:attributes="href string:$portal_url/@@user-information?${userquery};
-                                               title userid">
-                                <span tal:replace="user/fullname">Full Name</span>
-                                <em> – <em tal:replace="user/login">login name</em></em>
-                            </a>
-                            <input type="hidden" name="users.id:records" tal:attributes="value userid" />
-                        </td>
+                  <td>
+                    <a href="@@user-information"
+                       tal:attributes="href string:$portal_url/@@user-information?${userquery};
+                             title userid">
+                      <span tal:replace="user/fullname">Full Name</span>
+                      <em> – <em tal:replace="user/login">login name</em></em>
+                    </a>
+                    <input type="hidden" name="users.id:records" tal:attributes="value userid" />
+                  </td>
 
-                        <td class="listingCheckbox text-center align-middle"
-                            tal:repeat="portal_role portal_roles">
-                          <tal:block tal:define="inherited python:user['roles'][portal_role]['inherited'];
-                                                 explicit python:user['roles'][portal_role]['explicit'];
-                                                 enabled python:user['roles'][portal_role]['canAssign']">
-                            <input type="checkbox"
-                               class="noborder"
-                               name="users.roles:list:records"
-                               value="Manager"
-                               tal:condition="not:inherited"
-                               tal:attributes="value portal_role;
+                  <td class="listingCheckbox text-center align-middle"
+                      tal:repeat="portal_role portal_roles">
+                    <tal:block tal:define="inherited python:user['roles'][portal_role]['inherited'];
+                                           explicit python:user['roles'][portal_role]['explicit'];
+                                           enabled python:user['roles'][portal_role]['canAssign']">
+                      <input type="checkbox"
+                             class="noborder"
+                             name="users.roles:list:records"
+                             value="Manager"
+                             tal:condition="not:inherited"
+                             tal:attributes="value portal_role;
                                    checked python:'checked' if explicit else nothing;
                                    disabled python:default if enabled else 'disabled'" />
-                            <input type="hidden"
-                                name="users.roles:list:records"
-                                value="Manager"
-                                tal:condition="python:inherited"
-                                tal:attributes="value portal_role" />
-                            <img tal:condition="inherited" tal:replace="structure context/site_icon.png" />
-                          </tal:block>
+                      <input type="hidden"
+                             name="users.roles:list:records"
+                             value="Manager"
+                             tal:condition="python:inherited"
+                             tal:attributes="value portal_role" />
+                      <img tal:condition="inherited" tal:replace="structure context/site_icon.png" />
+                    </tal:block>
 
-                        </td>
+                  </td>
 
-                        <td class="listingCheckbox">
-                          <input type="checkbox"
-                             class="noborder"
-                             name="users.resetpassword:records"
-                                         value=""
-                                         tal:attributes="value userid;
-                                                         disabled python:user['can_set_password'] and default or 'disabled'" />
-                        </td>
+                  <td class="listingCheckbox">
+                    <input type="checkbox"
+                           class="noborder"
+                           name="users.resetpassword:records"
+                           value=""
+                           tal:attributes="value userid;
+                                 disabled python:user['can_set_password'] and default or 'disabled'" />
+                  </td>
 
-                        <!-- N.B.: We disallow to delete users here, because this can bring a large site down when all contents are processed to change the owner.
-                        <td class="listingCheckbox">
-                          <input type="checkbox"
-                                         class="noborder notify"
-                                         name="delete:list"
-                                         value=""
-                                         tal:attributes="value userid;
-                                                         disabled python:user['can_delete'] and default or 'disabled'" />
-                        </td>
-                        -->
+                  <!-- N.B.: We disallow to delete users here, because this can bring a large site down when all contents are processed to change the owner.
+                       <td class="listingCheckbox">
+                       <input type="checkbox"
+                       class="noborder notify"
+                       name="delete:list"
+                       value=""
+                       tal:attributes="value userid;
+                       disabled python:user['can_delete'] and default or 'disabled'" />
+                       </td>
+                  -->
 
-                    </tr>
-                  </tal:block>
-                  <tr tal:condition="not:batch">
-                      <td tal:condition="view/searchString"
-                          i18n:translate="text_nomatches"
-                          style="text-align:center;">No matches</td>
-                      <tal:block tal:condition="not:view/searchString">
-                        <td tal:condition="many_users"
-                            class="discreet"
-                            i18n:translate="text_no_user_searchstring"
-                            style="text-align:center; font-size: 100%;">
-                            Enter a username to search for
-                        </td>
-                        <td tal:condition="not:many_users"
-                            class="discreet"
-                            i18n:translate="text_no_user_searchstring_largesite"
-                            style="text-align:center; font-size: 100%;">
-                            Enter a username to search for, or click 'Show All'
-                        </td>
-                      </tal:block>
-                  </tr>
-              </tbody>
+                </tr>
+              </tal:block>
+              <tr tal:condition="not:batch">
+                <td tal:condition="view/searchString"
+                    i18n:translate="text_nomatches"
+                    style="text-align:center;">No matches</td>
+                <tal:block tal:condition="not:view/searchString">
+                  <td tal:condition="many_users"
+                      class="discreet"
+                      i18n:translate="text_no_user_searchstring"
+                      style="text-align:center; font-size: 100%;">
+                    Enter a username to search for
+                  </td>
+                  <td tal:condition="not:many_users"
+                      class="discreet"
+                      i18n:translate="text_no_user_searchstring_largesite"
+                      style="text-align:center; font-size: 100%;">
+                    Enter a username to search for, or click 'Show All'
+                  </td>
+                </tal:block>
+              </tr>
+            </tbody>
           </table>
 
           <div metal:use-macro="context/batch_macros/macros/navigation" />
