@@ -156,7 +156,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text" i18n:translate="">Search</div>
                 </div>
-                <input class="quickSearch form-control col-sm-4" type="text" name="searchstring" value="" tal:attributes="value view/searchstring">
+                <input class="quickSearch form-control col-sm-3" type="text" name="searchstring" value="" tal:attributes="value view/searchstring">
                 <div class="input-group-append">
                   <input type="submit" class="searchButton btn btn-secondary"
                          name="search_button" value="Search">
@@ -229,7 +229,7 @@
               <label i18n:translate="">User Name</label>
               <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
               <input type="text" name="username"
-                     class="form-control form-control-sm col-sm-4"
+                     class="form-control form-control-sm col-sm-3"
                      tal:attributes="value python:view.request.get('username', '')"/>
               <div i18n:translate="" class="form-text text-muted small">
                 Enter a user name, usually something like 'jsmith'. No spaces or
@@ -244,7 +244,7 @@
                  tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
               <label i18n:translate="">Password</label>
               <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
-              <input class="form-control form-control-sm col-sm-4" type="password" name="password"/>
+              <input class="form-control form-control-sm col-sm-3" type="password" name="password"/>
               <div class="form-text text-muted small" i18n:translate="">
                 Minimum 5 characters.
               </div>
@@ -255,7 +255,7 @@
                  tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
               <label i18n:translate="">Confirm password</label>
               <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
-              <input class="form-control form-control-sm col-sm-4" type="password" name="confirm"/>
+              <input class="form-control form-control-sm col-sm-3" type="password" name="confirm"/>
               <div class="form-text text-muted small" i18n:translate="">
                 Re-enter the password. Make sure the passwords are identical.
               </div>
@@ -265,7 +265,7 @@
             <div class="field">
               <label i18n:translate="">Email</label>
               <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
-              <input class="form-control form-control-sm col-sm-4"
+              <input class="form-control form-control-sm col-sm-3"
                      type="text" name="email"
                      tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/> </div>
               <div class="form-text text-muted small" i18n:translate="">
