@@ -162,7 +162,7 @@
 
                   </td>
 
-                  <td class="listingCheckbox">
+                  <td class="listingCheckbox text-center align-middle">
                     <input type="checkbox"
                            class="noborder"
                            name="users.resetpassword:records"
