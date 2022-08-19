@@ -33,4 +33,14 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Group Details -->
+  <browser:page
+      name="usergroup-groupdetails"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class="Products.CMFPlone.controlpanel.browser.usergroups_groupdetails.GroupDetailsControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_groupdetails.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>
