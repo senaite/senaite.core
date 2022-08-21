@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2117 Customized User/Groups Preferences in Site Configuration
 - #2115 Fix insufficient privileges for instrument QC viewlet
 - #2114 Allow Multi Analysis Results Entry
 - #2111 Replace header table with customizable sample header viewlet

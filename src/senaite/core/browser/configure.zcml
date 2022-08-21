@@ -32,6 +32,7 @@
   <include package=".portlets"/>
   <include package=".samples"/>
   <include package=".setup"/>
+  <include package=".usergroup"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
 
