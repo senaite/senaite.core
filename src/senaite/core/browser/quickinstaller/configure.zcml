@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <browser:page
+      name="prefs_install_products_form"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".quickinstaller.ManageProductsView"
+      permission="cmf.ManagePortal"
+      template="templates/quickinstaller.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2118 Customized Quickinstaller Configlet
 - #2117 Customized User/Groups Preferences in Site Configuration
 - #2115 Fix insufficient privileges for instrument QC viewlet
 - #2114 Allow Multi Analysis Results Entry
