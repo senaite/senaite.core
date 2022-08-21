@@ -19,6 +19,13 @@
       permission="senaite.core.permissions.TransitionDispatchSample"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+  <!-- Multi results view -->
+  <browser:page
+      for="*"
+      name="multi_results"
+      class=".multi_results.MultiResultsView"
+      permission="senaite.core.permissions.TransitionMultiResults"
+      layer="senaite.core.interfaces.ISenaiteCore" />
 
   <!-- Manage Sample Fields -->
   <browser:page

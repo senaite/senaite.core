@@ -24,6 +24,10 @@ from senaite.core.interfaces import IHideActionsMenu
 from zope.browsermenu.interfaces import IBrowserMenu
 from zope.component import getUtility
 
+HIDE_WF_ITEMS = [
+    "workflow-transition-advanced"
+]
+
 
 class ContentMenuProvider(Base):
     """Content menu provider for the "view" tab: displays the menu
@@ -41,12 +45,20 @@ class ContentMenuProvider(Base):
         Unfortunately, this can not be done more elegant w/o overrides.zcml.
         https://stackoverflow.com/questions/11904155/disable-advanced-in-workflow-status-menu-in-plone
         """
+        def is_wf_item_visible(item):
+            """Checks if the WF items is visible or not
+            """
+            extra = item.get("extra", {})
+            wfid = extra.get("id")
+            if wfid in HIDE_WF_ITEMS:
+                return False
+            return True
+
         action = item.get("action")
         if action.endswith("content_status_history"):
             # remove the "Advanced ..." submenu
-            submenu = filter(
-                lambda m: m.get("title") != "label_advanced",
-                item.get("submenu", []) or [])
+            submenu = item.get("submenu", []) or []
+            submenu = filter(is_wf_item_visible, submenu)
             item["submenu"] = submenu
         return item
 

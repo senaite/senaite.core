@@ -3,6 +3,26 @@
 
   <permissions>
 
+    <!-- SAMPLE -->
+
+    <!-- Note: We need the roles for `senaite.core: Add AnalysisRequest` to
+               avoid insufficient privileges when the immediate results entry
+               option is activated.
+               Additionally, we add the Sampler to edit field results, the Analyst
+               for field and lab results, the Verifier to allow batch verification
+               of multiple analyses.
+    -->
+    <permission name="senaite.core: Transition: Multi Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Sampler"/>
+      <role name="Verifier"/>
+    </permission>
+    <!-- /SAMPLE -->
+
     <!-- WORKSHEET -->
     <permission name="senaite.core: Add Worksheet" acquire="False">
       <role name="LabManager"/>
