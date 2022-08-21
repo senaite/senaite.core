@@ -1373,7 +1373,7 @@
          *   This includes GET params for printing labels, so that we do not
          *   have to care about this here.
          */
-        var ars, destination, dialog, errorbox, field, fieldname, message, msg, parent, q, stickertemplate;
+        var dialog, errorbox, field, fieldname, message, msg, parent;
         if (data['errors']) {
           msg = data.errors.message;
           if (msg !== "") {
@@ -1392,12 +1392,6 @@
           }
           window.bika.lims.portalMessage(msg);
           return window.scroll(0, 0);
-        } else if (data['stickers']) {
-          destination = base_url;
-          ars = data['stickers'];
-          stickertemplate = data['stickertemplate'];
-          q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',');
-          return window.location.replace(destination + q);
         } else if (data['confirmation']) {
           dialog = me.template_dialog("confirm-template", data.confirmation);
           dialog.on("yes", function() {
@@ -1405,11 +1399,14 @@
             return $("input[name=save_button]").trigger("click");
           });
           return dialog.on("no", function() {
+            var destination;
             destination = data.confirmation["destination"];
             if (destination) {
               return window.location.replace(portal_url + '/' + destination);
             }
           });
+        } else if (data['redirect_to']) {
+          return window.location.replace(data['redirect_to']);
         } else {
           return window.location.replace(base_url);
         }

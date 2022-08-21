@@ -1680,11 +1680,21 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Automatic label printing
         setup = api.get_setup()
         auto_print = setup.getAutoPrintStickers()
-        if 'register' in auto_print and ARs:
-            return {
-                'success': message,
-                'stickers': ARs.values(),
-                'stickertemplate': setup.getAutoStickerTemplate()
-            }
-        else:
-            return {'success': message}
+        immediate_results_entry = setup.getImmediateResultsEntry()
+        redirect_to = self.context.absolute_url()
+        sample_uids = ARs.values()
+        if "register" in auto_print and sample_uids:
+            redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
+                self.context.absolute_url(),
+                setup.getAutoStickerTemplate(),
+                ",".join(sample_uids)
+            )
+        elif immediate_results_entry and sample_uids:
+            redirect_to = "{}/multi_results?uids={}".format(
+                self.context.absolute_url(),
+                ",".join(sample_uids)
+            )
+        return {
+            "success": message,
+            "redirect_to": redirect_to,
+        }
