@@ -33,6 +33,7 @@
   <permission>senaite.core: Transition: Dispatch Sample</permission>
   <permission>senaite.core: Transition: Restore Sample</permission>
   <permission>senaite.core: Transition: Create Partitions</permission>
+  <permission>senaite.core: Transition: Multi Results</permission>
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Edit Field Results</permission>
@@ -99,6 +100,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="to_be_sampled"/>
     <exit-transition transition_id="no_sampling_workflow"/>
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -413,6 +415,7 @@
     <exit-transition transition_id="receive"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="multi_results"/>
     <!-- TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -509,6 +512,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -600,6 +604,7 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -699,6 +704,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -788,6 +794,7 @@
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -890,6 +897,7 @@
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False"/>
@@ -1577,6 +1585,21 @@
     <guard>
       <guard-expression>python:here.guard_handler("restore")</guard-expression>
       <guard-permission>senaite.core: Transition: Restore Sample</guard-permission>
+    </guard>
+  </transition>
+
+  <!-- Transition: Multi Results -->
+  <transition transition_id="multi_results" title="Multi Results" new_state="" trigger="USER"
+              allowed="False" before_script="" after_script="" i18n:attributes="title">
+    <!-- NOTE: The `listing` category hides the transition from the WF menu and thus,
+               makes it only visible in the listings:
+
+         https://github.com/plone/plone.app.contentmenu/blob/master/plone/app/contentmenu/menu.py#L840
+    -->
+    <action url="" category="listing" icon="">Multi Results</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("multi_results")</guard-expression>
+      <guard-permission>senaite.core: Transition: Multi Results</guard-permission>
     </guard>
   </transition>
 
