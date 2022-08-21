@@ -1,0 +1,66 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <!-- Users Controlpanel -->
+  <browser:page
+      name="usergroup-userprefs"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".usergroups_usersoverview.UsersOverviewControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_usersoverview.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Groups Controlpanel -->
+  <browser:page
+      name="usergroup-groupprefs"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".usergroups_groupsoverview.GroupsOverviewControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_groupsoverview.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Group Membership -->
+  <browser:page
+      name="usergroup-groupmembership"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class="Products.CMFPlone.controlpanel.browser.usergroups_groupmembership.GroupMembershipControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_groupmembership.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Group Details -->
+  <browser:page
+      name="usergroup-groupdetails"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class="Products.CMFPlone.controlpanel.browser.usergroups_groupdetails.GroupDetailsControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_groupdetails.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- User Configlet -->
+  <browser:page
+      name="user-information"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".userdatapanel.UserDataConfiglet"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- User Group Membership -->
+  <browser:page
+      name="usergroup-usermembership"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class="Products.CMFPlone.controlpanel.browser.usergroups_usermembership.UserMembershipControlPanel"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      template="templates/usergroups_usermembership.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+
+</configure>

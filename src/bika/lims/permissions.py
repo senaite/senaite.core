@@ -114,6 +114,7 @@ TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
 TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
 TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
 TransitionCreatePartitions = "senaite.core: Transition: Create Partitions"
+TransitionMultiResults = "senaite.core: Transition: Multi Results"
 
 
 # Type-specific permissions

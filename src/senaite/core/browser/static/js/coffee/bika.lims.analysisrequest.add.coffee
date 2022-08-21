@@ -1394,13 +1394,6 @@ class window.AnalysisRequestAdd
         window.bika.lims.portalMessage msg
         window.scroll 0, 0
 
-      else if data['stickers']
-        destination = base_url
-        ars = data['stickers']
-        stickertemplate = data['stickertemplate']
-        q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',')
-        window.location.replace destination + q
-
       else if data['confirmation']
         dialog = me.template_dialog "confirm-template", data.confirmation
         dialog.on "yes", ->
@@ -1413,7 +1406,8 @@ class window.AnalysisRequestAdd
           destination = data.confirmation["destination"]
           if destination
             window.location.replace portal_url + '/' + destination
-
+      else if data['redirect_to']
+        window.location.replace data['redirect_to']
       else
         window.location.replace base_url
 

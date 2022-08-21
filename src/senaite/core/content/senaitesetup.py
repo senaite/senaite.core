@@ -78,9 +78,26 @@ class ISetupSchema(model.Schema):
         required=False,
     )
 
+    immediate_results_entry = schema.Bool(
+        title=_(u"Immediate results entry"),
+        description=_(
+            "description_senaitesetup_immediateresultsentry",
+            default=u"Allow the user to directly enter results after sample "
+            "creation, e.g. to enter field results immediately, or lab "
+            "results, when the automatic sample reception is activated."
+        ),
+    )
+
     ###
     # Fieldsets
     ###
+    model.fieldset(
+        "analyses",
+        label=_("label_senaitesetup_fieldset_analyses", default=u"Analyses"),
+        fields=[
+            "immediate_results_entry",
+        ]
+    )
 
     model.fieldset(
         "notifications",
@@ -171,4 +188,18 @@ class Setup(Container):
         """Set the site logo
         """
         mutator = self.mutator("site_logo_css")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getImmediateResultsEntry(self):
+        """Returns if immediate results entry is enabled or not
+        """
+        accessor = self.accessor("immediate_results_entry")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setImmediateResultsEntry(self, value):
+        """Enable/Disable global Auditlogging
+        """
+        mutator = self.mutator("immediate_results_entry")
         return mutator(self, value)

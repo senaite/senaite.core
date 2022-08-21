@@ -1,0 +1,235 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/prefs_main_template/macros/master">
+
+  <body>
+
+
+    <metal:main metal:fill-slot="prefs_configlet_main" i18n:domain="plone">
+
+      <a id="setup-link"
+         class="link-parent"
+         tal:attributes="href string:$portal_url/@@overview-controlpanel"
+         i18n:translate="">
+        Site Setup
+      </a>
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="">Add-ons</h1>
+
+      <div class="documentDescription"
+           i18n:translate="">
+        This is the Add-on configuration section, you can activate and deactivate
+        add-ons in the lists below.
+      </div>
+
+      <div id="content-core">
+
+        <!-- UPGRADES -->
+        <section tal:define="products view/get_upgrades;
+                             num_products python:len(products)"
+                 tal:condition="python:num_products>0"
+                 id="upgrade-products" class="portlet">
+          <header class="portletHeader" i18n:translate="">Upgrades</header>
+          <section tal:condition="not:products" class="portletContent">
+            <div id="up-to-date-message" class="portalMessage info" role="status">
+              <strong i18n:translate="">No upgrades in this corner</strong>
+              <span i18n:translate="">You are up to date. High fives.</span>
+            </div>
+          </section>
+          <section class="portletContent" tal:condition="products">
+            <ul class="configlets">
+              <tal:products  tal:repeat="product products">
+                <li tal:define="pid product/id;">
+                  <form action="upgrade_products" method="post" class="float-right">
+                    <input type="hidden"
+                           name="prefs_reinstallProducts:list"
+                           tal:attributes="value pid;" />
+                    <input class="standalone"
+                           type="submit"
+                           value="Upgrade ${pid}"
+                           name="form.submitted"
+                           i18n:attributes="value"
+                           tal:attributes="value string:Upgrade ${pid};"/>
+                  </form>
+                  <h5>
+                    <span tal:replace="product/title" i18n:translate="">
+                      Add-on Name
+                    </span>
+                  </h5>
+                  <p class="configletDescription discreet">
+                    <tal:span tal:condition="product/description" tal:content="product/description" i18n:translate="">add-on description</tal:span>
+                    <em class="discreet"> – (<span tal:replace="pid">plugin.app.name</span> <span tal:replace="product/version">1.0</span>)</em>
+                  </p>
+                  <ul class="configletDetails p-0 m-0">
+                    <li class="text-primary" tal:define="upgrade_info product/upgrade_info">
+                      <span i18n:translate="">
+                        This addon has been upgraded.
+                      </span>
+                      <span tal:condition="not:upgrade_info/hasProfile"
+                            i18n:translate="label_product_upgrade_old_version">
+                        Old version was <strong i18n:name="version" tal:content="upgrade_info/installedVersion">version</strong>.
+                      </span>
+                      <span tal:condition="upgrade_info/hasProfile">
+                        <tal:span i18n:translate="label_product_upgrade_old_profile_version">
+                          Old profile version was <strong i18n:name="version" tal:content="upgrade_info/installedVersion">version</strong>.
+                        </tal:span>
+                        <tal:span i18n:translate="label_product_upgrade_new_profile_version">
+                          New profile version is <strong i18n:name="version" tal:content="upgrade_info/newVersion">version</strong>.
+                        </tal:span>
+                      </span>
+
+                      <div tal:condition="not:upgrade_info/available">
+                        <strong i18n:translate="">Warning</strong>
+                        <span i18n:translate="">There is no upgrade procedure defined for this
+                          addon. Please consult the addon documentation
+                          for upgrade information, or contact the addon
+                          author.</span>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </tal:products>
+              <li tal:condition="python:num_products > 1">
+                <form action="upgrade_products" method="post">
+                  <tal:products  tal:repeat="product products">
+                    <input type="hidden" value="product"
+                           name="prefs_reinstallProducts:list"
+                           tal:attributes="value product/id;" />
+                  </tal:products>
+                  <span>
+                    <div i18n:translate="label_product_upgrade_all_action">This can be risky, are you sure you want to do this?</div>
+                    <input class="context"
+                           type="submit"
+                           i18n:attributes="value"
+                           value="Upgrade them ALL!"
+                           name="form.submitted" />
+                  </span>
+                </form>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <!-- /UPGRADES -->
+
+        <!-- INSTALLABLE -->
+        <section tal:define="products view/get_available;
+                             num_products python:len(products)"
+                 tal:condition="python:num_products>0"
+                 id="install-products" class="portlet">
+          <header class="portletHeader" i18n:translate="">Available add-ons</header>
+          <section class="portletContent">
+            <ul class="configlets">
+              <li tal:repeat="product products">
+                <tal:product define="pid product/id">
+                  <form action="install_products" method="post" class="float-right">
+                    <input type="hidden"
+                           name="install_product"
+                           tal:attributes="value pid;" />
+                    <input class="context"
+                           type="submit"
+                           value="Install"
+                           name="form.submitted"
+                           i18n:attributes="value"/>
+                  </form>
+
+                  <h5>
+                    <span tal:replace="product/title" i18n:translate="">
+                      Add-on Name
+                    </span>
+                  </h5>
+                  <p class="configletDescription discreet">
+                    <tal:span tal:condition="product/description"
+                              i18n:translate=""
+                              tal:content="product/description">add-on description</tal:span>
+                    <em class="discreet"> – (<span tal:replace="pid">plugin.app.name</span> <span tal:replace="product/version">1.0</span>)</em>
+                  </p>
+                  <dl class="portalMessage warning"
+                      role="status"
+                      tal:condition="not:product/uninstall_profile">
+                    <dt i18n:translate="">Warning</dt>
+                    <dd i18n:translate="">This product cannot be uninstalled!</dd>
+                  </dl>
+                </tal:product>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <!-- /INSTALLABLE  -->
+
+        <!-- INSTALLED -->
+        <section tal:define="products view/get_installed;
+                             num_products python:len(products)"
+                 id="activated-products" class="portlet">
+          <header class="portletHeader" i18n:translate="">Activated add-ons</header>
+          <section class="portletContent">
+            <ul class="configlets">
+              <li tal:repeat="product products">
+                <tal:product define="pid product/id">
+                  <form action="uninstall_products" method="post" class="float-right">
+                    <input type="hidden"
+                           name="uninstall_product"
+                           tal:attributes="value pid;" />
+                    <input class="destructive"
+                           type="submit"
+                           value="Uninstall"
+                           name="form.submitted"
+                           tal:condition="product/uninstall_profile"
+                           i18n:attributes="value"/>
+                  </form>
+                  <h5>
+                    <span tal:replace="product/title" i18n:translate="">
+                      Add-on Name
+                    </span>
+                  </h5>
+                  <p class="configletDescription discreet">
+                    <tal:span tal:condition="product/description"
+                              i18n:translate=""
+                              tal:content="product/description">add-on description</tal:span>
+                    <em class="discreet"> – (<span tal:replace="pid">plugin.app.name</span> <span tal:replace="product/version">1.0</span>)</em>
+                  </p>
+                  <!-- <dl class="portalMessage info"
+                       role="status"
+                       tal:condition="not:product/uninstall_profile">
+                       <dt i18n:translate="">Info</dt>
+                       <dd i18n:translate="">This product cannot be uninstalled!</dd>
+                       </dl> -->
+                </tal:product>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <!-- /INSTALLED -->
+
+        <!-- BROKEN -->
+        <section tal:define="products view/get_broken;
+                             num_products python:len(products);"
+                 tal:condition="num_products"
+                 id="broken-products" class="portlet">
+          <header class="portletHeader" i18n:translate="">Broken add-ons</header>
+          <section class="portletContent">
+            <ul class="configlets">
+              <li tal:repeat="product products">
+                <h5>
+                  <span tal:replace="product/product_id" i18n:translate="">
+                    Add-on Name
+                  </span>
+                </h5>
+                <p class="configletDescription discreet">
+                  <span tal:content="product/type" i18n:translate="">Error Type</span>
+                  <em class="discreet"> - <tal:span tal:content="product/value" i18n:translate="">Error Reason</tal:span></em>
+                </p>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <!-- /BROKEN -->
+
+      </div>
+    </metal:main>
+
+  </body>
+</html>
