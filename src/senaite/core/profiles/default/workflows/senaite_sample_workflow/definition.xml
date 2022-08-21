@@ -603,6 +603,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
@@ -627,7 +628,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="True"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="False">
       <!-- LabClerk role has this permission  granted by default in rolemap -->
@@ -793,6 +794,7 @@
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
@@ -817,7 +819,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="True"/>
 
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
@@ -896,6 +898,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
+    <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
     <!-- /TRANSITIONS -->
@@ -916,7 +919,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Create Partitions" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Create Partitions" acquired="True"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
