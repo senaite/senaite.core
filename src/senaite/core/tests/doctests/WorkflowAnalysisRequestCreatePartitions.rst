@@ -91,13 +91,13 @@ Submit all analyses:
     ...     analysis.setResult(12)
     ...     success = do_action_for(analysis, "submit")
 
-Partitions cannot be created when the status is `to_be_verified`:
+Partitions can be created when the status is `to_be_verified`:
 
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
 
     >>> isTransitionAllowed(ar, "create_partitions")
-    False
+    True
 
 Verify all analyses:
 
@@ -106,22 +106,22 @@ Verify all analyses:
     ...     success = do_action_for(analysis, "verify")
     >>> setup.setSelfVerificationEnabled(False)
 
-Partitions cannot be created when the status is `verified`:
+Partitions can be created when the status is `verified`:
 
     >>> api.get_workflow_status_of(ar)
     'verified'
 
     >>> isTransitionAllowed(ar, "create_partitions")
-    False
+    True
 
-Partitions cannot be created when the status is `published`:
+Partitions can be created when the status is `published`:
 
     >>> success = do_action_for(ar, "publish")
     >>> api.get_workflow_status_of(ar)
     'published'
 
     >>> isTransitionAllowed(ar, "create_partitions")
-    False
+    True
 
 Partitions cannot be created when the status is `invalid`:
 
