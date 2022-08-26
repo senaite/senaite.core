@@ -134,7 +134,7 @@
         <p class="form-text text-muted" i18n:translate="">
           No user exists for
           <span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
-          and he/she will not be able to log in. Fill in the form below to create one for him/her.
+          and they will not be able to log in. Fill in the form below to create one for them.
         </p>
 
         <fieldset class="mb-3"
