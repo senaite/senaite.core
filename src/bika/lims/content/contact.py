@@ -311,7 +311,7 @@ class Contact(Person):
                 self._recursive_reindex_object(child_obj)
 
         logger.debug("Reindexing object {}".format(repr(obj)))
-        obj.reindexObject()
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])
 
 
 atapi.registerType(Contact, PROJECTNAME)
