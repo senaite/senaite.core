@@ -241,3 +241,9 @@ def guard_restore(sample):
     """Checks if the restore transition is allowed
     """
     return True
+
+
+def guard_multi_results(sample):
+    """Checks if the multi results action is allowed
+    """
+    return True

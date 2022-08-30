@@ -1,0 +1,216 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="senaite_legacy_resources"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h2 i18n:translate="">
+        Manage Analyses Results
+      </h2>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p class="text-secondary" i18n:translate="">
+        Enter or view the analyses results of multiple samples.
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+
+      <div class="d-flex mb-3">
+        <a href="#"
+           tal:attributes="href python:context.absolute_url()"
+           class="btn btn-outline-secondary"
+           i18n:translate="">
+          &larr; Go back to see all samples
+        </a>
+      </div>
+
+      <div class="multi-results-container">
+        <div class="sample"
+             tal:attributes="data-uid python:sample.UID()"
+             tal:define="portal context/@@plone_portal_state/portal;
+                         portal_url python:portal.absolute_url()"
+             tal:repeat="sample python:view.get_samples()">
+
+          <div class="card mb-3"
+               tal:define="sample_title python:sample.Title();
+                           sample_uid python:sample.UID();
+                           sample_url python:sample.absolute_url();
+                           client python:sample.getClient();
+                           client_name python:client.getName();
+                           client_url python:client.absolute_url();
+                           sample_type python:sample.getSampleTypeTitle();
+                           show_lab_analyses python:view.show_lab_analyses(sample);
+                           show_field_analyses python:view.show_field_analyses(sample);">
+
+            <!-- Sample Results -->
+            <div class="card-header">
+              <div class="float-right">
+                <span class="align-middle" i18n:translate="">Done</span>
+                <input data-toggle="collapse"
+                       checked="checked"
+                       tal:attributes="data-target string:#sample-${sample_uid};
+                                       id string:sample_done_${sample_uid};
+                                       name string:sample_done_${sample_uid}"
+                       class="align-middle done_checkbox"
+                       type="checkbox"/>
+              </div>
+              <!-- Client -->
+              <div class="d-flex pr-2">
+                <a href="#"
+                   target="_blank"
+                   class="text-decoration-none"
+                   tal:attributes="href python:client_url">
+                  <span class="border-bottom" tal:content="python:client_name"></span>
+                </a>
+              </div>
+              <!-- Sample ID -->
+              <div class="d-inline-flex pr-2">
+                <a href="#"
+                   class="font-weight-bold text-decoration-none"
+                   target="_blank"
+                   tal:content="python:sample_title"
+                   tal:attributes="href python:sample_url">
+                </a>
+              </div>
+              <!-- Sample Type -->
+              <div class="d-inline-flex">
+                <div tal:content="python:sample_type"></div>
+              </div>
+            </div>
+            <div class="card-body collapse"
+                 tal:condition="python:not any([show_lab_analyses, show_field_analyses])"
+                 tal:attributes="id string:sample-${sample_uid};
+                                 data-uid python:sample_uid;">
+              <div i18n:translate="">No visible analyses for this sample</div>
+            </div>
+            <div class="card-body collapse"
+                 tal:condition="python:any([show_lab_analyses, show_field_analyses])"
+                 tal:attributes="id string:sample-${sample_uid};
+                                 data-uid python:sample_uid;">
+
+              <!-- Navigation tabs -->
+              <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <button class="nav-link active"
+                          tal:attributes="data-target string:#field-analyses-${sample_uid}"
+                          tal:condition="python:show_field_analyses"
+                          data-toggle="tab"
+                          type="button"
+                          role="tab"
+                          i18n:translate="">
+                    Field Analyses
+                  </button>
+                  <button class="nav-link"
+                          id="nav-profile-tab"
+                          data-toggle="tab"
+                          tal:attributes="data-target string:#lab-analyses-${sample_uid};
+                                          class python:'nav-link active' if not show_field_analyses else 'nav-link'"
+                          tal:condition="python:show_lab_analyses"
+                          type="button"
+                          role="tab"
+                          i18n:translate="">
+                    Lab Analyses
+                  </button>
+                </div>
+              </nav>
+
+              <div class="tab-content">
+                <!-- Field analyses -->
+                <div class="tab-pane fade show active"
+                     tal:condition="python:show_field_analyses"
+                    tal:attributes="id string:field-analyses-${sample_uid}">
+                  <div class="pt-2" tal:content="structure python:view.contents_table(sample, 'field')"/>
+                </div>
+
+                <!-- Lab analyses -->
+                <div class="tab-pane fade"
+                     tal:condition="python:show_lab_analyses"
+                     tal:attributes="id string:lab-analyses-${sample_uid};
+                                     class python:'tab-pane fade show active' if not show_field_analyses else 'tab-pane fade'">
+                  <div class="pt-2" tal:content="structure python:view.contents_table(sample, 'lab')"/>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- JS/CSS -->
+      <tal:js tal:define="portal context/@@plone_portal_state/portal;">
+        <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function(event) {
+
+           // local storage helper
+           var STORAGE_KEY = "senaite.core-multi_results_hidden";
+           function get_hidden_uids() {
+             let data = window.localStorage.getItem(STORAGE_KEY);
+             if (data === null) {
+               return {};
+             }
+             return JSON.parse(data);
+           }
+           function set_hidden_uids(data) {
+             let json = JSON.stringify(data);
+             window.localStorage.setItem(STORAGE_KEY, json);
+           }
+
+           // hide sample (check "done" flag)
+           $(".card-body").on("hide.bs.collapse", function () {
+             let uid = this.dataset.uid;
+             let hidden_uids = get_hidden_uids();
+             hidden_uids[uid] = true;
+             set_hidden_uids(hidden_uids);
+             console.debug("Sample " + uid + " -> hide")
+
+           })
+
+           // show sample (uncheck "done" flag)
+           $(".card-body").on("show.bs.collapse", function () {
+             let uid = this.dataset.uid;
+             let hidden_uids = get_hidden_uids();
+             delete hidden_uids[uid];
+             set_hidden_uids(hidden_uids);
+             console.debug("Sample " + uid + " -> show")
+           })
+
+           // show all samples that are marked as "not done"
+           let samples = document.getElementsByClassName("sample");
+           let hidden_uids = get_hidden_uids();
+           for (sample of samples) {
+             let uid = sample.dataset.uid;
+             if (hidden_uids.hasOwnProperty(uid)) {
+               continue;
+             }
+             let done = sample.querySelector("input.done_checkbox");
+             let card = sample.querySelector("div.card-body")
+             if (done) {
+               done.checked = false;
+             }
+             if (card) {
+               card.classList.add("show");
+             }
+           }
+
+         });
+        </script>
+      </tal:js>
+      <tal:css tal:define="portal context/@@plone_portal_state/portal;">
+        <style type="text/css" media="screen">
+        </style>
+      </tal:css>
+    </metal:core>
+
+  </body>
+</html>

@@ -86,6 +86,7 @@
   <permission id="senaite.core.permissions.TransitionDispatchSample" title="senaite.core: Transition: Dispatch Sample"/>
   <permission id="senaite.core.permissions.TransitionRestoreSample" title="senaite.core: Transition: Restore Sample"/>
   <permission id="senaite.core.permissions.TransitionCreatePartitions" title="senaite.core: Transition: Create Partitions"/>
+  <permission id="senaite.core.permissions.TransitionMultiResults" title="senaite.core: Transition: Multi Results"/>
 
   # Object-specific permissions
   # ---------------------------
