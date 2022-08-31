@@ -1549,25 +1549,12 @@ class ServiceAnalytesValidator(RecordsValidator):
     """Validate AnalysisService Analytes field
     """
     name = "service_analytes_validator"
-    existing_names = []
-    existing_keywords = []
 
     def validate_record(self, instance, record):
         # Keyword cannot contain invalid characters
         keyword = record.get("keyword")
         if re.findall(r"[^A-Za-z\w\d\-_]", keyword):
             return _("Validation failed: Keyword contains invalid characters")
-
-        # Keyword must be unique
-        if keyword in self.existing_keywords:
-            return _("Validation failed: keyword must be unique")
-        self.existing_keywords.append(keyword)
-
-        # Name must be unique
-        name = record.get("name")
-        if name in self.existing_names:
-            return _("Validation failed: name must be unique")
-        self.existing_names.append(name)
 
 
 validation.register(ServiceAnalytesValidator())

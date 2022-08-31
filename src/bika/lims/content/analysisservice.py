@@ -306,11 +306,11 @@ Analytes = RecordsField(
     subfield_labels={
         "name": _(
             u"label_analysisservice_analytes_name",
-            default=u"Analyte name"
+            default=u"Name"
         ),
         "keyword": _(
             u"label_analysisservice_analytes_keyword",
-            default=u"Analyte keyword"
+            default=u"Keyword"
         ),
         "selected": _(
             u"label_analysisservice_analytes_selected",
