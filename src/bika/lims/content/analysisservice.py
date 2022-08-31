@@ -274,6 +274,84 @@ Conditions = RecordsField(
     )
 )
 
+MultiComponent = BooleanField(
+    "MultiComponent",
+    schemata="Analytes",
+    default=False,
+    widget=BooleanWidget(
+        label=_(
+            u"label_analysisservice_multicomponent",
+            default=u"Multiple Component analysis"),
+        description=_(
+            u"description_analysisservice_multicomponent",
+            default=u"Multiple Component analyses are widely used for the "
+                    u"measurement of the concentrations of multiple chemical "
+                    u"analytes simultaneously, with a single analyzer"
+        )
+    )
+)
+
+Analytes = RecordsField(
+    "Analytes",
+    schemata="Analytes",
+    subfields=(
+        "name",
+        "keyword",
+        "selected",
+    ),
+    required_subfields=(
+        "name",
+        "keyword",
+    ),
+    subfield_labels={
+        "name": _(
+            u"label_analysisservice_analytes_name",
+            default=u"Analyte name"
+        ),
+        "keyword": _(
+            u"label_analysisservice_analytes_keyword",
+            default=u"Analyte keyword"
+        ),
+        "selected": _(
+            u"label_analysisservice_analytes_selected",
+            default=u"Selected"
+        ),
+    },
+    subfield_descriptions={
+        "selected": _(
+            u"description_analysisservice_analytes_selected",
+            default=u"Whether this analyte is checked by default when "
+                    u"the multi-component analysis is selected in the sample "
+                    u"registration form. Only checked analytes will be "
+                    u"available for results entry after sample creation"
+        ),
+    },
+    subfield_types={
+        "name": "string",
+        "keyword": "string",
+        "selected": "boolean",
+    },
+    subfield_sizes={
+        "name": 20,
+        "keyword": 20,
+        "selected": 20,
+    },
+    subfield_validators={
+        "keyword": "service_analytes_validator",
+    },
+    subfield_maxlength={
+        "name": 50,
+        "keyword": 20,
+    },
+    widget=RecordsWidget(
+        label=_(u"label_analysisservice_analytes", default="Analytes"),
+        description=_(
+            u"description_analysisservice_analytes",
+            default=u"Individual components of this multi-component analysis"
+        ),
+    )
+)
+
 
 schema = schema.copy() + Schema((
     Methods,
@@ -287,6 +365,8 @@ schema = schema.copy() + Schema((
     PartitionSetup,
     DefaultResult,
     Conditions,
+    MultiComponent,
+    Analytes,
 ))
 
 # Move default method field after available methods field
