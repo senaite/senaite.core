@@ -18,8 +18,14 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 from bika.lims import api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.catalog import SETUP_CATALOG
+from zope.interface import Invalid
+
+RX_SERVICE_KEYWORD = r"[^A-Za-z\w\d\-_]"
 
 
 def get_calculation_dependants_for(service):
@@ -153,3 +159,77 @@ def get_service_dependencies_for(service):
         "dependencies": dependencies.values(),
         "dependants": dependants.values(),
     }
+
+
+def copy_service(service, title, keyword):
+    """Creates a copy of the given AnalysisService object, but with the
+    given title and keyword
+    """
+    service = api.get_object(service)
+    container = api.get_parent(service)
+
+    # Validate the keyword
+    err_msg = check_keyword(keyword)
+    if err_msg:
+        raise Invalid(err_msg)
+
+    # Create a copy with minimal info
+    params = {"title": title, "Keyword": keyword}
+    service_copy = api.create(container, "AnalysisService", **params)
+
+    def skip(obj_field):
+        to_skip = [
+            "Products.Archetypes.Field.ComputedField",
+            "UID",
+            "id",
+            "title",
+            "allowDiscussion",
+            "contributors",
+            "creation_date",
+            "creators",
+            "effectiveDate",
+            "expirationDate",
+            "language",
+            "location",
+            "modification_date",
+            "rights",
+            "subject",
+            "ShortTitle",  # AnalysisService
+            "Keyword",  # AnalysisService
+        ]
+        if obj_field.getType() in to_skip:
+            return True
+        if obj_field.getName() in to_skip:
+            return True
+        return False
+
+    # Copy field values
+    fields = api.get_fields(service).values()
+    for field in fields:
+        if skip(field):
+            continue
+        # Use getRaw to not wake up other objects
+        value = field.getRaw(service)
+        field.set(service_copy, value)
+
+    service_copy.reindexObject()
+    return service_copy
+
+
+def check_keyword(keyword, instance=None):
+    """Checks if the given service keyword is valid and unique. Returns an
+    error message if not valid. None otherwise
+    """
+
+    # Ensure the format is valid
+    if re.findall(RX_SERVICE_KEYWORD, keyword):
+        return "Validation failed: keyword contains invalid characters"
+
+    # Ensure no other service with this keyword exists
+    query = {"portal_type": "AnalysisService", "getKeyword": keyword}
+    brains = api.search(query, SETUP_CATALOG)
+    if instance:
+        uid = api.get_uid(instance)
+        brains = filter(lambda brain: api.get_uid(brain) != uid, brains)
+    if brains:
+        return "Validation failed: keyword is already in use"
