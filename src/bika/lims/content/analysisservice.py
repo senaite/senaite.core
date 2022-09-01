@@ -295,17 +295,17 @@ Analytes = RecordsField(
     "Analytes",
     schemata="Analytes",
     subfields=(
-        "name",
+        "title",
         "keyword",
         "selected",
     ),
     required_subfields=(
-        "name",
+        "title",
         "keyword",
     ),
     subfield_labels={
-        "name": _(
-            u"label_analysisservice_analytes_name",
+        "title": _(
+            u"label_analysisservice_analytes_title",
             default=u"Name"
         ),
         "keyword": _(
@@ -327,12 +327,12 @@ Analytes = RecordsField(
         ),
     },
     subfield_types={
-        "name": "string",
+        "title": "string",
         "keyword": "string",
         "selected": "boolean",
     },
     subfield_sizes={
-        "name": 20,
+        "title": 20,
         "keyword": 20,
         "selected": 20,
     },
@@ -340,7 +340,7 @@ Analytes = RecordsField(
         "keyword": "service_analytes_validator",
     },
     subfield_maxlength={
-        "name": 50,
+        "title": 50,
         "keyword": 20,
     },
     widget=RecordsWidget(

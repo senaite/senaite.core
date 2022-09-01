@@ -1512,7 +1512,7 @@ class ServiceAnalytesValidator(RecordsValidator):
     def validate_record(self, instance, record):
         # Keyword cannot contain invalid characters
         keyword = record.get("keyword")
-        if re.findall(r"[^A-Za-z\w\d\-_]", keyword):
+        if re.findall(serviceapi.RX_SERVICE_KEYWORD, keyword):
             return _("Validation failed: Keyword contains invalid characters")
 
 
