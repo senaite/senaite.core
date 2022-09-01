@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
+import six
 
 from bika.lims import api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
@@ -161,10 +162,37 @@ def get_service_dependencies_for(service):
     }
 
 
-def copy_service(service, title, keyword):
+def copy_service(service, title, keyword, skip=None):
     """Creates a copy of the given AnalysisService object, but with the
     given title and keyword
     """
+    if isinstance(skip, six.string_types):
+        skip = [skip]
+    elif not skip:
+        skip = []
+
+    # Extend the fields to skip with defaults
+    skip = list(skip)
+    skip.extend([
+        "Products.Archetypes.Field.ComputedField",
+        "UID",
+        "id",
+        "title",
+        "allowDiscussion",
+        "contributors",
+        "creation_date",
+        "creators",
+        "effectiveDate",
+        "expirationDate",
+        "language",
+        "location",
+        "modification_date",
+        "rights",
+        "subject",
+        "ShortTitle",  # AnalysisService
+        "Keyword",  # AnalysisService
+    ])
+
     service = api.get_object(service)
     container = api.get_parent(service)
 
@@ -177,36 +205,17 @@ def copy_service(service, title, keyword):
     params = {"title": title, "Keyword": keyword}
     service_copy = api.create(container, "AnalysisService", **params)
 
-    def skip(obj_field):
-        to_skip = [
-            "Products.Archetypes.Field.ComputedField",
-            "UID",
-            "id",
-            "title",
-            "allowDiscussion",
-            "contributors",
-            "creation_date",
-            "creators",
-            "effectiveDate",
-            "expirationDate",
-            "language",
-            "location",
-            "modification_date",
-            "rights",
-            "subject",
-            "ShortTitle",  # AnalysisService
-            "Keyword",  # AnalysisService
-        ]
-        if obj_field.getType() in to_skip:
+    def skip_field(obj_field):
+        if obj_field.getType() in skip:
             return True
-        if obj_field.getName() in to_skip:
+        if obj_field.getName() in skip:
             return True
         return False
 
     # Copy field values
     fields = api.get_fields(service).values()
     for field in fields:
-        if skip(field):
+        if skip_field(field):
             continue
         # Use getRaw to not wake up other objects
         value = field.getRaw(service)
@@ -226,10 +235,19 @@ def check_keyword(keyword, instance=None):
         return "Validation failed: keyword contains invalid characters"
 
     # Ensure no other service with this keyword exists
-    query = {"portal_type": "AnalysisService", "getKeyword": keyword}
-    brains = api.search(query, SETUP_CATALOG)
+    brains = get_by_keyword(keyword)
     if instance:
         uid = api.get_uid(instance)
         brains = filter(lambda brain: api.get_uid(brain) != uid, brains)
     if brains:
         return "Validation failed: keyword is already in use"
+
+
+def get_by_keyword(keyword, full_objects=False):
+    """Returns an Analysis Service object for the given keyword, if any
+    """
+    query = {"portal_type": "AnalysisService", "getKeyword": keyword}
+    brains = api.search(query, SETUP_CATALOG)
+    if full_objects:
+        return [api.get_object(brain) for brain in brains]
+    return brains
