@@ -680,67 +680,6 @@ Remarks = TextField(
     schemata='Description'
 )
 
-Analytes = RecordsField(
-    "Analytes",
-    schemata="Analytes",
-    subfields=(
-        "title",
-        "keyword",
-        "selected",
-    ),
-    required_subfields=(
-        "title",
-        "keyword",
-    ),
-    subfield_labels={
-        "title": _(
-            u"label_analysisservice_analytes_title",
-            default=u"Name"
-        ),
-        "keyword": _(
-            u"label_analysisservice_analytes_keyword",
-            default=u"Keyword"
-        ),
-        "selected": _(
-            u"label_analysisservice_analytes_selected",
-            default=u"Selected"
-        ),
-    },
-    subfield_descriptions={
-        "selected": _(
-            u"description_analysisservice_analytes_selected",
-            default=u"Whether this analyte is checked by default when "
-                    u"the multi-component analysis is selected in the sample "
-                    u"registration form. Only checked analytes will be "
-                    u"available for results entry after sample creation"
-        ),
-    },
-    subfield_types={
-        "title": "string",
-        "keyword": "string",
-        "selected": "boolean",
-    },
-    subfield_sizes={
-        "title": 20,
-        "keyword": 20,
-        "selected": 20,
-    },
-    subfield_validators={
-        "keyword": "service_analytes_validator",
-    },
-    subfield_maxlength={
-        "title": 50,
-        "keyword": 20,
-    },
-    widget=RecordsWidget(
-        label=_(u"label_analysisservice_analytes", default="Analytes"),
-        description=_(
-            u"description_analysisservice_analytes",
-            default=u"Individual components of this multi-component analysis"
-        ),
-    )
-)
-
 schema = BikaSchema.copy() + Schema((
     ShortTitle,
     SortKey,
@@ -779,7 +718,6 @@ schema = BikaSchema.copy() + Schema((
     NumberOfRequiredVerifications,
     Remarks,
     StringResult,
-    Analytes,
 ))
 
 schema['id'].widget.visible = False

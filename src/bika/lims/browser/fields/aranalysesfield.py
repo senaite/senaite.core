@@ -315,17 +315,17 @@ class ARAnalysesField(ObjectField):
         multi component analysis. Returns empty otherwise
         """
         analytes = []
-        for analyte_record in analysis.getAnalytes():
+        service = analysis.getAnalysisService()
+        for analyte_record in service.getAnalytes():
             keyword = analyte_record.get("keyword")
             analyte_id = self.generate_analysis_id(instance, keyword)
             values = {
                 "id": analyte_id,
                 "title": analyte_record.get("title"),
                 "Keyword": keyword,
-                "Analytes": []
             }
-            analyte = create_analysis(instance, analysis, **values)
-            analyte_record.update({"value": api.get_uid(analyte)})
+            analyte = create_analysis(instance, service, **values)
+            analyte.setMultiComponentAnalysis(analysis)
             analytes.append(analyte)
         return analytes
 

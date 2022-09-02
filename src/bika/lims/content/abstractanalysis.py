@@ -23,6 +23,8 @@ import copy
 import json
 import math
 from decimal import Decimal
+
+from Products.Archetypes.config import UID_CATALOG
 from six import string_types
 
 from AccessControl import ClassSecurityInfo
@@ -157,6 +159,12 @@ ResultsRange = ResultRangeField(
     required=0
 )
 
+# The Multi-component Analysis this analysis belongs to
+MultiComponentAnalysis = UIDReferenceField(
+    "MultiComponentAnalysis",
+    relationship="AnalysisMultiComponentAnalysis",
+)
+
 schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
@@ -171,6 +179,7 @@ schema = schema.copy() + Schema((
     Calculation,
     InterimFields,
     ResultsRange,
+    MultiComponentAnalysis,
 ))
 
 
@@ -1146,3 +1155,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if retest is None:
             logger.error("Retest with UID {} not found".format(retest_uid))
         return retest
+
+    def getRawAnalytes(self):
+        """Returns the UIDs of the analytes of this multi-component analysis
+        """
+        return get_backreferences(self, "AnalysisMultiComponentAnalysis")
+
+    def getAnalytes(self):
+        """Returns the analytes of this multi-component analysis, if any
+        """
+        uids = self.getRawAnalytes()
+        if not uids:
+            return []
+
+        brains = api.search({"UID": uids}, UID_CATALOG)
+        return [api.get_object(brain) for brain in brains]
+
+    def isAnalyte(self):
+        """Returns whether this analysis is an analyte of a multi-component
+        analysis
+        """
+        if self.getRawMultiComponentAnalysis():
+            return True
+        return False
