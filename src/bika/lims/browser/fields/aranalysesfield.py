@@ -274,10 +274,15 @@ class ARAnalysesField(ObjectField):
 
         if not analyses:
             # Create the analysis
-            new_id = self.generate_analysis_id(instance, service)
+            keyword = service.getKeyword()
+            new_id = self.generate_analysis_id(instance, keyword)
             logger.info("Creating new analysis '{}'".format(new_id))
             analysis = create_analysis(instance, service, id=new_id)
             analyses.append(analysis)
+
+            # Create the analytes if multi-component analysis
+            analytes = self.create_analytes(instance, analysis)
+            analyses.extend(analytes)
 
         for analysis in analyses:
             # Set the hidden status
@@ -305,11 +310,29 @@ class ARAnalysesField(ObjectField):
 
             analysis.reindexObject()
 
-    def generate_analysis_id(self, instance, service):
+    def create_analytes(self, instance, analysis):
+        """Creates Analysis objects that represent analytes of the given
+        multi component analysis. Returns empty otherwise
+        """
+        analytes = []
+        for analyte_record in analysis.getAnalytes():
+            keyword = analyte_record.get("keyword")
+            analyte_id = self.generate_analysis_id(instance, keyword)
+            values = {
+                "id": analyte_id,
+                "title": analyte_record.get("title"),
+                "Keyword": keyword,
+                "Analytes": []
+            }
+            analyte = create_analysis(instance, analysis, **values)
+            analyte_record.update({"value": api.get_uid(analyte)})
+            analytes.append(analyte)
+        return analytes
+
+    def generate_analysis_id(self, instance, keyword):
         """Generate a new analysis ID
         """
         count = 1
-        keyword = service.getKeyword()
         new_id = keyword
         while new_id in instance.objectIds():
             new_id = "{}-{}".format(keyword, count)

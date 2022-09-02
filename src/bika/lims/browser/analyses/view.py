@@ -688,6 +688,11 @@ class AnalysesView(ListingView):
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
 
+        # Analytes (if a multi component analysis)
+        obj = self.get_object(obj)
+        analytes = [analyte.get("value") for analyte in obj.getAnalytes()]
+        item["children"] = filter(api.is_uid, analytes)
+
         return item
 
     def folderitems(self):
