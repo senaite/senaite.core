@@ -330,6 +330,10 @@ class AnalysesView(ListingView):
         # Get the ananylsis object
         obj = self.get_object(analysis_brain)
 
+        if obj.isMultiComponent():
+            # The results entry cannot be done directly, but for its analytes
+            return False
+
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
             return True

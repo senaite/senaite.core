@@ -477,6 +477,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
+        if self.isMultiComponent():
+            # Cannot set a result to a multi-component analysis
+            msg = "setResult is not supported for Multicomponent analyses"
+            raise ValueError(msg)
+
         prev_result = self.getField("Result").get(self) or ""
 
         # Convert to list ff the analysis has result options set with multi
@@ -530,6 +535,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Set the result field
         self.getField("Result").set(self, val)
+
+        # Set a 'NA' result to the multi-component analysis this belongs to, but
+        # only if results for all analytes have been captured. This ensures the
+        if val and prev_result != val:
+            multi_component = self.getMultiComponentAnalysis()
+            if multi_component:
+                captured = self.getResultCaptureDate()
+                multi_component.setStringResult(True)
+                multi_component.getField("Result").set(multi_component, "NA")
+                multi_component.setResultCaptureDate(captured)
 
     @security.public
     def calculateResult(self, override=False, cascade=False):
@@ -1176,5 +1191,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         analysis
         """
         if self.getRawMultiComponentAnalysis():
+            return True
+        return False
+
+    def isMultiComponent(self):
+        """Returns whether this analysis is a multi-component analysis
+        """
+        if self.getRawAnalytes():
             return True
         return False
