@@ -146,10 +146,16 @@ def guard_submit(analysis):
             if analyst != security.get_user_id():
                 return False
 
+    # If multi-component, cannot submit unless all analytes have been submitted
+    for analyte in analysis.getAnalytes():
+        if not ISubmitted.providedBy(analyte):
+            return False
+
     # Cannot submit unless all dependencies are submitted or can be submitted
     for dependency in analysis.getDependencies():
         if not is_submitted_or_submittable(dependency):
             return False
+
     return True
 
 
