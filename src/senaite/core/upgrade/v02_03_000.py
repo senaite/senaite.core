@@ -22,14 +22,15 @@ from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
-from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
+from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_senaite_setup
+from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -75,7 +76,7 @@ def upgrade(tool):
     add_senaite_setup(portal)
 
     # Add isAnalyte index in analyses catalog
-    setup_core_catalogs(portal, catalog_classes=(AnalysisCatalog,))
+    add_isanalyte_index(portal)
 
     remove_stale_metadata(portal)
     fix_samples_primary(portal)
@@ -415,3 +416,11 @@ def fixed_point_value_to_string(value, precision):
     str_value = template % (sign, front, fra)
     # strip off trailing zeros and possible dot
     return str_value.rstrip("0").rstrip(".")
+
+
+def add_isanalyte_index(portal):
+    cat = api.get_tool(ANALYSIS_CATALOG)
+    logger.info("Add isAnalyte index to {} ...".format(cat.id))
+    if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
+        reindex_catalog_index(cat, "isAnalyte")
+    logger.info("Add isAnalyte index to {} [DONE]".format(cat.id))
