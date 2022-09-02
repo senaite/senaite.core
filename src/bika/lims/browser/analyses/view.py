@@ -1030,7 +1030,14 @@ class AnalysesView(ListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
+        item["Method"] = ""
         obj = self.get_object(analysis_brain)
+        if obj.isAnalyte():
+            method = obj.getMethod()
+            if method:
+                item["Method"] = api.get_title(method)
+            return
+
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
@@ -1072,6 +1079,9 @@ class AnalysesView(ListingView):
         :param item: analysis' dictionary counterpart that represents a row
         """
         item["Instrument"] = ""
+        obj = self.get_object(analysis_brain)
+        if obj.isAnalyte():
+            return
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)

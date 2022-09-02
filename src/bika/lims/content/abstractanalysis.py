@@ -1200,3 +1200,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if self.getRawAnalytes():
             return True
         return False
+
+    def setMethod(self, value):
+        """Sets the method to this analysia and analytes if multi-component
+        """
+        self.getField("Method").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setMethod(value)
+
+    def setInstrument(self, value):
+        """Sets the method to this analysia and analytes if multi-component
+        """
+        self.getField("Instrument").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setInstrument(value)
