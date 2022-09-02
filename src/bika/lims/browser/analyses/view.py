@@ -79,6 +79,7 @@ class AnalysesView(ListingView):
             "portal_type": "Analysis",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            "isAnalyte": False,
         })
 
         # set the listing view config
@@ -690,8 +691,8 @@ class AnalysesView(ListingView):
 
         # Analytes (if a multi component analysis)
         obj = self.get_object(obj)
-        analytes = [analyte.get("value") for analyte in obj.getAnalytes()]
-        item["children"] = filter(api.is_uid, analytes)
+        item["children"] = obj.getRawAnalytes()
+        item["parent"] = obj.getRawMultiComponentAnalysis()
 
         return item
 
