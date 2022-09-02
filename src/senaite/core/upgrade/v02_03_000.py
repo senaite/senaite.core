@@ -22,6 +22,7 @@ from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
@@ -72,6 +73,9 @@ def upgrade(tool):
 
     # Add new setup folder to portal
     add_senaite_setup(portal)
+
+    # Add isAnalyte index in analyses catalog
+    setup_core_catalogs(portal, catalog_classes=(AnalysisCatalog,))
 
     remove_stale_metadata(portal)
     fix_samples_primary(portal)
