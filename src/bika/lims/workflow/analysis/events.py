@@ -71,7 +71,11 @@ def after_retest(analysis):
     # so we need to mark the analysis as such
     alsoProvides(analysis, IVerified)
 
-    def verify_and_retest(relative):
+    # Retest and auto-verify relatives and analytes, from bottom to top
+    relatives = list(reversed(analysis.getDependents(recursive=True)))
+    relatives.extend(analysis.getDependencies(recursive=True))
+    relatives.extend(analysis.getAnalytes())
+    for relative in relatives:
         if not ISubmitted.providedBy(relative):
             # Result not yet submitted, no need to create a retest
             return
@@ -79,16 +83,13 @@ def after_retest(analysis):
         # Apply the transition manually, but only if analysis can be verified
         doActionFor(relative, "verify")
 
-        # Create the retest
-        create_retest(relative)
+        # Create the retest if not an Analyte
+        if not relative.isAnalyte():
+            create_retest(relative)
 
-    # Retest and auto-verify relatives, from bottom to top
-    relatives = list(reversed(analysis.getDependents(recursive=True)))
-    relatives.extend(analysis.getDependencies(recursive=True))
-    map(verify_and_retest, relatives)
-
-    # Create the retest
-    create_retest(analysis)
+    # Create the retest if not an Analyte
+    if not analysis.isAnalyte():
+        create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):

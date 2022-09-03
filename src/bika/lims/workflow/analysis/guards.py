@@ -344,7 +344,7 @@ def guard_retract(analysis):
     return True
 
 
-def guard_retest(analysis, check_dependents=True):
+def guard_retest(analysis):
     """Return whether the transition "retest" can be performed or not
     """
     # Retest transition does an automatic verify transition, so the analysis
