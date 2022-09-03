@@ -108,7 +108,7 @@ Analyses have been transitioned to `assigned`:
 And all them are associated to the worksheet:
 
     >>> ws_uid = api.get_uid(worksheet)
-    >>> filter(lambda an: an.getWorksheetUID() != ws_uid, analyses)
+    >>> filter(lambda an: an.getRawWorksheet() != ws_uid, analyses)
     []
 
 Analyses do not have an Analyst assigned, though:
@@ -185,7 +185,7 @@ In `to_be_verified` status, I cannot remove analyses:
     >>> worksheet.removeAnalysis(au)
     >>> map(lambda an: an.getKeyword(), worksheet.getAnalyses())
     ['Au']
-    >>> au.getWorksheetUID() == api.get_uid(worksheet)
+    >>> au.getRawWorksheet() == api.get_uid(worksheet)
     True
     >>> api.get_workflow_status_of(au)
     'to_be_verified'

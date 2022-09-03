@@ -107,7 +107,7 @@ The status of the duplicates is `assigned`:
 
 And are associated to the worksheet:
 
-    >>> wuid = list(set(map(lambda dup: dup.getWorksheetUID(), duplicates)))
+    >>> wuid = list(set(map(lambda dup: dup.getRawWorksheet(), duplicates)))
     >>> len(wuid)
     1
     >>> wuid[0] == api.get_uid(worksheet)

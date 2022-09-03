@@ -1081,6 +1081,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
+        return self.getRawWorksheet()
+
+    @security.public
+    def getRawWorksheet(self):
+        """Returns the UID of the worksheet the analysis is assigned to, if any
+        """
         uids = get_backreferences(self, relationship="WorksheetAnalysis")
         if not uids:
             return None
@@ -1096,7 +1102,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet_uid = self.getWorksheetUID()
+        worksheet_uid = self.getRawWorksheet()
         return api.get_object_by_uid(worksheet_uid, None)
 
     @security.public

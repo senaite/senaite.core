@@ -102,7 +102,7 @@ def guard_assign(analysis):
         return False
 
     # Cannot assign if the analysis has a worksheet assigned already
-    if analysis.getWorksheet():
+    if analysis.getRawWorksheet():
         return False
 
     return True
@@ -116,7 +116,7 @@ def guard_unassign(analysis):
         return False
 
     # Cannot unassign if the analysis is not assigned to any worksheet
-    if not analysis.getWorksheet():
+    if not analysis.getRawWorksheet():
         return False
 
     return True

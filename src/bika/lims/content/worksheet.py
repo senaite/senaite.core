@@ -257,8 +257,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Delegates to 'unassign' transition for the analysis passed in
         """
         # We need to bypass the guard's check for current context!
-        api.get_request().set("ws_uid", api.get_uid(self))
-        if analysis.getWorksheet() == self:
+        ws_uid = api.get_uid(self)
+        api.get_request().set("ws_uid", ws_uid)
+        if analysis.getRawWorksheet() == ws_uid:
             doActionFor(analysis, "unassign")
 
     def addToLayout(self, analysis, position=None):
