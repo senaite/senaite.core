@@ -32,7 +32,6 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.utils.analysis import create_analytes
-from bika.lims.utils.analysis import generate_analysis_id
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
@@ -276,10 +275,7 @@ class ARAnalysesField(ObjectField):
 
         if not analyses:
             # Create the analysis
-            keyword = service.getKeyword()
-            new_id = generate_analysis_id(instance, keyword)
-            logger.info("Creating new analysis '{}'".format(new_id))
-            analysis = create_analysis(instance, service, id=new_id)
+            analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
             # Create the analytes if multi-component analysis

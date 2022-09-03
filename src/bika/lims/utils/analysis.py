@@ -30,24 +30,6 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 
 
-def duplicateAnalysis(analysis):
-    """
-    Duplicate an analysis consist on creating a new analysis with
-    the same analysis service for the same sample. It is used in
-    order to reduce the error procedure probability because both
-    results must be similar.
-    :base: the analysis object used as the creation base.
-    """
-    ar = analysis.aq_parent
-    kw = analysis.getKeyword()
-    # Rename the analysis to make way for it's successor.
-    # Support multiple duplicates by renaming to *-0, *-1, etc
-    cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
-    a_id = "{0}-{1}".format(kw, len(cnt))
-    dup = create_analysis(ar, analysis, id=a_id, Retested=True)
-    return dup
-
-
 def copy_analysis_field_values(source, analysis, **kwargs):
     src_schema = source.Schema()
     dst_schema = analysis.Schema()
@@ -92,7 +74,11 @@ def create_analysis(context, source, **kwargs):
     :returns: Analysis object that was created
     :rtype: Analysis
     """
-    an_id = kwargs.get('id', source.getKeyword())
+    an_id = kwargs.get("id")
+    if not an_id:
+        keyword = source.getKeyword()
+        an_id = generate_analysis_id(context, keyword)
+
     analysis = _createObjectByType("Analysis", context, an_id)
     copy_analysis_field_values(source, analysis, **kwargs)
 
