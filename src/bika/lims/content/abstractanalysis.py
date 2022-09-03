@@ -1202,14 +1202,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return False
 
     def setMethod(self, value):
-        """Sets the method to this analysia and analytes if multi-component
+        """Sets the method to this analysis and analytes if multi-component
         """
         self.getField("Method").set(self, value)
         for analyte in self.getAnalytes():
             analyte.setMethod(value)
 
     def setInstrument(self, value):
-        """Sets the method to this analysia and analytes if multi-component
+        """Sets the method to this analysis and analytes if multi-component
         """
         self.getField("Instrument").set(self, value)
         for analyte in self.getAnalytes():
