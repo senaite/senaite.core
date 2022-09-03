@@ -169,8 +169,14 @@ def after_retract(analysis):
     # Retract our dependencies (analyses this analysis depends on)
     promote_to_dependencies(analysis, "retract")
 
-    # Create the retest
-    create_retest(analysis)
+    # If multi-component, retract all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "retract")
+
+    # Create the retest if not an Analyte, cause otherwise we end-up with a
+    # retracted multi-component analysis with non-retracted analytes inside
+    if not analysis.isAnalyte():
+        create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):

@@ -253,7 +253,8 @@ def get_review_history_statuses(instance, reverse=False):
     """Returns a list with the statuses of the instance from the review_history
     """
     review_history = getReviewHistory(instance, reverse=reverse)
-    return map(lambda event: event["review_state"], review_history)
+    statuses = [event.get("review_state") for event in review_history]
+    return filter(None, statuses)
 
 
 def getReviewHistory(instance, reverse=True):

@@ -27,6 +27,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.workflow import get_review_history_statuses
 from plone.memoize.request import cache
 
 
@@ -239,13 +240,17 @@ def guard_retract(analysis):
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
 
-    dependencies = analysis.getDependencies()
-    if not dependencies:
-        return True
-
     # Cannot retract if all dependencies have been verified
-    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
-        return False
+    for dependency in analysis.getDependencies():
+        if not IVerified.providedBy(dependency):
+            return False
+
+    # Cannot retract if multi-component was not previously retracted
+    multi_result = analysis.getMultiComponentAnalysis()
+    if multi_result:
+        statuses = get_review_history_statuses(multi_result)
+        if "retracted" not in statuses:
+            return False
 
     return True
 
