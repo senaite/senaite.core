@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
@@ -190,6 +191,9 @@ def after_retract(analysis):
 def after_reject(analysis):
     """Function triggered after the "reject" transition for the analysis passed
     in is performed."""
+    # Mark this analysis with IRejected
+    alsoProvides(analysis, IRejected)
+
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
 
@@ -199,6 +203,14 @@ def after_reject(analysis):
     # If multi-component, reject all analytes
     for analyte in analysis.getAnalytes():
         doActionFor(analyte, "reject")
+
+    # If analyte, reject the multi-component if all analytes are rejected
+    multi_component = analysis.getMultiComponentAnalysis()
+    if multi_component:
+        analytes = multi_component.getAnalytes()
+        rejected = [IRejected.providedBy(analyte) for analyte in analytes]
+        if all(rejected):
+            doActionFor(multi_component, "reject")
 
     if IRequestAnalysis.providedBy(analysis):
         # Try verify (for when remaining analyses are in 'verified')

@@ -25,6 +25,7 @@ from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
 from bika.lims.interfaces import IRejectAnalysis
+from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
@@ -327,6 +328,13 @@ def guard_retest(analysis, check_dependents=True):
 def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """
+    if analysis.isMultiComponent():
+        # Multi-component can be rejected if all analytes can be rejected or
+        # have already been rejected
+        for analyte in analysis.getAnalytes():
+            if not is_rejected_or_rejectable(analyte):
+                return False
+
     # Cannot reject if there are dependents that cannot be rejected
     if not is_transition_allowed(analysis.getDependents(), "reject"):
         return False
@@ -445,24 +453,6 @@ def cached_is_transition_allowed(analysis, transition_id):
     return False
 
 
-def _uid_cache_key(fun, obj):
-    """Cache key generator that returns the uid of the obj.
-    Note that the module, class and function names are always prepended when
-    @cache decorator is used. Thus, the result when this function is used as
-    'get_key' parameter in the decorator is always different for different
-    functions (fun)
-    """
-    return obj.UID()
-
-
-@cache(get_key=_uid_cache_key, get_request="analysis.REQUEST")
-def cached_get_workflow_status(analysis):
-    """Returns the current workflow status of the given analysis and cache the
-    value on the request.
-    """
-    return api.get_workflow_status_of(analysis)
-
-
 def is_submitted_or_submittable(analysis):
     """Returns whether the analysis is submittable or has already been submitted
     """
@@ -490,7 +480,7 @@ def is_rejected_or_rejectable(analysis):
     """
     if IRejectAnalysis.providedBy(analysis):
         return True
-    if cached_get_workflow_status(analysis) == "rejected":
+    if IRejected.providedBy(analysis):
         return True
     if is_transition_allowed(analysis, "reject"):
         return True

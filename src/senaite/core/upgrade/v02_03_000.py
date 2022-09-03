@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
@@ -90,6 +91,7 @@ def upgrade(tool):
     migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
     mark_retracted_analyses(portal)
+    mark_rejected_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -434,12 +436,7 @@ def mark_retracted_analyses(portal):
     """
     logger.info("Applying IRetracted interface to retracted analyses ...")
     query = {
-        "portal_type": [
-            "Analysis",
-            "ReferenceAnalysis",
-            "DuplicateAnalysis",
-            "RejectAnalysis",
-        ]
+        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"]
     }
     brains = api.search(query, ANALYSIS_CATALOG)
     total = len(brains)
@@ -462,3 +459,33 @@ def mark_retracted_analyses(portal):
         alsoProvides(obj, IRetracted)
 
     logger.info("Applying IRetracted interface to retracted analyses [DONE]")
+
+
+def mark_rejected_analyses(portal):
+    """Sets the IRetracted interface to analyses that were rejected
+    """
+    logger.info("Applying IRejected interface to rejected analyses ...")
+    query = {
+        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"]
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Applying IRejected {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        if IRejected.providedBy(obj):
+            obj._p_deactivate()  # noqa
+            continue
+
+        history = api.get_review_history(obj)
+        statuses = [event.get("review_state") for event in history]
+        if "rejected" not in statuses:
+            obj._p_deactivate()  # noqa
+            continue
+
+        alsoProvides(obj, IRejected)
+
+    logger.info("Applying IRejected interface to rejected analyses [DONE]")
