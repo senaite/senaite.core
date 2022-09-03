@@ -31,6 +31,8 @@ from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
+from bika.lims.utils.analysis import create_analytes
+from bika.lims.utils.analysis import generate_analysis_id
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
@@ -275,13 +277,13 @@ class ARAnalysesField(ObjectField):
         if not analyses:
             # Create the analysis
             keyword = service.getKeyword()
-            new_id = self.generate_analysis_id(instance, keyword)
+            new_id = generate_analysis_id(instance, keyword)
             logger.info("Creating new analysis '{}'".format(new_id))
             analysis = create_analysis(instance, service, id=new_id)
             analyses.append(analysis)
 
             # Create the analytes if multi-component analysis
-            analytes = self.create_analytes(instance, analysis)
+            analytes = create_analytes(analysis)
             analyses.extend(analytes)
 
         for analysis in analyses:
@@ -309,35 +311,6 @@ class ARAnalysesField(ObjectField):
             analysis.setConditions(conditions)
 
             analysis.reindexObject()
-
-    def create_analytes(self, instance, analysis):
-        """Creates Analysis objects that represent analytes of the given
-        multi component analysis. Returns empty otherwise
-        """
-        analytes = []
-        service = analysis.getAnalysisService()
-        for analyte_record in service.getAnalytes():
-            keyword = analyte_record.get("keyword")
-            analyte_id = self.generate_analysis_id(instance, keyword)
-            values = {
-                "id": analyte_id,
-                "title": analyte_record.get("title"),
-                "Keyword": keyword,
-            }
-            analyte = create_analysis(instance, service, **values)
-            analyte.setMultiComponentAnalysis(analysis)
-            analytes.append(analyte)
-        return analytes
-
-    def generate_analysis_id(self, instance, keyword):
-        """Generate a new analysis ID
-        """
-        count = 1
-        new_id = keyword
-        while new_id in instance.objectIds():
-            new_id = "{}-{}".format(keyword, count)
-            count += 1
-        return new_id
 
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance

@@ -414,6 +414,9 @@ def create_retest(analysis):
     retest.setResult("")
     retest.setResultCaptureDate(None)
 
+    # Create the analytes if multi-component analysis
+    create_analytes(retest)
+
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
     if worksheet:
@@ -421,3 +424,35 @@ def create_retest(analysis):
 
     retest.reindexObject()
     return retest
+
+
+def create_analytes(analysis):
+    """Creates Analysis objects that represent analytes of the given multi
+    component analysis. Returns empty otherwise
+    """
+    analytes = []
+    service = analysis.getAnalysisService()
+    container = api.get_parent(analysis)
+    for analyte_record in service.getAnalytes():
+        keyword = analyte_record.get("keyword")
+        analyte_id = generate_analysis_id(container, keyword)
+        values = {
+            "id": analyte_id,
+            "title": analyte_record.get("title"),
+            "Keyword": keyword,
+        }
+        analyte = create_analysis(container, service, **values)
+        analyte.setMultiComponentAnalysis(analysis)
+        analytes.append(analyte)
+    return analytes
+
+
+def generate_analysis_id(instance, keyword):
+    """Generates a new analysis ID
+    """
+    count = 1
+    new_id = keyword
+    while new_id in instance.objectIds():
+        new_id = "{}-{}".format(keyword, count)
+        count += 1
+    return new_id
