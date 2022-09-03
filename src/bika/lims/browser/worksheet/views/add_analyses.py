@@ -66,6 +66,7 @@ class AddAnalysesView(BikaListingView):
         self.contentFilter = {
             "portal_type": "Analysis",
             "review_state": "unassigned",
+            "isAnalyte": False,
             "isSampleReceived": True,
             "sort_on": "getPrioritySortkey",
         }
