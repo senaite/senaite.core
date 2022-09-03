@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
+from bika.lims.interfaces import IRejectAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
@@ -268,7 +269,15 @@ def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """
     # Cannot reject if there are dependents that cannot be rejected
-    return is_transition_allowed(analysis.getDependents(), "reject")
+    if not is_transition_allowed(analysis.getDependents(), "reject"):
+        return False
+
+    # Cannot reject if multi-component with analytes that cannot be rejected
+    for analyte in analysis.getAnalytes():
+        if not is_rejected_or_rejectable(analyte):
+            return False
+
+    return True
 
 
 def guard_publish(analysis):
@@ -377,6 +386,24 @@ def cached_is_transition_allowed(analysis, transition_id):
     return False
 
 
+def _uid_cache_key(fun, obj):
+    """Cache key generator that returns the uid of the obj.
+    Note that the module, class and function names are always prepended when
+    @cache decorator is used. Thus, the result when this function is used as
+    'get_key' parameter in the decorator is always different for different
+    functions (fun)
+    """
+    return obj.UID()
+
+
+@cache(get_key=_uid_cache_key, get_request="analysis.REQUEST")
+def cached_get_workflow_status(analysis):
+    """Returns the current workflow status of the given analysis and cache the
+    value on the request.
+    """
+    return api.get_workflow_status_of(analysis)
+
+
 def is_submitted_or_submittable(analysis):
     """Returns whether the analysis is submittable or has already been submitted
     """
@@ -395,5 +422,17 @@ def is_verified_or_verifiable(analysis):
     if is_transition_allowed(analysis, "verify"):
         return True
     if is_transition_allowed(analysis, "multi_verify"):
+        return True
+    return False
+
+
+def is_rejected_or_rejectable(analysis):
+    """Returns whether the analysis is rejectable or has already been rejected
+    """
+    if IRejectAnalysis.providedBy(analysis):
+        return True
+    if cached_get_workflow_status(analysis) == "rejected":
+        return True
+    if is_transition_allowed(analysis, "reject"):
         return True
     return False

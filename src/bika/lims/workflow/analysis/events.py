@@ -187,6 +187,10 @@ def after_reject(analysis):
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")
 
+    # If multi-component, reject all analytes
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "reject")
+
     if IRequestAnalysis.providedBy(analysis):
         # Try verify (for when remaining analyses are in 'verified')
         doActionFor(analysis.getRequest(), "verify")
