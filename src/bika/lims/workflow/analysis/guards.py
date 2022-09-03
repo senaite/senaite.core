@@ -226,9 +226,41 @@ def guard_multi_verify(analysis):
     return True
 
 
+@on_guard
 def guard_verify(analysis):
     """Return whether the transition "verify" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if IVerified.providedBy(multi_component):
+            return True
+
+        # Direct verification of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "verify"):
+            return False
+
+        # Analyte can be verified if the multi-component can be verified or
+        # has been verified already
+        if not is_verified_or_verifiable(multi_component):
+            return False
+
+    elif analysis.isMultiComponent():
+
+        # Multi-component can be verified if all analytes can be verified or
+        # have already been verified
+        for analyte in analysis.getAnalytes():
+
+            # Prevent max depth exceed error
+            if is_on_guard(analyte, "verify"):
+                continue
+
+            if not is_verified_or_verifiable(analyte):
+                return False
+
     # Cannot verify if the number of remaining verifications is > 1
     remaining_verifications = analysis.getNumberOfRemainingVerifications()
     if remaining_verifications > 1:
@@ -273,6 +305,8 @@ def guard_retract(analysis):
 
         # Get the multi component analysis
         multi_component = analysis.getMultiComponentAnalysis()
+        if IRetracted.providedBy(multi_component):
+            return True
 
         # Direct retraction of analytes is not permitted. Return False unless
         # the guard for the multiple component is being evaluated already in

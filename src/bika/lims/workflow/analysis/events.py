@@ -238,6 +238,10 @@ def after_verify(analysis):
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
 
+    # If multi-component, verify all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "verify")
+
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
