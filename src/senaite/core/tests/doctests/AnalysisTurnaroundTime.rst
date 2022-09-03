@@ -22,7 +22,6 @@ Needed Imports:
     >>> from bika.lims.workflow import doActionFor
     >>> from bika.lims.workflow import getCurrentState
     >>> from bika.lims.workflow import getAllowedTransitions
-    >>> from bika.lims.workflow import getReviewHistory
     >>> from DateTime import DateTime
     >>> from datetime import timedelta
     >>> from plone.app.testing import TEST_USER_ID
