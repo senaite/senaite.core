@@ -138,10 +138,6 @@ def after_submit(analysis):
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
-    # Promote the analytes this multi-component analysis contains
-    for analyte in analysis.getAnalytes():
-        doActionFor(analyte, "submit")
-
     # Promote to the multi-component analysis this analysis belongs to
     multi_result = analysis.getMultiComponentAnalysis()
     if multi_result:
