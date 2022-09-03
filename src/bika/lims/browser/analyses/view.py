@@ -1033,9 +1033,6 @@ class AnalysesView(ListingView):
         item["Method"] = ""
         obj = self.get_object(analysis_brain)
         if obj.isAnalyte():
-            method = obj.getMethod()
-            if method:
-                item["Method"] = api.get_title(method)
             return
 
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
