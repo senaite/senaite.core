@@ -1016,7 +1016,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the stored Analyst or the user who submitted the result
         """
         analyst = self.getField("Analyst").get(self) or self.getAssignedAnalyst()
-        if not analyst:
+        if not analyst and not self.isMultiComponent():
             analyst = self.getSubmittedBy()
         return analyst or ""
 

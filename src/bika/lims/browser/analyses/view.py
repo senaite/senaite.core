@@ -1109,7 +1109,13 @@ class AnalysesView(ListingView):
         item["Analyst"] = self.get_user_name(analyst)
 
     def _folder_item_submitted_by(self, obj, item):
+        item["SubmittedBy"] = ""
+
         obj = self.get_object(obj)
+        if obj.isMultiComponent():
+            # Do not display submitter for multi-component analyses
+            return
+
         submitted_by = obj.getSubmittedBy()
         item["SubmittedBy"] = self.get_user_name(submitted_by)
 
