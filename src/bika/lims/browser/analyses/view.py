@@ -858,6 +858,12 @@ class AnalysesView(ListingView):
             item["before"]["Result"] = img
             return
 
+        # Get the analysis object
+        obj = self.get_object(analysis_brain)
+        if obj.isMultiComponent():
+            # Don't display the "NA" result of a multi-component analysis
+            return
+
         result = analysis_brain.getResult
         capture_date = analysis_brain.getResultCaptureDate
         capture_date_str = self.ulocalized_time(capture_date, long_format=0)
@@ -865,9 +871,6 @@ class AnalysesView(ListingView):
         item["Result"] = result
         item["CaptureDate"] = capture_date_str
         item["result_captured"] = capture_date_str
-
-        # Get the analysis object
-        obj = self.get_object(analysis_brain)
 
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
