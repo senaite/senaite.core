@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from functools import wraps
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
@@ -29,6 +31,7 @@ from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from zope.annotation import IAnnotations
 
 
 def is_worksheet_context():
@@ -47,6 +50,34 @@ def is_worksheet_context():
         return True
 
     return False
+
+
+def is_on_guard(analysis, guard):
+    """Function that checks if the guard for the given analysis is being
+    evaluated within the current thread. This is useful to prevent max depth
+    recursion errors when evaluating guards from interdependent objects
+    """
+    key = "guard_%s:%s" % (guard, analysis.UID())
+    storage = IAnnotations(api.get_request())
+    return key in storage
+
+
+def on_guard(func):
+    """Decorator that keeps track of the guard and analysis that is being
+    evaluated within the current thread. This is useful to prevent max depth
+    recursion errors when evaluating guards from independent objects
+    """
+    @wraps(func)
+    def decorator(*args):
+        analysis = args[0]
+        key = "%s:%s" % (func.__name__, analysis.UID())
+        storage = IAnnotations(api.get_request())
+        storage[key] = True
+        out = func(*args)
+        if key in storage:
+            del(storage[key])
+        return out
+    return decorator
 
 
 def guard_initialize(analysis):
@@ -233,9 +264,39 @@ def guard_verify(analysis):
     return True
 
 
+@on_guard
 def guard_retract(analysis):
     """ Return whether the transition "retract" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+
+        # Direct retraction of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "retract"):
+            return False
+
+        # Analyte can be retracted if the multi-component can be retracted or
+        # has been retracted already
+        if not is_retracted_or_retractable(multi_component):
+            return False
+
+    elif analysis.isMultiComponent():
+
+        # Multi-component can be retracted if all analytes can be retracted or
+        # have already been retracted
+        for analyte in analysis.getAnalytes():
+
+            # Prevent max depth exceed error
+            if is_on_guard(analyte, "retract"):
+                continue
+
+            if not is_retracted_or_retractable(analyte):
+                return False
+
     # Cannot retract if there are dependents that cannot be retracted
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
@@ -244,11 +305,6 @@ def guard_retract(analysis):
     for dependency in analysis.getDependencies():
         if not IVerified.providedBy(dependency):
             return False
-
-    # Cannot retract if multi-component was not previously retracted
-    multi_result = analysis.getMultiComponentAnalysis()
-    if multi_result and not IRetracted.providedBy(multi_result):
-        return False
 
     return True
 
@@ -437,5 +493,15 @@ def is_rejected_or_rejectable(analysis):
     if cached_get_workflow_status(analysis) == "rejected":
         return True
     if is_transition_allowed(analysis, "reject"):
+        return True
+    return False
+
+
+def is_retracted_or_retractable(analysis):
+    """Returns whether the analysis is retractable or has been retracted already
+    """
+    if IRetracted.providedBy(analysis):
+        return True
+    if is_transition_allowed(analysis, "retract"):
         return True
     return False
