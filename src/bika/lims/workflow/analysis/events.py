@@ -103,6 +103,11 @@ def after_unassign(analysis):
     """
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
+
+    # If multi-component, unassign all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "unassign")
+
     # Reindex the Analysis Request
     reindex_request(analysis)
 

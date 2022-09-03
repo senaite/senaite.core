@@ -114,9 +114,27 @@ def guard_assign(analysis):
     return True
 
 
+@on_guard
 def guard_unassign(analysis):
     """Return whether the transition "unassign" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if not multi_component.getRawWorksheet():
+            return True
+
+        # Direct un-assignment of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "unassign"):
+            return False
+
+        # Analyte can be unassigned if the multi-component can be unassigned
+        # or has been unassigned already
+        return is_unassigned_or_unassignable(multi_component)
+
     # Only if the request was done from worksheet context.
     if not is_worksheet_context():
         return False
@@ -543,5 +561,16 @@ def is_assigned_or_assignable(analysis):
     if analysis.getRawWorksheet():
         return True
     if is_transition_allowed(analysis, "assign"):
+        return True
+    return False
+
+
+def is_unassigned_or_unassignable(analysis):
+    """Returns whether the analysis is unassignable or has been unassigned
+    already
+    """
+    if not analysis.getRawWorksheet():
+        return True
+    if is_transition_allowed(analysis, "unassign"):
         return True
     return False
