@@ -387,16 +387,10 @@ def create_retest(analysis):
 
     # Support multiple retests by prefixing keyword with *-0, *-1, etc.
     parent = api.get_parent(analysis)
-    keyword = analysis.getKeyword()
-
-    # Get only those analyses with same keyword as original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    new_id = '{}-{}'.format(keyword, len(analyses))
 
     # Create a copy of the original analysis
     an_uid = api.get_uid(analysis)
-    retest = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    retest = create_analysis(parent, analysis, RetestOf=an_uid)
     retest.setResult("")
     retest.setResultCaptureDate(None)
 
