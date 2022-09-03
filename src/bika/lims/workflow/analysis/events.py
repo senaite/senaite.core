@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -162,6 +163,8 @@ def after_retract(analysis):
     unless the the retracted analysis was assigned to a worksheet. In such case,
     the copy is transitioned to 'assigned' state too
     """
+    # Mark this analysis as IRetracted
+    alsoProvides(analysis, IRetracted)
 
     # Retract our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "retract")

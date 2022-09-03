@@ -951,6 +951,11 @@ class IReceived(Interface):
     """
 
 
+class IRetracted(Interface):
+    """Marker interface for retracted objects
+    """
+
+
 class IInternalUse(Interface):
     """Marker interface for objects only lab personnel must have access
     """

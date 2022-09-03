@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -34,6 +35,7 @@ from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from zope.interface import alsoProvides
 
 version = "2.3.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -87,6 +89,7 @@ def upgrade(tool):
     move_arreports_to_report_catalog(portal)
     migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
+    mark_retracted_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -424,3 +427,38 @@ def add_isanalyte_index(portal):
     if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
         reindex_catalog_index(cat, "isAnalyte")
     logger.info("Add isAnalyte index to {} [DONE]".format(cat.id))
+
+
+def mark_retracted_analyses(portal):
+    """Sets the IRetracted interface to analyses that were retracted
+    """
+    logger.info("Applying IRetracted interface to retracted analyses ...")
+    query = {
+        "portal_type": [
+            "Analysis",
+            "ReferenceAnalysis",
+            "DuplicateAnalysis",
+            "RejectAnalysis",
+        ]
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Applying IRetracted {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        if IRetracted.providedBy(obj):
+            obj._p_deactivate()  # noqa
+            continue
+
+        history = api.get_review_history(obj)
+        statuses = [event.get("review_state") for event in history]
+        if "retracted" not in statuses:
+            obj._p_deactivate()  # noqa
+            continue
+
+        alsoProvides(obj, IRetracted)
+
+    logger.info("Applying IRetracted interface to retracted analyses [DONE]")

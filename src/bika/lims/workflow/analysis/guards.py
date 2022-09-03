@@ -23,11 +23,11 @@ from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
 from bika.lims.interfaces import IRejectAnalysis
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import get_review_history_statuses
 from plone.memoize.request import cache
 
 
@@ -247,10 +247,8 @@ def guard_retract(analysis):
 
     # Cannot retract if multi-component was not previously retracted
     multi_result = analysis.getMultiComponentAnalysis()
-    if multi_result:
-        statuses = get_review_history_statuses(multi_result)
-        if "retracted" not in statuses:
-            return False
+    if multi_result and not IRetracted.providedBy(multi_result):
+        return False
 
     return True
 
