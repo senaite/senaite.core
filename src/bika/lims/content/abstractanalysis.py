@@ -1220,3 +1220,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         self.getField("Instrument").set(self, value)
         for analyte in self.getAnalytes():
             analyte.setInstrument(value)
+
+    def setAnalyst(self, value):
+        """Sets the analyst to this analysis and analytes if multi-component
+        """
+        self.getField("Analyst").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setAnalyst(value)

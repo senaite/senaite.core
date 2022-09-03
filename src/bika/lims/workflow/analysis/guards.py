@@ -93,6 +93,12 @@ def guard_initialize(analysis):
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
+    multi_component = analysis.getMultiComponentAnalysis()
+    if multi_component:
+        # Analyte can be assigned if the multi-component can be assigned or
+        # has been assigned already
+        return is_assigned_or_assignable(multi_component)
+
     # Only if the request was done from worksheet context.
     if not is_worksheet_context():
         return False
@@ -527,5 +533,15 @@ def is_retracted_or_retractable(analysis):
     if IRetracted.providedBy(analysis):
         return True
     if is_transition_allowed(analysis, "retract"):
+        return True
+    return False
+
+
+def is_assigned_or_assignable(analysis):
+    """Returns whether the analysis is assignable or has been assigned already
+    """
+    if analysis.getRawWorksheet():
+        return True
+    if is_transition_allowed(analysis, "assign"):
         return True
     return False

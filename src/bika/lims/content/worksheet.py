@@ -194,7 +194,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 return
 
         # Cannot add an analysis that is assigned already
-        if analysis.getWorksheet():
+        if analysis.getRawWorksheet():
             return
 
         # Just in case
@@ -235,6 +235,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         doActionFor(analysis, "assign")
         self.setAnalyses(analyses + [analysis])
         self.addToLayout(analysis, position)
+
+        # Add the analytes if multi-component analysis
+        analytes = analysis.getAnalytes()
+        if analytes:
+            self.addAnalyses(analytes)
 
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")
