@@ -418,8 +418,19 @@ def create_analytes(analysis):
     analytes = []
     service = analysis.getAnalysisService()
     container = api.get_parent(analysis)
+
+    # Select the analytes that were selected for this service and sample
+    keywords = []
+    if IRequestAnalysis.providedBy(analysis):
+        sample = analysis.getRequest()
+        sample_analytes = sample.getServiceAnalytesFor(service)
+        keywords = [analyte.get("keyword") for analyte in sample_analytes]
+
     for analyte_record in service.getAnalytes():
         keyword = analyte_record.get("keyword")
+        if keywords and keyword not in keywords:
+            continue
+
         analyte_id = generate_analysis_id(container, keyword)
         values = {
             "id": analyte_id,
@@ -429,6 +440,7 @@ def create_analytes(analysis):
         analyte = create_analysis(container, service, **values)
         analyte.setMultiComponentAnalysis(analysis)
         analytes.append(analyte)
+
     return analytes
 
 

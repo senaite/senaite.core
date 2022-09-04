@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import base64
+import copy
 import functools
 import re
 import sys
@@ -1371,6 +1372,12 @@ schema = BikaSchema.copy() + Schema((
     RecordsField(
         "ServiceConditions",
         widget=ComputedWidget(visible=False)
+    ),
+
+    # Selected analytes from multi-component analyses on Sample registration
+    RecordsField(
+        "ServiceAnalytes",
+        widget=ComputedWidget(visible=False)
     )
 )
 )
@@ -2499,6 +2506,23 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if num_steps > max_num_steps:
             return 100
         return (num_steps * 100) / max_num_steps
+
+    def getServiceAnalytesFor(self, service_or_uid):
+        """Return a list of dicts representing the analytes selected for this
+        sample and the given service. These analytes are usually selected on
+        sample registration
+        """
+        analytes = []
+        true_values = ("true", "1", "on", "True", True, 1)
+        target_uid = api.get_uid(service_or_uid)
+        all_analytes = self.getServiceAnalytes() or []
+        all_analytes = copy.deepcopy(all_analytes)
+        for analyte in all_analytes:
+            if analyte.get("uid") != target_uid:
+                continue
+            if analyte.get("value", None) in true_values:
+                analytes.append(analyte)
+        return analytes
 
 
 registerType(AnalysisRequest, PROJECTNAME)
