@@ -68,7 +68,7 @@ class Tests(DataTestCase):
             u"Validation failed: keyword is already in use")
         self.assertEqual(
             service1.schema.get('Keyword').validate('TV', service1),
-            u"Validation failed: 'TV': This keyword is already in use by calculation 'Titration'")
+            u"Validation failed: keyword is already in use by calculation 'Titration'")
         self.assertEqual(
             None,
             service1.schema.get(
