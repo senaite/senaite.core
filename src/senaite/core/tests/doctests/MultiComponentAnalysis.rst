@@ -373,3 +373,46 @@ verified as well:
 
     >>> list(set([api.get_review_status(an) for an in analytes]))
     ['verified']
+
+
+Assignment of multi-component analysis
+......................................
+
+Create the sample and receive:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+
+Status of multi-component and analytes is 'unassigned':
+
+    >>> api.get_review_status(multi_component)
+    'unassigned'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['unassigned']
+
+Create a worksheet:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+When a multi-component is assigned to a worksheet, the analytes are assigned
+as well:
+
+    >>> worksheet.addAnalyses([multi_component])
+    >>> multi_component.getWorksheet() == worksheet
+    True
+
+    >>> assigned = [analyte.getWorksheet() == worksheet for analyte in analytes]
+    >>> all(assigned)
+    True
+
+And all their statuses are now 'assigned':
+
+    >>> api.get_review_status(multi_component)
+    'assigned'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['assigned']
