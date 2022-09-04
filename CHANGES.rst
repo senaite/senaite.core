@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2120 Support for Multiple component analysis
 - #2119 Fix linked client contact user can not see existing samples
 - #2118 Customized Quickinstaller Configlet
 - #2117 Customized User/Groups Preferences in Site Configuration
