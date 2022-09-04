@@ -753,7 +753,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         uid = api.get_uid(instrument)
-        return uid in map(api.get_uid, self.getAllowedInstruments())
+        return uid in self.getRawAllowedInstruments()
 
     @security.public
     def isMethodAllowed(self, method):
@@ -775,12 +775,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the methods allowed for this analysis
         :rtype: list of Methods
         """
-        methods_uids = self.getRawAllowedMethods()
-        if not methods_uids:
+        service = self.getAnalysisService()
+        if not service:
             return []
-        cat = api.get_tool(UID_CATALOG)
-        brains = cat(UID=methods_uids)
-        return [api.get_object(brain) for brain in brains]
+        return service.getMethods()
 
     @security.public
     def getRawAllowedMethods(self):
@@ -802,6 +800,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
         return service.getInstruments()
+
+    @security.public
+    def getRawAllowedInstruments(self):
+        """Returns the UIDS of the allowed instruments from the service
+        """
+        service = self.getAnalysisService()
+        if not service:
+            return []
+        return service.getRawInstruments()
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):

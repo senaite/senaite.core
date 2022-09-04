@@ -1509,11 +1509,11 @@ class AnalysesView(ListingView):
         """
         # Always return true if the analysis has a method assigned
         obj = self.get_object(analysis)
-        method = obj.getMethod()
+        method = obj.getRawMethod()
         if method:
             return True
 
-        methods = obj.getRawAllowedMethods()
+        methods = obj.getRawAllowedMethods() or []
         return len(methods) > 0
 
     def is_instrument_required(self, analysis):
@@ -1522,16 +1522,17 @@ class AnalysesView(ListingView):
         displayed for selection.
         :param analysis: Brain or object that represents an analysis
         """
+
         # If method selection list is required, the instrument selection too
         if self.is_method_required(analysis):
             return True
         
         # Always return true if the analysis has an instrument assigned
-        if self.get_instrument(analysis):
+        analysis = self.get_object(analysis)
+        if analysis.getRawInstrument():
             return True
 
-        obj = self.get_object(analysis)
-        instruments = obj.getAllowedInstruments()
+        instruments = analysis.getRawAllowedInstruments() or []
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
         # selection list are always a subset of the allowed instruments when

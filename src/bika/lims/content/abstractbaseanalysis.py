@@ -305,7 +305,7 @@ Method = UIDReferenceField(
     required=0,
     allowed_types=("Method",),
     vocabulary="_default_method_vocabulary",
-    accessor="getRawMethod",
+    accessor="getMethodUID",
     widget=SelectionWidget(
         format="select",
         label=_("Default Method"),
@@ -927,7 +927,16 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         return self.getField("Method").get(self)
 
+    @security.public
     def getRawMethod(self):
+        """Returns the UID of the assigned method
+
+        :returns: Method UID
+        """
+        return self.getField("Method").getRaw(self)
+
+    @security.public
+    def getMethodUID(self):
         """Returns the UID of the assigned method
 
         NOTE: This is the default accessor of the `Method` schema field
@@ -936,11 +945,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Method UID
         """
-        field = self.getField("Method")
-        method = field.getRaw(self)
-        if not method:
-            return None
-        return method
+        return self.getRawMethod()
 
     @security.public
     def getMethodURL(self):
@@ -963,11 +968,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Instrument UID
         """
-        field = self.getField("Instrument")
-        instrument = field.getRaw(self)
-        if not instrument:
-            return None
-        return instrument
+        return self.getField("Instrument").getRaw(self)
 
     @security.public
     def getInstrumentUID(self):
@@ -1001,9 +1002,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getCategoryUID(self):
         """Used to populate catalog values
         """
-        category = self.getCategory()
-        if category:
-            return category.UID()
+        return self.getRawCategory()
 
     @security.public
     def getMaxTimeAllowed(self):
