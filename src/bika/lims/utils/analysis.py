@@ -83,16 +83,21 @@ def create_analysis(context, source, **kwargs):
     copy_analysis_field_values(source, analysis, **kwargs)
 
     # AnalysisService field is not present on actual AnalysisServices.
-    if IAnalysisService.providedBy(source):
-        analysis.setAnalysisService(source)
-    else:
-        analysis.setAnalysisService(source.getAnalysisService())
+    service = source
+    if not IAnalysisService.providedBy(source):
+        service = source.getAnalysisService()
+    analysis.setAnalysisService(service)
 
     # Set the interims from the Service
-    service_interims = analysis.getAnalysisService().getInterimFields()
+    service_interims = service.getInterimFields()
     # Avoid references from the analysis interims to the service interims
     service_interims = copy.deepcopy(service_interims)
     analysis.setInterimFields(service_interims)
+
+    # Set the default method
+    methods = service.getRawMethods()
+    if methods:
+        analysis.setMethod(methods[0])
 
     analysis.unmarkCreationFlag()
     zope.event.notify(ObjectInitializedEvent(analysis))
