@@ -672,5 +672,11 @@ class AnalysisService(AbstractBaseAnalysis):
         # N.B. we return a copy of the list to avoid accidental writes
         return self.getRawMethods()[:]
 
+    def isMultiComponent(self):
+        """Returns whether this service is a multi-component service
+        """
+        analytes = self.getAnalytes() or []
+        return len(analytes) > 0
+
 
 registerType(AnalysisService, PROJECTNAME)
