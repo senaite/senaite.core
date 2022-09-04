@@ -376,9 +376,23 @@ def guard_retract(analysis):
     return True
 
 
+@on_guard
 def guard_retest(analysis):
     """Return whether the transition "retest" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if multi_component.isRetested():
+            return True
+
+        # Direct retest of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "retest"):
+            return False
+
     # Retest transition does an automatic verify transition, so the analysis
     # should be verifiable first
     if not is_transition_allowed(analysis, "verify"):
