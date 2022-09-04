@@ -35,6 +35,11 @@ from plone.memoize.request import cache
 from zope.annotation import IAnnotations
 
 
+def get_request():
+    # Fixture for tests that do not have a regular request!!!
+    return api.get_request() or api.get_test_request()
+
+
 def is_worksheet_context():
     """Returns whether the current context from the request is a Worksheet
     """
@@ -59,7 +64,7 @@ def is_on_guard(analysis, guard):
     recursion errors when evaluating guards from interdependent objects
     """
     key = "guard_%s:%s" % (guard, analysis.UID())
-    storage = IAnnotations(api.get_request())
+    storage = IAnnotations(get_request())
     return key in storage
 
 
@@ -72,7 +77,7 @@ def on_guard(func):
     def decorator(*args):
         analysis = args[0]
         key = "%s:%s" % (func.__name__, analysis.UID())
-        storage = IAnnotations(api.get_request())
+        storage = IAnnotations(get_request())
         storage[key] = True
         out = func(*args)
         if key in storage:
