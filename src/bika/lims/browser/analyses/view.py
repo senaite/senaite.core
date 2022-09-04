@@ -1513,7 +1513,7 @@ class AnalysesView(ListingView):
         if method:
             return True
 
-        methods = obj.getAllowedMethods()
+        methods = obj.getRawAllowedMethods()
         return len(methods) > 0
 
     def is_instrument_required(self, analysis):

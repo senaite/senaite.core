@@ -764,7 +764,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         uid = api.get_uid(method)
-        return uid in map(api.get_uid, self.getAllowedMethods())
+        return uid in self.getRawAllowedMethods()
 
     @security.public
     def getAllowedMethods(self):
@@ -775,11 +775,21 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the methods allowed for this analysis
         :rtype: list of Methods
         """
+        methods_uids = self.getRawAllowedMethods()
+        if not methods_uids:
+            return []
+        cat = api.get_tool(UID_CATALOG)
+        brains = cat(UID=methods_uids)
+        return [api.get_object(brain) for brain in brains]
+
+    @security.public
+    def getRawAllowedMethods(self):
+        """Returns the UIDs of the allowed methods for this analysis
+        """
         service = self.getAnalysisService()
         if not service:
             return []
-        # get the available methods of the service
-        return service.getMethods()
+        return service.getRawMethods()
 
     @security.public
     def getAllowedInstruments(self):

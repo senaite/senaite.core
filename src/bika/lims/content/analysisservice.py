@@ -57,7 +57,6 @@ Methods = UIDReferenceField(
     multiValued=1,
     vocabulary="_methods_vocabulary",
     allowed_types=("Method", ),
-    accessor="getRawMethods",
     widget=PicklistWidget(
         label=_("Methods"),
         description=_(
@@ -379,14 +378,6 @@ class AnalysisService(AbstractBaseAnalysis):
         field = self.getField("Methods")
         methods = field.get(self)
         return methods
-
-    def getRawMethods(self):
-        """Returns the assigned method UIDs
-
-        :returns: List of method UIDs
-        """
-        methods = self.getMethods()
-        return map(api.get_uid, methods)
 
     def getMethod(self):
         """Get the default method
