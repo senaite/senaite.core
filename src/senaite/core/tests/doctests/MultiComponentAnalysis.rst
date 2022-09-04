@@ -17,6 +17,8 @@ Needed Imports:
     >>> from DateTime import DateTime
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from bika.lims.workflow import isTransitionAllowed
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
 
@@ -33,6 +35,9 @@ Functional Helpers:
     ...     sample = create_analysisrequest(client, request, values, uids)
     ...     return sample
 
+    >>> def do_action(object, transition_id):
+    ...      return do_action_for(object, transition_id)[0]
+
 Variables:
 
     >>> portal = self.portal
@@ -48,6 +53,7 @@ We need to create some basic objects for the test:
     >>> lab_contact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=lab_contact)
     >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> setup.setSelfVerificationEnabled(True)
 
 
 Multi-component Service
@@ -71,7 +77,7 @@ Create the multi-component service, that is made of analytes:
     True
 
 
-Multi-component analyses
+Multi-component analysis
 ........................
 
 Although there is only one "Multi-component" service, the system creates
@@ -119,3 +125,251 @@ From an analyte, one can get the multi-component analysis that belongs to:
     True
     >>> multi_component.UID() == pb.getRawMultiComponentAnalysis()
     True
+
+
+Submission of results
+.....................
+
+Receive the sample:
+
+    >>> do_action(sample, "receive")
+    True
+
+Is not possible to set a result to a multi-component directly:
+
+    >>> multi_component.setResult("Something")
+    Traceback (most recent call last):
+    [...]
+    ValueError: setResult is not supported for Multicomponent analyses
+
+But a "NA" (*No apply*) result is set automatically as soon as a result for
+any of its analytes is set:
+
+    >>> multi_component.getResult()
+    ''
+
+    >>> pb.setResult(12)
+    >>> multi_component.getResult()
+    'NA'
+
+Is not possible to manually submit a multi-component analysis, is automatically
+submitted when results for all analytes are captured and submitted:
+
+    >>> isTransitionAllowed(multi_component, "submit")
+    False
+
+    >>> isTransitionAllowed(pb, "submit")
+    True
+
+    >>> api.get_review_status(multi_component)
+    'unassigned'
+
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+    >>> all(submitted)
+    True
+
+    >>> api.get_review_status(multi_component)
+    'to_be_verified'
+
+
+Retraction of results
+.....................
+
+Create the sample, receive and capture results:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+    >>> all(submitted)
+    True
+
+Analytes cannot be retracted, but the multi-component analysis only. The reason
+is that the retraction involves the creation of a retest. The detection of the
+concentrations of analytes in a multicomponent analysis takes place in a single
+analytical procedure, usually by an spectrometer. Thus, it does not make sense
+to create a retest for a single analyte - if there is an inconsistency, the
+whole multi-component analysis has to be run again:
+
+    >>> analyte = analytes[0]
+    >>> isTransitionAllowed(analyte, "retract")
+    False
+
+    >>> isTransitionAllowed(multi_component, "retract")
+    True
+
+When a multiple component analysis is retracted, a new multi-component test
+is added, with new analytes. Existing analytes and multi-component are all
+transitioned to "retracted" status:
+
+    >>> do_action(multi_component, "retract")
+    True
+
+    >>> api.get_review_status(multi_component)
+    'retracted'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['retracted']
+
+    >>> retest = multi_component.getRetest()
+    >>> retest.isMultiComponent()
+    True
+
+    >>> api.get_review_status(retest)
+    'unassigned'
+
+    >>> retest_analytes = retest.getAnalytes()
+    >>> list(set([api.get_review_status(an) for an in retest_analytes]))
+    ['unassigned']
+
+
+Rejection of results
+....................
+
+Create the sample, receive and capture results:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+    >>> all(submitted)
+    True
+
+Both individual analytes or the whole multi-component analysis can be rejected.
+Reason is that although a multi-component analysis takes place in a single
+run/analytical procedure, one might want to "discard" results for some of the
+analytes/components after the analysis has run without compromising the validity
+of the analytical process:
+
+    >>> analyte = analytes[0]
+    >>> isTransitionAllowed(analyte, "reject")
+    True
+
+    >>> isTransitionAllowed(multi_component, "reject")
+    True
+
+If I reject an analyte, the multi_component analysis is not affected:
+
+    >>> do_action(analyte, "reject")
+    True
+
+    >>> api.get_review_status(analyte)
+    'rejected'
+
+    >>> api.get_review_status(multi_component)
+    'to_be_verified'
+
+However, if I reject the multiple component analyses, all analytes are rejected
+automatically:
+
+    >>> statuses = list(set([api.get_review_status(an) for an in analytes]))
+    >>> sorted(statuses)
+    ['rejected', 'to_be_verified']
+
+    >>> do_action(multi_component, "reject")
+    True
+
+    >>> api.get_review_status(multi_component)
+    'rejected'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['rejected']
+
+
+Retest of multi-component analysis
+..................................
+
+Create the sample, receive and capture results:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+    >>> all(submitted)
+    True
+
+Analytes cannot be retested, but the multi-component analysis only. The
+detection of the concentrations of analytes in a multi-component analysis takes
+place in a single analytical procedure. Therefore, it does not make sense to
+retest analytes individually, but the whole multi-component analysis:
+
+    >>> analyte = analytes[0]
+    >>> isTransitionAllowed(analyte, "retest")
+    False
+
+    >>> isTransitionAllowed(multi_component, "retest")
+    True
+
+When a multiple component analysis is retested, a new multi-component test
+is added, with new analytes. Existing analytes and multi-component are all
+transitioned to "verified" status:
+
+    >>> do_action(multi_component, "retest")
+    True
+
+    >>> api.get_review_status(multi_component)
+    'verified'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['verified']
+
+    >>> retest = multi_component.getRetest()
+    >>> retest.isMultiComponent()
+    True
+
+    >>> api.get_review_status(retest)
+    'unassigned'
+
+    >>> retest_analytes = retest.getAnalytes()
+    >>> list(set([api.get_review_status(an) for an in retest_analytes]))
+    ['unassigned']
+
+
+Verification of multi-component analysis
+........................................
+
+Create the sample, receive and capture results:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+    >>> all(submitted)
+    True
+
+Analytes cannot be verified, but the multi-component analysis only. The
+detection of the concentrations of analytes in a multi-component analysis takes
+place in a single analytical procedure. Therefore, it does not make sense to
+verify analytes individually, but the whole multi-component analysis:
+
+    >>> analyte = analytes[0]
+    >>> isTransitionAllowed(analyte, "verify")
+    False
+
+    >>> isTransitionAllowed(multi_component, "verify")
+    True
+
+When a multiple component analysis is verified, all analytes are automatically
+verified as well:
+
+    >>> do_action(multi_component, "verify")
+    True
+
+    >>> api.get_review_status(multi_component)
+    'verified'
+
+    >>> list(set([api.get_review_status(an) for an in analytes]))
+    ['verified']
