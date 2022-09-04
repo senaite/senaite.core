@@ -360,10 +360,13 @@ def guard_retract(analysis):
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
 
+    dependencies = analysis.getDependencies()
+    if not dependencies:
+        return True
+
     # Cannot retract if all dependencies have been verified
-    for dependency in analysis.getDependencies():
-        if not IVerified.providedBy(dependency):
-            return False
+    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
+        return False
 
     return True
 
