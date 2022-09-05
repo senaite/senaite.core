@@ -1424,6 +1424,9 @@ class AnalysesView(ListingView):
             return
 
         full_obj = self.get_object(analysis_brain)
+        if full_obj.isMultiComponent():
+            return
+
         item['Hidden'] = full_obj.getHidden()
 
         # Hidden checkbox is not reachable by tabbing
