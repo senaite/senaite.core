@@ -90,8 +90,7 @@ def upgrade(tool):
     move_arreports_to_report_catalog(portal)
     migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
-    mark_retracted_analyses(portal)
-    mark_rejected_analyses(portal)
+    mark_retracted_and_rejected_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -431,61 +430,35 @@ def add_isanalyte_index(portal):
     logger.info("Add isAnalyte index to {} [DONE]".format(cat.id))
 
 
-def mark_retracted_analyses(portal):
-    """Sets the IRetracted interface to analyses that were retracted
+def mark_retracted_and_rejected_analyses(portal):
+    """Sets the IRetracted and/or IRejected interface to analyses that were
+    either retracted or rejected
     """
-    logger.info("Applying IRetracted interface to retracted analyses ...")
+    logger.info("Applying IRetracted/IRejected interface to analyses ...")
     query = {
-        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"]
+        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"],
+        "review_state": ["retracted", "rejected"],
     }
     brains = api.search(query, ANALYSIS_CATALOG)
     total = len(brains)
 
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Applying IRetracted {0}/{1}".format(num, total))
+            logger.info("Apply IRetracted/IRejected {0}/{1}".format(num, total))
 
         obj = api.get_object(brain)
         if IRetracted.providedBy(obj):
             obj._p_deactivate()  # noqa
             continue
 
-        history = api.get_review_history(obj)
-        statuses = [event.get("review_state") for event in history]
-        if "retracted" not in statuses:
-            obj._p_deactivate()  # noqa
-            continue
-
-        alsoProvides(obj, IRetracted)
-
-    logger.info("Applying IRetracted interface to retracted analyses [DONE]")
-
-
-def mark_rejected_analyses(portal):
-    """Sets the IRetracted interface to analyses that were rejected
-    """
-    logger.info("Applying IRejected interface to rejected analyses ...")
-    query = {
-        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"]
-    }
-    brains = api.search(query, ANALYSIS_CATALOG)
-    total = len(brains)
-
-    for num, brain in enumerate(brains):
-        if num and num % 100 == 0:
-            logger.info("Applying IRejected {0}/{1}".format(num, total))
-
-        obj = api.get_object(brain)
         if IRejected.providedBy(obj):
             obj._p_deactivate()  # noqa
             continue
 
-        history = api.get_review_history(obj)
-        statuses = [event.get("review_state") for event in history]
-        if "rejected" not in statuses:
-            obj._p_deactivate()  # noqa
-            continue
+        status = api.get_review_status(obj)
+        if status == "retracted":
+            alsoProvides(obj, IRetracted)
+        elif status == "rejected":
+            alsoProvides(obj, IRejected)
 
-        alsoProvides(obj, IRejected)
-
-    logger.info("Applying IRejected interface to rejected analyses [DONE]")
+    logger.info("Applying IRetracted/IRejected interface to analyses [DONE]")
