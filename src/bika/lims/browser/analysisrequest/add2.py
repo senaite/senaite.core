@@ -1682,18 +1682,32 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         auto_print = setup.getAutoPrintStickers()
         immediate_results_entry = setup.getImmediateResultsEntry()
         redirect_to = self.context.absolute_url()
-        sample_uids = ARs.values()
-        if "register" in auto_print and sample_uids:
+
+        # UIDs of the new created samples
+        sample_uids = ",".join(ARs.values())
+        # UIDs of previous created samples when save&copy was selected
+        prev_sample_uids = self.request.get("sample_uids")
+        if prev_sample_uids:
+            sample_uids = ",".join([prev_sample_uids, sample_uids])
+        # Get the submit action (either "Save" or "Save and Copy")
+        submit_action = self.request.form.get("submit_action", "save")
+        if submit_action == "save_and_copy":
+            # redirect to the sample add form, but keep track of
+            # previous created sample UIDs
+            redirect_to = "{}/ar_add?copy_from={}&ar_count={}&sample_uids={}" \
+                .format(self.context.absolute_url(),
+                        ",".join(ARs.values()),  # copy_from
+                        len(ARs.values()),  # ar_count
+                        sample_uids)  # sample_uids
+        elif "register" in auto_print and sample_uids:
             redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
                 self.context.absolute_url(),
                 setup.getAutoStickerTemplate(),
-                ",".join(sample_uids)
-            )
+                sample_uids)
         elif immediate_results_entry and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),
-                ",".join(sample_uids)
-            )
+                sample_uids)
         return {
             "success": message,
             "redirect_to": redirect_to,
