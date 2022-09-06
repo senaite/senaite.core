@@ -74,6 +74,8 @@ class window.AnalysisRequestAdd
     $("body").on "click", "[name='save_button']", @on_form_submit
     # Save and copy button clicked
     $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
+    # Cancel button clicked
+    $("body").on "click", "[name='cancel_button']", @on_cancel
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
@@ -1338,6 +1340,7 @@ class window.AnalysisRequestAdd
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": yes
 
+
   on_ajax_end: =>
     ###
      * Ajax request finished
@@ -1352,6 +1355,18 @@ class window.AnalysisRequestAdd
     # reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": no
+
+
+  on_cancel: (event, callback) =>
+    console.debug "°°° on_cancel °°°"
+    event.preventDefault()
+    base_url = this.get_base_url()
+
+    @ajax_post_form("cancel").done (data) ->
+      if data["redirect_to"]
+        window.location.replace data["redirect_to"]
+      else
+        window.location.replace base_url
 
 
   # Note: Context of callback bound to this object

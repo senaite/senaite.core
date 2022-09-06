@@ -664,6 +664,12 @@
                i18n:attributes="value"
                value="Save and Copy"/>
 
+        <input class="btn btn-outline-secondary btn-sm"
+               type="submit"
+               name="cancel_button"
+               i18n:attributes="value"
+               value="Cancel"/>
+
         <input type="hidden" id="confirmed" name="confirmed" value="0"/>
 
         <!-- submit input field is not included in the request when submitting via JS.

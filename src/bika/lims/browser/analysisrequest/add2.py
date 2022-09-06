@@ -1514,8 +1514,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
         return adapter.check_confirmation(records)
 
+    def ajax_cancel(self):
+        """Cancel and redirect to configured actions
+        """
+        message = _("Sample creation cancelled")
+        self.context.plone_utils.addPortalMessage(message, "info")
+        return self.handle_redirect([], message)
+
     def ajax_submit(self):
-        """Submit & create the ARs
+        """Create samples and redirect to configured actions
         """
         # Check if there is the need to display a confirmation pane
         confirmation = self.check_confirmation()
@@ -1677,6 +1684,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
 
+        return self.handle_redirect(ARs.values(), message)
+
+    def handle_redirect(self, uids, message):
+        """Handle redirect after sample creation or cancel
+        """
         # Automatic label printing
         setup = api.get_setup()
         auto_print = setup.getAutoPrintStickers()
@@ -1684,7 +1696,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         redirect_to = self.context.absolute_url()
 
         # UIDs of the new created samples
-        sample_uids = ",".join(ARs.values())
+        sample_uids = ",".join(uids)
         # UIDs of previous created samples when save&copy was selected
         prev_sample_uids = self.request.get("sample_uids")
         if prev_sample_uids:
@@ -1696,8 +1708,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # previous created sample UIDs
             redirect_to = "{}/ar_add?copy_from={}&ar_count={}&sample_uids={}" \
                 .format(self.context.absolute_url(),
-                        ",".join(ARs.values()),  # copy_from
-                        len(ARs.values()),  # ar_count
+                        ",".join(uids),  # copy_from
+                        len(uids),  # ar_count
                         sample_uids)  # sample_uids
         elif "register" in auto_print and sample_uids:
             redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
