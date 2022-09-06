@@ -176,6 +176,59 @@ def create(container, portal_type, *args, **kwargs):
     return obj
 
 
+def copy_object(source, container=None, *args, **kwargs):
+    """Creates a copy of the source object into the specified container. If
+    container is None, creates the copy inside the same container as the source
+
+    :param source: object from which create a copy
+    :type source: ATContentType/DexterityContentType/CatalogBrain
+    :param container: container
+    :type container: ATContentType/DexterityContentType/CatalogBrain
+    :returns: The new created object
+    """
+    source = get_object(source)
+    if not container:
+        container = get_parent(source)
+    portal_type = get_portal_type(source)
+
+    # Extend the fields to skip with defaults
+    skip = kwargs.pop("skip", [])
+    skip = set(skip)
+    skip.update([
+        "Products.Archetypes.Field.ComputedField",
+        "UID",
+        "id",
+        "allowDiscussion",
+        "contributors",
+        "creation_date",
+        "creators",
+        "effectiveDate",
+        "expirationDate",
+        "language",
+        "location",
+        "modification_date",
+        "rights",
+        "subject",
+    ])
+    # Build a dict for complexity reduction
+    skip = dict([(item, True) for item in skip])
+
+    # Update kwargs with the field values to copy from source
+    for field in get_fields(source).values():
+        field_name = field.getName()
+        if field_name in kwargs:
+            continue
+        if skip.get(field_name, False):
+            continue
+        if skip.get(field.getType(), False):
+            continue
+        field_value = field.getRaw(source)
+        kwargs.update({field_name: field_value})
+
+    # Create a copy
+    return create(container, portal_type, *args, **kwargs)
+
+
 def get_tool(name, context=None, default=_marker):
     """Get a portal tool by name
 

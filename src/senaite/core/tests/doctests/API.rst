@@ -1899,3 +1899,18 @@ portal_factory:
     >>> tmp_client = portal.clients.restrictedTraverse(tmp_path)
     >>> api.is_temporary(tmp_client)
     True
+
+
+Copying content
+...............
+
+This function helps to do it right and copies an existing content for you.
+
+Here we create a copy of the `Client` we created earlier::
+
+    >>> client2 = api.copy_object(client, title="Test Client 2")
+    >>> client2
+    <Client at /plone/clients/client-2>
+
+    >>> client2.Title()
+    'Test Client 2'
