@@ -21,6 +21,7 @@
 import re
 
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.catalog import SETUP_CATALOG
 from zope.interface import Invalid
@@ -182,14 +183,14 @@ def check_keyword(keyword, instance=None):
 
     # Ensure the format is valid
     if re.findall(RX_SERVICE_KEYWORD, keyword):
-        return "Validation failed: keyword contains invalid characters"
+        return _("Validation failed: keyword contains invalid characters")
 
     # Ensure no other service with this keyword exists
     brains = get_by_keyword(keyword)
     if instance and len(brains) > 1:
-        return "Validation failed: keyword is already in use"
+        return _("Validation failed: keyword is already in use")
     elif brains:
-        return "Validation failed: keyword is already in use"
+        return _("Validation failed: keyword is already in use")
 
     # Ensure there are no interim fields from calculations with same keyword
     calc = getattr(instance, "getRawCalculation", None)
@@ -210,8 +211,8 @@ def check_keyword(keyword, instance=None):
         # Extract all keywords from interims
         interim_keywords = [field.get("keyword") for field in interim_fields]
         if keyword in interim_keywords:
-            return "Validation failed: keyword is already in use by " \
-                   "calculation '{}'".format(api.get_title(calculation))
+            return _("Validation failed: keyword is already in use by "
+                     "calculation '{}'").format(api.get_title(calculation))
 
 
 def get_by_keyword(keyword, full_objects=False):

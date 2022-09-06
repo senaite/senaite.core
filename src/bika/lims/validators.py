@@ -256,7 +256,7 @@ class ServiceKeywordValidator:
         err_msg = serviceapi.check_keyword(value, instance)
         if err_msg:
             ts = api.get_tool("translation_service")
-            return to_utf8(ts.translate(_(err_msg)))
+            return to_utf8(ts.translate(err_msg))
         return True
 
 
