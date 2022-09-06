@@ -134,7 +134,7 @@ class RecordField(ObjectField):
     def isSelection(self,subfield):
         """select box needed?"""
 
-        return self.subfield_vocabularies.has_key(subfield)
+        return subfield in self.subfield_vocabularies
 
     security.declarePublic('testSubfieldCondition')
     def testSubfieldCondition(self, subfield, folder, portal, object):
@@ -349,7 +349,7 @@ class RecordField(ObjectField):
             result returned by validator
             """
             name = self.getName()
-            if errors and errors.has_key(name):
+            if errors and name in errors:
                 return True
 
             if self.required_subfields:

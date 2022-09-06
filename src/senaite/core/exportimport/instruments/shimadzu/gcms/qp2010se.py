@@ -140,7 +140,7 @@ class GCMSQP2010SECSVParser(InstrumentCSVResultsFileParser):
             return self.parse_quantitationesultsline(line)
 
     def parse_headerline(self, line):
-        """ Parses header lines
+        r""" Parses header lines
 
             Header example:
             [Header]
