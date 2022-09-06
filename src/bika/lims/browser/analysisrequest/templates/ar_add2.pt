@@ -672,10 +672,10 @@
 
         <input type="hidden" id="confirmed" name="confirmed" value="0"/>
 
-        <!-- submit input field is not included in the request when submitting via JS.
-             Therefore, we it is stored in this field from the event handler -->
+        <!-- The input[type=submit] fields are not included in the request when submitting via JS.
+             Therefore, we set the action explicitly in the ajax event handler -->
         <input type="hidden" name="submit_action" value="save"/>
-        <!-- list of previous sample UIDs from copy&save cycles -->
+        <!-- List of previous created sample UIDs from copy&save cycles -->
         <input type="hidden" name="sample_uids" value="" tal:attributes="value request/sample_uids|nothing"/>
 
       </form>
