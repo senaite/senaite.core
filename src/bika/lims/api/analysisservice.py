@@ -186,10 +186,9 @@ def check_keyword(keyword, instance=None):
 
     # Ensure no other service with this keyword exists
     brains = get_by_keyword(keyword)
-    if instance:
-        uid = api.get_uid(instance)
-        brains = filter(lambda brain: api.get_uid(brain) != uid, brains)
-    if brains:
+    if instance and len(brains) > 1:
+        return "Validation failed: keyword is already in use"
+    elif brains:
         return "Validation failed: keyword is already in use"
 
     # Ensure there are no interim fields from calculations with same keyword
