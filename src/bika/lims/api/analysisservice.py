@@ -171,7 +171,7 @@ def copy_service(service, title, keyword):
         raise Invalid(err_msg)
 
     # Create a copy
-    params = {"title": title, "Keyword": keyword}
+    params = {"title": title, "ShortTitle": "", "Keyword": keyword}
     return api.copy_object(service, **params)
 
 
