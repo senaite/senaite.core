@@ -19,22 +19,22 @@
 # Some rights reserved, see README and LICENSE.
 
 # BBB Imports
-from senaite.core.catalog import AUDITLOG_CATALOG as CATALOG_AUDITLOG  # noqa
-from senaite.core.catalog import SAMPLE_CATALOG as CATALOG_ANALYSIS_REQUEST_LISTING  # noqa
-from senaite.core.catalog import ANALYSIS_CATALOG as CATALOG_ANALYSIS_LISTING  # noqa
-from senaite.core.catalog import AUTOIMPORTLOG_CATALOG as CATALOG_AUTOIMPORTLOGS_LISTING  # noqa
-from senaite.core.catalog import SENAITE_CATALOG as BIKA_CATALOG  # noqa
-from senaite.core.catalog import WORKSHEET_CATALOG as CATALOG_WORKSHEET_LISTING  # noqa
-from senaite.core.catalog import REPORT_CATALOG as CATALOG_REPORT_LISTING  # noqa
-from senaite.core.catalog import SETUP_CATALOG  # noqa
-from senaite.core.catalog import SETUP_CATALOG as CATALOG_SETUP # noqa
+from senaite.core.catalog import AUDITLOG_CATALOG as CATALOG_AUDITLOG
+from senaite.core.catalog import SAMPLE_CATALOG as CATALOG_ANALYSIS_REQUEST_LISTING
+from senaite.core.catalog import ANALYSIS_CATALOG as CATALOG_ANALYSIS_LISTING
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG as CATALOG_AUTOIMPORTLOGS_LISTING
+from senaite.core.catalog import SENAITE_CATALOG as BIKA_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG as CATALOG_WORKSHEET_LISTING
+from senaite.core.catalog import REPORT_CATALOG as CATALOG_REPORT_LISTING
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import SETUP_CATALOG as CATALOG_SETUP
 
 # Catalog classes
-from .auditlog_catalog import AuditLogCatalog  # noqa
-from .bika_catalog import BikaCatalog  # noqa
-from .bikasetup_catalog import BikaSetupCatalog  # noqa
-from .analysis_catalog import BikaAnalysisCatalog  # noqa
-from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing  # noqa
-from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing  # noqa
-from .worksheet_catalog import BikaCatalogWorksheetListing  # noqa
-from .report_catalog import BikaCatalogReport  # noqa
+from .auditlog_catalog import AuditLogCatalog
+from .bika_catalog import BikaCatalog
+from .bikasetup_catalog import BikaSetupCatalog
+from .analysis_catalog import BikaAnalysisCatalog
+from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing
+from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing
+from .worksheet_catalog import BikaCatalogWorksheetListing
+from .report_catalog import BikaCatalogReport

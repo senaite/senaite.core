@@ -136,7 +136,7 @@ WORKFLOW_DEFINITIONS_TO_PORT = [
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
-    setup = portal.portal_setup  # noqa
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
@@ -332,7 +332,7 @@ def remove_stale_workflow_definitions(portal):
     for workflow_id in STALE_WORKFLOW_DEFINITIONS:
         if workflow_id in wf_tool:
             logger.info("Removing {}".format(workflow_id))
-            wf_tool._delObject(workflow_id)  # noqa
+            wf_tool._delObject(workflow_id)
 
     logger.info("Removing stale workflow definitions [DONE]")
 
@@ -366,7 +366,7 @@ def port_workflow(portal, source, destination, portal_types):
 
     # Remove the workflow definition from portal_workflow
     wf_tool = api.get_tool("portal_workflow")
-    wf_tool._delObject(source)  # noqa
+    wf_tool._delObject(source)
     logger.info("{} [DONE]".format(msg))
 
 
@@ -790,7 +790,7 @@ def remove_collective_indexing_notify_modified(portal):
         Module ZODB.Connection, line 578, in _store_objects
         Module ZODB.serialize, line 430, in serialize
         Module ZODB.serialize, line 439, in _dump
-    PicklingError: Can't pickle <class 'collective.indexing.indexer.notifyModified'>: import of module collective.indexing.indexer failed  # noqa
+    PicklingError: Can't pickle <class 'collective.indexing.indexer.notifyModified'>: import of module collective.indexing.indexer failed
 
     in collective.indexing.indexer:
 
