@@ -1,0 +1,35 @@
+name: build and test senaite.core
+on:
+  - push
+  - pull_request
+env:
+  PLONE_VERSION: "5.2"
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '2.7'
+          cache: 'pip'
+      - name: cache eggs
+        uses: actions/cache@v3
+        with:
+          key: eggs-cache-${{ hashFiles('buildout.cfg', 'requirements.txt') }}
+          path: |
+            eggs/
+      - name: install
+        run: |
+          pip install virtualenv
+          virtualenv -p `which python` .
+          bin/pip install -r requirements.txt
+          bin/buildout -N -t 3 annotate
+          bin/buildout -N -t 3
+      - name: lint
+        run: |
+          bin/pip install flake8
+          bin/flake8 --config travis_ci_flake8.cfg src/{bika,senaite}/
+      - name: test
+        run: |
+          bin/test -s senaite.core.tests
