@@ -750,7 +750,7 @@ validation.register(PrePreservationValidator())
 
 
 class StandardIDValidator:
-    """Matches against regular expression:
+    r"""Matches against regular expression:
        [^A-Za-z\w\d\-\_]
     """
 

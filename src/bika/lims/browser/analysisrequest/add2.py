@@ -1515,8 +1515,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
         return adapter.check_confirmation(records)
 
+    def ajax_cancel(self):
+        """Cancel and redirect to configured actions
+        """
+        message = _("Sample creation cancelled")
+        self.context.plone_utils.addPortalMessage(message, "info")
+        return self.handle_redirect([], message)
+
     def ajax_submit(self):
-        """Submit & create the ARs
+        """Create samples and redirect to configured actions
         """
         # Check if there is the need to display a confirmation pane
         confirmation = self.check_confirmation()
@@ -1678,23 +1685,42 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
 
+        return self.handle_redirect(ARs.values(), message)
+
+    def handle_redirect(self, uids, message):
+        """Handle redirect after sample creation or cancel
+        """
         # Automatic label printing
         setup = api.get_setup()
         auto_print = setup.getAutoPrintStickers()
         immediate_results_entry = setup.getImmediateResultsEntry()
         redirect_to = self.context.absolute_url()
-        sample_uids = ARs.values()
-        if "register" in auto_print and sample_uids:
+
+        # UIDs of the new created samples
+        sample_uids = ",".join(uids)
+        # UIDs of previous created samples when save&copy was selected
+        prev_sample_uids = self.request.get("sample_uids")
+        if prev_sample_uids:
+            sample_uids = ",".join([prev_sample_uids, sample_uids])
+        # Get the submit action (either "Save" or "Save and Copy")
+        submit_action = self.request.form.get("submit_action", "save")
+        if submit_action == "save_and_copy":
+            # redirect to the sample add form, but keep track of
+            # previous created sample UIDs
+            redirect_to = "{}/ar_add?copy_from={}&ar_count={}&sample_uids={}" \
+                .format(self.context.absolute_url(),
+                        ",".join(uids),  # copy_from
+                        len(uids),  # ar_count
+                        sample_uids)  # sample_uids
+        elif "register" in auto_print and sample_uids:
             redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
                 self.context.absolute_url(),
                 setup.getAutoStickerTemplate(),
-                ",".join(sample_uids)
-            )
+                sample_uids)
         elif immediate_results_entry and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),
-                ",".join(sample_uids)
-            )
+                sample_uids)
         return {
             "success": message,
             "redirect_to": redirect_to,

@@ -245,7 +245,7 @@ def zero_fill(matchobj):
     return matchobj.group().zfill(8)
 
 
-num_sort_regex = re.compile('\d+')
+num_sort_regex = re.compile(r'\d+')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sortable_title')
 

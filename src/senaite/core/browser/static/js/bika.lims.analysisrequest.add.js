@@ -20,6 +20,7 @@
       this.set_service_conditions = bind(this.set_service_conditions, this);
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
+      this.on_cancel = bind(this.on_cancel, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
       this.on_ajax_start = bind(this.on_ajax_start, this);
       this.ajax_post_form = bind(this.ajax_post_form, this);
@@ -94,6 +95,8 @@
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
       $("body").on("click", "tr.category", this.on_service_category_click);
       $("body").on("click", "[name='save_button']", this.on_form_submit);
+      $("body").on("click", "[name='save_and_copy_button']", this.on_form_submit);
+      $("body").on("click", "[name='cancel_button']", this.on_cancel);
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", this.on_analysis_checkbox_click);
@@ -1332,13 +1335,17 @@
       /*
        * Ajax request started
        */
-      var button;
+      var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_start °°°");
-      button = $("input[name=save_button]");
-      button.prop({
+      save_button = $("input[name=save_button]");
+      save_button.prop({
         "disabled": true
       });
-      return button[0].value = _t("Loading ...");
+      save_button[0].value = _t("Loading ...");
+      save_and_copy_button = $("input[name=save_and_copy_button]");
+      return save_and_copy_button.prop({
+        "disabled": true
+      });
     };
 
     AnalysisRequestAdd.prototype.on_ajax_end = function() {
@@ -1346,13 +1353,31 @@
       /*
        * Ajax request finished
        */
-      var button;
+      var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_end °°°");
-      button = $("input[name=save_button]");
-      button.prop({
+      save_button = $("input[name=save_button]");
+      save_button.prop({
         "disabled": false
       });
-      return button[0].value = _t("Save");
+      save_button[0].value = _t("Save");
+      save_and_copy_button = $("input[name=save_and_copy_button]");
+      return save_and_copy_button.prop({
+        "disabled": false
+      });
+    };
+
+    AnalysisRequestAdd.prototype.on_cancel = function(event, callback) {
+      var base_url;
+      console.debug("°°° on_cancel °°°");
+      event.preventDefault();
+      base_url = this.get_base_url();
+      return this.ajax_post_form("cancel").done(function(data) {
+        if (data["redirect_to"]) {
+          return window.location.replace(data["redirect_to"]);
+        } else {
+          return window.location.replace(base_url);
+        }
+      });
     };
 
     AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
@@ -1361,10 +1386,17 @@
        * Eventhandler for the form submit button.
        * Extracts and submits all form data asynchronous.
        */
-      var base_url, me, portal_url;
+      var action, action_input, base_url, btn, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
       me = this;
+      btn = event.currentTarget;
+      action = "save";
+      if (btn.name === "save_and_copy_button") {
+        action = "save_and_copy";
+      }
+      action_input = document.querySelector("input[name='submit_action']");
+      action_input.value = action;
       base_url = me.get_base_url();
       portal_url = me.get_portal_url();
       $("div.error").removeClass("error");

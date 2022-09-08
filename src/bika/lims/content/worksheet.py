@@ -446,7 +446,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             prefix = reference.id + "-D"
         bac = getToolByName(reference, 'senaite_catalog_analysis')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
-        rr = re.compile("^" + prefix + "[\d+]+$")
+        rr = re.compile("^" + prefix + r"[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()
         _id = ids[-1] if ids else 0

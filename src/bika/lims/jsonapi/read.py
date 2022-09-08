@@ -38,7 +38,7 @@ import App
 
 def read(context, request):
     tag = AuthenticatorView(context, request).authenticator()
-    pattern = '<input .*name="(\w+)".*value="(\w+)"'
+    pattern = r'<input .*name="(\w+)".*value="(\w+)"'
     _authenticator = re.match(pattern, tag).groups()[1]
 
     ret = {

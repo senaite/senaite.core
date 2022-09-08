@@ -695,13 +695,31 @@
 
         </table>
 
-        <input class="btn btn-success btn-sm allowMultiSubmit"
+        <input class="btn btn-success btn-sm"
                type="submit"
                name="save_button"
                i18n:attributes="value"
                value="Save"/>
 
+        <input class="btn btn-outline-success btn-sm"
+               type="submit"
+               name="save_and_copy_button"
+               i18n:attributes="value"
+               value="Save and Copy"/>
+
+        <input class="btn btn-outline-secondary btn-sm"
+               type="submit"
+               name="cancel_button"
+               i18n:attributes="value"
+               value="Cancel"/>
+
         <input type="hidden" id="confirmed" name="confirmed" value="0"/>
+
+        <!-- The input[type=submit] fields are not included in the request when submitting via JS.
+             Therefore, we set the action explicitly in the ajax event handler -->
+        <input type="hidden" name="submit_action" value="save"/>
+        <!-- List of previous created sample UIDs from copy&save cycles -->
+        <input type="hidden" name="sample_uids" value="" tal:attributes="value request/sample_uids|nothing"/>
 
       </form>
       <!-- /ADD Form -->
