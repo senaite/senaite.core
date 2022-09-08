@@ -192,25 +192,12 @@ def check_keyword(keyword, instance=None):
     elif brains:
         return _("Validation failed: keyword is already in use")
 
-    # Ensure there are no interim fields from calculations with same keyword
-    calc = getattr(instance, "getRawCalculation", None)
-    our_calc_uid = calc and calc() or ""
+    # Ensure the keyword is not used in calculations
+    ref = "[{}]".format(keyword)
     cat = api.get_tool(SETUP_CATALOG)
     for calculation in cat(portal_type="Calculation"):
-
-        # Skip interims from calculation assigned to this service
-        if api.get_uid(calculation) == our_calc_uid:
-            continue
-
-        # Skip if calculation does not have interim fields
         calculation = api.get_object(calculation)
-        interim_fields = calculation.getInterimFields()
-        if not interim_fields:
-            continue
-
-        # Extract all keywords from interims
-        interim_keywords = [field.get("keyword") for field in interim_fields]
-        if keyword in interim_keywords:
+        if ref in calculation.getFormula():
             return _("Validation failed: keyword is already in use by "
                      "calculation '{}'").format(api.get_title(calculation))
 

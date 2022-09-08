@@ -253,6 +253,10 @@ class ServiceKeywordValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
+        if instance.getKeyword() == value:
+            # Nothing changed
+            return
+
         err_msg = serviceapi.check_keyword(value, instance)
         if err_msg:
             ts = api.get_tool("translation_service")
