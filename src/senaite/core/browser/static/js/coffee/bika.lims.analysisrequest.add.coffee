@@ -72,6 +72,10 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr.category", @on_service_category_click
     # Save button clicked
     $("body").on "click", "[name='save_button']", @on_form_submit
+    # Save and copy button clicked
+    $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
+    # Cancel button clicked
+    $("body").on "click", "[name='cancel_button']", @on_cancel
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
@@ -1327,10 +1331,14 @@ class window.AnalysisRequestAdd
     ###
     console.debug "°°° on_ajax_start °°°"
 
-    # deactivate the button
-    button = $("input[name=save_button]")
-    button.prop "disabled": yes
-    button[0].value = _t("Loading ...")
+    # deactivate the save button
+    save_button = $("input[name=save_button]")
+    save_button.prop "disabled": yes
+    save_button[0].value = _t("Loading ...")
+
+    # deactivate the save and copy button
+    save_and_copy_button = $("input[name=save_and_copy_button]")
+    save_and_copy_button.prop "disabled": yes
 
 
   on_ajax_end: =>
@@ -1339,10 +1347,26 @@ class window.AnalysisRequestAdd
     ###
     console.debug "°°° on_ajax_end °°°"
 
-    # reactivate the button
-    button = $("input[name=save_button]")
-    button.prop "disabled": no
-    button[0].value = _t("Save")
+    # reactivate the save button
+    save_button = $("input[name=save_button]")
+    save_button.prop "disabled": no
+    save_button[0].value = _t("Save")
+
+    # reactivate the save and copy button
+    save_and_copy_button = $("input[name=save_and_copy_button]")
+    save_and_copy_button.prop "disabled": no
+
+
+  on_cancel: (event, callback) =>
+    console.debug "°°° on_cancel °°°"
+    event.preventDefault()
+    base_url = this.get_base_url()
+
+    @ajax_post_form("cancel").done (data) ->
+      if data["redirect_to"]
+        window.location.replace data["redirect_to"]
+      else
+        window.location.replace base_url
 
 
   # Note: Context of callback bound to this object
@@ -1354,6 +1378,15 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_form_submit °°°"
     event.preventDefault()
     me = this
+
+    # The clicked submit button is not part of the form data, therefore,
+    # we pass the name of the button through a hidden field
+    btn = event.currentTarget
+    action = "save"
+    if btn.name == "save_and_copy_button"
+        action = "save_and_copy"
+    action_input = document.querySelector("input[name='submit_action']")
+    action_input.value = action
 
     # get the right base url
     base_url = me.get_base_url()
