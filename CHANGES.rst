@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2127 Fix instrument expiry date display in listing view
 - #2123 Add Sample Form: Save and Copy Action
 - #2119 Fix linked client contact user can not see existing samples
 - #2118 Customized Quickinstaller Configlet
