@@ -283,7 +283,7 @@ def create_retest(ar):
     actions_pool.queue_pool()
 
     # Create the Retest (Analysis Request)
-    ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
+    ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample', 'Remarks']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
     copy_field_values(ar, retest, ignore_fieldnames=ignore)
 
