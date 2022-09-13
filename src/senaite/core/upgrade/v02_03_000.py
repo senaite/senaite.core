@@ -27,8 +27,10 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_senaite_setup
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -69,6 +71,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "plone.app.registry")
     setup.runImportStepFromProfile(profile, "controlpanel")
+
+    # Ensure the catalog mappings for Analyses and Samples is correct
+    # https://github.com/senaite/senaite.core/pull/2130
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
     # Add new setup folder to portal
     add_senaite_setup(portal)
