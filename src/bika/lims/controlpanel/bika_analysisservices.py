@@ -251,6 +251,9 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": False}),
             ("SortKey", {
                 "ajax": True,
+                "help": _(
+                    "Float value from 0.0 - 1000.0 indicating the sort order. "
+                    "Duplicate values are ordered alphabetically."),
                 "refetch": True,
                 "title": _("Sort Key"),
                 "sortable": False}),
