@@ -251,7 +251,7 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": False}),
             ("SortKey", {
                 "ajax": True,
-                "autosave": True,
+                "refetch": True,
                 "title": _("Sort Key"),
                 "sortable": False}),
         ))
