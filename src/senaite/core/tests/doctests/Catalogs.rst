@@ -1,0 +1,63 @@
+Catalogs
+--------
+
+SENAITE comes with several catalogs to index specific objects.
+For Archetype objects, the catalog mapping is done in `archetype_tool`.
+
+
+Running this test from the buildout directory::
+
+    bin/test test_textual_doctests -t Catalogs
+
+
+Test Setup
+..........
+
+Needed Imports::
+
+    >>> from bika.lims import api
+
+    >>> from senaite.core.catalog import ANALYSIS_CATALOG
+    >>> from senaite.core.catalog import AUDITLOG_CATALOG
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
+
+
+Variables::
+
+    >>> portal = self.portal
+    >>> request = self.request
+    >>> archetype_tool = api.get_tool("archetype_tool")
+
+
+Sample Catalog
+..............
+
+Samples should be registered in the sample catalog:
+
+    >>> catmap = archetype_tool.catalog_map.get("AnalysisRequest")
+
+    >>> len(catmap)
+    2
+
+    >>> SAMPLE_CATALOG in catmap
+    True
+
+    >>> AUDITLOG_CATALOG in catmap
+    True
+
+
+Analysis Catalog
+................
+
+Analyses should be registered in the analysis catalog:
+
+    >>> catmap = archetype_tool.catalog_map.get("Analysis")
+
+    >>> len(catmap)
+    2
+
+    >>> ANALYSIS_CATALOG in catmap
+    True
+
+    >>> AUDITLOG_CATALOG in catmap
+    True
