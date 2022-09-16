@@ -46,6 +46,7 @@ from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
+from DateTime.DateTime import DateTime
 
 
 @indexer(IBatch)
@@ -98,6 +99,7 @@ schema = BikaFolderSchema.copy() + Schema((
     DateTimeField(
         'BatchDate',
         required=False,
+        default_method=DateTime,
         widget=DateTimeWidget(
             label=_('Date'),
         ),
