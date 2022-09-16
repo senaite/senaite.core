@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2133 Filter Contact and CCContact by Client on first click
 - #2129 Fix Traceback when invalidating a Sample with Remarks
 - #2128 Fix referenceresults widget view mode
 - #2127 Fix instrument expiry date display in listing view
