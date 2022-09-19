@@ -768,6 +768,12 @@ class AnalysesView(ListingView):
 
         return items
 
+    def render_unit(self, unit, css_class="unit small text-secondary"):
+        """Render HTML element for unit
+        """
+        return "<span class='{css_class}'>{unit}</span>".format(
+            unit=unit, css_class=css_class)
+
     def _folder_item_category(self, analysis_brain, item):
         """Sets the category to the item passed in
 
