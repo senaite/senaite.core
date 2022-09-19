@@ -896,7 +896,7 @@ class AnalysesView(ListingView):
 
             else:
                 item["result_type"] = "numeric"
-                item["help"]["result"] = _(
+                item["help"]["Result"] = _(
                     "Enter the result either in decimal or scientific "
                     "notation, e.g. 0.00005 or 1e-5, 10000 or 1e5")
 
