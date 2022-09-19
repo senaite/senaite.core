@@ -862,6 +862,11 @@ class AnalysesView(ListingView):
         item["CaptureDate"] = capture_date_str
         item["result_captured"] = capture_date_str
 
+        # Add the unit after the result
+        unit = item.get("Unit")
+        if unit:
+            item["after"]["Result"] = self.render_unit(unit)
+
         # Get the analysis object
         obj = self.get_object(analysis_brain)
 
