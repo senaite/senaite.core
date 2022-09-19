@@ -962,10 +962,17 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
+            interim_unit = interim_field.get("unit", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
             interim_field["formatted_value"] = interim_formatted
             item[interim_keyword] = interim_field
             item["class"][interim_keyword] = "interim"
+
+            # render the unit after the interim field
+            if interim_unit:
+                formatted_interim_unit = format_supsub(interim_unit)
+                item["after"][interim_keyword] = self.render_unit(
+                    formatted_interim_unit)
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
