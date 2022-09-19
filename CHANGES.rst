@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2133 Filter Contact and CCContact by Client on first click
 - #2134 Render unit after result and interim fields
 - #2129 Fix Traceback when invalidating a Sample with Remarks
 - #2128 Fix referenceresults widget view mode
