@@ -533,14 +533,7 @@ def pre_install(portal_setup):
 
     :param portal_setup: SetupTool
     """
-    logger.info("SENAITE CORE pre-install handler [BEGIN]")
-
-    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
-    profile_id = PROFILE_ID
-    context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
-
-    logger.info("SENAITE CORE pre-install handler [DONE]")
+    logger.info("SENAITE CORE pre-install handler")
 
 
 def post_install(portal_setup):
@@ -555,7 +548,7 @@ def post_install(portal_setup):
     # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
     profile_id = PROFILE_ID
     context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
+    portal = context.getSite()
 
     # always apply the skins profile last to ensure our layers are first
     _run_import_step(portal, "skins", profile=profile_id)

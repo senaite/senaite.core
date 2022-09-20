@@ -28,7 +28,6 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
-from bika.lims.browser.viewlets import InstrumentQCFailuresViewlet  # noqa
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.utils import get_image

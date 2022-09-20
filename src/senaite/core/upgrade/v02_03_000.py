@@ -50,7 +50,7 @@ METADATA_TO_REMOVE = [
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
-    setup = portal.portal_setup  # noqa
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
@@ -253,7 +253,7 @@ def fix_unassigned_samples(portal):
         cat.catalog_object(obj, obj_url, idxs=indexes, update_metadata=1)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Fix unassigned samples ...")
 
@@ -290,7 +290,7 @@ def move_arreports_to_report_catalog(portal):
         obj.reindexObject()
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Move ARReports to SENAITE Report Catalog [DONE]")
 
@@ -317,7 +317,7 @@ def migrate_analysis_services_fields(portal):
         migrate_ldl_field_to_string(obj)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Migrate Analysis Services [DONE]")
 
@@ -347,7 +347,7 @@ def migrate_analyses_fields(portal):
         migrate_ldl_field_to_string(obj)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Migrate Analyses Fields [DONE]")
 

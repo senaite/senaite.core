@@ -230,7 +230,7 @@ def get_request_data(request=None):
 
     :param request: Request object
     :returns: Dictionary of extracted request header/form data
-    """ # noqa
+    """
 
     if request is None:
         # get the request
