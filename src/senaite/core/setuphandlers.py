@@ -137,7 +137,6 @@ CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
     ("ARReport", [REPORT_CATALOG, PORTAL_CATALOG]),
     ("ARTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("ARTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Analysis", [ANALYSIS_CATALOG]),
     ("AnalysisCategory", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("AnalysisProfile", [SETUP_CATALOG, PORTAL_CATALOG]),
