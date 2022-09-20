@@ -6,6 +6,9 @@ Changelog
 ------------------
 
 - #2130 Catalog mapping for Samples and Analyses
+- #2131 Allow to edit the analysis service sort keys in the services listing
+- #2133 Filter Contact and CCContact by Client on first click
+- #2134 Render unit after result and interim fields
 - #2129 Fix Traceback when invalidating a Sample with Remarks
 - #2128 Fix referenceresults widget view mode
 - #2127 Fix instrument expiry date display in listing view
