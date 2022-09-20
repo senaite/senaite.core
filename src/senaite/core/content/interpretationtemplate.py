@@ -152,39 +152,39 @@ class InterpretationTemplate(Item):
         return schema[fieldname].set
 
     @security.protected(permissions.View)
-    def getAnalysisTemplates(self):  # noqa CamelCase
+    def getAnalysisTemplates(self):
         """Return the ARTemplate objects assigned to this template, if any
         """
         accessor = self.accessor("analysis_templates")
         return accessor(self)
 
     @security.protected(permissions.View)
-    def getRawAnalysisTemplates(self):  # noqa CamelCase
+    def getRawAnalysisTemplates(self):
         """Return the UIDs of ARTemplate objects assigned, if any
         """
         accessor = self.accessor("analysis_templates", raw=True)
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setAnalysisTemplates(self, value):  # noqa CamelCase
+    def setAnalysisTemplates(self, value):
         mutator = self.mutator("analysis_templates")
         mutator(self.context, value)
 
     @security.protected(permissions.View)
-    def getSampleTypes(self):  # noqa CamelCase
+    def getSampleTypes(self):
         """Return the SampleType objects assigned to this template, if any
         """
         accessor = self.accessor("sample_types")
         return accessor(self)
 
     @security.protected(permissions.View)
-    def getRawSampleTypes(self):  # noqa CamelCase
+    def getRawSampleTypes(self):
         """Return the UIDs of the SampleType objects assigned, if any
         """
         accessor = self.accessor("sample_types", raw=True)
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setSampleTypes(self, value):  # noqa CamelCase
+    def setSampleTypes(self, value):
         mutator = self.mutator("sample_types")
         mutator(self.context, value)

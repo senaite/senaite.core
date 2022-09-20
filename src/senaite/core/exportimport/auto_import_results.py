@@ -126,7 +126,7 @@ class AutoImportResultsView(BrowserView):
             tb = None
             try:
                 importer.process()
-            except Exception:  # noqa
+            except Exception:
                 tb = traceback.format_exc()
 
             # extract importer logs

@@ -18,5 +18,5 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from remarks import IRemarksAddedEvent  # noqa
-from remarks import RemarksAddedEvent  # noqa
+from remarks import IRemarksAddedEvent
+from remarks import RemarksAddedEvent

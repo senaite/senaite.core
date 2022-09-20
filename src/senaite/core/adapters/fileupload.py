@@ -49,7 +49,7 @@ class BlobbableFileUpload(Base):
             with blob.open("w") as blobfile:
                 copyfileobj(self.context, blobfile)
         elif filename is not None:
-            assert isfile(filename), "invalid file for blob: {0}".format(filename)  # noqa
+            assert isfile(filename), "invalid file for blob: {0}".format(filename)
             blob.consumeFile(filename)
         else:  # the cgi module only creates a tempfile for 1000+ bytes
             self.context.seek(0)  # just to be sure we copy everything...

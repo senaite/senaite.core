@@ -6,7 +6,7 @@ from App.class_init import InitializeClass
 from bika.lims.catalog.base import BaseCatalog
 from bika.lims.interfaces import IBikaAnalysisCatalog
 from zope.interface import implements
-from senaite.core.catalog import ANALYSIS_CATALOG as CATALOG_ANALYSIS_LISTING  # noqa
+from senaite.core.catalog import ANALYSIS_CATALOG as CATALOG_ANALYSIS_LISTING
 
 
 class BikaAnalysisCatalog(BaseCatalog):

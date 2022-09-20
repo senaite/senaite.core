@@ -249,7 +249,7 @@ class RemarksField(ObjectField):
 
         # split legacy remarks on the complete delimiter, e.g.:
         # === Tue, 28 Jan 2020 06:53:58 +0100 (admin)\nThis is a Test
-        lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)  # noqa
+        lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)
 
         record = None
         records = []

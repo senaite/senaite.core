@@ -25,8 +25,8 @@ from zope.i18n.locales import locales
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
-from bika.lims.utils import t  # noqa
-from bika.lims.permissions import *  # noqa
+from bika.lims.utils import t
+from bika.lims.permissions import *
 
 
 PROJECTNAME = "bika.lims"
