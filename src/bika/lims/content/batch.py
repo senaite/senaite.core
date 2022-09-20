@@ -32,6 +32,7 @@ from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
+from DateTime.DateTime import DateTime
 from plone.app.folder.folder import ATFolder
 from plone.indexer import indexer
 from Products.Archetypes.public import DateTimeField
@@ -46,7 +47,6 @@ from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
-from DateTime.DateTime import DateTime
 
 
 @indexer(IBatch)
