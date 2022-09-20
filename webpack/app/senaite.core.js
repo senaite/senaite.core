@@ -81,6 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // https://github.com/senaite/senaite.app.listing/pull/87
   document.body.addEventListener("listing:submit", (event) => {
     let menu = document.getElementById("plone-contentmenu-workflow");
+    // return immediately if no workflow menu is present
+    if (menu === null ) {
+      return false;
+    }
     let base_url = location.href.split("#")[0].split("?")[0];
     const request = new Request(base_url + "/menu/workflow_menu");
     fetch(request)
