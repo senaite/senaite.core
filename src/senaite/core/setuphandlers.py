@@ -35,6 +35,7 @@ from senaite.core.api.catalog import get_indexes
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
@@ -145,22 +146,38 @@ CATALOG_MAPPINGS = (
     ("AnalysisSpec", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Attachment", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("AttachmentType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG, PORTAL_CATALOG]),
     ("Batch", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("BatchLabel", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Calculation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Client", [PORTAL_CATALOG]),
+    ("Contact", [PORTAL_CATALOG]),
     ("Container", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("ContainerType", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Department", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("DuplicateAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
     ("Instrument", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentCalibration", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentCertification", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentMaintenanceTask", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentScheduledTask", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("InstrumentType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentValidation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("LabContact", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Manufacturer", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Method", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Multifile", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Preservation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Pricelist", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("ReferenceAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
     ("ReferenceDefinition", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("ReferenceSample", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("RejectAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
+    ("Report", [REPORT_CATALOG, PORTAL_CATALOG]),
     ("SampleCondition", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SampleMatrix", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SamplePoint", [SETUP_CATALOG, PORTAL_CATALOG]),
@@ -169,6 +186,8 @@ CATALOG_MAPPINGS = (
     ("StorageLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SubGroup", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Supplier", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SupplierContact", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Worksheet", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("WorksheetTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
 )
 
