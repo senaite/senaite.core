@@ -90,7 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(request)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          console.warn("Menu provider view not accessible");
+          return;
         }
         return response.text();
       })
