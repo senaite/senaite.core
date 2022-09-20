@@ -40,6 +40,7 @@ from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
@@ -187,7 +188,7 @@ CATALOG_MAPPINGS = (
     ("SubGroup", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Supplier", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SupplierContact", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Worksheet", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Worksheet", [WORKSHEET_CATALOG, PORTAL_CATALOG]),
     ("WorksheetTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
 )
 
