@@ -76,4 +76,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let controller = ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
     window.widgets[id] = controller;
   }
+
+  // Workflow Menu Update for Ajax Transitions
+  // https://github.com/senaite/senaite.app.listing/pull/87
+  document.body.addEventListener("listing:submit", (event) => {
+    let menu = document.getElementById("plone-contentmenu-workflow");
+    let base_url = location.href.split("#")[0].split("?")[0];
+    const request = new Request(base_url + "/menu/workflow_menu");
+    fetch(request)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then((html) => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+        menu.replaceWith(doc.body.firstChild);
+      })
+  });
+
 });
