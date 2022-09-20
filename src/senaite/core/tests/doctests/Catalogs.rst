@@ -20,6 +20,7 @@ Needed Imports::
     >>> from senaite.core.catalog import ANALYSIS_CATALOG
     >>> from senaite.core.catalog import AUDITLOG_CATALOG
     >>> from senaite.core.catalog import SAMPLE_CATALOG
+    >>> from senaite.core.setuphandlers import CATALOG_MAPPINGS
 
 
 Variables::
@@ -27,6 +28,22 @@ Variables::
     >>> portal = self.portal
     >>> request = self.request
     >>> archetype_tool = api.get_tool("archetype_tool")
+
+
+Catalog Mappings
+................
+
+Catalogs should be mapped according to the catalog mappings:
+
+    >>> passed = {}
+
+    >>> for mapping in CATALOG_MAPPINGS:
+    ...     portal_type, catalogs = mapping
+    ...     mapped = archetype_tool.catalog_map.get(portal_type)
+    ...     passed[portal_type] = set(catalogs).issubset(mapped)
+
+    >>> all(passed.values())
+    True
 
 
 Sample Catalog
