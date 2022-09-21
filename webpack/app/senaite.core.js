@@ -94,8 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const request = new Request(base_url + "/menu/workflow_menu");
     fetch(request)
       .then((response) => {
-        // we might get a 404 e.g. for WS /manage_results, but this is actually
-        // desired. Otherwise, we would update the WF menu of the WS ...
+        // we might get a 404 when the current page URL ends with a view, e.g.
+        // `WS-ID/manage_results` or `CLIENT-ID/multi_results` etc.
         if (response.ok) {
           return response.text();
         }
