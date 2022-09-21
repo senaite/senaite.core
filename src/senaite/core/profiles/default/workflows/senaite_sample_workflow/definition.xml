@@ -518,6 +518,7 @@
     <!-- PLONE PERMISSIONS -->
     <permission-map name="Delete objects" acquired="False">
       <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
