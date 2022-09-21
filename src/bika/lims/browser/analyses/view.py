@@ -102,6 +102,7 @@ class AnalysesView(ListingView):
         self.dmk = context.bika_setup.getResultsDecimalMark()
         self.scinot = context.bika_setup.getScientificNotationResults()
         self.categories = []
+        self.expand_all_categories = True
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -241,7 +242,6 @@ class AnalysesView(ListingView):
         self.append_partition_filters()
         if self.analysis_categories_enabled():
             self.show_categories = True
-            self.expand_all_categories = True
 
     def before_render(self):
         """Before render hook
