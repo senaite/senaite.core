@@ -89,16 +89,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const request = new Request(base_url + "/menu/workflow_menu");
     fetch(request)
       .then((response) => {
-        if (!response.ok) {
-          console.warn("Menu provider view not accessible");
-          return;
+        // we might get a 404 e.g. for WS /manage_results, but this is actually
+        // desired. Otherwise, we would update the WF menu of the WS ...
+        if (response.ok) {
+          return response.text();
         }
-        return response.text();
       })
       .then((html) => {
+        if (!html) {
+          return;
+        }
         let parser = new DOMParser();
         let doc = parser.parseFromString(html, "text/html");
-        menu.replaceWith(doc.body.firstChild);
+        let el = doc.body.firstChild;
+        menu.replaceWith(el);
       })
   });
 
