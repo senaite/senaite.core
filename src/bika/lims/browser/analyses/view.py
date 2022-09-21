@@ -239,6 +239,9 @@ class AnalysesView(ListingView):
         super(AnalysesView, self).update()
         self.load_analysis_categories()
         self.append_partition_filters()
+        if self.analyses_categories_enabled():
+            self.show_categories = True
+            self.expand_all_categories = True
 
     def before_render(self):
         """Before render hook
@@ -268,6 +271,13 @@ class AnalysesView(ListingView):
         """Check if analysis remarks are enabled
         """
         return self.context.bika_setup.getEnableAnalysisRemarks()
+
+    @viewcache.memoize
+    def analyses_categories_enabled(self):
+        """Check if analyses should be grouped by category
+        """
+        setup = api.get_senaite_setup()
+        return setup.getCategorizeSampleAnalyses()
 
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
