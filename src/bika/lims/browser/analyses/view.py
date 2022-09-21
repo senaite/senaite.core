@@ -768,9 +768,11 @@ class AnalysesView(ListingView):
 
         return items
 
-    def render_unit(self, unit, css_class="unit small text-secondary"):
+    def render_unit(self, unit, css_class=None):
         """Render HTML element for unit
         """
+        if css_class is None:
+            css_class = "unit d-inline-block py-2 small text-secondary"
         return "<span class='{css_class}'>{unit}</span>".format(
             unit=unit, css_class=css_class)
 
