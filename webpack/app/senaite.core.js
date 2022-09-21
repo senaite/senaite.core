@@ -85,7 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (menu === null ) {
       return false;
     }
-    let base_url = location.href.split("#")[0].split("?")[0];
+    // get the base url from the `data-base-url` attribute
+    let base_url = document.body.dataset.baseUrl;
+    if (base_url === undefined) {
+      // fallback to the current location URL
+      base_url = location.href.split("#")[0].split("?")[0];
+    }
     const request = new Request(base_url + "/menu/workflow_menu");
     fetch(request)
       .then((response) => {
