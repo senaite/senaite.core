@@ -239,7 +239,7 @@ class AnalysesView(ListingView):
         super(AnalysesView, self).update()
         self.load_analysis_categories()
         self.append_partition_filters()
-        if self.analyses_categories_enabled():
+        if self.analysis_categories_enabled():
             self.show_categories = True
             self.expand_all_categories = True
 
@@ -273,7 +273,7 @@ class AnalysesView(ListingView):
         return self.context.bika_setup.getEnableAnalysisRemarks()
 
     @viewcache.memoize
-    def analyses_categories_enabled(self):
+    def analysis_categories_enabled(self):
         """Check if analyses should be grouped by category
         """
         setup = api.get_senaite_setup()
