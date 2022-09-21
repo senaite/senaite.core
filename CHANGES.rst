@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2139 Fix LabClerk cannot create partitions from received samples
 - #2130 Catalog mapping for Samples and Analyses
 - #2131 Allow to edit the analysis service sort keys in the services listing
 - #2133 Filter Contact and CCContact by Client on first click
