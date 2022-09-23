@@ -3,6 +3,16 @@
            xmlns:five="http://namespaces.zope.org/five"
            i18n_domain="plone">
 
+  <!-- Menu Provider -->
+  <browser:page
+      for="*"
+      name="menu"
+      class=".menu_provider.MenuProviderView"
+      permission="zope2.View"
+      allowed_attributes="workflow_menu"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- A content provider showing the menu -->
 
   <adapter
