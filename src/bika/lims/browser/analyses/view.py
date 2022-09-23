@@ -276,6 +276,9 @@ class AnalysesView(ListingView):
     def analysis_categories_enabled(self):
         """Check if analyses should be grouped by category
         """
+        # setting applies only for samples
+        if not IAnalysisRequest.providedBy(self.context):
+            return False
         setup = api.get_senaite_setup()
         return setup.getCategorizeSampleAnalyses()
 
