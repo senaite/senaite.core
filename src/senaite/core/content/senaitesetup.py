@@ -88,6 +88,16 @@ class ISetupSchema(model.Schema):
         ),
     )
 
+    categorize_sample_analyses = schema.Bool(
+        title=_("title_senaitesetup_categorizesampleanalyses",
+                default=u"Categorize sample analyses"),
+        description=_(
+            "description_senaitesetup_categorizesampleanalyses",
+            default=u"Group analyses by category for samples"
+        ),
+        default=False,
+    )
+
     ###
     # Fieldsets
     ###
@@ -96,6 +106,7 @@ class ISetupSchema(model.Schema):
         label=_("label_senaitesetup_fieldset_analyses", default=u"Analyses"),
         fields=[
             "immediate_results_entry",
+            "categorize_sample_analyses",
         ]
     )
 
@@ -202,4 +213,18 @@ class Setup(Container):
         """Enable/Disable global Auditlogging
         """
         mutator = self.mutator("immediate_results_entry")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getCategorizeSampleAnalyses(self):
+        """Returns if analyses should be grouped by category for samples
+        """
+        accessor = self.accessor("categorize_sample_analyses")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setCategorizeSampleAnalyses(self, value):
+        """Enable/Disable grouping of analyses by category for samples
+        """
+        mutator = self.mutator("categorize_sample_analyses")
         return mutator(self, value)
