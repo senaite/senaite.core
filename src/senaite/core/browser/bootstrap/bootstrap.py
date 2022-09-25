@@ -151,9 +151,12 @@ class BootstrapView(BrowserView):
         data = {
             "data-base-url": self.context.absolute_url(),
             "data-view-url": self.context_state.view_url(),
+            "data-view-name": self.context_state.view_template_id(),
+            "data-review-state": self.context_state.workflow_state(),
             "data-portal-url": portal_url,
             "data-i18ncatalogurl": portal_url + "/plonejsi18n",
             "data-auto-logoff": setup.getAutoLogOff(),
+            "data-portal-type": api.get_portal_type(self.context),
         }
         return data
 
