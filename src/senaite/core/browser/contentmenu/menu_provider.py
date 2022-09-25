@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.decorators import readonly_transaction
 from zope.component import getMultiAdapter
 from zope.interface import implementer
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from .interfaces import IMenuProvider
 
@@ -26,6 +27,7 @@ class MenuProviderView(BrowserView):
     def available(self):
         return self.contentmenu.available()
 
+    @readonly_transaction
     def workflow_menu(self):
         menu_id = "content_status_history"
         menu = self.contentmenu.menu()

@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2140 Allow to enable/disable analysis categories for samples
 - #2137 Dynamic Workflow Menu
 - #2139 Fix LabClerk cannot create partitions from received samples
 - #2130 Catalog mapping for Samples and Analyses

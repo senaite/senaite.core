@@ -102,6 +102,7 @@ class AnalysesView(ListingView):
         self.dmk = context.bika_setup.getResultsDecimalMark()
         self.scinot = context.bika_setup.getScientificNotationResults()
         self.categories = []
+        self.expand_all_categories = True
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -239,6 +240,8 @@ class AnalysesView(ListingView):
         super(AnalysesView, self).update()
         self.load_analysis_categories()
         self.append_partition_filters()
+        if self.analysis_categories_enabled():
+            self.show_categories = True
 
     def before_render(self):
         """Before render hook
@@ -268,6 +271,16 @@ class AnalysesView(ListingView):
         """Check if analysis remarks are enabled
         """
         return self.context.bika_setup.getEnableAnalysisRemarks()
+
+    @viewcache.memoize
+    def analysis_categories_enabled(self):
+        """Check if analyses should be grouped by category
+        """
+        # setting applies only for samples
+        if not IAnalysisRequest.providedBy(self.context):
+            return False
+        setup = api.get_senaite_setup()
+        return setup.getCategorizeSampleAnalyses()
 
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
