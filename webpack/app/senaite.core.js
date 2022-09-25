@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
     // get the base url from the `data-base-url` attribute
+    // -> see IBootstrapView
     let base_url = document.body.dataset.baseUrl;
     if (base_url === undefined) {
       // fallback to the current location URL
@@ -109,6 +110,32 @@ document.addEventListener("DOMContentLoaded", () => {
         let el = doc.body.firstChild;
         menu.replaceWith(el);
       })
+  });
+
+  // Sample view reload when all analyses are in the same state, e.g.
+  // all in to_be_verified or verified state
+  // This is needed to update fields according to the state
+  document.body.addEventListener("listing:submit", (event) => {
+    // get the portal_type from the `data-portal-type` attribute
+    // -> see IBootstrapView
+    let portal_type = document.body.dataset.portalType;
+    if (["AnalysisRequest", "Worksheet"].indexOf(portal_type) == -1) {
+      return;
+    }
+    // we are on a sample or worksheet
+    let folderitems = event.detail.folderitems;
+    let review_states = new Set();
+    for (let item of folderitems) {
+      let rs = item.review_state;
+      if (["retracted", "rejected"].indexOf(rs) > -1) {
+        continue;
+      }
+      review_states.add(rs);
+    }
+    console.debug("Review states of folderitems: ", review_states);
+    if (review_states.size === 1) {
+      location.reload();
+    }
   });
 
 });
