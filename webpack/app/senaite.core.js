@@ -112,12 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   });
 
-  // Sample view reload when all analyses are in the same state, e.g.
-  // all in to_be_verified or verified state
-  // This is needed to update fields according to the state
+  // Reload the whole view if the status of the view's context has changed
+  // due to the transition submission of some items from the listing
   document.body.addEventListener("listing:submit", (event) => {
     // get the old workflow state of the view context
     let old_workflow_state = document.body.dataset.reviewState;
+
     // get the new workflow state of the view context
     // https://github.com/senaite/senaite.app.listing/pull/92
     let data = event.detail.data;
