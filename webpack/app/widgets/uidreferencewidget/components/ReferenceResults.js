@@ -205,11 +205,13 @@ class ReferenceResults extends React.Component {
 
       // crop before the current page
       if (page == first_page && crop_before) {
+        // link to first page
         pages.push(
           <li>
             <button className="page-link" page={1} onClick={this.on_page}>1</button>
           </li>
         );
+        // placeholder
         pages.push(
           <li>
             <div className="page-link">...</div>
@@ -228,11 +230,13 @@ class ReferenceResults extends React.Component {
 
       // crop after the current page
       if (page === last_page && crop_after) {
+        // placeholder
         pages.push(
           <li>
             <div className="page-link">...</div>
           </li>
         );
+        // link to last page
         pages.push(
           <li>
             <button className="page-link" page={total} onClick={this.on_page}>
