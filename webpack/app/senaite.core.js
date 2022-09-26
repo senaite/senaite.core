@@ -125,14 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // get the old workflow state of the view context
-    let review_state = document.body.dataset.reviewState;
-
+    let old_workflow_state = document.body.dataset.reviewState;
     // get the new workflow state of the view context
+    // https://github.com/senaite/senaite.app.listing/pull/92
     let data = event.detail.data;
-    let view_context_state = data.view_context_state;
+    let new_workflow_state = data.view_context_state;
 
     // reload the entire page if workflow state of the view context changed
-    if (view_context_state != review_state) {
+    if (old_workflow_state != new_workflow_state) {
       location.reload()
     }
   });
