@@ -16,7 +16,7 @@ def readonly_transaction(func):
     @wraps(func)
     def decorator(self, *args, **kwargs):
         logger.info("*** READONLY TRANSACTION: '{}.{}' ***".
-                    format(self.__class__.__name__, self.__name__))
+                    format(self.__class__.__name__, func.__name__))
         tx = transaction.get()
         tx.doom()
         return func(self, *args, **kwargs)
