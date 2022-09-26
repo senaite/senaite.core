@@ -116,14 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // all in to_be_verified or verified state
   // This is needed to update fields according to the state
   document.body.addEventListener("listing:submit", (event) => {
-    // get the portal_type from the `data-portal-type` attribute
-    // -> see IBootstrapView
-    let portal_type = document.body.dataset.portalType;
-    // only analyses states propagate up to sample/worksheet
-    if (["AnalysisRequest", "Worksheet"].indexOf(portal_type) == -1) {
-      return;
-    }
-
     // get the old workflow state of the view context
     let old_workflow_state = document.body.dataset.reviewState;
     // get the new workflow state of the view context
