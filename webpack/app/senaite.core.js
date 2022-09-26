@@ -119,22 +119,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // get the portal_type from the `data-portal-type` attribute
     // -> see IBootstrapView
     let portal_type = document.body.dataset.portalType;
+    // only analyses states propagate up to sample/worksheet
     if (["AnalysisRequest", "Worksheet"].indexOf(portal_type) == -1) {
       return;
     }
-    // we are on a sample or worksheet
-    let folderitems = event.detail.folderitems;
-    let review_states = new Set();
-    for (let item of folderitems) {
-      let rs = item.review_state;
-      if (["retracted", "rejected"].indexOf(rs) > -1) {
-        continue;
-      }
-      review_states.add(rs);
-    }
-    console.debug("Review states of folderitems: ", review_states);
-    if (review_states.size === 1) {
-      location.reload();
+
+    // get the old workflow state of the view context
+    let review_state = document.body.dataset.reviewState;
+
+    // get the new workflow state of the view context
+    let data = event.detail.data;
+    let view_context_state = data.view_context_state;
+
+    // reload the entire page if workflow state of the view context changed
+    if (view_context_state != review_state) {
+      location.reload()
     }
   });
 
