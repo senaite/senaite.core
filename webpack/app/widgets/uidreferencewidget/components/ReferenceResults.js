@@ -221,6 +221,20 @@ class ReferenceResults extends React.Component {
           </button>
         </li>
       );
+
+      // crop after the current page
+      if (page === last_page && crop_after) {
+        pages.push(<li><div className="page-link">...</div></li>);
+        pages.push(
+          <li>
+            <button className="page-link" page={total} onClick={this.on_page}>
+              {total}
+            </button>
+          </li>
+        );
+        crop_after = false;
+      }
+
     }
     return pages;
   }
