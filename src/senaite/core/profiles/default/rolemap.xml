@@ -17,7 +17,6 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
       <role name="Sampler"/>
       <role name="Verifier"/>
     </permission>
