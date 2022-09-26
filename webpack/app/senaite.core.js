@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
     // get the base url from the `data-base-url` attribute
+    // -> see IBootstrapView
     let base_url = document.body.dataset.baseUrl;
     if (base_url === undefined) {
       // fallback to the current location URL
@@ -109,6 +110,23 @@ document.addEventListener("DOMContentLoaded", () => {
         let el = doc.body.firstChild;
         menu.replaceWith(el);
       })
+  });
+
+  // Reload the whole view if the status of the view's context has changed
+  // due to the transition submission of some items from the listing
+  document.body.addEventListener("listing:submit", (event) => {
+    // get the old workflow state of the view context
+    let old_workflow_state = document.body.dataset.reviewState;
+
+    // get the new workflow state of the view context
+    // https://github.com/senaite/senaite.app.listing/pull/92
+    let data = event.detail.data;
+    let new_workflow_state = data.view_context_state;
+
+    // reload the entire page if workflow state of the view context changed
+    if (old_workflow_state != new_workflow_state) {
+      location.reload()
+    }
   });
 
 });
