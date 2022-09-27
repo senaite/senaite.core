@@ -1532,13 +1532,13 @@ class AnalysesView(ListingView):
         # If method selection list is required, the instrument selection too
         if self.is_method_required(analysis):
             return True
-        
+
         # Always return true if the analysis has an instrument assigned
-        if self.get_instrument(analysis):
+        analysis = self.get_object(analysis)
+        if analysis.getRawInstrument():
             return True
 
-        obj = self.get_object(analysis)
-        instruments = obj.getAllowedInstruments()
+        instruments = analysis.getRawAllowedInstruments()
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
         # selection list are always a subset of the allowed instruments when
