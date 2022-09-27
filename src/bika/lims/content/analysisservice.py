@@ -315,17 +315,14 @@ class AnalysisService(AbstractBaseAnalysis):
 
         :returns: List of method objects
         """
-        field = self.getField("Methods")
-        methods = field.get(self)
-        return methods
+        return self.getField("Methods").get(self)
 
     def getRawMethods(self):
         """Returns the assigned method UIDs
 
         :returns: List of method UIDs
         """
-        methods = self.getMethods()
-        return map(api.get_uid, methods)
+        return self.getField("Methods").getRaw(self)
 
     def getMethod(self):
         """Get the default method

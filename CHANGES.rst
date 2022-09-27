@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2150 Performance: prioritize raw getter for AllowedMethods field
 - #2148 Performance: prioritize raw getter for AllowedInstruments field
 - #2147 Remove stale function workflow.getReviewHistory
 - #2146 Fix "No object found for UID: <laboratory_uid>" in report preview
