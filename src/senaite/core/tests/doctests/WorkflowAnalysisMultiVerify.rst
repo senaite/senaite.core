@@ -15,7 +15,6 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
-    >>> from bika.lims.workflow import getReviewHistory
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
@@ -216,7 +215,7 @@ The status of the analysis and others is still `to_be_verified`:
 
 And my user id is recorded as such:
 
-    >>> action = getReviewHistory(analysis)[0]
+    >>> action = api.get_review_history(analysis)[0]
     >>> action['actor'] == TEST_USER_ID
     True
 

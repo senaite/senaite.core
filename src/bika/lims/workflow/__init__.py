@@ -249,20 +249,6 @@ def getAllowedTransitions(instance):
     return [trans['id'] for trans in transitions]
 
 
-def get_review_history_statuses(instance, reverse=False):
-    """Returns a list with the statuses of the instance from the review_history
-    """
-    review_history = getReviewHistory(instance, reverse=reverse)
-    return map(lambda event: event["review_state"], review_history)
-
-
-def getReviewHistory(instance, reverse=True):
-    """Returns the review history for the instance
-    :returns: the list of historic events as dicts
-    """
-    return api.get_review_history(instance, rev=reverse)
-
-
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
@@ -285,7 +271,7 @@ def getTransitionActor(obj, action_id):
     :return: the username of the user that performed the transition passed-in
     :type: string
     """
-    review_history = getReviewHistory(obj)
+    review_history = api.get_review_history(obj)
     for event in review_history:
         if event.get('action') == action_id:
             return event.get('actor')
@@ -297,7 +283,7 @@ def getTransitionDate(obj, action_id, return_as_datetime=False):
     Returns date of action for object. Sometimes we need this date in Datetime
     format and that's why added return_as_datetime param.
     """
-    review_history = getReviewHistory(obj)
+    review_history = api.get_review_history(obj)
     for event in review_history:
         if event.get('action') == action_id:
             evtime = event.get('time')
