@@ -1534,10 +1534,10 @@ class AnalysesView(ListingView):
             return True
         
         # Always return true if the analysis has an instrument assigned
-        if self.get_instrument(analysis):
+        analysis = self.get_object(analysis)
+        if analysis.getRawInstrument():
             return True
 
-        obj = self.get_object(analysis)
         instruments = analysis.getRawAllowedInstruments() or []
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
