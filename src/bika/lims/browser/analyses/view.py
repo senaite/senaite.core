@@ -478,7 +478,7 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis)
         # get the allowed interfaces from the analysis service
-        instruments = obj.getRawAllowedInstruments()
+        instruments = obj.getAllowedInstruments()
         # if no method is passed, get the assigned method of the analyis
         if method is None:
             method = obj.getMethod()
@@ -486,7 +486,7 @@ class AnalysesView(ListingView):
         # check if the analysis has a method
         if method:
             # supported instrument from the method
-            method_instruments = method.getRawInstruments()
+            method_instruments = method.getInstruments()
             # allow only method instruments that are set in service
             instruments = list(
                 set(instruments).intersection(method_instruments))
