@@ -478,7 +478,7 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis)
         # get the allowed interfaces from the analysis service
-        instruments = obj.getAllowedInstruments()
+        instruments = obj.getRawAllowedInstruments()
         # if no method is passed, get the assigned method of the analyis
         if method is None:
             method = obj.getMethod()
@@ -1538,7 +1538,7 @@ class AnalysesView(ListingView):
             return True
 
         obj = self.get_object(analysis)
-        instruments = obj.getAllowedInstruments()
+        instruments = analysis.getRawAllowedInstruments() or []
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
         # selection list are always a subset of the allowed instruments when

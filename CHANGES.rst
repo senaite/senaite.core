@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2148 Performance: prioritize raw getter for AllowedInstruments field
 - #2145 Crop page navigation for DX reference widget
 - #2143 Fix Traceback when using readonly decorator for objects w/o __name__
 - #2140 Allow to enable/disable analysis categories for samples
