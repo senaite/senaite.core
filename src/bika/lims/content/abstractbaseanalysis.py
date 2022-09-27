@@ -963,11 +963,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Instrument UID
         """
-        field = self.getField("Instrument")
-        instrument = field.getRaw(self)
-        if not instrument:
-            return None
-        return instrument
+        return self.getField("Instrument").getRaw(self)
 
     @security.public
     def getInstrumentUID(self):
