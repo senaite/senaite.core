@@ -214,7 +214,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         verifiers = list()
         actions = ["verify", "multi_verify"]
-        for event in wf.getReviewHistory(self):
+        for event in api.get_review_history(self):
             if event['action'] in actions:
                 verifiers.append(event['actor'])
         sorted(verifiers, reverse=True)
