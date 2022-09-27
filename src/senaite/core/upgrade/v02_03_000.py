@@ -32,6 +32,7 @@ from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_senaite_setup
 from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
 from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_catalogs_order
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -76,8 +77,12 @@ def upgrade(tool):
     # Ensure the catalog mappings for Analyses and Samples is correct
     # https://github.com/senaite/senaite.core/pull/2130
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
+
     # remap auditlog catalog
     setup_auditlog_catalog_mappings(portal)
+
+    # ensure the catalogs assigned to types are sorted correctly
+    setup_catalogs_order(portal)
 
     # Add new setup folder to portal
     add_senaite_setup(portal)
@@ -91,6 +96,7 @@ def upgrade(tool):
     move_arreports_to_report_catalog(portal)
     migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
+    reindex_laboratory(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -420,3 +426,12 @@ def fixed_point_value_to_string(value, precision):
     str_value = template % (sign, front, fra)
     # strip off trailing zeros and possible dot
     return str_value.rstrip("0").rstrip(".")
+
+
+def reindex_laboratory(portal):
+    """Forces the reindex of laboratory content type
+    """
+    logger.info("Reindexing laboratory content type ...")
+    setup = api.get_setup()
+    setup.laboratory.reindexObject()
+    logger.info("Reindexing laboratory content type [DONE]")
