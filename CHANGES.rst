@@ -6,6 +6,8 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2147 Remove stale function workflow.getReviewHistory
+- #2146 Fix "No object found for UID: <laboratory_uid>" in report preview
 - #2145 Crop page navigation for DX reference widget
 - #2143 Fix Traceback when using readonly decorator for objects w/o __name__
 - #2140 Allow to enable/disable analysis categories for samples
