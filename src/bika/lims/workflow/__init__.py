@@ -32,7 +32,7 @@ from bika.lims.decorators import synchronized
 from bika.lims.interfaces import IActionHandlerPool, IGuardAdapter
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
-from bika.lims.utils import changeWorkflowState  # noqa
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName

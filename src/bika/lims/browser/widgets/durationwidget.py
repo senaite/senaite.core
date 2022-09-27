@@ -18,4 +18,4 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.browser.widgets.durationwidget import DurationWidget  # noqa
+from senaite.core.browser.widgets.durationwidget import DurationWidget

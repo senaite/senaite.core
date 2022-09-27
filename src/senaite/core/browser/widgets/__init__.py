@@ -18,7 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .referencewidget import ReferenceWidget  # noqa
-from .datetimewidget import DateTimeWidget  # noqa
-from .recordswidget import RecordsWidget  # noqa
-from .durationwidget import DurationWidget  # noqa
+from .referencewidget import ReferenceWidget
+from .datetimewidget import DateTimeWidget
+from .recordswidget import RecordsWidget
+from .durationwidget import DurationWidget

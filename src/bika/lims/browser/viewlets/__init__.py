@@ -18,5 +18,5 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from analysisrequest import *  # noqa
-from instruments import InstrumentQCFailuresViewlet  # noqa
+from analysisrequest import *
+from instruments import InstrumentQCFailuresViewlet

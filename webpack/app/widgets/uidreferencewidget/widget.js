@@ -24,6 +24,7 @@ class UIDReferenceWidgetController extends React.Component {
       prev_url: null,  // previous page API URL (coming from `senaite.jsonapi`)
       b_start: 1,  // batch start for pagination (see `senaite.jsonapi.batch`)
       focused: 0,  // current result that has the focus
+      padding: 3,  // page padding
     }
 
     // Root input HTML element
@@ -45,11 +46,15 @@ class UIDReferenceWidgetController extends React.Component {
       "multi_valued",
       "disabled",
       "readonly",
+      "padding",
     ]
 
     // Query data keys and set state with parsed JSON value
     for (let key of data_keys) {
       let value = el.dataset[key];
+      if (value === undefined) {
+        continue;
+      }
       this.state[key] = this.parse_json(value);
     }
 
@@ -403,6 +408,7 @@ class UIDReferenceWidgetController extends React.Component {
             count={this.state.count}
             page={this.state.page}
             pages={this.state.pages}
+            padding={this.state.padding}
             next_url={this.state.next_url}
             prev_url={this.state.prev_url}
             on_select={this.select}

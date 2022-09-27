@@ -103,6 +103,7 @@ class AnalysesView(ListingView):
         self.dmk = context.bika_setup.getResultsDecimalMark()
         self.scinot = context.bika_setup.getScientificNotationResults()
         self.categories = []
+        self.expand_all_categories = True
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -240,6 +241,8 @@ class AnalysesView(ListingView):
         super(AnalysesView, self).update()
         self.load_analysis_categories()
         self.append_partition_filters()
+        if self.analysis_categories_enabled():
+            self.show_categories = True
 
     def before_render(self):
         """Before render hook
@@ -269,6 +272,16 @@ class AnalysesView(ListingView):
         """Check if analysis remarks are enabled
         """
         return self.context.bika_setup.getEnableAnalysisRemarks()
+
+    @viewcache.memoize
+    def analysis_categories_enabled(self):
+        """Check if analyses should be grouped by category
+        """
+        # setting applies only for samples
+        if not IAnalysisRequest.providedBy(self.context):
+            return False
+        setup = api.get_senaite_setup()
+        return setup.getCategorizeSampleAnalyses()
 
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
@@ -778,6 +791,14 @@ class AnalysesView(ListingView):
 
         return items
 
+    def render_unit(self, unit, css_class=None):
+        """Render HTML element for unit
+        """
+        if css_class is None:
+            css_class = "unit d-inline-block py-2 small text-secondary"
+        return "<span class='{css_class}'>{unit}</span>".format(
+            unit=unit, css_class=css_class)
+
     def _folder_item_category(self, analysis_brain, item):
         """Sets the category to the item passed in
 
@@ -872,6 +893,11 @@ class AnalysesView(ListingView):
         item["CaptureDate"] = capture_date_str
         item["result_captured"] = capture_date_str
 
+        # Add the unit after the result
+        unit = item.get("Unit")
+        if unit:
+            item["after"]["Result"] = self.render_unit(unit)
+
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
             # Allow to set Remarks
@@ -898,7 +924,7 @@ class AnalysesView(ListingView):
 
             else:
                 item["result_type"] = "numeric"
-                item["help"]["result"] = _(
+                item["help"]["Result"] = _(
                     "Enter the result either in decimal or scientific "
                     "notation, e.g. 0.00005 or 1e-5, 10000 or 1e5")
 
@@ -964,10 +990,17 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
+            interim_unit = interim_field.get("unit", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
             interim_field["formatted_value"] = interim_formatted
             item[interim_keyword] = interim_field
             item["class"][interim_keyword] = "interim"
+
+            # render the unit after the interim field
+            if interim_unit:
+                formatted_interim_unit = format_supsub(interim_unit)
+                item["after"][interim_keyword] = self.render_unit(
+                    formatted_interim_unit)
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
@@ -1525,11 +1558,10 @@ class AnalysesView(ListingView):
         displayed for selection.
         :param analysis: Brain or object that represents an analysis
         """
-
         # If method selection list is required, the instrument selection too
         if self.is_method_required(analysis):
             return True
-        
+
         # Always return true if the analysis has an instrument assigned
         analysis = self.get_object(analysis)
         if analysis.getRawInstrument():

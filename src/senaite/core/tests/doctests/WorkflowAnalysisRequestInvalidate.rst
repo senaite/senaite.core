@@ -223,3 +223,48 @@ User with other roles cannot:
 Reset settings:
 
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+
+
+Remarks field is not copied from invalidated to retest
+......................................................
+
+Create a Sample and receive:
+
+    >>> ar = new_ar([Cu])
+    >>> success = do_action_for(ar, "receive")
+
+Add some Remarks:
+
+    >>> ar.setRemarks("This is the first remark")
+    >>> ar.setRemarks("This is the second remark")
+    >>> ar.getRemarks()
+    [{...}]
+
+Submit results and verify them:
+
+    >>> setup.setSelfVerificationEnabled(True)
+    >>> for analysis in ar.getAnalyses(full_objects=True):
+    ...     analysis.setResult(12)
+    ...     submitted = do_action_for(analysis, "submit")
+    ...     verified = do_action_for(analysis, "verify")
+    >>> setup.setSelfVerificationEnabled(False)
+    >>> api.get_workflow_status_of(ar)
+    'verified'
+
+Invalidate the sample:
+
+    >>> success = do_action_for(ar, "invalidate")
+    >>> api.get_workflow_status_of(ar)
+    'invalid'
+
+    >>> retest = ar.getRetest()
+    >>> retest
+    <AnalysisRequest at /plone/clients/client-1/W-0004-R01>
+
+The value for Remarks field has not been copied to the retest:
+
+    >>> retest.getRemarks()
+    []
+
+    >>> ar.getRemarks()
+    [{...}]

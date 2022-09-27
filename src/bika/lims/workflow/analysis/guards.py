@@ -509,7 +509,6 @@ def _transition_cache_key(fun, obj, action):
     >>> from zope.annotation.interfaces import IAnnotations
     >>> request = api.get_request()
     >>> IAnnotations(request)
-    # noqa: E501
     {'bika.lims.workflow.analysis.guards.check_analysis_allows_transition:3ff02762c70f4a56b1b30c1b74d32bf6-retract': True,
      'bika.lims.workflow.analysis.guards.check_analysis_allows_transition:0390c16ddec14a04b87ff8408e2aa229-retract': True,
      ...

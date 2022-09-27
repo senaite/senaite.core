@@ -33,7 +33,14 @@ from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import get_indexes
 from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
@@ -56,6 +63,8 @@ except ImportError:
 
     class INonInstallable(Interface):
         pass
+
+PORTAL_CATALOG = "portal_catalog"
 
 
 @implementer(INonInstallable)
@@ -105,62 +114,82 @@ CATALOGS = (
 
 INDEXES = (
     # catalog, id, indexed attribute, type
-    ("portal_catalog", "Analyst", "", "FieldIndex"),
-    ("portal_catalog", "analysisRequestTemplates", "", "FieldIndex"),
-    ("portal_catalog", "getFullname", "", "FieldIndex"),
-    ("portal_catalog", "getName", "", "FieldIndex"),
-    ("portal_catalog", "getParentUID", "", "FieldIndex"),
-    ("portal_catalog", "getUsername", "", "FieldIndex"),
-    ("portal_catalog", "is_active", "", "BooleanIndex"),
-    ("portal_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
-    ("portal_catalog", "review_state", "", "FieldIndex"),
-    ("portal_catalog", "sample_uid", "", "KeywordIndex"),
-    ("portal_catalog", "title", "", "FieldIndex"),
+    (PORTAL_CATALOG, "Analyst", "", "FieldIndex"),
+    (PORTAL_CATALOG, "analysisRequestTemplates", "", "FieldIndex"),
+    (PORTAL_CATALOG, "getFullname", "", "FieldIndex"),
+    (PORTAL_CATALOG, "getName", "", "FieldIndex"),
+    (PORTAL_CATALOG, "getParentUID", "", "FieldIndex"),
+    (PORTAL_CATALOG, "getUsername", "", "FieldIndex"),
+    (PORTAL_CATALOG, "is_active", "", "BooleanIndex"),
+    (PORTAL_CATALOG, "path", "getPhysicalPath", "ExtendedPathIndex"),
+    (PORTAL_CATALOG, "review_state", "", "FieldIndex"),
+    (PORTAL_CATALOG, "sample_uid", "", "KeywordIndex"),
+    (PORTAL_CATALOG, "title", "", "FieldIndex"),
 )
 
 COLUMNS = (
     # catalog, column name
-    ("portal_catalog", "analysisRequestTemplates"),
-    ("portal_catalog", "review_state"),
-    ("portal_catalog", "getClientID"),
-    ("portal_catalog", "Analyst"),
+    (PORTAL_CATALOG, "analysisRequestTemplates"),
+    (PORTAL_CATALOG, "review_state"),
+    (PORTAL_CATALOG, "getClientID"),
+    (PORTAL_CATALOG, "Analyst"),
 )
 
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
-    ("ARReport", ["senaite_catalog_report", "portal_catalog"]),
-    ("ARTemplate", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisCategory", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisProfile", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisService", ["senaite_catalog_setup", "portal_catalog"]),
-    ("AnalysisSpec", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Attachment", ["senaite_catalog", "portal_catalog"]),
-    ("AttachmentType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Batch", ["senaite_catalog", "portal_catalog"]),
-    ("BatchLabel", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Calculation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Container", ["senaite_catalog_setup", "portal_catalog"]),
-    ("ContainerType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Department", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Instrument", ["senaite_catalog_setup", "portal_catalog"]),
-    ("InstrumentType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("LabContact", ["senaite_catalog_setup", "portal_catalog"]),
-    ("LabProduct", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Manufacturer", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Method", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Multifile", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Preservation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("ReferenceDefinition", ["senaite_catalog_setup", "portal_catalog"]),
-    ("ReferenceSample", ["senaite_catalog", "portal_catalog"]),
-    ("SampleCondition", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SampleMatrix", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SamplePoint", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SampleType", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SamplingDeviation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("StorageLocation", ["senaite_catalog_setup", "portal_catalog"]),
-    ("SubGroup", ["senaite_catalog_setup", "portal_catalog"]),
-    ("Supplier", ["senaite_catalog_setup", "portal_catalog"]),
-    ("WorksheetTemplate", ["senaite_catalog_setup", "portal_catalog"]),
+    ("ARReport", [REPORT_CATALOG, PORTAL_CATALOG]),
+    ("ARTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Analysis", [ANALYSIS_CATALOG]),
+    ("AnalysisCategory", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AnalysisProfile", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AnalysisRequest", [SAMPLE_CATALOG]),
+    ("AnalysisService", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AnalysisSpec", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Attachment", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("AttachmentType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG, PORTAL_CATALOG]),
+    ("Batch", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("BatchLabel", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Calculation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Client", [PORTAL_CATALOG]),
+    ("Contact", [PORTAL_CATALOG]),
+    ("Container", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("ContainerType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Department", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("DuplicateAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
+    ("Instrument", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentCalibration", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentCertification", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentMaintenanceTask", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentScheduledTask", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("InstrumentValidation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("LabContact", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Manufacturer", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Method", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Multifile", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Preservation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Pricelist", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("ReferenceAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
+    ("ReferenceDefinition", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("ReferenceSample", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("RejectAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
+    ("Report", [REPORT_CATALOG, PORTAL_CATALOG]),
+    ("SampleCondition", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SampleMatrix", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SamplePoint", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SampleType", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SamplingDeviation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("StorageLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SubGroup", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Supplier", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SupplierContact", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Worksheet", [WORKSHEET_CATALOG, PORTAL_CATALOG]),
+    ("WorksheetTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
 )
 
 
@@ -504,14 +533,7 @@ def pre_install(portal_setup):
 
     :param portal_setup: SetupTool
     """
-    logger.info("SENAITE CORE pre-install handler [BEGIN]")
-
-    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
-    profile_id = PROFILE_ID
-    context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
-
-    logger.info("SENAITE CORE pre-install handler [DONE]")
+    logger.info("SENAITE CORE pre-install handler")
 
 
 def post_install(portal_setup):
@@ -526,7 +548,7 @@ def post_install(portal_setup):
     # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
     profile_id = PROFILE_ID
     context = portal_setup._getImportContext(profile_id)
-    portal = context.getSite()  # noqa
+    portal = context.getSite()
 
     # always apply the skins profile last to ensure our layers are first
     _run_import_step(portal, "skins", profile=profile_id)

@@ -188,9 +188,38 @@ class ReferenceResults extends React.Component {
    */
   build_pages() {
     let pages = [];
-    for (let page=1; page <= this.props.pages; page++) {
+
+    let total = this.props.pages;
+    let current = this.props.page;
+    let padding = this.props.padding;
+
+    let first_page = current - padding > 0 ? current - padding : 1;
+    let last_page = current + padding < total ? current + padding : total;
+
+    let crop_before = first_page === 1 ? false : true;
+    let crop_after = last_page < total ? true : false;
+
+    for (let page=first_page; page <= last_page; page++) {
       let cls = ["page-item"];
-      if (this.props.page == page) cls.push("active");
+      if (current === page) cls.push("active");
+
+      // crop before the current page
+      if (page == first_page && crop_before) {
+        // link to first page
+        pages.push(
+          <li>
+            <button className="page-link" page={1} onClick={this.on_page}>1</button>
+          </li>
+        );
+        // placeholder
+        pages.push(
+          <li>
+            <div className="page-link">...</div>
+          </li>
+        );
+        crop_before = false;
+      }
+
       pages.push(
         <li className={cls.join(" ")}>
           <button className="page-link" page={page} onClick={this.on_page}>
@@ -198,6 +227,26 @@ class ReferenceResults extends React.Component {
           </button>
         </li>
       );
+
+      // crop after the current page
+      if (page === last_page && crop_after) {
+        // placeholder
+        pages.push(
+          <li>
+            <div className="page-link">...</div>
+          </li>
+        );
+        // link to last page
+        pages.push(
+          <li>
+            <button className="page-link" page={total} onClick={this.on_page}>
+              {total}
+            </button>
+          </li>
+        );
+        crop_after = false;
+      }
+
     }
     return pages;
   }

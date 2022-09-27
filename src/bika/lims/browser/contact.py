@@ -29,7 +29,7 @@ from bika.lims.api import security
 from bika.lims.browser import BrowserView
 from bika.lims.content.contact import Contact
 from bika.lims.content.labcontact import LabContact
-from Products.CMFPlone.controlpanel.browser.usergroups_usersoverview import UsersOverviewControlPanel  # noqa
+from Products.CMFPlone.controlpanel.browser.usergroups_usersoverview import UsersOverviewControlPanel
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName

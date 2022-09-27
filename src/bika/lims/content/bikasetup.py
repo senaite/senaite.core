@@ -314,6 +314,17 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "CategorizeSampleAnalyses",
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("label_bikasetup_categorizesampleanalyses",
+                    default="Categorize sample analyses"),
+            description=_("description_bikasetup_categorizesampleanalyses",
+                          "Group analyses by category for samples")
+        ),
+    ),
+    BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
         default=False,
@@ -1064,6 +1075,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setImmediateResultsEntry(value)
+
+    def getCategorizeSampleAnalyses(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getCategorizeSampleAnalyses()
+        return False
+
+    def setCategorizeSampleAnalyses(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setCategorizeSampleAnalyses(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

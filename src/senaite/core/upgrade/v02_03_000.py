@@ -29,9 +29,12 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_senaite_setup
+from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
@@ -52,7 +55,7 @@ METADATA_TO_REMOVE = [
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
-    setup = portal.portal_setup  # noqa
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
@@ -74,6 +77,12 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "plone.app.registry")
     setup.runImportStepFromProfile(profile, "controlpanel")
+
+    # Ensure the catalog mappings for Analyses and Samples is correct
+    # https://github.com/senaite/senaite.core/pull/2130
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
+    # remap auditlog catalog
+    setup_auditlog_catalog_mappings(portal)
 
     # Add new setup folder to portal
     add_senaite_setup(portal)
@@ -253,7 +262,7 @@ def fix_unassigned_samples(portal):
         cat.catalog_object(obj, obj_url, idxs=indexes, update_metadata=1)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Fix unassigned samples ...")
 
@@ -290,7 +299,7 @@ def move_arreports_to_report_catalog(portal):
         obj.reindexObject()
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Move ARReports to SENAITE Report Catalog [DONE]")
 
@@ -317,7 +326,7 @@ def migrate_analysis_services_fields(portal):
         migrate_ldl_field_to_string(obj)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Migrate Analysis Services [DONE]")
 
@@ -347,7 +356,7 @@ def migrate_analyses_fields(portal):
         migrate_ldl_field_to_string(obj)
 
         # Flush the object from memory
-        obj._p_deactivate()  # noqa
+        obj._p_deactivate()
 
     logger.info("Migrate Analyses Fields [DONE]")
 
@@ -396,7 +405,7 @@ def migrate_uncertainty_field_to_string(obj):
     if isinstance(value, tuple):
         migrated_value = fixed_point_value_to_string(value, 10)
         logger.info("Migrating Uncertainty field of %s: %s -> %s" % (
-            api.get_pat(obj), value, migrated_value))
+            api.get_path(obj), value, migrated_value))
         value = migrated_value
 
     # set the new value

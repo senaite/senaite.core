@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import analysisservice as serviceapi
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisServices
@@ -36,6 +37,7 @@ from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
@@ -196,6 +198,11 @@ class AnalysisServicesView(BikaListingView):
                 "title": _("Calculation"),
                 "sortable": False}),
             ("SortKey", {
+                "ajax": True,
+                "help": _(
+                    "Float value from 0.0 - 1000.0 indicating the sort order. "
+                    "Duplicate values are ordered alphabetically."),
+                "refetch": True,
                 "title": _("Sort Key"),
                 "sortable": False}),
         ))
@@ -231,6 +238,11 @@ class AnalysisServicesView(BikaListingView):
         if not self.context.bika_setup.getShowPrices():
             for i in range(len(self.review_states)):
                 self.review_states[i]["columns"].remove("Price")
+
+    def can_edit(self, service):
+        """Check if manage is allowed
+        """
+        return check_permission(ModifyPortalContent, self.context)
 
     def get_decimal_mark(self):
         """Returns the decimal mark
@@ -346,6 +358,9 @@ class AnalysisServicesView(BikaListingView):
         # Sort key
         sortkey = obj.getSortKey()
         item["SortKey"] = sortkey
+
+        if self.can_edit(obj):
+            item["allow_edit"].append("SortKey")
 
         # Icons
         after_icons = ""

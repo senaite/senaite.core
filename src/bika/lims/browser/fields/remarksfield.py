@@ -179,14 +179,16 @@ class RemarksField(ObjectField):
         # Store the data
         ObjectField.set(self, instance, history)
 
-        # N.B. ensure updated catalog metadata for the snapshot
-        instance.reindexObject()
+        if not api.is_temporary(instance):
 
-        # notify object edited event
-        event.notify(ObjectEditedEvent(instance))
+            # N.B. ensure updated catalog metadata for the snapshot
+            instance.reindexObject()
 
-        # notify new remarks for e.g. later email notification etc.
-        event.notify(RemarksAddedEvent(instance, history))
+            # notify object edited event
+            event.notify(ObjectEditedEvent(instance))
+
+            # notify new remarks for e.g. later email notification etc.
+            event.notify(RemarksAddedEvent(instance, history))
 
     def to_safe_html(self, html):
         # see: Products.PortalTransforms.tests.test_xss
@@ -247,7 +249,7 @@ class RemarksField(ObjectField):
 
         # split legacy remarks on the complete delimiter, e.g.:
         # === Tue, 28 Jan 2020 06:53:58 +0100 (admin)\nThis is a Test
-        lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)  # noqa
+        lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)
 
         record = None
         records = []

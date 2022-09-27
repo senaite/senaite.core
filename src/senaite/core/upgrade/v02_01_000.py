@@ -52,7 +52,7 @@ MIGRATE_CATALOGS = [
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
-    setup = portal.portal_setup  # noqa
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 

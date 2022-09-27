@@ -6,6 +6,19 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2145 Crop page navigation for DX reference widget
+- #2143 Fix Traceback when using readonly decorator for objects w/o __name__
+- #2140 Allow to enable/disable analysis categories for samples
+- #2137 Dynamic Workflow Menu
+- #2139 Fix LabClerk cannot create partitions from received samples
+- #2130 Catalog mapping for Samples and Analyses
+- #2131 Allow to edit the analysis service sort keys in the services listing
+- #2133 Filter Contact and CCContact by Client on first click
+- #2134 Render unit after result and interim fields
+- #2132 Add a default date for batch creation 
+- #2129 Fix Traceback when invalidating a Sample with Remarks
+- #2128 Fix referenceresults widget view mode
+- #2127 Fix instrument expiry date display in listing view
 - #2123 Add Sample Form: Save and Copy Action
 - #2119 Fix linked client contact user can not see existing samples
 - #2118 Customized Quickinstaller Configlet
