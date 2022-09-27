@@ -1516,11 +1516,11 @@ class AnalysesView(ListingView):
         """
         # Always return true if the analysis has a method assigned
         obj = self.get_object(analysis)
-        method = obj.getMethod()
+        method = obj.getRawMethod()
         if method:
             return True
 
-        methods = obj.getAllowedMethods()
+        methods = obj.getRawAllowedMethods()
         return len(methods) > 0
 
     def is_instrument_required(self, analysis):
