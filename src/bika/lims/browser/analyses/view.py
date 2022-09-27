@@ -486,7 +486,7 @@ class AnalysesView(ListingView):
         # check if the analysis has a method
         if method:
             # supported instrument from the method
-            method_instruments = method.getInstruments()
+            method_instruments = method.getRawInstruments()
             # allow only method instruments that are set in service
             instruments = list(
                 set(instruments).intersection(method_instruments))
