@@ -1538,7 +1538,7 @@ class AnalysesView(ListingView):
         if analysis.getRawInstrument():
             return True
 
-        instruments = analysis.getRawAllowedInstruments() or []
+        instruments = analysis.getRawAllowedInstruments()
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
         # selection list are always a subset of the allowed instruments when
