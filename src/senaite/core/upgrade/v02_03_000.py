@@ -22,6 +22,7 @@ from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
@@ -76,8 +77,12 @@ def upgrade(tool):
     # Ensure the catalog mappings for Analyses and Samples is correct
     # https://github.com/senaite/senaite.core/pull/2130
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
+
     # remap auditlog catalog
     setup_auditlog_catalog_mappings(portal)
+
+    # ensure the catalogs assigned to types are sorted correctly
+    setup_catalogs_order(portal)
 
     # Add new setup folder to portal
     add_senaite_setup(portal)
@@ -91,6 +96,7 @@ def upgrade(tool):
     move_arreports_to_report_catalog(portal)
     migrate_analysis_services_fields(portal)
     migrate_analyses_fields(portal)
+    reindex_laboratory(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -420,3 +426,49 @@ def fixed_point_value_to_string(value, precision):
     str_value = template % (sign, front, fra)
     # strip off trailing zeros and possible dot
     return str_value.rstrip("0").rstrip(".")
+
+
+def setup_catalogs_order(portal):
+    """Ensures the order of catalogs portal types are bound to is correct
+    This is required because senaite.app.supermodel uses the first catalog
+    the portal type is associated with when retrieving brains
+    """
+    logger.info("Setup Catalogs order ...")
+
+    def sort_catalogs(id1, id2):
+        if id1 == id2:
+            return 0
+
+        # Catalogs sorted, senaite_* always first
+        senaite = map(lambda cat_id: cat_id.startswith("senaite_"), [id1, id2])
+        if not all(senaite) and any(senaite):
+            # Item starting with senaite always gets max priority
+            if id1.startswith("senaite_"):
+                return -1
+            return 1
+
+        # Auditlog catalog is always the last!
+        if id1 == AUDITLOG_CATALOG:
+            return 1
+        if id2 == AUDITLOG_CATALOG:
+            return -1
+
+        if id1 < id2:
+            return -1
+        return 1
+
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in at.listCatalogs().items():
+        sorted_catalogs = sorted(catalogs, cmp=sort_catalogs)
+        at.setCatalogsByType(portal_type, sorted_catalogs)
+
+    logger.info("Setup Catalogs order [DONE]")
+
+
+def reindex_laboratory(portal):
+    """Forces the reindex of laboratory content type
+    """
+    logger.info("Reindexing laboratory content type ...")
+    setup = api.get_setup()
+    setup.laboratory.reindexObject()
+    logger.info("Reindexing laboratory content type [DONE]")

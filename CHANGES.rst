@@ -5,6 +5,7 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2146 Fix "No object found for UID: <laboratory_uid>" in report preview
 - #2143 Fix Traceback when using readonly decorator for objects w/o __name__
 - #2140 Allow to enable/disable analysis categories for samples
 - #2137 Dynamic Workflow Menu
