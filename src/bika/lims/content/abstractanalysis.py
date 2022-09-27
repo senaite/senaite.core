@@ -30,7 +30,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import ResultRangeField
@@ -214,7 +213,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         verifiers = list()
         actions = ["verify", "multi_verify"]
-        for event in wf.getReviewHistory(self):
+        for event in api.get_review_history(self):
             if event['action'] in actions:
                 verifiers.append(event['actor'])
         sorted(verifiers, reverse=True)
