@@ -226,6 +226,7 @@ def install(context):
     setup_other_catalogs(portal)
     setup_catalog_mappings(portal)
     setup_auditlog_catalog_mappings(portal)
+    setup_catalogs_order(portal)
     setup_content_structure(portal)
     add_senaite_setup(portal)
     add_dexterity_portal_items(portal)
@@ -478,6 +479,43 @@ def setup_auditlog_catalog_mappings(portal):
             at.setCatalogsByType(portal_type, new_catalogs)
             logger.info("*** Adding catalog '{}' for '{}'".format(
                 AUDITLOG_CATALOG, portal_type))
+
+
+def setup_catalogs_order(portal):
+    """Ensures the order of catalogs portal types are bound to is correct
+    This is required because senaite.app.supermodel uses the first catalog
+    the portal type is associated with when retrieving brains
+    """
+    logger.info("Setup Catalogs order ...")
+
+    def sort_catalogs(id1, id2):
+        if id1 == id2:
+            return 0
+
+        # Audit-log catalog is always the last!
+        if id1 == AUDITLOG_CATALOG:
+            return 1
+        if id2 == AUDITLOG_CATALOG:
+            return -1
+
+        # Catalogs sorted, senaite_* always first
+        senaite = map(lambda cat_id: cat_id.startswith("senaite_"), [id1, id2])
+        if not all(senaite) and any(senaite):
+            # Item starting with senaite always gets max priority
+            if id1.startswith("senaite_"):
+                return -1
+            return 1
+
+        if id1 < id2:
+            return -1
+        return 1
+
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in at.listCatalogs().items():
+        sorted_catalogs = sorted(catalogs, cmp=sort_catalogs)
+        at.setCatalogsByType(portal_type, sorted_catalogs)
+
+    logger.info("Setup Catalogs order [DONE]")
 
 
 def remove_default_content(portal):

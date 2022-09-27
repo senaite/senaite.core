@@ -22,7 +22,6 @@ from bika.lims import api
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
-from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
@@ -33,6 +32,7 @@ from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_senaite_setup
 from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
 from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_catalogs_order
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -426,43 +426,6 @@ def fixed_point_value_to_string(value, precision):
     str_value = template % (sign, front, fra)
     # strip off trailing zeros and possible dot
     return str_value.rstrip("0").rstrip(".")
-
-
-def setup_catalogs_order(portal):
-    """Ensures the order of catalogs portal types are bound to is correct
-    This is required because senaite.app.supermodel uses the first catalog
-    the portal type is associated with when retrieving brains
-    """
-    logger.info("Setup Catalogs order ...")
-
-    def sort_catalogs(id1, id2):
-        if id1 == id2:
-            return 0
-
-        # Catalogs sorted, senaite_* always first
-        senaite = map(lambda cat_id: cat_id.startswith("senaite_"), [id1, id2])
-        if not all(senaite) and any(senaite):
-            # Item starting with senaite always gets max priority
-            if id1.startswith("senaite_"):
-                return -1
-            return 1
-
-        # Auditlog catalog is always the last!
-        if id1 == AUDITLOG_CATALOG:
-            return 1
-        if id2 == AUDITLOG_CATALOG:
-            return -1
-
-        if id1 < id2:
-            return -1
-        return 1
-
-    at = api.get_tool("archetype_tool")
-    for portal_type, catalogs in at.listCatalogs().items():
-        sorted_catalogs = sorted(catalogs, cmp=sort_catalogs)
-        at.setCatalogsByType(portal_type, sorted_catalogs)
-
-    logger.info("Setup Catalogs order [DONE]")
 
 
 def reindex_laboratory(portal):
