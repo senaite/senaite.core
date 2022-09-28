@@ -191,6 +191,8 @@ def create(container, portal_type, *args, **kwargs):
 def edit(obj, **kwargs):
     """Updates the values of object fields with the new values passed-in
     """
+    # Prevent circular dependencies
+    from security import check_permission
     fields = get_fields(obj)
     temporary = is_temporary(obj)
     for name, value in kwargs.items():
@@ -206,8 +208,6 @@ def edit(obj, **kwargs):
         # check field writable permission
         permission = getattr(field, "write_permission", ModifyPortalContent)
         if not temporary and permission:
-            # Prevent circular dependencies
-            from security import check_permission
             if not check_permission(permission, obj):
                 raise Unauthorized("Field '{}' is not writeable".format(name))
 
