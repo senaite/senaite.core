@@ -1549,7 +1549,7 @@ class AnalysesView(ListingView):
         if method:
             return True
 
-        methods = obj.getRawAllowedMethods() or []
+        methods = obj.getRawAllowedMethods()
         return len(methods) > 0
 
     def is_instrument_required(self, analysis):
@@ -1567,7 +1567,7 @@ class AnalysesView(ListingView):
         if analysis.getRawInstrument():
             return True
 
-        instruments = analysis.getRawAllowedInstruments() or []
+        instruments = analysis.getRawAllowedInstruments()
         # There is no need to check for the instruments of the method assigned
         # to # the analysis (if any), because the instruments rendered in the
         # selection list are always a subset of the allowed instruments when
