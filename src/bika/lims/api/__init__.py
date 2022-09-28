@@ -51,6 +51,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
@@ -188,14 +189,27 @@ def create(container, portal_type, *args, **kwargs):
 
 
 def edit(obj, **kwargs):
-    """Updates the values of object fields with the new values passed-in,
-    bypassing writable mode and permission check
+    """Updates the values of object fields with the new values passed-in
     """
     fields = get_fields(obj)
+    temporary = is_temporary(obj)
     for name, value in kwargs.items():
         field = fields.get(name, None)
         if not field:
             continue
+
+        # cannot update readonly fields
+        readonly = getattr(field, "readonly", False)
+        if readonly:
+            raise ValueError("Field '{}' is readonly".format(name))
+
+        # check field writable permission
+        permission = getattr(field, "write_permission", ModifyPortalContent)
+        if not temporary and permission:
+            # Prevent circular dependencies
+            from security import check_permission
+            if not check_permission(permission, obj):
+                raise Unauthorized("Field '{}' is not writeable".format(name))
 
         # Set the value
         if hasattr(field, "getMutator"):
