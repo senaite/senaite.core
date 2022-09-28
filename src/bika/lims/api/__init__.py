@@ -159,7 +159,7 @@ def create(container, portal_type, *args, **kwargs):
         # create the AT object
         obj = _createObjectByType(portal_type, container, id)
         # update the object with values
-        edit(obj, title=title, **kwargs)
+        edit(obj, check_permissions=False, title=title, **kwargs)
         # auto-id if required
         if obj._at_rename_after_creation:
             obj._renameAfterCreation(check_auto_id=True)
@@ -187,13 +187,12 @@ def create(container, portal_type, *args, **kwargs):
     return obj
 
 
-def edit(obj, **kwargs):
+def edit(obj, check_permissions=True, **kwargs):
     """Updates the values of object fields with the new values passed-in
     """
     # Prevent circular dependencies
     from security import check_permission
     fields = get_fields(obj)
-    temporary = is_temporary(obj)
     for name, value in kwargs.items():
         field = fields.get(name, None)
         if not field:
@@ -205,9 +204,9 @@ def edit(obj, **kwargs):
             raise ValueError("Field '{}' is readonly".format(name))
 
         # check field writable permission
-        permission = getattr(field, "write_permission", ModifyPortalContent)
-        if not temporary and permission:
-            if not check_permission(permission, obj):
+        if check_permissions:
+            perm = getattr(field, "write_permission", ModifyPortalContent)
+            if perm and not check_permission(perm, obj):
                 raise Unauthorized("Field '{}' is not writeable".format(name))
 
         # Set the value
