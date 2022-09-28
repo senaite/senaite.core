@@ -5,6 +5,8 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2151 Improve the creation process of AT content types
+- #2151 Added a naive edit function in the API
 - #2150 Performance: prioritize raw getter for AllowedMethods field
 - #2148 Performance: prioritize raw getter for AllowedInstruments field
 - #2147 Remove stale function workflow.getReviewHistory
