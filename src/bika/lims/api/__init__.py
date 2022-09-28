@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 import re
 from collections import OrderedDict
 from datetime import datetime
@@ -48,6 +49,7 @@ from plone.memoize.volatile import DontCache
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
+from Products.Archetypes.utils import mapply
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -159,7 +161,7 @@ def create(container, portal_type, *args, **kwargs):
         # create the AT object
         obj = _createObjectByType(portal_type, container, id)
         # update the object with values
-        edit(obj, title=title, **kwargs)
+        edit(obj, check_permissions=False, title=title, **kwargs)
         # auto-id if required
         if obj._at_rename_after_creation:
             obj._renameAfterCreation(check_auto_id=True)
@@ -200,7 +202,11 @@ def copy_object(source, container=None, *args, **kwargs):
     source = get_object(source)
     if not container:
         container = get_parent(source)
-    portal_type = get_portal_type(source)
+
+    # Use same portal type as source unless explicitly set in kwargs
+    portal_type = kwargs.pop("portal_type", None)
+    if not portal_type:
+        portal_type = get_portal_type(source)
 
     # Extend the fields to skip with defaults
     skip = kwargs.pop("skip", [])
@@ -234,19 +240,21 @@ def copy_object(source, container=None, *args, **kwargs):
         if skip.get(field.getType(), False):
             continue
         field_value = field.getRaw(source)
+        # Do a hard copy of value if mutable type
+        if isinstance(field_value, (list, dict, set)):
+            field_value = copy.deepcopy(field_value)
         kwargs.update({field_name: field_value})
 
     # Create a copy
     return create(container, portal_type, *args, **kwargs)
 
 
-def edit(obj, **kwargs):
+def edit(obj, check_permissions=True, **kwargs):
     """Updates the values of object fields with the new values passed-in
     """
     # Prevent circular dependencies
     from security import check_permission
     fields = get_fields(obj)
-    temporary = is_temporary(obj)
     for name, value in kwargs.items():
         field = fields.get(name, None)
         if not field:
@@ -258,9 +266,9 @@ def edit(obj, **kwargs):
             raise ValueError("Field '{}' is readonly".format(name))
 
         # check field writable permission
-        permission = getattr(field, "write_permission", ModifyPortalContent)
-        if not temporary and permission:
-            if not check_permission(permission, obj):
+        if check_permissions:
+            perm = getattr(field, "write_permission", ModifyPortalContent)
+            if perm and not check_permission(perm, obj):
                 raise Unauthorized("Field '{}' is not writeable".format(name))
 
         # Set the value

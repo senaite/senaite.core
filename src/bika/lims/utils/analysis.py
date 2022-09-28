@@ -21,13 +21,10 @@
 import copy
 import math
 
-import zope.event
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFPlone.utils import _createObjectByType
 
 
 def duplicateAnalysis(analysis):
@@ -88,29 +85,35 @@ def create_analysis(context, source, **kwargs):
     :returns: Analysis object that was created
     :rtype: Analysis
     """
-    an_id = kwargs.get("id")
-    if not an_id:
+    # compute the id of the new analysis if necessary
+    analysis_id = kwargs.get("id")
+    if not analysis_id:
         keyword = source.getKeyword()
-        an_id = generate_analysis_id(context, keyword)
+        analysis_id = generate_analysis_id(context, keyword)
 
-    analysis = _createObjectByType("Analysis", context, an_id)
-    copy_analysis_field_values(source, analysis, **kwargs)
+    # set the fields from source to be ignored
+    ignore_fieldnames = ['Hidden', 'Attachment']
 
-    # AnalysisService field is not present on actual AnalysisServices.
+    # get the service to be assigned to the analysis
     service = source
     if not IAnalysisService.providedBy(source):
         service = source.getAnalysisService()
-    analysis.setAnalysisService(service)
 
+    # TODO Why do we need to copy interims from service instead of source?
     # Set the interims from the Service
     service_interims = service.getInterimFields()
     # Avoid references from the analysis interims to the service interims
     service_interims = copy.deepcopy(service_interims)
-    analysis.setInterimFields(service_interims)
 
-    analysis.unmarkCreationFlag()
-    zope.event.notify(ObjectInitializedEvent(analysis))
-    return analysis
+    kwargs.update({
+        "portal_type": "Analysis",
+        "id": analysis_id,
+        "skip": ignore_fieldnames,
+        "AnalysisService": api.get_uid(service),
+        "InterimFields": service_interims,
+    })
+
+    return api.copy_object(source, container=context, **kwargs)
 
 
 def get_significant_digits(numeric_value):
