@@ -165,8 +165,7 @@ def create(container, portal_type, *args, **kwargs):
             obj._renameAfterCreation(check_auto_id=True)
         # we are no longer under creation
         obj.unmarkCreationFlag()
-        # reindex and notify
-        obj.reindexObject()
+        # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
         # newstyle factory
