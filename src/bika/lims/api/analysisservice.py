@@ -18,8 +18,15 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.catalog import SETUP_CATALOG
+from zope.interface import Invalid
+
+RX_SERVICE_KEYWORD = r"[^A-Za-z\w\d\-_]"
 
 
 def get_calculation_dependants_for(service):
@@ -153,3 +160,53 @@ def get_service_dependencies_for(service):
         "dependencies": dependencies.values(),
         "dependants": dependants.values(),
     }
+
+
+def copy_service(service, title, keyword):
+    """Creates a copy of the given AnalysisService object, but with the
+    given title and keyword
+    """
+    # Validate the keyword
+    err_msg = check_keyword(keyword)
+    if err_msg:
+        raise Invalid(err_msg)
+
+    # Create a copy
+    params = {"title": title, "ShortTitle": "", "Keyword": keyword}
+    return api.copy_object(service, **params)
+
+
+def check_keyword(keyword, instance=None):
+    """Checks if the given service keyword is valid and unique. Returns an
+    error message if not valid. None otherwise
+    """
+
+    # Ensure the format is valid
+    if re.findall(RX_SERVICE_KEYWORD, keyword):
+        return _("Validation failed: keyword contains invalid characters")
+
+    # Ensure no other service with this keyword exists
+    brains = get_by_keyword(keyword)
+    if instance and len(brains) > 1:
+        return _("Validation failed: keyword is already in use")
+    elif brains:
+        return _("Validation failed: keyword is already in use")
+
+    # Ensure the keyword is not used in calculations
+    ref = "[{}]".format(keyword)
+    cat = api.get_tool(SETUP_CATALOG)
+    for calculation in cat(portal_type="Calculation"):
+        calculation = api.get_object(calculation)
+        if ref in calculation.getFormula():
+            return _("Validation failed: keyword is already in use by "
+                     "calculation '{}'").format(api.get_title(calculation))
+
+
+def get_by_keyword(keyword, full_objects=False):
+    """Returns an Analysis Service object for the given keyword, if any
+    """
+    query = {"portal_type": "AnalysisService", "getKeyword": keyword}
+    brains = api.search(query, SETUP_CATALOG)
+    if full_objects:
+        return [api.get_object(brain) for brain in brains]
+    return brains

@@ -178,14 +178,7 @@ class EditForm(EditFormAdapterBase):
         # Check if the new value is empty
         if not value:
             return _("Keyword required")
-        # Check if the current value is used in a calculation
-        ref = "[{}]".format(current_value)
-        query = {"portal_type": "Calculation"}
-        for brain in self.setup_catalog(query):
-            calc = api.get_object(brain)
-            if ref in calc.getFormula():
-                return _("Current keyword '{}' used in calculation '{}'"
-                         .format(current_value, api.get_title(calc)))
+
         # Check the current value with the validator
         validator = ServiceKeywordValidator()
         check = validator(value, instance=self.context)

@@ -152,8 +152,7 @@ Add another copy of existing analyses:
 
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> for analysis in analyses:
-    ...     new_id = "{}-1".format(analysis.getKeyword())
-    ...     duplicate = create_analysis(ar, analysis, id=new_id)
+    ...     duplicate = create_analysis(ar, analysis)
 
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> sorted(map(api.get_id, analyses))

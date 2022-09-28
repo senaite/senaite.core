@@ -38,14 +38,10 @@ def duplicateAnalysis(analysis):
     results must be similar.
     :base: the analysis object used as the creation base.
     """
-    ar = analysis.aq_parent
-    kw = analysis.getKeyword()
-    # Rename the analysis to make way for it's successor.
-    # Support multiple duplicates by renaming to *-0, *-1, etc
-    cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
-    a_id = "{0}-{1}".format(kw, len(cnt))
-    dup = create_analysis(ar, analysis, id=a_id, Retested=True)
-    return dup
+    keyword = analysis.getKeyword()
+    container = api.get_parent(analysis)
+    duplicate_id = generate_analysis_id(container, keyword)
+    return api.copy_object(analysis, id=duplicate_id, Retested=True)
 
 
 def copy_analysis_field_values(source, analysis, **kwargs):
@@ -92,18 +88,22 @@ def create_analysis(context, source, **kwargs):
     :returns: Analysis object that was created
     :rtype: Analysis
     """
-    an_id = kwargs.get('id', source.getKeyword())
+    an_id = kwargs.get("id")
+    if not an_id:
+        keyword = source.getKeyword()
+        an_id = generate_analysis_id(context, keyword)
+
     analysis = _createObjectByType("Analysis", context, an_id)
     copy_analysis_field_values(source, analysis, **kwargs)
 
     # AnalysisService field is not present on actual AnalysisServices.
-    if IAnalysisService.providedBy(source):
-        analysis.setAnalysisService(source)
-    else:
-        analysis.setAnalysisService(source.getAnalysisService())
+    service = source
+    if not IAnalysisService.providedBy(source):
+        service = source.getAnalysisService()
+    analysis.setAnalysisService(service)
 
     # Set the interims from the Service
-    service_interims = analysis.getAnalysisService().getInterimFields()
+    service_interims = service.getInterimFields()
     # Avoid references from the analysis interims to the service interims
     service_interims = copy.deepcopy(service_interims)
     analysis.setInterimFields(service_interims)
@@ -401,16 +401,10 @@ def create_retest(analysis):
 
     # Support multiple retests by prefixing keyword with *-0, *-1, etc.
     parent = api.get_parent(analysis)
-    keyword = analysis.getKeyword()
-
-    # Get only those analyses with same keyword as original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    new_id = '{}-{}'.format(keyword, len(analyses))
 
     # Create a copy of the original analysis
     an_uid = api.get_uid(analysis)
-    retest = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    retest = create_analysis(parent, analysis, RetestOf=an_uid)
     retest.setResult("")
     retest.setResultCaptureDate(None)
 
@@ -421,3 +415,14 @@ def create_retest(analysis):
 
     retest.reindexObject()
     return retest
+
+
+def generate_analysis_id(instance, keyword):
+    """Generates a new analysis ID
+    """
+    count = 1
+    new_id = keyword
+    while new_id in instance.objectIds():
+        new_id = "{}-{}".format(keyword, count)
+        count += 1
+    return new_id

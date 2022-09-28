@@ -27,6 +27,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.api import analysisservice as serviceapi
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
@@ -252,52 +253,14 @@ class ServiceKeywordValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        # fieldname = kwargs['field'].getName()
-        # request = kwargs.get('REQUEST', {})
-        # form = request.get('form', {})
+        if instance.getKeyword() == value:
+            # Nothing changed
+            return
 
-        translate = getToolByName(instance, 'translation_service').translate
-
-        if re.findall(r"[^A-Za-z\w\d\-\_]", value):
-            return _("Validation failed: keyword contains invalid characters")
-
-        # check the value against all AnalysisService keywords
-        # this has to be done from catalog so we don't
-        # clash with ourself
-        bsc = getToolByName(instance, 'senaite_catalog_setup')
-        services = bsc(portal_type='AnalysisService', getKeyword=value)
-        for service in services:
-            if service.UID != instance.UID():
-                msg = _(
-                    "Validation failed: '${title}': This keyword "
-                    "is already in use by service '${used_by}'",
-                    mapping={
-                        'title': safe_unicode(value),
-                        'used_by': safe_unicode(service.Title)
-                    })
-                return to_utf8(translate(msg))
-
-        calc = hasattr(instance, 'getCalculation') and \
-            instance.getCalculation() or None
-        our_calc_uid = calc and calc.UID() or ''
-
-        # check the value against all Calculation Interim Field ids
-        calcs = [c for c in bsc(portal_type='Calculation')]
-        for calc in calcs:
-            calc = calc.getObject()
-            interim_fields = calc.getInterimFields()
-            if not interim_fields:
-                continue
-            for field in interim_fields:
-                if field['keyword'] == value and our_calc_uid != calc.UID():
-                    msg = _(
-                        "Validation failed: '${title}': This keyword "
-                        "is already in use by calculation '${used_by}'",
-                        mapping={
-                            'title': safe_unicode(value),
-                            'used_by': safe_unicode(calc.Title())
-                        })
-                    return to_utf8(translate(msg))
+        err_msg = serviceapi.check_keyword(value, instance)
+        if err_msg:
+            ts = api.get_tool("translation_service")
+            return to_utf8(ts.translate(err_msg))
         return True
 
 

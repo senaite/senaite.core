@@ -274,9 +274,7 @@ class ARAnalysesField(ObjectField):
 
         if not analyses:
             # Create the analysis
-            new_id = self.generate_analysis_id(instance, service)
-            logger.info("Creating new analysis '{}'".format(new_id))
-            analysis = create_analysis(instance, service, id=new_id)
+            analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
         for analysis in analyses:
@@ -304,17 +302,6 @@ class ARAnalysesField(ObjectField):
             analysis.setConditions(conditions)
 
             analysis.reindexObject()
-
-    def generate_analysis_id(self, instance, service):
-        """Generate a new analysis ID
-        """
-        count = 1
-        keyword = service.getKeyword()
-        new_id = keyword
-        while new_id in instance.objectIds():
-            new_id = "{}-{}".format(keyword, count)
-            count += 1
-        return new_id
 
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance
