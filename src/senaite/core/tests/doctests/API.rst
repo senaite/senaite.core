@@ -84,6 +84,27 @@ Here we create a new `Client` in the `plone/clients` folder::
      'Test Client'
 
 
+Editing Content
+...............
+
+This function helps to edit a given content.
+
+Here we update the `Client` we created earlier, an AT::
+
+    >>> api.edit(client, AccountNumber="12343567890", BankName="BTC Bank")
+    >>> client.getAccountNumber()
+    '12343567890'
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+It also works for DX content types::
+
+    >>> api.edit(senaite_setup, site_logo_css="my-test-logo")
+    >>> senaite_setup.getSiteLogoCSS()
+    'my-test-logo'
+
+
 Getting a Tool
 ..............
 
