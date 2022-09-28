@@ -110,7 +110,7 @@
     handler="bika.lims.subscribers.analysisrequest.AfterTransitionEventHandler"
   />
 
-  <!-- Batch modified event
+  <!-- Batch initialized and modified events
   This subscriber moves a Batch to its corresponding client folder when the
   the batch is being created in batches folder and a client is set. This only
   happens when the Batch is created by lab personnel, cause batches created by
@@ -118,6 +118,10 @@
   Therefore, this behaviour allows client contacts to access to batches that
   were created by lab personnel and were assigned to their client.
   -->
+  <subscriber
+    for="bika.lims.interfaces.IBatch
+         Products.Archetypes.interfaces.IObjectInitializedEvent"
+    handler="bika.lims.subscribers.batch.ObjectInitializedEventHandler" />
   <subscriber
     for="bika.lims.interfaces.IBatch
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
