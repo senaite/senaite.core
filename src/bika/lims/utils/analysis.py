@@ -27,20 +27,6 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 
 
-def duplicateAnalysis(analysis):
-    """
-    Duplicate an analysis consist on creating a new analysis with
-    the same analysis service for the same sample. It is used in
-    order to reduce the error procedure probability because both
-    results must be similar.
-    :base: the analysis object used as the creation base.
-    """
-    keyword = analysis.getKeyword()
-    container = api.get_parent(analysis)
-    duplicate_id = generate_analysis_id(container, keyword)
-    return api.copy_object(analysis, id=duplicate_id, Retested=True)
-
-
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or
     an existing Analysis, and all possible field values will be set to the
