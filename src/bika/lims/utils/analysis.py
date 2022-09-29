@@ -41,39 +41,6 @@ def duplicateAnalysis(analysis):
     return api.copy_object(analysis, id=duplicate_id, Retested=True)
 
 
-def copy_analysis_field_values(source, analysis, **kwargs):
-    src_schema = source.Schema()
-    dst_schema = analysis.Schema()
-    # Some fields should not be copied from source!
-    # BUT, if these fieldnames are present in kwargs, the value will
-    # be set accordingly.
-    IGNORE_FIELDNAMES = [
-        'UID', 'id', 'allowDiscussion', 'subject', 'location', 'contributors',
-        'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
-        'creation_date', 'modification_date', 'Hidden', 'Attachment']
-    for field in src_schema.fields():
-        fieldname = field.getName()
-        if fieldname in IGNORE_FIELDNAMES and fieldname not in kwargs:
-            continue
-        if fieldname not in dst_schema:
-            continue
-        value = kwargs.get(fieldname, field.get(source))
-
-        # Campbell's mental note:never ever use '.set()' directly to a
-        # field. If you can't use the setter, then use the mutator in order
-        # to give the value. We have realized that in some cases using
-        # 'set' when the value is a string, it saves the value
-        # as unicode instead of plain string.
-        field = analysis.getField(fieldname)
-        mutator = getattr(field, "mutator", None)
-        if mutator:
-            mutator_name = field.mutator
-            mutator = getattr(analysis, mutator_name)
-            mutator(value)
-        else:
-            field.set(analysis, value)
-
-
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or
     an existing Analysis, and all possible field values will be set to the
@@ -96,6 +63,9 @@ def create_analysis(context, source, **kwargs):
     if not IAnalysisService.providedBy(source):
         service = source.getAnalysisService()
 
+    # use "Analysis" as portal_type unless explicitly set
+    portal_type = kwargs.pop("portal_type", "Analysis")
+
     # TODO Why do we need to copy interims from service instead of source?
     # Set the interims from the Service
     service_interims = service.getInterimFields()
@@ -104,7 +74,7 @@ def create_analysis(context, source, **kwargs):
 
     kwargs.update({
         "container": context,
-        "portal_type": "Analysis",
+        "portal_type": portal_type,
         "skip": ['Hidden', 'Attachment'],
         "id": analysis_id,
         "AnalysisService": api.get_uid(service),

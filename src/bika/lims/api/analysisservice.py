@@ -180,7 +180,6 @@ def check_keyword(keyword, instance=None):
     """Checks if the given service keyword is valid and unique. Returns an
     error message if not valid. None otherwise
     """
-
     # Ensure the format is valid
     if re.findall(RX_SERVICE_KEYWORD, keyword):
         return _("Validation failed: keyword contains invalid characters")

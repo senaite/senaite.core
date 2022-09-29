@@ -19,10 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
-from bika.lims.utils import tmpID
-from bika.lims.utils.analysis import copy_analysis_field_values
+from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import events as analysis_events
 
@@ -90,13 +88,9 @@ def after_retract(duplicate_analysis):
         return
 
     # Create a copy (retest) of the duplicate and assign to worksheet
-    ref_gid = duplicate_analysis.getReferenceAnalysesGroupID()
-    retest = _createObjectByType("DuplicateAnalysis", worksheet, tmpID())
-    copy_analysis_field_values(duplicate_analysis, retest)
-    retest.setAnalysis(duplicate_analysis.getAnalysis())
-    retest.setRetestOf(duplicate_analysis)
-    retest.setReferenceAnalysesGroupID(ref_gid)
-    retest.setResult(duplicate_analysis.getResult())
+    retest = create_analysis(worksheet, duplicate_analysis,
+                             portal_type="DuplicateAnalysis",
+                             RetestOf=duplicate_analysis)
     worksheet.addToLayout(retest, dest_slot)
     worksheet.setAnalyses(worksheet.getAnalyses() + [retest, ])
 
