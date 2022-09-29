@@ -303,6 +303,8 @@ class EmailView(BrowserView):
         body = setup.getEmailBodySamplePublication()
         template_context = {
             "client_name": self.client_name,
+            "lab_name": self.lab_name,
+            "lab_address": self.lab_address,
         }
         rendered_body = self.render_email_template(
             body, template_context=template_context)
@@ -360,6 +362,18 @@ class EmailView(BrowserView):
         """Returns the client name
         """
         return safe_unicode(self.context.Title())
+
+    @property
+    def lab_address(self):
+        """Returns the laboratory print address
+        """
+        return "<br/>".join(self.laboratory.getPrintAddress())
+
+    @property
+    def lab_name(self):
+        """Returns the laboratory name
+        """
+        return "<br/>".join(self.laboratory.getPrintAddress())
 
     @property
     def exit_url(self):
