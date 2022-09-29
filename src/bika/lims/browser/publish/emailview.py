@@ -498,7 +498,7 @@ class EmailView(BrowserView):
         """
 
         # allow to add translation for initial template
-        template = self.context.translate(template)
+        template = self.context.translate(_(template))
         recipients = self.email_recipients_and_responsibles
         if template_context is None:
             template_context = {
