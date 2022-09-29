@@ -360,10 +360,9 @@ def create_retest(analysis):
     parent = api.get_parent(analysis)
 
     # Create a copy of the original analysis
-    an_uid = api.get_uid(analysis)
-    retest = create_analysis(parent, analysis, RetestOf=an_uid)
-    retest.setResult("")
-    retest.setResultCaptureDate(None)
+    portal_type = api.get_portal_type(analysis)
+    retest = create_analysis(parent, analysis, portal_type=portal_type,
+                             RetestOf=analysis, Result="", CaptureDate=None)
 
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
