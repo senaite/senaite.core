@@ -50,10 +50,10 @@ from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.utils import mapply
-from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
@@ -189,22 +189,28 @@ def create(container, portal_type, *args, **kwargs):
     return obj
 
 
-def copy_object(source, container=None, *args, **kwargs):
-    """Creates a copy of the source object into the specified container. If
-    container is None, creates the copy inside the same container as the source
+def copy_object(source, container=None, portal_type=None, *args, **kwargs):
+    """Creates a copy of the source object. If container is None, creates the
+    copy inside the same container as the source. If portal_type is specified,
+    creates a new object of this type, and copies the values from source fields
+    to the destination object. Field values sent as kwargs have priority over
+    the field values from source.
 
     :param source: object from which create a copy
     :type source: ATContentType/DexterityContentType/CatalogBrain
-    :param container: container
+    :param container: destination container
     :type container: ATContentType/DexterityContentType/CatalogBrain
+    :param portal_type: destination portal type
     :returns: The new created object
     """
+    # Prevent circular dependencies
+    from security import check_permission
+    # Use same container as source unless explicitly set
     source = get_object(source)
     if not container:
         container = get_parent(source)
 
-    # Use same portal type as source unless explicitly set in kwargs
-    portal_type = kwargs.pop("portal_type", None)
+    # Use same portal type as source unless explicitly set
     if not portal_type:
         portal_type = get_portal_type(source)
 
@@ -231,15 +237,36 @@ def copy_object(source, container=None, *args, **kwargs):
     skip = dict([(item, True) for item in skip])
 
     # Update kwargs with the field values to copy from source
-    for field in get_fields(source).values():
-        field_name = field.getName()
+    fields = get_fields(source)
+    for field_name, field in fields.items():
+        # Prioritize field values passed as kwargs
         if field_name in kwargs:
             continue
+        # Skip framework internal fields by name
         if skip.get(field_name, False):
             continue
-        if skip.get(field.getType(), False):
+        # Skip fields of non-suitable types
+        if hasattr(field, "getType") and skip.get(field.getType(), False):
             continue
-        field_value = field.getRaw(source)
+        # Skip readonly fields
+        if getattr(field, "readonly", False):
+            continue
+        # Skip non-readable fields
+        perm = getattr(field, "read_permission", View)
+        if perm and not check_permission(perm, source):
+            continue
+
+        # do not wake-up objects unnecessarily
+        if hasattr(field, "getRaw"):
+            field_value = field.getRaw(source)
+        elif hasattr(field, "get_raw"):
+            field_value = field.get_raw(source)
+        elif hasattr(field, "getAccessor"):
+            accessor = field.getAccessor(source)
+            field_value = accessor()
+        else:
+            field_value = field.get(source)
+
         # Do a hard copy of value if mutable type
         if isinstance(field_value, (list, dict, set)):
             field_value = copy.deepcopy(field_value)

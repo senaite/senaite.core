@@ -91,9 +91,6 @@ def create_analysis(context, source, **kwargs):
         keyword = source.getKeyword()
         analysis_id = generate_analysis_id(context, keyword)
 
-    # set the fields from source to be ignored
-    ignore_fieldnames = ['Hidden', 'Attachment']
-
     # get the service to be assigned to the analysis
     service = source
     if not IAnalysisService.providedBy(source):
@@ -106,14 +103,15 @@ def create_analysis(context, source, **kwargs):
     service_interims = copy.deepcopy(service_interims)
 
     kwargs.update({
+        "container": context,
         "portal_type": "Analysis",
+        "skip": ['Hidden', 'Attachment'],
         "id": analysis_id,
-        "skip": ignore_fieldnames,
         "AnalysisService": api.get_uid(service),
         "InterimFields": service_interims,
     })
 
-    return api.copy_object(source, container=context, **kwargs)
+    return api.copy_object(source, **kwargs)
 
 
 def get_significant_digits(numeric_value):

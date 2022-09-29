@@ -5,6 +5,9 @@ Changelog
 2.3.0 (unreleased)
 ------------------
 
+- #2152 Added `api.copy_object` function for both DX and AT types
+- #2151 Improve the creation process of AT content types
+- #2151 Added `api.edit` function for both DX and AT types
 - #2151 Improve the creation process of AT content types
 - #2151 Added a naive edit function in the API
 - #2150 Performance: prioritize raw getter for AllowedMethods field
