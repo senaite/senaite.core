@@ -373,7 +373,7 @@ class EmailView(BrowserView):
     def lab_name(self):
         """Returns the laboratory name
         """
-        return "<br/>".join(self.laboratory.getPrintAddress())
+        return self.laboratory.getName()
 
     @property
     def exit_url(self):
