@@ -52,7 +52,6 @@ def create_analysis(context, source, **kwargs):
     # use "Analysis" as portal_type unless explicitly set
     portal_type = kwargs.pop("portal_type", "Analysis")
 
-    # TODO Why do we need to copy interims from service instead of source?
     # Set the interims from the Service
     service_interims = service.getInterimFields()
     # Avoid references from the analysis interims to the service interims
@@ -63,7 +62,7 @@ def create_analysis(context, source, **kwargs):
         "portal_type": portal_type,
         "skip": ['Hidden', 'Attachment'],
         "id": analysis_id,
-        "AnalysisService": api.get_uid(service),
+        "AnalysisService": service,
         "InterimFields": service_interims,
     })
 

@@ -45,7 +45,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.interfaces import IHideActionsMenu
 from transaction import savepoint
 from zope.i18n.locales import locales
-from zope.interface import Invalid
 from zope.interface.declarations import implements
 
 
@@ -53,13 +52,20 @@ class AnalysisServiceCopy(BrowserView):
     template = ViewPageTemplateFile("templates/analysisservice_copy.pt")
     created = []
 
-    def copy_service(self, src_uid, dst_title, dst_keyword):
-        try:
-            obj = serviceapi.copy_service(src_uid, dst_title, dst_keyword)
-            return api.get_title(obj)
-        except Invalid as err:
+    def copy_service(self, source, title, keyword):
+        """Creates a copy of the given AnalysisService object, but with the
+        given title and keyword
+        """
+        # Validate the keyword
+        err_msg = serviceapi.check_keyword(keyword)
+        if err_msg:
             self.context.plone_utils.addPortalMessage(
-                safe_unicode(err.message), "error")
+                safe_unicode(err_msg), "error")
+            return
+
+        # Create a copy
+        return api.copy_object(source, title=title, Keyword=keyword,
+                               ShortTitle="")
 
     def __call__(self):
         uc = getToolByName(self.context, "uid_catalog")
@@ -92,9 +98,9 @@ class AnalysisServiceCopy(BrowserView):
                     self.savepoint.rollback()
                     self.created = []
                     break
-                title = self.copy_service(s, titles[i], keywords[i])
-                if title:
-                    self.created.append(title)
+                service_copy = self.copy_service(s, titles[i], keywords[i])
+                if service_copy:
+                    self.created.append(api.get_title(service_copy))
             if len(self.created) > 1:
                 message = _("${items} were successfully created.",
                             mapping={
