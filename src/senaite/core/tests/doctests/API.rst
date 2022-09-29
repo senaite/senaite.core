@@ -80,8 +80,78 @@ Here we create a new `Client` in the `plone/clients` folder::
     >>> client
     <Client at /plone/clients/client-1>
 
-     >>> client.Title()
-     'Test Client'
+    >>> client.Title()
+    'Test Client'
+
+Created objects are properly indexed::
+
+    >>> services = self.portal.bika_setup.bika_analysisservices
+    >>> service = api.create(services, "AnalysisService",
+    ...                      title="Dummy service", Keyword="DUM")
+    >>> uid = api.get_uid(service)
+    >>> catalog = api.get_tool("senaite_catalog_setup")
+    >>> brains = catalog(portal_type="AnalysisService", UID=uid)
+    >>> brains[0].getKeyword
+    'DUM'
+
+
+Editing Content
+...............
+
+This function helps to edit a given content.
+
+Here we update the `Client` we created earlier, an AT::
+
+    >>> api.edit(client, AccountNumber="12343567890", BankName="BTC Bank")
+    >>> client.getAccountNumber()
+    '12343567890'
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+It also works for DX content types::
+
+    >>> api.edit(senaite_setup, site_logo_css="my-test-logo")
+    >>> senaite_setup.getSiteLogoCSS()
+    'my-test-logo'
+
+The field need to be writeable::
+
+    >>> field = client.getField("BankName")
+    >>> field.readonly = True
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Field 'BankName' is readonly
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+    >>> field.readonly = False
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+And user need to have enough permissions to change the value as well::
+
+    >>> field.write_permission = "Delete objects"
+    >>> api.edit(client, BankName="Electrum Coins")
+    Traceback (most recent call last):
+    [...]
+    Unauthorized: Field 'BankName' is not writeable
+
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+Unless we manually force to bypass the permissions check::
+
+    >>> api.edit(client, check_permissions=False, BankName="Electrum Coins")
+    >>> client.getBankName()
+    'Electrum Coins'
+
+Restore permission::
+
+    >>> field.write_permission = "Modify Portal Content"
 
 
 Getting a Tool

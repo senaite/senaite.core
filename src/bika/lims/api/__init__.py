@@ -47,8 +47,11 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
@@ -153,9 +156,17 @@ def create(container, portal_type, *args, **kwargs):
     fti = types_tool.getTypeInfo(portal_type)
 
     if fti.product:
+        # create the AT object
         obj = _createObjectByType(portal_type, container, id)
-        obj.processForm()
-        obj.edit(title=title, **kwargs)
+        # update the object with values
+        edit(obj, check_permissions=False, title=title, **kwargs)
+        # auto-id if required
+        if obj._at_rename_after_creation:
+            obj._renameAfterCreation(check_auto_id=True)
+        # we are no longer under creation
+        obj.unmarkCreationFlag()
+        # notify that the object was created
+        notify(ObjectInitializedEvent(obj))
     else:
         # newstyle factory
         factory = getUtility(IFactory, fti.factory)
@@ -174,6 +185,36 @@ def create(container, portal_type, *args, **kwargs):
         obj = container._getOb(obj.getId())
 
     return obj
+
+
+def edit(obj, check_permissions=True, **kwargs):
+    """Updates the values of object fields with the new values passed-in
+    """
+    # Prevent circular dependencies
+    from security import check_permission
+    fields = get_fields(obj)
+    for name, value in kwargs.items():
+        field = fields.get(name, None)
+        if not field:
+            continue
+
+        # cannot update readonly fields
+        readonly = getattr(field, "readonly", False)
+        if readonly:
+            raise ValueError("Field '{}' is readonly".format(name))
+
+        # check field writable permission
+        if check_permissions:
+            perm = getattr(field, "write_permission", ModifyPortalContent)
+            if perm and not check_permission(perm, obj):
+                raise Unauthorized("Field '{}' is not writeable".format(name))
+
+        # Set the value
+        if hasattr(field, "getMutator"):
+            mutator = field.getMutator(obj)
+            mapply(mutator, value)
+        else:
+            field.set(obj, value)
 
 
 def get_tool(name, context=None, default=_marker):
