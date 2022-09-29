@@ -80,8 +80,19 @@ Here we create a new `Client` in the `plone/clients` folder::
     >>> client
     <Client at /plone/clients/client-1>
 
-     >>> client.Title()
-     'Test Client'
+    >>> client.Title()
+    'Test Client'
+
+Created objects are properly indexed::
+
+    >>> services = self.portal.bika_setup.bika_analysisservices
+    >>> service = api.create(services, "AnalysisService",
+    ...                      title="Dummy service", Keyword="DUM")
+    >>> uid = api.get_uid(service)
+    >>> catalog = api.get_tool("senaite_catalog_setup")
+    >>> brains = catalog(portal_type="AnalysisService", UID=uid)
+    >>> brains[0].getKeyword
+    'DUM'
 
 
 Editing Content
