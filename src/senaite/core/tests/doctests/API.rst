@@ -1969,3 +1969,100 @@ portal_factory:
     >>> tmp_client = portal.clients.restrictedTraverse(tmp_path)
     >>> api.is_temporary(tmp_client)
     True
+
+Copying content
+...............
+
+This function helps to do it right and copies an existing content for you.
+
+Here we create a copy of the `Client` we created earlier::
+
+    >>> client.setTaxNumber('VAT12345')
+    >>> client2 = api.copy_object(client, title="Test Client 2")
+    >>> client2
+    <Client at /plone/clients/client-2>
+
+    >>> client2.Title()
+    'Test Client 2'
+
+    >>> client2.getTaxNumber()
+    'VAT12345'
+
+We can override source values on copy as well::
+
+    >>> client.setBankName('Peanuts Bank Ltd')
+    >>> client3 = api.copy_object(client, title="Test Client 3",
+    ...                           BankName="Nuts Bank Ltd")
+    >>> client3
+    <Client at /plone/clients/client-3>
+
+    >>> client3.Title()
+    'Test Client 3'
+
+    >>> client3.getTaxNumber()
+    'VAT12345'
+
+    >>> client3.getBankName()
+    'Nuts Bank Ltd'
+
+We can create a copy in a container other than source's::
+
+    >>> sample_points = self.portal.bika_setup.bika_samplepoints
+    >>> sample_point = api.create(sample_points, "SamplePoint", title="Test")
+    >>> sample_point
+    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+
+    >>> sample_point_copy = api.copy_object(sample_point, container=client3)
+    >>> sample_point_copy
+    <SamplePoint at /plone/clients/client-3/samplepoint-2>
+
+We can even create a copy to a different type::
+
+    >>> suppliers = self.portal.bika_setup.bika_suppliers
+    >>> supplier = api.copy_object(client, container=suppliers,
+    ...                            portal_type="Supplier", title="Supplier 1")
+    >>> supplier
+    <Supplier at /plone/bika_setup/bika_suppliers/supplier-1>
+
+    >>> supplier.Title()
+    'Supplier 1'
+
+    >>> supplier.getTaxNumber()
+    'VAT12345'
+
+    >>> supplier.getBankName()
+    'Peanuts Bank Ltd'
+
+It works for Dexterity types as well::
+
+    >>> sample_containers = self.portal.bika_setup.sample_containers
+    >>> sample_container = api.create(sample_containers, "SampleContainer",
+    ...                               title="Sample container 4",
+    ...                               description="Sample container to test",
+    ...                               capacity="100 ml")
+    >>> sample_container
+    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-4>
+
+    >>> sample_container.Title()
+    'Sample container 4'
+
+    >>> sample_container.Description()
+    'Sample container to test'
+
+    >>> sample_container.getCapacity()
+    '100 ml'
+
+    >>> sample_container_copy = api.copy_object(sample_container,
+    ...                                         title="Sample container 5",
+    ...                                         capacity="50 ml")
+    >>> sample_container_copy
+    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-5>
+
+    >>> sample_container_copy.Title()
+    'Sample container 5'
+
+    >>> sample_container_copy.Description()
+    'Sample container to test'
+
+    >>> sample_container_copy.getCapacity()
+    '50 ml'
