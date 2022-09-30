@@ -52,9 +52,8 @@ def create_analysis(context, source, **kwargs):
     # use "Analysis" as portal_type unless explicitly set
     portal_type = kwargs.pop("portal_type", "Analysis")
 
-    # Set the interims from the Service
+    # initialize interims with those from the service
     service_interims = service.getInterimFields()
-    # Avoid references from the analysis interims to the service interims
     service_interims = copy.deepcopy(service_interims)
 
     kwargs.update({
@@ -65,7 +64,6 @@ def create_analysis(context, source, **kwargs):
         "AnalysisService": service,
         "InterimFields": service_interims,
     })
-
     return api.copy_object(source, **kwargs)
 
 

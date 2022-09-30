@@ -295,6 +295,13 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return calculation
 
     @security.public
+    def setCalculation(self, value):
+        self.getField("Calculation").set(self, value)
+        # Reset interims so they get extended with those from calculation
+        interim_fields = copy.deepcopy(self.getInterimFields())
+        self.setInterimFields(interim_fields)
+
+    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
