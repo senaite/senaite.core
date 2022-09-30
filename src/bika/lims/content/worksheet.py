@@ -426,6 +426,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for the specified reference sample and increments in one unit the
             suffix.
         """
+        # TODO This hurts my eyes, @xispa cleanup this RefAnalysesGroupID asap
         prefix = reference.id + "-"
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
