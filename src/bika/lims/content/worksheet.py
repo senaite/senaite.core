@@ -409,7 +409,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Create the reference analysis
         gid = ref_gid and ref_gid or self.nextRefAnalysesGroupID(reference)
-        values = {"ReferenceAnalysesGroupID": gid}
+        values = {"ReferenceAnalysesGroupID": gid, "Worksheet": self}
         ref_analysis = create_reference_analysis(reference, service, **values)
 
         # Add the reference analysis into the worksheet
@@ -533,8 +533,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
 
         # Reindex
-        duplicate.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
-                                      "getReferenceAnalysesGroupID"])
         self.reindexObject(idxs=["getAnalysesUIDs"])
         return duplicate
 
