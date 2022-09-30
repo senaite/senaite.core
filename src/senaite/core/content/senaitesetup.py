@@ -40,9 +40,14 @@ class ISetupSchema(model.Schema):
 
     directives.widget("email_body_sample_publication", RichTextFieldWidget)
     email_body_sample_publication = RichTextField(
-        title=_(u"Publication Email Text"),
+        title=_("title_senaitesetup_publication_email_text",
+                default=u"Publication Email Text"),
         description=_(
-            "The default text that is used for the publication email."),
+            "description_senaitesetup_publication_email_text",
+            default=u"Set the email body text to be used by default "
+            "when sending out result reports to the selected recipients. "
+            "You can use reserved keywords: "
+            "$client_name, $recipients, $lab_name, $lab_address"),
         defaultFactory=default_email_body_sample_publication,
         required=False,
     )
