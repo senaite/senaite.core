@@ -297,7 +297,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
     @security.public
     def setCalculation(self, value):
         self.getField("Calculation").set(self, value)
+        # TODO Something weird here
         # Reset interims so they get extended with those from calculation
+        # see bika.lims.browser.fields.interimfieldsfield.set
         interim_fields = copy.deepcopy(self.getInterimFields())
         self.setInterimFields(interim_fields)
 
