@@ -43,6 +43,7 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_int
 from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils.analysis import create_duplicate
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
@@ -533,14 +534,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return None
 
         # Create the duplicate
-        duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
-        duplicate.setAnalysis(src_analysis)
-
-        # Set ReferenceAnalysesGroupID (same id for the analyses from
-        # the same Reference Sample and same Worksheet)
-        if not ref_gid:
-            ref_gid = self.nextRefAnalysesGroupID(duplicate.getRequest())
-        duplicate.setReferenceAnalysesGroupID(ref_gid)
+        duplicate = create_duplicate(src_analysis)
 
         # Add the duplicate into the worksheet
         self.addToLayout(duplicate, destination_slot)

@@ -630,20 +630,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return True
 
     @security.public
-    def getPrice(self):
-        """The function obtains the analysis' price without VAT and without
-        member discount
-        :return: the price (without VAT or Member Discount) in decimal format
-        """
-        analysis_request = self.aq_parent
-        client = analysis_request.aq_parent
-        if client.getBulkDiscount():
-            price = self.getBulkPrice()
-        else:
-            price = self.getField('Price').get(self)
-        return price
-
-    @security.public
     def getVATAmount(self):
         """Compute the VAT amount without member discount.
         :return: the result as a float

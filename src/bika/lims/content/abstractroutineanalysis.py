@@ -517,3 +517,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # Sanitize the conditions
         conditions = filter(None, [to_condition(cond) for cond in conditions])
         sample.setServiceConditions(other_conditions + conditions)
+
+    @security.public
+    def getPrice(self):
+        """The function obtains the analysis' price without VAT and without
+        member discount
+        :return: the price (without VAT or Member Discount) in decimal format
+        """
+        client = self.getClient()
+        if client and client.getBulkDiscount():
+            return self.getBulkPrice()
+        return self.getField('Price').get(self)

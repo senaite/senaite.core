@@ -33,7 +33,7 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import t
 from bika.lims.utils import to_unicode as _u
-from bika.lims.utils.analysis import create_analysis
+from bika.lims.utils.analysis import create_reference_analysis
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -273,7 +273,7 @@ class ReferenceSample(BaseFolder):
         :returns: the newly created Reference Analysis
         :rtype: string
         """
-        return create_analysis(self, service, portal_type="ReferenceAnalysis")
+        return create_reference_analysis(self, service)
 
 
     security.declarePublic('getServices')

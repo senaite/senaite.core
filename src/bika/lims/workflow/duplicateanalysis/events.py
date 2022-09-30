@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.utils.analysis import create_retest
 from bika.lims.utils.analysis import generate_analysis_id
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import events as analysis_events
 
 
@@ -87,5 +88,19 @@ def after_retract(duplicate_analysis):
                     .format(duplicate_analysis.getId(), worksheet.getId()))
         return
 
-    # Create a copy (retest) of the duplicate and assign to worksheet
-    create_retest(duplicate_analysis)
+    # Create a copy (retest) of the duplicate, but with results preserved
+    kwargs = {
+        "Result": duplicate_analysis.getResult(),
+        "InterimFields": duplicate_analysis.getInterimFields()
+    }
+    retest = create_retest(duplicate_analysis, **kwargs)
+
+    # Assign assign the retest to worksheet
+    worksheet.addToLayout(retest, dest_slot)
+    worksheet.setAnalyses(worksheet.getAnalyses() + [retest, ])
+
+    # Reindex
+    worksheet.reindexObject(idxs=["getAnalysesUIDs"])
+
+    # Try to rollback the worksheet to prevent inconsistencies
+    doActionFor(worksheet, "rollback_to_open")

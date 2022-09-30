@@ -18,12 +18,12 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
 import math
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 
@@ -58,17 +58,25 @@ def create_analysis(context, source, **kwargs):
     # use "Analysis" as portal_type unless explicitly set
     portal_type = kwargs.pop("portal_type", "Analysis")
 
-    # initialize interims with those from the service
-    service_interims = service.getInterimFields()
-    service_interims = copy.deepcopy(service_interims)
+    # initialize interims with those from the service if not explicitly set
+    interim_fields = kwargs.pop("InterimFields", service.getInterimFields())
+
+    # do not copy these fields from source
+    skip_fields = [
+        "Hidden",
+        "Attachment",
+        "Result",
+        "ResultCaptureDate",
+        "Worksheet"
+    ]
 
     kwargs.update({
         "container": context,
         "portal_type": portal_type,
-        "skip": ['Hidden', 'Attachment'],
+        "skip": skip_fields,
         "id": analysis_id,
         "AnalysisService": service,
-        "InterimFields": service_interims,
+        "InterimFields": interim_fields,
     })
     return api.copy_object(source, **kwargs)
 
@@ -353,27 +361,63 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     return formatDecimalMark(formatted, decimalmark)
 
 
-def create_retest(analysis):
+def create_retest(analysis, **kwargs):
     """Creates a retest of the given analysis
     """
     if not IRequestAnalysis.providedBy(analysis):
         raise ValueError("Type not supported: {}".format(repr(type(analysis))))
 
-    # Support multiple retests by prefixing keyword with *-0, *-1, etc.
-    parent = api.get_parent(analysis)
-
     # Create a copy of the original analysis
-    portal_type = api.get_portal_type(analysis)
-    retest = create_analysis(parent, analysis, portal_type=portal_type,
-                             RetestOf=analysis, Result="", CaptureDate=None)
+    parent = api.get_parent(analysis)
+    kwargs.update({
+        "portal_type": api.get_portal_type(analysis),
+        "RetestOf": analysis,
+    })
+    retest = create_analysis(parent, analysis, **kwargs)
 
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(retest)
 
-    retest.reindexObject()
     return retest
+
+
+def create_duplicate(analysis, **kwargs):
+    """Creates a duplicate of the source analysis
+    """
+    if not IRequestAnalysis.providedBy(analysis):
+        raise ValueError("Type not supported: {}".format(repr(type(analysis))))
+
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        raise ValueError("Cannot create a duplicate without worksheet")
+
+    sample_id = analysis.getRequestID()
+    kwargs.update({
+        "portal_type": "DuplicateAnalysis",
+        "Analysis": analysis,
+        "Worksheet": worksheet,
+        "ReferenceAnalysesGroupID": "{}-D".format(sample_id),
+    })
+
+    return create_analysis(worksheet, analysis, **kwargs)
+
+
+def create_reference_analysis(container, source, **kwargs):
+    """Creates a reference analysis
+    """
+    container = api.get_object(container)
+    if not IReferenceSample.providedBy(container):
+        container_type = type(container)
+        raise ValueError("Type not supported: {}".format(repr(container_type)))
+
+    ref_type = "b" if container.getBlank() else "c"
+    kwargs.update({
+        "portal_type": "ReferenceAnalysis",
+        "ReferenceType": ref_type,
+    })
+    return create_analysis(container, source, **kwargs)
 
 
 def generate_analysis_id(instance, keyword):
