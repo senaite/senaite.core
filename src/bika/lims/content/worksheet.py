@@ -44,6 +44,7 @@ from bika.lims.utils import tmpID
 from bika.lims.utils import to_int
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils.analysis import create_duplicate
+from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
@@ -407,25 +408,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return None
 
         # Create the reference analysis
-        ref_analysis = reference.addReferenceAnalysis(service)
-        if not ref_analysis:
-            logger.warning("Unable to create a reference analysis for "
-                           "reference '{0}' and service '{1}'"
-                           .format(reference.getId(), service.getKeyword()))
-            return None
-
-        # Set ReferenceAnalysesGroupID (same id for the analyses from
-        # the same Reference Sample and same Worksheet)
         gid = ref_gid and ref_gid or self.nextRefAnalysesGroupID(reference)
-        ref_analysis.setReferenceAnalysesGroupID(gid)
+        values = {"ReferenceAnalysesGroupID": gid}
+        ref_analysis = create_reference_analysis(reference, service, **values)
 
         # Add the reference analysis into the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         self.addToLayout(ref_analysis, slot)
 
         # Reindex
-        ref_analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
-                                         "getReferenceAnalysesGroupID"])
         self.reindexObject(idxs=["getAnalysesUIDs"])
         return ref_analysis
 
@@ -1393,7 +1384,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'ReferenceAnalysis':
                 service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
-                new_reference = reference.addReferenceAnalysis(service_uid)
+                new_reference = create_reference_analysis(reference, service_uid)
                 reference_type = new_reference.getReferenceType()
                 new_analysis_uid = api.get_uid(new_reference)
                 position = analysis_positions[analysis.UID()]

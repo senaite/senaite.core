@@ -38,6 +38,7 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
+from bika.lims.utils.analysis import create_reference_analysis
 from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from Products.Archetypes.atapi import BooleanField
@@ -629,15 +630,11 @@ class Instrument(ATFolder):
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            ref_analysis = reference.addReferenceAnalysis(service)
 
-            # Set ReferenceAnalysesGroupID (same id for the analyses from
-            # the same Reference Sample and same Worksheet)
-            # https://github.com/bikalabs/Bika-LIMS/issues/931
-            ref_analysis.setReferenceAnalysesGroupID(refgid)
-            ref_analysis.setInstrument(self)
-            ref_analysis.reindexObject()
-            addedanalyses.append(ref_analysis)
+            # Create the reference analysis
+            values = {"ReferenceAnalysesGroupID": refgid, "Instrument": self}
+            analysis = create_reference_analysis(reference, service, **values)
+            addedanalyses.append(analysis)
 
         # Set DisposeUntilNextCalibrationTest to False
         if (len(addedanalyses) > 0):

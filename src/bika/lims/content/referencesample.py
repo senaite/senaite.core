@@ -33,7 +33,6 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import t
 from bika.lims.utils import to_unicode as _u
-from bika.lims.utils.analysis import create_reference_analysis
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -249,32 +248,6 @@ class ReferenceSample(BaseFolder):
     def getReferenceAnalyses(self):
         """ return all analyses linked to this reference sample """
         return self.objectValues('ReferenceAnalysis')
-
-    security.declarePublic('getReferenceAnalysesService')
-    def getReferenceAnalysesService(self, service_uid):
-        """ return all analyses linked to this reference sample for a service """
-        analyses = []
-        for analysis in self.objectValues('ReferenceAnalysis'):
-            if analysis.getServiceUID() == service_uid:
-                analyses.append(analysis)
-        return analyses
-
-    security.declarePublic('addReferenceAnalysis')
-    def addReferenceAnalysis(self, service):
-        """
-        Creates a new Reference Analysis object based on this Sample
-        Reference, with the type passed in and associates the newly
-        created object to the Analysis Service passed in.
-
-        :param service: Object, brain or UID of the Analysis Service
-        :param reference_type: type of ReferenceAnalysis, where 'b' is is
-        Blank and 'c' is Control
-        :type reference_type: A String
-        :returns: the newly created Reference Analysis
-        :rtype: string
-        """
-        return create_reference_analysis(self, service)
-
 
     security.declarePublic('getServices')
     def getServices(self):
