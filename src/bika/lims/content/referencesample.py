@@ -29,12 +29,11 @@ from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import t
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils.analysis import create_analysis
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -274,41 +273,7 @@ class ReferenceSample(BaseFolder):
         :returns: the newly created Reference Analysis
         :rtype: string
         """
-        if api.is_uid(service) or api.is_brain(service):
-            return self.addReferenceAnalysis(api.get_object(service))
-
-        if not IAnalysisService.providedBy(service):
-            return None
-
-        interim_fields = service.getInterimFields()
-        analysis = api.create(self, "ReferenceAnalysis")
-        # Copy all the values from the schema
-        # TODO Add Service as a param in ReferenceAnalysis constructor and do
-        #      this logic there instead of here
-        discard = ['id', ]
-        keys = service.Schema().keys()
-        for key in keys:
-            if key in discard:
-                continue
-            if key not in analysis.Schema().keys():
-                continue
-            val = service.getField(key).get(service)
-            # Campbell's mental note:never ever use '.set()' directly to a
-            # field. If you can't use the setter, then use the mutator in order
-            # to give the value. We have realized that in some cases using
-            # 'set' when the value is a string, it saves the value
-            # as unicode instead of plain string.
-            # analysis.getField(key).set(analysis, val)
-            mutator_name = analysis.getField(key).mutator
-            mutator = getattr(analysis, mutator_name)
-            mutator(val)
-        analysis.setAnalysisService(service)
-        ref_type = self.getBlank() and 'b' or 'c'
-        analysis.setReferenceType(ref_type)
-        analysis.setInterimFields(interim_fields)
-        analysis.unmarkCreationFlag()
-        renameAfterCreation(analysis)
-        return analysis
+        return create_analysis(self, service, portal_type="ReferenceAnalysis")
 
 
     security.declarePublic('getServices')
@@ -351,5 +316,6 @@ class ReferenceSample(BaseFolder):
         """ dispose sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
+
 
 registerType(ReferenceSample, PROJECTNAME)

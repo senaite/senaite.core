@@ -23,6 +23,7 @@ import math
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 
@@ -38,6 +39,11 @@ def create_analysis(context, source, **kwargs):
     :returns: Analysis object that was created
     :rtype: Analysis
     """
+    # Ensure we have an object as source
+    source = api.get_object(source)
+    if not IBaseAnalysis.providedBy(source):
+        raise ValueError("Type not supported: {}".format(repr(type(source))))
+
     # compute the id of the new analysis if necessary
     analysis_id = kwargs.get("id")
     if not analysis_id:
