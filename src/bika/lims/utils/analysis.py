@@ -384,7 +384,7 @@ def create_retest(analysis, **kwargs):
 
 
 def create_duplicate(analysis, **kwargs):
-    """Creates a duplicate of the source analysis
+    """Creates a duplicate of the given analysis
     """
     if not IRequestAnalysis.providedBy(analysis):
         raise ValueError("Type not supported: {}".format(repr(type(analysis))))
@@ -404,20 +404,20 @@ def create_duplicate(analysis, **kwargs):
     return create_analysis(worksheet, analysis, **kwargs)
 
 
-def create_reference_analysis(container, source, **kwargs):
-    """Creates a reference analysis
+def create_reference_analysis(reference_sample, source, **kwargs):
+    """Creates a reference analysis inside the referencesample
     """
-    container = api.get_object(container)
-    if not IReferenceSample.providedBy(container):
-        container_type = type(container)
-        raise ValueError("Type not supported: {}".format(repr(container_type)))
+    ref = api.get_object(reference_sample)
+    if not IReferenceSample.providedBy(ref):
+        raise ValueError("Type not supported: {}".format(repr(type(ref))))
 
-    ref_type = "b" if container.getBlank() else "c"
+    # Set the type of the reference analysis
+    ref_type = "b" if ref.getBlank() else "c"
     kwargs.update({
         "portal_type": "ReferenceAnalysis",
         "ReferenceType": ref_type,
     })
-    return create_analysis(container, source, **kwargs)
+    return create_analysis(ref, source, **kwargs)
 
 
 def generate_analysis_id(instance, keyword):
