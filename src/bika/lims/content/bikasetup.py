@@ -625,10 +625,15 @@ schema = BikaFolderSchema.copy() + Schema((
         # Needed to fetch the default value from the registry
         edit_accessor="getEmailBodySamplePublication",
         widget=RichWidget(
-            label=_("Email body for Sample publication notifications"),
+            label=_(
+                "label_bikasetup_email_body_sample_publication",
+                "Email body for Sample publication notifications"),
             description=_(
-                "The default text that is used for the publication email. "
-                " sending publication reports."),
+                "description_bikasetup_email_body_sample_publication",
+                default="Set the email body text to be used by default when "
+                "sending out result reports to the selected recipients. "
+                "You can use reserved keywords: "
+                "$client_name, $recipients, $lab_name, $lab_address"),
             default_mime_type="text/x-html",
             output_mime_type="text/x-html",
             allow_file_upload=False,
