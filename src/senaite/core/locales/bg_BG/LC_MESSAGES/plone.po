@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-09-29 17:59+0000\n"
+"POT-Creation-Date: 2022-10-02 13:39+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bulgarian (Bulgaria) (https://www.transifex.com/senaite/teams/87045/bg_BG/)\n"
@@ -332,16 +332,22 @@ msgstr ""
 msgid "description_debug_mode"
 msgstr ""
 
+#. here. Note that this doesn't actually delete the group or user, it is only
+#. removed from this group."
 #. Default: "You can add or remove groups and users from this particular group here. Note that this doesn't actually delete the group or user, it is only removed from this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:78
 msgid "description_group_members_of"
 msgstr ""
 
+#. business units. Groups are not directly related to permissions on a global
+#. level, you normally use Roles for that - and let certain Groups have a
+#. particular role."
 #. Default: "Groups are logical collections of users, such as departments and business units. Groups are not directly related to permissions on a global level, you normally use Roles for that - and let certain Groups have a particular role."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:55
 msgid "description_groups_management"
 msgstr ""
 
+#. membership in another group."
 #. Default: "The symbol ${image_link_icon} indicates a role inherited from membership in another group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:66
 msgid "description_groups_management2"
@@ -355,6 +361,8 @@ msgstr ""
 msgid "description_manage_contextual_portlets"
 msgstr ""
 
+#. listing of groups, so you may not see the groups defined by those plugins
+#. unless doing a specific search."
 #. Default: "Note: Some or all of your PAS groups source plugins do not allow listing of groups, so you may not see the groups defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:72
 msgid "description_pas_group_listing"
@@ -367,6 +375,8 @@ msgstr ""
 msgid "description_pas_show_all_search_results"
 msgstr ""
 
+#. of users, so you may not see the users defined by those plugins unless
+#. doing a specific search."
 #. Default: "Some or all of your PAS user source plugins do not allow listing of users, so you may not see the users defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:57
 msgid "description_pas_users_listing"
@@ -485,11 +495,13 @@ msgstr ""
 msgid "heading_version_overview"
 msgstr ""
 
+#. and type the document as you usually do."
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
 msgid "help_format_wysiwyg"
 msgstr ""
 
+#. creation."
 #. Default: "A unique identifier for the group. Can not be changed after creation."
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:34
 msgid "help_groupname"
@@ -967,6 +979,7 @@ msgstr ""
 msgid "unassigned"
 msgstr ""
 
+#. ${image_link_icon} indicates a role inherited from membership in a group."
 #. Default: "Note that roles set here apply directly to a user. The symbol ${image_link_icon} indicates a role inherited from membership in a group."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:52
 msgid "user_roles_note"

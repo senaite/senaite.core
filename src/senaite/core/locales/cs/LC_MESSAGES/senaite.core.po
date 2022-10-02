@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-09-29 17:58+0000\n"
+"POT-Creation-Date: 2022-10-02 13:39+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: trendspotter <jirka.p@volny.cz>, 2022\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Domain: DOMAIN\n"
 "Language: cs\n"
 
-#: bika/lims/content/bikasetup.py:839
+#: bika/lims/content/bikasetup.py:844
 msgid " <p>The ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client ID</td><td>{clientId}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, clientId, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
 msgstr " <p>ID Server poskytuje jedinečné sekvenční ID pro objekty, jako jsou Vzorky, Pracovní listy atd., na základě formátu určeného pro každý typ obsahu.</p><p>Formát je konstruován podobně jako formátovací syntaxe jazyka Python pomocí předdefinovaných proměnných pro každý typ obsahu a postupuje ID pomocí sekvenčního čísla \"seq\" a jeho výplně v podobě počtu číslic, např. \"seq\". např. \"03d\" pro sekvenci ID od 001 do 999. </p><p>Alfanumerické předpony pro ID jsou zahrnuty stejně jako ve formátech, např. WS pro Worksheet v WS-{seq:03d} vytváří sekvenční ID Worksheet: WS-001, WS-002, WS-003 atd. </p><p>Pro dynamické generování alfanumerických a sekvenčních ID lze použít zástupný znak {alfa}. Např. WS-{alpha:2a3d} vytvoří WS-AA001, WS-AA002, WS-AB034 atd.</p><p>Mezi proměnné, které lze použít, patří:<table><tr><th style='width:150px'>Typ obsahu</th><th>Proměnné</th></tr><tr><td>Id klienta</td><td>{clientId}</td></tr><tr><td>Rok</td><td>{year}</td></tr><tr><td>Id vzorku</td><td>{sampleId}</td></tr><tr><td>Typ vzorku</td><td>{sampleType}</td></tr><tr><td>Datum vzorkování</td><td>{samplingDate}</td></tr><tr><td>Datum odběru vzorku</td><td>{dateSampled}</td></tr></table></p><p>Nastavení konfigurace:<ul><li>format:<ul><li>řetězec formátu pythonu vytvořený z předdefinovaných proměnných, jako je sampleId, clientId, sampleType. </li><li>Speciální proměnná 'seq' musí být umístěna jako poslední v typu řetězce theformat</li></ul></li><li>typ sequence: [generated|counter]</li><li>context: pokud je typ counter, poskytuje kontext počítací funkci</li><li>counter type: [backreference|contained]</li><li>counter reference: parametr počítací funkce</li><li>prefix: výchozí předpona, pokud není uveden ve formátu řetězce</li><li>split length: počet částí, které mají být zahrnuty do předpony</li></ul></p>"
 
@@ -131,7 +131,7 @@ msgstr "(Nebezpečný)"
 msgid "(Required)"
 msgstr "(Požadováno)"
 
-#: senaite/core/browser/setup/templates/email_body_sample_publication.pt:25
+#: senaite/core/browser/setup/templates/email_body_sample_publication.pt:26
 msgid "*** This is an automatically generated email, please do not reply to this message. ***"
 msgstr "*** Toto je automaticky generovaný e-mail, na tuto zprávu neodpovídejte. ***"
 
@@ -296,7 +296,7 @@ msgstr "Do všech analýz přidejte pole s poznámkami"
 msgid "Add analyses from the selected profile to the template"
 msgstr "Přidat do šablony analýzy z vybraného profilu"
 
-#: senaite/core/content/senaitesetup.py:74
+#: senaite/core/content/senaitesetup.py:79
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
 msgstr ""
 
@@ -619,7 +619,7 @@ msgstr "Musí být zadán analytik."
 msgid "Any"
 msgstr "Jakýkoli"
 
-#: senaite/core/content/senaitesetup.py:123
+#: senaite/core/content/senaitesetup.py:128
 msgid "Appearance"
 msgstr ""
 
@@ -769,7 +769,7 @@ msgstr "Automatické vyplnění"
 msgid "Automatic log-off"
 msgstr "Automatické odhlášení"
 
-#: bika/lims/content/bikasetup.py:721
+#: bika/lims/content/bikasetup.py:726
 msgid "Automatic sticker printing"
 msgstr "Automatický tisk nálepek"
 
@@ -1408,7 +1408,7 @@ msgstr "Nelze převést '{}' na celé číslo"
 msgid "Could not load PDF for sample {}"
 msgstr "Nelze načíst PDF pro vzorek {}"
 
-#: bika/lims/browser/publish/emailview.py:525
+#: bika/lims/browser/publish/emailview.py:539
 msgid "Could not send email to {0} ({1})"
 msgstr "Nelze odeslat e-mail na adresu {0} ({1})"
 
@@ -1723,7 +1723,7 @@ msgstr "Výchozí kategorie"
 msgid "Default container for new sample partitions"
 msgstr "Výchozí kontejner pro nové ukázkové oddíly"
 
-#: bika/lims/content/bikasetup.py:914
+#: bika/lims/content/bikasetup.py:919
 msgid "Default count of Sample to add."
 msgstr "Výchozí počet vzorků k přidání."
 
@@ -1793,7 +1793,7 @@ msgstr "Výchozí časové cykly pro analýzy"
 msgid "Default value"
 msgstr "Implicitní hodnota"
 
-#: bika/lims/content/bikasetup.py:915
+#: bika/lims/content/bikasetup.py:920
 msgid "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
 msgstr "Výchozí hodnota „Počet vzorků“, když uživatelé kliknou na tlačítko „PŘIDAT“ a vytvoří se nové vzorky"
 
@@ -2102,17 +2102,13 @@ msgstr "E-mailová adresa"
 msgid "Email Log"
 msgstr "Protokol e-mailů"
 
-#: bika/lims/content/bikasetup.py:689
+#: bika/lims/content/bikasetup.py:694
 msgid "Email body for Sample Invalidation notifications"
 msgstr "Tělo e-mailu pro oznámení o zneplatnění vzorku"
 
-#: bika/lims/content/bikasetup.py:653
+#: bika/lims/content/bikasetup.py:658
 msgid "Email body for Sample Rejection notifications"
 msgstr "Tělo e-mailu pro oznámení o odmítnutí vzorku"
-
-#: bika/lims/content/bikasetup.py:628
-msgid "Email body for Sample publication notifications"
-msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:158
 msgid "Email cancelled"
@@ -2122,11 +2118,11 @@ msgstr "E-mail byl zrušen"
 msgid "Email notification"
 msgstr "Upozornění e-mailem"
 
-#: bika/lims/content/bikasetup.py:678
+#: bika/lims/content/bikasetup.py:683
 msgid "Email notification on Sample invalidation"
 msgstr "E-mailové oznámení o zneplatnění vzorku"
 
-#: bika/lims/content/bikasetup.py:643
+#: bika/lims/content/bikasetup.py:648
 msgid "Email notification on Sample rejection"
 msgstr "E-mailové oznámení o odmítnutí vzorku"
 
@@ -2162,7 +2158,7 @@ msgstr "Povolit plánování vzorkování"
 msgid "Enable global Audit Log"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:51
+#: senaite/core/content/senaitesetup.py:56
 msgid "Enable global Auditlog"
 msgstr ""
 
@@ -2174,7 +2170,7 @@ msgstr "Povolit pracovní postup odběru vzorků pro vytvořený vzorek"
 msgid "Enable the Results Report Printing workflow"
 msgstr "Povolte pracovní postup Tisk sestavy výsledků"
 
-#: bika/lims/content/bikasetup.py:902
+#: bika/lims/content/bikasetup.py:907
 msgid "Enable the rejection workflow"
 msgstr "Povolit pracovní postup odmítnutí"
 
@@ -2417,7 +2413,7 @@ msgstr "Složka, ve které budou výsledky uloženy"
 msgid "For each interface of this instrument,                       you can define a folder where                       the system should look for the results files while                       automatically importing results. Having a folder                       for each Instrument and inside that folder creating                       different folders for each of its Interfaces                       can be a good approach. You can use Interface codes                       to be sure that folder names are unique."
 msgstr "Pro každé rozhraní tohoto přístroje můžete definovat složku, kde by systém měl hledat soubory výsledků při automatickém importu výsledků. Dobrým přístupem může být složka pro každý přístroj a uvnitř složky, která vytvoří různé složky pro každé ze svých rozhraní. Pomocí kódů rozhraní si můžete být jisti, že názvy složek jsou jedinečné."
 
-#: bika/lims/content/bikasetup.py:837
+#: bika/lims/content/bikasetup.py:842
 msgid "Formatting Configuration"
 msgstr "Konfigurace formátování"
 
@@ -2543,7 +2539,7 @@ msgstr "IBN"
 msgid "ID"
 msgstr "ID"
 
-#: bika/lims/content/bikasetup.py:893
+#: bika/lims/content/bikasetup.py:898
 msgid "ID Server Values"
 msgstr "Hodnoty ID serveru"
 
@@ -2639,7 +2635,7 @@ msgstr "Pokud váš vzorec vyžaduje speciální funkci z externí knihovny Pyth
 msgid "Ignore in Report"
 msgstr "Ignorovat ve Zprávě"
 
-#: senaite/core/content/senaitesetup.py:82
+#: senaite/core/content/senaitesetup.py:87
 msgid "Immediate results entry"
 msgstr ""
 
@@ -3059,7 +3055,7 @@ msgstr "Jazyk"
 msgid "Large Sticker"
 msgstr "Velký štítek"
 
-#: bika/lims/content/bikasetup.py:756
+#: bika/lims/content/bikasetup.py:761
 msgid "Large sticker"
 msgstr "Velká nálepka"
 
@@ -3778,7 +3774,7 @@ msgstr ""
 msgid "Note: You can also drag and drop the attachment rows to change the order they appear in the report."
 msgstr "Poznámka: Můžete také přetáhnout řádky příloh a změnit jejich pořadí v sestavě."
 
-#: senaite/core/content/senaitesetup.py:115
+#: senaite/core/content/senaitesetup.py:120
 msgid "Notifications"
 msgstr ""
 
@@ -3829,7 +3825,7 @@ msgid "Number of analysis requested and published per department and expresed as
 msgstr "Počet požadovaných a zveřejněných analýz na oddělení a vyjádřený jako procento všech provedených analýz"
 
 #: bika/lims/browser/templates/stickers_preview.pt:189
-#: bika/lims/content/bikasetup.py:766
+#: bika/lims/content/bikasetup.py:771
 msgid "Number of copies"
 msgstr "Počet kopií"
 
@@ -4315,10 +4311,6 @@ msgstr "Provincie"
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:90
 msgid "Public. Lag"
 msgstr "Prodleva zveřejnění"
-
-#: senaite/core/content/senaitesetup.py:43
-msgid "Publication Email Text"
-msgstr ""
 
 #: bika/lims/content/analysisrequest.py:717
 msgid "Publication Specification"
@@ -5209,7 +5201,7 @@ msgstr "Seeding key {} až {}"
 msgid "Select"
 msgstr "Vybrat"
 
-#: bika/lims/content/bikasetup.py:722
+#: bika/lims/content/bikasetup.py:727
 msgid "Select 'Register' if you want stickers to be automatically printed when new Samples or sample records are created. Select 'Receive' to print stickers when Samples or Samples are received. Select 'None' to disable automatic printing"
 msgstr "Vyberte „Registrovat“, pokud chcete, aby se štítky automaticky vytvářely při vytváření nových vzorků nebo záznamů vzorků. Vyberte 'Přijmout' pro tisk štítků po přijetí vzorků nebo záznamů vzorků. Výběrem „Žádný“ deaktivujete automatický tisk"
 
@@ -5305,11 +5297,11 @@ msgstr "Vybrat preferovaný přístroj"
 msgid "Select the types that this ID is used to identify."
 msgstr "Vyberte typy, které se toto ID používá k identifikaci."
 
-#: bika/lims/content/bikasetup.py:679
+#: bika/lims/content/bikasetup.py:684
 msgid "Select this to activate automatic notifications via email to the Client and Lab Managers when a Sample is invalidated."
 msgstr "Vyberte tuto možnost, chcete-li aktivovat automatická oznámení prostřednictvím e-mailu klientovi a vedoucím laboratoře v případě zneplatnění vzorku."
 
-#: bika/lims/content/bikasetup.py:644
+#: bika/lims/content/bikasetup.py:649
 msgid "Select this to activate automatic notifications via email to the Client when a Sample is rejected."
 msgstr "Vyberte tuto možnost, chcete-li aktivovat automatická upozornění prostřednictvím e-mailu klientovi, když je vzorek odmítnut."
 
@@ -5317,7 +5309,7 @@ msgstr "Vyberte tuto možnost, chcete-li aktivovat automatická upozornění pro
 msgid "Select this to activate the dashboard as a default front page."
 msgstr "Tuto možnost vyberte, chcete-li aktivovat řídicí panel jako výchozí přední stránku."
 
-#: bika/lims/content/bikasetup.py:903
+#: bika/lims/content/bikasetup.py:908
 msgid "Select this to activate the rejection workflow for Samples. A 'Reject' option will be displayed in the actions menu."
 msgstr "Vyberte tuto možnost, chcete-li aktivovat pracovní postup odmítnutí pro vzorky. V nabídce akcí se zobrazí možnost „Odmítnout“."
 
@@ -5345,15 +5337,15 @@ msgstr "Vyberte, zda chcete klientským kontaktům zobrazit ukázkové oddíly. 
 msgid "Select which Analyses should be included on the Worksheet"
 msgstr "Vyberte, které analýzy se mají na pracovním listu zahrnout"
 
-#: bika/lims/content/bikasetup.py:757
+#: bika/lims/content/bikasetup.py:762
 msgid "Select which sticker should be used as the 'large' sticker by default"
 msgstr "Vyberte, který štítek by měl být ve výchozím nastavení použit jako „velký“"
 
-#: bika/lims/content/bikasetup.py:746
+#: bika/lims/content/bikasetup.py:751
 msgid "Select which sticker should be used as the 'small' sticker by default"
 msgstr "Vyberte, který štítek by měl být ve výchozím nastavení použit jako „malý“ štítek"
 
-#: bika/lims/content/bikasetup.py:735
+#: bika/lims/content/bikasetup.py:740
 msgid "Select which sticker to print when automatic sticker printing is enabled"
 msgstr "Vyberte, který štítek se má tisknout, když je povolen automatický tisk štítku"
 
@@ -5425,7 +5417,7 @@ msgstr "Nastavení poznámek pro vybrané analýzy"
 msgid "Set the Sample Rejection workflow and the reasons"
 msgstr "Nastavte pracovní postup Odmítnutí vzorku a důvody"
 
-#: bika/lims/content/bikasetup.py:767
+#: bika/lims/content/bikasetup.py:772
 msgid "Set the default number of copies to be printed for each sticker"
 msgstr "Nastavte výchozí počet kopií, které se mají vytisknout pro každou nálepku"
 
@@ -5437,11 +5429,11 @@ msgstr "Nastavte úkol údržby jako uzavřený."
 msgid "Set the specification to be used before publishing a Sample."
 msgstr "Nastavit specifikaci, která bude použita před publikováním vzorku."
 
-#: bika/lims/content/bikasetup.py:662
+#: bika/lims/content/bikasetup.py:667
 msgid "Set the text for the body of the email to be sent to the Sample's client contact if the option 'Email notification on Sample rejection' is enabled. You can use reserved keywords: $sample_id, $sample_link, $reasons, $lab_address"
 msgstr "Pokud je aktivována možnost „Oznámení e-mailem o odmítnutí vzorku“, nastavte text pro e-mail, který má být zaslán klientskému kontaktu vzorku. Můžete použít vyhrazená klíčová slova: $sample_id, $sample_link, $reasons, $lab_address"
 
-#: bika/lims/content/bikasetup.py:703
+#: bika/lims/content/bikasetup.py:708
 msgid "Set the text for the body of the email to be sent, , if option 'Email notification on Sample 'invalidation' enabled,  to the Sample's client contact. You can use reserved keywords: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
 msgstr "Nastavte text pro tělo e-mailu, který má být odeslán, pokud je povolena možnost „Oznámení e-mailem o neplatnosti vzorku“, kontaktu klienta s ukázkou. Můžete použít vyhrazená klíčová slova: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
 
@@ -5516,11 +5508,11 @@ msgstr "Kód webu"
 msgid "Site Description"
 msgstr "Popis webu"
 
-#: senaite/core/content/senaitesetup.py:67
+#: senaite/core/content/senaitesetup.py:72
 msgid "Site Logo"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:73
+#: senaite/core/content/senaitesetup.py:78
 msgid "Site Logo CSS"
 msgstr ""
 
@@ -5537,7 +5529,7 @@ msgstr "Velikost"
 msgid "Small Sticker"
 msgstr "Malý štítek"
 
-#: bika/lims/content/bikasetup.py:745
+#: bika/lims/content/bikasetup.py:750
 msgid "Small sticker"
 msgstr "Malý štítek"
 
@@ -5610,7 +5602,7 @@ msgstr "Stav"
 msgid "Sticker"
 msgstr "Štítek"
 
-#: bika/lims/content/bikasetup.py:734
+#: bika/lims/content/bikasetup.py:739
 msgid "Sticker templates"
 msgstr "Šablony nálepek"
 
@@ -5884,14 +5876,6 @@ msgstr "Bude použita desetinné znaménko vybrané v nastavení Bika."
 msgid "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 msgstr "Výchozí typ kontejneru. Nové oddělky vzorků jsou automaticky přiřazeny kontejneru tohoto typu, pokud to nebylo podrobněji uvedeno pro každou analytickou službu"
 
-#: senaite/core/content/senaitesetup.py:44
-msgid "The default text that is used for the publication email."
-msgstr ""
-
-#: bika/lims/content/bikasetup.py:629
-msgid "The default text that is used for the publication email.  sending publication reports."
-msgstr ""
-
 #: senaite/core/browser/install/templates/senaite-addsite.pt:113
 msgid "The default timezone setting of the portal. Users will be able to set their own timezone, if available timezones are defined in the date and time settings."
 msgstr "Výchozí nastavení časového pásma portálu. Uživatelé si budou moci nastavit vlastní časové pásmo, pokud jsou v nastavení data a času definována dostupná časová pásma."
@@ -5920,7 +5904,7 @@ msgstr "Z tohoto vzorku byly vytvořeny následující oddělky:"
 msgid "The following sample(s) will be dispatched"
 msgstr "Budou odeslány tyto vzorky (odeslán tento vzorek)"
 
-#: senaite/core/content/senaitesetup.py:52
+#: senaite/core/content/senaitesetup.py:57
 msgid "The global Auditlog shows all modifications of the system. When enabled, all entities will be indexed in a separate catalog. This will increase the time when objects are created or modified."
 msgstr ""
 
@@ -6167,7 +6151,7 @@ msgstr ""
 msgid "This report was sent to the following contacts:"
 msgstr "Tato zpráva byla odeslána následujícím kontaktům:"
 
-#: senaite/core/content/senaitesetup.py:68
+#: senaite/core/content/senaitesetup.py:73
 msgid "This shows a custom logo on your SENAITE site."
 msgstr ""
 
@@ -6998,6 +6982,15 @@ msgstr "deaktivovat"
 msgid "description_bikasetup_categorizesampleanalyses"
 msgstr ""
 
+#. result reports to the selected recipients. You can use reserved keywords:
+#. $client_name, $recipients, $lab_name, $lab_address"
+#. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
+#: bika/lims/content/bikasetup.py:631
+msgid "description_bikasetup_email_body_sample_publication"
+msgstr ""
+
+#. e.g. to enter field results immediately, or lab results, when the automatic
+#. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: bika/lims/content/bikasetup.py:359
 msgid "description_bikasetup_immediateresultsentry"
@@ -7009,13 +7002,22 @@ msgid "description_copyright"
 msgstr "description_copyright"
 
 #. Default: "Group analyses by category for samples"
-#: senaite/core/content/senaitesetup.py:94
+#: senaite/core/content/senaitesetup.py:99
 msgid "description_senaitesetup_categorizesampleanalyses"
 msgstr ""
 
+#. e.g. to enter field results immediately, or lab results, when the automatic
+#. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
-#: senaite/core/content/senaitesetup.py:83
+#: senaite/core/content/senaitesetup.py:88
 msgid "description_senaitesetup_immediateresultsentry"
+msgstr ""
+
+#. result reports to the selected recipients. You can use reserved keywords:
+#. $client_name, $recipients, $lab_name, $lab_address"
+#. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
+#: senaite/core/content/senaitesetup.py:45
+msgid "description_senaitesetup_publication_email_text"
 msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:332
@@ -7040,6 +7042,11 @@ msgstr "label_add_to_groups"
 msgid "label_bikasetup_categorizesampleanalyses"
 msgstr ""
 
+#. Default: "Email body for Sample publication notifications"
+#: bika/lims/content/bikasetup.py:628
+msgid "label_bikasetup_email_body_sample_publication"
+msgstr ""
+
 #. Default: "Immediate results entry"
 #: bika/lims/content/bikasetup.py:357
 msgid "label_bikasetup_immediateresultsentry"
@@ -7057,7 +7064,6 @@ msgstr "label_date_to"
 
 #. Default: "SENAITE is powered by"
 #: senaite/core/browser/viewlets/templates/colophon.pt:11
-#, fuzzy
 msgid "label_powered_by"
 msgstr "label_powered_by"
 
@@ -7077,7 +7083,7 @@ msgid "label_senaite"
 msgstr "label_senaite"
 
 #. Default: "Analyses"
-#: senaite/core/content/senaitesetup.py:106
+#: senaite/core/content/senaitesetup.py:111
 msgid "label_senaitesetup_fieldset_analyses"
 msgstr ""
 
@@ -7158,8 +7164,13 @@ msgid "title_required"
 msgstr "title_required"
 
 #. Default: "Categorize sample analyses"
-#: senaite/core/content/senaitesetup.py:92
+#: senaite/core/content/senaitesetup.py:97
 msgid "title_senaitesetup_categorizesampleanalyses"
+msgstr ""
+
+#. Default: "Publication Email Text"
+#: senaite/core/content/senaitesetup.py:43
+msgid "title_senaitesetup_publication_email_text"
 msgstr ""
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:530
