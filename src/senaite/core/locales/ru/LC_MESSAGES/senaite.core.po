@@ -3,16 +3,16 @@
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # Алексей Сериков <nchrom@gmail.com>, 2020
 # alex r <transifex.com@rmpl.of.by>, 2021
-# Leonid Toporkov, 2022
 # Ragnar Lothbrok, 2022
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2022
+# Leonid Toporkov, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-10-02 13:39+0000\n"
+"POT-Creation-Date: 2022-10-03 21:23+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
+"Last-Translator: Leonid Toporkov, 2022\n"
 "Language-Team: Russian (https://www.transifex.com/senaite/teams/87045/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,11 +42,11 @@ msgstr "${contact_fullname} может войти в LIMS, используя ${
 
 #: bika/lims/controlpanel/bika_analysisservices.py:151
 msgid "${items} were successfully created."
-msgstr "${items} были успешно созданы."
+msgstr "${items} успешно созданы."
 
 #: bika/lims/controlpanel/bika_analysisservices.py:156
 msgid "${item} was successfully created."
-msgstr "${item} был успешно создан."
+msgstr "${item} успешно создан."
 
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:35
 msgid "%"
@@ -80,15 +80,15 @@ msgstr "&larr; Назад к ${back_link} "
 
 #: senaite/core/browser/samples/templates/multi_results.pt:31
 msgid "&larr; Go back to see all samples"
-msgstr ""
+msgstr "&larr; Назад к списку образцов"
 
 #: bika/lims/validators.py:895
 msgid "'Max' value must be above 'Min' value"
-msgstr ""
+msgstr "'Макс' значение должно быть больше 'Мин'"
 
 #: bika/lims/validators.py:890
 msgid "'Max' value must be numeric"
-msgstr ""
+msgstr "'Макс' значение должно быть числом"
 
 #: bika/lims/content/analysisspec.py:83
 msgid "'Min' and 'Max' values indicate a valid results range. Any result outside this results range will raise an alert. 'Min warn' and 'Max warn' values indicate a shoulder range. Any result outside the results range but within the shoulder range will raise a less severe alert. If the result is out of range, the value set for '< Min' or '< Max' will be displayed in lists and results reports instead of the real result."
@@ -96,7 +96,7 @@ msgstr "Значения 'Min' и 'Max' показывают допустимы�
 
 #: bika/lims/validators.py:888
 msgid "'Min' value must be numeric"
-msgstr ""
+msgstr "'Мин' значение должно быть числом"
 
 #: bika/lims/validators.py:909
 msgid "'Warn Max' value must be above 'Max' value"
@@ -151,15 +151,15 @@ msgstr "< Мин."
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:61
 msgid "<i class=\"fas fa-link\" aria-hidden=\"true\" /> Go to worksheet template setup"
-msgstr ""
+msgstr "<i class=\"fas fa-link\" aria-hidden=\"true\" />Перейти к настройке шаблона рабочего листа"
 
 #: bika/lims/browser/templates/senaite-frontpage.pt:15
 msgid "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to SENAITE"
-msgstr "Добро пожаловать в SENAITE"
+msgstr "<img src=\"${DYNAMIC_CONTENT}\" /> Добро пожаловать в SENAITE"
 
 #: bika/lims/content/calculation.py:119
 msgid "<p>The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.</p><p>To enter a Calculation, use standard maths operators,  + - * / ( ), and all keywords available, both from other Analysis Services and the Interim Fields specified here, as variables. Enclose them in square brackets [ ].</p><p>E.g, the calculation for Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG are the keywords for those two Analysis Services.</p>"
-msgstr "<p>Формула, которую вы вводите здесь, будет рассчитываться динамически, когда отображается анализ, использующий данный расчета.</p><p>Для ввода расчета используй стандартные математические операции, + - * / (), все ключевые слова, от других служб анализа и промежуточных полей , указанные здесь, доступны как переменные. Оборачивайте их в прямоугольные скобки []</p><p>апример для расчета общей жесткости, общее содержание ионов кальция и магния в воде, будут введены как [Ca] + [Mg], где Са и Mg являются ключевыми словами для этих двух служб анализа.</p>"
+msgstr "<p>Формула, которую вы вводите здесь, будет вычисляться динамически при отображении анализа, использующего данный расчет.</p><p>Для построения формулы используйте стандартные математические операции, + - * / (), ключевые слова Аналитических Услуг и промежуточные поля,  доступные как переменные. Оборачивайте их в прямоугольные скобки []</p><p>Например, для расчета показателя Общей Жесткости воды, суммарное содержание ионов кальция и магния в воде, можно записать как [Ca] + [Mg], где Са и Mg являются ключевыми словами для этих двух Аналитических Услуг.</p>"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "<span>x</span> <span class=\"formHelp\">x</span>"
@@ -172,7 +172,7 @@ msgstr "> Макс."
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:66
 msgid "A short title for the site. This will be shown in the title of the browser window on each page."
-msgstr "Краткое наименование сайта (отображается в заголовке окна браузера)."
+msgstr "Краткое наименование сайта. Сокращенное наименование ображается в заголовке окна браузера на каждой странице."
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
@@ -297,11 +297,11 @@ msgstr "Добавить замечания ко всем анализам"
 
 #: bika/lims/content/artemplate.py:249
 msgid "Add analyses from the selected profile to the template"
-msgstr ""
+msgstr "Добавить Аналитические Услуги из выбранного профиля к шаблону"
 
 #: senaite/core/content/senaitesetup.py:79
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
-msgstr ""
+msgstr "Добавить пользовательские CSS стили для логотипа, например height:15px; width:150px;"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:210
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:38
@@ -326,7 +326,7 @@ msgstr "Дополнительные библиотеки Python"
 
 #: bika/lims/content/analysisrequest.py:225
 msgid "Additional email addresses to be notified"
-msgstr ""
+msgstr "Дополнительный адрес электронной почты для уведомлений"
 
 #: bika/lims/content/analysisservice.py:118
 msgid "Additional result values"
@@ -6413,7 +6413,7 @@ msgstr ""
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:180
 msgid "Update Attachments"
-msgstr "Обновить приложения"
+msgstr "Обновить вложения"
 
 #: bika/lims/content/labcontact.py:51
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"

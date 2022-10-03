@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.3.0 (unreleased)
+2.3.0 (2022-10-03)
 ------------------
 
 - #2153 Improve default body text for email publication to allow translations
