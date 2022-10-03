@@ -4,12 +4,12 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2154 Cleanup the internal logic used for the creation of analysis objects
 
 
 2.3.0 (2022-10-03)
 ------------------
 
-- #2154 Cleanup the internal logic used for the creation of analysis objects
 - #2153 Improve default body text for email publication to allow translations
 - #2151 Added `api.copy_object` function for both DX and AT types
 - #2150 Improve the creation process of AT content types
