@@ -1,8 +1,12 @@
 Changelog
 =========
 
+2.4.0 (unreleased)
+------------------
 
-2.3.0 (unreleased)
+
+
+2.3.0 (2022-10-03)
 ------------------
 
 - #2154 Cleanup the internal logic used for the creation of analysis objects
