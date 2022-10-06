@@ -35,6 +35,7 @@ from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.config.groups import HIDDEN_GROUPS
 from senaite.core.p3compat import cmp
 
 
@@ -75,6 +76,18 @@ class ContactLoginDetailsView(BrowserView):
         # view logic to make sure we get all users from all plugins (e.g. LDAP)
         users_view = UsersOverviewControlPanel(self.context, self.request)
         return users_view.doSearch("")
+
+    def get_laboratory_groups(self):
+        """Return the groups available for laboratory users
+        """
+        gtool = api.get_tool("portal_groups")
+        groups = gtool.listGroupIds()
+
+        # exclude hidden groups (Administrators, etc.)
+        groups = filter(lambda group: group not in HIDDEN_GROUPS, groups)
+
+        # sort them
+        return sorted(groups)
 
     def get_user_properties(self):
         """Return the properties of the User

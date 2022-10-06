@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2156 Fix groups for selection in login details view are hardcoded
 
 
 2.3.0 (2022-10-03)
