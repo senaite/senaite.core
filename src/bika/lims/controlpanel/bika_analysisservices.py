@@ -22,17 +22,15 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import analysisservice as serviceapi
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
 from bika.lims.permissions import AddAnalysisService
 from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import tmpID
-from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -41,7 +39,6 @@ from Products.Archetypes import atapi
 from Products.ATContentTypes.content.schemata import finalizeATCTSchema
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -53,65 +50,22 @@ from zope.interface.declarations import implements
 
 class AnalysisServiceCopy(BrowserView):
     template = ViewPageTemplateFile("templates/analysisservice_copy.pt")
-    # should never be copied between services
-    skip_fieldnames = [
-        "UID",
-        "id",
-        "title",
-        "ShortTitle",
-        "Keyword",
-    ]
     created = []
 
-    def create_service(self, src_uid, dst_title, dst_keyword):
-        folder = self.context.bika_setup.bika_analysisservices
-        dst_service = _createObjectByType("AnalysisService", folder, tmpID())
-        # manually set keyword and title
-        dst_service.setKeyword(dst_keyword)
-        dst_service.setTitle(dst_title)
-        dst_service.unmarkCreationFlag()
-        _id = renameAfterCreation(dst_service)
-        dst_service = folder[_id]
-        return dst_service
-
-    def validate_service(self, dst_service):
-        # validate entries
-        validator = ServiceKeywordValidator()
-        # baseschema uses uniquefieldvalidator on title, this is sufficient.
-        res = validator(dst_service.getKeyword(), instance=dst_service)
-        if res is not True:
-            self.savepoint.rollback()
-            self.created = []
+    def copy_service(self, source, title, keyword):
+        """Creates a copy of the given AnalysisService object, but with the
+        given title and keyword
+        """
+        # Validate the keyword
+        err_msg = serviceapi.check_keyword(keyword)
+        if err_msg:
             self.context.plone_utils.addPortalMessage(
-                safe_unicode(res), "info")
-            return False
-        return True
+                safe_unicode(err_msg), "error")
+            return
 
-    def copy_service(self, src_uid, dst_title, dst_keyword):
-        uc = getToolByName(self.context, "uid_catalog")
-        src_service = uc(UID=src_uid)[0].getObject()
-        dst_service = self.create_service(src_uid, dst_title, dst_keyword)
-        if self.validate_service(dst_service):
-            # copy field values
-            for field in src_service.Schema().fields():
-                fieldname = field.getName()
-                fieldtype = field.getType()
-                if fieldtype == "Products.Archetypes.Field.ComputedField" \
-                        or fieldname in self.skip_fieldnames:
-                    continue
-                value = field.get(src_service)
-                if value:
-                    # https://github.com/bikalabs/bika.lims/issues/2015
-                    if fieldname in ["UpperDetectionLimit",
-                                     "LowerDetectionLimit"]:
-                        value = str(value)
-                    mutator_name = dst_service.getField(fieldname).mutator
-                    mutator = getattr(dst_service, mutator_name)
-                    mutator(value)
-            dst_service.reindexObject()
-            return dst_title
-        else:
-            return False
+        # Create a copy
+        return api.copy_object(source, title=title, Keyword=keyword,
+                               ShortTitle="")
 
     def __call__(self):
         uc = getToolByName(self.context, "uid_catalog")
@@ -144,9 +98,9 @@ class AnalysisServiceCopy(BrowserView):
                     self.savepoint.rollback()
                     self.created = []
                     break
-                title = self.copy_service(s, titles[i], keywords[i])
-                if title:
-                    self.created.append(title)
+                service_copy = self.copy_service(s, titles[i], keywords[i])
+                if service_copy:
+                    self.created.append(api.get_title(service_copy))
             if len(self.created) > 1:
                 message = _("${items} were successfully created.",
                             mapping={

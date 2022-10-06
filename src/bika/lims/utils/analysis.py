@@ -18,67 +18,14 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
 import math
 
-import zope.event
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFPlone.utils import _createObjectByType
-
-
-def duplicateAnalysis(analysis):
-    """
-    Duplicate an analysis consist on creating a new analysis with
-    the same analysis service for the same sample. It is used in
-    order to reduce the error procedure probability because both
-    results must be similar.
-    :base: the analysis object used as the creation base.
-    """
-    ar = analysis.aq_parent
-    kw = analysis.getKeyword()
-    # Rename the analysis to make way for it's successor.
-    # Support multiple duplicates by renaming to *-0, *-1, etc
-    cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
-    a_id = "{0}-{1}".format(kw, len(cnt))
-    dup = create_analysis(ar, analysis, id=a_id, Retested=True)
-    return dup
-
-
-def copy_analysis_field_values(source, analysis, **kwargs):
-    src_schema = source.Schema()
-    dst_schema = analysis.Schema()
-    # Some fields should not be copied from source!
-    # BUT, if these fieldnames are present in kwargs, the value will
-    # be set accordingly.
-    IGNORE_FIELDNAMES = [
-        'UID', 'id', 'allowDiscussion', 'subject', 'location', 'contributors',
-        'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
-        'creation_date', 'modification_date', 'Hidden', 'Attachment']
-    for field in src_schema.fields():
-        fieldname = field.getName()
-        if fieldname in IGNORE_FIELDNAMES and fieldname not in kwargs:
-            continue
-        if fieldname not in dst_schema:
-            continue
-        value = kwargs.get(fieldname, field.get(source))
-
-        # Campbell's mental note:never ever use '.set()' directly to a
-        # field. If you can't use the setter, then use the mutator in order
-        # to give the value. We have realized that in some cases using
-        # 'set' when the value is a string, it saves the value
-        # as unicode instead of plain string.
-        field = analysis.getField(fieldname)
-        mutator = getattr(field, "mutator", None)
-        if mutator:
-            mutator_name = field.mutator
-            mutator = getattr(analysis, mutator_name)
-            mutator(value)
-        else:
-            field.set(analysis, value)
 
 
 def create_analysis(context, source, **kwargs):
@@ -92,25 +39,46 @@ def create_analysis(context, source, **kwargs):
     :returns: Analysis object that was created
     :rtype: Analysis
     """
-    an_id = kwargs.get('id', source.getKeyword())
-    analysis = _createObjectByType("Analysis", context, an_id)
-    copy_analysis_field_values(source, analysis, **kwargs)
+    # Ensure we have an object as source
+    source = api.get_object(source)
+    if not IBaseAnalysis.providedBy(source):
+        raise ValueError("Type not supported: {}".format(repr(type(source))))
 
-    # AnalysisService field is not present on actual AnalysisServices.
-    if IAnalysisService.providedBy(source):
-        analysis.setAnalysisService(source)
-    else:
-        analysis.setAnalysisService(source.getAnalysisService())
+    # compute the id of the new analysis if necessary
+    analysis_id = kwargs.get("id")
+    if not analysis_id:
+        keyword = source.getKeyword()
+        analysis_id = generate_analysis_id(context, keyword)
 
-    # Set the interims from the Service
-    service_interims = analysis.getAnalysisService().getInterimFields()
-    # Avoid references from the analysis interims to the service interims
-    service_interims = copy.deepcopy(service_interims)
-    analysis.setInterimFields(service_interims)
+    # get the service to be assigned to the analysis
+    service = source
+    if not IAnalysisService.providedBy(source):
+        service = source.getAnalysisService()
 
-    analysis.unmarkCreationFlag()
-    zope.event.notify(ObjectInitializedEvent(analysis))
-    return analysis
+    # use "Analysis" as portal_type unless explicitly set
+    portal_type = kwargs.pop("portal_type", "Analysis")
+
+    # initialize interims with those from the service if not explicitly set
+    interim_fields = kwargs.pop("InterimFields", service.getInterimFields())
+
+    # do not copy these fields from source
+    skip_fields = [
+        "Hidden",
+        "Attachment",
+        "Result",
+        "ResultCaptureDate",
+        "Worksheet"
+    ]
+
+    kwargs.update({
+        "container": context,
+        "portal_type": portal_type,
+        "skip": skip_fields,
+        "id": analysis_id,
+        "AnalysisService": service,
+        "InterimFields": interim_fields,
+    })
+    return api.copy_object(source, **kwargs)
 
 
 def get_significant_digits(numeric_value):
@@ -393,31 +361,71 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     return formatDecimalMark(formatted, decimalmark)
 
 
-def create_retest(analysis):
+def create_retest(analysis, **kwargs):
     """Creates a retest of the given analysis
     """
     if not IRequestAnalysis.providedBy(analysis):
         raise ValueError("Type not supported: {}".format(repr(type(analysis))))
 
-    # Support multiple retests by prefixing keyword with *-0, *-1, etc.
-    parent = api.get_parent(analysis)
-    keyword = analysis.getKeyword()
-
-    # Get only those analyses with same keyword as original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    new_id = '{}-{}'.format(keyword, len(analyses))
-
     # Create a copy of the original analysis
-    an_uid = api.get_uid(analysis)
-    retest = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
-    retest.setResult("")
-    retest.setResultCaptureDate(None)
+    parent = api.get_parent(analysis)
+    kwargs.update({
+        "portal_type": api.get_portal_type(analysis),
+        "RetestOf": analysis,
+    })
+    retest = create_analysis(parent, analysis, **kwargs)
 
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(retest)
 
-    retest.reindexObject()
     return retest
+
+
+def create_duplicate(analysis, **kwargs):
+    """Creates a duplicate of the given analysis
+    """
+    if not IRequestAnalysis.providedBy(analysis):
+        raise ValueError("Type not supported: {}".format(repr(type(analysis))))
+
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        raise ValueError("Cannot create a duplicate without worksheet")
+
+    sample_id = analysis.getRequestID()
+    kwargs.update({
+        "portal_type": "DuplicateAnalysis",
+        "Analysis": analysis,
+        "Worksheet": worksheet,
+        "ReferenceAnalysesGroupID": "{}-D".format(sample_id),
+    })
+
+    return create_analysis(worksheet, analysis, **kwargs)
+
+
+def create_reference_analysis(reference_sample, source, **kwargs):
+    """Creates a reference analysis inside the referencesample
+    """
+    ref = api.get_object(reference_sample)
+    if not IReferenceSample.providedBy(ref):
+        raise ValueError("Type not supported: {}".format(repr(type(ref))))
+
+    # Set the type of the reference analysis
+    ref_type = "b" if ref.getBlank() else "c"
+    kwargs.update({
+        "portal_type": "ReferenceAnalysis",
+        "ReferenceType": ref_type,
+    })
+    return create_analysis(ref, source, **kwargs)
+
+
+def generate_analysis_id(instance, keyword):
+    """Generates a new analysis ID
+    """
+    count = 1
+    new_id = keyword
+    while new_id in instance.objectIds():
+        new_id = "{}-{}".format(keyword, count)
+        count += 1
+    return new_id

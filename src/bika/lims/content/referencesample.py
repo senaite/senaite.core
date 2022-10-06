@@ -29,8 +29,6 @@ from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import t
@@ -251,66 +249,6 @@ class ReferenceSample(BaseFolder):
         """ return all analyses linked to this reference sample """
         return self.objectValues('ReferenceAnalysis')
 
-    security.declarePublic('getReferenceAnalysesService')
-    def getReferenceAnalysesService(self, service_uid):
-        """ return all analyses linked to this reference sample for a service """
-        analyses = []
-        for analysis in self.objectValues('ReferenceAnalysis'):
-            if analysis.getServiceUID() == service_uid:
-                analyses.append(analysis)
-        return analyses
-
-    security.declarePublic('addReferenceAnalysis')
-    def addReferenceAnalysis(self, service):
-        """
-        Creates a new Reference Analysis object based on this Sample
-        Reference, with the type passed in and associates the newly
-        created object to the Analysis Service passed in.
-
-        :param service: Object, brain or UID of the Analysis Service
-        :param reference_type: type of ReferenceAnalysis, where 'b' is is
-        Blank and 'c' is Control
-        :type reference_type: A String
-        :returns: the newly created Reference Analysis
-        :rtype: string
-        """
-        if api.is_uid(service) or api.is_brain(service):
-            return self.addReferenceAnalysis(api.get_object(service))
-
-        if not IAnalysisService.providedBy(service):
-            return None
-
-        interim_fields = service.getInterimFields()
-        analysis = api.create(self, "ReferenceAnalysis")
-        # Copy all the values from the schema
-        # TODO Add Service as a param in ReferenceAnalysis constructor and do
-        #      this logic there instead of here
-        discard = ['id', ]
-        keys = service.Schema().keys()
-        for key in keys:
-            if key in discard:
-                continue
-            if key not in analysis.Schema().keys():
-                continue
-            val = service.getField(key).get(service)
-            # Campbell's mental note:never ever use '.set()' directly to a
-            # field. If you can't use the setter, then use the mutator in order
-            # to give the value. We have realized that in some cases using
-            # 'set' when the value is a string, it saves the value
-            # as unicode instead of plain string.
-            # analysis.getField(key).set(analysis, val)
-            mutator_name = analysis.getField(key).mutator
-            mutator = getattr(analysis, mutator_name)
-            mutator(val)
-        analysis.setAnalysisService(service)
-        ref_type = self.getBlank() and 'b' or 'c'
-        analysis.setReferenceType(ref_type)
-        analysis.setInterimFields(interim_fields)
-        analysis.unmarkCreationFlag()
-        renameAfterCreation(analysis)
-        return analysis
-
-
     security.declarePublic('getServices')
     def getServices(self):
         """ get all services for this Sample """
@@ -351,5 +289,6 @@ class ReferenceSample(BaseFolder):
         """ dispose sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
+
 
 registerType(ReferenceSample, PROJECTNAME)

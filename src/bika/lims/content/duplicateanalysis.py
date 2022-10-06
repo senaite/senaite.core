@@ -127,22 +127,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return siblings
 
     @security.public
-    def setAnalysis(self, analysis):
-        # Copy all the values from the schema
-        if not analysis:
-            return
-        discard = ['id', ]
-        keys = analysis.Schema().keys()
-        for key in keys:
-            if key in discard:
-                continue
-            if key not in self.Schema().keys():
-                continue
-            val = analysis.getField(key).get(analysis)
-            self.getField(key).set(self, val)
-        self.getField('Analysis').set(self, analysis)
-
-    @security.public
     def getResultsRange(self):
         """Returns the valid result range for this analysis duplicate, based on
         both on the result and duplicate variation set in the original analysis
