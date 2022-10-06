@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2154 Cleanup the internal logic used for the creation of analysis objects
+- #2156 Fix groups for selection in login details view are hardcoded
 
 
 2.3.0 (2022-10-03)
