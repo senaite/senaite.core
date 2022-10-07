@@ -18,10 +18,12 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.catalog import ANALYSIS_CATALOG
 
 version = "2.4.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -41,6 +43,30 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    reindex_qc_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def reindex_qc_analyses(portal):
+    """Reindex the QC analyses to ensure they are displayed again in worksheets
+    """
+    logger.info("Reindexing QC Analyses ...")
+    query = {
+        "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
+        "review_state": "assigned",
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Reindexed {0}/{1} QC analyses".format(num, total))
+
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Reindexing QC Analyses [DONE]")
