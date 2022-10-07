@@ -156,9 +156,19 @@ class BootstrapView(BrowserView):
             "data-portal-url": portal_url,
             "data-i18ncatalogurl": portal_url + "/plonejsi18n",
             "data-auto-logoff": setup.getAutoLogOff(),
-            "data-portal-type": api.get_portal_type(self.context),
+            "data-portal-type": self.get_portal_type(),
         }
         return data
+
+    def get_portal_type(self):
+        """Returns either the portal type or the name of the current object
+        """
+        try:
+            return api.get_portal_type(self.context)
+        except api.APIError:
+            return self.context.__name__
+        except AttributeError:
+            return ""
 
     def get_viewport_values(self, view=None):
         """Determine the value of the viewport meta-tag

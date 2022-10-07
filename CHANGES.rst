@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2158 Fix traceback when accessing registry
 - #2154 Cleanup the internal logic used for the creation of analysis objects
 - #2156 Fix groups for selection in login details view are hardcoded
 
