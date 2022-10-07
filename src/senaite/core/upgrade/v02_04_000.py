@@ -43,14 +43,15 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
-    reindex_qc_analyses(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 
-def reindex_qc_analyses(portal):
+def reindex_qc_analyses(tool):
     """Reindex the QC analyses to ensure they are displayed again in worksheets
+
+    :param tool: portal_setup tool
     """
     logger.info("Reindexing QC Analyses ...")
     query = {

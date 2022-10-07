@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <!-- Reindex QC Analyses
+       https://github.com/senaite/senaite.core/pull/2157 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Reindex QC Analyses"
+      description="Reindex the QC analyses to ensure they are displayed again in worksheets"
+      source="2.4.0"
+      destination="2401"
+      handler="senaite.core.upgrade.v02_04_000.reindex_qc_analyses"
+      profile="senaite.core:default"/>
+
+</configure>
