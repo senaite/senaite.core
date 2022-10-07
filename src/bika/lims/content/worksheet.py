@@ -416,6 +416,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         self.addToLayout(ref_analysis, slot)
 
+        # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
+        #      backreference, while it should be the other way round.
+        #      `getAnalyst` is affected as well, because in turn, it relies
+        #      on `getWorksheet` to get the assigned analyst.
+        ref_analysis.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
+
         # Reindex
         self.reindexObject(idxs=["getAnalysesUIDs"])
         return ref_analysis
@@ -531,6 +537,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate into the worksheet
         self.addToLayout(duplicate, destination_slot)
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
+
+        # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
+        #      backreference, while it should be the other way round.
+        #      `getAnalyst` is affected as well, because in turn, it relies
+        #      on `getWorksheet` to get the assigned analyst.
+        duplicate.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
 
         # Reindex
         self.reindexObject(idxs=["getAnalysesUIDs"])
