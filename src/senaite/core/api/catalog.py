@@ -72,7 +72,7 @@ def add_index(catalog, index, index_type, indexed_attrs=None):
     if index in indexes:
         return False
     if index_type == "ZCTextIndex":
-        return add_zc_text_index(catalog, index)
+        return add_zc_text_index(catalog, index, indexed_attrs=indexed_attrs)
     catalog.addIndex(index, index_type)
     # set indexed attribute
     index_obj = get_index(catalog, index)
@@ -112,7 +112,7 @@ def get_index(catalog, index):
     return catalog.Indexes[index]
 
 
-def add_zc_text_index(catalog, index, lex_id="Lexicon"):
+def add_zc_text_index(catalog, index, lex_id="Lexicon", indexed_attrs=None):
     """Add ZC text index to the catalog
 
     :param catalog: Catalog object
@@ -137,7 +137,7 @@ def add_zc_text_index(catalog, index, lex_id="Lexicon"):
         catalog._setObject(lex_id, lexicon)
 
     class extra(object):
-        doc_attr = index
+        doc_attr = indexed_attrs if indexed_attrs else index
         lexicon_id = lex_id
         index_type = "Okapi BM25 Rank"
 
