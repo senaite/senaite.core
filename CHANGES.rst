@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2162 Allow to create samples without analyses
 - #2160 Allow indexed attributes for ZCTextIndex in catalog API
 - #2158 Fix traceback when accessing registry
 - #2154 Cleanup the internal logic used for the creation of analysis objects

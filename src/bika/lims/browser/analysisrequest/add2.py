@@ -132,6 +132,13 @@ class AnalysisRequestAddView(BrowserView):
             logger.warn("!! No object found for UID #{} !!")
         return obj
 
+    @viewcache.memoize
+    def analyses_required(self):
+        """Check if analyses are required
+        """
+        setup = api.get_setup()
+        return setup.getSampleAnalysesRequired()
+
     def get_currency(self):
         """Returns the configured currency
         """
@@ -1569,6 +1576,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # columns pass the required check below.
             if record.get("Client", False):
                 required_fields.pop('Client', None)
+
+            # Check if analyses are required for sample registration
+            if not self.analyses_required():
+                required_fields.pop("Analyses", None)
 
             # Contacts get pre-filled out if only one contact exists.
             # We won't force those columns with only the Contact filled out to
