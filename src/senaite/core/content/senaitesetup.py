@@ -40,9 +40,14 @@ class ISetupSchema(model.Schema):
 
     directives.widget("email_body_sample_publication", RichTextFieldWidget)
     email_body_sample_publication = RichTextField(
-        title=_(u"Publication Email Text"),
+        title=_("title_senaitesetup_publication_email_text",
+                default=u"Publication Email Text"),
         description=_(
-            "The default text that is used for the publication email."),
+            "description_senaitesetup_publication_email_text",
+            default=u"Set the email body text to be used by default "
+            "when sending out result reports to the selected recipients. "
+            "You can use reserved keywords: "
+            "$client_name, $recipients, $lab_name, $lab_address"),
         defaultFactory=default_email_body_sample_publication,
         required=False,
     )
@@ -98,6 +103,16 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    sample_analyses_required = schema.Bool(
+        title=_("title_senaitesetup_sampleanalysesrequired",
+                default=u"Require sample analyses"),
+        description=_(
+            "description_senaitesetup_sampleanalysesrequired",
+            default=u"Analyses are required for sample registration"
+        ),
+        default=True,
+    )
+
     ###
     # Fieldsets
     ###
@@ -107,6 +122,7 @@ class ISetupSchema(model.Schema):
         fields=[
             "immediate_results_entry",
             "categorize_sample_analyses",
+            "sample_analyses_required",
         ]
     )
 
@@ -227,4 +243,18 @@ class Setup(Container):
         """Enable/Disable grouping of analyses by category for samples
         """
         mutator = self.mutator("categorize_sample_analyses")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSampleAnalysesRequired(self):
+        """Returns if analyses are required in sample add form
+        """
+        accessor = self.accessor("sample_analyses_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleAnalysesRequired(self, value):
+        """Allow/Disallow to create samples without analyses
+        """
+        mutator = self.mutator("sample_analyses_required")
         return mutator(self, value)

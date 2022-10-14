@@ -113,7 +113,7 @@ def guard_assign(analysis):
         return False
 
     # Cannot assign if the analysis has a worksheet assigned already
-    if analysis.getRawWorksheet():
+    if analysis.getWorksheetUID():
         return False
 
     return True
@@ -127,12 +127,12 @@ def guard_unassign(analysis):
 
         # Get the multi component analysis
         multi_component = analysis.getMultiComponentAnalysis()
-        if not multi_component.getRawWorksheet():
+        if not multi_component.getWorksheetUID():
             return True
 
-        # Direct un-assignment of analytes is not permitted. Return False unless
-        # the guard for the multiple component is being evaluated already in
-        # the current recursive call
+        # Direct un-assignment of analytes is not permitted. Return False
+        # unless the guard for the multiple component is being evaluated
+        # already in the current recursive call
         if not is_on_guard(multi_component, "unassign"):
             return False
 
@@ -145,7 +145,7 @@ def guard_unassign(analysis):
         return False
 
     # Cannot unassign if the analysis is not assigned to any worksheet
-    if not analysis.getRawWorksheet():
+    if not analysis.getWorksheetUID():
         return False
 
     return True
@@ -209,7 +209,7 @@ def guard_submit(analysis):
             if analyst != security.get_user_id():
                 return False
 
-    # If multi-component, cannot submit unless all analytes have been submitted
+    # If multi-component, cannot submit unless all analytes were submitted
     for analyte in analysis.getAnalytes():
         if not ISubmitted.providedBy(analyte):
             return False
@@ -579,7 +579,7 @@ def is_retracted_or_retractable(analysis):
 def is_assigned_or_assignable(analysis):
     """Returns whether the analysis is assignable or has been assigned already
     """
-    if analysis.getRawWorksheet():
+    if analysis.getWorksheetUID():
         return True
     if is_transition_allowed(analysis, "assign"):
         return True
@@ -590,7 +590,7 @@ def is_unassigned_or_unassignable(analysis):
     """Returns whether the analysis is unassignable or has been unassigned
     already
     """
-    if not analysis.getRawWorksheet():
+    if not analysis.getWorksheetUID():
         return True
     if is_transition_allowed(analysis, "unassign"):
         return True

@@ -43,6 +43,8 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_int
 from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils.analysis import create_duplicate
+from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
@@ -194,7 +196,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 return
 
         # Cannot add an analysis that is assigned already
-        if analysis.getRawWorksheet():
+        if analysis.getWorksheetUID():
             return
 
         # Just in case
@@ -262,9 +264,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Delegates to 'unassign' transition for the analysis passed in
         """
         # We need to bypass the guard's check for current context!
-        ws_uid = api.get_uid(self)
-        api.get_request().set("ws_uid", ws_uid)
-        if analysis.getRawWorksheet() == ws_uid:
+        api.get_request().set("ws_uid", api.get_uid(self))
+        if analysis.getWorksheet() == self:
             doActionFor(analysis, "unassign")
 
     def addToLayout(self, analysis, position=None):
@@ -412,25 +413,21 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return None
 
         # Create the reference analysis
-        ref_analysis = reference.addReferenceAnalysis(service)
-        if not ref_analysis:
-            logger.warning("Unable to create a reference analysis for "
-                           "reference '{0}' and service '{1}'"
-                           .format(reference.getId(), service.getKeyword()))
-            return None
-
-        # Set ReferenceAnalysesGroupID (same id for the analyses from
-        # the same Reference Sample and same Worksheet)
         gid = ref_gid and ref_gid or self.nextRefAnalysesGroupID(reference)
-        ref_analysis.setReferenceAnalysesGroupID(gid)
+        values = {"ReferenceAnalysesGroupID": gid, "Worksheet": self}
+        ref_analysis = create_reference_analysis(reference, service, **values)
 
         # Add the reference analysis into the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         self.addToLayout(ref_analysis, slot)
 
+        # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
+        #      backreference, while it should be the other way round.
+        #      `getAnalyst` is affected as well, because in turn, it relies
+        #      on `getWorksheet` to get the assigned analyst.
+        ref_analysis.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
+
         # Reindex
-        ref_analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
-                                         "getReferenceAnalysesGroupID"])
         self.reindexObject(idxs=["getAnalysesUIDs"])
         return ref_analysis
 
@@ -440,6 +437,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for the specified reference sample and increments in one unit the
             suffix.
         """
+        # TODO This hurts my eyes, @xispa cleanup this RefAnalysesGroupID asap
         prefix = reference.id + "-"
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
@@ -539,22 +537,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return None
 
         # Create the duplicate
-        duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
-        duplicate.setAnalysis(src_analysis)
-
-        # Set ReferenceAnalysesGroupID (same id for the analyses from
-        # the same Reference Sample and same Worksheet)
-        if not ref_gid:
-            ref_gid = self.nextRefAnalysesGroupID(duplicate.getRequest())
-        duplicate.setReferenceAnalysesGroupID(ref_gid)
+        duplicate = create_duplicate(src_analysis)
 
         # Add the duplicate into the worksheet
         self.addToLayout(duplicate, destination_slot)
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
 
+        # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
+        #      backreference, while it should be the other way round.
+        #      `getAnalyst` is affected as well, because in turn, it relies
+        #      on `getWorksheet` to get the assigned analyst.
+        duplicate.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
+
         # Reindex
-        duplicate.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
-                                      "getReferenceAnalysesGroupID"])
         self.reindexObject(idxs=["getAnalysesUIDs"])
         return duplicate
 
@@ -1405,7 +1400,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'ReferenceAnalysis':
                 service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
-                new_reference = reference.addReferenceAnalysis(service_uid)
+                new_reference = create_reference_analysis(reference, service_uid)
                 reference_type = new_reference.getReferenceType()
                 new_analysis_uid = api.get_uid(new_reference)
                 position = analysis_positions[analysis.UID()]

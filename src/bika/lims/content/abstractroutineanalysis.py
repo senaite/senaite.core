@@ -295,6 +295,15 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return calculation
 
     @security.public
+    def setCalculation(self, value):
+        self.getField("Calculation").set(self, value)
+        # TODO Something weird here
+        # Reset interims so they get extended with those from calculation
+        # see bika.lims.browser.fields.interimfieldsfield.set
+        interim_fields = copy.deepcopy(self.getInterimFields())
+        self.setInterimFields(interim_fields)
+
+    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
@@ -510,3 +519,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # Sanitize the conditions
         conditions = filter(None, [to_condition(cond) for cond in conditions])
         sample.setServiceConditions(other_conditions + conditions)
+
+    @security.public
+    def getPrice(self):
+        """The function obtains the analysis' price without VAT and without
+        member discount
+        :return: the price (without VAT or Member Discount) in decimal format
+        """
+        client = self.getClient()
+        if client and client.getBulkDiscount():
+            return self.getBulkPrice()
+        return self.getField('Price').get(self)

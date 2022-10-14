@@ -162,25 +162,10 @@ def get_service_dependencies_for(service):
     }
 
 
-def copy_service(service, title, keyword):
-    """Creates a copy of the given AnalysisService object, but with the
-    given title and keyword
-    """
-    # Validate the keyword
-    err_msg = check_keyword(keyword)
-    if err_msg:
-        raise Invalid(err_msg)
-
-    # Create a copy
-    params = {"title": title, "ShortTitle": "", "Keyword": keyword}
-    return api.copy_object(service, **params)
-
-
 def check_keyword(keyword, instance=None):
     """Checks if the given service keyword is valid and unique. Returns an
     error message if not valid. None otherwise
     """
-
     # Ensure the format is valid
     if re.findall(RX_SERVICE_KEYWORD, keyword):
         return _("Validation failed: keyword contains invalid characters")
@@ -210,3 +195,17 @@ def get_by_keyword(keyword, full_objects=False):
     if full_objects:
         return [api.get_object(brain) for brain in brains]
     return brains
+
+
+def copy_service(service, title, keyword):
+    """Creates a copy of the given AnalysisService object, but with the
+    given title and keyword
+    """
+    # Validate the keyword
+    err_msg = check_keyword(keyword)
+    if err_msg:
+        raise Invalid(err_msg)
+
+    # Create a copy
+    params = {"title": title, "ShortTitle": "", "Keyword": keyword}
+    return api.copy_object(service, **params)

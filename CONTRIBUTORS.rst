@@ -21,6 +21,7 @@ contributions descending.
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
 - Anton Feun, anton@satides.co.za
+- Winnie, winniehell@users.noreply.github.com
 - Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com
 - Dhruv Khattar, dhruv@khattarindia.com
@@ -42,8 +43,8 @@ contributions descending.
 - goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
 - Bugerman58, antonzh85@gmail.com
-- mimishons, shoniwam@nmrl.org.zw
 - José Manuel Pérez Lendínez, jmplz14@correo.ugr.es
+- mimishons, shoniwam@nmrl.org.zw
 
 
 Translators

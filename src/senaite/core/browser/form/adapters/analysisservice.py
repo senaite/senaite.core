@@ -17,6 +17,7 @@
 #
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
 from bika.lims import ServiceAnalytesValidator
 from six import string_types
 from itertools import chain

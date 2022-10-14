@@ -325,6 +325,17 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "SampleAnalysesRequired",
+        schemata="Analyses",
+        default=True,
+        widget=BooleanWidget(
+            label=_("label_bikasetup_sampleanalysesrequired",
+                    default="Require sample analyses"),
+            description=_("description_bikasetup_sampleanalysesrequired",
+                          "Analyses are required for sample registration")
+        ),
+    ),
+    BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
         default=False,
@@ -625,10 +636,15 @@ schema = BikaFolderSchema.copy() + Schema((
         # Needed to fetch the default value from the registry
         edit_accessor="getEmailBodySamplePublication",
         widget=RichWidget(
-            label=_("Email body for Sample publication notifications"),
+            label=_(
+                "label_bikasetup_email_body_sample_publication",
+                "Email body for Sample publication notifications"),
             description=_(
-                "The default text that is used for the publication email. "
-                " sending publication reports."),
+                "description_bikasetup_email_body_sample_publication",
+                default="Set the email body text to be used by default when "
+                "sending out result reports to the selected recipients. "
+                "You can use reserved keywords: "
+                "$client_name, $recipients, $lab_name, $lab_address"),
             default_mime_type="text/x-html",
             output_mime_type="text/x-html",
             allow_file_upload=False,
@@ -1092,6 +1108,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setCategorizeSampleAnalyses(value)
+
+    def getSampleAnalysesRequired(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSampleAnalysesRequired()
+        return False
+
+    def setSampleAnalysesRequired(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSampleAnalysesRequired(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

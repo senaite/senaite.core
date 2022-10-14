@@ -23,8 +23,6 @@ import copy
 import json
 import math
 from decimal import Decimal
-
-from Products.Archetypes.config import UID_CATALOG
 from six import string_types
 
 from AccessControl import ClassSecurityInfo
@@ -478,7 +476,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isMultiComponent():
             # Cannot set a result to a multi-component analysis
-            msg = "setResult is not supported for Multicomponent analyses"
+            msg = "setResult is not supported for Multi-component analyses"
             raise ValueError(msg)
 
         prev_result = self.getField("Result").get(self) or ""
@@ -535,8 +533,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Set the result field
         self.getField("Result").set(self, val)
 
-        # Set a 'NA' result to the multi-component analysis this belongs to, but
-        # only if results for all analytes have been captured. This ensures the
+        # Set a 'NA' result to the multi-component analysis this belongs to,
+        # but only if results for all analytes have been captured
         if val and prev_result != val:
             multi_component = self.getMultiComponentAnalysis()
             if multi_component:
@@ -654,20 +652,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return True
 
     @security.public
-    def getPrice(self):
-        """The function obtains the analysis' price without VAT and without
-        member discount
-        :return: the price (without VAT or Member Discount) in decimal format
-        """
-        analysis_request = self.aq_parent
-        client = analysis_request.aq_parent
-        if client.getBulkDiscount():
-            price = self.getBulkPrice()
-        else:
-            price = self.getField('Price').get(self)
-        return price
-
-    @security.public
     def getVATAmount(self):
         """Compute the VAT amount without member discount.
         :return: the result as a float
@@ -777,6 +761,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if not service:
             return []
+        # get the available methods of the service
         return service.getMethods()
 
     @security.public
@@ -1097,12 +1082,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
-        return self.getRawWorksheet()
-
-    @security.public
-    def getRawWorksheet(self):
-        """Returns the UID of the worksheet the analysis is assigned to, if any
-        """
         uids = get_backreferences(self, relationship="WorksheetAnalysis")
         if not uids:
             return None
@@ -1118,7 +1097,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet_uid = self.getRawWorksheet()
+        worksheet_uid = self.getWorksheetUID()
         return api.get_object_by_uid(worksheet_uid, None)
 
     @security.public
@@ -1214,7 +1193,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not uids:
             return []
 
-        brains = api.search({"UID": uids}, UID_CATALOG)
+        cat = api.get_tool("uid_catalog")
+        brains = cat(UID=uids)
         return [api.get_object(brain) for brain in brains]
 
     def isAnalyte(self):

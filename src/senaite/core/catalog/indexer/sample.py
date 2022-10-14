@@ -35,7 +35,7 @@ def assigned_state(instance):
             # Skip "inactive" analyses
             continue
 
-        if analysis.getRawWorksheet():
+        if analysis.getWorksheetUID():
             # At least one analysis with a worksheet assigned
             assigned = True
 

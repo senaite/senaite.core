@@ -121,7 +121,7 @@ All them are controls:
 
 And are associated to the worksheet:
 
-    >>> wuid = list(set(map(lambda ref: ref.getRawWorksheet(), ref_analyses)))
+    >>> wuid = list(set(map(lambda ref: ref.getWorksheetUID(), ref_analyses)))
     >>> len(wuid)
     1
     >>> wuid[0] == api.get_uid(worksheet)

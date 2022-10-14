@@ -80,8 +80,78 @@ Here we create a new `Client` in the `plone/clients` folder::
     >>> client
     <Client at /plone/clients/client-1>
 
-     >>> client.Title()
-     'Test Client'
+    >>> client.Title()
+    'Test Client'
+
+Created objects are properly indexed::
+
+    >>> services = self.portal.bika_setup.bika_analysisservices
+    >>> service = api.create(services, "AnalysisService",
+    ...                      title="Dummy service", Keyword="DUM")
+    >>> uid = api.get_uid(service)
+    >>> catalog = api.get_tool("senaite_catalog_setup")
+    >>> brains = catalog(portal_type="AnalysisService", UID=uid)
+    >>> brains[0].getKeyword
+    'DUM'
+
+
+Editing Content
+...............
+
+This function helps to edit a given content.
+
+Here we update the `Client` we created earlier, an AT::
+
+    >>> api.edit(client, AccountNumber="12343567890", BankName="BTC Bank")
+    >>> client.getAccountNumber()
+    '12343567890'
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+It also works for DX content types::
+
+    >>> api.edit(senaite_setup, site_logo_css="my-test-logo")
+    >>> senaite_setup.getSiteLogoCSS()
+    'my-test-logo'
+
+The field need to be writeable::
+
+    >>> field = client.getField("BankName")
+    >>> field.readonly = True
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Field 'BankName' is readonly
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+    >>> field.readonly = False
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+And user need to have enough permissions to change the value as well::
+
+    >>> field.write_permission = "Delete objects"
+    >>> api.edit(client, BankName="Electrum Coins")
+    Traceback (most recent call last):
+    [...]
+    Unauthorized: Field 'BankName' is not writeable
+
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+Unless we manually force to bypass the permissions check::
+
+    >>> api.edit(client, check_permissions=False, BankName="Electrum Coins")
+    >>> client.getBankName()
+    'Electrum Coins'
+
+Restore permission::
+
+    >>> field.write_permission = "Modify Portal Content"
 
 
 Getting a Tool
@@ -1900,7 +1970,6 @@ portal_factory:
     >>> api.is_temporary(tmp_client)
     True
 
-
 Copying content
 ...............
 
@@ -1908,9 +1977,92 @@ This function helps to do it right and copies an existing content for you.
 
 Here we create a copy of the `Client` we created earlier::
 
+    >>> client.setTaxNumber('VAT12345')
     >>> client2 = api.copy_object(client, title="Test Client 2")
     >>> client2
     <Client at /plone/clients/client-2>
 
     >>> client2.Title()
     'Test Client 2'
+
+    >>> client2.getTaxNumber()
+    'VAT12345'
+
+We can override source values on copy as well::
+
+    >>> client.setBankName('Peanuts Bank Ltd')
+    >>> client3 = api.copy_object(client, title="Test Client 3",
+    ...                           BankName="Nuts Bank Ltd")
+    >>> client3
+    <Client at /plone/clients/client-3>
+
+    >>> client3.Title()
+    'Test Client 3'
+
+    >>> client3.getTaxNumber()
+    'VAT12345'
+
+    >>> client3.getBankName()
+    'Nuts Bank Ltd'
+
+We can create a copy in a container other than source's::
+
+    >>> sample_points = self.portal.bika_setup.bika_samplepoints
+    >>> sample_point = api.create(sample_points, "SamplePoint", title="Test")
+    >>> sample_point
+    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+
+    >>> sample_point_copy = api.copy_object(sample_point, container=client3)
+    >>> sample_point_copy
+    <SamplePoint at /plone/clients/client-3/samplepoint-2>
+
+We can even create a copy to a different type::
+
+    >>> suppliers = self.portal.bika_setup.bika_suppliers
+    >>> supplier = api.copy_object(client, container=suppliers,
+    ...                            portal_type="Supplier", title="Supplier 1")
+    >>> supplier
+    <Supplier at /plone/bika_setup/bika_suppliers/supplier-1>
+
+    >>> supplier.Title()
+    'Supplier 1'
+
+    >>> supplier.getTaxNumber()
+    'VAT12345'
+
+    >>> supplier.getBankName()
+    'Peanuts Bank Ltd'
+
+It works for Dexterity types as well::
+
+    >>> sample_containers = self.portal.bika_setup.sample_containers
+    >>> sample_container = api.create(sample_containers, "SampleContainer",
+    ...                               title="Sample container 4",
+    ...                               description="Sample container to test",
+    ...                               capacity="100 ml")
+    >>> sample_container
+    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-4>
+
+    >>> sample_container.Title()
+    'Sample container 4'
+
+    >>> sample_container.Description()
+    'Sample container to test'
+
+    >>> sample_container.getCapacity()
+    '100 ml'
+
+    >>> sample_container_copy = api.copy_object(sample_container,
+    ...                                         title="Sample container 5",
+    ...                                         capacity="50 ml")
+    >>> sample_container_copy
+    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-5>
+
+    >>> sample_container_copy.Title()
+    'Sample container 5'
+
+    >>> sample_container_copy.Description()
+    'Sample container to test'
+
+    >>> sample_container_copy.getCapacity()
+    '50 ml'

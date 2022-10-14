@@ -54,7 +54,6 @@ Client's folder:
 If the client is assigned on creation, same behavior as before:
 
     >>> batch = api.create(portal.batches, "Batch", Client=client)
-    >>> modified(batch)
     >>> len(batches.objectValues("Batch"))
     0
     >>> len(client.objectValues("Batch"))

@@ -15,12 +15,13 @@
     This report was sent to the following contacts:
   </p>
 
-  $recipients
+  <p>$recipients</p>
 
   <p i18n:translate="">
     With best regards
   </p>
-  <tal:laboratory tal:replace="python:laboratory.getName() or 'SENAITE LIMS'"/>
+
+  <p>$lab_name</p>
 
   <p i18n:translate="">
     *** This is an automatically generated email, please do not reply to this message. ***

@@ -27,8 +27,6 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/Calculations.rst
 .. include:: ../src/senaite/core/tests/doctests/CobasIntegra400plusImportInterface.rst
 .. include:: ../src/senaite/core/tests/doctests/ContactUser.rst
-.. include:: ../src/senaite/core/tests/doctests/DataManagerAnalysis.rst
-.. include:: ../src/senaite/core/tests/doctests/DataManagerSample.rst
 .. include:: ../src/senaite/core/tests/doctests/DuplicateResultsRange.rst
 .. include:: ../src/senaite/core/tests/doctests/DynamicAnalysisSpec.rst
 .. include:: ../src/senaite/core/tests/doctests/HistoryAwareReferenceField.rst
@@ -37,12 +35,10 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/InstrumentsImportInterface.rst
 .. include:: ../src/senaite/core/tests/doctests/InternalUse.rst
 .. include:: ../src/senaite/core/tests/doctests/Listings.rst
-.. include:: ../src/senaite/core/tests/doctests/MultiCopmonentAnalysis.rst
 .. include:: ../src/senaite/core/tests/doctests/Permissions.rst
 .. include:: ../src/senaite/core/tests/doctests/QCAnalysesWithInterimFieldsOnAWorksheet.rst
 .. include:: ../src/senaite/core/tests/doctests/RemoveAnalysesFromAnalysisRequest.rst
 .. include:: ../src/senaite/core/tests/doctests/Rolemap.rst
-.. include:: ../src/senaite/core/tests/doctests/SampleAutoVerify.rst
 .. include:: ../src/senaite/core/tests/doctests/SecondaryAnalysisRequest.rst
 .. include:: ../src/senaite/core/tests/doctests/ServicesCalculationRecursion.rst
 .. include:: ../src/senaite/core/tests/doctests/ShowPrices.rst
@@ -56,7 +52,6 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisPublish.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisReject.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestCancel.rst
-.. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestCreatePartitions
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestInvalidate.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestSample.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowAnalysisRequestToBeSampled.rst
@@ -79,7 +74,6 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlVerify.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisRetract.rst
-.. include:: ../src/senaite/core/tests/doctests/WorkflowSampleDispatch.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetAutotransitions.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRemove.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRetract.rst

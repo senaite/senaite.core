@@ -19,10 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-from Products.CMFPlone.utils import _createObjectByType
+
+from bika.lims import api
 from bika.lims import logger
-from bika.lims.utils import tmpID
-from bika.lims.utils.analysis import copy_analysis_field_values
+from bika.lims.utils.analysis import create_retest
+from bika.lims.utils.analysis import generate_analysis_id
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import events as analysis_events
 
@@ -58,21 +59,19 @@ def after_retract(duplicate_analysis):
     in is performed. The duplicate transitions to "retracted" state and a new
     copy of the duplicate is created.
     """
-    # Rename the analysis to make way for it's successor.
-    # Support multiple retractions by renaming to *-0, *-1, etc
-    parent = duplicate_analysis.aq_parent
+    # Rename the analysis to make way for it's successor
+    parent = api.get_parent(duplicate_analysis)
     keyword = duplicate_analysis.getKeyword()
-    analyses = filter(lambda an: an.getKeyword() == keyword,
-                      parent.objectValues("DuplicateAnalysis"))
+    duplicate_id = api.get_id(duplicate_analysis)
+    retracted_id = generate_analysis_id(parent, keyword)
 
     # Rename the retracted duplicate
     # https://docs.plone.org/develop/plone/content/rename.html
     # _verifyObjectPaste permission check must be cancelled
     parent._verifyObjectPaste = str
-    retracted_id = '{}-{}'.format(keyword, len(analyses))
     # Make sure all persistent objects have _p_jar attribute
     transaction.savepoint(optimistic=True)
-    parent.manage_renameObject(duplicate_analysis.getId(), retracted_id)
+    parent.manage_renameObject(duplicate_id, retracted_id)
     delattr(parent, '_verifyObjectPaste')
 
     # Find out the slot position of the duplicate in the worksheet
@@ -89,20 +88,18 @@ def after_retract(duplicate_analysis):
                     .format(duplicate_analysis.getId(), worksheet.getId()))
         return
 
-    # Create a copy (retest) of the duplicate and assign to worksheet
-    ref_gid = duplicate_analysis.getReferenceAnalysesGroupID()
-    retest = _createObjectByType("DuplicateAnalysis", worksheet, tmpID())
-    copy_analysis_field_values(duplicate_analysis, retest)
-    retest.setAnalysis(duplicate_analysis.getAnalysis())
-    retest.setRetestOf(duplicate_analysis)
-    retest.setReferenceAnalysesGroupID(ref_gid)
-    retest.setResult(duplicate_analysis.getResult())
+    # Create a copy (retest) of the duplicate, but with results preserved
+    kwargs = {
+        "Result": duplicate_analysis.getResult(),
+        "InterimFields": duplicate_analysis.getInterimFields()
+    }
+    retest = create_retest(duplicate_analysis, **kwargs)
+
+    # Assign assign the retest to worksheet
     worksheet.addToLayout(retest, dest_slot)
     worksheet.setAnalyses(worksheet.getAnalyses() + [retest, ])
 
     # Reindex
-    retest.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
-                               "getReferenceAnalysesGroupID"])
     worksheet.reindexObject(idxs=["getAnalysesUIDs"])
 
     # Try to rollback the worksheet to prevent inconsistencies
