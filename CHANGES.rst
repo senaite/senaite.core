@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2120 Support for Multiple component analysis
 - #2162 Allow to create samples without analyses
 - #2160 Allow indexed attributes for ZCTextIndex in catalog API
 - #2158 Fix traceback when accessing registry
@@ -14,8 +15,6 @@ Changelog
 2.3.0 (2022-10-03)
 ------------------
 
-- #2120 Support for Multiple component analysis
-- #2150 Performance: prioritize raw getter for AllowedMethods field
 - #2153 Improve default body text for email publication to allow translations
 - #2151 Added `api.copy_object` function for both DX and AT types
 - #2150 Improve the creation process of AT content types
