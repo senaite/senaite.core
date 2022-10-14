@@ -140,7 +140,7 @@ Is not possible to set a result to a multi-component directly:
     >>> multi_component.setResult("Something")
     Traceback (most recent call last):
     [...]
-    ValueError: setResult is not supported for Multicomponent analyses
+    ValueError: setResult is not supported for Multi-component analyses
 
 But a "NA" (*No apply*) result is set automatically as soon as a result for
 any of its analytes is set:
