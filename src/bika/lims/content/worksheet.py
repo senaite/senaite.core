@@ -1107,10 +1107,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :returns: worksheet's UID
         :rtype: UID as string
         """
-        ws = self.getWorksheetTemplate()
-        if ws:
-            return ws.UID()
-        return ''
+        return self.getRawWorksheetTemplate()
 
     def getWorksheetTemplateTitle(self):
         """

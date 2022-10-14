@@ -1126,14 +1126,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def isRetest(self):
         """Returns whether this analysis is a retest or not
         """
-        return self.getRetestOf() and True or False
+        return self.getRawRetestOf() and True or False
 
     def getRetestOfUID(self):
         """Returns the UID of the retracted analysis this is a retest of
         """
-        retest_of = self.getRetestOf()
-        if retest_of:
-            return api.get_uid(retest_of)
+        return self.getRawRetestOf()
 
     def getRetest(self):
         """Returns the retest that comes from this analysis, if any
