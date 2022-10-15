@@ -1,4 +1,4 @@
-from bika.lims.interfaces import IRejectedAnalysis retract guard and event
+Analysis retract guard and event
 --------------------------------
 
 Running this test from the buildout directory:

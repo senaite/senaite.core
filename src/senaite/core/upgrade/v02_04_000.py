@@ -83,7 +83,7 @@ def mark_retracted_and_rejected_analyses(portal):
     """Sets the IRetracted and/or IRejected interface to analyses that were
     either retracted or rejected
     """
-    logger.info("Applying IRetracted/IRejected interface to analyses ...")
+    logger.info("Set IRetracted/IRejected interface to analyses ...")
     query = {
         "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"],
         "review_state": ["retracted", "rejected"],
@@ -93,7 +93,7 @@ def mark_retracted_and_rejected_analyses(portal):
 
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Apply IRetracted/IRejected {0}/{1}".format(num, total))
+            logger.info("Set IRetracted/IRejected {0}/{1}".format(num, total))
 
         obj = api.get_object(brain)
         if IRetracted.providedBy(obj):
@@ -110,4 +110,4 @@ def mark_retracted_and_rejected_analyses(portal):
         elif status == "rejected":
             alsoProvides(obj, IRejected)
 
-    logger.info("Applying IRetracted/IRejected interface to analyses [DONE]")
+    logger.info("Set IRetracted/IRejected interface to analyses [DONE]")

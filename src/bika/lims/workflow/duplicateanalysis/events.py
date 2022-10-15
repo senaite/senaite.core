@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IRetracted
