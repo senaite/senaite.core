@@ -47,9 +47,6 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
-    # Mark analyses with IRetracted and IRejected
-    mark_retracted_and_rejected_analyses(portal)
-
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
