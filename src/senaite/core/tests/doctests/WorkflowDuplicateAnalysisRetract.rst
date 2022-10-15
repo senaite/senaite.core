@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IRetracted
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -328,3 +329,27 @@ And the current state of the Analysis Request is `sample_received` now:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+
+
+IRetracted interface is provided by retracted duplicates
+........................................................
+
+When retracted, duplicate analyses are marked with the `IRetracted` interface:
+
+    >>> sample = new_ar([Cu])
+    >>> worksheet = to_new_worksheet_with_duplicate(sample)
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+    >>> duplicate.setResult(12)
+    >>> success = do_action_for(duplicate, "submit")
+    >>> IRetracted.providedBy(duplicate)
+    False
+
+    >>> success = do_action_for(duplicate, "retract")
+    >>> IRetracted.providedBy(duplicate)
+    True
+
+But the retest does not provide `IRetracted`:
+
+    >>> retest = duplicate.getRetest()
+    >>> IRetracted.providedBy(retest)
+    False

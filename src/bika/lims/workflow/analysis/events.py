@@ -20,6 +20,8 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -154,9 +156,11 @@ def after_retract(analysis):
     """Function triggered after a 'retract' transition for the analysis passed
     in is performed. The analysis transitions to "retracted" state and a new
     copy of the analysis is created. The copy initial state is "unassigned",
-    unless the the retracted analysis was assigned to a worksheet. In such case,
-    the copy is transitioned to 'assigned' state too
+    unless the the retracted analysis was assigned to a worksheet. In such
+    case, the copy is transitioned to 'assigned' state too
     """
+    # Mark this analysis as IRetracted
+    alsoProvides(analysis, IRetracted)
 
     # Retract our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "retract")
@@ -176,6 +180,9 @@ def after_retract(analysis):
 def after_reject(analysis):
     """Function triggered after the "reject" transition for the analysis passed
     in is performed."""
+    # Mark this analysis with IRejected
+    alsoProvides(analysis, IRejected)
+
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
 

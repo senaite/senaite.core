@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IRetracted
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -306,3 +307,25 @@ And the current state of the Analysis Request is `sample_received` now:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+
+
+IRetracted interface is provided by retracted analyses
+......................................................
+
+When retracted, routine analyses are marked with the `IRetracted` interface:
+
+    >>> sample = new_ar([Cu])
+    >>> submit_analyses(sample)
+    >>> analysis = sample.getAnalyses(full_objects=True)[0]
+    >>> IRetracted.providedBy(analysis)
+    False
+
+    >>> success = do_action_for(analysis, "retract")
+    >>> IRetracted.providedBy(analysis)
+    True
+
+But the retest does not provide `IRetracted`:
+
+    >>> retest = analysis.getRetest()
+    >>> IRetracted.providedBy(retest)
+    False
