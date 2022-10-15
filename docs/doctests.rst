@@ -66,14 +66,15 @@ Doctests
 .. include:: ../src/senaite/core/tests/doctests/WorkflowDuplicateAnalysisSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowDuplicateAnalysisVerify.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisBlankAssign.rst
+.. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisBLankRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisBlankMultiVerify.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisBlankSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisBlankVerify.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlAssign.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlMultiVerify.rst
+.. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlSubmit.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisControlVerify.rst
-.. include:: ../src/senaite/core/tests/doctests/WorkflowReferenceAnalysisRetract.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetAutotransitions.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRemove.rst
 .. include:: ../src/senaite/core/tests/doctests/WorkflowWorksheetRetract.rst
