@@ -24,7 +24,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.catalog import SETUP_CATALOG
-from zope.interface import Invalid
 
 RX_SERVICE_KEYWORD = r"[^A-Za-z\w\d\-_]"
 
@@ -195,17 +194,3 @@ def get_by_keyword(keyword, full_objects=False):
     if full_objects:
         return [api.get_object(brain) for brain in brains]
     return brains
-
-
-def copy_service(service, title, keyword):
-    """Creates a copy of the given AnalysisService object, but with the
-    given title and keyword
-    """
-    # Validate the keyword
-    err_msg = check_keyword(keyword)
-    if err_msg:
-        raise Invalid(err_msg)
-
-    # Create a copy
-    params = {"title": title, "ShortTitle": "", "Keyword": keyword}
-    return api.copy_object(service, **params)
