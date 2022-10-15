@@ -76,9 +76,10 @@ def reindex_qc_analyses(tool):
     logger.info("Reindexing QC Analyses [DONE]")
 
 
-def mark_retracted_and_rejected_analyses(portal):
+def mark_retracted_and_rejected_analyses(tool):
     """Sets the IRetracted and/or IRejected interface to analyses that were
     either retracted or rejected
+    :param tool: portal_setup tool
     """
     logger.info("Set IRetracted/IRejected interface to analyses ...")
     query = {
