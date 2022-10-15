@@ -1,0 +1,52 @@
+Phone field
+===========
+
+The phone field stores phone numbers
+
+Running this test from the buildout directory:
+
+bin/test test_schema_fields -t phonefield
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+
+Using the field
+---------------
+
+Create a content schema that uses the field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import PhoneField
+
+    >>> class IContent(Interface):
+    ...     phone = PhoneField(title=u"Phone")
+
+
+Get the field from the schema interface:
+
+    >>> field = IContent["phone"]
+    >>> field
+    <senaite.core.schema.phonefield.PhoneField object at ...>
+
+
+Construct the field:
+
+    >>> from persistent import Persistent
+
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     def __init__(self, phone="+447733123456"):
+    ...         self.phone = phone
+
+    >>> content = Content()
+    >>> content.phone
+    '+447733123456'
