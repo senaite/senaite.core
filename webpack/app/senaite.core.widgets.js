@@ -43,14 +43,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // PhoneWidget
   // https://github.com/jackocnr/intl-tel-input#readme
-  var phone_widgets = document.getElementsByClassName("senaite-phone-widget-input");
+  let phone_widgets = document.getElementsByClassName("senaite-phone-widget-input");
+  let error_codes = ["Invalid number", "Invalid country code", "Too short", "Too long", "Invalid number"];
   let init_phone_input = (el) => {
-    intlTelInput(el, {
+    let id = el.dataset.intlTelInputId;
+    let iti = intlTelInput(el, {
       // avoid that the dropdown is cropped in records widget
       dropdownContainer: document.body,
       // https://github.com/jackocnr/intl-tel-input#utilities-script
       utilsScript: "++plone++senaite.core.static/modules/intl-tel-input/js/utils.js"
     });
+    // add event handler only once
+    if (id === undefined) {
+      el.addEventListener("blur", () => {
+        // validation
+        let valid = iti.isValidNumber();
+        let number = iti.getNumber();
+        let field = el.closest(".field");
+        if (valid) {
+          field.classList.remove("error");
+          field.title = "";
+        } else {
+          field.classList.add("error");
+          let error_code = iti.getValidationError();
+          let error_msg = error_codes[error_code];
+          field.title = error_msg;
+        }
+        // always set the number (even if validation failed!)
+        let name = el.dataset.name;
+        let hidden = document.querySelector("input[name='" + name + "']");
+        hidden.value = number;
+      });
+    }
   }
   // initialize all phone widgets
   for (let widget of phone_widgets) {

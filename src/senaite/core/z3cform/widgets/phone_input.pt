@@ -5,7 +5,7 @@
            readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
            style="" value="" type="tel"
            tal:attributes="id view/id;
-                           name view/name;
+                           data-name view/name;
                            class string:${view/klass} senaite-phone-widget-input;
                            style view/style;
                            title view/title;
@@ -34,4 +34,9 @@
                            maxlength view/maxlength;
                            placeholder view/placeholder;
                            autocapitalize view/autocapitalize;" />
+
+    <!-- Value get set by the phone widget JS -->
+    <input type="hidden"
+           tal:attributes="name view/name;
+                           value view/value;"/>
 </html>
