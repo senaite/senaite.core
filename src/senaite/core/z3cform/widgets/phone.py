@@ -27,7 +27,7 @@ class PhoneWidget(text.TextWidget):
         super(PhoneWidget, self).update()
         widget.addFieldClass(self)
         if self.mode == INPUT_MODE:
-            self.addClass("form-control")
+            self.addClass("form-control form-control-sm")
 
 
 @adapter(IPhoneField, ISenaiteFormLayer)
