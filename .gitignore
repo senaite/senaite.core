@@ -52,3 +52,4 @@ src/senaite.jsonapi
 .Python
 pyvenv.cfg
 /lib/
+/webpack/.eslintrc.js
