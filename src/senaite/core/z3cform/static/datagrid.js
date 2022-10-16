@@ -188,8 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
       row.remove();
       this.update_order_index(datagrid);
       this.init_auto_append_handler(datagrid);
-      // notify field
-      let field = row.closest(".field");
       let event_data = {datagrid: datagrid, row: row}
       this.trigger_custom_event(field, "datagrid:row_removed", event_data);
     }
@@ -204,12 +202,9 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         $newtr.insertAfter(ref_row);
       }
-
       this.init_auto_append_handler(datagrid);
-      // notify field
-      let field = ref_row.closest(".field");
       let event_data = {datagrid: datagrid, row: newtr}
-      this.trigger_custom_event(field, "datagrid:row_added", event_data);
+      this.trigger_custom_event("datagrid:row_added", event_data);
       return newtr;
     }
 
@@ -365,9 +360,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    trigger_custom_event(el, event_name, event_data) {
+    trigger_custom_event(event_name, event_data) {
       let event = new CustomEvent(event_name, {detail: event_data});
-      el.dispatchEvent(event);
+      document.body.dispatchEvent(event);
     }
 
     /* EVENT HANDLERS */
