@@ -32,12 +32,17 @@ module.exports = {
   mode: mode,
   context: path.resolve(__dirname, "app"),
   entry: {
-    main: [
+    // https://webpack.js.org/configuration/entry-context/#entry-descriptor
+    "senaite.core": [
       // scripts
       "./senaite.core.js",
       // styles
       "./scss/senaite.core.scss",
     ],
+    "seniate.core.widgets": [
+      // scripts
+      "./senaite.core.widgets.js",
+    ]
   },
   output: {
     // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
