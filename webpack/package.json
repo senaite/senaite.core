@@ -23,6 +23,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-confirmation2": "^4.2.1",
     "bootstrap-select": "^1.13.18",
+    "intl-tel-input": "^17.0.19",
     "jquery": "<3",
     "jquery-form": "^4.3.0",
     "jquery-migrate": "<2",
