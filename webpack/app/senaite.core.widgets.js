@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     init_phone_input(widget);
   }
   // dynamically initialize new phone widgets when used in datagrid fields
-  document.addEventListener("datagrid:row_added", (event) => {
+  document.body.addEventListener("datagrid:row_added", (event) => {
     let row = event.detail.row;
     let input = row.querySelector(".senaite-phone-widget-input");
     if(input) {
