@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IVerified
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -225,3 +226,24 @@ And to ensure consistency amongst tests, we disable self-verification:
     >>> bikasetup.setSelfVerificationEnabled(False)
     >>> bikasetup.getSelfVerificationEnabled()
     False
+
+
+IVerified interface is provided by duplicate analysis that are verified
+.......................................................................
+
+When verified, duplicate analyses are marked with the `IVerified` interface:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> sample = new_ar([Cu])
+    >>> worksheet = to_new_worksheet_with_duplicate(sample)
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+    >>> duplicate.setResult(12)
+    >>> success = do_action_for(duplicate, "submit")
+    >>> IVerified.providedBy(duplicate)
+    False
+
+    >>> success = do_action_for(duplicate, "verify")
+    >>> IVerified.providedBy(duplicate)
+    True
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
