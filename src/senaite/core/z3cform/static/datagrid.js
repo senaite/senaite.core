@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.update_order_index(datagrid);
       this.init_auto_append_handler(datagrid);
       let event_data = {datagrid: datagrid, row: row}
-      this.trigger_custom_event(field, "datagrid:row_removed", event_data);
+      this.trigger_custom_event("datagrid:row_removed", event_data);
     }
 
     insert_row(ref_row, before=false) {
