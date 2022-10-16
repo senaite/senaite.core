@@ -47,7 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let init_phone_input = (el) => {
     intlTelInput(el, {
       // avoid that the dropdown is cropped in records widget
-      dropdownContainer: document.body
+      dropdownContainer: document.body,
+      // https://github.com/jackocnr/intl-tel-input#utilities-script
+      utilsScript: "++plone++senaite.core.static/modules/intl-tel-input/js/utils.js"
     });
   }
   // initialize all phone widgets
