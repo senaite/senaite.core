@@ -167,8 +167,8 @@ def after_retract(analysis):
     """Function triggered after a 'retract' transition for the analysis passed
     in is performed. The analysis transitions to "retracted" state and a new
     copy of the analysis is created. The copy initial state is "unassigned",
-    unless the the retracted analysis was assigned to a worksheet. In such case,
-    the copy is transitioned to 'assigned' state too
+    unless the the retracted analysis was assigned to a worksheet. In such
+    case, the copy is transitioned to 'assigned' state too
     """
     # Mark this analysis as IRetracted
     alsoProvides(analysis, IRetracted)

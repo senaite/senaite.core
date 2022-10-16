@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IVerified
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -414,3 +415,22 @@ And to ensure consistency amongst tests, we disable self-verification:
     >>> bikasetup.setSelfVerificationEnabled(False)
     >>> bikasetup.getSelfVerificationEnabled()
     False
+
+
+IVerified interface is provided by verified analyses
+....................................................
+
+When verified, routine analyses are marked with the `IVerified` interface:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> sample = new_ar([Cu])
+    >>> submit_analyses(sample)
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> IVerified.providedBy(analysis)
+    False
+
+    >>> success = do_action_for(analysis, "verify")
+    >>> IVerified.providedBy(analysis)
+    True
+
+    >>> bikasetup.setSelfVerificationEnabled(False)

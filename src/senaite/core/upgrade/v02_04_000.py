@@ -49,12 +49,6 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
-    # Add isAnalyte index in analyses catalog
-    add_isanalyte_index(portal)
-
-    # Mark analyses with IRetracted and IRejected
-    mark_retracted_and_rejected_analyses(portal)
-
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -84,7 +78,9 @@ def reindex_qc_analyses(tool):
     logger.info("Reindexing QC Analyses [DONE]")
 
 
-def add_isanalyte_index(portal):
+def add_isanalyte_index(tool):
+    """Adds the isAnalyte index to the analysis catalog
+    """
     cat = api.get_tool(ANALYSIS_CATALOG)
     logger.info("Add isAnalyte index to {} ...".format(cat.id))
     if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
@@ -92,11 +88,12 @@ def add_isanalyte_index(portal):
     logger.info("Add isAnalyte index to {} [DONE]".format(cat.id))
 
 
-def mark_retracted_and_rejected_analyses(portal):
+def mark_retracted_and_rejected_analyses(tool):
     """Sets the IRetracted and/or IRejected interface to analyses that were
     either retracted or rejected
+    :param tool: portal_setup tool
     """
-    logger.info("Applying IRetracted/IRejected interface to analyses ...")
+    logger.info("Set IRetracted/IRejected interface to analyses ...")
     query = {
         "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"],
         "review_state": ["retracted", "rejected"],
@@ -106,7 +103,7 @@ def mark_retracted_and_rejected_analyses(portal):
 
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Apply IRetracted/IRejected {0}/{1}".format(num, total))
+            logger.info("Set IRetracted/IRejected {0}/{1}".format(num, total))
 
         obj = api.get_object(brain)
         if IRetracted.providedBy(obj):
@@ -123,4 +120,4 @@ def mark_retracted_and_rejected_analyses(portal):
         elif status == "rejected":
             alsoProvides(obj, IRejected)
 
-    logger.info("Applying IRetracted/IRejected interface to analyses [DONE]")
+    logger.info("Set IRetracted/IRejected interface to analyses [DONE]")

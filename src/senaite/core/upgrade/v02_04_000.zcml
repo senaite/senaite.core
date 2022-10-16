@@ -13,4 +13,23 @@
       handler="senaite.core.upgrade.v02_04_000.reindex_qc_analyses"
       profile="senaite.core:default"/>
 
+  <!-- Mark analyses with IRejected or IRetracted
+       https://github.com/senaite/senaite.core/pull/2164 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Mark analyses with IRetracted and IRejected"
+      description="Mark analyses with IRetracted and IRejected"
+      source="2401"
+      destination="2402"
+      handler="senaite.core.upgrade.v02_04_000.mark_retracted_and_rejected_analyses"
+      profile="senaite.core:default"/>
+
+  <!-- Add isAnalyte index in analyses catalog -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Add isAnalyte index"
+      description="Add isAnalyte index in analyses catalog"
+      source="2402"
+      destination="2403"
+      handler="senaite.core.upgrade.v02_04_000.add_isanalyte_index"
+      profile="senaite.core:default"/>
+
 </configure>

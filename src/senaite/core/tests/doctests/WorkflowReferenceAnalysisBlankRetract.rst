@@ -1,9 +1,9 @@
-Reference Analysis retract guard and event
-------------------------------------------
+Reference Analysis (Blanks) retract guard and event
+---------------------------------------------------
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t WorkflowReferenceAnalysisRetract
+    bin/test test_textual_doctests -t WorkflowReferenceAnalysisBlankRetract
 
 
 Test Setup
@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IRetracted
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -22,19 +23,6 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
 Functional Helpers:
-
-    >>> def start_server():
-    ...     from Testing.ZopeTestCase.utils import startZServer
-    ...     ip, port = startZServer()
-    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-
-    >>> def timestamp(format="%Y-%m-%d"):
-    ...     return DateTime().strftime(format)
-
-    >>> def start_server():
-    ...     from Testing.ZopeTestCase.utils import startZServer
-    ...     ip, port = startZServer()
-    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
     >>> def new_ar(services):
     ...     values = {
@@ -97,45 +85,43 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> control_def = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Control definition")
-    >>> control_refs = [{'uid': api.get_uid(Cu), 'result': '10', 'min': '0', 'max': '0'},
-    ...                 {'uid': api.get_uid(Fe), 'result': '10', 'min': '0', 'max': '0'},
-    ...                 {'uid': api.get_uid(Au), 'result': '15', 'min': '14.5', 'max': '15.5'},]
-    >>> control_def.setReferenceResults(control_refs)
-    >>> control_sample = api.create(supplier, "ReferenceSample", title="Control",
-    ...                      ReferenceDefinition=control_def,
-    ...                      Blank=False, ExpiryDate=date_future,
-    ...                      ReferenceResults=control_refs)
+    >>> blank_def = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
+    >>> blank_refs = [{'uid': api.get_uid(Cu), 'result': '0', 'min': '0', 'max': '0'},
+    ...               {'uid': api.get_uid(Fe), 'result': '0', 'min': '0', 'max': '0'},
+    ...               {'uid': api.get_uid(Au), 'result': '0', 'min': '0', 'max': '0'},]
+    >>> blank_def.setReferenceResults(blank_refs)
+    >>> blank_sample = api.create(supplier, "ReferenceSample", title="Blank",
+    ...                    ReferenceDefinition=blank_def,
+    ...                    Blank=True, ExpiryDate=date_future,
+    ...                    ReferenceResults=blank_refs)
 
 
-Retract transition and guard basic constraints
-..............................................
+Blank retraction basic constraints
+..................................
 
-Create an Analysis Request and submit regular analyses:
+Create a Worksheet and submit regular analyses:
 
     >>> ar = new_ar([Cu])
-    >>> worksheet = to_new_worksheet_with_reference(ar, control_sample)
+    >>> worksheet = to_new_worksheet_with_reference(ar, blank_sample)
     >>> submit_regular_analyses(worksheet)
 
-Get the reference and submit:
+Get the blank and submit:
 
-    >>> reference = worksheet.getReferenceAnalyses()[0]
-    >>> reference.setResult(12)
-    >>> try_transition(reference, "submit", "to_be_verified")
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(0)
+    >>> try_transition(blank, "submit", "to_be_verified")
     True
-    >>> api.get_workflow_status_of(reference)
-    'to_be_verified'
-    >>> api.get_workflow_status_of(worksheet)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
-Retract the reference:
+Retract the blank:
 
-    >>> try_transition(reference, "retract", "retracted")
+    >>> try_transition(blank, "retract", "retracted")
     True
-    >>> api.get_workflow_status_of(reference)
+    >>> api.get_workflow_status_of(blank)
     'retracted'
 
-And one new additional reference has been added in `assigned` state:
+And one new additional blank has been added in `assigned` state:
 
     >>> references = worksheet.getReferenceAnalyses()
     >>> sorted(map(api.get_workflow_status_of, references))
@@ -151,36 +137,36 @@ While the Analysis Request is still in `to_be_verified`:
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
 
-The new analysis is a copy of retracted one:
+The new blank is a copy of retracted one:
 
     >>> retest = filter(lambda an: api.get_workflow_status_of(an) == "assigned", references)[0]
-    >>> retest.getKeyword() == reference.getKeyword()
+    >>> retest.getKeyword() == blank.getKeyword()
     True
-    >>> retest.getReferenceAnalysesGroupID() == reference.getReferenceAnalysesGroupID()
+    >>> retest.getReferenceAnalysesGroupID() == blank.getReferenceAnalysesGroupID()
     True
-    >>> retest.getRetestOf() == reference
+    >>> retest.getRetestOf() == blank
     True
-    >>> reference.getRetest() == retest
+    >>> blank.getRetest() == retest
     True
-    >>> retest.getAnalysisService() == reference.getAnalysisService()
+    >>> retest.getAnalysisService() == blank.getAnalysisService()
     True
 
 And keeps the same results as the retracted one:
 
-    >>> retest.getResult() == reference.getResult()
+    >>> retest.getResult() == blank.getResult()
     True
 
 And is located in the same slot as well:
 
-    >>> worksheet.get_slot_position_for(reference) == worksheet.get_slot_position_for(retest)
+    >>> worksheet.get_slot_position_for(blank) == worksheet.get_slot_position_for(retest)
     True
 
-If I submit the result for the new reference:
+If I submit the result for the new blank:
 
     >>> try_transition(retest, "submit", "to_be_verified")
     True
 
-The status of both the reference and the Worksheet is "to_be_verified":
+The status of both the blank and the Worksheet is "to_be_verified":
 
     >>> api.get_workflow_status_of(retest)
     'to_be_verified'
@@ -194,7 +180,7 @@ And I can even retract the retest:
     >>> api.get_workflow_status_of(retest)
     'retracted'
 
-And one new additional reference has been added in `assigned` state:
+And one new additional blank has been added in `assigned` state:
 
     >>> references = worksheet.getReferenceAnalyses()
     >>> sorted(map(api.get_workflow_status_of, references))
@@ -205,15 +191,15 @@ And the Worksheet has been transitioned to `open`:
     >>> api.get_workflow_status_of(worksheet)
     'open'
 
-Retract transition when reference analyses from same Reference Sample are added
--------------------------------------------------------------------------------
+Retract transition when a duplicate from same Reference Sample is added
+-----------------------------------------------------------------------
 
 When analyses from same Reference Sample are added in a worksheet, the
 worksheet allocates different slots for them, although each of the slots keeps
-the container the analysis belongs to (in this case the same Reference Sample).
+the container the blank belongs to (in this case the same Reference Sample).
 Hence, when retracting a reference analysis, the retest must be added in the
-same position as the original, regardless of how many reference analyses from
-same reference sample exist.
+same position as the original, regardless of how many blanks from same
+reference sample exist.
 Further information: https://github.com/senaite/senaite.core/pull/1179
 
 Create an Analysis Request:
@@ -225,41 +211,64 @@ Create an Analysis Request:
 
 Add same reference sample twice:
 
-    >>> ref_1 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
-    >>> ref_2 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
-    >>> ref_1 != ref_2
+    >>> blank_1 = worksheet.addReferenceAnalyses(blank_sample, [api.get_uid(Cu)])[0]
+    >>> blank_2 = worksheet.addReferenceAnalyses(blank_sample, [api.get_uid(Cu)])[0]
+    >>> blank_1 != blank_2
     True
 
 Get the reference analyses positions:
 
-    >>> ref_1_pos = worksheet.get_slot_position_for(ref_1)
-    >>> ref_1_pos
+    >>> blank_1_pos = worksheet.get_slot_position_for(blank_1)
+    >>> blank_1_pos
     1
-    >>> ref_2_pos = worksheet.get_slot_position_for(ref_2)
-    >>> ref_2_pos
+    >>> blank_2_pos = worksheet.get_slot_position_for(blank_2)
+    >>> blank_2_pos
     2
 
 Submit both:
 
-    >>> ref_1.setResult(12)
-    >>> ref_2.setResult(13)
-    >>> try_transition(ref_1, "submit", "to_be_verified")
+    >>> blank_1.setResult(12)
+    >>> blank_2.setResult(13)
+    >>> try_transition(blank_1, "submit", "to_be_verified")
     True
-    >>> try_transition(ref_2, "submit", "to_be_verified")
+    >>> try_transition(blank_2, "submit", "to_be_verified")
     True
 
-Retract the first reference analysis. The retest has been added in same slot:
+Retract the first blank. The retest has been added in same slot:
 
-    >>> try_transition(ref_1, "retract", "retracted")
+    >>> try_transition(blank_1, "retract", "retracted")
     True
-    >>> retest_1 = ref_1.getRetest()
+    >>> retest_1 = blank_1.getRetest()
     >>> worksheet.get_slot_position_for(retest_1)
     1
 
-And the same if we retract the second reference analysis:
+And the same if we retract the second blank analysis:
 
-    >>> try_transition(ref_2, "retract", "retracted")
+    >>> try_transition(blank_2, "retract", "retracted")
     True
-    >>> retest_2 = ref_2.getRetest()
+    >>> retest_2 = blank_2.getRetest()
     >>> worksheet.get_slot_position_for(retest_2)
     2
+
+IRetracted interface is provided by retracted blanks
+....................................................
+
+When retracted, blank analyses are marked with the `IRetracted` interface:
+
+    >>> sample = new_ar([Cu])
+    >>> worksheet = to_new_worksheet_with_reference(sample, blank_sample)
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(12)
+    >>> success = do_action_for(blank, "submit")
+    >>> IRetracted.providedBy(blank)
+    False
+
+    >>> success = do_action_for(blank, "retract")
+    >>> IRetracted.providedBy(blank)
+    True
+
+But the retest does not provide `IRetracted`:
+
+    >>> retest = blank.getRetest()
+    >>> IRetracted.providedBy(retest)
+    False
