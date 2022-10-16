@@ -59,6 +59,19 @@ module.exports = {
         ]
       },
       {
+        test: /\.css$/,
+        use: [
+          {
+            // https://webpack.js.org/plugins/mini-css-extract-plugin/
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            // https://webpack.js.org/loaders/css-loader/
+            loader: "css-loader"
+          },
+        ]
+      },
+      {
         // SCSS
         test: /\.s[ac]ss$/i,
         use: [
