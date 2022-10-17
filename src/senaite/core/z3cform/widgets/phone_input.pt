@@ -1,39 +1,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:omit-tag="">
-    <input id="" name="" class="" title="" lang="" disabled=""
-           readonly="" alt="" tabindex="" accesskey="" size="" maxlength=""
-           style="" value="" type="tel"
-           tal:attributes="id view/id;
-                           data-name view/name;
+
+    <input type="tel"
+           tal:attributes="python:view.attrs();
+                           id view/id;
                            class string:${view/klass} senaite-phone-widget-input;
-                           style view/style;
                            title view/title;
-                           lang view/lang;
-                           onclick view/onclick;
-                           ondblclick view/ondblclick;
-                           onmousedown view/onmousedown;
-                           onmouseup view/onmouseup;
-                           onmouseover view/onmouseover;
-                           onmousemove view/onmousemove;
-                           onmouseout view/onmouseout;
-                           onkeypress view/onkeypress;
-                           onkeydown view/onkeydown;
-                           onkeyup view/onkeyup;
                            value view/value;
                            disabled view/disabled;
-                           tabindex view/tabindex;
-                           onfocus view/onfocus;
-                           onblur view/onblur;
-                           onchange view/onchange;
                            readonly view/readonly;
-                           alt view/alt;
-                           accesskey view/accesskey;
-                           onselect view/onselect;
-                           size view/size;
-                           maxlength view/maxlength;
-                           placeholder view/placeholder;
-                           autocapitalize view/autocapitalize;" />
+                           placeholder view/placeholder;" />
 
     <!-- Value get set by the phone widget JS -->
     <input type="hidden"

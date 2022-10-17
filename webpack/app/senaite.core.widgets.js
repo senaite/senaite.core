@@ -47,7 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let error_codes = ["Invalid number", "Invalid country code", "Too short", "Too long", "Invalid number"];
   let init_phone_input = (el) => {
     let id = el.dataset.intlTelInputId;
+    let initial_country = el.dataset.initial_country;
+    let preferred_countries = JSON.parse(el.dataset.preferred_countries);
     let iti = intlTelInput(el, {
+      initialCountry: initial_country,
+      preferredCountries: preferred_countries,
       // avoid that the dropdown is cropped in records widget
       dropdownContainer: document.body,
       // https://github.com/jackocnr/intl-tel-input#utilities-script
