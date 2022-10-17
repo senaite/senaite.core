@@ -54,4 +54,6 @@ If we render the widget we get the HTML:
     >>> widget.value = PHONE_NUMBER
     >>> widget.mode = interfaces.INPUT_MODE
     >>> print(widget.render().replace('\n', ''))
-    <input class="senaite-phone-widget senaite-phone-widget-input" value="+17024181234" type="tel" />
+    <input name="" class="senaite-phone-widget senaite-phone-widget-input" value="+17024181234" type="tel" />
+    <!-- Value get set by the phone widget JS -->
+    <input type="hidden" value="+17024181234"/>
