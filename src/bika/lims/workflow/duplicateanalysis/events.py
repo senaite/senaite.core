@@ -22,10 +22,12 @@ import transaction
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.interfaces import IRetracted
 from bika.lims.utils.analysis import create_retest
 from bika.lims.utils.analysis import generate_analysis_id
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import events as analysis_events
+from zope.interface import alsoProvides
 
 
 def after_submit(duplicate_analysis):
@@ -59,6 +61,9 @@ def after_retract(duplicate_analysis):
     in is performed. The duplicate transitions to "retracted" state and a new
     copy of the duplicate is created.
     """
+    # Mark this duplicate as IRetracted
+    alsoProvides(duplicate_analysis, IRetracted)
+
     # Rename the analysis to make way for it's successor
     parent = api.get_parent(duplicate_analysis)
     keyword = duplicate_analysis.getKeyword()

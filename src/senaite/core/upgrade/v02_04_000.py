@@ -19,11 +19,14 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IRetracted
 from senaite.core import logger
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
-from senaite.core.catalog import ANALYSIS_CATALOG
+from zope.interface import alsoProvides
 
 version = "2.4.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -71,3 +74,38 @@ def reindex_qc_analyses(tool):
         obj._p_deactivate()
 
     logger.info("Reindexing QC Analyses [DONE]")
+
+
+def mark_retracted_and_rejected_analyses(tool):
+    """Sets the IRetracted and/or IRejected interface to analyses that were
+    either retracted or rejected
+    :param tool: portal_setup tool
+    """
+    logger.info("Set IRetracted/IRejected interface to analyses ...")
+    query = {
+        "portal_type": ["Analysis", "ReferenceAnalysis", "DuplicateAnalysis"],
+        "review_state": ["retracted", "rejected"],
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Set IRetracted/IRejected {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        if IRetracted.providedBy(obj):
+            obj._p_deactivate()  # noqa
+            continue
+
+        if IRejected.providedBy(obj):
+            obj._p_deactivate()  # noqa
+            continue
+
+        status = api.get_review_status(obj)
+        if status == "retracted":
+            alsoProvides(obj, IRetracted)
+        elif status == "rejected":
+            alsoProvides(obj, IRejected)
+
+    logger.info("Set IRetracted/IRejected interface to analyses [DONE]")
