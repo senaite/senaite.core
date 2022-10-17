@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IRejected
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import getAllowedTransitions
@@ -593,3 +594,18 @@ And no transition can be done from this state:
 
     >>> getAllowedTransitions(analysis)
     []
+
+
+IRejected interface is provided by rejected analyses
+....................................................
+
+When rejected, routine analyses are marked with the `IRejected` interface:
+
+    >>> ar = new_ar([Cu])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> IRejected.providedBy(analysis)
+    False
+
+    >>> success = do_action_for(analysis, "reject")
+    >>> IRejected.providedBy(analysis)
+    True

@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IRetracted
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -137,6 +138,8 @@ The retraction of the worksheet causes all its analyses to be retracted:
     6
     >>> sorted(map(api.get_workflow_status_of, analyses))
     ['assigned', 'assigned', 'assigned', 'retracted', 'retracted', 'retracted']
+    >>> sorted(map(IRetracted.providedBy, analyses))
+    [False, False, False, True, True, True]
 
 And the Worksheet transitions to "open":
 

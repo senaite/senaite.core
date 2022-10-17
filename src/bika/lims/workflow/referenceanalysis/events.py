@@ -21,7 +21,9 @@
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
+from bika.lims.interfaces import IRetracted
 from bika.lims.workflow.analysis import events as analysis_events
+from zope.interface import alsoProvides
 
 
 def after_submit(reference_analysis):
@@ -53,6 +55,9 @@ def after_retract(reference_analysis):
     analysis passed in is performed. The reference analysis transitions to
     "retracted" state and a new copy of the reference analysis is created
     """
+    # Mark this reference analysis with IRetracted
+    alsoProvides(reference_analysis, IRetracted)
+
     reference = reference_analysis.getSample()
     service = reference_analysis.getAnalysisService()
     worksheet = reference_analysis.getWorksheet()
@@ -61,7 +66,8 @@ def after_retract(reference_analysis):
         # This a reference analysis in a worksheet
         slot = worksheet.get_slot_position_for(reference_analysis)
         refgid = reference_analysis.getReferenceAnalysesGroupID()
-        ref = worksheet.add_reference_analysis(reference, service, slot, refgid)
+        ref = worksheet.add_reference_analysis(reference, service, slot,
+                                               refgid)
         if not ref:
             logger.warn("Cannot add a retest for reference analysis {} into {}"
                         .format(reference_analysis.getId(), worksheet.getId()))

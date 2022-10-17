@@ -13,6 +13,7 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.interfaces import IVerified
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -426,3 +427,30 @@ And to ensure consistency amongst tests, we disable self-verification:
     >>> bikasetup.setSelfVerificationEnabled(False)
     >>> bikasetup.getSelfVerificationEnabled()
     False
+
+
+IVerified interface is provided by fully verified controls
+..........................................................
+
+Controls do not provide `IVerified` unless fully verified:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> bikasetup.setNumberOfRequiredVerifications(2)
+    >>> bikasetup.setTypeOfmultiVerification("self_multi_enabled")
+    >>> sample = new_ar([Cu])
+    >>> worksheet = to_new_worksheet_with_reference(sample, control_sample)
+    >>> control = worksheet.getReferenceAnalyses()[0]
+    >>> control.setResult(12)
+    >>> success = do_action_for(control, "submit")
+    >>> IVerified.providedBy(control)
+    False
+
+    >>> success = do_action_for(control, "multi_verify")
+    >>> IVerified.providedBy(control)
+    False
+
+    >>> success = do_action_for(control, "verify")
+    >>> IVerified.providedBy(control)
+    True
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
