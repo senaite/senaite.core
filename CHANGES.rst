@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2166 Fix partitions not displaying complete list of Interpretation Templates
 - #2165 Add DX phone field and widget
 - #2164 Added `IRetracted` and `IRejected` marker interfaces for analyses
 - #2162 Allow to create samples without analyses

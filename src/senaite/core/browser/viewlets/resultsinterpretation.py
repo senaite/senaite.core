@@ -82,15 +82,14 @@ class ResultsInterpretationViewlet(ViewletBase):
             """
             obj = api.get_object(obj)
             sample_types = obj.getRawSampleTypes() or [sample_type_uid]
-            if sample_type_uid not in sample_types:
-                return False
+            if sample_type_uid in sample_types:
+                return True
 
             analysis_templates = obj.getRawAnalysisTemplates()
-            if analysis_templates:
-                if template_uid not in analysis_templates:
-                    return False
+            if template_uid in analysis_templates:
+                return True
 
-            return True
+            return False
 
         def get_data_info(item):
             return {
