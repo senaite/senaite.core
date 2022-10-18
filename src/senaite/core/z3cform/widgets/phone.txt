@@ -1,0 +1,59 @@
+Datetime widget
+===============
+
+The phone widget allows to set an national/international phone number and
+display it accordingly.
+
+
+Running this test from the buildout directory:
+
+    bin/test test_z3c_widgets -t phone
+
+
+Test Setup
+----------
+
+    >>> from senaite.core.z3cform.widgets.phone import PhoneWidget
+    >>> from z3c.form import interfaces
+
+Some variables we need:
+
+    >>> PHONE_NUMBER = "+17024181234"
+    >>> INPUT_TPL = "phone_input.pt"
+    >>> HIDDEN_TPL = "phone_hidden.pt"
+    >>> DISPLAY_TPL = "phone_display.pt"
+
+
+Using the Widget
+----------------
+
+The widget can render an input field only by adapting a request:
+
+    >>> from z3c.form.testing import TestRequest
+    >>> request = TestRequest()
+    >>> widget = PhoneWidget(request)
+
+
+Register the input template:
+
+    >>> import os.path
+    >>> import zope.interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.pagetemplate.interfaces import IPageTemplate
+    >>> import senaite.core.z3cform.widgets
+    >>> import z3c.form.widget
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), INPUT_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='input')
+
+
+If we render the widget we get the HTML:
+
+    >>> widget.value = PHONE_NUMBER
+    >>> widget.mode = interfaces.INPUT_MODE
+    >>> print(widget.render().replace('\n', ''))
+    <input class="senaite-phone-widget senaite-phone-widget-input" data-initial_country="us" data-preferred_countries="[]" type="tel" value="+17024181234">
+    <!-- Value get set by the phone widget JS -->
+    <input type="hidden" value="+17024181234"/>

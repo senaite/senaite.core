@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="z3c.form">
+
+  <!-- Phone Widget -->
+  <adapter
+      factory=".phone.PhoneWidgetFactory"
+      for="senaite.core.schema.interfaces.IPhoneField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Phone input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".phone.PhoneWidget"
+      template="phone_input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Phone display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".phone.PhoneWidget"
+      template="phone_display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Phone hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".phone.PhoneWidget"
+      template="phone_hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+</configure>

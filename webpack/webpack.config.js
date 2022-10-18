@@ -32,12 +32,17 @@ module.exports = {
   mode: mode,
   context: path.resolve(__dirname, "app"),
   entry: {
-    main: [
+    // https://webpack.js.org/configuration/entry-context/#entry-descriptor
+    "senaite.core": [
       // scripts
       "./senaite.core.js",
       // styles
       "./scss/senaite.core.scss",
     ],
+    "seniate.core.widgets": [
+      // scripts
+      "./senaite.core.widgets.js",
+    ]
   },
   output: {
     // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
@@ -56,6 +61,19 @@ module.exports = {
             // https://webpack.js.org/loaders/babel-loader/
             loader: "babel-loader"
           }
+        ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            // https://webpack.js.org/plugins/mini-css-extract-plugin/
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            // https://webpack.js.org/loaders/css-loader/
+            loader: "css-loader"
+          },
         ]
       },
       {
@@ -265,6 +283,7 @@ module.exports = {
         { from: "../node_modules/react/umd", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/react-dom/umd", to: path.resolve(staticPath, "modules/react-dom") },
         { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},
+        { from: "../node_modules/intl-tel-input/build", to: path.resolve(staticPath, "modules/intl-tel-input") },
         // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
     }),

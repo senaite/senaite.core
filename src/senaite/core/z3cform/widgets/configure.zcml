@@ -2,10 +2,11 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
+  <include file="address.zcml" />
   <include file="datagrid.zcml" />
   <include file="datetimewidget.zcml" />
   <include file="number.zcml" />
+  <include file="phone.zcml" />
   <include file="uidreference.zcml" />
-  <include file="address.zcml" />
 
 </configure>

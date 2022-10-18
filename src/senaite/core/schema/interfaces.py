@@ -6,6 +6,7 @@ from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
+from zope.schema.interfaces import INativeString
 
 
 class IBaseField(IField):
@@ -45,4 +46,9 @@ class IAddressField(IList):
 
 class IRichTextField(IRichText):
     """Senaite rich text field
+    """
+
+
+class IPhoneField(INativeString):
+    """Input type "phone" widget
     """
