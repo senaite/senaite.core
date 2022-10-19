@@ -40,7 +40,7 @@ class PhoneWidget(text.TextWidget):
         :returns: dictionary of HTML attributes
         """
         attrs = {
-            "name": self.name,
+            "data-name": self.name,
         }
 
         initial_country = self.initial_country
