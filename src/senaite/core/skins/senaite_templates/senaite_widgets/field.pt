@@ -81,6 +81,7 @@
                   portal python:context.portal_url.getPortalObject();
                   visCondition python:field.widget.testCondition(context.aq_inner.getParentNode(), portal, context);
                   error_id python:errors.get(fieldName)">
+
       <tal:condition
         condition="python:visState == 'visible' and visCondition">
         <div class="field"

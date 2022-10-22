@@ -1,7 +1,7 @@
 <div id="senaite-sampleheader"
      tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
                  test nocall:senaite_view/test;
-                 errors python:request.get('errors', {});
+                 errors python:options.get('errors', {});
                  config python:view.get_configuration();
                  prominent_columns python:config.get('prominent_columns');
                  standard_columns python:config.get('standard_columns');
