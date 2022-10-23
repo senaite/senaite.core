@@ -35,10 +35,15 @@ class SampleHeaderViewlet(ViewletBase):
         request = self.request
         submitted = request.form.get("sampleheader_form_submitted", False)
         save = request.form.get("sampleheader_form_save", False)
+        errors = {}
         if submitted and save:
-            self.handle_form_submit(request=self.request)
-            self.request.response.redirect(self.context.absolute_url())
-        return self.template()
+            errors = self.handle_form_submit(request=self.request)
+            # NOTE: we only redirect if no validation errors occured,
+            #       because otherwise the fields are not error-indicated!
+            if not errors:
+                # redirect needed to show status message
+                self.request.response.redirect(self.context.absolute_url())
+        return self.template(errors=errors)
 
     def handle_form_submit(self, request=None):
         """Handle form submission
@@ -63,9 +68,7 @@ class SampleHeaderViewlet(ViewletBase):
                 errors.update({name: error})
 
         if errors:
-            request["errors"] = errors
-            message = _("Please correct the indicated errors")
-            self.add_status_message(message, level="error")
+            return errors
         else:
             # we want to set the fields with the data manager
             dm = IDataManager(self.context)
