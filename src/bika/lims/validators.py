@@ -38,6 +38,9 @@ from Products.ZCTextIndex.ParseTree import ParseError
 from zope.interface import implements
 
 
+RX_NO_SPECIAL_CHARACTERS = r"[^A-Za-z\w\d\-_]"
+
+
 class IdentifierTypeAttributesValidator:
     """Validate IdentifierTypeAttributes to ensure that attributes are
     not duplicated.
@@ -1528,7 +1531,7 @@ class ServiceAnalytesValidator(RecordsValidator):
     def validate_record(self, instance, record):
         # Keyword cannot contain invalid characters
         keyword = record.get("keyword")
-        if re.findall(serviceapi.RX_SERVICE_KEYWORD, keyword):
+        if re.findall(RX_NO_SPECIAL_CHARACTERS, keyword):
             return _("Validation failed: Keyword contains invalid characters")
 
 
