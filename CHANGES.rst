@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2173 Fix UnicodeDecodeError when a required condition is empty in add form
 - #2172 Fix SuperModel import error introduced in PR #2154
 - #2169 Fix field error indication in sample header
 - #2166 Fix partitions not displaying complete list of Interpretation Templates
