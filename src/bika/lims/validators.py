@@ -27,7 +27,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
-from bika.lims.api import analysisservice as serviceapi
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
@@ -257,7 +256,20 @@ class ServiceKeywordValidator:
             # Nothing changed
             return
 
-        err_msg = serviceapi.check_keyword(value, instance)
+        # The validators module get imported early in __init__.py,
+        # and this line causes this (indirect) import error:
+        #
+        # from bika.lims.browser.fields.uidreferencefield import get_backreferences
+        # ImportError: cannot import name SuperModel
+        #
+        # Mental note from ramonski:
+        # Probably because *all* fields get imported in
+        # bika.lims.browser.fields.__init__.py and the ZCA is not yet fully
+        # initialized.
+        #
+        # https://github.com/senaite/senaite.docker/issues/14
+        from bika.lims.api.analysisservice import check_keyword
+        err_msg = check_keyword(value, instance)
         if err_msg:
             ts = api.get_tool("translation_service")
             return to_utf8(ts.translate(err_msg))

@@ -37,6 +37,7 @@ from senaite.core.permissions import AddWorksheet
 from senaite.core.permissions.worksheet import can_add_worksheet
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
+from plone.memoize.view import memoize
 
 
 class FolderView(BikaListingView):
@@ -73,7 +74,6 @@ class FolderView(BikaListingView):
 
         self.show_select_column = True
         self.show_select_all_checkbox = True
-        self.filter_by_user = False
         self.selected_state = ""
         self.analyst_choices = []
         self.can_reassign = False
@@ -221,20 +221,35 @@ class FolderView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
-        if self.context.bika_setup.getRestrictWorksheetUsersAccess():
-            # Display only the worksheets assigned to the current user unless
-            # the user belongs to a privileged role
-            allowed = ["Manager", "LabManager", "RegulatoryInspector"]
-            diff = filter(lambda role: role in allowed, self.member.getRoles())
-            self.filter_by_user = len(diff) == 0
-
-        if self.filter_by_user:
+        if self.show_only_mine():
             # Remove 'Mine' button and hide 'Analyst' column
             del self.review_states[1]  # Mine
             self.columns["Analyst"]["toggle"] = False
             self.contentFilter["getAnalyst"] = self.member.id
             for rvw in self.review_states:
                 rvw["contentFilter"]["getAnalyst"] = self.member.id
+
+    def is_privileged_user(self):
+        """Returns whether the current user is a privileged member
+        """
+        privileged = ["Manager", "LabManager", "RegulatoryInspector"]
+        user_roles = self.member.getRoles()
+        if set(privileged).intersection(user_roles):
+            return True
+        return False
+
+    @memoize
+    def show_only_mine(self):
+        """Returns whether only the worksheets assigned to current user have
+        to be displayed or not
+        """
+        # do not filter if user is a privileged member
+        if self.is_privileged_user():
+            return False
+
+        # rely on setup's setting
+        setup = api.get_setup()
+        return setup.getRestrictWorksheetUsersAccess()
 
     def is_analyst_assignment_allowed(self):
         """Check if the analyst can be assigned
@@ -243,7 +258,7 @@ class FolderView(BikaListingView):
             return False
         if not self.can_manage:
             return False
-        if self.filter_by_user:
+        if self.show_only_mine():
             return False
         return True
 

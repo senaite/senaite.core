@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+    <input type="tel"
+           tal:attributes="python:view.attrs();
+                           id view/id;
+                           class string:${view/klass} senaite-phone-widget-input;
+                           title view/title;
+                           value view/value;
+                           disabled view/disabled;
+                           readonly view/readonly;
+                           placeholder view/placeholder;" />
+
+    <!-- Value get set by the phone widget JS -->
+    <input type="hidden"
+           tal:attributes="name view/name;
+                           value view/value;"/>
+</html>

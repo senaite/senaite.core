@@ -4,12 +4,10 @@ import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
-import UIDReferenceWidgetController from "./widgets/uidreferencewidget/widget.js"
-import AddressWidgetController from "./widgets/addresswidget/widget.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.debug("*** SENAITE CORE JS LOADED ***");
+  console.info("*** SENAITE CORE JS LOADED ***");
 
   // Initialize i18n message factories
   window.i18n = new I18N();
@@ -18,16 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // BBB: set global `portal_url` variable
   window.portal_url = document.body.dataset.portalUrl
-
-  // TinyMCE
-  tinymce.init({
-    height: 300,
-    paste_data_images: true,
-    selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text'],textarea.richTextWidget",
-    plugins: ["paste", "link", "fullscreen", "table", "code"],
-    content_css : "/++plone++senaite.core.static/bundles/main.css",
-  })
-  // /TinyMCE
 
   // Initialize Site
   window.site = new Site();
@@ -59,23 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     $("[data-toggle='tooltip']").tooltip();
     $("select.selectpicker").selectpicker();
   });
-
-  // Widgets
-  window.widgets = {};
-  // Referencewidgets
-  var ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
-  for (let widget of ref_widgets) {
-    let id = widget.dataset.id;
-    let controller = ReactDOM.render(<UIDReferenceWidgetController root_el={widget} />, widget);
-    window.widgets[id] = controller;
-  }
-  // AddressWidget
-  var address_widgets = document.getElementsByClassName("senaite-address-widget-input");
-  for (let widget of address_widgets) {
-    let id = widget.dataset.id;
-    let controller = ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
-    window.widgets[id] = controller;
-  }
 
   // Workflow Menu Update for Ajax Transitions
   // https://github.com/senaite/senaite.app.listing/pull/87

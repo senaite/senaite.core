@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2172 Fix SuperModel import error introduced in PR #2154
+- #2169 Fix field error indication in sample header
+- #2166 Fix partitions not displaying complete list of Interpretation Templates
+- #2165 Add DX phone field and widget
 - #2164 Added `IRetracted` and `IRejected` marker interfaces for analyses
 - #2162 Allow to create samples without analyses
 - #2160 Allow indexed attributes for ZCTextIndex in catalog API
