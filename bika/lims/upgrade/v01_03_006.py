@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
@@ -95,14 +97,17 @@ def fix_samples_primary(portal):
     samples = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     total = len(samples)
     for num, sample in enumerate(samples):
-        if num and num % 10 == 0:
+        if num and num % 100 == 0:
             logger.info("Processed samples: {}/{}".format(num, total))
+        if num and num % 1000 == 0:
+            transaction.commit()
 
         # Extract the parent(s) from this sample
         sample = api.get_object(sample)
         parents = sample.getRefs(relationship=ref_id)
         if not parents:
             # Processed already
+            sample._p_deactivate()
             continue
 
         # Re-assign the parent sample(s)
