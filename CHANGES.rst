@@ -3,7 +3,7 @@ Changelog
 
 2.4.0 (unreleased)
 ------------------
-
+- #2175 Analysis profiles not recognised on AR template creation
 - #2173 Fix UnicodeDecodeError when a required condition is empty in add form
 - #2172 Fix SuperModel import error introduced in PR #2154
 - #2169 Fix field error indication in sample header
