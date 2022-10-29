@@ -8,6 +8,5 @@
                        data-style view/style;
                        data-title view/title;">
     <!-- ReactJS controlled component -->
-    <div>REACT JS Component</div>
   </div>
 </html>
