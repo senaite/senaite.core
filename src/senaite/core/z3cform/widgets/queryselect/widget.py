@@ -126,6 +126,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def get_search_index(self):
         return self.attr("search_index", "")
 
+    def get_limit(self):
+        return self.attr("limit", 25)
+
     def get_search_wildcard(self):
         return self.attr("search_wildcard", False)
 
@@ -156,6 +159,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
             "data-columns": self.get_columns(),
+            "data-display_template": self.get_display_template(),
+            "data-limit": self.get_limit(),
             "data-search_index": self.get_search_index(),
             "data-search_wildcard": self.get_search_wildcard(),
             "data-allow_user_value": self.get_allow_user_value(),
