@@ -96,7 +96,7 @@ class SearchResults extends React.Component {
    */
   get_result_value(result) {
     let value_key = this.get_value_key();
-    return result[value_key] || `NO VALUE FOUND FOR KEY='${value_key}'!`;
+    return result[value_key];
   }
 
   /*
@@ -317,8 +317,11 @@ class SearchResults extends React.Component {
   on_select(event) {
     event.preventDefault();
     let target = event.currentTarget;
-    let value_key = this.get_value_key();
-    let value = target.getAttribute(value_key)
+    let value = target.getAttribute("value")
+    if (value === null) {
+      console.warn("SearchResults::on_select:missing_value!");
+      return;
+    }
     console.debug("SearchResults::on_select:event=", event);
     if (this.props.on_select) {
       this.props.on_select(value);

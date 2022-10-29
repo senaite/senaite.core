@@ -13,8 +13,8 @@ class QuerySelectWidgetController extends React.Component {
 
     // Internal state
     this.state = {
-      value_key: "uid",  // item key that has the value stored
-      records: {},  // mapping of UID -> result record
+      value_key: "uid",  // result object key that has the submit value stored
+      records: {},  // mapping of value -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
       searchterm: "",  // the search term that was entered by the user
       loading: false,  // loading flag when searching for results
@@ -110,6 +110,11 @@ class QuerySelectWidgetController extends React.Component {
     }
   }
 
+  /*
+   * Checks if the field should be rendered as disabled
+   *
+   * @returns {Boolean} true/false if the widget is disabled
+   */
   is_disabled() {
     if (this.state.disabled) {
       return true;
@@ -135,7 +140,8 @@ class QuerySelectWidgetController extends React.Component {
   make_query(options) {
     options = options || {};
 
-    // allow to search any index
+    // allow to search a custom index
+    // NOTE: This should be a ZCTextIndex!
     let search_index = this.state.search_index || "q";
     let search_term = this.state.searchterm;
 
@@ -341,11 +347,11 @@ class QuerySelectWidgetController extends React.Component {
     data = data || {};
     let items = data.items || [];
 
+    // Mapping of value -> JSON API result item
     let records = Object.assign(this.state.records, {})
-    // update state records
     for (let item of items) {
-      let uid = item.uid;
-      records[uid] = item;
+      let value = item[this.state.value_key];
+      records[value] = item;
     }
 
     this.setState({
@@ -399,7 +405,7 @@ class QuerySelectWidgetController extends React.Component {
     return (
         <div className={this.props.root_class}>
           <References
-            uids={this.state.values}
+            values={this.state.values}
             records={this.state.records}
             display_template={this.state.display_template}
             name={this.state.name}
@@ -407,7 +413,7 @@ class QuerySelectWidgetController extends React.Component {
           />
           <SearchField
             className="form-control"
-            name="uidreference-search"
+            name="query-select-search"
             disabled={this.is_disabled()}
             on_search={this.search}
             on_clear={this.clear_results}
