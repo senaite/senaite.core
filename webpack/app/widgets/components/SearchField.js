@@ -145,6 +145,7 @@ class SearchField extends React.Component {
       <div className="uidreferencewidget-search-field">
         <div className="input-group">
           <input type="text"
+                 autoComplete="off"
                  name={this.props.name}
                  className={this.props.className}
                  ref={this.input_field_ref}
