@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-import string
 
 import six
 
 from bika.lims import api
-from bika.lims import logger
 from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
@@ -161,13 +159,15 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-api_url": self.get_api_url(),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
-            "data-columns": self.get_columns(),
-            "data-display_template": self.get_display_template(),
-            "data-limit": self.get_limit(),
             "data-search_index": self.get_search_index(),
             "data-search_wildcard": self.get_search_wildcard(),
             "data-allow_user_value": self.get_allow_user_value(),
+            "data-columns": self.get_columns(),
+            "data-display_template": self.get_display_template(),
+            "data-limit": self.get_limit(),
             "data-multi_valued": self.is_multi_valued(),
+            "data-disabled": self.disabled or False,
+            "data-readonly": self.readonly or False,
         }
 
         # convert all attributes to JSON
@@ -183,19 +183,6 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         portal_url = api.get_url(portal)
         api_url = "{}/@@API/senaite/v1".format(portal_url)
         return api_url
-
-    def render_value(self, uid):
-        """Returns a rendered HTML element for the reference
-        """
-        template = string.Template(self.get_display_template())
-        try:
-            obj_info = self.get_obj_info(uid)
-        except ValueError as e:
-            # Current user might not have privileges to view this object
-            logger.error(e.message)
-            return ""
-
-        return template.safe_substitute(obj_info)
 
 
 @adapter(IField, ISenaiteFormLayer)
