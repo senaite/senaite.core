@@ -13,6 +13,7 @@ class QuerySelectWidgetController extends React.Component {
 
     // Internal state
     this.state = {
+      value_key: "uid",  // item key that has the value stored
       records: {},  // mapping of UID -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
       searchterm: "",  // the search term that was entered by the user
@@ -35,7 +36,7 @@ class QuerySelectWidgetController extends React.Component {
     const data_keys = [
       "id",
       "name",
-      "uids",
+      "values",
       "api_url",
       "records",
       "catalog",
@@ -114,7 +115,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return true;
     }
-    if (!this.state.multi_valued && this.state.uids.length > 0) {
+    if (!this.state.multi_valued && this.state.values.length > 0) {
       return true;
     }
     return false;
@@ -200,24 +201,24 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
-   * Add the UID of a search result to the state
+   * Add the value of a search result to the state
    *
-   * @param {String} uid: The selected UID
-   * @returns {Array} uids: current selected UIDs
+   * @param {String} value: The selected value
+   * @returns {Array} values: current selected values
    */
-  select(uid) {
-    console.debug("QuerySelectWidgetController::select:uid:", uid);
-    // create a copy of the selected UIDs
-    let uids = [].concat(this.state.uids);
-    // Add the new UID if it is not selected yet
-    if (uids.indexOf(uid) == -1) {
-      uids.push(uid);
+  select(value) {
+    console.debug("QuerySelectWidgetController::select:value:", value);
+    // create a copy of the selected values
+    let values = [].concat(this.state.values);
+    // Add the new value if it is not selected yet
+    if (values.indexOf(value) == -1) {
+      values.push(value);
     }
-    this.setState({uids: uids});
-    if (uids.length > 0 && !this.state.multi_valued) {
+    this.setState({values: values});
+    if (values.length > 0 && !this.state.multi_valued) {
       this.clear_results();
     }
-    return uids;
+    return values;
   }
 
   /*
@@ -229,30 +230,30 @@ class QuerySelectWidgetController extends React.Component {
     let focused = this.state.focused;
     let result = this.state.results.at(focused);
     if (result) {
-      let uid = result.uid;
-      if (this.state.uids.indexOf(uid) == -1) {
-        this.select(uid);
+      let value = result[this.state.value_key];
+      if (this.state.values.indexOf(value) == -1) {
+        this.select(value);
       } else {
-        this.deselect(uid);
+        this.deselect(value);
       }
     }
   }
 
   /*
-   * Remove the UID of a reference from the state
+   * Remove the value of a reference from the state
    *
-   * @param {String} uid: The selected UID
-   * @returns {Array} uids: current selected UIDs
+   * @param {String} value: The selected value
+   * @returns {Array} values: current selected values
    */
-  deselect(uid) {
-    console.debug("QuerySelectWidgetController::deselect:uid:", uid);
-    let uids = [].concat(this.state.uids);
-    let pos = uids.indexOf(uid);
+  deselect(value) {
+    console.debug("QuerySelectWidgetController::deselect:value:", value);
+    let values = [].concat(this.state.values);
+    let pos = values.indexOf(values);
     if (pos > -1) {
-      uids.splice(pos, 1);
+      values.splice(pos, 1);
     }
-    this.setState({uids: uids});
-    return uids;
+    this.setState({values: values});
+    return values;
   }
 
   /*
@@ -392,7 +393,7 @@ class QuerySelectWidgetController extends React.Component {
     return (
         <div className={this.props.root_class}>
           <References
-            uids={this.state.uids}
+            uids={this.state.values}
             records={this.state.records}
             display_template={this.state.display_template}
             name={this.state.name}
@@ -411,7 +412,7 @@ class QuerySelectWidgetController extends React.Component {
           <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
-            uids={this.state.uids}
+            uids={this.state.values}
             searchterm={this.state.searchterm}
             results={this.state.results}
             focused={this.state.focused}

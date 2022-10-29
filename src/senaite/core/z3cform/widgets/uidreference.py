@@ -178,7 +178,8 @@ class UIDReferenceWidget(TextLinesWidget):
         attributes = {
             "data-id": self.id,
             "data-name": self.name,
-            "data-uids": uids,
+            "data-values": uids,
+            "data-value_key": "uid",
             "data-api_url": self.get_api_url(),
             "data-records": dict(zip(uids, map(self.get_obj_info, uids))),
             "data-query": self.get_query(),
