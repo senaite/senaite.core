@@ -140,16 +140,18 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
+        values = self.get_value()
         attributes = {
             "data-id": self.id,
             "data-name": self.name,
+            "data-values": values,
+            "data-value_key": "title",
             "data-api_url": self.get_api_url(),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
             "data-search_index": self.get_search_index(),
             "data-allow_user_value": self.get_allow_user_value(),
             "data-multi_valued": self.is_multi_valued(),
-            "data-values": self.get_value(),
         }
 
         # convert all attributes to JSON
