@@ -36,7 +36,7 @@ class QuerySelectWidgetController extends React.Component {
     const data_keys = [
       "id",
       "name",
-      "values",
+      "values",  // selected values
       "records",
       "api_url",  // JSON API URL for search queries
       "catalog",  // catalog name
