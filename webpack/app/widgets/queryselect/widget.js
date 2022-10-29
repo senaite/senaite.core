@@ -1,6 +1,9 @@
 import React from "react"
+
 import SearchAPI from "../../api/search.js"
 import SearchField from "../components/SearchField.js"
+import SearchResults from "../components/SearchResults.js"
+import References from "../components/References.js"
 
 
 class QuerySelectWidgetController extends React.Component {
@@ -10,6 +13,7 @@ class QuerySelectWidgetController extends React.Component {
 
     // Internal state
     this.state = {
+      records: {},  // mapping of UID -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
       searchterm: "",  // the search term that was entered by the user
       loading: false,  // loading flag when searching for results
@@ -22,7 +26,7 @@ class QuerySelectWidgetController extends React.Component {
       focused: 0,  // current result that has the focus
       padding: 3,  // page padding
     }
-    //
+
     // Root input HTML element
     let el = props.root_el;
 
@@ -31,10 +35,11 @@ class QuerySelectWidgetController extends React.Component {
     const data_keys = [
       "id",
       "name",
-      "values",
+      "uids",
       "api_url",
-      "catalog",  // the catalog tool to query
-      "query",  // the base catalog query to use
+      "records",
+      "catalog",
+      "query",
       "search_index",  // the search index to use
       "allow_user_value",  // allow the user to enter custom values
       "columns",
@@ -62,10 +67,31 @@ class QuerySelectWidgetController extends React.Component {
 
     // Bind callbacks to current context
     this.search = this.search.bind(this);
+    this.goto_page = this.goto_page.bind(this);
+    this.clear_results = this.clear_results.bind(this);
+    this.select = this.select.bind(this);
+    this.select_focused = this.select_focused.bind(this);
+    this.deselect = this.deselect.bind(this);
+    this.navigate_results = this.navigate_results.bind(this);
+    this.on_keydown = this.on_keydown.bind(this);
+    this.on_click = this.on_click.bind(this);
 
-    window.qsw = this;
+    // dev only
+    window.qw = this;
 
-    return this;
+    return this
+  }
+
+  componentDidMount() {
+    // Bind event listeners of the document
+    document.addEventListener("keydown", this.on_keydown, false);
+    document.addEventListener("click", this.on_click, false)
+  }
+
+  componentWillUnmount() {
+    // Remove event listeners of the document
+    document.removeEventListener("keydown", this.on_keydown, false);
+    document.removeEventListener("click", this.on_click, false);
   }
 
   /*
@@ -81,6 +107,19 @@ class QuerySelectWidgetController extends React.Component {
     }
   }
 
+  is_disabled() {
+    if (this.state.disabled) {
+      return true;
+    }
+    if (this.state.readonly) {
+      return true;
+    }
+    if (!this.state.multi_valued && this.state.uids.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   /*
    * Create a query object for the API
    *
@@ -93,6 +132,7 @@ class QuerySelectWidgetController extends React.Component {
   make_query(options) {
     options = options || {};
 
+    // allow to search any index
     let search_index = this.state.search_index || "q";
     let search_term = this.state.searchterm;
 
@@ -145,6 +185,131 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Fetch results of a page
+   *
+   * @param {Integer} page: The page to fetch
+   * @returns {Promise}
+   */
+  goto_page(page) {
+    page = parseInt(page);
+    let limit = parseInt(this.state.limit)
+    // calculate the beginning of the page
+    // Note: this is the count of previous items that are excluded
+    let b_start = page * limit - limit;
+    return this.fetch_results({b_start: b_start});
+  }
+
+  /*
+   * Add the UID of a search result to the state
+   *
+   * @param {String} uid: The selected UID
+   * @returns {Array} uids: current selected UIDs
+   */
+  select(uid) {
+    console.debug("QuerySelectWidgetController::select:uid:", uid);
+    // create a copy of the selected UIDs
+    let uids = [].concat(this.state.uids);
+    // Add the new UID if it is not selected yet
+    if (uids.indexOf(uid) == -1) {
+      uids.push(uid);
+    }
+    this.setState({uids: uids});
+    if (uids.length > 0 && !this.state.multi_valued) {
+      this.clear_results();
+    }
+    return uids;
+  }
+
+  /*
+   * Add/remove the focused result
+   *
+   */
+  select_focused() {
+    console.debug("QuerySelectWidgetController::select_focused");
+    let focused = this.state.focused;
+    let result = this.state.results.at(focused);
+    if (result) {
+      let uid = result.uid;
+      if (this.state.uids.indexOf(uid) == -1) {
+        this.select(uid);
+      } else {
+        this.deselect(uid);
+      }
+    }
+  }
+
+  /*
+   * Remove the UID of a reference from the state
+   *
+   * @param {String} uid: The selected UID
+   * @returns {Array} uids: current selected UIDs
+   */
+  deselect(uid) {
+    console.debug("QuerySelectWidgetController::deselect:uid:", uid);
+    let uids = [].concat(this.state.uids);
+    let pos = uids.indexOf(uid);
+    if (pos > -1) {
+      uids.splice(pos, 1);
+    }
+    this.setState({uids: uids});
+    return uids;
+  }
+
+  /*
+   * Navigate the results either up or down
+   *
+   * @param {String} direction: either up or down
+   */
+  navigate_results(direction) {
+    let page = this.state.page;
+    let pages = this.state.pages;
+    let results = this.state.results;
+    let focused = this.state.focused;
+    let searchterm = this.state.searchterm;
+
+    console.debug("QuerySelectWidgetController::navigate_results:focused:", focused);
+
+    if (direction == "up") {
+      if (focused > 0) {
+        this.setState({focused: focused - 1});
+      } else {
+        this.setState({focused: 0});
+        if (page > 1) {
+          this.goto_page(page - 1);
+        }
+      }
+    }
+
+    else if (direction == "down") {
+      if (this.state.results.length == 0) {
+        this.search(searchterm);
+      }
+      if (focused < results.length - 1) {
+        this.setState({focused: focused + 1});
+      } else {
+        this.setState({focused: 0});
+        if (page < pages) {
+          this.goto_page(page + 1);
+        }
+      }
+    }
+
+    else if (direction == "left") {
+      this.setState({focused: 0});
+      if (page > 0) {
+        this.goto_page(page - 1);
+      }
+    }
+
+    else if (direction == "right") {
+      this.setState({focused: 0});
+      if (page < pages) {
+        this.goto_page(page + 1);
+      }
+    }
+  }
+
+  /*
    * Toggle loading state
    *
    * @param {Boolean} toggle: The loading state to set
@@ -169,7 +334,15 @@ class QuerySelectWidgetController extends React.Component {
     data = data || {};
     let items = data.items || [];
 
+    let records = Object.assign(this.state.records, {})
+    // update state records
+    for (let item of items) {
+      let uid = item.uid;
+      records[uid] = item;
+    }
+
     this.setState({
+      records: records,
       results: items,
       count: data.count || 0,
       page: data.page || 1,
@@ -179,19 +352,82 @@ class QuerySelectWidgetController extends React.Component {
     });
   }
 
+  /*
+   * Clear results from the state
+   */
+  clear_results() {
+    this.setState({
+      results: [],
+      count: 0,
+      page: 1,
+      pages: 1,
+      next_url: null,
+      prev_url: null,
+    });
+  }
+
+  /*
+   * ReactJS event handler for keydown event
+   */
+  on_keydown(event){
+    // clear results when ESC key is pressed
+    if(event.keyCode === 27) {
+      this.clear_results();
+    }
+  }
+
+  /*
+   * ReactJS event handler for click events
+   */
+  on_click(event) {
+    // clear results when clicked outside of the widget
+    let widget = this.props.root_el;
+    let target = event.target;
+    if (!widget.contains(target)) {
+      this.clear_results();
+    }
+  }
+
   render() {
     return (
-        <div className="queryselectwidget">
+        <div className={this.props.root_class}>
+          <References
+            uids={this.state.uids}
+            records={this.state.records}
+            display_template={this.state.display_template}
+            name={this.state.name}
+            on_deselect={this.deselect}
+          />
           <SearchField
             className="form-control"
-            name="queryselect-search"
+            name="uidreference-search"
+            disabled={this.is_disabled()}
             on_search={this.search}
+            on_clear={this.clear_results}
             on_focus={this.search}
+            on_arrow_key={this.navigate_results}
+            on_enter={this.select_focused}
+          />
+          <SearchResults
+            className="position-absolute shadow border rounded bg-white mt-1 p-1"
+            columns={this.state.columns}
+            uids={this.state.uids}
+            searchterm={this.state.searchterm}
+            results={this.state.results}
+            focused={this.state.focused}
+            count={this.state.count}
+            page={this.state.page}
+            pages={this.state.pages}
+            padding={this.state.padding}
+            next_url={this.state.next_url}
+            prev_url={this.state.prev_url}
+            on_select={this.select}
+            on_page={this.goto_page}
+            on_clear={this.clear_results}
           />
         </div>
     );
   }
-
 }
 
 export default QuerySelectWidgetController;

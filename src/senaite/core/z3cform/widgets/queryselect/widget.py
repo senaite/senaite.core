@@ -134,6 +134,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def get_display_template(self):
         return self.attr("display_template", DISPLAY_TEMPLATE)
 
+    def is_multi_valued(self):
+        return self.attr("multi_valued", False)
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
@@ -145,6 +148,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-catalog": self.get_catalog(),
             "data-search_index": self.get_search_index(),
             "data-allow_user_value": self.get_allow_user_value(),
+            "data-multi_valued": self.is_multi_valued(),
+            "data-values": self.get_value(),
         }
 
         # convert all attributes to JSON

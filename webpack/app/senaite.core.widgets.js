@@ -2,9 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import tinymce from "tinymce";
 
-import UIDReferenceWidgetController from "./widgets/uidreferencewidget/widget.js"
-import AddressWidgetController from "./widgets/addresswidget/widget.js"
 import QuerySelectWidgetController from "./widgets/queryselect/widget.js"
+import AddressWidgetController from "./widgets/addresswidget/widget.js"
 import intlTelInput from "intl-tel-input";
 import "intl-tel-input/build/css/intlTelInput.css";
 
@@ -30,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Referencewidget
   let ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
   for (let widget of ref_widgets) {
-    ReactDOM.render(<UIDReferenceWidgetController root_el={widget} />, widget);
+    ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={widget} />, widget);
   }
 
   // AddressWidget
@@ -42,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // QuerySelectWidget
   let queryselect_widgets = document.getElementsByClassName("senaite-queryselect-widget-input");
   for (let widget of queryselect_widgets) {
-    ReactDOM.render(<QuerySelectWidgetController root_el={widget} />, widget);
+    ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={widget} />, widget);
   }
 
   // PhoneWidget
