@@ -1,9 +1,9 @@
 import React from "react"
 
-import References from "../components/References.js"
 import SearchAPI from "../../api/search.js"
 import SearchField from "../components/SearchField.js"
 import SearchResults from "../components/SearchResults.js"
+import SelectedValues from "../components/SelectedValues.js"
 
 
 class QuerySelectWidgetController extends React.Component {
@@ -409,7 +409,7 @@ class QuerySelectWidgetController extends React.Component {
   render() {
     return (
         <div className={this.props.root_class}>
-          <References
+          <SelectedValues
             values={this.state.values}
             records={this.state.records}
             display_template={this.state.display_template}

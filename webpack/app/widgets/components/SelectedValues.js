@@ -1,7 +1,7 @@
 import React from "react";
 
 
-class References extends React.Component {
+class SelectedValues extends React.Component {
 
   constructor(props) {
     super(props);
@@ -59,7 +59,7 @@ class References extends React.Component {
     event.preventDefault();
     let target = event.currentTarget;
     let value = target.getAttribute("value");
-    console.debug("References::on_deselect: Remove value", value);
+    console.debug("SelectedValues::on_deselect: Remove value", value);
     if (this.props.on_deselect) {
       this.props.on_deselect(value);
     }
@@ -73,7 +73,7 @@ class References extends React.Component {
         </ul>
         {/* submitted in form */}
         <textarea
-          className="d-block"
+          className="d-none"
           name={this.props.name}
           value={this.props.values.join("\n")}
         />
@@ -82,4 +82,4 @@ class References extends React.Component {
   }
 }
 
-export default References;
+export default SelectedValues;
