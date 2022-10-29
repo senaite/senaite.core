@@ -51,6 +51,8 @@ class SearchField extends React.Component {
     if (this.props.on_blur) {
       let value = this.get_search_value();
       this.props.on_blur(value);
+      // clear the input field
+      this.input_field_ref.current.value = ""
     }
   }
 
@@ -116,7 +118,8 @@ class SearchField extends React.Component {
       // prevent form submission when clicking ENTER
       event.preventDefault();
       if (this.props.on_enter) {
-        this.props.on_enter();
+        let value = this.get_search_value();
+        this.props.on_enter(value);
       }
 
     }

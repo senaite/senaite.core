@@ -237,7 +237,7 @@ class QuerySelectWidgetController extends React.Component {
    * Add/remove the focused result
    *
    */
-  select_focused() {
+  select_focused(searchvalue) {
     console.debug("QuerySelectWidgetController::select_focused");
     let focused = this.state.focused;
     let result = this.state.results.at(focused);
@@ -247,6 +247,11 @@ class QuerySelectWidgetController extends React.Component {
         this.select(value);
       } else {
         this.deselect(value);
+      }
+    } else {
+      if (this.state.allow_user_value) {
+        // allow to set the current searchvalue
+        this.select(searchvalue);
       }
     }
   }
@@ -420,6 +425,7 @@ class QuerySelectWidgetController extends React.Component {
             on_focus={this.search}
             on_arrow_key={this.navigate_results}
             on_enter={this.select_focused}
+            on_blur={this.select_focused}
           />
           <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
