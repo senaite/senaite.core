@@ -1,7 +1,7 @@
 import React from "react"
 
 import SearchAPI from "../../api/search.js"
-import ReferenceField from "../components/ReferenceField.js"
+import SearchField from "../components/SearchField.js"
 import ReferenceResults from "../components/ReferenceResults.js"
 import References from "../components/References.js"
 
@@ -387,7 +387,7 @@ class UIDReferenceWidgetController extends React.Component {
             name={this.state.name}
             on_deselect={this.deselect}
           />
-          <ReferenceField
+          <SearchField
             className="form-control"
             name="uidreference-search"
             disabled={this.is_disabled()}

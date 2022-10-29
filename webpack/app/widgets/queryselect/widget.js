@@ -1,5 +1,6 @@
 import React from "react"
 import SearchAPI from "../../api/search.js"
+import SearchField from "../components/SearchField.js"
 
 
 class QuerySelectWidgetController extends React.Component {
@@ -61,10 +62,26 @@ class QuerySelectWidgetController extends React.Component {
     return this;
   }
 
+  /*
+   * JSON parse the given value
+   *
+   * @param {String} value: The JSON value to parse
+   */
+  parse_json(value) {
+    try {
+      return JSON.parse(value)
+    } catch (error) {
+      console.error(`Could not parse "${value}" to JSON`);
+    }
+  }
+
   render() {
     return (
         <div className="queryselectwidget">
-          REACT RENDERED!!!!
+          <SearchField
+            className="form-control"
+            name="queryselect-search"
+          />
         </div>
     );
   }

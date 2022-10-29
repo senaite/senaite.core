@@ -1,7 +1,10 @@
 import React from "react";
 
 
-class ReferenceField extends React.Component {
+/** Input field that triggers a search query
+ *
+ */
+class SearchField extends React.Component {
 
   constructor(props) {
     super(props);
@@ -33,7 +36,7 @@ class ReferenceField extends React.Component {
    * Handler when the search field get focused
    */
   on_focus(event) {
-    console.debug("ReferenceField::on_focus");
+    console.debug("SearchField::on_focus");
     if (this.props.on_focus) {
       let value = this.get_search_value() || null;
       this.props.on_focus(value);
@@ -44,7 +47,7 @@ class ReferenceField extends React.Component {
    * Handler when the search field lost focus
    */
   on_blur(event) {
-    console.debug("ReferenceField::on_blur");
+    console.debug("SearchField::on_blur");
     if (this.props.on_blur) {
       let value = this.get_search_value();
       this.props.on_blur(value);
@@ -57,7 +60,7 @@ class ReferenceField extends React.Component {
   on_change(event) {
     event.preventDefault();
     let value = this.get_search_value();
-    console.debug("ReferenceField::on_change:value: ", value);
+    console.debug("SearchField::on_change:value: ", value);
     if (this.props.on_search) {
       this.props.on_search(value);
     }
@@ -109,7 +112,7 @@ class ReferenceField extends React.Component {
    */
   on_keypress(event) {
     if (event.which == 13) {
-      console.debug("ReferenceField::on_keypress:ENTER");
+      console.debug("SearchField::on_keypress:ENTER");
       // prevent form submission when clicking ENTER
       event.preventDefault();
       if (this.props.on_enter) {
@@ -153,18 +156,17 @@ class ReferenceField extends React.Component {
                  onBlur={this.on_blur}
                  placeholder={this.props.placeholder}
                  style={{maxWidth: "160px"}}
-                 disabled={this.props.disabled}
           />
-          <div class="input-group-append">
+          <div className="input-group-append">
             <button className="btn btn-sm btn-outline-secondary"
                     disabled={this.props.disabled}
                     onClick={this.on_clear_click}>
-              <i class="fas fa-times"></i>
+              <i className="fas fa-times"></i>
             </button>
             <button className="btn btn-sm btn-outline-primary"
                     disabled={this.props.disabled}
                     onClick={this.on_search_click}>
-              <i class="fas fa-search"></i>
+              <i className="fas fa-search"></i>
             </button>
           </div>
         </div>
@@ -173,4 +175,4 @@ class ReferenceField extends React.Component {
   }
 }
 
-export default ReferenceField;
+export default SearchField;
