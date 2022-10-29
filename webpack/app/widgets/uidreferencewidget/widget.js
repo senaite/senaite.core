@@ -1,7 +1,6 @@
 import React from "react"
-import ReactDOM from "react-dom"
 
-import ReferenceWidgetAPI from "./api.js"
+import SearchAPI from "../../api/search.js"
 import ReferenceField from "./components/ReferenceField.js"
 import ReferenceResults from "./components/ReferenceResults.js"
 import References from "./components/References.js"
@@ -59,7 +58,7 @@ class UIDReferenceWidgetController extends React.Component {
     }
 
     // Initialize communication API with the API URL
-    this.api = new ReferenceWidgetAPI({
+    this.api = new SearchAPI({
       api_url: this.state.api_url,
     });
 
