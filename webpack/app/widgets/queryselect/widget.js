@@ -1,9 +1,9 @@
 import React from "react"
 
+import References from "../components/References.js"
 import SearchAPI from "../../api/search.js"
 import SearchField from "../components/SearchField.js"
 import SearchResults from "../components/SearchResults.js"
-import References from "../components/References.js"
 
 
 class QuerySelectWidgetController extends React.Component {
@@ -37,16 +37,17 @@ class QuerySelectWidgetController extends React.Component {
       "id",
       "name",
       "values",
-      "api_url",
       "records",
-      "catalog",
-      "query",
-      "search_index",  // the search index to use
+      "api_url",  // JSON API URL for search queries
+      "catalog",  // catalog name
+      "query",  // base catalog query
+      "search_index",  // query search index
       "search_wildcard",  // make the search term a wildcard search
+      "limit",  // limit to display on one page
+      "value_key",  // key that contains the value that is stored
       "allow_user_value",  // allow the user to enter custom values
-      "columns",
+      "columns",  // columns to be displayed in the results popup
       "display_template",
-      "limit",
       "multi_valued",
       "disabled",
       "readonly",
@@ -417,7 +418,8 @@ class QuerySelectWidgetController extends React.Component {
           <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
-            uids={this.state.values}
+            values={this.state.values}
+            value_key={this.state.value_key}
             searchterm={this.state.searchterm}
             results={this.state.results}
             focused={this.state.focused}

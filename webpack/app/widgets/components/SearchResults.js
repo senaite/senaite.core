@@ -1,6 +1,10 @@
 import React from "react";
+import {_t} from "../../i18n-wrapper.js"
 
 
+/** Renders the search results in a table popup
+ *
+ */
 class SearchResults extends React.Component {
 
   constructor(props) {
@@ -12,6 +16,13 @@ class SearchResults extends React.Component {
     this.on_prev_page = this.on_prev_page.bind(this);
     this.on_next_page = this.on_next_page.bind(this);
     this.on_close = this.on_close.bind(this);
+  }
+
+  /*
+   * Return the key where a value is located in a result record
+   */
+  get_value_key() {
+    return this.props.value_key || "uid";
   }
 
   /*
@@ -42,7 +53,9 @@ class SearchResults extends React.Component {
    */
   get_column_labels() {
     let columns = this.get_columns();
-    return columns.map((column) => { return column.label });
+    return columns.map((column) => {
+      return column.label
+    });
   }
 
   /*
@@ -77,21 +90,22 @@ class SearchResults extends React.Component {
   }
 
   /*
-   * Returns the UID of a result object
+   * Returns the value of a result object (JSON API record)
    *
-   * @returns {String} UID of the result
+   * @returns {String} value of the result
    */
-  get_result_uid(result) {
-    return result.uid || "NO UID FOUND!";
+  get_result_value(result) {
+    let value_key = this.get_value_key();
+    return result[value_key] || `NO VALUE FOUND FOR KEY='${value_key}'!`;
   }
 
   /*
-   * Checks wehter the UID is already in the list of selected UIDs
+   * Checks whether the value is already in the list of selected values
    *
-   * @returns {Boolean} true if the UID is already selected, false otherwise
+   * @returns {Boolean} true if the value is already selected, false otherwise
    */
-  is_uid_selected(uid) {
-    return this.props.uids.indexOf(uid) > -1;
+  is_value_selected(value) {
+    return this.props.values.indexOf(value) > -1;
   }
 
   /*
@@ -127,9 +141,9 @@ class SearchResults extends React.Component {
     let rows = [];
     let results = this.get_results();
     results.forEach((result, index) => {
-      let uid = this.get_result_uid(result);
+      let value = this.get_result_value(result);
       rows.push(
-        <tr uid={uid}
+        <tr value={value}
             className={this.props.focused == index ? "table-active": ""}
             onClick={this.on_select}>
           {this.build_columns(result)}
@@ -154,8 +168,8 @@ class SearchResults extends React.Component {
         <td dangerouslySetInnerHTML={{__html: highlighted}}></td>
       );
     }
-    let uid = result.uid;
-    let used = this.props.uids.indexOf(uid) > -1;
+    let value = this.get_result_value(result);
+    let used = this.props.values.indexOf(value) > -1;
     columns.push(
       <td>{used && <i className="fas fa-link text-success"></i>}</td>
     );
@@ -303,10 +317,11 @@ class SearchResults extends React.Component {
   on_select(event) {
     event.preventDefault();
     let target = event.currentTarget;
-    let uid = target.getAttribute("uid")
+    let value_key = this.get_value_key();
+    let value = target.getAttribute(value_key)
     console.debug("SearchResults::on_select:event=", event);
     if (this.props.on_select) {
-      this.props.on_select(uid);
+      this.props.on_select(value);
     }
   }
 
