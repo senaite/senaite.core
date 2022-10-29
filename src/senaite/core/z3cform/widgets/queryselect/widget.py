@@ -126,6 +126,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def get_search_index(self):
         return self.attr("search_index", "")
 
+    def get_value_key(self):
+        return self.attr("value_key", "uid")
+
     def get_limit(self):
         return self.attr("limit", 25)
 
@@ -154,7 +157,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-id": self.id,
             "data-name": self.name,
             "data-values": values,
-            "data-value_key": "title",
+            "data-value_key": self.get_value_key(),
             "data-api_url": self.get_api_url(),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
