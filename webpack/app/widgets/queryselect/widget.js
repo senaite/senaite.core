@@ -42,6 +42,7 @@ class QuerySelectWidgetController extends React.Component {
       "catalog",
       "query",
       "search_index",  // the search index to use
+      "search_wildcard",  // make the search term a wildcard search
       "allow_user_value",  // allow the user to enter custom values
       "columns",
       "display_template",
@@ -136,6 +137,10 @@ class QuerySelectWidgetController extends React.Component {
     // allow to search any index
     let search_index = this.state.search_index || "q";
     let search_term = this.state.searchterm;
+
+    if (this.state.search_wildcard && !search_term.endsWith("*")) {
+      search_term += "*"
+    }
 
     let query = Object.assign({
       limit: this.state.limit,

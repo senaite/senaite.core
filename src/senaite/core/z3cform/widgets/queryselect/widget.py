@@ -126,6 +126,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def get_search_index(self):
         return self.attr("search_index", "")
 
+    def get_search_wildcard(self):
+        return self.attr("search_wildcard", False)
+
     def get_allow_user_value(self):
         """Allow the user to enter a custom value
         """
@@ -133,6 +136,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
 
     def get_display_template(self):
         return self.attr("display_template", DISPLAY_TEMPLATE)
+
+    def get_columns(self):
+        return self.attr("columns", [])
 
     def is_multi_valued(self):
         return self.attr("multi_valued", False)
@@ -149,7 +155,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-api_url": self.get_api_url(),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
+            "data-columns": self.get_columns(),
             "data-search_index": self.get_search_index(),
+            "data-search_wildcard": self.get_search_wildcard(),
             "data-allow_user_value": self.get_allow_user_value(),
             "data-multi_valued": self.is_multi_valued(),
         }
