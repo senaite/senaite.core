@@ -253,7 +253,7 @@ class QuerySelectWidgetController extends React.Component {
         this.deselect(value);
       }
     } else {
-      if (this.state.allow_user_value) {
+      if (searchvalue && this.state.allow_user_value) {
         // allow to set the current searchvalue
         this.select(searchvalue);
       }

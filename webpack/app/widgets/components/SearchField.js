@@ -48,6 +48,10 @@ class SearchField extends React.Component {
    */
   on_blur(event) {
     console.debug("SearchField::on_blur");
+    if (event.relatedTarget !== null) {
+      // do not fire blur event if the user clicked e.g. in the results table
+      return;
+    }
     if (this.props.on_blur) {
       let value = this.get_search_value();
       this.props.on_blur(value);
