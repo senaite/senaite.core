@@ -2,7 +2,7 @@ import React from "react"
 
 import SearchAPI from "../../api/search.js"
 import SearchField from "../components/SearchField.js"
-import ReferenceResults from "../components/ReferenceResults.js"
+import SearchResults from "../components/SearchResults.js"
 import References from "../components/References.js"
 
 
@@ -397,7 +397,7 @@ class UIDReferenceWidgetController extends React.Component {
             on_arrow_key={this.navigate_results}
             on_enter={this.select_focused}
           />
-          <ReferenceResults
+          <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
             uids={this.state.uids}

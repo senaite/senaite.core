@@ -1,7 +1,7 @@
 import React from "react";
 
 
-class ReferenceResults extends React.Component {
+class SearchResults extends React.Component {
 
   constructor(props) {
     super(props);
@@ -157,7 +157,7 @@ class ReferenceResults extends React.Component {
     let uid = result.uid;
     let used = this.props.uids.indexOf(uid) > -1;
     columns.push(
-      <td>{used && <i class="fas fa-link text-success"></i>}</td>
+      <td>{used && <i className="fas fa-link text-success"></i>}</td>
     );
     return columns;
   }
@@ -292,7 +292,7 @@ class ReferenceResults extends React.Component {
   build_close_button() {
     return (
       <button className="btn btn-sm btn-link" onClick={this.on_close}>
-        <i class="fas fa-window-close"></i>
+        <i className="fas fa-window-close"></i>
       </button>
     )
   }
@@ -304,7 +304,7 @@ class ReferenceResults extends React.Component {
     event.preventDefault();
     let target = event.currentTarget;
     let uid = target.getAttribute("uid")
-    console.debug("ReferenceResults::on_select:event=", event);
+    console.debug("SearchResults::on_select:event=", event);
     if (this.props.on_select) {
       this.props.on_select(uid);
     }
@@ -317,7 +317,7 @@ class ReferenceResults extends React.Component {
     event.preventDefault();
     let target = event.currentTarget;
     let page = target.getAttribute("page")
-    console.debug("ReferenceResults::on_page:event=", event);
+    console.debug("SearchResults::on_page:event=", event);
     if (page == this.props.page) {
       return;
     }
@@ -331,7 +331,7 @@ class ReferenceResults extends React.Component {
    */
   on_prev_page(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_prev_page:event=", event);
+    console.debug("SearchResults::on_prev_page:event=", event);
     let page = this.props.page;
     if (page < 2) {
       console.warn("No previous pages available!");
@@ -347,7 +347,7 @@ class ReferenceResults extends React.Component {
    */
   on_next_page(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_next_page:event=", event);
+    console.debug("SearchResults::on_next_page:event=", event);
     let page = this.props.page;
     if (page + 1 > this.props.pages) {
       console.warn("No next pages available!");
@@ -363,7 +363,7 @@ class ReferenceResults extends React.Component {
    */
   on_close(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_close:event=", event);
+    console.debug("SearchResults::on_close:event=", event);
     if (this.props.on_clear) {
       this.props.on_clear();
     }
@@ -406,4 +406,4 @@ class ReferenceResults extends React.Component {
   }
 }
 
-export default ReferenceResults;
+export default SearchResults;
