@@ -124,6 +124,8 @@ class SearchField extends React.Component {
       if (this.props.on_enter) {
         let value = this.get_search_value();
         this.props.on_enter(value);
+        // clear the input field
+        this.input_field_ref.current.value = ""
       }
 
     }
