@@ -138,7 +138,7 @@ class QuerySelectWidgetController extends React.Component {
     let search_index = this.state.search_index || "q";
     let search_term = this.state.searchterm;
 
-    if (this.state.search_wildcard && !search_term.endsWith("*")) {
+    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
       search_term += "*"
     }
 
