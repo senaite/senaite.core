@@ -219,6 +219,10 @@ class QuerySelectWidgetController extends React.Component {
    * @returns {Array} values: current selected values
    */
   select(value) {
+    if (value === null) {
+      console.warn("QuerySelectWidgetController::select: MISSING VALUE");
+      return;
+    }
     console.debug("QuerySelectWidgetController::select:value:", value);
     // create a copy of the selected values
     let values = [].concat(this.state.values);
