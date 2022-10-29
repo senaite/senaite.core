@@ -248,7 +248,7 @@ class QuerySelectWidgetController extends React.Component {
   deselect(value) {
     console.debug("QuerySelectWidgetController::deselect:value:", value);
     let values = [].concat(this.state.values);
-    let pos = values.indexOf(values);
+    let pos = values.indexOf(value);
     if (pos > -1) {
       values.splice(pos, 1);
     }
