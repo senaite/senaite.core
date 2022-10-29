@@ -1,9 +1,9 @@
 import React from "react"
 
 import SearchAPI from "../../api/search.js"
-import ReferenceField from "./components/ReferenceField.js"
-import ReferenceResults from "./components/ReferenceResults.js"
-import References from "./components/References.js"
+import ReferenceField from "../components/ReferenceField.js"
+import ReferenceResults from "../components/ReferenceResults.js"
+import References from "../components/References.js"
 
 
 class UIDReferenceWidgetController extends React.Component {
