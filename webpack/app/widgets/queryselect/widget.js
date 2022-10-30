@@ -79,9 +79,6 @@ class QuerySelectWidgetController extends React.Component {
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
 
-    // dev only
-    window.qw = this;
-
     return this
   }
 
