@@ -10,34 +10,31 @@
         interface="senaite.core.z3cform.interfaces.IQuerySelectWidget" />
   </class>
 
-  <!-- Widget factory (the first interface for the field! Maybe use lines field here?) -->
-  <adapter
-      factory=".widget.QuerySelectWidgetFactory"
-      for="*
-           senaite.core.interfaces.ISenaiteFormLayer" />
+  <!-- Data converter -->
+  <adapter factory=".widget.QuerySelectDataConverter" />
 
   <!-- INPUT template -->
   <z3c:widgetTemplate
       mode="input"
-      widget="senaite.core.z3cform.interfaces.IQuerySelectWidget"
-      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      widget=".widget.QuerySelectWidget"
       template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
       />
 
   <!-- DISPLAY template -->
   <z3c:widgetTemplate
       mode="display"
-      widget="senaite.core.z3cform.interfaces.IQuerySelectWidget"
-      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      widget=".widget.QuerySelectWidget"
       template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
       />
 
   <!-- HIDDEN template -->
   <z3c:widgetTemplate
       mode="hidden"
-      widget="senaite.core.z3cform.interfaces.IQuerySelectWidget"
-      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      widget=".widget.QuerySelectWidget"
       template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
       />
 
 </configure>
