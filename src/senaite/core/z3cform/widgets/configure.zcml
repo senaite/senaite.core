@@ -3,6 +3,7 @@
     i18n_domain="senaite.core">
 
   <!-- package includes -->
+  <include package=".uidreference" />
   <include package=".queryselect" />
 
   <include file="address.zcml" />
@@ -10,6 +11,5 @@
   <include file="datetimewidget.zcml" />
   <include file="number.zcml" />
   <include file="phone.zcml" />
-  <include file="uidreference.zcml" />
 
 </configure>
