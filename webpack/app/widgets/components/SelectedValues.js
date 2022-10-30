@@ -6,6 +6,7 @@ class SelectedValues extends React.Component {
   constructor(props) {
     super(props);
 
+    this.on_change = this.on_change.bind(this);
     this.on_deselect = this.on_deselect.bind(this);
   }
 
@@ -56,6 +57,26 @@ class SelectedValues extends React.Component {
     return items
   }
 
+  /*
+   * Callback when the textarea field was changed
+   * Note: This will be useful when the field is used in the sample add form
+   */
+  on_change(event) {
+    event.preventDefault();
+    let target = event.currentTarget;
+    let value = target.value;
+    if (!value) {
+      return;
+    }
+    let values = value.split("\n");
+    // filter out empties
+    values = values.filter(x => x);
+    // set new values directly
+    if (values && this.props.set_values) {
+      this.props.set_values(values);
+    }
+  }
+
   on_deselect(event) {
     event.preventDefault();
     let target = event.currentTarget;
@@ -75,6 +96,7 @@ class SelectedValues extends React.Component {
         {/* submitted in form */}
         <textarea
           className="d-none"
+          onChange={this.on_change}
           name={this.props.name}
           value={this.props.values.join("\n")}
         />

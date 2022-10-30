@@ -75,6 +75,7 @@ class QuerySelectWidgetController extends React.Component {
     this.select = this.select.bind(this);
     this.select_focused = this.select_focused.bind(this);
     this.deselect = this.deselect.bind(this);
+    this.set_values = this.set_values.bind(this);
     this.navigate_results = this.navigate_results.bind(this);
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
@@ -275,6 +276,15 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Set *all* values
+   *
+   * @param {Array} values: The values to be set
+   */
+  set_values(values) {
+    this.setState({values: values});
+  }
+
+  /*
    * Navigate the results either up or down
    *
    * @param {String} direction: either up or down
@@ -416,6 +426,7 @@ class QuerySelectWidgetController extends React.Component {
             display_template={this.state.display_template}
             name={this.state.name}
             on_deselect={this.deselect}
+            set_values={this.set_values}
           />
           <SearchField
             className="form-control"
