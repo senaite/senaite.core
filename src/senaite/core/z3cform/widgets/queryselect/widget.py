@@ -10,6 +10,7 @@ from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.z3cform.interfaces import IQuerySelectWidget
 from z3c.form.browser import widget
+from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import INPUT_MODE
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
@@ -22,8 +23,35 @@ from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.schema.interfaces import IField
+from zope.schema.interfaces import ISequence
 
 _marker = object
+
+
+@adapter(ISequence, IQuerySelectWidget)
+class QuerySelectDataConverter(TextLinesConverter):
+    """
+    """
+
+    def toWidgetValue(self, value):
+        """Return the value w/o changes
+
+        Note:
+
+        All widget templates use the `get_value` method,
+        which ensures a list of UIDs.
+
+        However, `toWidgetValue` is called by `widget.update()` implicitly for
+        `self.value`, which is then used by the `get_value` method again.
+        """
+        return value
+
+    def toFieldValue(self, value):
+        """Converts a unicode string to a list of UIDs
+        """
+        # remove any blank lines at the end
+        value = value.rstrip("\r\n")
+        return super(QuerySelectDataConverter, self).toFieldValue(value)
 
 
 @implementer_only(IQuerySelectWidget)
