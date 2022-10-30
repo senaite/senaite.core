@@ -166,6 +166,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def is_multi_valued(self):
         return self.attr("multi_valued", False)
 
+    def get_hide_input_after_select(self):
+        return self.attr("hide_input_after_select", False)
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
@@ -187,6 +190,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-multi_valued": self.is_multi_valued(),
             "data-disabled": self.disabled or False,
             "data-readonly": self.readonly or False,
+            "data-hide_input_after_select": self.get_hide_input_after_select(),
         }
 
         # convert all attributes to JSON

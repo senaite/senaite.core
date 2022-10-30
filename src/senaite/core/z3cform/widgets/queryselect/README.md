@@ -99,3 +99,54 @@ widget directive as *additional arguments*:
              Default: `3`
              Note: This option affects the length of the batch navigation to
                    avoid horizontal overflow for more than e.g. 50 pages.
+
+- `hide_input_after_select`: Controls if the search input field should be rendered after a value was selected
+                             Default: `False`
+                             Note: Only used if for single valued fields
+
+
+# Full example
+
+This example shows how the widget can be used with most of the described settings configured:
+
+
+    class IPatientSchema(model.Schema):
+
+        directives.widget(
+            "patient_id_query",
+            QuerySelectWidgetFactory,
+            catalog=PATIENT_CATALOG,
+            query={
+                "portal_type": "Patient",
+                "is_active": True,
+                "sort_on": "title",
+                "sort_order": "ascending",
+            },
+            search_index="patient_searchable_id",
+            display_template="${patient_id}",
+            value_key="patient_id",
+            search_wildcard=True,
+            multi_valued=False,
+            allow_user_value=True,
+            hide_input_after_select=True,
+            columns=[
+                {
+                    "name": "patient_id",
+                    "width": "30",
+                    "align": "left",
+                    "label": _(u"Patient ID"),
+                }, {
+                    "name": "firstname",
+                    "width": "70",
+                    "align": "left",
+                    "label": _(u"Patient Name"),
+                },
+            ],
+            limit=3,
+        )
+        patient_id_query = schema.List(
+            title=_(u"label_patient_id_query", default=u"Patient ID Query"),
+            description=_(u"Query patient IDs or enter a new ID"),
+            required=False,
+            value_type=schema.TextLine(),
+        )

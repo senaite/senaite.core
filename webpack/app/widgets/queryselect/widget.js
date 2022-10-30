@@ -49,6 +49,7 @@ class QuerySelectWidgetController extends React.Component {
       "columns",  // columns to be displayed in the results popup
       "display_template",  // template to use for the selected values
       "multi_valued",  // if true, more than one value can be set
+      "hide_input_after_select",  // only for single valued fields to hide the input after selection
       "disabled",  // if true, the field is rendered as not editable
       "readonly",  // if true, the field is rendered as not editable
       "padding",  // number of pages to show in navigation before and after the current
@@ -124,6 +125,19 @@ class QuerySelectWidgetController extends React.Component {
       return true;
     }
     return false;
+  }
+
+
+  /*
+   * Checks if the search field should be rendered after select on single valued fields
+   *
+   * @returns {Boolean} true/false if the search field is rendered
+   */
+  show_search_field() {
+    if (!this.state.multi_valued && this.state.values.length > 0 && this.state.hide_input_after_select) {
+      return false;
+    }
+    return true
   }
 
   /*
@@ -431,6 +445,7 @@ class QuerySelectWidgetController extends React.Component {
             on_deselect={this.deselect}
             set_values={this.set_values}
           />
+          {this.show_search_field() &&
           <SearchField
             className="form-control"
             name="query-select-search"
@@ -441,7 +456,7 @@ class QuerySelectWidgetController extends React.Component {
             on_arrow_key={this.navigate_results}
             on_enter={this.select_focused}
             on_blur={this.select_focused}
-          />
+          />}
           <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
