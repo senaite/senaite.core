@@ -57,13 +57,11 @@ class QuerySelectDataConverter(TextLinesConverter):
 class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     """A widget to select one or more items from catalog search
     """
-    klass = u"queryselect-widget"
+    klass = u"senaite-queryselect-widget-input"
 
     def update(self):
         super(QuerySelectWidget, self).update()
         widget.addFieldClass(self)
-        if self.mode == INPUT_MODE:
-            self.addClass("form-control form-control-sm")
 
     def get_form(self):
         """Return the current form of the widget

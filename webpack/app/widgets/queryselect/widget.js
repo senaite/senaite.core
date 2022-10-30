@@ -34,8 +34,8 @@ class QuerySelectWidgetController extends React.Component {
     // Data keys located at the root element
     // -> initial values are set from the widget class
     const data_keys = [
-      "id",
-      "name",
+      "id",  // element id
+      "name",  // input name that get submitted
       "values",  // selected values
       "records",  // Mapping of value -> result item
       "api_url",  // JSON API URL for search queries
@@ -47,11 +47,11 @@ class QuerySelectWidgetController extends React.Component {
       "value_key",  // key that contains the value that is stored
       "allow_user_value",  // allow the user to enter custom values
       "columns",  // columns to be displayed in the results popup
-      "display_template",
-      "multi_valued",
-      "disabled",
-      "readonly",
-      "padding",
+      "display_template",  // template to use for the selected values
+      "multi_valued",  // if true, more than one value can be set
+      "disabled",  // if true, the field is rendered as not editable
+      "readonly",  // if true, the field is rendered as not editable
+      "padding",  // number of pages to show in navigation before and after the current
     ]
 
     // Query data keys and set state with parsed JSON value
@@ -422,7 +422,7 @@ class QuerySelectWidgetController extends React.Component {
 
   render() {
     return (
-        <div className={this.props.root_class}>
+        <div id={this.state.id} className={this.props.root_class}>
           <SelectedValues
             values={this.state.values}
             records={this.state.records}

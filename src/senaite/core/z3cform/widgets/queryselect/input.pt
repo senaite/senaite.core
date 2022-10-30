@@ -2,11 +2,10 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:omit-tag="">
 
-  <div class="senaite-queryselect-widget-input"
-       tal:attributes="python:view.get_input_widget_attributes();
-                       data-class view/klass;
-                       data-style view/style;
-                       data-title view/title;">
+  <div tal:attributes="python:view.get_input_widget_attributes();
+                       class view/klass;
+                       style view/style;
+                       title view/title;">
     <!-- ReactJS controlled component -->
   </div>
 </html>

@@ -61,7 +61,7 @@ class UIDReferenceDataConverter(TextLinesConverter):
 class UIDReferenceWidget(TextLinesWidget):
     """Senaite UID reference widget
     """
-    klass = u"senaite-uidreference-widget"
+    klass = u"senaite-uidreference-widget-input"
 
     def __init__(self, request, *args, **kw):
         super(UIDReferenceWidget, self).__init__(request)
