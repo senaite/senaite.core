@@ -28,6 +28,7 @@ class SelectedValues extends React.Component {
 
   render_display_template(value) {
     let template = this.props.display_template;
+    if (!template) return value;
     let context = this.props.records[value];
     if (!context) return value;
     return this.interpolate(template, context);

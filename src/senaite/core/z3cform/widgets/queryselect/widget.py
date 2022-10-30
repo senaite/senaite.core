@@ -23,14 +23,12 @@ from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.schema.interfaces import IField
 
-DISPLAY_TEMPLATE = "${title}"
-
 _marker = object
 
 
 @implementer_only(IQuerySelectWidget)
 class QuerySelectWidget(widget.HTMLInputWidget, Widget):
-    """
+    """A widget to select one or more items from catalog search
     """
     klass = u"queryselect-widget"
 
@@ -138,9 +136,6 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """
         return self.attr("allow_user_value", False)
 
-    def get_display_template(self):
-        return self.attr("display_template", DISPLAY_TEMPLATE)
-
     def get_columns(self):
         return self.attr("columns", [])
 
@@ -163,7 +158,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-search_wildcard": self.get_search_wildcard(),
             "data-allow_user_value": self.get_allow_user_value(),
             "data-columns": self.get_columns(),
-            "data-display_template": self.get_display_template(),
+            "data-display_template": None,
             "data-limit": self.get_limit(),
             "data-multi_valued": self.is_multi_valued(),
             "data-disabled": self.disabled or False,
