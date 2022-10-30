@@ -129,7 +129,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         return self.attr("limit", 25)
 
     def get_search_wildcard(self):
-        return self.attr("search_wildcard", False)
+        return self.attr("search_wildcard", True)
 
     def get_allow_user_value(self):
         """Allow the user to enter a custom value
