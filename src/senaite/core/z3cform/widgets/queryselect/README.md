@@ -36,10 +36,10 @@ To customize the widget behavior, the following settings can be passed to the
 widget directive as *additional arguments*:
 
 - `name`: The name of the submitted field.
-          Default: Field name, e.g. `form.widgets.query_field`
+          Default: Field name, e.g. `form.widgets.field_query`
           
 - `id`: The element ID for the rendered widget.
-        Default: Hyphenized field name, e.g. `form-widgets-query_field`
+        Default: Hyphenated field name, e.g. `form-widgets-query_field`
 
 - `api_url`: The JSON API base URL to use.
              Default: `<portal_url>/@@API/senaite/v1`
