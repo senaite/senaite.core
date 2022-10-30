@@ -37,7 +37,7 @@ class QuerySelectWidgetController extends React.Component {
       "id",
       "name",
       "values",  // selected values
-      "records",
+      "records",  // Mapping of value -> result item
       "api_url",  // JSON API URL for search queries
       "catalog",  // catalog name
       "query",  // base catalog query
@@ -364,6 +364,9 @@ class QuerySelectWidgetController extends React.Component {
     let items = data.items || [];
 
     // Mapping of value -> JSON API result item
+    //
+    // NOTE: This is only used for UID reference field to render a friendly name
+    //       for stored UIDs when the edit form is initially rendered
     let records = Object.assign(this.state.records, {})
     for (let item of items) {
       let value = item[this.state.value_key];
