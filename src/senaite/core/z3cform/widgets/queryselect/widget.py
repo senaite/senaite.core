@@ -30,9 +30,8 @@ _marker = object
 
 @adapter(ISequence, IQuerySelectWidget)
 class QuerySelectDataConverter(TextLinesConverter):
+    """Converter for multi valued List fields
     """
-    """
-
     def toWidgetValue(self, value):
         """Return the value w/o changes
 
