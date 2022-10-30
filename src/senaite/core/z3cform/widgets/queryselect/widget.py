@@ -11,7 +11,6 @@ from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.z3cform.interfaces import IQuerySelectWidget
 from z3c.form.browser import widget
 from z3c.form.converter import TextLinesConverter
-from z3c.form.interfaces import INPUT_MODE
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import ISubForm
