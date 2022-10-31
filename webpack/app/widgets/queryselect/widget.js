@@ -137,7 +137,7 @@ class QuerySelectWidgetController extends React.Component {
     if (!this.state.multi_valued && this.state.values.length > 0 && this.state.hide_input_after_select) {
       return false;
     }
-    return true
+    return true;
   }
 
   /*
