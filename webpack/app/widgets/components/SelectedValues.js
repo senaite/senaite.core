@@ -42,7 +42,7 @@ class SelectedValues extends React.Component {
     for (let value of selected_values) {
       items.push(
         <li value={value} className="d-inline-block">
-          <div className="p-1 mb-1 mr-1 bg-light border rounded">
+          <div className="p-1 mb-1 mr-1 bg-light border rounded field-validation">
             <span dangerouslySetInnerHTML={{__html: this.render_display_template(value)}}></span>
             <button value={value}
                     className="btn btn-sm btn-link-danger"
@@ -89,7 +89,7 @@ class SelectedValues extends React.Component {
 
   render() {
     return (
-      <div className="uidreferencewidget-references">
+      <div className="queryselectwidget-selected-values">
         <ul className="list-unstyled d-table-row">
           {this.build_selected_items()}
         </ul>
