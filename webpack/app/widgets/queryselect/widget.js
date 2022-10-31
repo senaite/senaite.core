@@ -97,6 +97,21 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Trigger a custom event on the textarea field that get submitted
+   *
+   * @param {String} event_name: The name of the event to dispatch
+   * @param {Object} event_data: The data to send with the event
+   */
+  trigger_custom_event(event_name, event_data) {
+    let event = new CustomEvent(event_name, {detail: event_data, bubbles: true});
+    let field = document.querySelector(`textarea[name=${this.state.name}]`, this.props.root_el);
+    if (field) {
+      console.info("Dispatching Event", event);
+      field.dispatchEvent(event);
+    }
+  }
+
+  /*
    * JSON parse the given value
    *
    * @param {String} value: The JSON value to parse
@@ -246,6 +261,8 @@ class QuerySelectWidgetController extends React.Component {
     if (values.length > 0 && !this.state.multi_valued) {
       this.clear_results();
     }
+    // manually trigger a select event
+    this.trigger_custom_event("select", {value: value});
     return values;
   }
 
@@ -284,6 +301,8 @@ class QuerySelectWidgetController extends React.Component {
     let pos = values.indexOf(value);
     if (pos > -1) {
       values.splice(pos, 1);
+      // manually trigger deselect event
+      this.trigger_custom_event("deselect", {value: value});
     }
     this.setState({values: values});
     return values;
