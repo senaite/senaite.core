@@ -65,14 +65,11 @@ class SelectedValues extends React.Component {
     event.preventDefault();
     let target = event.currentTarget;
     let value = target.value;
-    if (!value) {
-      return;
-    }
     let values = value.split("\n");
     // filter out empties
     values = values.filter(x => x);
     // set new values directly
-    if (values && this.props.set_values) {
+    if (this.props.set_values) {
       this.props.set_values(values);
     }
   }
