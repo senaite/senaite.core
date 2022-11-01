@@ -144,6 +144,7 @@ class SearchResults extends React.Component {
       let value = this.get_result_value(result);
       rows.push(
         <tr value={value}
+            style={{cursor:"pointer"}}
             className={this.props.focused == index ? "table-active": ""}
             onClick={this.on_select}>
           {this.build_columns(result)}
