@@ -80,6 +80,7 @@ class QuerySelectWidgetController extends React.Component {
     this.navigate_results = this.navigate_results.bind(this);
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
+    this.focus_row = this.focus_row.bind(this);
 
     return this
   }
@@ -264,6 +265,16 @@ class QuerySelectWidgetController extends React.Component {
     // manually trigger a select event
     this.trigger_custom_event("select", {value: value});
     return values;
+  }
+
+  /*
+   * Set the focus for the given row at index
+   *
+   */
+  focus_row(rowindex) {
+    this.setState({
+      focused: rowindex
+    })
   }
 
   /*
@@ -520,6 +531,7 @@ class QuerySelectWidgetController extends React.Component {
             on_select={this.select}
             on_page={this.goto_page}
             on_clear={this.clear_results}
+            on_mouse_over={this.focus_row}
           />
         </div>
     );

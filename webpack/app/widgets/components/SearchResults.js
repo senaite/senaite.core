@@ -16,6 +16,7 @@ class SearchResults extends React.Component {
     this.on_prev_page = this.on_prev_page.bind(this);
     this.on_next_page = this.on_next_page.bind(this);
     this.on_close = this.on_close.bind(this);
+    this.on_mouse_over = this.on_mouse_over.bind(this);
   }
 
   /*
@@ -144,8 +145,10 @@ class SearchResults extends React.Component {
       let value = this.get_result_value(result);
       rows.push(
         <tr value={value}
+            index={index}
             style={{cursor:"pointer"}}
             className={this.props.focused == index ? "table-active": ""}
+            onMouseOver={this.on_mouse_over}
             onClick={this.on_select}>
           {this.build_columns(result)}
         </tr>
@@ -385,6 +388,19 @@ class SearchResults extends React.Component {
     console.debug("SearchResults::on_close:event=", event);
     if (this.props.on_clear) {
       this.props.on_clear();
+    }
+  }
+
+  /*
+   * Event handler when the mouse is over a row
+   */
+  on_mouse_over(event) {
+    event.preventDefault();
+    console.debug("SearchResults::on_mouse_over:event=", event);
+    let target = event.currentTarget;
+    let index = target.getAttribute("index");
+    if (index !== null && this.props.on_mouse_over) {
+      this.props.on_mouse_over(index);
     }
   }
 
