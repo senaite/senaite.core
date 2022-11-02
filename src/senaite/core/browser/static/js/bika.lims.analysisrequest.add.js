@@ -22,6 +22,7 @@
       this.on_ajax_end = bind(this.on_ajax_end, this);
       this.on_ajax_start = bind(this.on_ajax_start, this);
       this.ajax_post_form = bind(this.ajax_post_form, this);
+      this.native_set_value = bind(this.native_set_value, this);
       this.on_copy_button_click = bind(this.on_copy_button_click, this);
       this.on_service_category_click = bind(this.on_service_category_click, this);
       this.on_service_listing_header_click = bind(this.on_service_listing_header_click, this);
@@ -1201,7 +1202,7 @@
           }
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find("textarea")[index];
-          return $(_el).val(value);
+          return me.native_set_value(_el, value);
         });
       });
       $td1.find("input[type=radio]").each(function(index, el) {
@@ -1281,6 +1282,32 @@
         });
       });
       return $(me).trigger("form:changed");
+    };
+
+
+    /**
+      * Set input value with native setter to support ReactJS components
+     */
+
+    AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
+      var evt, setter;
+      setter = null;
+      if (input.tagName === "TEXTAREA") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+      } else if (input.tagName === "SELECT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set;
+      } else if (input.tagName === "INPUT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+      } else {
+        input.value = value;
+      }
+      if (setter) {
+        setter.call(input, value);
+      }
+      evt = new Event("input", {
+        bubbles: true
+      });
+      return input.dispatchEvent(evt);
     };
 
     AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
