@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2178 AT Queryselect Widget
 - #2177 Dexterity Queryselect Widget
 - #2173 Fix UnicodeDecodeError when a required condition is empty in add form
 - #2172 Fix SuperModel import error introduced in PR #2154
