@@ -143,10 +143,13 @@ class SearchResults extends React.Component {
     let results = this.get_results();
     results.forEach((result, index) => {
       let value = this.get_result_value(result);
+      let cursor = value ? "pointer" : "not-allowed";
+      let title = value ? "" : _t("Missing key");
       rows.push(
         <tr value={value}
             index={index}
-            style={{cursor:"pointer"}}
+            title={title}
+            style={{cursor:cursor}}
             className={this.props.focused == index ? "table-active": ""}
             onMouseOver={this.on_mouse_over}
             onClick={this.on_select}>
