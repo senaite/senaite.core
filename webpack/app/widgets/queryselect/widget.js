@@ -91,10 +91,62 @@ class QuerySelectWidgetController extends React.Component {
     document.addEventListener("click", this.on_click, false)
   }
 
+  componentDidUpdate() {
+    this.fix_dropdown_overflow();
+  }
   componentWillUnmount() {
     // Remove event listeners of the document
     document.removeEventListener("keydown", this.on_keydown, false);
     document.removeEventListener("click", this.on_click, false);
+  }
+
+  /*
+   * Fix overflow at the bottom or at the right of the container
+   */
+  fix_dropdown_overflow() {
+    let widget = this.props.root_el;
+
+    let field = widget.querySelector(".queryselectwidget-search-field");
+    let dropdown = widget.querySelector(".queryselectwidget-results-container");
+
+    if (!dropdown) {
+      return;
+    }
+
+    // get the bottom and right position of the field
+    let field_rect = field.getBoundingClientRect();
+    let field_bottom_pos = field_rect.y + field_rect.height;
+    let field_right_pos = field_rect.x + field_rect.width;
+
+    // get the bottom and right position of the dropdown
+    let dropdown_rect = dropdown.getBoundingClientRect();
+    let dropdown_bottom_pos = dropdown_rect.y + dropdown_rect.height;
+    let dropdown_right_pos = dropdown_rect.x + dropdown_rect.width;
+
+    // check if we are off screen within our parent container
+    let container = dropdown.closest(".table-responsive") || dropdown.closest(".container-fluid");
+    if (!container) {
+      return;
+    }
+
+    // get the bottom and right position of our container
+    let container_rect = container.getBoundingClientRect();
+    let container_bottom_pos = container_rect.y + container_rect.height;
+    let container_right_pos = container_rect.x + container_rect.width;
+
+    // get the space we have below the search field
+    let field_space_below = container_bottom_pos - field_rect.y;
+
+    // dropdown overflows at the bottom of the container
+    if (dropdown_bottom_pos > container_bottom_pos) {
+      dropdown.style.bottom = "10px";
+      dropdown.style.transform = `translateY(${(container_bottom_pos - field_bottom_pos) - field_space_below}px)`;
+    }
+    // dropdown overflows at the right
+    if (dropdown_right_pos > container_right_pos) {
+      dropdown.style.right = "10px";
+      dropdown.style.transform = `translateX(${(container_right_pos - field_right_pos)}px)`;
+    }
   }
 
   /*
