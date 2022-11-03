@@ -547,6 +547,7 @@ class QuerySelectWidgetController extends React.Component {
     return (
         <div id={this.state.id} className={this.props.root_class}>
           <SelectedValues
+            className="queryselectwidget-selected-values"
             values={this.state.values}
             records={this.state.records}
             display_template={this.state.display_template}
@@ -556,7 +557,7 @@ class QuerySelectWidgetController extends React.Component {
           />
           {this.show_search_field() &&
           <SearchField
-            className="form-control"
+            className="queryselectwidget-search-field"
             name="query-select-search"
             disabled={this.is_disabled()}
             on_search={this.search}
@@ -567,7 +568,7 @@ class QuerySelectWidgetController extends React.Component {
             on_blur={this.select_focused}
           />}
           <SearchResults
-            className="position-absolute shadow border rounded bg-white mt-1 p-1"
+            className="queryselectwidget-results-container position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
             values={this.state.values}
             value_key={this.state.value_key}

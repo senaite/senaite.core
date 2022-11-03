@@ -420,7 +420,7 @@ class SearchResults extends React.Component {
         <div style={{position: "absolute", top: 0, right: 0}}>
           {this.build_close_button()}
         </div>
-        <table className="table table-sm table-hover small queryselect-results-table">
+        <table className="table table-sm table-hover small queryselectwidget-results-table">
           <thead>
             <tr>
               {this.build_header_columns()}
