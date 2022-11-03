@@ -169,11 +169,13 @@ class SearchField extends React.Component {
           />
           <div className="input-group-append">
             <button className="btn btn-sm btn-outline-secondary"
+                    style={{zIndex: 0}}
                     disabled={this.props.disabled}
                     onClick={this.on_clear_click}>
               <i className="fas fa-times"></i>
             </button>
             <button className="btn btn-sm btn-outline-primary"
+                    style={{zIndex: 0}}
                     disabled={this.props.disabled}
                     onClick={this.on_search_click}>
               <i className="fas fa-search"></i>
