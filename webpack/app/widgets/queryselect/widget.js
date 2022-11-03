@@ -105,7 +105,7 @@ class QuerySelectWidgetController extends React.Component {
    */
   trigger_custom_event(event_name, event_data) {
     let event = new CustomEvent(event_name, {detail: event_data, bubbles: true});
-    let field = document.querySelector(`textarea[name=${this.state.name}]`, this.props.root_el);
+    let field = document.querySelector(`textarea[name='${this.state.name}']`, this.props.root_el);
     if (field) {
       console.info("Dispatching Event", event);
       field.dispatchEvent(event);
