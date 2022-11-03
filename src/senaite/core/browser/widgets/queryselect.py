@@ -88,6 +88,7 @@ class QuerySelectWidget(TypesWidget):
             "data-multi_valued": self.attr(context, "multi_valued"),
             "data-api_url": self.get_api_url(context),
             "data-search_index": self.attr(context, "search_index"),
+            "data-search_wildcard": self.attr(context, "search_wildcard"),
             "data-limit": self.attr(context, "limit"),
             "data-catalog": self.attr(context, "catalog"),
             "data-allow_user_value": self.attr(context, "allow_user_value"),
