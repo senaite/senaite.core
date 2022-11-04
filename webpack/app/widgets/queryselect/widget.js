@@ -568,7 +568,7 @@ class QuerySelectWidgetController extends React.Component {
             on_blur={this.select_focused}
           />}
           <SearchResults
-            className="queryselectwidget-results-container position-absolute shadow border rounded bg-white mt-1 p-1"
+            className="queryselectwidget-results-container position-absolute shadow-lg border border-light rounded-lg bg-white mt-2 p-1"
             columns={this.state.columns}
             values={this.state.values}
             value_key={this.state.value_key}

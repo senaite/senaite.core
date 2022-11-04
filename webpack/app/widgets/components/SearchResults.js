@@ -1,5 +1,6 @@
 import React from "react";
 import {_t} from "../../i18n-wrapper.js"
+import "./SearchResults.css"
 
 
 /** Renders the search results in a table popup
