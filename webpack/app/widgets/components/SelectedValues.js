@@ -86,7 +86,7 @@ class SelectedValues extends React.Component {
 
   render() {
     return (
-      <div className={this.props.className}>
+      <div className="queryselectwidget-selected-values">
         <ul className="list-unstyled d-table-row">
           {this.build_selected_items()}
         </ul>
