@@ -61,7 +61,7 @@ class UIDReferenceDataConverter(TextLinesConverter):
 class UIDReferenceWidget(TextLinesWidget):
     """Senaite UID reference widget
     """
-    klass = u"senaite-uidreference-widget"
+    klass = u"senaite-uidreference-widget-input"
 
     def __init__(self, request, *args, **kw):
         super(UIDReferenceWidget, self).__init__(request)
@@ -162,6 +162,9 @@ class UIDReferenceWidget(TextLinesWidget):
     def get_query(self):
         return self.attr("query", {})
 
+    def get_search_index(self):
+        return self.attr("search_index", "")
+
     def get_columns(self):
         return self.attr("columns", [])
 
@@ -171,6 +174,9 @@ class UIDReferenceWidget(TextLinesWidget):
     def is_multi_valued(self):
         return getattr(self.field, "multi_valued", False)
 
+    def get_hide_input_after_select(self):
+        return self.attr("hide_input_after_select", False)
+
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
@@ -178,17 +184,20 @@ class UIDReferenceWidget(TextLinesWidget):
         attributes = {
             "data-id": self.id,
             "data-name": self.name,
-            "data-uids": uids,
+            "data-values": uids,
+            "data-value_key": "uid",
             "data-api_url": self.get_api_url(),
             "data-records": dict(zip(uids, map(self.get_obj_info, uids))),
             "data-query": self.get_query(),
             "data-catalog": self.get_catalog(),
+            "data-search_index": self.get_search_index(),
             "data-columns": self.get_columns(),
             "data-display_template": self.get_display_template(),
             "data-limit": self.get_limit(),
             "data-multi_valued": self.is_multi_valued(),
             "data-disabled": self.disabled or False,
             "data-readonly": self.readonly or False,
+            "data-hide_input_after_select": self.get_hide_input_after_select(),
         }
 
         # convert all attributes to JSON

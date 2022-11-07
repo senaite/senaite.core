@@ -39,7 +39,7 @@ module.exports = {
       // styles
       "./scss/senaite.core.scss",
     ],
-    "seniate.core.widgets": [
+    "senaite.core.widgets": [
       // scripts
       "./senaite.core.widgets.js",
     ]

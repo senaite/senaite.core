@@ -1,19 +1,20 @@
 import React from "react"
-import ReactDOM from "react-dom"
 
-import ReferenceWidgetAPI from "./api.js"
-import ReferenceField from "./components/ReferenceField.js"
-import ReferenceResults from "./components/ReferenceResults.js"
-import References from "./components/References.js"
+import SearchAPI from "../../api/search.js"
+import SearchField from "../components/SearchField.js"
+import SearchResults from "../components/SearchResults.js"
+import SelectedValues from "../components/SelectedValues.js"
 
 
-class UIDReferenceWidgetController extends React.Component {
+class QuerySelectWidgetController extends React.Component {
 
   constructor(props) {
     super(props);
 
     // Internal state
     this.state = {
+      value_key: "uid",  // result object key that has the submit value stored
+      records: {},  // mapping of value -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
       searchterm: "",  // the search term that was entered by the user
       loading: false,  // loading flag when searching for results
@@ -33,20 +34,25 @@ class UIDReferenceWidgetController extends React.Component {
     // Data keys located at the root element
     // -> initial values are set from the widget class
     const data_keys = [
-      "id",
-      "name",
-      "uids",
-      "api_url",
-      "records",
-      "catalog",
-      "query",
-      "columns",
-      "display_template",
-      "limit",
-      "multi_valued",
-      "disabled",
-      "readonly",
-      "padding",
+      "id",  // element id
+      "name",  // input name that get submitted
+      "values",  // selected values
+      "records",  // Mapping of value -> result item
+      "api_url",  // JSON API URL for search queries
+      "catalog",  // catalog name
+      "query",  // base catalog query
+      "search_index",  // query search index
+      "search_wildcard",  // make the search term a wildcard search
+      "limit",  // limit to display on one page
+      "value_key",  // key that contains the value that is stored
+      "allow_user_value",  // allow the user to enter custom values
+      "columns",  // columns to be displayed in the results popup
+      "display_template",  // template to use for the selected values
+      "multi_valued",  // if true, more than one value can be set
+      "hide_input_after_select",  // only for single valued fields to hide the input after selection
+      "disabled",  // if true, the field is rendered as not editable
+      "readonly",  // if true, the field is rendered as not editable
+      "padding",  // number of pages to show in navigation before and after the current
     ]
 
     // Query data keys and set state with parsed JSON value
@@ -59,7 +65,7 @@ class UIDReferenceWidgetController extends React.Component {
     }
 
     // Initialize communication API with the API URL
-    this.api = new ReferenceWidgetAPI({
+    this.api = new SearchAPI({
       api_url: this.state.api_url,
     });
 
@@ -70,12 +76,11 @@ class UIDReferenceWidgetController extends React.Component {
     this.select = this.select.bind(this);
     this.select_focused = this.select_focused.bind(this);
     this.deselect = this.deselect.bind(this);
+    this.set_values = this.set_values.bind(this);
     this.navigate_results = this.navigate_results.bind(this);
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
-
-    // dev only
-    window.widget = this;
+    this.focus_row = this.focus_row.bind(this);
 
     return this
   }
@@ -93,6 +98,21 @@ class UIDReferenceWidgetController extends React.Component {
   }
 
   /*
+   * Trigger a custom event on the textarea field that get submitted
+   *
+   * @param {String} event_name: The name of the event to dispatch
+   * @param {Object} event_data: The data to send with the event
+   */
+  trigger_custom_event(event_name, event_data) {
+    let event = new CustomEvent(event_name, {detail: event_data, bubbles: true});
+    let field = document.querySelector(`textarea[name=${this.state.name}]`, this.props.root_el);
+    if (field) {
+      console.info("Dispatching Event", event);
+      field.dispatchEvent(event);
+    }
+  }
+
+  /*
    * JSON parse the given value
    *
    * @param {String} value: The JSON value to parse
@@ -105,6 +125,11 @@ class UIDReferenceWidgetController extends React.Component {
     }
   }
 
+  /*
+   * Checks if the field should be rendered as disabled
+   *
+   * @returns {Boolean} true/false if the widget is disabled
+   */
   is_disabled() {
     if (this.state.disabled) {
       return true;
@@ -112,10 +137,23 @@ class UIDReferenceWidgetController extends React.Component {
     if (this.state.readonly) {
       return true;
     }
-    if (!this.state.multi_valued && this.state.uids.length > 0) {
+    if (!this.state.multi_valued && this.state.values.length > 0) {
       return true;
     }
     return false;
+  }
+
+
+  /*
+   * Checks if the search field should be rendered after select on single valued fields
+   *
+   * @returns {Boolean} true/false if the search field is rendered
+   */
+  show_search_field() {
+    if (!this.state.multi_valued && this.state.values.length > 0 && this.state.hide_input_after_select) {
+      return false;
+    }
+    return true;
   }
 
   /*
@@ -129,11 +167,24 @@ class UIDReferenceWidgetController extends React.Component {
    */
   make_query(options) {
     options = options || {};
-    return Object.assign({
-      q: this.state.searchterm,
+
+    // allow to search a custom index
+    // NOTE: This should be a ZCTextIndex!
+    let search_index = this.state.search_index || "q";
+    let search_term = this.state.searchterm;
+
+    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
+      search_term += "*"
+    }
+
+    let query = Object.assign({
       limit: this.state.limit,
       complete: 1,
     }, options, this.state.query);
+
+    // inject the search index
+    query[search_index] = search_term;
+    return query;
   }
 
   /*
@@ -150,7 +201,7 @@ class UIDReferenceWidgetController extends React.Component {
     this.toggle_loading(true);
     let promise = this.api.search(this.state.catalog, query, url_params);
     promise.then(function(data) {
-      console.debug("ReferenceWidgetController::fetch_results:GOT DATA: ", data);
+      console.debug("QuerySelectWidgetController::fetch_results:GOT DATA: ", data);
       self.set_results_data(data);
       self.toggle_loading(false);
     });
@@ -168,7 +219,7 @@ class UIDReferenceWidgetController extends React.Component {
       this.state.searchterm = "";
       return;
     }
-    console.debug("ReferenceWidgetController::search:searchterm:", searchterm);
+    console.debug("QuerySelectWidgetController::search:searchterm:", searchterm);
     // set the searchterm directly to avoid re-rendering
     this.state.searchterm = searchterm || "";
     return this.fetch_results();
@@ -190,59 +241,118 @@ class UIDReferenceWidgetController extends React.Component {
   }
 
   /*
-   * Add the UID of a search result to the state
+   * Add the value of a search result to the state
    *
-   * @param {String} uid: The selected UID
-   * @returns {Array} uids: current selected UIDs
+   * @param {String} value: The selected value
+   * @returns {Array} values: current selected values
    */
-  select(uid) {
-    console.debug("ReferenceWidgetController::select:uid:", uid);
-    // create a copy of the selected UIDs
-    let uids = [].concat(this.state.uids);
-    // Add the new UID if it is not selected yet
-    if (uids.indexOf(uid) == -1) {
-      uids.push(uid);
+  select(value) {
+    if (value === null) {
+      console.warn("QuerySelectWidgetController::select: MISSING VALUE");
+      return;
     }
-    this.setState({uids: uids});
-    if (uids.length > 0 && !this.state.multi_valued) {
+    console.debug("QuerySelectWidgetController::select:value:", value);
+    // create a copy of the selected values
+    let values = [].concat(this.state.values);
+    // Add the new value if it is not selected yet
+    if (values.indexOf(value) == -1) {
+      values.push(value);
+    }
+    this.setState({values: values});
+    if (values.length > 0 && !this.state.multi_valued) {
       this.clear_results();
     }
-    return uids;
+    // manually trigger a select event
+    this.trigger_custom_event("select", {value: value});
+    return values;
+  }
+
+  /*
+   * Set the focus for the given row at index
+   *
+   */
+  focus_row(rowindex) {
+    this.setState({
+      focused: rowindex
+    })
   }
 
   /*
    * Add/remove the focused result
    *
    */
-  select_focused() {
-    console.debug("ReferenceWidgetController::select_focused");
+  select_focused(searchvalue) {
+    console.debug("QuerySelectWidgetController::select_focused");
     let focused = this.state.focused;
     let result = this.state.results.at(focused);
     if (result) {
-      let uid = result.uid;
-      if (this.state.uids.indexOf(uid) == -1) {
-        this.select(uid);
+      let value = result[this.state.value_key];
+      if (this.state.values.indexOf(value) == -1) {
+        this.select(value);
       } else {
-        this.deselect(uid);
+        this.deselect(value);
+      }
+    } else {
+      if (searchvalue && this.state.allow_user_value) {
+        // allow to set the current searchvalue
+        this.select(searchvalue);
       }
     }
   }
 
   /*
-   * Remove the UID of a reference from the state
+   * Remove the value of a reference from the state
    *
-   * @param {String} uid: The selected UID
-   * @returns {Array} uids: current selected UIDs
+   * @param {String} value: The selected value
+   * @returns {Array} values: current selected values
    */
-  deselect(uid) {
-    console.debug("ReferenceWidgetController::deselect:uid:", uid);
-    let uids = [].concat(this.state.uids);
-    let pos = uids.indexOf(uid);
+  deselect(value) {
+    console.debug("QuerySelectWidgetController::deselect:value:", value);
+    let values = [].concat(this.state.values);
+    let pos = values.indexOf(value);
     if (pos > -1) {
-      uids.splice(pos, 1);
+      values.splice(pos, 1);
+      // manually trigger deselect event
+      this.trigger_custom_event("deselect", {value: value});
     }
-    this.setState({uids: uids});
-    return uids;
+    this.setState({values: values});
+    return values;
+  }
+
+  /*
+   * Set *all* values
+   *
+   * @param {Array} values: The values to be set
+   */
+  set_values(values) {
+    // get the current set values
+    let current_values = this.state.values;
+
+    if (!current_values && !values) {
+      // nothing to do
+      return;
+    }
+
+    for (const value of values) {
+      if (current_values.indexOf(value) > -1) {
+        // value not changed -> continue
+        continue;
+      }
+      if (current_values.indexOf(value) == -1) {
+        // value added -> trigger select event
+        this.trigger_custom_event("select", {value: value});
+      }
+    }
+
+    for (const value of current_values) {
+      if (values.indexOf(value) == -1) {
+        // value removed -> trigger deselect event
+        this.trigger_custom_event("deselect", {value: value});
+      }
+    }
+
+    // set the state with the new values
+    this.setState({values: values});
   }
 
   /*
@@ -257,7 +367,7 @@ class UIDReferenceWidgetController extends React.Component {
     let focused = this.state.focused;
     let searchterm = this.state.searchterm;
 
-    console.debug("ReferenceWidgetController::navigate_results:focused:", focused);
+    console.debug("QuerySelectWidgetController::navigate_results:focused:", focused);
 
     if (direction == "up") {
       if (focused > 0) {
@@ -324,11 +434,14 @@ class UIDReferenceWidgetController extends React.Component {
     data = data || {};
     let items = data.items || [];
 
+    // Mapping of value -> JSON API result item
+    //
+    // NOTE: This is only used for UID reference field to render a friendly name
+    //       for stored UIDs when the edit form is initially rendered
     let records = Object.assign(this.state.records, {})
-    // update state records
     for (let item of items) {
-      let uid = item.uid;
-      records[uid] = item;
+      let value = item[this.state.value_key];
+      records[value] = item;
     }
 
     this.setState({
@@ -380,28 +493,32 @@ class UIDReferenceWidgetController extends React.Component {
 
   render() {
     return (
-        <div className="uidreferencewidget">
-          <References
-            uids={this.state.uids}
+        <div id={this.state.id} className={this.props.root_class}>
+          <SelectedValues
+            values={this.state.values}
             records={this.state.records}
             display_template={this.state.display_template}
             name={this.state.name}
             on_deselect={this.deselect}
+            set_values={this.set_values}
           />
-          <ReferenceField
+          {this.show_search_field() &&
+          <SearchField
             className="form-control"
-            name="uidreference-search"
+            name="query-select-search"
             disabled={this.is_disabled()}
             on_search={this.search}
             on_clear={this.clear_results}
             on_focus={this.search}
             on_arrow_key={this.navigate_results}
             on_enter={this.select_focused}
-          />
-          <ReferenceResults
+            on_blur={this.select_focused}
+          />}
+          <SearchResults
             className="position-absolute shadow border rounded bg-white mt-1 p-1"
             columns={this.state.columns}
-            uids={this.state.uids}
+            values={this.state.values}
+            value_key={this.state.value_key}
             searchterm={this.state.searchterm}
             results={this.state.results}
             focused={this.state.focused}
@@ -414,10 +531,11 @@ class UIDReferenceWidgetController extends React.Component {
             on_select={this.select}
             on_page={this.goto_page}
             on_clear={this.clear_results}
+            on_mouse_over={this.focus_row}
           />
         </div>
     );
   }
 }
 
-export default UIDReferenceWidgetController;
+export default QuerySelectWidgetController;
