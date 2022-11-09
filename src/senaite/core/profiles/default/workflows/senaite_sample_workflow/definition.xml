@@ -39,7 +39,6 @@
   <permission>senaite.core: Edit Field Results</permission>
   <permission>senaite.core: Edit Results</permission>
   <permission>senaite.core: Manage Invoices</permission>
-  <permission>senaite.core: View Results</permission>
   <permission>Access contents information</permission>
   <permission>Add portal content</permission>
   <permission>Modify portal content</permission>
@@ -133,7 +132,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -232,7 +230,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -344,7 +341,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -447,7 +443,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -543,7 +538,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -639,7 +633,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Add portal content" acquired="True">
       <!-- Publisher role must be able to add ARReports -->
@@ -735,7 +728,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -828,7 +820,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Add portal content" acquired="True">
       <!-- Publisher role must be able to add ARReports -->
@@ -927,7 +918,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1014,7 +1004,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1094,7 +1083,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1179,7 +1167,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1259,7 +1246,6 @@
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="View" acquired="True"/>
 

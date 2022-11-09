@@ -839,30 +839,6 @@
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
       <role name="Verifier"/>
-      <!-- @xispa conflicts
-      Usage in workflows:
-        - ar_workflow.xml: as regular permission
-        - analysis_workflow.xml: as regular permission
-        - referenceanalysis_workflow.xml: as regular permission
-        - duplicateanalysis_workflow.xml: as regular permission
-        - rejectanalysis_workflow.xml: as regualr permission
-
-      Usage in views:
-        - worksheet: View, ManageResults
-        - analysisrequest: Published Results
-
-      Usage in code:
-        - Analyses listing: folder_item (Result + Uncertainty + Attachments)
-
-      Additional notes:
-        - Does not make sense to have different permissions for WS Manage
-          Results and AR Manage Results
-        - Don't think View Results permission should be used in AR's
-          Published results view. A permission "View Results Reports" would fit
-          better imo.
-        - Consider to stick to field-specific permissions ("Field: View ?") in
-          analyses listing
-      -->
     </permission>
 
     <!-- View/Action permissions -->
