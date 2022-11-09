@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2180 Rely on analysis permission when displaying results
+- #2179 Fix Traceback when removing a Worksheet
 - #2178 AT Queryselect Widget
 - #2177 Dexterity Queryselect Widget
 - #2173 Fix UnicodeDecodeError when a required condition is empty in add form
