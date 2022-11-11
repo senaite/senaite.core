@@ -375,8 +375,8 @@ def create_retest(analysis, **kwargs):
     })
     retest = create_analysis(parent, analysis, **kwargs)
 
-    # Create the analytes if multi-component analysis
-    if not retest.isAnalyte():
+    # Create the analytes if necessary
+    if analysis.isMultiComponent():
         create_analytes(retest)
 
     # Add the retest to the same worksheet, if any
@@ -453,7 +453,7 @@ def create_analytes(analysis):
             "id": analyte_id,
             "title": analyte_record.get("title"),
             "Keyword": keyword,
-            "MultiComponentAnalysis": api.get_uid(analysis),
+            "MultiComponentAnalysis": analysis,
         }
         analyte = create_analysis(container, service, **values)
         analytes.append(analyte)

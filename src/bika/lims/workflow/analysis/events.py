@@ -64,32 +64,28 @@ def before_reject(analysis):
 
 
 def after_retest(analysis):
-    """Function triggered before 'retest' transition takes place. Creates a
-    copy of the current analysis
+    """Function triggered after 'retest' transition takes place. Verifies and
+    creates a copy of the given analysis, dependents and dependencies
     """
     # When an analysis is retested, it automatically transitions to verified,
     # so we need to mark the analysis as such
     alsoProvides(analysis, IVerified)
 
-    # Retest and auto-verify relatives and analytes, from bottom to top
-    relatives = list(reversed(analysis.getDependents(recursive=True)))
-    relatives.extend(analysis.getDependencies(recursive=True))
-    relatives.extend(analysis.getAnalytes())
-    for relative in relatives:
-        if not ISubmitted.providedBy(relative):
+    # Retest and auto-verify relatives, from bottom to top
+    to_retest = list(reversed(analysis.getDependents(recursive=True)))
+    to_retest.extend(analysis.getDependencies(recursive=True))
+    to_retest.append(analysis)
+
+    for obj in to_retest:
+        if not ISubmitted.providedBy(obj):
             # Result not yet submitted, no need to create a retest
             return
 
         # Apply the transition manually, but only if analysis can be verified
-        doActionFor(relative, "verify")
+        doActionFor(obj, "verify")
 
-        # Create the retest if not an Analyte
-        if not relative.isAnalyte():
-            create_retest(relative)
-
-    # Create the retest if not an Analyte
-    if not analysis.isAnalyte():
-        create_retest(analysis)
+        # Create the retest
+        create_retest(obj)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
