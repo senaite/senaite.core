@@ -453,9 +453,9 @@ def create_analytes(analysis):
             "id": analyte_id,
             "title": analyte_record.get("title"),
             "Keyword": keyword,
+            "MultiComponentAnalysis": api.get_uid(analysis),
         }
         analyte = create_analysis(container, service, **values)
-        analyte.setMultiComponentAnalysis(analysis)
         analytes.append(analyte)
 
     return analytes

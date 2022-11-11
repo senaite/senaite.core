@@ -303,8 +303,9 @@ class ARAnalysesField(ObjectField):
             analysis.setResultsRange(analysis_rr)
 
             # Set default (pre)conditions
-            conditions = self.resolve_conditions(analysis)
-            analysis.setConditions(conditions)
+            if not analysis.isAnalyte():
+                conditions = self.resolve_conditions(analysis)
+                analysis.setConditions(conditions)
 
             analysis.reindexObject()
 
