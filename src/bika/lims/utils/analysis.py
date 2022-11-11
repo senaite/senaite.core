@@ -376,7 +376,8 @@ def create_retest(analysis, **kwargs):
     retest = create_analysis(parent, analysis, **kwargs)
 
     # Create the analytes if multi-component analysis
-    create_analytes(retest)
+    if not retest.isAnalyte():
+        create_analytes(retest)
 
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
@@ -428,6 +429,9 @@ def create_analytes(analysis):
     """Creates Analysis objects that represent analytes of the given multi
     component analysis. Returns empty otherwise
     """
+    if analysis.isAnalyte():
+        raise ValueError("An analyte already: {}".format(analysis))
+
     analytes = []
     service = analysis.getAnalysisService()
     container = api.get_parent(analysis)
