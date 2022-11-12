@@ -81,11 +81,15 @@ def after_retest(analysis):
             # Result not yet submitted, no need to create a retest
             return
 
-        # Apply the transition manually, but only if analysis can be verified
-        doActionFor(obj, "verify")
-
         # Create the retest
         create_retest(obj)
+
+        # Verify the analysis
+        doActionFor(obj, "verify")
+
+        # Verify the analytes
+        for analyte in obj.getAnalytes():
+            doActionFor(analyte, "verify")
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
