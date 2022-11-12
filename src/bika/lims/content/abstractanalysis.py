@@ -42,6 +42,7 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.permissions import FieldEditAnalysisResult
+from bika.lims.permissions import ViewResults
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
@@ -73,7 +74,7 @@ Attachment = UIDReferenceField(
 # a non-numeric result is needed, ResultOptions can be used.
 Result = StringField(
     'Result',
-    read_permission=View,
+    read_permission=ViewResults,
     write_permission=FieldEditAnalysisResult,
 )
 

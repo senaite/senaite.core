@@ -38,3 +38,8 @@ class IAddressWidget(IObjectWidget):
 class IPhoneWidget(IWidget):
     """Input type "phone" widget
     """
+
+
+class IQuerySelectWidget(IWidget):
+    """Allows to search and select a value
+    """

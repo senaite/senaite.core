@@ -21,14 +21,15 @@
 .ar-table .copybutton:hover {
     cursor: pointer;
 }
-.ar-table tr td {
+.ar-table td.field-label,
+.ar-table tr td.service-column {
     text-align: center;
     vertical-align: top;
 }
-.ar-table tr:hover>* {
+.ar-table tr.ar-table-row:hover>td {
     background-color: #fcf8e3!important;
 }
-.ar-table tr td:nth-child(1) {
+.ar-table td.field-label {
     width: 20em;
     font-weight: bold;
     background-color: #f5f5f5;

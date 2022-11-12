@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- permission -->
+  <class class=".widget.QuerySelectWidget">
+    <require
+        permission="zope.Public"
+        interface="senaite.core.z3cform.interfaces.IQuerySelectWidget" />
+  </class>
+
+  <!-- Data converter -->
+  <adapter factory=".widget.QuerySelectDataConverter" />
+
+  <!-- INPUT template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".widget.QuerySelectWidget"
+      template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- DISPLAY template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".widget.QuerySelectWidget"
+      template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- HIDDEN template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".widget.QuerySelectWidget"
+      template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+</configure>

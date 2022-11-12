@@ -1233,7 +1233,7 @@ class window.AnalysisRequestAdd
         return unless arnum > 0
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("textarea")[index]
-        $(_el).val value
+        me.native_set_value(_el, value)
 
     # Copy <input type="radio"> fields
     $td1.find("input[type=radio]").each (index, el) ->
@@ -1285,6 +1285,30 @@ class window.AnalysisRequestAdd
 
     # trigger form:changed event
     $(me).trigger "form:changed"
+
+
+  ###*
+    * Set input value with native setter to support ReactJS components
+  ###
+  native_set_value: (input, value) =>
+    # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+    # TL;DR: React library overrides input value setter
+
+    setter = null
+    if input.tagName == "TEXTAREA"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set
+    else if input.tagName == "SELECT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set
+    else if input.tagName == "INPUT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
+    else
+      input.value = value
+
+    if setter
+      setter.call(input, value)
+
+    evt = new Event("input", {bubbles: true})
+    input.dispatchEvent(evt)
 
 
   # Note: Context of callback bound to this object

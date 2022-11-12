@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import six
-
 from collections import OrderedDict
 from datetime import datetime
+
+import six
 
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -1618,7 +1618,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, n)
-                msg = _("Field '{}' is required".format(field))
+                msg = _("Field '{}' is required").format(safe_unicode(field))
                 fielderrors[fieldname] = msg
 
             # Process valid record
@@ -1669,6 +1669,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             except Exception as e:
                 actions.resume()
                 errors["message"] = str(e)
+                logger.error(e, exc_info=True)
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
             # and UID to print stickers

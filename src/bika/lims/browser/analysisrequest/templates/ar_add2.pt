@@ -401,9 +401,9 @@
                tal:attributes="value view/ar_count"/>
 
         <!-- ADD Form -->
-        <table class="ar-table grid table table-sm table-condensed table-bordered">
+        <table class="ar-table table table-sm table-bordered">
 
-          <tr>
+          <tr class="ar-table-row">
             <td>
               <div id="manage-ar-fields"
                   tal:condition="python:user.has_role('LabManager') or user.has_role('Manager')">
@@ -433,8 +433,8 @@
                              widget python:field.widget;
                              errors python:{};
                              mode python:'edit';">
-              <tr tal:attributes="fieldName python:fieldName;">
-                <td>
+              <tr class="ar-table-row" tal:attributes="fieldName python:fieldName;">
+                <td class="field-label">
                   <label class="formQuestion">
                     <span
                       tal:attributes="class python:required and 'text-primary' or ''"

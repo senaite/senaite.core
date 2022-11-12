@@ -1,13 +1,14 @@
-import UIDReferenceWidgetController from "./widgets/uidreferencewidget/widget.js"
+import React from "react";
+import ReactDOM from "react-dom";
+import tinymce from "tinymce";
+
+import QuerySelectWidgetController from "./widgets/queryselect/widget.js"
 import AddressWidgetController from "./widgets/addresswidget/widget.js"
 import intlTelInput from "intl-tel-input";
 import "intl-tel-input/build/css/intlTelInput.css";
 
 document.addEventListener("DOMContentLoaded", () => {
   console.info("*** SENAITE CORE WIDGETS JS LOADED ***");
-
-  // Widgets
-  window.widgets = {};
 
   // TinyMCE
   let wysiwig_elements = [
@@ -26,19 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // Referencewidget
-  var ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
+  let ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
   for (let widget of ref_widgets) {
-    let id = widget.dataset.id;
-    let controller = ReactDOM.render(<UIDReferenceWidgetController root_el={widget} />, widget);
-    window.widgets[id] = controller;
+    ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={widget} />, widget);
   }
 
   // AddressWidget
-  var address_widgets = document.getElementsByClassName("senaite-address-widget-input");
+  let address_widgets = document.getElementsByClassName("senaite-address-widget-input");
   for (let widget of address_widgets) {
-    let id = widget.dataset.id;
-    let controller = ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
-    window.widgets[id] = controller;
+    ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
+  }
+
+  // QuerySelectWidget
+  let queryselect_widgets = document.getElementsByClassName("senaite-queryselect-widget-input");
+  for (let widget of queryselect_widgets) {
+    ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={widget} />, widget);
   }
 
   // PhoneWidget

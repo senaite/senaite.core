@@ -60,6 +60,7 @@ form[name='edit_form'] {
         @extend .small;
     }
     .field.error input,
+    .field.error textarea,
     .field.error select {
         @extend .is-invalid;
     }
