@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2183 Use the pc catalog to get getName for Supplier and not the bsc catalog
 - #2180 Rely on analysis permission when displaying results
 - #2179 Fix Traceback when removing a Worksheet
 - #2178 AT Queryselect Widget
