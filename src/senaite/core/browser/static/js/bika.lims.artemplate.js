@@ -6,6 +6,7 @@ function ARTemplateEditView() {
     var that = this;
     var samplepoint = $('#archetypes-fieldname-SamplePoint #SamplePoint');
     var sampletype = $('#archetypes-fieldname-SampleType #SampleType');
+    var analysisprofile = $('#archetypes-fieldname-AnalysisProfile #AnalysisProfile');
 
     /**
      * Entry-point method for AnalysisServiceEditView
@@ -76,7 +77,7 @@ function ARTemplateEditView() {
 
     function clickSaveButton(event){
         var selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
-        if(selected_analyses.length < 1){
+        if(selected_analyses.length < 1 && !(analysisprofile.val())){
             window.bika.lims.portalMessage("No analyses have been selected");
             window.scroll(0, 0);
             return false;
