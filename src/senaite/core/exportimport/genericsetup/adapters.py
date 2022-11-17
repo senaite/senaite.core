@@ -61,6 +61,7 @@ from zope.schema.interfaces import ITuple
 from .config import SITE_ID
 from .interfaces import IFieldNode
 from .interfaces import IRecordField
+from .structure import ID_MAP
 
 SKIP_FIELDS = [
     "id",
@@ -219,12 +220,21 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         self.set_field_value(data, filename=filename)
 
     def get_archive_path(self):
-        """Get the unified archive path
+        """Calculate the archive path from the context
         """
         site = self.environ.getSite()
         site_path = api.get_path(site)
         obj_path = api.get_path(self.context)
-        return obj_path.replace(site_path, SITE_ID, 1)
+        # remove the portal path
+        rel_path = obj_path.replace(site_path, "")
+
+        archive_path = [SITE_ID]
+        for segment in rel_path.split("/"):
+            if not segment:
+                continue
+            # map the new ID to the old ID to match the path in the archive
+            archive_path.append(ID_MAP.get(segment, segment))
+        return "/".join(archive_path)
 
     def get_file_data(self, path):
         """Return the file data from the archive path
@@ -240,6 +250,9 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         """Returns the filename
         """
         value = self.get_field_value()
+
+        if not value:
+            return ""
 
         if isinstance(value, six.string_types):
             return value
