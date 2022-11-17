@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2183 Fix instrument supplier does not load on test data import
 - #2180 Rely on analysis permission when displaying results
 - #2179 Fix Traceback when removing a Worksheet
 - #2178 AT Queryselect Widget
