@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2186 Fix sticker template for sample type is not selected by default
+- #2183 Fix instrument supplier does not load on test data import
 - #2180 Rely on analysis permission when displaying results
 - #2179 Fix Traceback when removing a Worksheet
 - #2178 AT Queryselect Widget
