@@ -140,7 +140,7 @@ class Sticker(BrowserView):
         """
         uids = filter(None, self.request.get("items", "").split(","))
         if not uids:
-            return api.get_uid(self.context)
+            return [api.get_uid(self.context)]
         return uids
 
     def getAvailableTemplates(self):
