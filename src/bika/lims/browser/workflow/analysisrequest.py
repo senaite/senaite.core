@@ -55,8 +55,7 @@ class WorkflowActionPrintStickersAdapter(RequestContextAware):
     implements(IWorkflowActionUIDsAdapter)
 
     def __call__(self, action, uids):
-        url = "{}/sticker?template={}&items={}".format(self.back_url,
-            self.context.bika_setup.getAutoStickerTemplate(), ",".join(uids))
+        url = "{}/sticker?items={}".format(self.back_url, ",".join(uids))
         return self.redirect(redirect_url=url)
 
 
@@ -126,9 +125,7 @@ class WorkflowActionReceiveAdapter(WorkflowActionGenericAdapter):
         if self.is_auto_print_stickers_enabled():
             # Redirect to the auto-print stickers view
             uids = ",".join(map(api.get_uid, transitioned))
-            sticker_template = self.context.bika_setup.getAutoStickerTemplate()
-            url = "{}/sticker?autoprint=1&template={}&items={}".format(
-                self.back_url, sticker_template, uids)
+            url = "{}/sticker?autoprint=1&items={}".format(self.back_url, uids)
             return self.redirect(redirect_url=url)
 
         # Redirect the user to success page

@@ -1724,10 +1724,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                         len(uids),  # ar_count
                         sample_uids)  # sample_uids
         elif "register" in auto_print and sample_uids:
-            redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
-                self.context.absolute_url(),
-                setup.getAutoStickerTemplate(),
-                sample_uids)
+            redirect_to = "{}/sticker?autoprint=1&items={}".format(
+                self.context.absolute_url(), sample_uids)
         elif immediate_results_entry and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),
