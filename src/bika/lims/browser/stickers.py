@@ -345,4 +345,4 @@ class Sticker(BrowserView):
         setup = api.get_setup()
         if size == "small":
             return setup.getSmallStickerTemplate()
-        return setup.getSmallStickerTemplate()
+        return setup.getLargeStickerTemplate()
