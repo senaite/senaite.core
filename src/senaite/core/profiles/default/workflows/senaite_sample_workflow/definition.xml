@@ -1353,7 +1353,7 @@
 
   <transition transition_id="receive" title="Receive" new_state="sample_received"
               trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Receive sample</action>
+    <action url="" category="workflow" icon="">Receive</action>
     <guard>
       <guard-permission>senaite.core: Transition: Receive Sample</guard-permission>
       <guard-expression>python:here.guard_handler("receive")</guard-expression>
@@ -1478,7 +1478,7 @@
   </transition>
 
   <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Submit for verification</action>
+    <action url="" category="workflow" icon="">Submit</action>
     <guard>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>

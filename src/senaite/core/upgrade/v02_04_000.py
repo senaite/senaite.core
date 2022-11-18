@@ -78,14 +78,14 @@ def reindex_qc_analyses(tool):
     logger.info("Reindexing QC Analyses [DONE]")
 
 
-def add_isanalyte_index(tool):
+def setup_multi_component_analyses(tool):
     """Adds the isAnalyte index to the analysis catalog
     """
     cat = api.get_tool(ANALYSIS_CATALOG)
-    logger.info("Add isAnalyte index to {} ...".format(cat.id))
+    logger.info("Setup multi-component analyses {} ...".format(cat.id))
     if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
         reindex_catalog_index(cat, "isAnalyte")
-    logger.info("Add isAnalyte index to {} [DONE]".format(cat.id))
+    logger.info("Setup multi-component analyses {} [DONE]".format(cat.id))
 
 
 def mark_retracted_and_rejected_analyses(tool):
@@ -121,3 +121,22 @@ def mark_retracted_and_rejected_analyses(tool):
             alsoProvides(obj, IRejected)
 
     logger.info("Set IRetracted/IRejected interface to analyses [DONE]")
+
+
+def fix_sample_actions_not_translated(tool):
+    """Changes the name of the action item displayed in the actions list from
+    sample (actbox) for the transitions 'submit' and 'receive'
+
+    :param tool: portal_setup tool
+    """
+    logger.info("Fix sample actions without translation ...")
+    actions = ["submit", "receive"]
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_sample_workflow")
+    for action in actions:
+        transition = workflow.transitions.get(action)
+
+        # update action with title
+        transition.actbox_name = transition.title
+
+    logger.info("Fix sample actions without translation [DONE]")

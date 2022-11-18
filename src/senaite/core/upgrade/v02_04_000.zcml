@@ -23,13 +23,24 @@
       handler="senaite.core.upgrade.v02_04_000.mark_retracted_and_rejected_analyses"
       profile="senaite.core:default"/>
 
-  <!-- Add isAnalyte index in analyses catalog -->
+  <!-- Fix sample actions without translation
+       https://github.com/senaite/senaite.core/pull/2190 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Add isAnalyte index"
-      description="Add isAnalyte index in analyses catalog"
+      title="SENAITE CORE 2.4.0: Fix sample actions without translation"
+      description="Fix sample actions without translation"
       source="2402"
       destination="2403"
-      handler="senaite.core.upgrade.v02_04_000.add_isanalyte_index"
+      handler="senaite.core.upgrade.v02_04_000.fix_sample_actions_not_translated"
+      profile="senaite.core:default"/>
+
+  <!-- Support for multi-component analyses
+       https://github.com/senaite/senaite.core/pull/2120 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Support for multi-component analyses"
+      description="Support for multi-component analyses"
+      source="2403"
+      destination="2404"
+      handler="senaite.core.upgrade.v02_04_000.setup_multi_component_analyses"
       profile="senaite.core:default"/>
 
 </configure>
