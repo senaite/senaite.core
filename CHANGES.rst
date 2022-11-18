@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2190 Fix sample actions without translation
 - #2185 Fix analysis profiles not recognised on AR template creation
 - #2186 Fix sticker template for sample type is not selected by default
 - #2183 Fix instrument supplier does not load on test data import

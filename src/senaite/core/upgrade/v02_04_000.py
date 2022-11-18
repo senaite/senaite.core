@@ -109,3 +109,22 @@ def mark_retracted_and_rejected_analyses(tool):
             alsoProvides(obj, IRejected)
 
     logger.info("Set IRetracted/IRejected interface to analyses [DONE]")
+
+
+def fix_sample_actions_not_translated(tool):
+    """Changes the name of the action item displayed in the actions list from
+    sample (actbox) for the transitions 'submit' and 'receive'
+
+    :param tool: portal_setup tool
+    """
+    logger.info("Fix sample actions without translation ...")
+    actions = ["submit", "receive"]
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_sample_workflow")
+    for action in actions:
+        transition = workflow.transitions.get(action)
+
+        # update action with title
+        transition.actbox_name = transition.title
+
+    logger.info("Fix sample actions without translation [DONE]")
