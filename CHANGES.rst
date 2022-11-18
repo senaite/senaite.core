@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2190 Fix sample actions without translation
+- #2189 Fix auto-print of barcode labels when auto-receive is enabled
 - #2188 Fix archive path for Generic Setup file imports
 - #2185 Fix analysis profiles not recognised on AR template creation
 - #2186 Fix sticker template for sample type is not selected by default
