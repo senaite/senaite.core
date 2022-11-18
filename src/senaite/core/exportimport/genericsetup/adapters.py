@@ -225,8 +225,13 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         site = self.environ.getSite()
         site_path = api.get_path(site)
         obj_path = api.get_path(self.context)
-        # remove the portal path
-        rel_path = obj_path.replace(site_path, "")
+        # remove the portal path at the *beginning* of the path
+        # NOTE: avoid to replace any further paths starting with the site path,
+        #       e.g. /senaite/senaite_storage/....
+        #       >>> path = '/senaite/senaite_storage/SC0120335'
+        #       >>> path.replace("/senaite", "", 1)
+        #       '/senaite_storage/SC0120335
+        rel_path = obj_path.replace(site_path, "", 1)
 
         archive_path = [SITE_ID]
         for segment in rel_path.split("/"):
