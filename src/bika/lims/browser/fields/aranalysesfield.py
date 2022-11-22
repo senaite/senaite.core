@@ -293,10 +293,8 @@ class ARAnalysesField(ObjectField):
             parent_sample = analysis.getRequest()
             analysis.setInternalUse(parent_sample.getInternalUse())
 
-            # Set the default result to the analysis
-            if not analysis.getResult() and default_result:
-                analysis.setResult(default_result)
-                analysis.setResultCaptureDate(None)
+            # Set default result, but only if not a multi-component
+            self.set_default_result(analysis, default_result)
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
@@ -373,6 +371,32 @@ class ARAnalysesField(ObjectField):
         analyses.extend(from_descendant)
 
         return analyses
+
+    def set_default_result(self, analysis, default_result):
+        """Sets the default result to the analysis w/o updating the results
+        capture date. It does nothing if the instance is a multi-component
+        analysis or if the analysios has a result already set
+        """
+        if not default_result:
+            return
+        if analysis.getResult():
+            return
+        if analysis.isMultiComponent():
+            return
+
+        # keep track of original capture date of the multi-component the
+        # analysis belongs to
+        multi = analysis.getMultiComponentAnalysis()
+        multi_capture = multi.getResultCaptureDate() if multi else None
+
+        # set the default result and reset capture date
+        analysis.setResult(default_result)
+        analysis.setResultCaptureDate(None)
+
+        # if multi, restore the original capture date
+        if multi:
+            multi.setResultCaptureDate(multi_capture)
+
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants

@@ -416,3 +416,37 @@ And all their statuses are now 'assigned':
 
     >>> list(set([api.get_review_status(an) for an in analytes]))
     ['assigned']
+
+
+Multi-component with default result
+...................................
+
+Set a default result for a Multi-component analysis:
+
+    >>> metals.setDefaultResult("12")
+
+Create a sample:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi_component = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi_component.getAnalytes()
+
+Analytes have the default result set, but the multi-component:
+
+    >>> list(set([analyte.getResult() for analyte in analytes]))
+    ['12']
+
+    >>> multi_component.getResult()
+    'NA'
+
+The Result Capture Date is not set in any case:
+
+    >>> filter(None, ([analyte.getResultCaptureDate() for an in analytes]))
+    []
+
+    >>> multi_component.getResultCaptureDate()
+
+Restore the default result for a Multi-component analysis:
+
+    >>> metals.setDefaultResult(None)
