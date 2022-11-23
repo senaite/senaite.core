@@ -11,12 +11,12 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7'
-          cache: 'pip'
+          python-version: "2.7.18"
+          cache: "pip"
       - name: cache eggs
         uses: actions/cache@v3
         with:
-          key: eggs-cache-${{ hashFiles('buildout.cfg', 'requirements.txt') }}
+          key: eggs-cache-${{ hashFiles("buildout.cfg", "requirements.txt") }}
           path: |
             eggs/
       - name: install
