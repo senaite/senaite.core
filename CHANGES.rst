@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2191 Apply category sort order on analysis specifications
 - #2190 Fix sample actions without translation
 - #2189 Fix auto-print of barcode labels when auto-receive is enabled
 - #2188 Fix archive path for Generic Setup file imports
