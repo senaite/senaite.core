@@ -6,7 +6,7 @@ env:
   PLONE_VERSION: "5.2"
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
