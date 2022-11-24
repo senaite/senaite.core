@@ -103,10 +103,48 @@ Unit = StringField(
     'Unit',
     schemata="Description",
     widget=StringWidget(
-        label=_("Unit"),
+        label=_("Default Unit"),
         description=_(
             "The measurement units for this analysis service' results, e.g. "
             "mg/l, ppm, dB, mV, etc."),
+    )
+)
+
+
+UnitChoices = RecordsField(
+    "UnitChoices",
+    schemata="Description",
+    type="UnitChoices",
+    subfields=(
+        "unitchoice",
+    ),
+    required_subfields=(
+        "unitchoice",
+    ),
+    subfield_labels={
+        "unitchoice": _("Units"),
+    },
+    subfield_descriptions={
+        "unitchoice": _("Please provide a list of units"),
+    },
+    subfield_types={
+        "unitchoice": "string",
+    },
+    subfield_sizes={
+        "unitchoice": 20,
+    },
+    subfield_validators={
+        "unitchoice": "service_unitchoices_validator",
+    },
+    subfield_maxlength={
+        "unitchoice": 50,
+        "description": 200,
+    },
+    widget=RecordsWidget(
+        label=_("Multiple Unit Selection"),
+        description=_(
+            "Provide a list of units that are suitable for the analysis."
+        ),
     )
 )
 
@@ -680,6 +718,8 @@ Remarks = TextField(
     schemata='Description'
 )
 
+
+
 schema = BikaSchema.copy() + Schema((
     ShortTitle,
     SortKey,
@@ -687,6 +727,7 @@ schema = BikaSchema.copy() + Schema((
     ProtocolID,
     ScientificName,
     Unit,
+    UnitChoices,
     Precision,
     ExponentialFormatPrecision,
     LowerDetectionLimit,
@@ -752,6 +793,14 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         unit = self.Schema().getField("Unit").get(self) or ""
         return unit.strip()
+
+    @security.public
+    def getUnitChoices(self):
+        '''Returns the UnitChoices
+
+        :returns: List of UnitChoices objects
+        '''
+        return self.Schema().getField("UnitChoices").get(self) or ""
 
     @security.public
     def getDefaultVAT(self):

@@ -27,7 +27,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
-from bika.lims.api import analysisservice as serviceapi
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
@@ -257,7 +256,20 @@ class ServiceKeywordValidator:
             # Nothing changed
             return
 
-        err_msg = serviceapi.check_keyword(value, instance)
+        # The validators module get imported early in __init__.py,
+        # and this line causes this (indirect) import error:
+        #
+        # from bika.lims.browser.fields.uidreferencefield import get_backreferences
+        # ImportError: cannot import name SuperModel
+        #
+        # Mental note from ramonski:
+        # Probably because *all* fields get imported in
+        # bika.lims.browser.fields.__init__.py and the ZCA is not yet fully
+        # initialized.
+        #
+        # https://github.com/senaite/senaite.docker/issues/14
+        from bika.lims.api.analysisservice import check_keyword
+        err_msg = check_keyword(value, instance)
         if err_msg:
             ts = api.get_tool("translation_service")
             return to_utf8(ts.translate(err_msg))
@@ -1495,3 +1507,45 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
+
+class ServiceUnitChoicesValidator(object):
+    """Validate AnalysisService UnitChoices field
+    """
+    implements(IValidator)
+    name = "service_unitchoices_validator"
+
+    def __call__(self, field_value, **kwargs):
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        translate = getToolByName(instance, "translation_service").translate
+        field_name = kwargs["field"].getName()
+
+        # This value in request prevents running once per subfield value.
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = "{}-{}-{}".format(self.name, instance.getId(), field_name)
+        if instance.REQUEST.get(key, False):
+            return True
+
+        # Walk through all records set for this records field
+        field_name_value = "{}_value".format(field_name)
+        records = request.get(field_name_value, [])
+        for record in records:
+            # Validate the record
+            msg = self.validate_record(record)
+            if msg:
+                return to_utf8(translate(msg))
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_record(self, record):
+        unit_choice = record.get("unitchoice")
+        # Check that the unit choice is a string
+        if not unit_choice:
+                    return _("Validation failed: '{}' is not a string").format(
+                        unit_choice)
+
+
+validation.register(ServiceUnitChoicesValidator())
+
