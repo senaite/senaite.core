@@ -436,9 +436,25 @@ def create_analytes(analysis):
     service = analysis.getAnalysisService()
     container = api.get_parent(analysis)
 
-    # Select the analytes that were selected for this service and sample
     keywords = []
-    if IRequestAnalysis.providedBy(analysis):
+
+    # if a retest, pick the analytes from the retested
+    retests_of = {}
+    if hasattr(analysis, 'getRetestOf'):
+        retested = analysis.getRetestOf()
+        analytes = retested and retested.getAnalytes() or []
+
+        # skip those that are not valid
+        skip = ["cancelled", "retracted", "rejected"]
+        get_status = api.get_review_status
+        analytes = filter(lambda an: get_status(an) not in skip, analytes)
+
+        # extract the keywords and map with original analyte
+        keywords = [analyte.getKeyword() for analyte in analytes]
+        retests_of = dict(zip(keywords, analytes))
+
+    # pick the analytes that were selected for this service and sample
+    if not keywords and IRequestAnalysis.providedBy(analysis):
         sample = analysis.getRequest()
         sample_analytes = sample.getServiceAnalytesFor(service)
         keywords = [analyte.get("keyword") for analyte in sample_analytes]
@@ -449,11 +465,13 @@ def create_analytes(analysis):
             continue
 
         analyte_id = generate_analysis_id(container, keyword)
+        retest_of = retests_of.get(keyword, None)
         values = {
             "id": analyte_id,
             "title": analyte_record.get("title"),
             "Keyword": keyword,
             "MultiComponentAnalysis": analysis,
+            "RetestOf": retest_of,
         }
         analyte = create_analysis(container, service, **values)
         analytes.append(analyte)
