@@ -210,7 +210,8 @@
                  field python:context.Schema()['Remarks'];
                  errors python:{};">
           <h3>
-            <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+            <img i18n:attributes="title" title="Remarks"
+                 tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/remarks.png"/>
             <span i18n:translate="">Remarks</span>
           </h3>
           <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>

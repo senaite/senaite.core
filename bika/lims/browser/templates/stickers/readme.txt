@@ -12,7 +12,7 @@ bika/lims/profiles/default/types/*xml
         action_id="sticker_preview"
         category="document_actions"
         condition_expr=""
-        icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_preview.png"
+        icon_expr="string:${portal_url}/++resource++bika.lims.images/sticker_preview.png"
         link_target="Stickers preview"
         url_expr="string:${object_url}/sticker?filter_by_type=<<type_id>>"
         i18n:attributes="title"

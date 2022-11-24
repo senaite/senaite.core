@@ -255,7 +255,7 @@
                     class="btn btn-link">
               <img src="#"
                    style="height:16px;width:auto;"
-                   tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
+                   tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/add.png"/>
               <span i18n:translate="">Add</span>
             </button>
           </form>
