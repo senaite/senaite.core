@@ -32,4 +32,10 @@ def after_remove(worksheet):
     """Removes the worksheet from the system
     """
     container = worksheet.aq_parent
-    container.manage_delObjects([worksheet.getId()])
+
+    # bypass security checks on object removal. The removal of worksheet
+    # objects is governed by "Transition: Remove Worksheet" permission at
+    # worksheet level, along with a specific guard to ensure that only empty
+    # worksheets can be removed. Therefore, better keep the "Delete objects"
+    # permission at Worksheets folder level as false, because is less specific
+    container._delObject(worksheet.getId())

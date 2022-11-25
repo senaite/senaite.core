@@ -6,12 +6,12 @@ env:
   PLONE_VERSION: "5.2"
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: 'ubuntu-20.04'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '2.7'
+          python-version: '2.7.18'
           cache: 'pip'
       - name: cache eggs
         uses: actions/cache@v3

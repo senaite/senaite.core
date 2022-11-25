@@ -27,10 +27,13 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IGetStickerTemplates
+from bika.lims.interfaces import ISampleType
 from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
 from bika.lims.vocabularies import getStickerTemplates
+from plone.memoize.view import memoize
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -129,15 +132,16 @@ class Sticker(BrowserView):
         """Returns a list of SuperModel items
         """
         uids = self.get_uids()
-        if not uids:
-            return [SuperModel(self.context)]
         items = map(lambda uid: SuperModel(uid), uids)
         return self._resolve_number_of_copies(items)
 
     def get_uids(self):
         """Parse the UIDs from the request `items` parameter
         """
-        return filter(None, self.request.get("items", "").split(","))
+        uids = filter(None, self.request.get("items", "").split(","))
+        if not uids:
+            return [api.get_uid(self.context)]
+        return uids
 
     def getAvailableTemplates(self):
         """Returns an array with the templates of stickers available.
@@ -170,45 +174,15 @@ class Sticker(BrowserView):
             templates.append(out)
         return templates
 
-    def getSelectedTemplate(self, default="Code_39_40x20mm.pt"):
-        """Returns the id of the sticker template selected.
-
-        If no specific template found in the request (parameter template),
-        returns the default template set in Setup > Stickers.
-
-        If the template doesn't exist, uses the default template.
-
-        If no template selected but size param, get the sticker template set as
-        default in Bika Setup for the size set.
+    def getSelectedTemplate(self):
+        """Returns the id of the sticker template selected in the request. If
+        no template has been selected, returns default's depending on the
+        selected items and setup settings
         """
-        # Default sticker
-        bs_template = self.context.bika_setup.getAutoStickerTemplate()
-        size = self.request.get("size", "")
-
-        if self.filter_by_type:
-            templates = getStickerTemplates(filter_by_type=self.filter_by_type)
-            # Get the first sticker
-            bs_template = templates[0].get("id", "") if templates else ""
-        elif size == "small":
-            bs_template = self.context.bika_setup.getSmallStickerTemplate()
-        elif size == "large":
-            bs_template = self.context.bika_setup.getLargeStickerTemplate()
-        rq_template = self.request.get("template", bs_template)
-        # Check if the template exists. If not, fallback to default's
-        # 'prefix' is also the resource folder's name
-        prefix = ""
-        templates_dir = ""
-        if rq_template.find(":") >= 0:
-            prefix, rq_template = rq_template.split(":")
-            templates_dir = self._getStickersTemplatesDirectory(prefix)
-        else:
-            this_dir = os.path.dirname(os.path.abspath(__file__))
-            templates_dir = os.path.join(this_dir, "templates/stickers/")
-            if self.filter_by_type:
-                templates_dir = templates_dir + "/" + self.filter_by_type
-        if not os.path.isfile(os.path.join(templates_dir, rq_template)):
-            rq_template = default
-        return "%s:%s" % (prefix, rq_template) if prefix else rq_template
+        template_id = self.request.get("template")
+        if not template_id:
+            template_id = self.get_default_template()
+        return template_id
 
     def getSelectedTemplateCSS(self):
         """Looks for the CSS file from the selected template and return its
@@ -332,3 +306,43 @@ class Sticker(BrowserView):
         default_num = setup.getDefaultNumberOfCopies()
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
+
+    def get_default_template_for(self, obj, size):
+        """Returns the id of the sticker template to be rendered for the given
+        object and size
+        """
+        obj = api.get_object(obj)
+        if ISampleType.providedBy(obj):
+            if size == "small":
+                return obj.getDefaultSmallSticker()
+            return obj.getDefaultLargeSticker()
+
+        elif IAnalysisRequest.providedBy(obj):
+            sample_type = obj.getSampleType()
+            return self.get_default_template_for(sample_type, size)
+
+        return None
+
+    @memoize
+    def get_default_template(self):
+        """Returns the default sticker template to use for the given context
+        and selected items
+        """
+        if self.filter_by_type:
+            templates = getStickerTemplates(filter_by_type=self.filter_by_type)
+            template_id = templates[0].get("id", "") if templates else ""
+            if template_id:
+                return template_id
+
+        # pick the default template from the first item
+        size = self.request.get("size", "")
+        for uid in self.get_uids():
+            template = self.get_default_template_for(uid, size)
+            if template:
+                return template
+
+        # rely on the default setup template
+        setup = api.get_setup()
+        if size == "small":
+            return setup.getSmallStickerTemplate()
+        return setup.getLargeStickerTemplate()

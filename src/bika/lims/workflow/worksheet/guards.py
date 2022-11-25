@@ -122,6 +122,6 @@ def guard_remove(worksheet):
     """Return whether the workflow can be removed. Returns true if the worksheet
     does not contain any analysis
     """
-    if worksheet.getAnalyses():
+    if worksheet.getRawAnalyses():
         return False
     return True

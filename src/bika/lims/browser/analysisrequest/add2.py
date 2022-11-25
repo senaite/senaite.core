@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import six
-
 from collections import OrderedDict
 from datetime import datetime
+
+import six
 
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -1617,7 +1617,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, n)
-                msg = _("Field '{}' is required".format(field))
+                msg = _("Field '{}' is required").format(safe_unicode(field))
                 fielderrors[fieldname] = msg
 
             # Process valid record
@@ -1668,6 +1668,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             except Exception as e:
                 actions.resume()
                 errors["message"] = str(e)
+                logger.error(e, exc_info=True)
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
             # and UID to print stickers
@@ -1697,12 +1698,21 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return self.handle_redirect(ARs.values(), message)
 
+    def is_automatic_label_printing_enabled(self):
+        """Returns whether the automatic printing of barcode labels is active
+        """
+        setup = api.get_setup()
+        auto_print = setup.getAutoPrintStickers()
+        auto_receive = setup.getAutoreceiveSamples()
+        action = "receive" if auto_receive else "register"
+        return action in auto_print
+
     def handle_redirect(self, uids, message):
         """Handle redirect after sample creation or cancel
         """
         # Automatic label printing
         setup = api.get_setup()
-        auto_print = setup.getAutoPrintStickers()
+        auto_print = self.is_automatic_label_printing_enabled()
         immediate_results_entry = setup.getImmediateResultsEntry()
         redirect_to = self.context.absolute_url()
 
@@ -1722,11 +1732,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                         ",".join(uids),  # copy_from
                         len(uids),  # ar_count
                         sample_uids)  # sample_uids
-        elif "register" in auto_print and sample_uids:
-            redirect_to = "{}/sticker?autoprint=1&template={}&items={}".format(
-                self.context.absolute_url(),
-                setup.getAutoStickerTemplate(),
-                sample_uids)
+        elif auto_print and sample_uids:
+            redirect_to = "{}/sticker?autoprint=1&items={}".format(
+                self.context.absolute_url(), sample_uids)
         elif immediate_results_entry and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),

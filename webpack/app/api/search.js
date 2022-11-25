@@ -1,9 +1,14 @@
-class ReferenceWidgetAPI {
+/**Search JSON API
+ *
+ * Use the senaite.jsonapi to search a catalog
+ *
+*/
+class SearchAPI {
 
   constructor(props) {
-    console.debug("ReferenceWidgetAPI::constructor")
+    console.debug("SearchAPI::constructor")
     this.api_url = props.api_url;
-    this.on_api_error = props.on_api_error || function(response) {};
+    this.on_api_error = props.on_api_error || function() {};
     return this;
   }
 
@@ -36,7 +41,7 @@ class ReferenceWidgetAPI {
       body: method === "POST" ? data : null,
       credentials: "include"
     };
-    console.info("ReferenceWidgetAPI::fetch:endpoint=" + endpoint + " init=", init);
+    console.info("SearchAPI::fetch:endpoint=" + endpoint + " init=", init);
     request = new Request(url, init);
     return fetch(request).then(function(response) {
       if (!response.ok) {
@@ -76,7 +81,7 @@ class ReferenceWidgetAPI {
     for(let [key, value] of Object.entries(params)) {
       url += `&${key}=${value}`;
     }
-    console.debug("ReferenceWidgetAPI::search:url=", url);
+    console.debug("SearchAPI::search:url=", url);
     return this.get_json(url, {method: "GET"});
   }
 
@@ -86,8 +91,8 @@ class ReferenceWidgetAPI {
    */
   get_csrf_token() {
     return document.querySelector("#protect-script").dataset.token;
-  };
+  }
 
 }
 
-export default ReferenceWidgetAPI;
+export default SearchAPI;
