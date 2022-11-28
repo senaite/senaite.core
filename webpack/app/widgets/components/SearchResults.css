@@ -1,0 +1,8 @@
+/* CSS rules for the results table
+ *
+ * Basically to avoid border mixins from parent elements
+ * in Sample Add Form / Header Table
+ */
+table.queryselectwidget-results-table {}
+table.queryselectwidget-results-table th { border-left: none; border-right: none; }
+table.queryselectwidget-results-table td { border-left: none; border-right: none; }

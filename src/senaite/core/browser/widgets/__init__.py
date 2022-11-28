@@ -18,7 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .referencewidget import ReferenceWidget
-from .datetimewidget import DateTimeWidget
-from .recordswidget import RecordsWidget
-from .durationwidget import DurationWidget
+from .datetimewidget import DateTimeWidget  # noqa F401
+from .durationwidget import DurationWidget  # noqa F401
+from .queryselect import QuerySelectWidget  # noqa F401
+from .recordswidget import RecordsWidget  # noqa F401
+from .referencewidget import ReferenceWidget  # noqa F401

@@ -4,6 +4,20 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2193 Fix analyst cannot import results from instruments
+- #2190 Fix sample actions without translation
+- #2189 Fix auto-print of barcode labels when auto-receive is enabled
+- #2188 Fix archive path for Generic Setup file imports
+- #2185 Fix analysis profiles not recognised on AR template creation
+- #2186 Fix sticker template for sample type is not selected by default
+- #2183 Fix instrument supplier does not load on test data import
+- #2180 Rely on analysis permission when displaying results
+- #2179 Fix Traceback when removing a Worksheet
+- #2178 AT Queryselect Widget
+- #2177 Dexterity Queryselect Widget
+- #2173 Fix UnicodeDecodeError when a required condition is empty in add form
+- #2172 Fix SuperModel import error introduced in PR #2154
+- #2169 Fix field error indication in sample header
 - #2166 Fix partitions not displaying complete list of Interpretation Templates
 - #2165 Add DX phone field and widget
 - #2164 Added `IRetracted` and `IRejected` marker interfaces for analyses

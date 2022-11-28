@@ -1,8 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import {_t} from "../../i18n-wrapper.js"
+import "./SearchResults.css"
 
 
-class ReferenceResults extends React.Component {
+/** Renders the search results in a table popup
+ *
+ */
+class SearchResults extends React.Component {
 
   constructor(props) {
     super(props);
@@ -13,6 +17,14 @@ class ReferenceResults extends React.Component {
     this.on_prev_page = this.on_prev_page.bind(this);
     this.on_next_page = this.on_next_page.bind(this);
     this.on_close = this.on_close.bind(this);
+    this.on_mouse_over = this.on_mouse_over.bind(this);
+  }
+
+  /*
+   * Return the key where a value is located in a result record
+   */
+  get_value_key() {
+    return this.props.value_key || "uid";
   }
 
   /*
@@ -43,7 +55,9 @@ class ReferenceResults extends React.Component {
    */
   get_column_labels() {
     let columns = this.get_columns();
-    return columns.map((column) => { return column.label });
+    return columns.map((column) => {
+      return column.label
+    });
   }
 
   /*
@@ -78,21 +92,22 @@ class ReferenceResults extends React.Component {
   }
 
   /*
-   * Returns the UID of a result object
+   * Returns the value of a result object (JSON API record)
    *
-   * @returns {String} UID of the result
+   * @returns {String} value of the result
    */
-  get_result_uid(result) {
-    return result.uid || "NO UID FOUND!";
+  get_result_value(result) {
+    let value_key = this.get_value_key();
+    return result[value_key];
   }
 
   /*
-   * Checks wehter the UID is already in the list of selected UIDs
+   * Checks whether the value is already in the list of selected values
    *
-   * @returns {Boolean} true if the UID is already selected, false otherwise
+   * @returns {Boolean} true if the value is already selected, false otherwise
    */
-  is_uid_selected(uid) {
-    return this.props.uids.indexOf(uid) > -1;
+  is_value_selected(value) {
+    return this.props.values.indexOf(value) > -1;
   }
 
   /*
@@ -128,10 +143,16 @@ class ReferenceResults extends React.Component {
     let rows = [];
     let results = this.get_results();
     results.forEach((result, index) => {
-      let uid = this.get_result_uid(result);
+      let value = this.get_result_value(result);
+      let cursor = value ? "pointer" : "not-allowed";
+      let title = value ? "" : _t("Missing key");
       rows.push(
-        <tr uid={uid}
+        <tr value={value}
+            index={index}
+            title={title}
+            style={{cursor:cursor}}
             className={this.props.focused == index ? "table-active": ""}
+            onMouseOver={this.on_mouse_over}
             onClick={this.on_select}>
           {this.build_columns(result)}
         </tr>
@@ -155,10 +176,10 @@ class ReferenceResults extends React.Component {
         <td dangerouslySetInnerHTML={{__html: highlighted}}></td>
       );
     }
-    let uid = result.uid;
-    let used = this.props.uids.indexOf(uid) > -1;
+    let value = this.get_result_value(result);
+    let used = this.props.values.indexOf(value) > -1;
     columns.push(
-      <td>{used && <i class="fas fa-link text-success"></i>}</td>
+      <td>{used && <i className="fas fa-link text-success"></i>}</td>
     );
     return columns;
   }
@@ -293,7 +314,7 @@ class ReferenceResults extends React.Component {
   build_close_button() {
     return (
       <button className="btn btn-sm btn-link" onClick={this.on_close}>
-        <i class="fas fa-window-close"></i>
+        <i className="fas fa-window-close"></i>
       </button>
     )
   }
@@ -304,10 +325,14 @@ class ReferenceResults extends React.Component {
   on_select(event) {
     event.preventDefault();
     let target = event.currentTarget;
-    let uid = target.getAttribute("uid")
-    console.debug("ReferenceResults::on_select:event=", event);
+    let value = target.getAttribute("value")
+    if (value === null) {
+      console.warn("SearchResults::on_select:missing_value!");
+      return;
+    }
+    console.debug("SearchResults::on_select:event=", event);
     if (this.props.on_select) {
-      this.props.on_select(uid);
+      this.props.on_select(value);
     }
   }
 
@@ -318,7 +343,7 @@ class ReferenceResults extends React.Component {
     event.preventDefault();
     let target = event.currentTarget;
     let page = target.getAttribute("page")
-    console.debug("ReferenceResults::on_page:event=", event);
+    console.debug("SearchResults::on_page:event=", event);
     if (page == this.props.page) {
       return;
     }
@@ -332,7 +357,7 @@ class ReferenceResults extends React.Component {
    */
   on_prev_page(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_prev_page:event=", event);
+    console.debug("SearchResults::on_prev_page:event=", event);
     let page = this.props.page;
     if (page < 2) {
       console.warn("No previous pages available!");
@@ -348,7 +373,7 @@ class ReferenceResults extends React.Component {
    */
   on_next_page(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_next_page:event=", event);
+    console.debug("SearchResults::on_next_page:event=", event);
     let page = this.props.page;
     if (page + 1 > this.props.pages) {
       console.warn("No next pages available!");
@@ -364,9 +389,22 @@ class ReferenceResults extends React.Component {
    */
   on_close(event) {
     event.preventDefault();
-    console.debug("ReferenceResults::on_close:event=", event);
+    console.debug("SearchResults::on_close:event=", event);
     if (this.props.on_clear) {
       this.props.on_clear();
+    }
+  }
+
+  /*
+   * Event handler when the mouse is over a row
+   */
+  on_mouse_over(event) {
+    event.preventDefault();
+    console.debug("SearchResults::on_mouse_over:event=", event);
+    let target = event.currentTarget;
+    let index = target.getAttribute("index");
+    if (index !== null && this.props.on_mouse_over) {
+      this.props.on_mouse_over(index);
     }
   }
 
@@ -383,7 +421,7 @@ class ReferenceResults extends React.Component {
         <div style={{position: "absolute", top: 0, right: 0}}>
           {this.build_close_button()}
         </div>
-        <table className="table table-sm table-hover small">
+        <table className="table table-sm table-hover small queryselectwidget-results-table">
           <thead>
             <tr>
               {this.build_header_columns()}
@@ -407,4 +445,4 @@ class ReferenceResults extends React.Component {
   }
 }
 
-export default ReferenceResults;
+export default SearchResults;

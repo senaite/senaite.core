@@ -9,7 +9,7 @@
   <browser:page
       name="ajax_form"
       for="*"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       class=".ajax.FormView"
       allowed_attributes="initialized modified submit"
       layer="senaite.core.interfaces.ISenaiteCore"
