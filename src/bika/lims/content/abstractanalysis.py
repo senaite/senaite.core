@@ -522,29 +522,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         self.getField("Result").set(self, val)
 
     @security.public
-    def setSelectedUnit(self):
-        """Return the unit selected from the units list.  
-        Set the units for an analysis service from a result
-        variable list. In result options use the result variables 
-        to define a list of units.  
-        """
-        unit_selected=str(self.getInterimValue("units"))
-        field = self.getField("Unit")
-        field.set(self, unit_selected)
-        return 
-
-    @security.public
     def calculateResult(self, override=False, cascade=False):
         """Calculates the result for the current analysis if it depends of
         other analysis/interim fields. Otherwise, do nothing
         """
-        # set the selected unit if "units" keyword is included in interims
-        interims=self.getInterimFields()
-        for i in interims:
-            interim_keyword = i.get("keyword")
-            if interim_keyword == "units":
-                self.setSelectedUnit()
-
         if self.getResult() and override is False:
             return False
 
