@@ -130,11 +130,11 @@ def fix_sample_actions_not_translated(tool):
     logger.info("Fix sample actions without translation [DONE]")
 
 
-def fix_absolute_path_stickers(tool):
+def fix_relative_path_stickers(tool):
     """Updates the actions from AnalysisRequest and ReferenceSample types so
     the absolute url for sticker icons is used instead of relative path
     """
-    logger.info("Use absolute paths for sticker icons ...")
+    logger.info("Use portal as relative path for sticker icons ...")
     portal = api.get_portal()
     portal_types = ["AnalysisRequest", "ReferenceSample"]
     for portal_type in portal_types:
@@ -146,4 +146,4 @@ def fix_absolute_path_stickers(tool):
                 icon = icon_expr.split("senaite_theme/icon/")[-1]
                 icon_expr = "string:${portal_url}/senaite_theme/icon/%s" % icon
             action.setIconExpression(icon_expr)
-    logger.info("Use absolute paths for sticker icons [DONE]")
+    logger.info("Use portal as relative path for sticker icons [DONE]")

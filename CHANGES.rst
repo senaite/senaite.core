@@ -4,7 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
-- #2197 Use absolute paths for sticker icons
+- #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments
 - #2190 Fix sample actions without translation
