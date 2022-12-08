@@ -33,4 +33,14 @@
       handler="senaite.core.upgrade.v02_04_000.fix_sample_actions_not_translated"
       profile="senaite.core:default"/>
 
+  <!-- Use absolute paths for sticker icons
+       https://github.com/senaite/senaite.core/pull/2197 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Use absolute paths for sticker icons"
+      description="Use absolute paths for sticker icons"
+      source="2403"
+      destination="2404"
+      handler="senaite.core.upgrade.v02_04_000.fix_absolute_path_stickers"
+      profile="senaite.core:default"/>
+
 </configure>
