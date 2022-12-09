@@ -130,20 +130,10 @@ def fix_sample_actions_not_translated(tool):
     logger.info("Fix sample actions without translation [DONE]")
 
 
-def fix_relative_path_stickers(tool):
-    """Updates the actions from AnalysisRequest and ReferenceSample types so
-    the absolute url for sticker icons is used instead of relative path
+def import_typeinfo(tool):
+    """Import typeinfo step from profiles
     """
-    logger.info("Use portal as relative path for sticker icons ...")
-    portal = api.get_portal()
-    portal_types = ["AnalysisRequest", "ReferenceSample"]
-    for portal_type in portal_types:
-        type_info = portal.portal_types.getTypeInfo(portal_type)
-        actions = type_info.listActions()
-        for action in actions:
-            icon_expr = action.getIconExpression() or ""
-            if "senaite_theme/icon/" in icon_expr:
-                icon = icon_expr.split("senaite_theme/icon/")[-1]
-                icon_expr = "string:${portal_url}/senaite_theme/icon/%s" % icon
-            action.setIconExpression(icon_expr)
-    logger.info("Use portal as relative path for sticker icons [DONE]")
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile("profile-bika.lims:default", "typeinfo")
+    setup.runImportStepFromProfile(profile, "typeinfo")
