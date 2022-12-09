@@ -494,19 +494,32 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Allow to use Wildcards, LDL and UDL values in calculations
-        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL"]
+        # Allow to use Wildcards in calculations
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL","NAME","UNC"]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if "." in k]
         keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
-        errwilds = [k[1] for k in keysandwildcards if k[0] not in keywords]
-        if len(errwilds) > 0:
-            msg = _(
-                "Wildcards for interims are not allowed: ${wildcards}",
-                mapping={
-                    "wildcards": safe_unicode(", ".join(errwilds))
-                })
-            return to_utf8(translate(msg))
+        
+        # Check if interim_fields include a wildcard.
+
+        """
+        Get the key form the keysandwildcards and check if its in the dep_service.
+        If not raise an eror that interim_fields cannot include wildcards
+        """
+        #get keys from keysandwildcards
+        keys=[key[0] for key in keysandwildcards]
+
+        for num, key in enumerate(keys):
+            # Check if the service keyword exists and is active.
+            dep_service = catalog(getKeyword=key, is_active=True)
+            if not dep_service:
+                msg = _(
+                    "Validation failed: Keyword '${key}' is invalid. Wildcards for interims are not allowed: ${keyword}",
+                    mapping={
+                        'key': safe_unicode(key),
+                        'keyword': safe_unicode(keysandwildcards[num])
+                    })
+                return to_utf8(translate(msg))
 
         wildcards = [k[1] for k in keysandwildcards if k[0] in keywords]
         wildcards = [wd for wd in wildcards if wd not in allowedwds]
@@ -1545,6 +1558,5 @@ class ServiceUnitChoicesValidator(object):
         if not unit_choice:
                     return _("Validation failed: '{}' is not a string").format(
                         unit_choice)
-
 
 validation.register(ServiceUnitChoicesValidator())
