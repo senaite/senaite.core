@@ -135,6 +135,12 @@ class AnalysesView(ListingView):
                 "title": _("Calculation"),
                 "sortable": False,
                 "toggle": False}),
+            ("UnitChoices", {
+                "title": _("Unit Selection"),
+                "sortable": False,
+                "ajax": True,
+                "on_change": "_on_unit_choice_change",
+                "toggle": True}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -155,12 +161,12 @@ class AnalysesView(ListingView):
                 "input_class": "ajax_calculate numeric",
                 "ajax": True,
                 "sortable": False}),
-            ("Specification", {
-                "title": _("Specification"),
-                "sortable": False}),
             ("Uncertainty", {
                 "title": _("+-"),
                 "ajax": True,
+                "sortable": False}),
+            ("Specification", {
+                "title": _("Specification"),
                 "sortable": False}),
             ("retested", {
                 "title": _("Retested"),
@@ -406,6 +412,7 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         return obj.getInstrument()
+
 
     def get_calculation(self, analysis_brain):
         """Returns the calculation assigned to the analysis passed in, if any
@@ -664,6 +671,10 @@ class AnalysesView(ListingView):
         self._folder_item_result(obj, item)
         # Fill calculation and interim fields
         self._folder_item_calculation(obj, item)
+
+        # Fill unit choices field
+        self._folder_item_unit_choices(obj, item)
+
         # Fill method
         self._folder_item_method(obj, item)
         # Fill instrument
@@ -778,6 +789,7 @@ class AnalysesView(ListingView):
         # analyses requires them to be displayed for selection
         self.columns["Method"]["toggle"] = self.is_method_column_required()
         self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
+        self.columns["UnitChoices"]["toggle"] = self.is_unit_choices_column_required()
 
         return items
 
@@ -1045,6 +1057,43 @@ class AnalysesView(ListingView):
         item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
 
+    def _folder_item_unit_choices(self, analysis_brain, item):
+        """Set the unit choices to the item passed in.
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+        if not self.has_permission(ViewResults, analysis_brain):
+            # Hide unit_choices if user cannot view results
+            return
+        is_editable = self.is_analysis_edition_allowed(analysis_brain)
+        if is_editable:
+            # Set unit_choices. The default unit is also included. 
+            analysis_obj = self.get_object(analysis_brain)
+            # get unit_choice_fields
+            unit_choice_fields = analysis_obj.getUnitChoices() or list()
+            if unit_choice_fields:
+                # Get the keys for the dictionary
+                unit_choice_fields_key=set().union(*(d.keys() for d in unit_choice_fields))
+                if 'unitchoice' in unit_choice_fields_key:
+                    # Get the default unit
+                    unit=analysis_obj.getUnit()
+                    # Copy to prevent to avoid persistent changes
+                    unit_choice_fields = deepcopy(unit_choice_fields)
+                    # Get the {value:text} dict
+                    choices=["{}:{}".format(x['unitchoice'],x['unitchoice']) for x in unit_choice_fields]
+                    # Add default unit to list of choices
+                    choices.append("{}:{}".format(unit,unit))
+                    # Create a dictionary of the choices
+                    choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+                    # Generate the display list
+                    # [{"ResultValue": value, "ResultText": text},]
+                    headers = ["ResultValue", "ResultText"]
+                    dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                    item["choices"]["UnitChoices"] = dl
+                    item["allow_edit"].append("UnitChoices")
+
+
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
 
@@ -1064,6 +1113,17 @@ class AnalysesView(ListingView):
             if method:
                 item["Method"] = api.get_title(method)
                 item["replace"]["Method"] = get_link_for(method, tabindex="-1")
+
+    def _on_unit_choice_change(self, uid=None, value=None, item=None, **kw):
+        """ updates the unit on selection of unit_choices. 
+        """
+        item["Unit"] = value
+        unit = item.get("Unit")
+        if unit:
+            item["after"]["Result"] = self.render_unit(unit)
+        
+        return item
+        
 
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
         """Update instrument and calculation when the method changes
@@ -1085,6 +1145,7 @@ class AnalysesView(ListingView):
         item["choices"]["Instrument"] = inst_vocab
 
         return item
+
 
     def _folder_item_instrument(self, analysis_brain, item):
         """Fills the analysis' instrument to the item passed in.
@@ -1543,6 +1604,17 @@ class AnalysesView(ListingView):
         # a method is selected
         return len(instruments) > 0
 
+    def is_unit_choices_required(self, analysis):
+        """Returns whether the render of the unit choice selection list is
+        required for the analysis passed-in.
+        :param analysis: Brain or object that represents an analysis
+        """
+        # Always return true if the analysis has unitchoices
+        analysis = self.get_object(analysis)
+        if analysis.getUnitChoices():
+            return True
+
+
     def is_method_column_required(self):
         """Returns whether the method column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
@@ -1562,5 +1634,16 @@ class AnalysesView(ListingView):
         for item in self.items:
             obj = item.get("obj")
             if self.is_instrument_required(obj):
+                return True
+        return False
+
+    def is_unit_choices_column_required(self):
+        """Returns whether the unit_choices column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for unit_choices selection to be rendered
+        """
+        for item in self.items:
+            obj = item.get("obj")
+            if self.is_unit_choices_required(obj):
                 return True
         return False

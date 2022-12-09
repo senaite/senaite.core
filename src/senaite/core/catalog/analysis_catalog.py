@@ -66,6 +66,7 @@ COLUMNS = BASE_COLUMNS + [
     "getServiceUID",
     "getSubmittedBy",
     "getUnit",
+    "getUnitChoices",
     "getVerificators",
     "isSelfVerificationEnabled",
 ]
