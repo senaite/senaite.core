@@ -54,10 +54,11 @@ SKIP_EXPORT_TYPES = [
     "ARReport",
     "AnalysisRequest",
     "Attachment",
+    "AutoImportLog",
     "Batch",
+    "Invoice",
     "ReferenceSample",
     "Worksheet",
-    "Invoice",
 ]
 
 ID_MAP = {}

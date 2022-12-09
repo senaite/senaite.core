@@ -75,19 +75,19 @@ class ARAnalysesField(ObjectField):
         :param kwargs: Keyword arguments to inject in the search query
         :returns: A list of Analysis Objects/Catalog Brains
         """
-        # Do we need to return objects or brains
-        full_objects = kwargs.get("full_objects", False)
-
-        # Bail out parameters from kwargs that don't match with indexes
+        # Filter out parameters from kwargs that don't match with indexes
         catalog = api.get_tool(ANALYSIS_CATALOG)
         indexes = catalog.indexes()
         query = dict([(k, v) for k, v in kwargs.items() if k in indexes])
 
-        # Do the search against the catalog
         query["portal_type"] = "Analysis"
         query["getAncestorsUIDs"] = api.get_uid(instance)
+        query["sort_on"] = kwargs.get("sort_on", "sortable_title")
+        query["sort_order"] = kwargs.get("sort_order", "ascending")
+
+        # Do the search against the catalog
         brains = catalog(query)
-        if full_objects:
+        if kwargs.get("full_objects", False):
             return map(api.get_object, brains)
         return brains
 

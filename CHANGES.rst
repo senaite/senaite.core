@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments
 - #2190 Fix sample actions without translation
 - #2189 Fix auto-print of barcode labels when auto-receive is enabled
