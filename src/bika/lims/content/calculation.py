@@ -48,6 +48,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
+from bika.lims.api import APIError
 
 schema = BikaSchema.copy() + Schema((
 
@@ -78,7 +79,6 @@ schema = BikaSchema.copy() + Schema((
             label=_("Dependent Analyses"),
         ),
     ),
-
     RecordsField(
         'PythonImports',
         required=False,
@@ -126,7 +126,25 @@ schema = BikaSchema.copy() + Schema((
                 "<p>E.g, the calculation for Total Hardness, the total of "
                 "Calcium (ppm) and Magnesium (ppm) ions in water, is entered "
                 "as [Ca] + [Mg], where Ca and MG are the keywords for those "
-                "two Analysis Services.</p>"),
+                "two Analysis Services.</p>"
+                "<p> Wildcards can be included with calcualtions. The following"
+                " wildcards are allowed:"
+                "<ol>"
+                "<li>%(context_uid)s - The wildcard %(context_uid)s in calculation"
+                " formula is automatically replaced by the Unique identifier (UID) of the analysis from which the calculation has been triggered</li>"
+                "<li> .NAME - The wildcard .NAME in calculation formula is automatically replaced by the analysis service name. The wildcard .NAME"
+                " is appended to the analysis service name (e.g. [Ca.NAME]) </li>"
+                "<li> .UNC - The wildcard .UNC in calculation formula is automatically replaced by the uncertainty value for the analysis service." 
+                " The wildcard .UNC is appended to the analysis service name (e.g. [Ca.UNC]) </li>"
+                "<li> .LDL - The wildcard .LDL in calculation formula is automatically replaced by the lower detection limit value defined for the analysis service." 
+                " The wildcard .LDL is appended to the analysis service name (e.g. [Ca.LDL]) </li>"
+                "<li> .UDL - The wildcard .UDL in calculation formula is automatically replaced by the upper detection limit value defined for the analysis service." 
+                " The wildcard .UDL is appended to the analysis service name (e.g. [Ca.UDL]) </li>"
+                "<li> .BELOWLDL - The wildcard .BELOWLDL in calculation formula is automatically replaced by a binary value (i.e, 0 or 1) stating if the result is below"
+                " the lower detection limit.</li>"
+                "<li> .ABOVEUDL - The wildcard .ABOVEUDL in calculation formula is automatically replaced by a binary value (i.e, 0 or 1) stating if the result is above"
+                " the upper detection limit.</li>"
+                ),
         )
     ),
 
@@ -136,7 +154,7 @@ schema = BikaSchema.copy() + Schema((
         subfields=('keyword', 'value'),
         subfield_labels={'keyword': _('Keyword'), 'value': _('Value')},
         subfield_readonly={'keyword': True, 'value': False},
-        subfield_types={'keyword': 'string', 'value': 'float'},
+        subfield_types={'keyword': 'string', 'value': 'string'},
         default=[{'keyword': '', 'value': 0}],
         widget=BikaRecordsWidget(
             label=_("Test Parameters"),
@@ -221,10 +239,23 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('Formula').set(self, Formula)
         else:
             keywords = re.compile(r"\[([^.^\]]+)\]").findall(Formula)
+            # get the keywords from the keysandwildcards
+            # evaluate the 'Formula' and obtian both keywords and keysandwildcards
+            keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(Formula)
+            # get keysandwildcards 
+            keysandwildcards = [k for k in keysandwildcards if "." in k]
+            # Split keysandwildcards into [keys,wildcards] list
+            keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
+            # Obtain a list of keys. 
+            keys = [k[0] for k in keysandwildcards]
+            # Add the keys from keysandwildcards to the keywords list. 
+            keywords.extend(keys)  
+            # Remove duplicate keywords from list
+            keywords = list(dict.fromkeys(keywords))
             brains = bsc(portal_type='AnalysisService',
                          getKeyword=keywords)
             services = [brain.getObject() for brain in brains]
-            self.getField('DependentServices').set(self, services)
+            self.getField('DependentServices').set(self, services) 
             self.getField('Formula').set(self, Formula)
 
     def getMinifiedFormula(self):
@@ -314,23 +345,69 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         and gloms them together.
         """
         params = []
-
         # Set default/existing values for InterimField keywords
         for interim in self.getInterimFields():
             keyword = interim.get('keyword')
+            # itermin fields value are always a float
+            val_type_interim = 'float'
             ex = [x.get('value') for x in form_value if
                   x.get('keyword') == keyword]
             params.append({'keyword': keyword,
-                           'value': ex[0] if ex else interim.get('value')})
-        # Set existing/blank values for service keywords
+                           'value': ex[0] if ex else interim.get('value'), 'subfield_type': val_type_interim})    
+        # Set existing/blank values for service keywords and service keywords with wildcards
+        # allowedwds is a list of allowed keywords.
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL","NAME","UNC"]
+        # Get the keywords, interims and keysanwildcards that are defined in the formula
+        formula_keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(self.getFormula())
         for service in self.getDependentServices():
+            # get the keyword for the dependent services. 
             keyword = service.getKeyword()
-            ex = [x.get('value') for x in form_value if
-                  x.get('keyword') == keyword]
-            params.append({'keyword': keyword,
-                           'value': ex[0] if ex else ''})
-        self.Schema().getField('TestParameters').set(self, params)
+            # get the string result for the service
+            str_result = service.getStringResult()
+            # get the values (e.g. [{'keyword':'example1','value': 'ex1','subfield_type': 'float'},])
+            for val in form_value:
+                # get keyword from the form_value
+                val_keyword=val.get('keyword')       
+                # Check if the form_keyword is in the formula list. This updates param list based on contents of Formula. 
+                if val_keyword in formula_keysandwildcards:
+                    # Get the form value
+                    val_value= val.get('value')
+                    # Define the val type for the result 
+                    val_type_result = 'string' if str_result else 'float'
+                    # Check if keyword is not a wildcard
+                    if "." not in val_keyword:
+                        # check for a key and check that it is in service.getKeyword()
+                        if val_keyword == keyword:
+                            # convert to float if val_type_result is 'float'. 
+                            if val_type_result == 'float':
+                                # convert the record type to float here!!!
+                                try:
+                                    val_value = api.to_float(val_value)
+                                except APIError: 
+                                    val_value = "ERROR: Float required for parameter. '{}' is not floatable. ".format(val_value) 
+                            params.append({'keyword': val_keyword,'value': val_value,'subfield_type':val_type_result})
 
+                    if "." in val_keyword:
+                        default_type_wds = {"LDL": 'float',"UDL":'float', "BELOWLDL":'float', "ABOVEUDL":'float',"NAME":'string', "UNC":'float'}
+                        # Get the key from the wildcard value. 
+                        val_keyword_wds=val.get('keyword').split(".", 1)[0]
+                        wds=val.get('keyword').split(".", 1)[1]
+                        # define the result type
+                        val_type_result = default_type_wds[wds]
+                        # convert to float if val_type_result is 'float'. 
+                        if val_type_result == 'float':
+                            try:
+                                val_value = api.to_float(val_value)
+                            except APIError: 
+                                val_value = "ERROR: Float required for parameter. '{}' is not floatable. ".format(val_value) 
+                        # check for a key and check that it is in service.getKeyword()
+                        if val_keyword_wds == keyword:
+                            if wds in allowedwds:
+                                params.append({'keyword': val_keyword,'value': val_value,'subfield_type':val_type_result})
+
+        
+        self.Schema().getField('TestParameters').set(self, params)
+        
     # noinspection PyUnusedLocal
     def setTestResult(self, form_value):
         """Calculate formula with TestParameters and enter result into
@@ -338,6 +415,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """
         # Create mapping from TestParameters
         mapping = {x['keyword']: x['value'] for x in self.getTestParameters()}
+        type_dict= {x['keyword']: x['subfield_type'] for x in self.getTestParameters()}
         # Gather up and parse formula
         formula = self.getMinifiedFormula()
         test_result_field = self.Schema().getField('TestResult')
@@ -345,12 +423,26 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         # Flush the TestResult field and return
         if not formula:
             return test_result_field.set(self, "")
-
-        formula = formula.replace('[', '{').replace(']', '}').replace('  ', '')
+        for keyword in mapping.keys():
+            if type_dict[keyword] ==  'string':
+                converter = "s"
+                # we need to quote a string result because of the `eval` below
+                mapping[keyword]='"%s"' % mapping[keyword]
+            else:
+                converter = "f"
+            
+            formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
+            # convert any remaining placeholders, e.g. from interims etc.
+        # NOTE: we assume remaining values are all floatable!
+        formula = formula.replace("[", "%(").replace("]", ")f")
         result = 'Failure'
-
+        
         try:
-            formula = formula.format(**mapping)
+            formula = eval("'%s'%%mapping" % formula,
+                           {"__builtins__": None,
+                            'math': math,
+                            'context': self},
+                           {'mapping': mapping})
             result = eval(formula, self._getGlobals())
         except TypeError as e:
             # non-numeric arguments in interim mapping?
@@ -358,7 +450,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         except ZeroDivisionError as e:
             result = "Division by 0: {}".format(str(e.args[0]))
         except KeyError as e:
-            result = "Key Error: {}".format(str(e.args[0]))
+            result = "Key Error:{}".format(str(e.args[0]))
         except ImportError as e:
             result = "Import Error: {}".format(str(e.args[0]))
         except Exception as e:

@@ -494,19 +494,32 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Allow to use Wildcards, LDL and UDL values in calculations
-        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL"]
+        # Allow to use Wildcards in calculations
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL","NAME","UNC"]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if "." in k]
         keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
-        errwilds = [k[1] for k in keysandwildcards if k[0] not in keywords]
-        if len(errwilds) > 0:
-            msg = _(
-                "Wildcards for interims are not allowed: ${wildcards}",
-                mapping={
-                    "wildcards": safe_unicode(", ".join(errwilds))
-                })
-            return to_utf8(translate(msg))
+        
+        # Check if interim_fields include a wildcard.
+
+        """
+        Get the key form the keysandwildcards and check if its in the dep_service.
+        If not raise an eror that interim_fields cannot include wildcards
+        """
+        #get keys from keysandwildcards
+        keys=[key[0] for key in keysandwildcards]
+
+        for num, key in enumerate(keys):
+            # Check if the service keyword exists and is active.
+            dep_service = catalog(getKeyword=key, is_active=True)
+            if not dep_service:
+                msg = _(
+                    "Validation failed: Keyword '${key}' is invalid. Wildcards for interims are not allowed: ${keyword}",
+                    mapping={
+                        'key': safe_unicode(key),
+                        'keyword': safe_unicode(keysandwildcards[num])
+                    })
+                return to_utf8(translate(msg))
 
         wildcards = [k[1] for k in keysandwildcards if k[0] in keywords]
         wildcards = [wd for wd in wildcards if wd not in allowedwds]
@@ -1507,3 +1520,42 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
+class ServiceUnitChoicesValidator(object):
+    """Validate AnalysisService UnitChoices field
+    """
+    implements(IValidator)
+    name = "service_unitchoices_validator"
+
+    def __call__(self, field_value, **kwargs):
+        instance = kwargs["instance"]
+        request = kwargs.get("REQUEST", {})
+        translate = getToolByName(instance, "translation_service").translate
+        field_name = kwargs["field"].getName()
+
+        # This value in request prevents running once per subfield value.
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = "{}-{}-{}".format(self.name, instance.getId(), field_name)
+        if instance.REQUEST.get(key, False):
+            return True
+
+        # Walk through all records set for this records field
+        field_name_value = "{}_value".format(field_name)
+        records = request.get(field_name_value, [])
+        for record in records:
+            # Validate the record
+            msg = self.validate_record(record)
+            if msg:
+                return to_utf8(translate(msg))
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_record(self, record):
+        unit_choice = record.get("unitchoice")
+        # Check that the unit choice is a string
+        if not unit_choice:
+                    return _("Validation failed: '{}' is not a string").format(
+                        unit_choice)
+
+validation.register(ServiceUnitChoicesValidator())
