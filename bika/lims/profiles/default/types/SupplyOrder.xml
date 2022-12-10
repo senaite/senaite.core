@@ -51,7 +51,7 @@
          action_id="print"
          category="document_actions"
          condition_expr=""
-         icon_expr="string:${object_url}/++resource++bika.lims.images/print_32.png"
+         icon_expr="string:${portal_url}/++resource++bika.lims.images/print_32.png"
          link_target=""
          url_expr="string:${object_url}/print"
          i18n:attributes="title"

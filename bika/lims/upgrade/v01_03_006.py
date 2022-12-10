@@ -55,6 +55,7 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "rolemap")
 
     remove_stale_metadata(portal)
