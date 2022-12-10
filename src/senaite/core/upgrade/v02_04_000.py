@@ -128,3 +128,12 @@ def fix_sample_actions_not_translated(tool):
         transition.actbox_name = transition.title
 
     logger.info("Fix sample actions without translation [DONE]")
+
+
+def import_typeinfo(tool):
+    """Import typeinfo step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile("profile-bika.lims:default", "typeinfo")
+    setup.runImportStepFromProfile(profile, "typeinfo")
