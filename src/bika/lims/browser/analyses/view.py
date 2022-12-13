@@ -794,7 +794,7 @@ class AnalysesView(ListingView):
         """Render HTML element for unit
         """
         if css_class is None:
-            css_class = "unit d-inline-block py-2 small text-secondary"
+            css_class = "unit d-inline-block py-2 small text-secondary text-nowrap"
         return "<span class='{css_class}'>{unit}</span>".format(
             unit=unit, css_class=css_class)
 
@@ -1077,9 +1077,11 @@ class AnalysesView(ListingView):
                     # Copy to prevent to avoid persistent changes
                     unit_choice_fields = deepcopy(unit_choice_fields)
                     # Get the {value:text} dict
-                    choices=["{}:{}".format(x['unitchoice'],x['unitchoice']) for x in unit_choice_fields]
+                    # Remove leading white space on front of unit choices. 
+                    choices=["{}:{}".format(x['unitchoice'],x['unitchoice'].lstrip()) for x in unit_choice_fields]
                     # Add default unit to list of choices
-                    choices.append("{}:{}".format(unit,unit))
+                    # Space in {}: {} ensures that the default unit is always on top of the selection.
+                    choices.append("{}: {}".format(unit,unit))
                     # Create a dictionary of the choices
                     choices = dict(map(lambda ch: ch.strip().split(":"), choices))
                     # Generate the display list
@@ -1088,6 +1090,7 @@ class AnalysesView(ListingView):
                     dl = map(lambda it: dict(zip(headers, it)), choices.items())
                     item["choices"]["UnitChoices"] = dl
                     item["allow_edit"].append("UnitChoices")
+
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
