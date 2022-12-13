@@ -1117,7 +1117,9 @@ class AnalysesView(ListingView):
         if unit:
             item["after"]["Result"] = self.render_unit(unit)
 
-        return item    def _on_method_change(self, uid=None, value=None, item=None, **kw):
+        return item    
+    
+    def _on_method_change(self, uid=None, value=None, item=None, **kw):
 
         """Update instrument and calculation when the method changes
 
