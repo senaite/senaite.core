@@ -329,13 +329,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         else:
             value = ""
-            # Restore the DetectionLimitSelector, cause maybe its visibility
-            # was changed because allow manual detection limit was enabled and
-            # the user set a result with "<" or ">"
-            if manual_dl:
-                service = self.getAnalysisService()
-                selector = service.getDetectionLimitSelector()
-                self.setDetectionLimitSelector(selector)
 
         # Set the result
         self.getField("Result").set(self, result)
@@ -494,14 +487,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             except (ValueError, TypeError):
                 val = value
 
-            # We dismiss the operand and the selector visibility unless the user
+            # Dismiss the operand and the selector visibility unless the user
             # is allowed to manually set the detection limit or the DL selector
             # is visible.
             allow_manual = self.getAllowManualDetectionLimit()
             selector = self.getDetectionLimitSelector()
             if allow_manual or selector:
-                # Ensure visibility of the detection limit selector
-                self.setDetectionLimitSelector(True)
 
                 # Set the detection limit operand
                 self.setDetectionLimitOperand(oper)
