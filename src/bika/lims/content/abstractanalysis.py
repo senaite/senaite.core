@@ -475,34 +475,19 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
-        # UDL/LDL directly entered in the results field
+        # Store the detection limit (UDL/LDL) operand if necessary
+        dl_selector = self.getDetectionLimitSelector()
         if val and val[0] in [LDL, UDL]:
-            # Result prefixed with LDL/UDL
-            oper = val[0]
-            # Strip off LDL/UDL from the result
-            val = val.replace(oper, "", 1)
-            # Check if the value is indeterminate / non-floatable
-            try:
-                val = float(val)
-            except (ValueError, TypeError):
-                val = value
-
-            # Dismiss the operand and the selector visibility unless the user
-            # is allowed to manually set the detection limit or the DL selector
-            # is visible.
-            allow_manual = self.getAllowManualDetectionLimit()
-            selector = self.getDetectionLimitSelector()
-            if allow_manual or selector:
-
-                # Set the detection limit operand
-                self.setDetectionLimitOperand(oper)
-
-                if not allow_manual:
-                    # Override value by default DL
-                    if oper == LDL:
-                        val = self.getLowerDetectionLimit()
-                    else:
-                        val = self.getUpperDetectionLimit()
+            # Result prefixed with DL operand
+            self.setDetectionLimitOperand(val[0])
+            # Strip off the detection limit operand from the result
+            val = val.replace(val[0], "", 1)
+        elif not dl_selector:
+            # User cannot choose the detection limit from a selection list,
+            # but might be allowed to manually enter the dl with the result.
+            # If so, reset the detection limit operand, cause the previous
+            # entered result might be an DL, but current doesn't
+            self.setDetectionLimitOperand("")
 
         # Update ResultCapture date if necessary
         if not val:
