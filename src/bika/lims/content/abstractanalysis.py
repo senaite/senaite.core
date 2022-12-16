@@ -476,7 +476,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         val = str("" if not value and value != 0 else value).strip()
 
         # Store the detection limit (UDL/LDL) operand if necessary
-        dl_selector = self.getDetectionLimitSelector()
         if val and val[0] in [LDL, UDL]:
             # Strip off the detection limit operand from the result
             wo_dl = val.replace(val[0], "", 1).strip()
@@ -484,7 +483,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if api.is_floatable(wo_dl):
                 self.setDetectionLimitOperand(val[0])
                 val = api.to_float(wo_dl)
-        elif not dl_selector:
+
+        elif not self.getDetectionLimitSelector():
             # User cannot choose the detection limit from a selection list,
             # but might be allowed to manually enter the dl with the result.
             # If so, reset the detection limit operand, cause the previous
