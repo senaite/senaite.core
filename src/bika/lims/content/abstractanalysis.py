@@ -475,14 +475,31 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
-        # Store the detection limit (UDL/LDL) operand if necessary
+        # UDL/LDL directly entered in the results field
         if val and val[0] in [LDL, UDL]:
             # Strip off the detection limit operand from the result
-            wo_dl = val.replace(val[0], "", 1).strip()
-            # We won't consider this a DL unless float-able
-            if api.is_floatable(wo_dl):
-                self.setDetectionLimitOperand(val[0])
-                val = api.to_float(wo_dl)
+            operand = val[0]
+
+            # Convert to float-able if possible
+            wo_dl = val.replace(operand, "", 1).strip()
+            val = api.to_float(wo_dl) if api.is_floatable(wo_dl) else val
+
+            # Result becomes the detection limit
+            selector = self.getDetectionLimitSelector()
+            allow_manual = self.getAllowManualDetectionLimit()
+            if any([selector, allow_manual]):
+
+                # Set the detection limit operand
+                self.setDetectionLimitOperand(operand)
+
+                if not allow_manual:
+                    # Manual introduction of DL is not permitted
+                    if operand == LDL:
+                        # Result is default LDL
+                        val = self.getLowerDetectionLimit()
+                    else:
+                        # Result is default UDL
+                        val = self.getUpperDetectionLimit()
 
         elif not self.getDetectionLimitSelector():
             # User cannot choose the detection limit from a selection list,
