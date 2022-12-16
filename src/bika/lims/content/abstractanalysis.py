@@ -481,7 +481,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Result prefixed with DL operand
             self.setDetectionLimitOperand(val[0])
             # Strip off the detection limit operand from the result
-            val = val.replace(val[0], "", 1)
+            val = val.replace(val[0], "", 1).strip()
         elif not dl_selector:
             # User cannot choose the detection limit from a selection list,
             # but might be allowed to manually enter the dl with the result.
