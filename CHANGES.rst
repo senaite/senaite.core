@@ -4,8 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
-2203
-- #2203 Added missing parameter date to date_to_string on sample listing
+- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments
