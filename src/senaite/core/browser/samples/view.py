@@ -762,7 +762,7 @@ class SamplesView(ListingView):
         """
         if not isinstance(date, DateTime):
             return ""
-        return dtime.date_to_string("%Y-%m-%d %H:%M")
+        return dtime.date_to_string(date, fmt="%Y-%m-%d %H:%M")
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
