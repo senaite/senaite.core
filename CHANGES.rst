@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
+- #2197 Use portal as relative path for sticker icons
+- #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments
 - #2190 Fix sample actions without translation
 - #2189 Fix auto-print of barcode labels when auto-receive is enabled
