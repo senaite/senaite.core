@@ -25,6 +25,6 @@ def sortable_title(instance):
             analytes = service.getAnalytes()
             titles = filter(None, [an.get("title") for an in analytes])
             index = titles.index(title) if title in titles else len(titles)
-            title = "{}-{}".format(sortable_title(multi)(), index)
+            title = "{}-{:04d}".format(sortable_title(multi)(), index)
 
     return "{}-{}".format(title, api.get_id(instance))
