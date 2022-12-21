@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import LDL
+from bika.lims import UDL
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from senaite.core import logger
@@ -137,3 +139,46 @@ def import_typeinfo(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile("profile-bika.lims:default", "typeinfo")
     setup.runImportStepFromProfile(profile, "typeinfo")
+
+
+def fix_traceback_retract_dl(tool):
+    """Migrates the values of LDL and UDL of analyses/services to string, as
+    well as results that are DetectionLimit and stored as floats
+    """
+    logger.info("Migrate LDL, UDL and result fields to string ...")
+    cat = api.get_tool("uid_catalog")
+    query = {"portal_type": ["AnalysisService", "Analysis",
+                             "DuplicateAnalysis", "ReferenceAnalysis"]}
+    brains = cat.search(query)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Migrated {0}/{1} LDL/UDL fields".format(num, total))
+
+        obj = api.get_object(brain)
+
+        # Migrate UDL to string
+        field = obj.getField("UpperDetectionLimit")
+        value = field.get(obj)
+        if isinstance(value, (int, float)):
+            field.set(obj, str(value))
+
+        # Migrate LDL to string
+        field = obj.getField("LowerDetectionLimit")
+        value = field.get(obj)
+        if isinstance(value, (int, float)):
+            field.set(obj, str(value))
+
+        # Migrate the result
+        field = obj.getField("Result")
+        if field and obj.getDetectionLimitOperand() in [LDL, UDL]:
+            # The result is the detection limit
+            result = field.get(obj)
+            if isinstance(result, (int, float)):
+                field.set(obj, str(result))
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Migrate LDL, UDL and result fields to string [DONE]")

@@ -353,14 +353,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isLowerDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is a lower detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default LDL." % (self.id, result))
         return AbstractBaseAnalysis.getLowerDetectionLimit(self)
 
     # Method getUpperDetectionLimit overrides method of class BaseAnalysis
@@ -373,14 +371,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isUpperDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is an upper detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default UDL." % (self.id, result))
         return AbstractBaseAnalysis.getUpperDetectionLimit(self)
 
     @security.public
@@ -487,13 +483,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Result prefixed with LDL/UDL
             oper = val[0]
             # Strip off LDL/UDL from the result
-            val = val.replace(oper, "", 1)
-            # Check if the value is indeterminate / non-floatable
-            try:
-                val = float(val)
-            except (ValueError, TypeError):
-                val = value
-
+            val = val.replace(oper, "", 1).strip()
             # We dismiss the operand and the selector visibility unless the user
             # is allowed to manually set the detection limit or the DL selector
             # is visible.
