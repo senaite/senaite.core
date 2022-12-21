@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2202 Fix detection limit set manually is not displayed on result save
 - #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
