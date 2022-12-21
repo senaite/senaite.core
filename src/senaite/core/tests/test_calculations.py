@@ -354,7 +354,7 @@ class TestCalculations(DataTestCase):
                         or an.isUpperDetectionLimit():
                         operator = an.getDetectionLimitOperand()
                         strres = f['analyses'][key].replace(operator, '')
-                        self.assertEqual(an.getResult(), float(strres))
+                        self.assertEqual(an.getResult(), strres)
                     else:
                         self.assertEqual(an.getResult(), f['analyses'][key])
                 elif key == self.calcservice.getKeyword():
