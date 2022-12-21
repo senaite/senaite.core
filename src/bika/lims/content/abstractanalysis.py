@@ -329,13 +329,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         else:
             value = ""
-            # Restore the DetectionLimitSelector, cause maybe its visibility
-            # was changed because allow manual detection limit was enabled and
-            # the user set a result with "<" or ">"
-            if manual_dl:
-                service = self.getAnalysisService()
-                selector = service.getDetectionLimitSelector()
-                self.setDetectionLimitSelector(selector)
 
         # Set the result
         self.getField("Result").set(self, result)
@@ -480,28 +473,33 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # UDL/LDL directly entered in the results field
         if val and val[0] in [LDL, UDL]:
-            # Result prefixed with LDL/UDL
-            oper = val[0]
-            # Strip off LDL/UDL from the result
-            val = val.replace(oper, "", 1).strip()
-            # We dismiss the operand and the selector visibility unless the user
-            # is allowed to manually set the detection limit or the DL selector
-            # is visible.
-            allow_manual = self.getAllowManualDetectionLimit()
+            # Strip off the detection limit operand from the result
+            operand = val[0]
+            val = val.replace(operand, "", 1).strip()
+
+            # Result becomes the detection limit
             selector = self.getDetectionLimitSelector()
-            if allow_manual or selector:
-                # Ensure visibility of the detection limit selector
-                self.setDetectionLimitSelector(True)
+            allow_manual = self.getAllowManualDetectionLimit()
+            if any([selector, allow_manual]):
 
                 # Set the detection limit operand
-                self.setDetectionLimitOperand(oper)
+                self.setDetectionLimitOperand(operand)
 
                 if not allow_manual:
-                    # Override value by default DL
-                    if oper == LDL:
+                    # Manual introduction of DL is not permitted
+                    if operand == LDL:
+                        # Result is default LDL
                         val = self.getLowerDetectionLimit()
                     else:
+                        # Result is default UDL
                         val = self.getUpperDetectionLimit()
+
+        elif not self.getDetectionLimitSelector():
+            # User cannot choose the detection limit from a selection list,
+            # but might be allowed to manually enter the dl with the result.
+            # If so, reset the detection limit operand, cause the previous
+            # entered result might be an DL, but current doesn't
+            self.setDetectionLimitOperand("")
 
         # Update ResultCapture date if necessary
         if not val:

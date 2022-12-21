@@ -892,6 +892,14 @@ class AnalysesView(ListingView):
             if self.is_result_edition_allowed(analysis_brain):
                 item["allow_edit"].append("Result")
 
+            # Display the DL operand (< or >) in the results entry field if
+            # the manual entry of DL is set, but DL selector is hidden
+            allow_manual = obj.getAllowManualDetectionLimit()
+            selector = obj.getDetectionLimitSelector()
+            if allow_manual and not selector:
+                operand = obj.getDetectionLimitOperand()
+                item["Result"] = "{} {}".format(operand, result).strip()
+
             # Prepare result options
             choices = obj.getResultOptions()
             if choices:
