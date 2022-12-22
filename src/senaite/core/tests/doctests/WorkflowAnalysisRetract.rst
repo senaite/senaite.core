@@ -329,3 +329,79 @@ But the retest does not provide `IRetracted`:
     >>> retest = analysis.getRetest()
     >>> IRetracted.providedBy(retest)
     False
+
+
+Retract an analysis with a result that is a Detection Limit
+...........................................................
+
+Allow the user to manually enter the detection limit as the result:
+
+    >>> Cu.setAllowManualDetectionLimit(True)
+
+Create the sample:
+
+    >>> sample = new_ar([Cu])
+    >>> cu = sample.getAnalyses(full_objects=True)[0]
+    >>> cu.setResult("< 10")
+    >>> success = do_action_for(cu, "submit")
+    >>> cu.getResult()
+    '10'
+
+    >>> cu.getFormattedResult(html=False)
+    '< 10'
+
+    >>> cu.isLowerDetectionLimit()
+    True
+
+    >>> cu.getDetectionLimitOperand()
+    '<'
+
+The Detection Limit is not kept on the retest:
+
+    >>> success = do_action_for(analysis, "retract")
+    >>> retest = analysis.getRetest()
+    >>> retest.getResult()
+    ''
+
+    >>> retest.getFormattedResult(html=False)
+    ''
+
+    >>> retest.isLowerDetectionLimit()
+    False
+
+    >>> retest.getDetectionLimitOperand()
+    ''
+
+Do the same with Upper Detection Limit (UDL):
+
+    >>> sample = new_ar([Cu])
+    >>> cu = sample.getAnalyses(full_objects=True)[0]
+    >>> cu.setResult("> 10")
+    >>> success = do_action_for(cu, "submit")
+    >>> cu.getResult()
+    '10'
+
+    >>> cu.getFormattedResult(html=False)
+    '> 10'
+
+    >>> cu.isUpperDetectionLimit()
+    True
+
+    >>> cu.getDetectionLimitOperand()
+    '>'
+
+The Detection Limit is not kept on the retest:
+
+    >>> success = do_action_for(analysis, "retract")
+    >>> retest = analysis.getRetest()
+    >>> retest.getResult()
+    ''
+
+    >>> retest.getFormattedResult(html=False)
+    ''
+
+    >>> retest.isUpperDetectionLimit()
+    False
+
+    >>> retest.getDetectionLimitOperand()
+    ''

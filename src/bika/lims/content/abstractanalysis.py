@@ -346,14 +346,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isLowerDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is a lower detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default LDL." % (self.id, result))
         return AbstractBaseAnalysis.getLowerDetectionLimit(self)
 
     # Method getUpperDetectionLimit overrides method of class BaseAnalysis
@@ -366,14 +364,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isUpperDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is an upper detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default UDL." % (self.id, result))
         return AbstractBaseAnalysis.getUpperDetectionLimit(self)
 
     @security.public
@@ -479,10 +475,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if val and val[0] in [LDL, UDL]:
             # Strip off the detection limit operand from the result
             operand = val[0]
-
-            # Convert to float-able if possible
-            wo_dl = val.replace(operand, "", 1).strip()
-            val = api.to_float(wo_dl) if api.is_floatable(wo_dl) else val
+            val = val.replace(operand, "", 1).strip()
 
             # Result becomes the detection limit
             selector = self.getDetectionLimitSelector()
