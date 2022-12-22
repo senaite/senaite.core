@@ -18,6 +18,8 @@
 # Copyright 2018-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
+
 from bika.lims import api
 from bika.lims import LDL
 from bika.lims import UDL
@@ -167,6 +169,10 @@ def fix_traceback_retract_dl(tool):
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Migrated {0}/{1} LDL/UDL fields".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
 
         obj = api.get_object(brain)
 
