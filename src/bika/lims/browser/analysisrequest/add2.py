@@ -1084,7 +1084,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "title": obj and api.get_title(obj) or ""
         }
 
-    def to_attachment_record(self, fileupload, **kwargs):
+    def to_attachment_record(self, fileupload):
         """Returns a dict-like structure with suitable information for the
         proper creation of Attachment objects
         """
