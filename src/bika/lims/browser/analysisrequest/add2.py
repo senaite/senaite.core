@@ -35,7 +35,6 @@ from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
-from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
 from BTrees.OOBTree import OOBTree
@@ -45,7 +44,6 @@ from plone.memoize import view as viewcache
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
 from plone.protect.interfaces import IDisableCSRFProtection
-from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
