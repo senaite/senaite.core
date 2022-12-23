@@ -1086,6 +1086,56 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "title": obj and api.get_title(obj) or ""
         }
 
+    def to_attachment_record(self, fileupload, **kwargs):
+        """Returns a dict-like structure with suitable information for the
+        proper creation of Attachment objects
+        """
+        if not fileupload.filename:
+            # ZPublisher.HTTPRequest.FileUpload is empty
+            return None
+        return {
+            "AttachmentFile": fileupload,
+            "AttachmentType": "",
+            "ReportOption": "",
+            "AttachmentKeys": "",
+            "Service": "",
+        }
+
+    def create_attachment(self, sample, attachment_record):
+        """Creates an attachment for the given sample with the information
+        provided in attachment_record
+        """
+        # create the attachment object
+        client = sample.getClient()
+        attachment = api.create(client, "Attachment", **attachment_record)
+        uid = attachment_record.get("Service")
+        if not uid:
+            # Link the attachment to the sample
+            sample.addAttachment(attachment)
+            return attachment
+
+        # Link the attachment to analyses with this service uid
+        ans = sample.objectValues(spec="Analysis")
+        ans = filter(lambda an: an.getRawAnalysisService() == uid, ans)
+        for analysis in ans:
+            attachments = analysis.getRawAttachment()
+            analysis.setAttachment(attachments + [attachment])
+
+        # Assign the attachment to the given condition
+        condition_title = attachment_record.get("Condition")
+        if not condition_title:
+            return attachment
+
+        conditions = sample.getServiceConditions()
+        for condition in conditions:
+            is_uid = condition.get("uid") == uid
+            is_title = condition.get("title") == condition_title
+            is_file = condition.get("type") == "file"
+            if all([is_uid, is_title, is_file]):
+                condition["value"] = api.get_uid(attachment)
+        sample.setServiceConditions(conditions)
+        return attachment
+
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
@@ -1563,7 +1613,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Extract file uploads (fields ending with _file)
             # These files will be added later as attachments
             file_fields = filter(lambda f: f.endswith("_file"), record)
-            attachments[n] = map(lambda f: record.pop(f), file_fields)
+            uploads = map(lambda f: record.pop(f), file_fields)
+            attachments[n] = [self.to_attachment_record(f) for f in uploads]
 
             # Required fields and their values
             required_keys = [field.getName() for field in fields
@@ -1606,8 +1657,23 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
-            # Handle required fields from Service conditions
+            # Handle fields from Service conditions
             for condition in record.get("ServiceConditions", []):
+                if condition.get("type") == "file":
+                    # Add the file as an attachment
+                    file_upload = condition.get("value")
+                    att = self.to_attachment_record(file_upload)
+                    if att:
+                        # Add the file as an attachment
+                        att.update({
+                            "Service": condition.get("uid"),
+                            "Condition": condition.get("title"),
+                        })
+                        attachments[n].append(att)
+                    # Reset the condition value
+                    filename = file_upload and file_upload.filename or ""
+                    condition.value = filename
+
                 if condition.get("required") == "on":
                     if not condition.get("value"):
                         title = condition.get("title")
@@ -1670,16 +1736,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 errors["message"] = str(e)
                 logger.error(e, exc_info=True)
                 return {"errors": errors}
+
             # We keep the title to check if AR is newly created
             # and UID to print stickers
             ARs[ar.Title()] = ar.UID()
-            for attachment in attachments.get(n, []):
-                if not attachment.filename:
-                    continue
-                att = _createObjectByType("Attachment", client, tmpID())
-                att.setAttachmentFile(attachment)
-                att.processForm()
-                ar.addAttachment(att)
+
+            # Create the attachments
+            attachments = filter(None, attachments.get(n, []))
+            for attachment_record in attachments:
+                self.create_attachment(ar, attachment_record)
+
         actions.resume()
 
         level = "info"
