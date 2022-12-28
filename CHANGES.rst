@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2207 Support for file upload on analysis (pre) conditions
+- #2208 Remove `default_method` from AnalysisRequest's Contact field
 - #2204 Fix traceback when retracting an analysis with a detection limit
 - #2202 Fix detection limit set manually is not displayed on result save
 - #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
