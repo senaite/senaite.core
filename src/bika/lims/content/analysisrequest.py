@@ -1249,7 +1249,7 @@ schema = BikaSchema.copy() + Schema((
 
     # The Analysis Request the current Analysis Request comes from because of
     # an invalidation of the former
-    ReferenceField(
+    UIDReferenceField(
         'Invalidated',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestRetracted',
@@ -1260,14 +1260,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
-    ),
-
-    # The Analysis Request that was automatically generated due to the
-    # invalidation of the current Analysis Request
-    ComputedField(
-        'Retest',
-        expression="here.get_retest()",
-        widget=ComputedWidget(visible=False)
     ),
 
     # For comments or results interpretation
@@ -2171,15 +2163,20 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     def set_ARAttachment(self, value):
         return None
 
-    def get_retest(self):
-        """Returns the Analysis Request automatically generated because of the
-        retraction of the current analysis request
+    def getRawRetest(self):
+        """Returns the UID of the Analysis Request that has been generated
+        automatically because of the retraction of the current Analysis Request
         """
-        relationship = "AnalysisRequestRetracted"
-        retest = self.getBackReferences(relationship=relationship)
-        if retest and len(retest) > 1:
-            logger.warn("More than one retest for {0}".format(self.getId()))
-        return retest and retest[0] or None
+        relationship = self.getField("Invalidated").relationship
+        uids = get_backreferences(self, relationship=relationship)
+        return uids[0] if uids else None
+
+    def getRetest(self):
+        """Returns the Analysis Request that has been generated automatically
+        because of the retraction of the current Analysis Request
+        """
+        uid = self.getRawRetest()
+        return api.get_object_by_uid(uid, default=None)
 
     def getAncestors(self, all_ancestors=True):
         """Returns the ancestor(s) of this Analysis Request

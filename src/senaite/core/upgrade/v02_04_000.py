@@ -202,6 +202,7 @@ def migrate_analysisrequest_referencefields(tool):
         "CCContact",
         "Client",
         "DetachedFrom",
+        "Invalidated",
         "Invoice",
         "PrimaryAnalysisRequest",
         "Profiles",
