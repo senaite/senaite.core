@@ -367,7 +367,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
         referenceClass=HoldingReference,
@@ -377,8 +377,10 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
             label=_("Sample Template"),
-            description=_("The predefined values of the Sample template are set "
-                          "in the request"),
+            description=_(
+                "The predefined values of the Sample template are set in the "
+                "request"
+            ),
             size=20,
             render_own_label=True,
             visible={
