@@ -2303,6 +2303,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Returns the secondary analysis requests from this analysis request
         """
         uids = self.getRawSecondaryAnalysisRequests()
+        if not uids:
+            return []
         uc = api.get_tool("uid_catalog")
         return [api.get_object(brain) for brain in uc(UID=uids)]
 
