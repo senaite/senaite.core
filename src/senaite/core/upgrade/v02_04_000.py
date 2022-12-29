@@ -197,18 +197,18 @@ def migrate_analysisrequest_referencefields(tool):
     """
     logger.info("Migrate ReferenceFields to UIDReferenceField ...")
 
-    # (field_name, ref_id, reindex_references)
+    # (field_name, ref_id)
     fields_info = [
-        ("CCContact", "AnalysisRequestCCContact", False),
-        ("Client", "AnalysisRequestClient", False),
-        ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest", False),
-        ("Batch", "AnalysisRequestBatch", True),
-        ("SubGroup", "AnalysisRequestSubGroup", False),
-        ("Template", "AnalysisRequestARTemplate", False),
-        ("Profiles", "AnalysisRequestAnalysisProfiles", False),
-        ("Specification", "AnalysisRequestAnalysisSpec", False),
-        ("PublicationSpecification", "AnalysisRequestPublicationSpec", False),
-        ("Attachment", "AnalysisRequestAttachment", False),
+        ("CCContact", "AnalysisRequestCCContact"),
+        ("Client", "AnalysisRequestClient"),
+        ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest"),
+        ("Batch", "AnalysisRequestBatch"),
+        ("SubGroup", "AnalysisRequestSubGroup"),
+        ("Template", "AnalysisRequestARTemplate"),
+        ("Profiles", "AnalysisRequestAnalysisProfiles"),
+        ("Specification", "AnalysisRequestAnalysisSpec"),
+        ("PublicationSpecification", "AnalysisRequestPublicationSpec"),
+        ("Attachment", "AnalysisRequestAttachment"),
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
@@ -236,10 +236,9 @@ def migrate_reference_fields(obj, fields_info):
     """Migrates the reference fields specified in fields_info for the object
     passed in
     """
-    to_reindex = set()
     updated = False
     ref_tool = api.get_tool(REFERENCE_CATALOG)
-    for field_name, ref_id, ref_reindex in fields_info:
+    for field_name, ref_id in fields_info:
 
         # Extract the referenced objects
         references = obj.getRefs(relationship=ref_id)
@@ -259,19 +258,9 @@ def migrate_reference_fields(obj, fields_info):
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(obj, relationship=ref_id)
 
-        # Add the references to reindex
-        if ref_reindex:
-            if api.is_object(references):
-                references = [references]
-            map(lambda ref: to_reindex.add(ref), references)
-
     if not updated:
         # Nothing changed
         return False
 
     # Re-index the object
     obj.reindexObject()
-
-    # Re-index the references
-    for reference in to_reindex:
-        reference.reindexObject()
