@@ -227,7 +227,7 @@ def migrate_analysisrequest_referencefields(tool):
         # Flush the object from memory
         sample._p_deactivate()
 
-    logger.info("Migrate CCContact to UIDReferenceField [DONE]")
+    logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
 
 
 def migrate_reference_fields(obj, fields_info):
