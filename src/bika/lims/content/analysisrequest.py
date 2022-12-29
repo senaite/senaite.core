@@ -627,7 +627,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Specification',
         required=0,
         primary_bound=True,  # field changes propagate to partitions

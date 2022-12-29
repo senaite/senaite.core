@@ -206,6 +206,7 @@ def migrate_analysisrequest_referencefields(tool):
         ("SubGroup", "AnalysisRequestSubGroup", False),
         ("Template", "AnalysisRequestARTemplate", False),
         ("Profiles", "AnalysisRequestAnalysisProfiles", False),
+        ("Specification", "AnalysisRequestAnalysisSpec", False),
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
