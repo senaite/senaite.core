@@ -257,7 +257,7 @@ schema = BikaSchema.copy() + Schema((
     # Field for the creation of Secondary Analysis Requests.
     # This field is meant to be displayed in AR Add form only. A viewlet exists
     # to inform the user this Analysis Request is secondary
-    ReferenceField(
+    UIDReferenceField(
         "PrimaryAnalysisRequest",
         allowed_types=("AnalysisRequest",),
         referenceClass=HoldingReference,

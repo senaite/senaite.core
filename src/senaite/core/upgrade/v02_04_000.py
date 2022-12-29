@@ -200,7 +200,8 @@ def migrate_analysisrequest_referencefields(tool):
     # (field_name, ref_id, reindex_references)
     fields_info = [
         ("CCContact", "AnalysisRequestCCContact", False),
-        ("Client", "AnalysisRequestClient", False)
+        ("Client", "AnalysisRequestClient", False),
+        ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest", False),
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
