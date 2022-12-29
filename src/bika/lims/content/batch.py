@@ -226,15 +226,19 @@ class Batch(ATFolder, ClientAwareMixin):
         """
         return get_backreferences(self, "AnalysisRequestBatch")
 
-    def getAnalysisRequests(self):
+    def getAnalysisRequests(self, **kwargs):
         """Return all the Analysis Requests objects linked to the Batch kargs
         are passed directly to the catalog.
         """
         uids = self.getRawAnalysisRequests()
         if not uids:
             return []
-        uc = api.get_tool("uid_catalog")
-        return [api.get_object(brain) for brain in uc(UID=uids)]
+        full_objects = kwargs.pop("full_objects", True)
+        kwargs.update({"UID": uids})
+        brains = api.search(kwargs, SAMPLE_CATALOG)
+        if not full_objects:
+            return brains
+        return [api.get_object(brain) for brain in brains]
 
     def isOpen(self):
         """Returns true if the Batch is in 'open' state
@@ -251,10 +255,10 @@ class Batch(ATFolder, ClientAwareMixin):
         """Returns the progress in percent of all samples
         """
         total_progress = 0
-        samples = self.getRawAnalysisRequests()
+        samples = self.getAnalysisRequests(full_objects=False)
         total = len(samples)
         if total > 0:
-            sample_progresses = map(lambda s: s.getProgress(), samples)
+            sample_progresses = map(lambda s: s.getProgress, samples)
             total_progress = sum(sample_progresses) / total
         return total_progress
 
