@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import FieldEditAnalysisConditions
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
+from bika.lims.content.attachment import Attachment
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
@@ -78,7 +79,27 @@ class SetAnalysisConditionsView(BrowserView):
             choices = condition.get("choices", "")
             options = filter(None, choices.split("|"))
             condition.update({"options": options})
+
+            if condition.get("type") == "file":
+                uid = condition.get("value")
+                condition["attachment"] = self.get_attachment_info(uid)
+
         return conditions
+
+    def get_attachment_info(self, uid):
+        attachment = api.get_object_by_uid(uid, default=None)
+        if not isinstance(attachment, Attachment):
+            return {}
+
+        url = api.get_url(attachment)
+        at_file = attachment.getAttachmentFile()
+        return {
+            "uid": api.get_uid(attachment),
+            "id": api.get_id(attachment),
+            "url": url,
+            "download_url": "{}/at_download/AttachmentFile".format(url),
+            "filename": at_file.filename,
+        }
 
     def handle_submit(self):
         analysis = self.get_analysis()
