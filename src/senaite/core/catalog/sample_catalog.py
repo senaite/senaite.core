@@ -74,7 +74,6 @@ COLUMNS = BASE_COLUMNS + [
     "getPrioritySortkey",
     "getProfilesTitle",
     "getProfilesTitleStr",
-    "getProfilesURL",
     "getProgress",
     "getProvince",
     "getRawParentAnalysisRequest",

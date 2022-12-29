@@ -1180,12 +1180,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'ProfilesURL',
-        expression="[p.absolute_url_path() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
         'ProfilesTitle',
         expression="[p.Title() for p in here.getProfiles()] " \
                    "if here.getProfiles() else []",

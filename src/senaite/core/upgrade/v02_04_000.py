@@ -200,6 +200,7 @@ def purge_computed_fields_profile(self):
     ]
     columns_to_remove = [
         ("getProfilesUID", SAMPLE_CATALOG),
+        ("getProfilesURL", SAMPLE_CATALOG),
     ]
 
     # Purge the catalogs
