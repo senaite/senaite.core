@@ -21,7 +21,6 @@
 import base64
 import functools
 import re
-import sys
 from decimal import Decimal
 
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
