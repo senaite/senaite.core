@@ -334,7 +334,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
