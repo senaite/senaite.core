@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
@@ -220,21 +221,20 @@ class Batch(ATFolder, ClientAwareMixin):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)
 
-    def getAnalysisRequestsBrains(self, **kwargs):
-        """Return all the Analysis Requests brains linked to the Batch
-        kargs are passed directly to the catalog.
+    def getRawAnalysisRequests(self):
+        """Returns the UIDs of all AnalysisRequests assigned to this Batch
         """
-        kwargs['getBatchUID'] = self.UID()
-        catalog = getToolByName(self, SAMPLE_CATALOG)
-        brains = catalog(kwargs)
-        return brains
+        return get_backreferences(self, "AnalysisRequestBatch")
 
-    def getAnalysisRequests(self, **kwargs):
+    def getAnalysisRequests(self):
         """Return all the Analysis Requests objects linked to the Batch kargs
         are passed directly to the catalog.
         """
-        brains = self.getAnalysisRequestsBrains(**kwargs)
-        return [b.getObject() for b in brains]
+        uids = self.getRawAnalysisRequests()
+        if not uids:
+            return []
+        uc = api.get_tool("uid_catalog")
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def isOpen(self):
         """Returns true if the Batch is in 'open' state
@@ -251,7 +251,7 @@ class Batch(ATFolder, ClientAwareMixin):
         """Returns the progress in percent of all samples
         """
         total_progress = 0
-        samples = self.getAnalysisRequests()
+        samples = self.getRawAnalysisRequests()
         total = len(samples)
         if total > 0:
             sample_progresses = map(lambda s: s.getProgress(), samples)

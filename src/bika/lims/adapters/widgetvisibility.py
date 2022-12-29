@@ -293,7 +293,7 @@ class BatchClientFieldVisibility(SenaiteATWidgetVisibility):
         if mode == "edit":
             # This batch does not have a client assigned, but allow the client
             # field to be editable only if does not contain any sample
-            if self.context.getAnalysisRequestsBrains():
+            if self.context.getRawAnalysisRequests():
                 return "invisible"
 
         return default
