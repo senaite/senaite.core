@@ -334,7 +334,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
@@ -367,7 +367,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
         referenceClass=HoldingReference,
@@ -377,8 +377,10 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
             label=_("Sample Template"),
-            description=_("The predefined values of the Sample template are set "
-                          "in the request"),
+            description=_(
+                "The predefined values of the Sample template are set in the "
+                "request"
+            ),
             size=20,
             render_own_label=True,
             visible={
@@ -416,7 +418,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
@@ -1120,8 +1122,7 @@ schema = BikaSchema.copy() + Schema((
 
     ComputedField(
         'ProfilesUID',
-        expression="[p.UID() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+        expression="here.getRawProfiles()",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1211,19 +1212,19 @@ schema = BikaSchema.copy() + Schema((
     ComputedField(
         'ProfilesURL',
         expression="[p.absolute_url_path() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+                   "if here.getRawProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitle',
         expression="[p.Title() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+                   "if here.getRawProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitleStr',
         expression="', '.join([p.Title() for p in here.getProfiles()]) " \
-                   "if here.getProfiles() else ''",
+                   "if here.getRawProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -2284,11 +2285,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             parent = self.getParentAnalysisRequest()
             alsoProvides(parent, IAnalysisRequestWithPartitions)
 
+    def getRawSecondaryAnalysisRequests(self):
+        """Returns the UIDs of the secondary Analysis Requests from this
+        Analysis Request
+        """
+        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        return get_backreferences(self, relationship)
+
     def getSecondaryAnalysisRequests(self):
         """Returns the secondary analysis requests from this analysis request
         """
-        relationship = "AnalysisRequestPrimaryAnalysisRequest"
-        return self.getBackReferences(relationship=relationship)
+        uids = self.getRawSecondaryAnalysisRequests()
+        if not uids:
+            return []
+        uc = api.get_tool("uid_catalog")
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def setDateReceived(self, value):
         """Sets the date received to this analysis request and to secondary

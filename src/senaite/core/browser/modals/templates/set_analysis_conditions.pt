@@ -58,6 +58,8 @@
                            tal:attributes="value condition/type"/>
                     <input type="hidden" name="conditions.required:records"
                            tal:attributes="value condition/required"/>
+                    <input type="hidden" name="conditions.attachment:records"
+                           tal:attributes="value condition/attachment/uid|nothing"/>
 
                     <select tal:condition="options"
                             tal:define="value condition/value|nothing"
@@ -84,6 +86,13 @@
                              tal:condition="not:required"
                              name="conditions.value:records"/>
                     </tal:non_select>
+
+                    <div tal:define="attachment condition/attachment|nothing"
+                         tal:condition="attachment" class="mt-2">
+
+                      <a tal:content="attachment/filename"
+                         tal:attributes="href attachment/download_url"/>
+                    </div>
 
                   </td>
                 </tr>
