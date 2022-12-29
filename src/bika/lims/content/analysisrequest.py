@@ -679,7 +679,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'PublicationSpecification',
         required=0,
         allowed_types='AnalysisSpec',
@@ -690,7 +690,8 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing a Sample."),
+                "Set the specification to be used before publishing a Sample."
+            ),
             size=20,
             render_own_label=True,
             visible={
