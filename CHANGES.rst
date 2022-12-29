@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2212 Improve performance of legacy AT `UIDReferenceField`'s getter
 - #2211 Remove `Profile` field (stale) from AnalysisRequest
 - #2207 Support for file upload on analysis (pre) conditions
 - #2208 Remove `default_method` from AnalysisRequest's Contact field
