@@ -205,6 +205,7 @@ def migrate_analysisrequest_referencefields(tool):
         ("Batch", "AnalysisRequestBatch", True),
         ("SubGroup", "AnalysisRequestSubGroup", False),
         ("Template", "AnalysisRequestARTemplate", False),
+        ("Profiles", "AnalysisRequestAnalysisProfiles", False),
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
@@ -233,7 +234,7 @@ def migrate_reference_fields(obj, fields_info):
     passed in
     """
     to_reindex = set()
-    field_values = {}
+    updated = False
     ref_tool = api.get_tool(REFERENCE_CATALOG)
     for field_name, ref_id, ref_reindex in fields_info:
 
@@ -243,8 +244,14 @@ def migrate_reference_fields(obj, fields_info):
             # Processed already or no referenced objects
             continue
 
-        # Re-assign the object
-        field_values.update({field_name: references})
+        # Re-assign the object directly to the field
+        field = obj.getField(field_name)
+        if field.multiValued:
+            value = [api.get_uid(val) for val in references]
+        else:
+            value = api.get_uid(references)
+        field.set(obj, value)
+        updated = True
 
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(obj, relationship=ref_id)
@@ -255,12 +262,9 @@ def migrate_reference_fields(obj, fields_info):
                 references = [references]
             map(lambda ref: to_reindex.add(ref), references)
 
-    if not field_values:
+    if not updated:
         # Nothing changed
-        return
-
-    # Re-assign the referenced objects
-    api.edit(obj, check_permissions=False, **field_values)
+        return False
 
     # Re-index the object
     obj.reindexObject()

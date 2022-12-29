@@ -418,7 +418,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
@@ -1122,8 +1122,7 @@ schema = BikaSchema.copy() + Schema((
 
     ComputedField(
         'ProfilesUID',
-        expression="[p.UID() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+        expression="here.getRawProfiles()",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1213,19 +1212,19 @@ schema = BikaSchema.copy() + Schema((
     ComputedField(
         'ProfilesURL',
         expression="[p.absolute_url_path() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+                   "if here.getRawProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitle',
         expression="[p.Title() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
+                   "if here.getRawProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitleStr',
         expression="', '.join([p.Title() for p in here.getProfiles()]) " \
-                   "if here.getProfiles() else ''",
+                   "if here.getRawProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
