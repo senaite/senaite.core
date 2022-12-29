@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
 - #2208 Remove `default_method` from AnalysisRequest's Contact field
 - #2204 Fix traceback when retracting an analysis with a detection limit
 - #2202 Fix detection limit set manually is not displayed on result save
