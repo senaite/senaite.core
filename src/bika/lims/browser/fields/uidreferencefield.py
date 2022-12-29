@@ -156,7 +156,7 @@ class UIDReferenceField(StringField):
         :rtype: BaseContent | list[BaseContent]
         """
         uids = StringField.get(self, context, **kwargs)
-        if not self.multiValued:
+        if not isinstance(uids, list):
             uids = [uids]
 
         # Remove non-valid uids
