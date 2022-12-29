@@ -159,13 +159,6 @@ class UIDReferenceField(StringField):
         if not isinstance(uids, list):
             uids = [uids]
 
-        # Remove non-valid uids
-        uids = filter(api.is_uid, uids)
-        if not uids:
-            if self.multiValued:
-                return []
-            return None
-
         # Do a direct search for all brains at once
         uc = api.get_tool("uid_catalog")
         references = uc(UID=uids)
@@ -180,7 +173,9 @@ class UIDReferenceField(StringField):
 
         if self.multiValued:
             return references
-        return references[0]
+        elif references:
+            return references[0]
+        return None
 
     @security.public
     def getRaw(self, context, aslist=False, **kwargs):
