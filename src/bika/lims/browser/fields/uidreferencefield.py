@@ -170,6 +170,9 @@ class UIDReferenceField(StringField):
         uc = api.get_tool("uid_catalog")
         references = uc(UID=uids)
 
+        # Keep the original order of items
+        references = sorted(references, key=lambda it: uids.index(it.UID))
+
         # Return objects by default
         full_objects = kwargs.pop("full_objects", True)
         if full_objects:
