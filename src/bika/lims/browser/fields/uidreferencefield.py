@@ -166,7 +166,7 @@ class UIDReferenceField(StringField):
                 return []
             return None
 
-        # Do a direct search for all brains at once instead
+        # Do a direct search for all brains at once
         uc = api.get_tool("uid_catalog")
         references = uc(UID=uids)
 
