@@ -54,7 +54,7 @@
       profile="senaite.core:default"/>
 
   <!-- Purge ComputedField from AnalysisRequest related with Profiles
-       https://github.com/senaite/senaite.core/pull/2212 -->
+       https://github.com/senaite/senaite.core/pull/2213 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Purge ComputedField from AnalysisRequest related with Profiles"
       description="Purge ComputedField from AnalysisRequest related with Profiles"
