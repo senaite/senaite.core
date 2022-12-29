@@ -25,8 +25,10 @@ from bika.lims import LDL
 from bika.lims import UDL
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -188,3 +190,27 @@ def fix_traceback_retract_dl(tool):
         obj._p_deactivate()
 
     logger.info("Migrate LDL, UDL and result fields to string [DONE]")
+
+
+def remove_default_container_type(tool):
+    """Removes references from the old "DefaultContainerType" field
+    """
+    ref_id = "AnalysisRequestContainerType"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Remove AnalysisRequestContainerType references
+        obj = api.get_object(sample)
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()

@@ -884,29 +884,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # TODO Remove - Is this still necessary?
-    ReferenceField(
-        'DefaultContainerType',
-        allowed_types=('ContainerType',),
-        relationship='AnalysisRequestContainerType',
-        referenceClass=HoldingReference,
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Default Container"),
-            description=_("Default container for new sample partitions"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
-    ),
-
     BooleanField(
         'Composite',
         default=False,
