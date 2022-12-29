@@ -266,3 +266,41 @@ def migrate_reference_fields(obj, fields_info):
     # Re-index the references
     for reference in to_reindex:
         reference.reindexObject()
+
+
+def cleanup_batch_type(tool):
+    """Cleanup of functions of Batch type, that entails the removal of some
+    catalog indexes and metadata
+    """
+    logger.info("Cleanup batch content type ...")
+    indexes_to_remove = [
+        ("getBatchUID", SAMPLE_CATALOG),
+    ]
+    columns_to_remove = [
+        ("getBatchUID", SAMPLE_CATALOG),
+    ]
+
+    # Purge the catalogs
+    purge_catalogs(indexes_to_remove, columns_to_remove)
+
+    logger.info("Cleanup batch content type [DONE]")
+
+
+def purge_catalogs(indexes_to_remove, columns_to_remove):
+    """Removes the indexes and columns from catalogs
+    """
+    # remove indexes
+    for index_name, catalog_id in indexes_to_remove:
+        cat = api.get_tool(catalog_id)
+        if index_name in cat.indexes():
+            logger.info("Removing '{}' index from '{}'".format(
+                index_name, catalog_id))
+            cat.delIndex(index_name)
+
+    # remove columns
+    for col_name, catalog_id in columns_to_remove:
+        cat = api.get_tool(catalog_id)
+        if col_name in cat.schema():
+            logger.info("Removing '{}' column from '{}'".format(
+                col_name, catalog_id))
+            cat.delColumn(col_name)

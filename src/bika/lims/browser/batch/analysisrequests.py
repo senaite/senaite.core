@@ -26,7 +26,8 @@ class AnalysisRequestsView(BaseView):
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
+        sample_uids = self.context.getRawAnalysisRequests()
         self.contentFilter = {"portal_type": "AnalysisRequest",
-                              "getBatchUID": api.get_uid(self.context),
+                              "UID": sample_uids,
                               "sort_on": "created",
                               "sort_order": "reverse"}

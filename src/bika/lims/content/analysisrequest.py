@@ -1566,12 +1566,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             return self.Schema()['Batch'].get(self)
 
     @security.public
-    def getBatchUID(self):
-        batch = self.getBatch()
-        if batch:
-            return batch.UID()
-
-    @security.public
     def setBatch(self, value=None):
         original_value = self.Schema().getField('Batch').get(self)
         if original_value != value:
