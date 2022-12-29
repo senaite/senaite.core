@@ -1234,7 +1234,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Primary Sample the current sample was detached from
-    ReferenceField(
+    UIDReferenceField(
         "DetachedFrom",
         allowed_types=("AnalysisRequest",),
         relationship="AnalysisRequestDetachedFrom",

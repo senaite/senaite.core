@@ -210,6 +210,7 @@ def migrate_analysisrequest_referencefields(tool):
         ("PublicationSpecification", "AnalysisRequestPublicationSpec"),
         ("Attachment", "AnalysisRequestAttachment"),
         ("Invoice", "AnalysisRequestInvoice"),
+        ("DetachedFrom", "AnalysisRequestDetachedFrom"),
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
