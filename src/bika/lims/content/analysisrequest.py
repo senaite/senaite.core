@@ -2225,8 +2225,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         This method is used as metadata
         """
-        rel_id = "AnalysisRequestParentAnalysisRequest"
-        return get_backreferences(self, relationship=rel_id)
+        relationship = self.getField("ParentAnalysisRequest").relationship
+        return get_backreferences(self, relationship=relationship)
 
     def isPartition(self):
         """Returns true if this Analysis Request is a partition
@@ -2267,7 +2267,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Returns the UIDs of the secondary Analysis Requests from this
         Analysis Request
         """
-        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        relationship = self.getField("PrimaryAnalysisRequest").relationship
         return get_backreferences(self, relationship)
 
     def getSecondaryAnalysisRequests(self):
