@@ -1483,6 +1483,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return None
 
     def getProfilesTitleStr(self):
+        """Returns a comma-separated string withg the titles of the profiles
+        assigned to this Sample. Used to populate a metadata field
+        """
         profiles = [profile.Title() for profile in self.getProfiles()]
         return ", ".join(profiles)
 
