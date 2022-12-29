@@ -395,12 +395,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
         referenceClass=HoldingReference,
-        vocabulary_display_path_bound=sys.maxsize,
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
@@ -2028,10 +2027,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             sets = [adv] if 'hidden' in adv else []
 
         # Created by using an AR Profile?
-        if not sets and self.getProfiles():
-            adv = []
-            adv += [profile.getAnalysisServiceSettings(uid) for profile in
-                    self.getProfiles()]
+        profiles = self.getProfiles()
+        if not sets and profiles:
+            adv = [profile.getAnalysisServiceSettings(uid) for profile in
+                   profiles]
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
