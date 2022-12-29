@@ -2290,11 +2290,19 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             parent = self.getParentAnalysisRequest()
             alsoProvides(parent, IAnalysisRequestWithPartitions)
 
+    def getRawSecondaryAnalysisRequests(self):
+        """Returns the UIDs of the secondary Analysis Requests from this
+        Analysis Request
+        """
+        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        return get_backreferences(self, relationship)
+
     def getSecondaryAnalysisRequests(self):
         """Returns the secondary analysis requests from this analysis request
         """
-        relationship = "AnalysisRequestPrimaryAnalysisRequest"
-        return self.getBackReferences(relationship=relationship)
+        uids = self.getRawSecondaryAnalysisRequests()
+        uc = api.get_tool("uid_catalog")
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def setDateReceived(self, value):
         """Sets the date received to this analysis request and to secondary
