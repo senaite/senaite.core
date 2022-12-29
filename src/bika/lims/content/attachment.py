@@ -235,5 +235,12 @@ class Attachment(BaseFolder, ClientAwareMixin):
         """
         return DateTime()
 
+    @security.public
+    def getFilename(self):
+        """Returns the filename of the underlying File object
+        """
+        att_file = self.getAttachmentFile()
+        return att_file.filename
+
 
 registerType(Attachment, PROJECTNAME)

@@ -259,6 +259,7 @@ Conditions = RecordsField(
             ('number', _('Number')),
             ('checkbox', _('Checkbox')),
             ('select', _('Select')),
+            ('file', _('File upload')),
         )),
     },
     widget=RecordsWidget(
