@@ -995,9 +995,8 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Invoice',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Invoice',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
@@ -1107,7 +1106,7 @@ schema = BikaSchema.copy() + Schema((
 
     ComputedField(
         'Invoiced',
-        expression='here.getInvoice() and True or False',
+        expression='here.getRawInvoice() and True or False',
         default=False,
         widget=ComputedWidget(
             visible=False,
