@@ -249,7 +249,7 @@ def migrate_reference_fields(obj, fields_info):
         if field.multiValued:
             value = [api.get_uid(val) for val in references]
         else:
-            value = api.get_uid(references)
+            value = api.get_uid(references[0])
         field.set(obj, value)
         updated = True
 
