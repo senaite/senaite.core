@@ -1099,15 +1099,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'ProfilesUID',
-        expression="[p.UID() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
-    ComputedField(
         'Invoiced',
         expression='here.getInvoice() and True or False',
         default=False,
