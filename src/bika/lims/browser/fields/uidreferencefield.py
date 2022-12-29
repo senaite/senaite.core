@@ -171,6 +171,7 @@ class UIDReferenceField(StringField):
         references = uc(UID=uids)
 
         # Notify about orphan UIDs (compatibility with legacy-code)
+        # XXX This overhead is not necessary imo
         valid_uids = dict([(api.get_uid(ref), True) for ref in references])
         for uid in uids:
             if valid_uids.get(uid):
