@@ -297,7 +297,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Batch',
         allowed_types=('Batch',),
         relationship='AnalysisRequestBatch',

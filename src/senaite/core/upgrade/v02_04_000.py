@@ -202,6 +202,7 @@ def migrate_analysisrequest_referencefields(tool):
         ("CCContact", "AnalysisRequestCCContact", False),
         ("Client", "AnalysisRequestClient", False),
         ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest", False),
+        ("Batch", "AnalysisRequestBatch", True)
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
