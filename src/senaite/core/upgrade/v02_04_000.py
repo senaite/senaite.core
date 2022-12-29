@@ -25,7 +25,9 @@ from bika.lims import LDL
 from bika.lims import UDL
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
@@ -188,3 +190,76 @@ def fix_traceback_retract_dl(tool):
         obj._p_deactivate()
 
     logger.info("Migrate LDL, UDL and result fields to string [DONE]")
+
+
+def migrate_analysisrequest_referencefields(tool):
+    """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
+    """
+    logger.info("Migrate ReferenceFields to UIDReferenceField ...")
+
+    # (field_name, ref_id, reindex_references)
+    fields_info = [
+        ("CCContact", "AnalysisRequestCCContact", False)
+    ]
+
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        sample = api.get_object(sample)
+        migrate_reference_fields(sample, fields_info)
+
+        # Flush the object from memory
+        sample._p_deactivate()
+
+    logger.info("Migrate CCContact to UIDReferenceField [DONE]")
+
+
+def migrate_reference_fields(obj, fields_info):
+    """Migrates the reference fields specified in fields_info for the object
+    passed in
+    """
+    to_reindex = set()
+    field_values = {}
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    for field_name, ref_id, ref_reindex in fields_info:
+
+        # Extract the referenced objects
+        references = obj.getRefs(relationship=ref_id)
+        if not references:
+            # Processed already or no referenced objects
+            continue
+
+        # Re-assign the object
+        field_values.update({field_name: references})
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Add the references to reindex
+        if ref_reindex:
+            if api.is_object(references):
+                references = [references]
+            map(lambda ref: to_reindex.add(ref), references)
+
+    if not field_values:
+        # Nothing changed
+        return
+
+    # Re-assign the referenced objects
+    api.edit(obj, **field_values)
+
+    # Re-index the object
+    obj.reindexObject()
+
+    # Re-index the references
+    for reference in to_reindex:
+        reference.reindexObject()

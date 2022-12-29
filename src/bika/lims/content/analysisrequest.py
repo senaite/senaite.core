@@ -152,8 +152,6 @@ schema = BikaSchema.copy() + Schema((
             label=_("Contact"),
             render_own_label=True,
             size=20,
-            helper_js=("bika_widgets/referencewidget.js",
-                       "++resource++bika.lims.js/contact.js"),
             description=_("The primary contact of this sample, "
                           "who will receive notifications and publications "
                           "via email"),
@@ -179,10 +177,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'CCContact',
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
