@@ -169,35 +169,6 @@ class Batch(ATFolder, ClientAwareMixin):
             return client
         return None
 
-    def getContactTitle(self):
-        return ""
-
-    def getProfilesTitle(self):
-        return ""
-
-    def getAnalysisService(self):
-        analyses = set()
-        for ar in self.getAnalysisRequests():
-            for an in ar.getAnalyses():
-                analyses.add(an)
-        value = []
-        for analysis in analyses:
-            val = analysis.Title
-            if val not in value:
-                value.append(val)
-        return list(value)
-
-    def getAnalysts(self):
-        analyses = []
-        for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
-        value = []
-        for analysis in analyses:
-            val = analysis.getAnalyst()
-            if val not in value:
-                value.append(val)
-        return value
-
     security.declarePublic('getBatchID')
 
     @deprecated("Please use getId instead")
