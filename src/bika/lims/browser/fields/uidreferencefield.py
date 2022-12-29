@@ -170,16 +170,6 @@ class UIDReferenceField(StringField):
         uc = api.get_tool("uid_catalog")
         references = uc(UID=uids)
 
-        # Notify about orphan UIDs (compatibility with legacy-code)
-        # XXX This overhead is not necessary imo
-        valid_uids = dict([(api.get_uid(ref), True) for ref in references])
-        for uid in uids:
-            if valid_uids.get(uid):
-                continue
-            # Broken Reference!
-            logger.warn("Reference on {} with UID {} is broken!"
-                        .format(repr(context), uid))
-
         # Return objects by default
         full_objects = kwargs.pop("full_objects", True)
         if full_objects:
