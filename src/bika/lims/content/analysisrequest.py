@@ -956,7 +956,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Attachment',
         multiValued=1,
         allowed_types=('Attachment',),
