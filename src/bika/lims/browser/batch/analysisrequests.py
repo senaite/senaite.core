@@ -18,7 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from bika.lims.browser.analysisrequest import AnalysisRequestsView as BaseView
 
 
