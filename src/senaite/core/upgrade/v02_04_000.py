@@ -196,21 +196,19 @@ def migrate_analysisrequest_referencefields(tool):
     """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
     """
     logger.info("Migrate ReferenceFields to UIDReferenceField ...")
-
-    # (field_name, ref_id)
-    fields_info = [
-        ("CCContact", "AnalysisRequestCCContact"),
-        ("Client", "AnalysisRequestClient"),
-        ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest"),
-        ("Batch", "AnalysisRequestBatch"),
-        ("SubGroup", "AnalysisRequestSubGroup"),
-        ("Template", "AnalysisRequestARTemplate"),
-        ("Profiles", "AnalysisRequestAnalysisProfiles"),
-        ("Specification", "AnalysisRequestAnalysisSpec"),
-        ("PublicationSpecification", "AnalysisRequestPublicationSpec"),
-        ("Attachment", "AnalysisRequestAttachment"),
-        ("Invoice", "AnalysisRequestInvoice"),
-        ("DetachedFrom", "AnalysisRequestDetachedFrom"),
+    field_names = [
+        "Attachment",
+        "Batch",
+        "CCContact",
+        "Client",
+        "DetachedFrom",
+        "Invoice",
+        "PrimaryAnalysisRequest",
+        "Profiles",
+        "PublicationSpecification",
+        "Specification",
+        "SubGroup",
+        "Template",
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
@@ -226,7 +224,7 @@ def migrate_analysisrequest_referencefields(tool):
 
         # Migrate the reference fields for current sample
         sample = api.get_object(sample)
-        migrate_reference_fields(sample, fields_info)
+        migrate_reference_fields(sample, field_names)
 
         # Flush the object from memory
         sample._p_deactivate()
@@ -234,13 +232,18 @@ def migrate_analysisrequest_referencefields(tool):
     logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
 
 
-def migrate_reference_fields(obj, fields_info):
-    """Migrates the reference fields specified in fields_info for the object
-    passed in
+def migrate_reference_fields(obj, field_names):
+    """Migrates the reference fields with the names specified from the obj
     """
     updated = False
     ref_tool = api.get_tool(REFERENCE_CATALOG)
-    for field_name, ref_id in fields_info:
+    for field_name in field_names:
+
+        # Get the relationship id from field
+        field = obj.getField(field_name)
+        ref_id = getattr(field, "relationship", False)
+        if not ref_id:
+            logger.error("No relationship for field {}".format(field_name))
 
         # Extract the referenced objects
         references = obj.getRefs(relationship=ref_id)
@@ -249,7 +252,6 @@ def migrate_reference_fields(obj, fields_info):
             continue
 
         # Re-assign the object directly to the field
-        field = obj.getField(field_name)
         if field.multiValued:
             value = [api.get_uid(val) for val in references]
         else:
