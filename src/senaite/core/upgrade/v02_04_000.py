@@ -199,7 +199,8 @@ def migrate_analysisrequest_referencefields(tool):
 
     # (field_name, ref_id, reindex_references)
     fields_info = [
-        ("CCContact", "AnalysisRequestCCContact", False)
+        ("CCContact", "AnalysisRequestCCContact", False),
+        ("Client", "AnalysisRequestClient", False)
     ]
 
     cat = api.get_tool(SAMPLE_CATALOG)
@@ -255,7 +256,7 @@ def migrate_reference_fields(obj, fields_info):
         return
 
     # Re-assign the referenced objects
-    api.edit(obj, **field_values)
+    api.edit(obj, check_permissions=False, **field_values)
 
     # Re-index the object
     obj.reindexObject()
