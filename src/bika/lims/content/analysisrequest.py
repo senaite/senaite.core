@@ -1180,12 +1180,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'ProfilesTitle',
-        expression="[p.Title() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
         'ProfilesTitleStr',
         expression="', '.join([p.Title() for p in here.getProfiles()]) " \
                    "if here.getProfiles() else ''",
@@ -1493,9 +1487,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if IBatch.providedBy(self.aq_parent):
             return self.aq_parent.getClient()
         return None
-
-    def getProfilesTitle(self):
-        return [profile.Title() for profile in self.getProfiles()]
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)

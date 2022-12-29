@@ -72,7 +72,6 @@ COLUMNS = BASE_COLUMNS + [
     "getPhysicalPath",
     "getPrinted",
     "getPrioritySortkey",
-    "getProfilesTitle",
     "getProfilesTitleStr",
     "getProgress",
     "getProvince",
