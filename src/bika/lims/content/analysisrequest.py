@@ -418,7 +418,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
-    # one can create an AR (using code) with DateSampled set when sampling_wf at
+    # one can create an AR (with code) with DateSampled set when sampling_wf at
     # the same time sampling workflow is active. This might cause
     # inconsistencies: AR still in `to_be_sampled`, but getDateSampled returns
     # a valid date!
@@ -1668,7 +1668,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # Keywords of the contained services
         billable_service_keys = map(
             lambda s: s.getKeyword(), set(billable_profile_services))
-        # The billable items contain billable profiles and single selected analyses
+        # Billable items contain billable profiles and single selected analyses
         billable_items = billable_profiles
         # Get the analyses to be billed
         exclude_rs = ["retracted", "rejected"]
@@ -2401,10 +2401,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # convert relative URLs to absolute URLs
         # N.B. This is actually a TinyMCE issue, but hardcoded in Plone:
-        #      https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
+        #  https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
         image_sources = re.findall(IMG_SRC_RX, html)
 
-        # we need a trailing slash so that urljoin does not remove the last segment
+        # add a trailing slash so that urljoin doesn't remove the last segment
         base_url = "{}/".format(api.get_url(self))
 
         for src in image_sources:
