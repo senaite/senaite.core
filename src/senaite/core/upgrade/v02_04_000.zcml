@@ -53,13 +53,23 @@
       handler="senaite.core.upgrade.v02_04_000.fix_traceback_retract_dl"
       profile="senaite.core:default"/>
 
-  <!-- Migrate CCContact ReferenceField to UIDReference field
+  <!-- Purge ComputedField from AnalysisRequest related with Profiles
+       https://github.com/senaite/senaite.core/pull/2213 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge ComputedField from AnalysisRequest related with Profiles"
+      description="Purge ComputedField from AnalysisRequest related with Profiles"
+      source="2405"
+      destination="2406"
+      handler="senaite.core.upgrade.v02_04_000.purge_computed_fields_profile"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate ReferenceField from AnalysisRequest to UIDReferenceField
        https://github.com/senaite/senaite.core/pull/2209 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Migrate ReferenceField from AnalysisRequest"
       description="Migrate ReferenceField from AnalysisRequest to UIDReferenceField"
-      source="2405"
-      destination="2406"
+      source="2406"
+      destination="2407"
       handler="senaite.core.upgrade.v02_04_000.migrate_analysisrequest_referencefields"
       profile="senaite.core:default"/>
 

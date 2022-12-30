@@ -201,8 +201,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("getProfilesTitle", {
                 "title": _("Profile"),
-                "sortable": True,
-                "index": "getProfilesTitle",
+                "sortable": False,
                 "toggle": False}),
             ("getAnalysesNum", {
                 "title": _("Number of Analyses"),

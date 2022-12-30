@@ -1096,16 +1096,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'ProfilesUID',
-        expression="here.getRawProfiles()",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
-    ComputedField(
         'Invoiced',
-        expression='here.getRawInvoice() and True or False',
+        expression='here.getInvoice() and True or False',
         default=False,
         widget=ComputedWidget(
             visible=False,
@@ -1182,24 +1174,6 @@ schema = BikaSchema.copy() + Schema((
         'StorageLocationUID',
         expression="here.getStorageLocation().UID() " \
                    "if here.getStorageLocation() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesURL',
-        expression="[p.absolute_url_path() for p in here.getProfiles()] " \
-                   "if here.getRawProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesTitle',
-        expression="[p.Title() for p in here.getProfiles()] " \
-                   "if here.getRawProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesTitleStr',
-        expression="', '.join([p.Title() for p in here.getProfiles()]) " \
-                   "if here.getRawProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1497,8 +1471,12 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             return self.aq_parent.getClient()
         return None
 
-    def getProfilesTitle(self):
-        return [profile.Title() for profile in self.getProfiles()]
+    def getProfilesTitleStr(self):
+        """Returns a comma-separated string withg the titles of the profiles
+        assigned to this Sample. Used to populate a metadata field
+        """
+        profiles = [profile.Title() for profile in self.getProfiles()]
+        return ", ".join(profiles)
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)
