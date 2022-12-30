@@ -231,6 +231,30 @@ def purge_catalogs(indexes_to_remove, columns_to_remove):
             cat.delColumn(col_name)
 
 
+def remove_default_container_type(tool):
+    """Removes references from the old "DefaultContainerType" field
+    """
+    ref_id = "AnalysisRequestContainerType"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Remove AnalysisRequestContainerType references
+        obj = api.get_object(sample)
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+
 def migrate_analysisrequest_referencefields(tool):
     """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
     """

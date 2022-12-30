@@ -882,29 +882,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # TODO Remove - Is this still necessary?
-    ReferenceField(
-        'DefaultContainerType',
-        allowed_types=('ContainerType',),
-        relationship='AnalysisRequestContainerType',
-        referenceClass=HoldingReference,
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Default Container"),
-            description=_("Default container for new sample partitions"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
-    ),
-
     BooleanField(
         'Composite',
         default=False,
@@ -1471,12 +1448,37 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             return self.aq_parent.getClient()
         return None
 
-    def getProfilesTitleStr(self):
+    @deprecated("Will be removed in SENAITE 3.0")
+    def getProfilesURL(self):
+        """Returns a list of all profile URLs
+
+        Backwards compatibility for removed computed field:
+        https://github.com/senaite/senaite.core/pull/2213
+        """
+        return [profile.absolute_url_path() for profile in self.getProfiles()]
+
+    @deprecated("Please use getRawProfiles instead. Will be removed in SENAITE 3.0")
+    def getProfilesUID(self):
+        """Returns a list of all profile UIDs
+
+        Backwards compatibility for removed computed field:
+        https://github.com/senaite/senaite.core/pull/2213
+        """
+        return self.getRawProfiles()
+
+    def getProfilesTitle(self):
+        """Returns a list of all profile titles
+
+        Backwards compatibility for removed computed field:
+        https://github.com/senaite/senaite.core/pull/2213
+        """
+        return [profile.Title() for profile in self.getProfiles()]
+
+    def getProfilesTitleStr(self, separator=", "):
         """Returns a comma-separated string withg the titles of the profiles
         assigned to this Sample. Used to populate a metadata field
         """
-        profiles = [profile.Title() for profile in self.getProfiles()]
-        return ", ".join(profiles)
+        return separator.join(self.getProfilesTitle())
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)
@@ -1760,7 +1762,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
-    @deprecated("Use getVerifiers instead")
+    @deprecated("Use getVerifiers instead. Will be removed in SENAITE 3.0")
     @security.public
     def getVerifier(self):
         """Returns the user that verified the whole Analysis Request. Since the
