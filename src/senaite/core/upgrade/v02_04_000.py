@@ -27,8 +27,8 @@ from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
-from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -192,104 +192,23 @@ def fix_traceback_retract_dl(tool):
     logger.info("Migrate LDL, UDL and result fields to string [DONE]")
 
 
-def migrate_analysisrequest_referencefields(tool):
-    """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
+def purge_computed_fields_profile(self):
+    """Cleanup of computed fields related with Profiles field and removal of
+    indexes and columns that are no longer required
     """
-    logger.info("Migrate ReferenceFields to UIDReferenceField ...")
-
-    # (field_name, ref_id, reindex_references)
-    fields_info = [
-        ("CCContact", "AnalysisRequestCCContact", False),
-        ("Client", "AnalysisRequestClient", False),
-        ("PrimaryAnalysisRequest", "AnalysisRequestPrimaryAnalysisRequest", False),
-        ("Batch", "AnalysisRequestBatch", True),
-        ("SubGroup", "AnalysisRequestSubGroup", False),
-        ("Template", "AnalysisRequestARTemplate", False),
-        ("Profiles", "AnalysisRequestAnalysisProfiles", False),
-    ]
-
-    cat = api.get_tool(SAMPLE_CATALOG)
-    brains = cat(portal_type="AnalysisRequest")
-    total = len(brains)
-    for num, sample in enumerate(brains):
-        if num and num % 100 == 0:
-            logger.info("Processed samples: {}/{}".format(num, total))
-
-        if num and num % 1000 == 0:
-            # reduce memory size of the transaction
-            transaction.savepoint()
-
-        # Migrate the reference fields for current sample
-        sample = api.get_object(sample)
-        migrate_reference_fields(sample, fields_info)
-
-        # Flush the object from memory
-        sample._p_deactivate()
-
-    logger.info("Migrate CCContact to UIDReferenceField [DONE]")
-
-
-def migrate_reference_fields(obj, fields_info):
-    """Migrates the reference fields specified in fields_info for the object
-    passed in
-    """
-    to_reindex = set()
-    updated = False
-    ref_tool = api.get_tool(REFERENCE_CATALOG)
-    for field_name, ref_id, ref_reindex in fields_info:
-
-        # Extract the referenced objects
-        references = obj.getRefs(relationship=ref_id)
-        if not references:
-            # Processed already or no referenced objects
-            continue
-
-        # Re-assign the object directly to the field
-        field = obj.getField(field_name)
-        if field.multiValued:
-            value = [api.get_uid(val) for val in references]
-        else:
-            value = api.get_uid(references)
-        field.set(obj, value)
-        updated = True
-
-        # Remove this relationship from reference catalog
-        ref_tool.deleteReferences(obj, relationship=ref_id)
-
-        # Add the references to reindex
-        if ref_reindex:
-            if api.is_object(references):
-                references = [references]
-            map(lambda ref: to_reindex.add(ref), references)
-
-    if not updated:
-        # Nothing changed
-        return False
-
-    # Re-index the object
-    obj.reindexObject()
-
-    # Re-index the references
-    for reference in to_reindex:
-        reference.reindexObject()
-
-
-def cleanup_batch_type(tool):
-    """Cleanup of functions of Batch type, that entails the removal of some
-    catalog indexes and metadata
-    """
-    logger.info("Cleanup batch content type ...")
+    logger.info("Purge ComputedField from Sample related with Profiles ...")
     indexes_to_remove = [
-        ("getBatchUID", SAMPLE_CATALOG),
     ]
     columns_to_remove = [
-        ("getBatchUID", SAMPLE_CATALOG),
+        ("getProfilesUID", SAMPLE_CATALOG),
+        ("getProfilesURL", SAMPLE_CATALOG),
+        ("getProfilesTitle", SAMPLE_CATALOG),
     ]
 
     # Purge the catalogs
     purge_catalogs(indexes_to_remove, columns_to_remove)
 
-    logger.info("Cleanup batch content type [DONE]")
+    logger.info("Purge ComputedField from Sample related with Profiles [DONE]")
 
 
 def purge_catalogs(indexes_to_remove, columns_to_remove):
@@ -310,3 +229,115 @@ def purge_catalogs(indexes_to_remove, columns_to_remove):
             logger.info("Removing '{}' column from '{}'".format(
                 col_name, catalog_id))
             cat.delColumn(col_name)
+
+
+def remove_default_container_type(tool):
+    """Removes references from the old "DefaultContainerType" field
+    """
+    ref_id = "AnalysisRequestContainerType"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Remove AnalysisRequestContainerType references
+        obj = api.get_object(sample)
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+
+def migrate_analysisrequest_referencefields(tool):
+    """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
+    """
+    logger.info("Migrate ReferenceFields to UIDReferenceField ...")
+    field_names = [
+        "Attachment",
+        "Batch",
+        "CCContact",
+        "Client",
+        "DetachedFrom",
+        "Invalidated",
+        "Invoice",
+        "PrimaryAnalysisRequest",
+        "Profiles",
+        "PublicationSpecification",
+        "Specification",
+        "SubGroup",
+        "Template",
+    ]
+
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        sample = api.get_object(sample)
+        migrate_reference_fields(sample, field_names)
+
+        # Flush the object from memory
+        sample._p_deactivate()
+
+    logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
+
+
+def migrate_reference_fields(obj, field_names):
+    """Migrates the reference fields with the names specified from the obj
+    """
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    for field_name in field_names:
+
+        # Get the relationship id from field
+        field = obj.getField(field_name)
+        ref_id = getattr(field, "relationship", False)
+        if not ref_id:
+            logger.error("No relationship for field {}".format(field_name))
+
+        # Extract the referenced objects
+        references = obj.getRefs(relationship=ref_id)
+        if not references:
+            # Processed already or no referenced objects
+            continue
+
+        # Re-assign the object directly to the field
+        if field.multiValued:
+            value = [api.get_uid(val) for val in references]
+        else:
+            value = api.get_uid(references[0])
+        field.set(obj, value)
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+
+def cleanup_batch_type(tool):
+    """Cleanup of functions of Batch type, that entails the removal of some
+    catalog indexes and metadata
+    """
+    logger.info("Cleanup batch content type ...")
+    indexes_to_remove = [
+        ("getBatchUID", SAMPLE_CATALOG),
+    ]
+    columns_to_remove = [
+        ("getBatchUID", SAMPLE_CATALOG),
+    ]
+
+    # Purge the catalogs
+    purge_catalogs(indexes_to_remove, columns_to_remove)
+
+    logger.info("Cleanup batch content type [DONE]")

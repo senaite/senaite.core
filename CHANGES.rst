@@ -6,6 +6,13 @@ Changelog
 
 - #2210 Cleanup Batch content type and remove `getBatchUID` index and column
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
+- #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
+- #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
+- #2214 Remove `DefaultContainerType` field (stale) from AnalysisRequest
+- #2215 Fix ParseError when search term contains parenthesis in widget search
+- #2213 Purge ComputedField fields from AnalysisRequest related with Profiles
+- #2212 Improve performance of legacy AT `UIDReferenceField`'s getter
+- #2211 Remove `Profile` field (stale) from AnalysisRequest
 - #2207 Support for file upload on analysis (pre) conditions
 - #2208 Remove `default_method` from AnalysisRequest's Contact field
 - #2204 Fix traceback when retracting an analysis with a detection limit
