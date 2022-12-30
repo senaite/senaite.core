@@ -326,7 +326,7 @@ schema = BikaSchema.copy() + Schema((
                 {'columnName': 'getClientTitle', 'width': '30',
                  'label': _('Client'), 'align': 'left'},
             ],
-            force_all = False,
+            force_all=False,
             ui_item="getId",
             showOn=True,
         ),
