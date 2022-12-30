@@ -170,6 +170,14 @@ class Batch(ATFolder, ClientAwareMixin):
         return None
 
     @deprecated("Will be removed in SENAITE 3.0")
+    def getContactTitle(self):
+        return ""
+
+    @deprecated("Will be removed in SENAITE 3.0")
+    def getProfilesTitle(self):
+        return ""
+
+    @deprecated("Will be removed in SENAITE 3.0")
     def getAnalysisService(self):
         analyses = set()
         for ar in self.getAnalysisRequests():
@@ -216,6 +224,17 @@ class Batch(ATFolder, ClientAwareMixin):
                      sort_on='sortable_title'):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)
+
+    @deprecated("Use getAnalysisRequests(full_objects=False, **kwargs) instead. Will be removed in SENAITE 3.0")
+    def getAnalysisRequestsBrains(self, **kwargs):
+        """Return all the Analysis Requests brains linked to the Batch
+        kargs are passed directly to the catalog.
+
+        Backwards compatibility for removed getBatchUID indexes/columns:
+        https://github.com/senaite/senaite.core/pull/2210
+        """
+        kwargs.update({"full_objects": False})
+        return self.getAnalysisRequests(**kwargs)
 
     def getRawAnalysisRequests(self):
         """Returns the UIDs of all AnalysisRequests assigned to this Batch

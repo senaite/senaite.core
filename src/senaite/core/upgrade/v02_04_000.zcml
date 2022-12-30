@@ -88,8 +88,8 @@
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Cleanup Batch content type"
       description="Optimizes functions from Batch type and removes indexes and columns that are no longer required"
-      source="2407"
-      destination="2408"
+      source="2408"
+      destination="2409"
       handler="senaite.core.upgrade.v02_04_000.cleanup_batch_type"
       profile="senaite.core:default"/>
 
