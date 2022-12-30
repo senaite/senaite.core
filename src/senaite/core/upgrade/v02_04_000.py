@@ -192,6 +192,45 @@ def fix_traceback_retract_dl(tool):
     logger.info("Migrate LDL, UDL and result fields to string [DONE]")
 
 
+def purge_computed_fields_profile(self):
+    """Cleanup of computed fields related with Profiles field and removal of
+    indexes and columns that are no longer required
+    """
+    logger.info("Purge ComputedField from Sample related with Profiles ...")
+    indexes_to_remove = [
+    ]
+    columns_to_remove = [
+        ("getProfilesUID", SAMPLE_CATALOG),
+        ("getProfilesURL", SAMPLE_CATALOG),
+        ("getProfilesTitle", SAMPLE_CATALOG),
+    ]
+
+    # Purge the catalogs
+    purge_catalogs(indexes_to_remove, columns_to_remove)
+
+    logger.info("Purge ComputedField from Sample related with Profiles [DONE]")
+
+
+def purge_catalogs(indexes_to_remove, columns_to_remove):
+    """Removes the indexes and columns from catalogs
+    """
+    # remove indexes
+    for index_name, catalog_id in indexes_to_remove:
+        cat = api.get_tool(catalog_id)
+        if index_name in cat.indexes():
+            logger.info("Removing '{}' index from '{}'".format(
+                index_name, catalog_id))
+            cat.delIndex(index_name)
+
+    # remove columns
+    for col_name, catalog_id in columns_to_remove:
+        cat = api.get_tool(catalog_id)
+        if col_name in cat.schema():
+            logger.info("Removing '{}' column from '{}'".format(
+                col_name, catalog_id))
+            cat.delColumn(col_name)
+
+
 def remove_default_container_type(tool):
     """Removes references from the old "DefaultContainerType" field
     """
