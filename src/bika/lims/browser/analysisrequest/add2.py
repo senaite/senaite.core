@@ -1740,8 +1740,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ARs[ar.Title()] = ar.UID()
 
             # Create the attachments
-            attachments = filter(None, attachments.get(n, []))
-            for attachment_record in attachments:
+            ar_attachments = filter(None, attachments.get(n, []))
+            for attachment_record in ar_attachments:
                 self.create_attachment(ar, attachment_record)
 
         actions.resume()
