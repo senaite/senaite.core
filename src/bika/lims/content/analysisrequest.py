@@ -230,12 +230,6 @@ schema = BikaSchema.copy() + Schema((
         'Client',
         required=1,
         allowed_types=('Client',),
-        # Do not back-reference. This field is only used for the rendering of
-        # the reference widget in Add Form. An AnalysisRequest is always
-        # created inside a Client object. Therefore, there is no need to keep
-        # back references. Since the Client object is not updated, this should
-        # also reduce the chance of transaction conflicts as well
-        relationship=None,
         mode="rw",
         read_permission=View,
         write_permission=FieldEditClient,
