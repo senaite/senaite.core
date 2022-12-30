@@ -108,7 +108,6 @@ from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import FileField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
