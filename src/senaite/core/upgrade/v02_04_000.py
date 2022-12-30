@@ -340,7 +340,8 @@ def rename_retestof_relationship(tool):
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Rename RetestOf relationship {0}".format(num, total))
+            logger.info("Rename RetestOf relationship {}/{}"
+                        .format(num, total))
 
         if num and num % 1000 == 0:
             transaction.savepoint()
