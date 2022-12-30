@@ -6,7 +6,6 @@ Changelog
 
 - #2210 Cleanup Batch content type and remove `getBatchUID` index and column
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
-- #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
 - #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
 - #2214 Remove `DefaultContainerType` field (stale) from AnalysisRequest
 - #2215 Fix ParseError when search term contains parenthesis in widget search
