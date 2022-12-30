@@ -566,7 +566,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('DatePreserved',
+    DateTimeField(
+        "DatePreserved",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditDatePreserved,
@@ -582,7 +583,8 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
-    StringField('Preserver',
+    StringField(
+        "Preserver",
         required=0,
         mode="rw",
         read_permission=View,
@@ -600,7 +602,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # TODO Sample cleanup - This comes from partition
-    DurationField('RetentionPeriod',
+    DurationField(
+        "RetentionPeriod",
         required=0,
         mode="r",
         read_permission=View,
