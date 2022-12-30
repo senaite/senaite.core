@@ -39,9 +39,8 @@ class ReferenceException(Exception):
 
 class UIDReferenceField(StringField):
     """A field that stores References as UID values.  This acts as a drop-in
-    replacement for Archetypes' ReferenceField.  A relationship is required
-    but if one is not provided, it will be composed from a concatenation
-    of `portal_type` + `fieldname`.
+    replacement for Archetypes' ReferenceField. If no relationship is provided,
+    the field won't keep backreferences in referenced objects
     """
     _properties = Field._properties.copy()
     _properties.update({
@@ -60,7 +59,11 @@ class UIDReferenceField(StringField):
         """Returns whether this field must keep back references. Returns True
         if the value for property relationship is None
         """
-        return self.relationship is not None
+        if not isinstance(self.relationship, six.string_types):
+            return False
+        if not self.relationship:
+            return False
+        return True
 
     def get_relationship_key(self, context):
         """Return the configured relationship key or generate a new one

@@ -98,6 +98,7 @@ Calculation = UIDReferenceField(
     "Calculation",
     schemata="Method",
     required=0,
+    relationship="AnalysisServiceCalculation",
     vocabulary="_default_calculation_vocabulary",
     allowed_types=("Calculation", ),
     accessor="getRawCalculation",

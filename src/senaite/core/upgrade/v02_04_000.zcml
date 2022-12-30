@@ -83,4 +83,14 @@
       handler="senaite.core.upgrade.v02_04_000.migrate_analysisrequest_referencefields"
       profile="senaite.core:default"/>
 
+  <!-- Rename RetestOf relationship
+       https://github.com/senaite/senaite.core/pull/2220 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Rename RetestOf relationship"
+      description="Rename RetestOf relationship"
+      source="2408"
+      destination="2409"
+      handler="senaite.core.upgrade.v02_04_000.rename_retestof_relationship"
+      profile="senaite.core:default"/>
+
 </configure>

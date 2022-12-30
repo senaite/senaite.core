@@ -4,7 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
-- #2219 Allow to not keep backreferences through `UIDReferenceField`
+- #2219 Make `UIDReferenceField` to not keep back-references by default
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
 - #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
 - #2214 Remove `DefaultContainerType` field (stale) from AnalysisRequest

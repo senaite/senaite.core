@@ -323,3 +323,38 @@ def migrate_reference_fields(obj, field_names):
 
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(obj, relationship=ref_id)
+
+
+def rename_retestof_relationship(tool):
+    """Renames the relationship for field RetestOf from the format
+    '<portal-type>RetestOf' to 'AnalysisRetestOf'. This field is inherited by
+    different analysis-like types and since we now assume that if no
+    relationship is explicitly set, UIDReferenceField does not keep
+    back-references, we need to update the relationship for those objects that
+    are not from 'Analysis' portal_type
+    """
+    logger.info("Rename RetestOf relationship ...")
+    uc = api.get_tool("uid_catalog")
+    portal_types = ['DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis']
+    brains = uc(portal_type=portal_types)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Rename RetestOf relationship {0}".format(num, total))
+
+        if num and num % 1000 == 0:
+            transaction.savepoint()
+
+        # find out if the current analysis is a retest
+        obj = api.get_object(brain)
+        field = obj.getField("RetestOf")
+        retest_of = field.get(obj)
+        if retest_of:
+            # re-link referenced object
+            field.link_reference(retest_of, obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Rename RetestOf relationship [DONE]")
+
