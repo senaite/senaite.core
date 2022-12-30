@@ -25,8 +25,10 @@ from bika.lims import LDL
 from bika.lims import UDL
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import reindex_catalog_index
@@ -200,3 +202,66 @@ def fix_traceback_retract_dl(tool):
         obj._p_deactivate()
 
     logger.info("Migrate LDL, UDL and result fields to string [DONE]")
+
+
+def purge_computed_fields_profile(self):
+    """Cleanup of computed fields related with Profiles field and removal of
+    indexes and columns that are no longer required
+    """
+    logger.info("Purge ComputedField from Sample related with Profiles ...")
+    indexes_to_remove = [
+    ]
+    columns_to_remove = [
+        ("getProfilesUID", SAMPLE_CATALOG),
+        ("getProfilesURL", SAMPLE_CATALOG),
+        ("getProfilesTitle", SAMPLE_CATALOG),
+    ]
+
+    # Purge the catalogs
+    purge_catalogs(indexes_to_remove, columns_to_remove)
+
+    logger.info("Purge ComputedField from Sample related with Profiles [DONE]")
+
+
+def purge_catalogs(indexes_to_remove, columns_to_remove):
+    """Removes the indexes and columns from catalogs
+    """
+    # remove indexes
+    for index_name, catalog_id in indexes_to_remove:
+        cat = api.get_tool(catalog_id)
+        if index_name in cat.indexes():
+            logger.info("Removing '{}' index from '{}'".format(
+                index_name, catalog_id))
+            cat.delIndex(index_name)
+
+    # remove columns
+    for col_name, catalog_id in columns_to_remove:
+        cat = api.get_tool(catalog_id)
+        if col_name in cat.schema():
+            logger.info("Removing '{}' column from '{}'".format(
+                col_name, catalog_id))
+            cat.delColumn(col_name)
+
+
+def remove_default_container_type(tool):
+    """Removes references from the old "DefaultContainerType" field
+    """
+    ref_id = "AnalysisRequestContainerType"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Remove AnalysisRequestContainerType references
+        obj = api.get_object(sample)
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()
