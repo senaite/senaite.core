@@ -1515,6 +1515,15 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         else:
             return self.Schema()['Batch'].get(self)
 
+    @deprecated("Use getRawBatch instead. Will be removed in SENAITE 3.0")
+    def getBatchUID(self):
+        """Returns the UID of the Batch assigned to this sample
+
+        Backwards compatibility for removed getBatchUID indexes/columns:
+        https://github.com/senaite/senaite.core/pull/2210
+        """
+        return self.getRawBatch()
+
     @security.public
     def setBatch(self, value=None):
         original_value = self.Schema().getField('Batch').get(self)

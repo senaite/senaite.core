@@ -169,6 +169,31 @@ class Batch(ATFolder, ClientAwareMixin):
             return client
         return None
 
+    @deprecated("Will be removed in SENAITE 3.0")
+    def getAnalysisService(self):
+        analyses = set()
+        for ar in self.getAnalysisRequests():
+            for an in ar.getAnalyses():
+                analyses.add(an)
+        value = []
+        for analysis in analyses:
+            val = analysis.Title
+            if val not in value:
+                value.append(val)
+        return list(value)
+
+    @deprecated("Will be removed in SENAITE 3.0")
+    def getAnalysts(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getAnalyst()
+            if val not in value:
+                value.append(val)
+        return value
+
     security.declarePublic('getBatchID')
 
     @deprecated("Please use getId instead")
