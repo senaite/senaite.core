@@ -1498,7 +1498,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Backwards compatibility for removed computed field:
         https://github.com/senaite/senaite.core/pull/2213
         """
-        return [profile.UID() for profile in self.getProfiles()]
+        return self.getRawProfiles()
 
     def getProfilesTitle(self):
         """Returns a list of all profile titles
