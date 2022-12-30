@@ -1279,7 +1279,7 @@ schema = BikaSchema.copy() + Schema((
                           "clients."),
             format="radio",
             render_own_label=True,
-            visible={'add': 'edit',}
+            visible={'add': 'edit'}
         ),
     ),
 
