@@ -55,6 +55,13 @@ class UIDReferenceField(StringField):
 
     security = ClassSecurityInfo()
 
+    @property
+    def keep_backreferences(self):
+        """Returns whether this field must keep back references. Returns True
+        if the value for property relationship is None
+        """
+        return self.relationship is not None
+
     def get_relationship_key(self, context):
         """Return the configured relationship key or generate a new one
         """
@@ -231,7 +238,8 @@ class UIDReferenceField(StringField):
         uids = filter(api.is_uid, uids)
 
         # Back-reference current object to referenced objects
-        self._set_backreferences(context, uids, **kwargs)
+        if self.keep_backreferences:
+            self._set_backreferences(context, uids, **kwargs)
 
         # Store the referenced objects as uids
         if not self.multiValued:
