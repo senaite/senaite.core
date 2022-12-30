@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
 - #2214 Remove `DefaultContainerType` field (stale) from AnalysisRequest
 - #2215 Fix ParseError when search term contains parenthesis in widget search
 - #2213 Purge ComputedField fields from AnalysisRequest related with Profiles
