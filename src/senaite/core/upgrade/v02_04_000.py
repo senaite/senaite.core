@@ -299,7 +299,6 @@ def migrate_analysisrequest_referencefields(tool):
 def migrate_reference_fields(obj, field_names):
     """Migrates the reference fields with the names specified from the obj
     """
-    updated = False
     ref_tool = api.get_tool(REFERENCE_CATALOG)
     for field_name in field_names:
 
@@ -321,14 +320,6 @@ def migrate_reference_fields(obj, field_names):
         else:
             value = api.get_uid(references[0])
         field.set(obj, value)
-        updated = True
 
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(obj, relationship=ref_id)
-
-    if not updated:
-        # Nothing changed
-        return False
-
-    # Re-index the object
-    obj.reindexObject()
