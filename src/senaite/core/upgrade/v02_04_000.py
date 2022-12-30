@@ -25,6 +25,7 @@ from bika.lims import LDL
 from bika.lims import UDL
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -228,3 +229,27 @@ def purge_catalogs(indexes_to_remove, columns_to_remove):
             logger.info("Removing '{}' column from '{}'".format(
                 col_name, catalog_id))
             cat.delColumn(col_name)
+
+
+def remove_default_container_type(tool):
+    """Removes references from the old "DefaultContainerType" field
+    """
+    ref_id = "AnalysisRequestContainerType"
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Remove AnalysisRequestContainerType references
+        obj = api.get_object(sample)
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()
