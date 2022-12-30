@@ -201,11 +201,8 @@ class Batch(ATFolder, ClientAwareMixin):
         """Return all the Analysis Requests objects linked to the Batch kargs
         are passed directly to the catalog.
         """
-        uids = self.getRawAnalysisRequests()
-        if not uids:
-            return []
         full_objects = kwargs.pop("full_objects", True)
-        kwargs.update({"UID": uids})
+        kwargs.update({"UID": self.getRawAnalysisRequests()})
         brains = api.search(kwargs, SAMPLE_CATALOG)
         if not full_objects:
             return brains
