@@ -84,7 +84,7 @@
       profile="senaite.core:default"/>
 
   <!-- Rename RetestOf relationship
-       https://github.com/senaite/senaite.core/pull/2220 -->
+       https://github.com/senaite/senaite.core/pull/2219 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Rename RetestOf relationship"
       description="Rename RetestOf relationship"
