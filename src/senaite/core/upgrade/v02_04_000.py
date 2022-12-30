@@ -357,4 +357,3 @@ def rename_retestof_relationship(tool):
         obj._p_deactivate()
 
     logger.info("Rename RetestOf relationship [DONE]")
-
