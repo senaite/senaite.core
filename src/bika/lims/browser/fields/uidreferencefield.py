@@ -56,14 +56,13 @@ class UIDReferenceField(StringField):
 
     @property
     def keep_backreferences(self):
-        """Returns whether this field must keep back references. Returns True
+        """Returns whether this field must keep back references. Returns False
         if the value for property relationship is None or empty
         """
-        if not isinstance(self.relationship, six.string_types):
-            return False
-        if not self.relationship.strip():
-            return False
-        return True
+        relationship = getattr(self, "relationship", None)
+        if relationship and isinstance(relationship, six.string_types):
+            return True
+        return False
 
     def get_relationship_key(self, context):
         """Return the configured relationship key or generate a new one
