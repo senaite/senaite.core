@@ -23,6 +23,7 @@ import transaction
 from bika.lims import api
 from bika.lims import LDL
 from bika.lims import UDL
+from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -351,7 +352,13 @@ def rename_retestof_relationship(tool):
         field = obj.getField("RetestOf")
         retest_of = field.get(obj)
         if retest_of:
-            # re-link referenced object
+            # remove the back-reference with the old relationship name
+            portal_type = api.get_portal_type(obj)
+            old_relationship_key = "{}RetestOf".format(portal_type)
+            back_storage = get_storage(retest_of)
+            back_storage.pop(old_relationship_key, None)
+
+            # re-link referenced object with the new relationship name
             field.link_reference(retest_of, obj)
 
         # Flush the object from memory
