@@ -108,7 +108,7 @@ class UIDReferenceField(StringField):
         return True
 
     @security.public
-    def get_uid(self, context, value):
+    def get_uid(self, context, value, default=""):
         """Takes a brain or object (or UID), and returns a UID.
 
         :param context: context is the object who's schema contains this field.
@@ -118,11 +118,11 @@ class UIDReferenceField(StringField):
         :return: resolved UID.
         :rtype: string
         """
-        # Empty string or list with single empty string, are commonly
-        # passed to us from form submissions
-        if not value or value == ['']:
-            return ''
-        return api.get_uid(value)
+        if api.is_object(value):
+            value = api.get_uid(value)
+        elif not api.is_uid(value):
+            value = default
+        return value
 
     @security.public
     def get(self, context, **kwargs):
