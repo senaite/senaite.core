@@ -87,10 +87,20 @@
        https://github.com/senaite/senaite.core/pull/2219 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Rename RetestOf relationship"
-      description="Rename RetestOf relationship"
+      description="Rename ?RetestOf relationship to AnalysisRetestOf"
       source="2408"
       destination="2409"
       handler="senaite.core.upgrade.v02_04_000.rename_retestof_relationship"
+      profile="senaite.core:default"/>
+
+  <!-- Purge back-references that are no longer required
+       https://github.com/senaite/senaite.core/pull/2219 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge back-references that are no longer required"
+      description="Purge back-references from UIDReferenceField that are no longer required"
+      source="2409"
+      destination="2410"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences"
       profile="senaite.core:default"/>
 
 </configure>

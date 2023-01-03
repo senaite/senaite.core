@@ -23,6 +23,7 @@ import transaction
 from bika.lims import api
 from bika.lims import LDL
 from bika.lims import UDL
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
@@ -305,7 +306,7 @@ def migrate_reference_fields(obj, field_names):
 
         # Get the relationship id from field
         field = obj.getField(field_name)
-        ref_id = getattr(field, "relationship", False)
+        ref_id = field.get_relationship_key(obj)
         if not ref_id:
             logger.error("No relationship for field {}".format(field_name))
 
@@ -336,7 +337,7 @@ def rename_retestof_relationship(tool):
     """
     logger.info("Rename RetestOf relationship ...")
     uc = api.get_tool("uid_catalog")
-    portal_types = ['DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis']
+    portal_types = ["DuplicateAnalysis", "ReferenceAnalysis", "RejectAnalysis"]
     brains = uc(portal_type=portal_types)
     total = len(brains)
     for num, brain in enumerate(brains):
@@ -365,3 +366,72 @@ def rename_retestof_relationship(tool):
         obj._p_deactivate()
 
     logger.info("Rename RetestOf relationship [DONE]")
+
+
+def purge_backreferences(tool):
+    """Purges back-references that are no longer required
+    """
+    logger.info("Purge no longer required back-references ...")
+    portal_types = [
+        "Analysis",
+        "AnalysisRequest",
+        "AnalysisService",
+        "AnalysisSpec",
+        "ARReport",
+        "Batch",
+        "Calculation",
+        "DuplicateAnalysis",
+        "Instrument",
+        "LabContact",
+        "Laboratory",
+        "Method",
+        "ReferenceAnalysis",
+        "RejectAnalysis"
+        "Worksheet",
+    ]
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type=portal_types)
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        obj = api.get_object(obj)
+        purge_backreferences_to(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Purge no longer required back-references [DONE]")
+
+
+def purge_backreferences_to(obj):
+    """Removes back-references that are no longer needed that point to the
+    given object
+    """
+    for field in api.get_fields(obj):
+        if not isinstance(field, UIDReferenceField):
+            continue
+
+        # Only purge if back-references are not required
+        if field.keep_backreferences:
+            continue
+
+        # Get the referenced objects
+        references = field.get(obj)
+        if not isinstance(references, (list, tuple)):
+            references = [references]
+
+        # Remove the back-references from these referenced objects to current
+        portal_type = api.get_portal_type(obj)
+        relationship = "{}{}".format(portal_type, field.getName())
+        references = filter(None, references)
+        for reference in references:
+            back_storage = get_storage(reference)
+            back_storage.pop(relationship, None)
