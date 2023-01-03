@@ -415,7 +415,8 @@ def purge_backreferences_to(obj):
     """Removes back-references that are no longer needed that point to the
     given object
     """
-    for field in api.get_fields(obj):
+    fields = api.get_fields(obj)
+    for field_name, field in fields.items():
         if not isinstance(field, UIDReferenceField):
             continue
 
