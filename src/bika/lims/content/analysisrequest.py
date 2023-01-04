@@ -22,7 +22,6 @@ import base64
 import copy
 import functools
 import re
-import sys
 from decimal import Decimal
 
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
@@ -110,7 +109,6 @@ from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import FileField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
@@ -152,8 +150,6 @@ schema = BikaSchema.copy() + Schema((
             label=_("Contact"),
             render_own_label=True,
             size=20,
-            helper_js=("bika_widgets/referencewidget.js",
-                       "++resource++bika.lims.js/contact.js"),
             description=_("The primary contact of this sample, "
                           "who will receive notifications and publications "
                           "via email"),
@@ -179,10 +175,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'CCContact',
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
@@ -232,11 +227,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Client',
         required=1,
         allowed_types=('Client',),
-        relationship='AnalysisRequestClient',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditClient,
@@ -261,7 +255,7 @@ schema = BikaSchema.copy() + Schema((
     # Field for the creation of Secondary Analysis Requests.
     # This field is meant to be displayed in AR Add form only. A viewlet exists
     # to inform the user this Analysis Request is secondary
-    ReferenceField(
+    UIDReferenceField(
         "PrimaryAnalysisRequest",
         allowed_types=("AnalysisRequest",),
         referenceClass=HoldingReference,
@@ -301,7 +295,7 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Batch',
         allowed_types=('Batch',),
         relationship='AnalysisRequestBatch',
@@ -332,13 +326,13 @@ schema = BikaSchema.copy() + Schema((
                 {'columnName': 'getClientTitle', 'width': '30',
                  'label': _('Client'), 'align': 'left'},
             ],
-            force_all = False,
+            force_all=False,
             ui_item="getId",
             showOn=True,
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
@@ -371,7 +365,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
         referenceClass=HoldingReference,
@@ -381,8 +375,10 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
             label=_("Sample Template"),
-            description=_("The predefined values of the Sample template are set "
-                          "in the request"),
+            description=_(
+                "The predefined values of the Sample template are set in the "
+                "request"
+            ),
             size=20,
             render_own_label=True,
             visible={
@@ -397,12 +393,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
         referenceClass=HoldingReference,
-        vocabulary_display_path_bound=sys.maxsize,
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
@@ -423,7 +418,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
-    # one can create an AR (using code) with DateSampled set when sampling_wf at
+    # one can create an AR (with code) with DateSampled set when sampling_wf at
     # the same time sampling workflow is active. This might cause
     # inconsistencies: AR still in `to_be_sampled`, but getDateSampled returns
     # a valid date!
@@ -571,7 +566,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('DatePreserved',
+    DateTimeField(
+        "DatePreserved",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditDatePreserved,
@@ -587,7 +583,8 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
-    StringField('Preserver',
+    StringField(
+        "Preserver",
         required=0,
         mode="rw",
         read_permission=View,
@@ -605,7 +602,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # TODO Sample cleanup - This comes from partition
-    DurationField('RetentionPeriod',
+    DurationField(
+        "RetentionPeriod",
         required=0,
         mode="r",
         read_permission=View,
@@ -630,7 +628,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Specification',
         required=0,
         primary_bound=True,  # field changes propagate to partitions
@@ -682,7 +680,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'PublicationSpecification',
         required=0,
         allowed_types='AnalysisSpec',
@@ -693,7 +691,8 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing a Sample."),
+                "Set the specification to be used before publishing a Sample."
+            ),
             size=20,
             render_own_label=True,
             visible={
@@ -935,7 +934,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Attachment',
         multiValued=1,
         allowed_types=('Attachment',),
@@ -974,9 +973,8 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Invoice',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Invoice',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
@@ -1188,7 +1186,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Primary Sample the current sample was detached from
-    ReferenceField(
+    UIDReferenceField(
         "DetachedFrom",
         allowed_types=("AnalysisRequest",),
         relationship="AnalysisRequestDetachedFrom",
@@ -1203,7 +1201,7 @@ schema = BikaSchema.copy() + Schema((
 
     # The Analysis Request the current Analysis Request comes from because of
     # an invalidation of the former
-    ReferenceField(
+    UIDReferenceField(
         'Invalidated',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestRetracted',
@@ -1214,14 +1212,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
-    ),
-
-    # The Analysis Request that was automatically generated due to the
-    # invalidation of the current Analysis Request
-    ComputedField(
-        'Retest',
-        expression="here.get_retest()",
-        widget=ComputedWidget(visible=False)
     ),
 
     # For comments or results interpretation
@@ -1292,7 +1282,7 @@ schema = BikaSchema.copy() + Schema((
                           "clients."),
             format="radio",
             render_own_label=True,
-            visible={'add': 'edit',}
+            visible={'add': 'edit'}
         ),
     ),
 
@@ -1684,7 +1674,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # Keywords of the contained services
         billable_service_keys = map(
             lambda s: s.getKeyword(), set(billable_profile_services))
-        # The billable items contain billable profiles and single selected analyses
+        # Billable items contain billable profiles and single selected analyses
         billable_items = billable_profiles
         # Get the analyses to be billed
         exclude_rs = ["retracted", "rejected"]
@@ -2016,10 +2006,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             sets = [adv] if 'hidden' in adv else []
 
         # Created by using an AR Profile?
-        if not sets and self.getProfiles():
-            adv = []
-            adv += [profile.getAnalysisServiceSettings(uid) for profile in
-                    self.getProfiles()]
+        profiles = self.getProfiles()
+        if not sets and profiles:
+            adv = [profile.getAnalysisServiceSettings(uid) for profile in
+                   profiles]
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
@@ -2160,15 +2150,20 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     def set_ARAttachment(self, value):
         return None
 
-    def get_retest(self):
-        """Returns the Analysis Request automatically generated because of the
-        retraction of the current analysis request
+    def getRawRetest(self):
+        """Returns the UID of the Analysis Request that has been generated
+        automatically because of the retraction of the current Analysis Request
         """
-        relationship = "AnalysisRequestRetracted"
-        retest = self.getBackReferences(relationship=relationship)
-        if retest and len(retest) > 1:
-            logger.warn("More than one retest for {0}".format(self.getId()))
-        return retest and retest[0] or None
+        relationship = self.getField("Invalidated").relationship
+        uids = get_backreferences(self, relationship=relationship)
+        return uids[0] if uids else None
+
+    def getRetest(self):
+        """Returns the Analysis Request that has been generated automatically
+        because of the retraction of the current Analysis Request
+        """
+        uid = self.getRawRetest()
+        return api.get_object_by_uid(uid, default=None)
 
     def getAncestors(self, all_ancestors=True):
         """Returns the ancestor(s) of this Analysis Request
@@ -2218,8 +2213,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         This method is used as metadata
         """
-        rel_id = "AnalysisRequestParentAnalysisRequest"
-        return get_backreferences(self, relationship=rel_id)
+        relationship = self.getField("ParentAnalysisRequest").relationship
+        return get_backreferences(self, relationship=relationship)
 
     def isPartition(self):
         """Returns true if this Analysis Request is a partition
@@ -2256,11 +2251,19 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             parent = self.getParentAnalysisRequest()
             alsoProvides(parent, IAnalysisRequestWithPartitions)
 
+    def getRawSecondaryAnalysisRequests(self):
+        """Returns the UIDs of the secondary Analysis Requests from this
+        Analysis Request
+        """
+        relationship = self.getField("PrimaryAnalysisRequest").relationship
+        return get_backreferences(self, relationship)
+
     def getSecondaryAnalysisRequests(self):
         """Returns the secondary analysis requests from this analysis request
         """
-        relationship = "AnalysisRequestPrimaryAnalysisRequest"
-        return self.getBackReferences(relationship=relationship)
+        uids = self.getRawSecondaryAnalysisRequests()
+        uc = api.get_tool("uid_catalog")
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def setDateReceived(self, value):
         """Sets the date received to this analysis request and to secondary
@@ -2404,10 +2407,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # convert relative URLs to absolute URLs
         # N.B. This is actually a TinyMCE issue, but hardcoded in Plone:
-        #      https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
+        #  https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
         image_sources = re.findall(IMG_SRC_RX, html)
 
-        # we need a trailing slash so that urljoin does not remove the last segment
+        # add a trailing slash so that urljoin doesn't remove the last segment
         base_url = "{}/".format(api.get_url(self))
 
         for src in image_sources:

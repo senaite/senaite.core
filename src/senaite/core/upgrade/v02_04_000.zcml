@@ -73,13 +73,43 @@
       handler="senaite.core.upgrade.v02_04_000.remove_default_container_type"
       profile="senaite.core:default"/>
 
+  <!-- Migrate ReferenceField from AnalysisRequest to UIDReferenceField
+       https://github.com/senaite/senaite.core/pull/2209 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate ReferenceField from AnalysisRequest"
+      description="Migrate ReferenceField from AnalysisRequest to UIDReferenceField"
+      source="2407"
+      destination="2408"
+      handler="senaite.core.upgrade.v02_04_000.migrate_analysisrequest_referencefields"
+      profile="senaite.core:default"/>
+
+  <!-- Rename RetestOf relationship
+       https://github.com/senaite/senaite.core/pull/2219 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Rename RetestOf relationship"
+      description="Rename RetestOf relationship to AnalysisRetestOf"
+      source="2408"
+      destination="2409"
+      handler="senaite.core.upgrade.v02_04_000.rename_retestof_relationship"
+      profile="senaite.core:default"/>
+
+  <!-- Purge back-references that are no longer required
+       https://github.com/senaite/senaite.core/pull/2219 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge back-references that are no longer required"
+      description="Purge back-references from UIDReferenceField that are no longer required"
+      source="2409"
+      destination="2410"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences"
+      profile="senaite.core:default"/>
+
   <!-- Support for multi-component analyses
        https://github.com/senaite/senaite.core/pull/2120 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Support for multi-component analyses"
       description="Support for multi-component analyses"
-      source="2407"
-      destination="2408"
+      source="2410"
+      destination="2411"
       handler="senaite.core.upgrade.v02_04_000.setup_multi_component_analyses"
       profile="senaite.core:default"/>
 
