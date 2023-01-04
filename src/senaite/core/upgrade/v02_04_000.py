@@ -447,6 +447,7 @@ def purge_setup_backreferences(tool):
         "AnalysisCategory",
         "AnalysisProfile",
         "ARTemplate",
+        "Attachment",
     ]
 
     uc = api.get_tool("uid_catalog")
