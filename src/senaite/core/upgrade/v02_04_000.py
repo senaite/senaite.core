@@ -416,6 +416,8 @@ def purge_backreferences_to(obj):
     given object
     """
     fields = api.get_fields(obj)
+    portal_type = api.get_portal_type(obj)
+
     for field_name, field in fields.items():
         if not isinstance(field, UIDReferenceField):
             continue
@@ -430,7 +432,6 @@ def purge_backreferences_to(obj):
             references = [references]
 
         # Remove the back-references from these referenced objects to current
-        portal_type = api.get_portal_type(obj)
         relationship = "{}{}".format(portal_type, field.getName())
         references = filter(None, references)
         for reference in references:
