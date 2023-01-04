@@ -445,6 +445,8 @@ def purge_setup_backreferences(tool):
     logger.info("Purge no longer required back-references from setup ...")
     portal_types = [
         "AnalysisCategory",
+        "AnalysisProfile",
+        "ARTemplate",
     ]
 
     uc = api.get_tool("uid_catalog")
