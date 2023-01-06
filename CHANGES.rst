@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
 - #2219 Make `UIDReferenceField` to not keep back-references by default
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
 - #2218 Improve performance of legacy AT `UIDReferenceField`'s setter

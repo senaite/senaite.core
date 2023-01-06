@@ -467,7 +467,7 @@ def purge_setup_backreferences(tool):
         "SamplePoint",
         "SampleType",
         "Worksheet",
-        "WorksheetTemplate"
+        "WorksheetTemplate",
     ]
 
     uc = api.get_tool("uid_catalog")
@@ -489,4 +489,3 @@ def purge_setup_backreferences(tool):
         obj._p_deactivate()
 
     logger.info("Purge no longer required back-references from setup [DONE]")
-

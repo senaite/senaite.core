@@ -104,7 +104,7 @@
       profile="senaite.core:default"/>
 
   <!-- Purge back-references that are no longer required from setup
-       https://github.com/senaite/senaite.core/pull/2219 -->
+       https://github.com/senaite/senaite.core/pull/2221 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Purge obsolete back-references from setup"
       description="Purge back-references from UIDReferenceField that are no longer required from setup items"
