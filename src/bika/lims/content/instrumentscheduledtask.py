@@ -20,6 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ScheduleInputWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -29,7 +30,6 @@ from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
@@ -42,10 +42,9 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         "Instrument",
         allowed_types=("Instrument",),
-        relationship="InstrumentScheduledTaskInstrument",
         widget=StringWidget(
             visible=False,
         )
