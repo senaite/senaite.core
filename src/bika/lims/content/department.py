@@ -29,7 +29,6 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDepartment
 from bika.lims.interfaces import IHaveDepartment
 from Products.Archetypes.public import BaseContent
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
