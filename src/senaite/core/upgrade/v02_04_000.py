@@ -462,6 +462,7 @@ def purge_setup_backreferences(tool):
         "Invoice",
         "LabContact",
         "ReferenceSample",
+        "RejectAnalysis",
     ]
 
     uc = api.get_tool("uid_catalog")
