@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.browser.fields import UIDReferenceField
 from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -41,9 +42,8 @@ schema = BikaSchema.copy() + Schema((
             description=_("Report type"),
         ),
     ),
-    ReferenceField('Client',
+    UIDReferenceField('Client',
         allowed_types = ('Client',),
-        relationship = 'ReportClient',
         widget = ReferenceWidget(
             label=_("Client"),
         ),
