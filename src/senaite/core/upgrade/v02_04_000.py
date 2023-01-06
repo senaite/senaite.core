@@ -454,6 +454,7 @@ def purge_setup_backreferences(tool):
         "Container",
         "Department",
         "Instrument",
+        "InstrumentCalibration",
     ]
 
     uc = api.get_tool("uid_catalog")
