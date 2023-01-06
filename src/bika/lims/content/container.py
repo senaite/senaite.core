@@ -21,6 +21,8 @@
 
 import json
 import sys
+
+from bika.lims.browser.fields import UIDReferenceField
 from operator import itemgetter
 
 import plone.protect
@@ -38,12 +40,11 @@ from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ContainerType',
+    UIDReferenceField('ContainerType',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('ContainerType',),
         vocabulary = 'getContainerTypes',
-        relationship = 'ContainerContainerType',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
@@ -69,12 +70,11 @@ schema = BikaSchema.copy() + Schema((
                 "for sample partitions stored in this container."),
         ),
     ),
-    ReferenceField('Preservation',
+    UIDReferenceField('Preservation',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Preservation',),
         vocabulary = 'getPreservations',
-        relationship = 'ContainerPreservation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,

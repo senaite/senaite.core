@@ -451,6 +451,7 @@ def purge_setup_backreferences(tool):
         "AutoImportLog",
         "Batch",
         "Client",
+        "Container",
     ]
 
     uc = api.get_tool("uid_catalog")
