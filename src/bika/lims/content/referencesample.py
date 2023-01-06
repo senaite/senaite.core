@@ -25,6 +25,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
@@ -42,10 +43,9 @@ from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ReferenceDefinition',
+    UIDReferenceField('ReferenceDefinition',
         schemata = 'Description',
         allowed_types = ('ReferenceDefinition',),
-        relationship = 'ReferenceSampleReferenceDefinition',
         referenceClass = HoldingReference,
         vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
@@ -69,10 +69,9 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('Manufacturer',
+    UIDReferenceField('Manufacturer',
         schemata = 'Description',
         allowed_types = ('Manufacturer',),
-        relationship = 'ReferenceSampleManufacturer',
         vocabulary = "getManufacturers",
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
