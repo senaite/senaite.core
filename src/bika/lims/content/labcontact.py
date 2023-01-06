@@ -33,7 +33,6 @@ from bika.lims.interfaces import ILabContact
 from Products.Archetypes import atapi
 from Products.Archetypes.Field import ImageField
 from Products.Archetypes.Field import ImageWidget
-from Products.Archetypes.Field import ReferenceField
 from Products.Archetypes.Field import ReferenceWidget
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
@@ -55,12 +54,11 @@ schema = Person.schema.copy() + atapi.Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Departments",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=("Department",),
-        relationship="LabContactDepartment",
         vocabulary="_departmentsVoc",
         referenceClass=HoldingReference,
         multiValued=1,

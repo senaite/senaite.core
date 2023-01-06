@@ -460,6 +460,7 @@ def purge_setup_backreferences(tool):
         "InstrumentScheduledTask",
         "InstrumentValidation",
         "Invoice",
+        "LabContact",
     ]
 
     uc = api.get_tool("uid_catalog")
