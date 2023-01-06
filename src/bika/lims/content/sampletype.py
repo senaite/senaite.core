@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.config import PROJECTNAME
@@ -264,10 +265,18 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         setup = api.get_setup()
         return setup.getDefaultSampleLifetime()
 
+    def getRawSamplePoints(self):
+        """Returns the UIDs of the Sample Points where this Sample Type is
+        supported
+        """
+        return get_backreferences(self, "SamplePointSampleType")
+
     def getSamplePoints(self):
         """Returns the Sample Points where current Sample Type is supported
         """
-        return self.getBackReferences("SamplePointSampleType")
+        uc = api.get_tool("uid_catalog")
+        uids = self.getRawSamplePoints()
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def getSamplePointTitle(self):
         """Returns a list of Sample Point titles

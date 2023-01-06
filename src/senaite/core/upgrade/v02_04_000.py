@@ -464,6 +464,7 @@ def purge_setup_backreferences(tool):
         "ReferenceSample",
         "RejectAnalysis",
         "Report",
+        "SamplePoint",
     ]
 
     uc = api.get_tool("uid_catalog")
