@@ -53,7 +53,6 @@ from bika.lims.workflow import skip
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
@@ -103,13 +102,12 @@ schema = BikaSchema.copy() + Schema((
         searchable=True,
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Method',
         required=0,
         vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        relationship='WorksheetMethod',
         referenceClass=HoldingReference,
         widget=SelectionWidget(
             format='select',
@@ -119,12 +117,11 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         required=0,
         allowed_types=('Instrument',),
         vocabulary='_getInstrumentsVoc',
-        relationship='WorksheetInstrument',
         referenceClass=HoldingReference,
     ),
 
