@@ -30,21 +30,7 @@ def ObjectModifiedEventHandler(obj, event):
     if not hasattr(obj, 'portal_type'):
         return
 
-    if obj.portal_type == 'Calculation':
-        pr = getToolByName(obj, 'portal_repository')
-        uc = getToolByName(obj, 'uid_catalog')
-        obj = uc(UID=obj.UID())[0].getObject()
-        version_id = obj.version_id if hasattr(obj, 'version_id') else 0
-
-        backrefs = obj.getBackReferences('MethodCalculation')
-        for i, target in enumerate(backrefs):
-            target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" % (version_id + 1,))
-            reference_versions = getattr(target, 'reference_versions', {})
-            reference_versions[obj.UID()] = version_id + 1
-            target.reference_versions = reference_versions
-
-    elif obj.portal_type == 'Contact':
+    if obj.portal_type == 'Contact':
         # Verify that the Contact details are the same as the Plone user.
         contact_username = obj.Schema()['Username'].get(obj)
         if contact_username:
