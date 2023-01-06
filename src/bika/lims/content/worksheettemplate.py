@@ -22,6 +22,7 @@ import sys
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES
@@ -34,7 +35,6 @@ from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
@@ -74,13 +74,12 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Service",
         schemata="Analyses",
         required=0,
         multiValued=1,
         allowed_types=("AnalysisService",),
-        relationship="WorksheetTemplateAnalysisService",
         referenceClass=HoldingReference,
         widget=ServicesWidget(
             label=_("Analysis Service"),
@@ -90,14 +89,13 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "RestrictToMethod",
         schemata="Description",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
         vocabulary="_getMethodsVoc",
         allowed_types=("Method",),
-        relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
@@ -111,14 +109,13 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Instrument",
         schemata="Description",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
         vocabulary="getInstrumentsDisplayList",
         allowed_types=("Instrument",),
-        relationship="WorksheetTemplateInstrument",
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,

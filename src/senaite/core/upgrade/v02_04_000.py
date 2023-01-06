@@ -467,6 +467,7 @@ def purge_setup_backreferences(tool):
         "SamplePoint",
         "SampleType",
         "Worksheet",
+        "WorksheetTemplate"
     ]
 
     uc = api.get_tool("uid_catalog")
