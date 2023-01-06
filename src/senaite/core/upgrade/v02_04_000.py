@@ -452,6 +452,7 @@ def purge_setup_backreferences(tool):
         "Batch",
         "Client",
         "Container",
+        "Department",
     ]
 
     uc = api.get_tool("uid_catalog")
