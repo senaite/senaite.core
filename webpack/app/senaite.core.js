@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // reload the entire page if workflow state of the view context changed
     if (old_workflow_state != new_workflow_state) {
-      location.reload()
+      location.reload();
     }
   });
 
