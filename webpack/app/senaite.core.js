@@ -51,6 +51,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Reload the whole view if the status of the view's context has changed
   // due to the transition submission of some items from the listing
   document.body.addEventListener("listing:submit", (event) => {
+
+    // skip site reload for multi_results view
+    // TODO: find a better way for this check!
+    if (document.body.classList.contains("template-multi_results")) {
+      return;
+    }
+
     // get the old workflow state of the view context
     let old_workflow_state = document.body.dataset.reviewState;
 
