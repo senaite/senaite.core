@@ -278,7 +278,8 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     formatted = _format_decimal_or_sci(
         uncertainty, precision, threshold, sciformat)
 
-    # strip off trailing zeros and the orphane dot
+    # strip off trailing zeros and the orphane dot,
+    # e.g.: 1.000000 -> 1
     if "." in formatted:
         formatted = formatted.rstrip("0").rstrip(".")
 
