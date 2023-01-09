@@ -183,10 +183,8 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     return formatted
 
 
-def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
-    """
-    Returns the formatted uncertainty according to the analysis, result
-    and decimal mark specified following these rules:
+def format_uncertainty(analysis, decimalmark=".", sciformat=1):
+    """Return formatted uncertainty value
 
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
@@ -221,9 +219,6 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     the uncertainty neither the result. The fixed length precision is
     used instead.
 
-    For further details, visit
-    https://jira.bikalabs.com/browse/LIMS-1334
-
     If the result is not floatable or no uncertainty defined, returns
     an empty string.
 
@@ -232,8 +227,6 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
 
     :param analysis: the analysis from which the uncertainty, precision
                      and other additional info have to be retrieved
-    :param result: result of the analysis. Used to retrieve and/or
-                   calculate the precision and/or uncertainty
     :param decimalmark: decimal mark to use. By default '.'
     :param sciformat: 1. The sci notation has to be formatted as aE^+b
                   2. The sci notation has to be formatted as ax10^b
@@ -244,25 +237,18 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     :returns: the formatted uncertainty
     """
     try:
-        result = float(result)
-    except ValueError:
-        return ""
-
-    objres = None
-    try:
-        objres = float(analysis.getResult())
-    except ValueError:
+        result = float(analysis.getResult())
+    except (ValueError, TypeError):
         pass
 
-    uncertainty = None
-    if result == objres:
-        # To avoid problems with DLs
-        uncertainty = analysis.getUncertainty()
-    else:
-        uncertainty = analysis.getUncertainty(result)
+    uncertainty = analysis.getUncertainty()
 
     if not uncertainty:
         return ""
+
+    # always convert exponential notation to decimal
+    if "e" in uncertainty.lower():
+        uncertainty = api.float_to_string(float(uncertainty))
 
     precision = -1
     # always get full precision of the uncertainty if user entered manually
@@ -281,7 +267,8 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     formatted = _format_decimal_or_sci(
         uncertainty, precision, threshold, sciformat)
 
-    # strip off trailing zeros and the orphane dot
+    # strip off trailing zeros and the orphane dot,
+    # e.g.: 1.000000 -> 1
     if "." in formatted:
         formatted = formatted.rstrip("0").rstrip(".")
 
