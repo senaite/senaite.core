@@ -183,10 +183,8 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     return formatted
 
 
-def format_uncertainty(analysis, decimalmark='.', sciformat=1):
-    """
-    Returns the formatted uncertainty according to the analysis, result
-    and decimal mark specified following these rules:
+def format_uncertainty(analysis, decimalmark=".", sciformat=1):
+    """Return formatted uncertainty value
 
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
