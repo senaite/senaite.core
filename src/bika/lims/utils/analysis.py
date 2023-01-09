@@ -221,9 +221,6 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     the uncertainty neither the result. The fixed length precision is
     used instead.
 
-    For further details, visit
-    https://jira.bikalabs.com/browse/LIMS-1334
-
     If the result is not floatable or no uncertainty defined, returns
     an empty string.
 
