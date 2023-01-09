@@ -246,6 +246,10 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     if not uncertainty:
         return ""
 
+    # always convert exponential notation to decimal
+    if "e" in uncertainty.lower():
+        uncertainty = api.float_to_string(float(uncertainty))
+
     precision = -1
     # always get full precision of the uncertainty if user entered manually
     # => avoids rounding and cut-off

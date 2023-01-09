@@ -384,6 +384,42 @@ Test the range 10-20 with an unertainty value of 5% of the result:
     '0.75'
 
 
+Test exponential format
+.......................
+
+Create a new sample:
+
+    >>> sample = new_sample([Cu, Fe, Au])
+    >>> au = get_analysis(sample, Au)
+    >>> au.setAllowManualUncertainty(True)
+    >>> au.setPrecisionFromUncertainty(False)
+
+Manually set the result and uncertainty:
+
+    >>> au.setResult("1.000123e-5")
+    >>> au.setUncertainty("0.002e-5")
+
+We expect manual uncertainties in full precision:
+
+    >>> au.getUncertainty()
+    '0.002e-5'
+
+    >>> format_uncertainty(au, sciformat=1)
+    '2e-08'
+
+    >>> format_uncertainty(au, sciformat=2)
+    '2x10^-8'
+
+    >>> format_uncertainty(au, sciformat=3)
+    '2x10<sup>-8</sup>'
+
+    >>> format_uncertainty(au, sciformat=4)
+    '2\xc2\xb710^-8'
+
+    >>> format_uncertainty(au, sciformat=5)
+    '2\xc2\xb710<sup>-8</sup>'
+
+
 Test floating point arithmetic
 ..............................
 
