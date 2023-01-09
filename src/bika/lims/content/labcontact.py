@@ -18,12 +18,12 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.contact import Contact
 from bika.lims.content.person import Person
@@ -33,13 +33,9 @@ from bika.lims.interfaces import ILabContact
 from Products.Archetypes import atapi
 from Products.Archetypes.Field import ImageField
 from Products.Archetypes.Field import ImageWidget
-from Products.Archetypes.Field import ReferenceWidget
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
-
 
 schema = Person.schema.copy() + atapi.Schema((
 
@@ -57,13 +53,10 @@ schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
         "Departments",
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("Department",),
         vocabulary="_departmentsVoc",
-        referenceClass=HoldingReference,
         multiValued=1,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Departments"),
             description=_("The laboratory departments"),
         ),
@@ -72,14 +65,17 @@ schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
         "DefaultDepartment",
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        vocabulary="_defaultDepsVoc",
-        accessor="getDefaultDepartmentUID",
-        widget=SelectionWidget(
-            visible=True,
-            format="select",
+        allowed_types=("Department",),
+        widget=ReferenceWidget(
             label=_("Default Department"),
             description=_("Default Department"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 ))
@@ -127,21 +123,6 @@ class LabContact(Contact):
         """
         return self.getField("DefaultDepartment").get(self)
 
-    @security.public
-    def getDefaultDepartmentUID(self):
-        """Returns the UID of the assigned default department
-
-        NOTE: This is the default accessor of the `DefaultDepartment` schema
-        field and needed for the selection widget to render the selected value
-        properly in _view_ mode.
-
-        :returns: Default Department UID
-        """
-        department = self.getDefaultDepartment()
-        if not department:
-            return None
-        return api.get_uid(department)
-
     def hasUser(self):
         """Check if contact has user
         """
@@ -174,15 +155,6 @@ class LabContact(Contact):
 
         return api.to_display_list(items, sort_by="value", allow_empty=False)
 
-    def _defaultDepsVoc(self):
-        """Vocabulary of all departments
-        """
-        # Getting the assigned departments
-        deps = self.getDepartments()
-        items = []
-        for d in deps:
-            items.append((api.get_uid(d), api.get_title(d)))
-        return api.to_display_list(items, sort_by="value", allow_empty=True)
 
     def addDepartment(self, dep):
         """Adds a department
