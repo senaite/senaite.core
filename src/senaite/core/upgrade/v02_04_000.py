@@ -451,6 +451,7 @@ def purge_setup_backreferences(tool):
         "AutoImportLog",
         "Batch",
         "Client",
+        "Contact",
         "Container",
         "Department",
         "Instrument",
