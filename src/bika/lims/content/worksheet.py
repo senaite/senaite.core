@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
-import sys
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -104,7 +103,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Method',
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
         widget=SelectionWidget(

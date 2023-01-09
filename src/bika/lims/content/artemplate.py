@@ -18,8 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -50,7 +48,6 @@ from zope.interface import implements
 schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "SamplePoint",
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SamplePoint",),
         accessor="getSamplePoint",
         edit_accessor="getSamplePoint",
@@ -76,7 +73,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     UIDReferenceField(
         "SampleType",
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SampleType",),
         accessor="getSampleType",
         edit_accessor="getSampleType",
