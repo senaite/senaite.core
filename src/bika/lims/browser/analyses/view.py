@@ -1192,9 +1192,8 @@ class AnalysesView(ListingView):
             item["allow_edit"].append("Uncertainty")
             return
 
-        result = obj.getResult()
         formatted = format_uncertainty(
-            obj, result, decimalmark=self.dmk, sciformat=int(self.scinot))
+            obj, decimalmark=self.dmk, sciformat=int(self.scinot))
         if formatted:
             item["replace"]["Uncertainty"] = formatted
             item["before"]["Uncertainty"] = "± "
