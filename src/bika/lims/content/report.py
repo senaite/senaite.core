@@ -18,34 +18,40 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.browser.fields import UIDReferenceField
-from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.public import *
-from plone.app.blob.field import FileField as BlobFileField
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.utils import user_fullname
+from DateTime import DateTime
+from plone.app.blob.field import FileField as BlobFileField
+from Products.Archetypes import atapi
+from Products.Archetypes.BaseFolder import BaseFolder
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import FileWidget
+from Products.Archetypes.Widget import StringWidget
 
 schema = BikaSchema.copy() + Schema((
-    BlobFileField('ReportFile',
-        widget = FileWidget(
-            label=_("Report"),
+    BlobFileField(
+        "ReportFile",
+        widget=FileWidget(
+            visible=False,
         ),
     ),
-    StringField('ReportType',
-        widget = StringWidget(
-            label=_("Report Type"),
-            description=_("Report type"),
+    StringField(
+        "ReportType",
+        widget=StringWidget(
+            visible=False,
         ),
     ),
-    UIDReferenceField('Client',
-        allowed_types = ('Client',),
-        widget = ReferenceWidget(
-            label=_("Client"),
+    UIDReferenceField(
+        "Client",
+        allowed_types=("Client",),
+        widget=ReferenceWidget(
+            visible=False,
         ),
     ),
 ),
@@ -53,6 +59,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['id'].required = False
 schema['title'].required = False
+
 
 class Report(BaseFolder, ClientAwareMixin):
     security = ClassSecurityInfo()
