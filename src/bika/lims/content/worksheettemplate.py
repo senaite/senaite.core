@@ -23,6 +23,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES
@@ -35,7 +36,6 @@ from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
@@ -92,13 +92,9 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "RestrictToMethod",
         schemata="Description",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary="_getMethodsVoc",
         allowed_types=("Method",),
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Method"),
             description=_(
                 "Restrict the available analysis services and instruments"
@@ -106,23 +102,21 @@ schema = BikaSchema.copy() + Schema((
                 " In order to apply this change to the services list, you "
                 "should save the change first."
             ),
+            showOn=True,
         ),
     ),
 
     UIDReferenceField(
         "Instrument",
         schemata="Description",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary="getInstrumentsDisplayList",
         allowed_types=("Instrument",),
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Instrument"),
             description=_(
                 "Select the preferred instrument"
             ),
+            showOn=True,
         ),
     ),
 
