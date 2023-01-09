@@ -32,7 +32,6 @@ from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
-from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.record import RecordField
 from senaite.core.browser.fields.records import RecordsField
@@ -42,7 +41,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "AnalysisRequest",
         allowed_types=("AnalysisRequest",),
-        referenceClass=HoldingReference,
         required=1,
     ),
     UIDReferenceField(

@@ -40,7 +40,6 @@ from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
-from Products.Archetypes.references import HoldingReference
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
@@ -80,7 +79,6 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
         allowed_types=("AnalysisService",),
-        referenceClass=HoldingReference,
         widget=ServicesWidget(
             label=_("Analysis Service"),
             description=_(

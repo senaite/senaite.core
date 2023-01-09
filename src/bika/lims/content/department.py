@@ -33,7 +33,6 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from zope.interface import implements
 
 DeapartmentID = StringField(
@@ -51,7 +50,6 @@ Manager = UIDReferenceField(
     "Manager",
     required=1,
     allowed_types=("LabContact", ),
-    referenceClass=HoldingReference,
     relationship="DepartmentLabContact",
     widget=ReferenceWidget(
         label=_("Manager"),

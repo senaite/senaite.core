@@ -43,7 +43,6 @@ from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
@@ -53,7 +52,6 @@ schema = BikaSchema.copy() + Schema((
         "SamplePoint",
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SamplePoint",),
-        referenceClass=HoldingReference,
         accessor="getSamplePoint",
         edit_accessor="getSamplePoint",
         mutator="setSamplePoint",
@@ -80,7 +78,6 @@ schema = BikaSchema.copy() + Schema((
         "SampleType",
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SampleType",),
-        referenceClass=HoldingReference,
         accessor="getSampleType",
         edit_accessor="getSampleType",
         mutator="setSampleType",

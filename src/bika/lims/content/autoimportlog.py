@@ -28,7 +28,6 @@ from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import DateTimeField
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import TextField
-from Products.Archetypes.references import HoldingReference
 from zope.interface import implements
 
 schema = BikaSchema.copy() + atapi.Schema((
@@ -42,7 +41,6 @@ schema = BikaSchema.copy() + atapi.Schema((
     UIDReferenceField(
         "Instrument",
         allowed_types=("Instrument",),
-        referenceClass=HoldingReference,
     ),
 
     StringField(

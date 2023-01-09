@@ -57,7 +57,6 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -108,7 +107,6 @@ schema = BikaSchema.copy() + Schema((
         vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
@@ -122,7 +120,6 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         allowed_types=('Instrument',),
         vocabulary='_getInstrumentsVoc',
-        referenceClass=HoldingReference,
     ),
 
     RemarksField(

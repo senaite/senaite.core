@@ -44,7 +44,6 @@ from Products.Archetypes.Field import ComputedField
 from Products.Archetypes.Field import DateTimeField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.Widget import BooleanWidget

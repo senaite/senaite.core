@@ -113,7 +113,6 @@ from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.public import Schema
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
@@ -178,7 +177,6 @@ schema = BikaSchema.copy() + Schema((
         'CCContact',
         multiValued=1,
         allowed_types=('Contact',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
         mode="rw",
         read_permission=View,
@@ -257,7 +255,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "PrimaryAnalysisRequest",
         allowed_types=("AnalysisRequest",),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestPrimaryAnalysisRequest',
         mode="rw",
         read_permission=View,
@@ -335,7 +332,6 @@ schema = BikaSchema.copy() + Schema((
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestSubGroup',
         mode="rw",
         read_permission=View,
@@ -367,7 +363,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestARTemplate',
         mode="rw",
         read_permission=View,
@@ -396,7 +391,6 @@ schema = BikaSchema.copy() + Schema((
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
@@ -937,7 +931,6 @@ schema = BikaSchema.copy() + Schema((
         'Attachment',
         multiValued=1,
         allowed_types=('Attachment',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestAttachment',
         mode="rw",
         read_permission=View,
@@ -975,7 +968,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Invoice',
         allowed_types=('Invoice',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
         mode="rw",
         read_permission=View,
@@ -1175,7 +1167,6 @@ schema = BikaSchema.copy() + Schema((
         'ParentAnalysisRequest',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestParentAnalysisRequest',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
@@ -1189,7 +1180,6 @@ schema = BikaSchema.copy() + Schema((
         "DetachedFrom",
         allowed_types=("AnalysisRequest",),
         relationship="AnalysisRequestDetachedFrom",
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
@@ -1204,7 +1194,6 @@ schema = BikaSchema.copy() + Schema((
         'Invalidated',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestRetracted',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,

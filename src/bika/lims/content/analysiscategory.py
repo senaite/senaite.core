@@ -28,7 +28,6 @@ from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import TextAreaWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
 
@@ -57,7 +56,6 @@ Department = UIDReferenceField(
     "Department",
     required=1,
     allowed_types=("Department",),
-    referenceClass=HoldingReference,
     widget=ReferenceWidget(
         label=_("Department"),
         description=_("The laboratory department"),
