@@ -32,12 +32,12 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
