@@ -51,7 +51,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Type',
         vocabulary = "getMaintenanceTypes",
         widget = ReferenceWidget(
-            checkbox_bound = 0,
             label = _("Maintenance type",
                       "Type"),
         ),

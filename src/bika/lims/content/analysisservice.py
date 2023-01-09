@@ -145,7 +145,6 @@ Preservation = UIDReferenceField(
     multiValued=0,
     widget=ReferenceWidget(
         visible=False,
-        checkbox_bound=0,
         label=_("Default Preservation"),
         description=_(
             "Select a default preservation for this analysis service. If the "
@@ -166,7 +165,6 @@ Container = UIDReferenceField(
     multiValued=0,
     widget=ReferenceWidget(
         visible=False,
-        checkbox_bound=0,
         label=_("Default Container"),
         description=_(
             "Select the default container to be used for this analysis "

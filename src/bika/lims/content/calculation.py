@@ -74,7 +74,6 @@ schema = BikaSchema.copy() + Schema((
         relationship="CalculationDependentServices",
         allowed_types=('AnalysisService',),
         widget=ReferenceWidget(
-            checkbox_bound=0,
             visible=False,
             label=_("Dependent Analyses"),
         ),

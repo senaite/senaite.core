@@ -117,7 +117,6 @@ schema = BikaSchema.copy() + Schema((
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Performed by"),
             description=_("The person at the supplier who performed the task"),
             size=30,

@@ -124,7 +124,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
             format="select",
-            checkbox_bound=0,
             label=_("Calculation"),
             description=_(
                 "If required, select a calculation for the The analysis "
