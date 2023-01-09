@@ -339,7 +339,7 @@ Since we have neither specified a precision in the analysis service, nor did we 
 set the precision from uncertainty, we get a precision of 0:
 
     >>> au.setResult("1.4")
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0'
 
 When we set the precision in the analysis, the uncertainty is formatted to this value:
@@ -347,15 +347,15 @@ When we set the precision in the analysis, the uncertainty is formatted to this 
 XXX: Why is it not rounded to 0.0002?
 
     >>> au.setPrecision(4)
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.0001'
 
     >>> au.setPrecision(5)
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.00015'
 
     >>> au.setPrecision(6)
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.00015'
 
 When the user manually entered an uncertainty and overrides an uncertainty
@@ -364,7 +364,7 @@ range, we always show all digits:
     >>> au.setPrecision(None)
     >>> au.setAllowManualUncertainty(True)
     >>> au.setUncertainty("0.00000123")
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.00000123'
 
 The uncertainty can be also defined as a percentage of the result and is then
@@ -382,6 +382,42 @@ Test the range 10-20 with an unertainty value of 5% of the result:
     >>> au.setResult(15)
     >>> au.getUncertainty()
     '0.75'
+
+
+Test exponential format
+.......................
+
+Create a new sample:
+
+    >>> sample = new_sample([Cu, Fe, Au])
+    >>> au = get_analysis(sample, Au)
+    >>> au.setAllowManualUncertainty(True)
+    >>> au.setPrecisionFromUncertainty(False)
+
+Manually set the result and uncertainty:
+
+    >>> au.setResult("1.000123e-5")
+    >>> au.setUncertainty("0.002e-5")
+
+We expect manual uncertainties in full precision:
+
+    >>> au.getUncertainty()
+    '0.002e-5'
+
+    >>> format_uncertainty(au, sciformat=1)
+    '2e-08'
+
+    >>> format_uncertainty(au, sciformat=2)
+    '2x10^-8'
+
+    >>> format_uncertainty(au, sciformat=3)
+    '2x10<sup>-8</sup>'
+
+    >>> format_uncertainty(au, sciformat=4)
+    '2\xc2\xb710^-8'
+
+    >>> format_uncertainty(au, sciformat=5)
+    '2\xc2\xb710<sup>-8</sup>'
 
 
 Test floating point arithmetic
@@ -431,7 +467,7 @@ Define it as an uncertainty as percentage of the result:
     >>> au.getUncertainty()
     '0.000001'
 
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.000001'
 
 
@@ -446,11 +482,11 @@ Define it as an uncertainty as percentage of the result:
 
 Because it exceeded the Exponential format precision, it is returned with the scientific notation:
 
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '1.0e-21'
 
 Change to a higher precision threshold:
 
     >>> au.setExponentialFormatPrecision(30)
-    >>> format_uncertainty(au, au.getResult())
+    >>> format_uncertainty(au)
     '0.000000000000000000001'

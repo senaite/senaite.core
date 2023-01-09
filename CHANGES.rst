@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2224 Fix wrong precision for exponential formatted uncertainties
 - #2219 Make `UIDReferenceField` to not keep back-references by default
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
 - #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
