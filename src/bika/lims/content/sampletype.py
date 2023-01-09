@@ -26,6 +26,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -39,12 +40,10 @@ from Products.Archetypes.public import BaseObject
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
@@ -134,10 +133,9 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         allowed_types=("SampleMatrix",),
         vocabulary="SampleMatricesVocabulary",
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Sample Matrix"),
+            showOn=True,
         ),
     ),
 
@@ -168,13 +166,13 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("ContainerType",),
         vocabulary="ContainerTypesVocabulary",
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Default Container Type"),
             description=_(
                 "The default container type. New sample partitions "
                 "are automatically assigned a container of this "
                 "type, unless it has been specified in more details "
                 "per analysis service"),
+            showOn=True,
         ),
     ),
 
