@@ -89,9 +89,8 @@
                                 valid_cls python:valid and 'valid' or 'invalid';"
                     tal:attributes="class string:recipient ${valid_cls}">
 
-                <input tal:condition="python:view.always_cc_responsibles"
+                <input tal:condition="python:email and view.always_cc_responsibles"
                        type="hidden"
-                       tal:condition="email"
                        tal:attributes="value string:${address};"
                        name="responsibles:list"/>
 
