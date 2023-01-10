@@ -651,6 +651,21 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=15,
         ),
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "AlwaysCCResponsiblesInReportEmail",
+        schemata="Notifications",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_always_cc_responsibles_in_report_emails",
+                default="Always send publication email to responsibles"),
+            description=_(
+                "description_bikasetup_always_cc_responsibles_in_report_emails",
+                default="When selected, the responsible persons of all "
+                "involved lab departments will receive publication emails."),
+        ),
+    ),
     BooleanField(
         'NotifyOnSampleRejection',
         schemata="Notifications",
@@ -1057,6 +1072,22 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setEmailBodySamplePublication(value)
+
+    def getAlwaysCCResponsiblesInReportEmail(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAlwaysCCResponsiblesInReportEmail()
+
+    def setAlwaysCCResponsiblesInReportEmail(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAlwaysCCResponsiblesInReportEmail(value)
 
     def getEnableGlobalAuditlog(self):
         """Get the value from the senaite setup
