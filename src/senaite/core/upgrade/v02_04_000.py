@@ -435,5 +435,6 @@ def purge_backreferences_to(obj):
         relationship = "{}{}".format(portal_type, field.getName())
         references = filter(None, references)
         for reference in references:
-            back_storage = get_storage(reference)
+            refob = api.get_object(reference)
+            back_storage = get_storage(refob)
             back_storage.pop(relationship, None)
