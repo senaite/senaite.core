@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2225 Fix UIDReferenceDataConverter argument type check
 - #2224 Fix wrong precision for exponential formatted uncertainties
 - #2219 Make `UIDReferenceField` to not keep back-references by default
 - #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
