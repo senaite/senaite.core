@@ -52,6 +52,11 @@ class UIDReferenceDataConverter(TextLinesConverter):
     def toFieldValue(self, value):
         """Converts a unicode string to a list of UIDs
         """
+        if not value:
+            value = u""
+        if isinstance(value, (list, tuple)):
+            value = u"\n".join(value)
+
         # remove any blank lines at the end
         value = value.rstrip("\r\n")
         return super(UIDReferenceDataConverter, self).toFieldValue(value)
