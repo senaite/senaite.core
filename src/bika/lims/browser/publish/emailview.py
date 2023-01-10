@@ -219,10 +219,22 @@ class EmailView(BrowserView):
         return api.get_portal()
 
     @property
+    def setup(self):
+        """Get the setup object
+        """
+        return api.get_setup()
+
+    @property
     def laboratory(self):
         """Laboratory object from the LIMS setup
         """
         return api.get_setup().laboratory
+
+    @property
+    def always_cc_responsibles(self):
+        """Setting if responsibles should be always CC'ed
+        """
+        return self.setup.getAlwaysCCResponsiblesInReportEmail()
 
     @property
     @view.memoize

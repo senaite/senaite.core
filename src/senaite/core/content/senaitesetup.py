@@ -52,6 +52,18 @@ class ISetupSchema(model.Schema):
         required=False,
     )
 
+    always_cc_responsibles_in_report_emails = schema.Bool(
+        title=_(
+            "title_senaitesetup_always_cc_responsibles_in_report_emails",
+            default=u"Always send publication email to responsibles"),
+        description=_(
+            "description_senaitesetup_always_cc_responsibles_in_report_emails",
+            default="When selected, the responsible persons of all involved "
+            "lab departments will receive publication emails."
+        ),
+        default=True,
+    )
+
     enable_global_auditlog = schema.Bool(
         title=_(u"Enable global Auditlog"),
         description=_(
@@ -131,6 +143,7 @@ class ISetupSchema(model.Schema):
         label=_(u"Notifications"),
         fields=[
             "email_body_sample_publication",
+            "always_cc_responsibles_in_report_emails",
         ]
     )
 
@@ -169,6 +182,20 @@ class Setup(Container):
         """Set email body text for publication emails
         """
         mutator = self.mutator("email_body_sample_publication")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getAlwaysCCResponsiblesInReportEmail(self):
+        """Returns if responsibles should always receive publication emails
+        """
+        accessor = self.accessor("always_cc_responsibles_in_report_emails")
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def setAlwaysCCResponsiblesInReportEmail(self, value):
+        """Set if responsibles should always receive publication emails
+        """
+        mutator = self.mutator("always_cc_responsibles_in_report_emails")
         return mutator(self, value)
 
     @security.protected(permissions.View)
