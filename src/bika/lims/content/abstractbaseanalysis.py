@@ -97,11 +97,13 @@ ScientificName = BooleanField(
     )
 )
 
+
 # The units of measurement used for representing results in reports and in
 # manage_results screen.
 Unit = StringField(
     'Unit',
     schemata="Description",
+    write_permission=FieldEditAnalysisResult,
     widget=StringWidget(
         label=_("Default Unit"),
         description=_(
@@ -110,39 +112,30 @@ Unit = StringField(
     )
 )
 
+# A selection of units that are able to update Unit. 
 UnitChoices = RecordsField(
     "UnitChoices",
     schemata="Description",
     type="UnitChoices",
     subfields=(
-        "unitchoice",
-    ),
-    required_subfields=(
-        "unitchoice",
+        "value",
     ),
     subfield_labels={
-        "unitchoice": _("Units"),
-    },
-    subfield_descriptions={
-        "unitchoice": _("Please provide a list of units"),
+        "value": _(" "),
     },
     subfield_types={
-        "unitchoice": "string",
+        "value": "string",
     },
     subfield_sizes={
-        "unitchoice": 20,
-    },
-    subfield_validators={
-        "unitchoice": "service_unitchoices_validator",
+        "value": 20,
     },
     subfield_maxlength={
-        "unitchoice": 50,
-        "description": 200,
+        "value": 50,
     },
     widget=RecordsWidget(
-        label=_("Multiple Unit Selection"),
+        label=_("Units for Selection"),
         description=_(
-            "Provide a list of units that are suitable for the analysis."
+            "Provide a list of units that are suitable for the analysis. Ensure to include the default unit in this list. "  
         ),
     )
 )
@@ -783,21 +776,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
-
-    @security.public
-    def getUnit(self):
-        """Returns the Unit
-        """
-        unit = self.Schema().getField("Unit").get(self) or ""
-        return unit.strip()
-
-    @security.public
-    def getUnitChoices(self):
-        '''Returns the UnitChoices
-        :returns: List of UnitChoices objects
-        '''
-        return self.Schema().getField("UnitChoices").get(self) or ""
-        
+         
     @security.public
     def getDefaultVAT(self):
         """Return default VAT from bika_setup

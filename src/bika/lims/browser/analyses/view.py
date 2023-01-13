@@ -134,13 +134,7 @@ class AnalysesView(ListingView):
             ("Calculation", {
                 "title": _("Calculation"),
                 "sortable": False,
-                "toggle": False}),
-            ("UnitChoices", {
-                "title": _("Unit Selection"),
-                "sortable": False,
-                "ajax": True,
-                "on_change": "_on_unit_choice_change",
-                "toggle": True}),
+                "toggle": False}),           
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -165,6 +159,12 @@ class AnalysesView(ListingView):
                 "title": _("+-"),
                 "ajax": True,
                 "sortable": False}),
+            ("Unit", {
+                "title": _("Unit"),
+                "sortable": False,
+                "ajax": True,
+                "on_change": "_on_unit_change",
+                "toggle": True}),
             ("Specification", {
                 "title": _("Specification"),
                 "sortable": False}),
@@ -460,6 +460,32 @@ class AnalysesView(ListingView):
             })
         return vocab
 
+    def get_unit_vocabulary(self, analysis_brain):
+        """Returns a vocabulary with all the units available for the passed in
+        analysis.
+
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+
+            {'ResultValue': <method_UID>,
+             'ResultText': <method_Title>}
+
+        :param analysis_brain: A single Analysis brain
+        :type analysis_brain: CatalogBrain
+        :returns: A list of dicts
+        """
+        obj = self.get_object(analysis_brain)
+        # Get unit choices
+        unit_choices = obj.getUnitChoices()
+        vocab = []
+        for unit in unit_choices:
+            vocab.append({
+                "ResultValue": unit['value'],
+                "ResultText": unit['value'],
+            })
+        return vocab
+
+
     def get_instruments_vocabulary(self, analysis, method=None):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -670,8 +696,8 @@ class AnalysesView(ListingView):
         self._folder_item_result(obj, item)
         # Fill calculation and interim fields
         self._folder_item_calculation(obj, item)
-        # Fill unit choices field
-        self._folder_item_unit_choices(obj, item)        
+        # Fill unit field
+        self._folder_item_unit(obj, item)        
         # Fill method
         self._folder_item_method(obj, item)
         # Fill instrument
@@ -708,7 +734,6 @@ class AnalysesView(ListingView):
         self._folder_item_remarks(obj, item)
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
-
         return item
 
     def folderitems(self):
@@ -786,7 +811,7 @@ class AnalysesView(ListingView):
         # analyses requires them to be displayed for selection
         self.columns["Method"]["toggle"] = self.is_method_column_required()
         self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
-        self.columns["UnitChoices"]["toggle"] = self.is_unit_choices_column_required()
+        self.columns["Unit"]["toggle"] = self.is_unit_selection_column_required()
 
         return items
 
@@ -900,6 +925,14 @@ class AnalysesView(ListingView):
             # Set the results field editable
             if self.is_result_edition_allowed(analysis_brain):
                 item["allow_edit"].append("Result")
+
+            # Display the DL operand (< or >) in the results entry field if
+            # the manual entry of DL is set, but DL selector is hidden
+            allow_manual = obj.getAllowManualDetectionLimit()
+            selector = obj.getDetectionLimitSelector()
+            if allow_manual and not selector:
+                operand = obj.getDetectionLimitOperand()
+                item["Result"] = "{} {}".format(operand, result).strip()
 
             # Prepare result options
             choices = obj.getResultOptions()
@@ -1054,42 +1087,20 @@ class AnalysesView(ListingView):
         item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
 
-    def _folder_item_unit_choices(self, analysis_brain, item):
-        """Set the unit choices to the item passed in.
+    def _folder_item_unit(self, analysis_brain, item):
+        """Fills the analysis' unit to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        if not self.has_permission(ViewResults, analysis_brain):
-            # Hide unit_choices if user cannot view results
+        if not self.is_analysis_edition_allowed(analysis_brain): 
             return
-        is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        if is_editable:
-            # Set unit_choices. The default unit is also included. 
-            analysis_obj = self.get_object(analysis_brain)
-            # get unit_choice_fields
-            unit_choice_fields = analysis_obj.getUnitChoices() or list()
-            if unit_choice_fields:
-                # Get the keys for the dictionary
-                unit_choice_fields_key=set().union(*(d.keys() for d in unit_choice_fields))
-                if 'unitchoice' in unit_choice_fields_key:
-                    # Get the default unit
-                    unit=analysis_obj.getUnit()
-                    # Copy to prevent to avoid persistent changes
-                    unit_choice_fields = deepcopy(unit_choice_fields)
-                    # Get the {value:text} dict
-                    # Remove leading white space on front of unit choices. 
-                    choices=["{}:{}".format(x['unitchoice'],x['unitchoice'].lstrip()) for x in unit_choice_fields]
-                    # Add default unit to list of choices
-                    # Space in {}: {} ensures that the default unit is always on top of the selection.
-                    choices.append("{}: {}".format(unit,unit))
-                    # Create a dictionary of the choices
-                    choices = dict(map(lambda ch: ch.strip().split(":"), choices))
-                    # Generate the display list
-                    # [{"ResultValue": value, "ResultText": text},]
-                    headers = ["ResultValue", "ResultText"]
-                    dl = map(lambda it: dict(zip(headers, it)), choices.items())
-                    item["choices"]["UnitChoices"] = dl
-                    item["allow_edit"].append("UnitChoices")
+
+        # Edition allowed
+        voc = self.get_unit_vocabulary(analysis_brain)
+        if voc:
+            item["choices"]["Unit"] = voc
+            item["allow_edit"].append("Unit")    
 
 
     def _folder_item_method(self, analysis_brain, item):
@@ -1117,10 +1128,17 @@ class AnalysesView(ListingView):
         """
         item["Unit"] = value
         unit = item.get("Unit")
-        if unit:
-            item["after"]["Result"] = self.render_unit(unit)
 
-        return item    
+        item["after"]["Result"] = self.render_unit(unit)
+        uncertainty = item.get("Uncertainty")
+        if uncertainty:
+            item["after"]["Uncertainty"] = self.render_unit(unit)
+
+        elif "Uncertainty" in item["allow_edit"]:
+            item["after"]["Uncertainty"] = self.render_unit(unit)
+
+        return item
+
     
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
 
@@ -1172,6 +1190,19 @@ class AnalysesView(ListingView):
         else:
             item["Instrument"] = _("Manual")
 
+
+    def _on_unit_change(self, uid=None, value=None, item=None, **kw):
+        """ updates the rendered unit on selection of unit. 
+        """
+        item["after"]["Result"] = self.render_unit(value)
+        uncertainty = item.get("Uncertainty")
+        if uncertainty:
+            item["after"]["Uncertainty"] = self.render_unit(value)
+
+        elif "Uncertainty" in item["allow_edit"]:
+            item["after"]["Uncertainty"] = self.render_unit(value)
+        return item
+
     def _folder_item_analyst(self, obj, item):
         obj = self.get_object(obj)
         analyst = obj.getAnalyst()
@@ -1201,7 +1232,8 @@ class AnalysesView(ListingView):
             url = "{}/at_download/AttachmentFile".format(api.get_url(at))
             link = get_link(url, at_file.filename, tabindex="-1")
             attachments_html.append(link)
-            attachments_names.append(at_file.filename)
+            filename = attachment.getFilename()
+            attachments_names.append(filename)
 
         if attachments_html:
             item["replace"]["Attachments"] = "<br/>".join(attachments_html)
@@ -1210,6 +1242,14 @@ class AnalysesView(ListingView):
         elif analysis.getAttachmentRequired():
             img = get_image("warning.png", title=_("Attachment required"))
             item["replace"]["Attachments"] = img
+
+    def get_attachment_link(self, attachment):
+        """Returns a well-formed link for the attachment passed in
+        """
+        filename = attachment.getFilename()
+        att_url = api.get_url(attachment)
+        url = "{}/at_download/AttachmentFile".format(att_url)
+        return get_link(url, filename, tabindex="-1")
 
     def _folder_item_uncertainty(self, analysis_brain, item):
         """Fills the analysis' uncertainty to the item passed in.
@@ -1231,7 +1271,11 @@ class AnalysesView(ListingView):
         allow_edit = self.is_uncertainty_edition_allowed(analysis_brain)
         if allow_edit:
             item["Uncertainty"] = obj.getUncertainty()
+            item["before"]["Uncertainty"] = "± "
             item["allow_edit"].append("Uncertainty")
+            unit = item.get("Unit")
+            if unit:
+                item["after"]["Uncertainty"] = self.render_unit(unit)
             return
 
         result = obj.getResult()
@@ -1240,7 +1284,10 @@ class AnalysesView(ListingView):
         if formatted:
             item["replace"]["Uncertainty"] = formatted
             item["before"]["Uncertainty"] = "± "
-            item["after"]["Uncertainty"] = obj.getUnit()
+            unit = item.get("Unit")
+            if unit:
+                item["after"]["Uncertainty"] = self.render_unit(unit)
+            return
 
     def _folder_item_detection_limits(self, analysis_brain, item):
         """Fills the analysis' detection limits to the item passed in.
@@ -1610,6 +1657,7 @@ class AnalysesView(ListingView):
         analysis = self.get_object(analysis)
         if analysis.getUnitChoices():
             return True
+        return False
 
     def is_method_column_required(self):
         """Returns whether the method column has to be rendered or not.
@@ -1633,10 +1681,10 @@ class AnalysesView(ListingView):
                 return True
         return False
         
-    def is_unit_choices_column_required(self):
-        """Returns whether the unit_choices column has to be rendered or not.
+    def is_unit_selection_column_required(self):
+        """Returns whether the unit column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
-        the list for unit_choices selection to be rendered
+        the list for unit selection to be rendered
         """
         for item in self.items:
             obj = item.get("obj")

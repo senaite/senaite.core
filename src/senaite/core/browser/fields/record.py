@@ -213,12 +213,12 @@ class RecordField(ObjectField):
 
     # this is really special purpose and in no ways generic
     def hideEmail(self,email='',instance=None):
-	masked = 'email: ' + \
-                 email.replace('@', ' (at) ').replace('.', ' (dot) ')
-	membertool = getToolByName(instance,'portal_membership',None)
-	if membertool is None or membertool.isAnonymousUser():
-	    return masked
-	return "<a href='mailto:%s'>%s</a>" % (email,email)
+        masked = 'email: ' + \
+                    email.replace('@', ' (at) ').replace('.', ' (dot) ')
+        membertool = getToolByName(instance,'portal_membership',None)
+        if membertool is None or membertool.isAnonymousUser():
+            return masked
+        return "<a href='mailto:%s'>%s</a>" % (email,email)
 
     def labelPhone(self,phone=''):
         return 'phone: ' + phone
