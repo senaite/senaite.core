@@ -3,7 +3,7 @@ Changelog
 
 2.4.0 (unreleased)
 ------------------
-- #2228 Fix worksheet template title reindex
+- #2228 Fix worksheet template title is not updated after template assignment
 - #2226 Add setting to CC responsible persons in publication emails
 - #2224 Fix wrong precision for exponential formatted uncertainties
 - #2219 Make `UIDReferenceField` to not keep back-references by default
