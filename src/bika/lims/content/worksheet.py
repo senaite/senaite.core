@@ -1076,9 +1076,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
-        # Store the Worksheet Template field
+        # Store the Worksheet Template field and reindex it
         self.getField('WorksheetTemplate').set(self, wst)
-
+        self.reindexObject(idxs=["getWorksheetTemplateTitle"])
+        
         if not wst:
             return
 
