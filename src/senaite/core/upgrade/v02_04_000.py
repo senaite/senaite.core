@@ -438,3 +438,56 @@ def purge_backreferences_to(obj):
             refob = api.get_object(reference)
             back_storage = get_storage(refob)
             back_storage.pop(relationship, None)
+
+
+def purge_setup_backreferences(tool):
+    """Purges back-references that are no longer required from setup
+    """
+    logger.info("Purge no longer required back-references from setup ...")
+    portal_types = [
+        "AnalysisCategory",
+        "AnalysisProfile",
+        "ARTemplate",
+        "Attachment",
+        "AutoImportLog",
+        "Batch",
+        "Client",
+        "Contact",
+        "Container",
+        "Department",
+        "Instrument",
+        "InstrumentCalibration",
+        "InstrumentCertification",
+        "InstrumentMaintenanceTask",
+        "InstrumentScheduledTask",
+        "InstrumentValidation",
+        "Invoice",
+        "LabContact",
+        "ReferenceSample",
+        "RejectAnalysis",
+        "Report",
+        "SamplePoint",
+        "SampleType",
+        "Worksheet",
+        "WorksheetTemplate",
+    ]
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type=portal_types)
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        obj = api.get_object(obj)
+        purge_backreferences_to(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Purge no longer required back-references from setup [DONE]")

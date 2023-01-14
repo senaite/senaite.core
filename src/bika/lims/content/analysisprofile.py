@@ -21,6 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -34,7 +35,6 @@ from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import DecimalWidget
 from Products.Archetypes.public import FixedPointField
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
@@ -54,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
                           "not be the same as any Calculation Interim field ID."),
         ),
     ),
-    ReferenceField('Service',
+    UIDReferenceField('Service',
         schemata = 'Analyses',
         required = 1,
         multiValued = 1,

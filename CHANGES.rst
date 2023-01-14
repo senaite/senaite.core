@@ -3,6 +3,8 @@ Changelog
 
 2.4.0 (unreleased)
 ------------------
+
+- #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
 - #2228 Fix worksheet template title is not updated after template assignment
 - #2226 Add setting to CC responsible persons in publication emails
 - #2224 Fix wrong precision for exponential formatted uncertainties
