@@ -298,14 +298,20 @@ def migrate_analysisrequest_referencefields(tool):
     logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
 
 
-def migrate_reference_fields(obj, field_names):
+def migrate_reference_fields(obj, field_names=None):
     """Migrates the reference fields with the names specified from the obj
     """
     ref_tool = api.get_tool(REFERENCE_CATALOG)
+    if field_names is None:
+        field_names = api.get_fields(obj).keys()
+
     for field_name in field_names:
 
         # Get the relationship id from field
         field = obj.getField(field_name)
+        if not isinstance(field, UIDReferenceField):
+            continue
+
         ref_id = field.get_relationship_key(obj)
         if not ref_id:
             logger.error("No relationship for field {}".format(field_name))
@@ -485,6 +491,9 @@ def purge_setup_backreferences(tool):
 
         # Migrate the reference fields for current sample
         obj = api.get_object(obj)
+        migrate_reference_fields(obj)
+
+        # Purge references
         purge_backreferences_to(obj)
 
         # Flush the object from memory
