@@ -113,14 +113,14 @@
       handler="senaite.core.upgrade.v02_04_000.purge_setup_backreferences"
       profile="senaite.core:default"/>
 
-  <!-- Fix Laboratory Contacts without departments
+  <!-- Fix missing references due to wrong relationship names
        https://github.com/senaite/senaite.core/pull/2230 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Fix Laboratory Contacts without departments"
-      description="Fix Laboratory Contacts without departments"
+      title="SENAITE CORE 2.4.0: Fix missing references"
+      description="Fix missing references due to wrong relationship names"
       source="2411"
       destination="2412"
-      handler="senaite.core.upgrade.v02_04_000.fix_labcontacts_without_departments"
+      handler="senaite.core.upgrade.v02_04_000.fix_missing_references"
       profile="senaite.core:default"/>
 
 </configure>

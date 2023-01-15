@@ -502,13 +502,48 @@ def purge_setup_backreferences(tool):
     logger.info("Purge no longer required back-references from setup [DONE]")
 
 
-def fix_labcontacts_without_departments(tool):
-    """Re-assign departments to LabContacts
+def fix_missing_references(tool):
+    """Fix missing references due to a wrong old-relationship name, case were
+    not following the convention <portal_type><field_name>
     """
-    logger.info("Fix LabContacts without departments ...")
+    # (portal_type, [(field_name, old_relationship name), ])
+    missing = dict([
+        ("AutoImportLog", [
+            ("Instrument", "InstrumentImportLogs")
+        ]),
+        ("Contact", [
+            ("CCContact", "ContactContact")
+        ]),
+        ("Department", [
+            ("Manager", "DepartmentLabContact")
+        ]),
+        ("InstrumentCalibration", [
+            ("Worker", "LabContactInstrumentCalibration"),
+        ]),
+        ("InstrumentCertification", [
+            ("Preparator", "LabContactInstrumentCertificatePreparator"),
+            ("Validator", "LabContactInstrumentCertificateValidator"),
+        ]),
+        ("InstrumentValidation", [
+            ("Worker", "LabContactInstrumentValidation"),
+        ]),
+        ("Invoice", [
+            ("Client", "ClientInvoice"),
+        ]),
+        ("LabContact", [
+            ("Departments", "LabContactDepartment")
+        ]),
+        ("WorksheetTemplate", [
+            ("Service", "WorksheetTemplateAnalysisService"),
+            ("RestrictToMethod", "WorksheetTemplateMethod"),
+        ]),
+    ])
+
+    logger.info("Fix missing references ...")
+
     ref_tool = api.get_tool(REFERENCE_CATALOG)
     uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type="LabContact")
+    brains = uc(portal_type=missing.keys())
     total = len(brains)
     for num, obj in enumerate(brains):
         if num and num % 100 == 0:
@@ -518,24 +553,27 @@ def fix_labcontacts_without_departments(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        # Migrate the reference fields for current sample
         obj = api.get_object(obj)
+        portal_type = api.get_portal_type(obj)
+        for field_name, relationship in missing.get(portal_type):
+            # Extract the referenced objects
+            references = obj.getRefs(relationship=relationship)
+            if not references:
+                # Processed already or no referenced objects
+                continue
 
-        # Extract the referenced objects
-        ref_id = "LabContactDepartment"
-        references = obj.getRefs(relationship=ref_id)
-        if not references:
-            # Processed already or no referenced objects
-            continue
+            # Assign the old-references
+            field = obj.getField(field_name)
+            if field.multiValued:
+                value = [api.get_uid(val) for val in references]
+            else:
+                value = api.get_uid(references[0])
+            field.set(obj, value)
 
-        # Assign the old-referenced departments
-        value = [api.get_uid(val) for val in references]
-        obj.setDepartments(value)
-
-        # Remove this relationship from reference catalog
-        ref_tool.deleteReferences(obj, relationship=ref_id)
+            # Remove this relationship from reference catalog
+            ref_tool.deleteReferences(obj, relationship=relationship)
 
         # Flush the object from memory
         obj._p_deactivate()
 
-    logger.info("Fix LabContacts without departments [DONE]")
+    logger.info("Fix missing references [DONE]")
