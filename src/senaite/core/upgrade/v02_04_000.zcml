@@ -113,4 +113,14 @@
       handler="senaite.core.upgrade.v02_04_000.purge_setup_backreferences"
       profile="senaite.core:default"/>
 
+  <!-- Fix Laboratory Contacts without departments
+       https://github.com/senaite/senaite.core/pull/2230 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Fix Laboratory Contacts without departments"
+      description="Fix Laboratory Contacts without departments"
+      source="2411"
+      destination="2412"
+      handler="senaite.core.upgrade.v02_04_000.fix_labcontacts_without_departments"
+      profile="senaite.core:default"/>
+
 </configure>

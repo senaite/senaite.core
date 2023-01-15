@@ -500,3 +500,42 @@ def purge_setup_backreferences(tool):
         obj._p_deactivate()
 
     logger.info("Purge no longer required back-references from setup [DONE]")
+
+
+def fix_labcontacts_without_departments(tool):
+    """Re-assign departments to LabContacts
+    """
+    logger.info("Fix LabContacts without departments ...")
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="LabContact")
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        obj = api.get_object(obj)
+
+        # Extract the referenced objects
+        ref_id = "LabContactDepartment"
+        references = obj.getRefs(relationship=ref_id)
+        if not references:
+            # Processed already or no referenced objects
+            continue
+
+        # Assign the old-referenced departments
+        value = [api.get_uid(val) for val in references]
+        obj.setDepartments(value)
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(obj, relationship=ref_id)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Fix LabContacts without departments [DONE]")
