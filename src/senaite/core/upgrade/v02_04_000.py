@@ -500,3 +500,80 @@ def purge_setup_backreferences(tool):
         obj._p_deactivate()
 
     logger.info("Purge no longer required back-references from setup [DONE]")
+
+
+def fix_missing_references(tool):
+    """Fix missing references due to a wrong old-relationship name, case were
+    not following the convention <portal_type><field_name>
+    """
+    # (portal_type, [(field_name, old_relationship name), ])
+    missing = dict([
+        ("AutoImportLog", [
+            ("Instrument", "InstrumentImportLogs")
+        ]),
+        ("Contact", [
+            ("CCContact", "ContactContact")
+        ]),
+        ("Department", [
+            ("Manager", "DepartmentLabContact")
+        ]),
+        ("InstrumentCalibration", [
+            ("Worker", "LabContactInstrumentCalibration"),
+        ]),
+        ("InstrumentCertification", [
+            ("Preparator", "LabContactInstrumentCertificatePreparator"),
+            ("Validator", "LabContactInstrumentCertificateValidator"),
+        ]),
+        ("InstrumentValidation", [
+            ("Worker", "LabContactInstrumentValidation"),
+        ]),
+        ("Invoice", [
+            ("Client", "ClientInvoice"),
+        ]),
+        ("LabContact", [
+            ("Departments", "LabContactDepartment")
+        ]),
+        ("WorksheetTemplate", [
+            ("Service", "WorksheetTemplateAnalysisService"),
+            ("RestrictToMethod", "WorksheetTemplateMethod"),
+        ]),
+    ])
+
+    logger.info("Fix missing references ...")
+
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type=missing.keys())
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        obj = api.get_object(obj)
+        portal_type = api.get_portal_type(obj)
+        for field_name, relationship in missing.get(portal_type):
+            # Extract the referenced objects
+            references = obj.getRefs(relationship=relationship)
+            if not references:
+                # Processed already or no referenced objects
+                continue
+
+            # Assign the old-references
+            field = obj.getField(field_name)
+            if field.multiValued:
+                value = [api.get_uid(val) for val in references]
+            else:
+                value = api.get_uid(references[0])
+            field.set(obj, value)
+
+            # Remove this relationship from reference catalog
+            ref_tool.deleteReferences(obj, relationship=relationship)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Fix missing references [DONE]")
