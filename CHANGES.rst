@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2231 Cannot set conditions with a '<' char when others are from type "file"
 - #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
 - #2228 Fix worksheet template title is not updated after template assignment
 - #2226 Add setting to CC responsible persons in publication emails

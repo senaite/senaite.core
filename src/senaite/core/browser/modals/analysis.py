@@ -85,7 +85,7 @@ class SetAnalysisConditionsView(BrowserView):
                 condition["attachment"] = self.get_attachment_info(uid)
 
         # Move conditions from "file" type to the end:
-        #   Cannot set conditions containing a '<' character when files
+        #   Cannot set conditions with a '<' char when others are from file
         #   https://github.com/senaite/senaite.core/pulls/2231
         def files_last(condition1, condition2):
             type1 = condition1.get("type")
