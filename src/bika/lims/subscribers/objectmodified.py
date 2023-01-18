@@ -27,10 +27,13 @@ from senaite.core.catalog import SETUP_CATALOG
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
     """
-    if not hasattr(obj, 'portal_type'):
+    try:
+        portal_type = api.get_portal_type(obj)
+    except api.APIError:
+        # BBB: Might be an `at_references` folder
         return
 
-    if obj.portal_type == 'Contact':
+    if portal_type == 'Contact':
         # Verify that the Contact details are the same as the Plone user.
         contact_username = obj.Schema()['Username'].get(obj)
         if contact_username:
@@ -44,7 +47,7 @@ def ObjectModifiedEventHandler(obj, event):
                               'fullname': contact_fullname}
                 member.setMemberProperties(properties)
 
-    elif obj.portal_type == 'AnalysisCategory':
+    elif portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
         uid = obj.UID()
@@ -53,12 +56,12 @@ def ObjectModifiedEventHandler(obj, event):
         query = dict(category_uid=uid, portal_type="AnalysisService")
         brains = api.search(query, SETUP_CATALOG)
         for brain in brains:
-            obj = api.get_object(brain)
-            obj.reindexObject()
+            ob = api.get_object(brain)
+            ob.reindexObject()
 
         # re-index analyses
         query = dict(getCategoryUID=uid)
         brains = api.search(query, ANALYSIS_CATALOG)
         for brain in brains:
-            obj = api.get_object(brain)
-            obj.reindexObject()
+            ob = api.get_object(brain)
+            ob.reindexObject()
