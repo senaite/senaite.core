@@ -488,7 +488,11 @@ def migrate_and_purge_references(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        obj = api.get_object_by_uid(uid)
+        obj = api.get_object_by_uid(uid, default=None)
+        if not api.is_object(obj):
+            # this one is corrupted
+            logger.warn("Wrong record with no sourceUID in reference catalog")
+            continue
 
         # Migrate reference fields
         migrate_reference_fields(obj)
