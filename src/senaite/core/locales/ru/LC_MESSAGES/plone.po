@@ -1,13 +1,14 @@
 #
 # Translators:
 # Ragnar Lothbrok, 2022
+# PavelFadeev, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-10-03 21:23+0000\n"
+"POT-Creation-Date: 2023-01-18 21:10+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ragnar Lothbrok, 2022\n"
+"Last-Translator: PavelFadeev, 2022\n"
 "Language-Team: Russian (https://www.transifex.com/senaite/teams/87045/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,47 +22,47 @@ msgstr ""
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
-msgstr ""
+msgstr "Активированные дополнения"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Alternative formats"
-msgstr ""
+msgstr "Альтернативные форматы"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
-msgstr ""
+msgstr "Применить правило для всего участка"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:123
 msgid "Available add-ons"
-msgstr ""
+msgstr "Доступные дополнения"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:212
 msgid "Broken add-ons"
-msgstr ""
+msgstr "Неработающие дополнения"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:256
 msgid "Configure rule"
-msgstr ""
+msgstr "Настроить содержимое "
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
-msgstr ""
+msgstr "Обновлены настройки содержимого."
 
 #: senaite/core/browser/dexterity/templates/container.pt:29
 msgid "Contents"
-msgstr ""
+msgstr "Содержание"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
-msgstr ""
+msgstr "Выключить глобально"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Displayed content types"
-msgstr ""
+msgstr "Отображаемые типы содержания"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
-msgstr ""
+msgstr "Включено"
 
 #: senaite/core/browser/dexterity/templates/macros.pt:20
 #: senaite/core/browser/login/templates/login.pt:17
@@ -74,23 +75,23 @@ msgstr "Фильтр:"
 
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:28
 msgid "Go to parent folder"
-msgstr ""
+msgstr "Перейти в родительскую папку"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:222
 msgid "Go to the folder where you want the rule to apply, or at the site root, click on 'rule' tab, and then locally setup the rules."
-msgstr ""
+msgstr "Перейдите в папку, к которой вы хотите применить правило, или в корень участка, перейдите на вкладку \"правила\", а затем локально настройте правила."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "Go to the upgrade page"
-msgstr ""
+msgstr "Перейдите на страницу обновления"
 
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
-msgstr ""
+msgstr "Главная страница"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:132
 msgid "Install"
-msgstr ""
+msgstr "Установить"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
@@ -102,19 +103,19 @@ msgstr "Выйти"
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
-msgstr ""
+msgstr "Переместиться вниз"
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:67
 msgid "Move up"
-msgstr ""
+msgstr "Двигайтесь вверх"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:39
 msgid "No upgrades in this corner"
-msgstr ""
+msgstr "Обновление в этом углу не предусмотрено"
 
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:56
 msgid "Note"
-msgstr ""
+msgstr "Примечание"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
@@ -126,11 +127,11 @@ msgstr "Вкл."
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
-msgstr ""
+msgstr "Относительный URL-адрес для логотипа панели инструментов SENAITE"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
-msgstr ""
+msgstr "Выберите, какие форматы доступны пользователям в качестве альтернативы формату по умолчанию. Обратите внимание, что если установлены новые форматы, они будут включены для текстовых полей по умолчанию, если они явно не отключены здесь или соответствующей программой установки."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:148
 msgid "Server:"
@@ -148,11 +149,11 @@ msgstr "Заголовок сайта"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
-msgstr ""
+msgstr "Типы контента, которые должны отображаться в навигации и карте сайта."
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:218
 msgid "The rule is enabled but will perform nothing since it is not assigned anywhere."
-msgstr ""
+msgstr "Правило включено, но оно ничего не будет выполнять, не будучи нигде назначенным."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "The site configuration is outdated and needs to be upgraded. Please ${link_continue_with_the_upgrade}."
@@ -160,64 +161,64 @@ msgstr "Конфигурация сайта устарела и нуждаетс
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:87
 msgid "There is no upgrade procedure defined for this addon. Please consult the addon documentation for upgrade information, or contact the addon author."
-msgstr ""
+msgstr "Для этого дополнения не определена процедура обновления. Пожалуйста, обратитесь к документации дополнения для получения информации об обновлении или свяжитесь с автором дополнения."
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:124
 msgid "There is not any action performed by this rule. Click on Add button to setup an action."
-msgstr ""
+msgstr "Это правило не выполняет никаких действий. Нажмите кнопку Добавить, чтобы установить действие."
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:39
 msgid "There is not any additional condition checked on this rule."
-msgstr ""
+msgstr "В этом правиле не проверяется никакое дополнительное условие."
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:32
 msgid "There was an error saving content rules."
-msgstr ""
+msgstr "Произошла ошибка при сохранении правил содержимого."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:69
 msgid "This addon has been upgraded."
-msgstr ""
+msgstr "Это дополнение было обновлено."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:23
 msgid "This is the Add-on configuration section, you can activate and deactivate add-ons in the lists below."
-msgstr ""
+msgstr "Это раздел настройки дополнений, вы можете активировать и деактивировать дополнения в списках ниже."
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This must be a URL relative to the site root."
-msgstr ""
+msgstr "Это должен быть URL относительно корня сайта."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:154
 msgid "This product cannot be uninstalled!"
-msgstr ""
+msgstr "Этот продукт не может быть деинсталлирован!"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:215
 msgid "This rule is not assigned to any location"
-msgstr ""
+msgstr "Это правило не назначено ни одному объекту"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This shows up in the title bar of browsers and in syndication feeds."
-msgstr ""
+msgstr "Это отображается в строке заголовка браузеров и в лентах синдикации."
 
 #: senaite/core/browser/portlets/templates/navigation.pt:5
 msgid "Toggle sidebar visibility"
-msgstr ""
+msgstr "Переключение видимости боковой панели"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:176
 msgid "Uninstall"
-msgstr ""
+msgstr "Удалить"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:105
 msgid "Upgrade them ALL!"
-msgstr ""
+msgstr "Обновите их ВСЕ!"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:36
 msgid "Upgrades"
-msgstr ""
+msgstr "Обновления"
 
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:32
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:28
 msgid "Users and Groups"
-msgstr ""
+msgstr "Пользователи и группы"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
@@ -225,11 +226,11 @@ msgstr "WSGI:"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
 msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
-msgstr ""
+msgstr "Отключать ли правила содержания глобально или нет. Если этот параметр выбран, никакие правила не будут выполняться нигде в пределах портала."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:40
 msgid "You are up to date. High fives."
-msgstr ""
+msgstr "Вы в курсе всех событий. Дай пять."
 
 #. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
@@ -286,7 +287,7 @@ msgstr ""
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "continue with the upgrade"
-msgstr ""
+msgstr "продолжить обновление"
 
 #. Default: "There is no group or user attached to this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:164
@@ -522,7 +523,7 @@ msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:148
 msgid "inactive"
-msgstr ""
+msgstr "неактивен"
 
 #. Default: "Add"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:105
@@ -816,7 +817,7 @@ msgstr ""
 #. Default: "Content rules"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:73
 msgid "legend-contentrules"
-msgstr ""
+msgstr "правила содержания легенд"
 
 #. Default: "E-mail Address"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:111
@@ -980,7 +981,7 @@ msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:153
 msgid "unassigned"
-msgstr ""
+msgstr "неназначенный"
 
 #. ${image_link_icon} indicates a role inherited from membership in a group."
 #. Default: "Note that roles set here apply directly to a user. The symbol ${image_link_icon} indicates a role inherited from membership in a group."
