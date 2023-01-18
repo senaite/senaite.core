@@ -325,26 +325,21 @@ def _uid_reference_fieldnames_cache(method, *args):
     return api.get_portal_type(args[0])
 
 
-@cache(_uid_reference_fieldnames_cache)
-def get_uidreference_fieldnames(obj):
-    field_names = []
-    for field_name, field in api.get_fields(obj).items():
-        if isinstance(field, UIDReferenceField):
-            field_names.append(field_name)
-    return field_names
-
-
 def migrate_reference_fields(obj, field_names=None):
     """Migrates the reference fields with the names specified from the obj
     """
     ref_tool = api.get_tool(REFERENCE_CATALOG)
-    if field_names is None:
-        field_names = get_uidreference_fieldnames(obj)
 
-    for field_name in field_names:
+    fields = {}
+    if field_names is None:
+        fields = api.get_fields()
+    else:
+        for field_name in field_names:
+            fields[field_name] = obj.getField(field_name)
+
+    for field_name, field in fields.items():
 
         # Get the relationship id from field
-        field = obj.getField(field_name)
         if not isinstance(field, UIDReferenceField):
             continue
 
@@ -460,9 +455,8 @@ def purge_backreferences_to(obj):
     """Removes back-references that are no longer needed that point to the
     given object
     """
-    fields = get_uidreference_fieldnames(obj)
-    for field_name in fields:
-        field = obj.getField(field_name)
+    fields = api.get_fields(obj)
+    for field_name, field in fields.items():
         if not isinstance(field, UIDReferenceField):
             continue
 
