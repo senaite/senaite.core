@@ -27,6 +27,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from plone.memoize.ram import cache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -320,12 +321,25 @@ def get_relationship_key(obj, field):
     return relationships.get(relationship, relationship)
 
 
+def _uid_reference_fieldnames_cache(method, *args):
+    return api.get_portal_type(args[0])
+
+
+@cache(_uid_reference_fieldnames_cache)
+def get_uidreference_fieldnames(obj):
+    field_names = []
+    for field_name, field in api.get_fields(obj).items():
+        if isinstance(field, UIDReferenceField):
+            field_names.append(field_name)
+    return field_names
+
+
 def migrate_reference_fields(obj, field_names=None):
     """Migrates the reference fields with the names specified from the obj
     """
     ref_tool = api.get_tool(REFERENCE_CATALOG)
     if field_names is None:
-        field_names = api.get_fields(obj).keys()
+        field_names = get_uidreference_fieldnames(obj)
 
     for field_name in field_names:
 
@@ -446,9 +460,9 @@ def purge_backreferences_to(obj):
     """Removes back-references that are no longer needed that point to the
     given object
     """
-    fields = api.get_fields(obj)
-
-    for field_name, field in fields.items():
+    fields = get_uidreference_fieldnames(obj)
+    for field_name in fields:
+        field = obj.getField(field_name)
         if not isinstance(field, UIDReferenceField):
             continue
 
