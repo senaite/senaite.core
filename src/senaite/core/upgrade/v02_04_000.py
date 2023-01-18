@@ -344,11 +344,14 @@ def migrate_reference_fields(obj, field_names=None):
             # Processed already or no referenced objects
             continue
 
+        # Heal instances that return things like [None, None, None]
+        references = filter(None, references)
+
         # Re-assign the object directly to the field
         if field.multiValued:
             value = [api.get_uid(val) for val in references]
         else:
-            value = api.get_uid(references[0])
+            value = api.get_uid(references[0]) if references else None
         field.set(obj, value)
 
         # Remove this relationship from reference catalog
