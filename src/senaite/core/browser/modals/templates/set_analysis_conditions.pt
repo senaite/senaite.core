@@ -28,7 +28,7 @@
               <colgroup>
                 <col style="width:20%"/>
               </colgroup>
-              <tal:condition repeat="condition python:view.get_conditions()">
+              <tal:condition repeat="condition conditions">
                 <tr tal:define="required python:condition.get('required') == 'on';
                                 is_checkbox python:condition.get('type') == 'checkbox';
                                 required python:required and not is_checkbox;">

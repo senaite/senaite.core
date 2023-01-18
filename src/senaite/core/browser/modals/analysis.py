@@ -84,7 +84,16 @@ class SetAnalysisConditionsView(BrowserView):
                 uid = condition.get("value")
                 condition["attachment"] = self.get_attachment_info(uid)
 
-        return conditions
+        # Move conditions from "file" type to the end:
+        #   Cannot set conditions with a '<' char when others are from file
+        #   https://github.com/senaite/senaite.core/pulls/2231
+        def files_last(condition1, condition2):
+            type1 = condition1.get("type")
+            type2 = condition2.get("type")
+            if "file" not in [type1, type2]:
+                return 0
+            return 1 if type1 == "file" else -1
+        return sorted(conditions, cmp=files_last)
 
     def get_attachment_info(self, uid):
         attachment = api.get_object_by_uid(uid, default=None)
@@ -108,8 +117,18 @@ class SetAnalysisConditionsView(BrowserView):
             message = _("Not allowed to update conditions: {}").format(title)
             return self.redirect(message=message, level="error")
 
-        # Update the conditions
+        # Sort the conditions as they were initially set
         conditions = self.request.form.get("conditions", [])
+        original = self.get_analysis().getConditions(empties=True)
+        original = [cond.get("title") for cond in original]
+
+        def original_order(condition1, condition2):
+            index1 = original.index(condition1.get("title"))
+            index2 = original.index(condition2.get("title"))
+            return (index1 > index2) - (index1 < index2)
+        conditions = sorted(conditions, cmp=original_order)
+
+        # Update the conditions
         analysis.setConditions(conditions)
         message = _("Analysis conditions updated: {}").format(title)
         return self.redirect(message=message)
