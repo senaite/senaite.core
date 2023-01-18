@@ -345,7 +345,7 @@ def migrate_reference_fields(obj, field_names=None):
             continue
 
         # Heal instances that return things like [None, None, None]
-        references = filter(None, references)
+        references = filter(api.is_object, references)
 
         # Re-assign the object directly to the field
         if field.multiValued:
