@@ -396,6 +396,49 @@ def rename_retestof_relationship(tool):
     logger.info("Rename RetestOf relationship [DONE]")
 
 
+def purge_backreferences(tool):
+    """Purges back-references that are no longer required
+    """
+    logger.info("Purge no longer required back-references ...")
+    portal_types = [
+        "Analysis",
+        "AnalysisRequest",
+        "AnalysisService",
+        "AnalysisSpec",
+        "ARReport",
+        "Batch",
+        "Calculation",
+        "DuplicateAnalysis",
+        "Instrument",
+        "LabContact",
+        "Laboratory",
+        "Method",
+        "ReferenceAnalysis",
+        "RejectAnalysis"
+        "Worksheet",
+    ]
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type=portal_types)
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        obj = api.get_object(obj)
+        purge_backreferences_to(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Purge no longer required back-references [DONE]")
+
+
 def purge_backreferences_to(obj):
     """Removes back-references that are no longer needed that point to the
     given object
