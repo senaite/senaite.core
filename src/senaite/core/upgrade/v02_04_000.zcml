@@ -93,34 +93,44 @@
       handler="senaite.core.upgrade.v02_04_000.rename_retestof_relationship"
       profile="senaite.core:default"/>
 
-  <!-- Purge back-references that are no longer required
-       https://github.com/senaite/senaite.core/pull/2219 -->
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Purge back-references that are no longer required"
-      description="Purge back-references from UIDReferenceField that are no longer required"
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
       source="2409"
-      destination="2410"
-      handler="senaite.core.upgrade.v02_04_000.purge_backreferences"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
       profile="senaite.core:default"/>
 
-  <!-- Purge back-references that are no longer required from setup
-       https://github.com/senaite/senaite.core/pull/2221 -->
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Purge obsolete back-references from setup"
-      description="Purge back-references from UIDReferenceField that are no longer required from setup items"
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
       source="2410"
-      destination="2411"
-      handler="senaite.core.upgrade.v02_04_000.purge_setup_backreferences"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
       profile="senaite.core:default"/>
 
-  <!-- Fix missing references due to wrong relationship names
-       https://github.com/senaite/senaite.core/pull/2230 -->
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Fix missing references"
-      description="Fix missing references due to wrong relationship names"
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
       source="2411"
-      destination="2412"
-      handler="senaite.core.upgrade.v02_04_000.fix_missing_references"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
+      source="2412"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
       profile="senaite.core:default"/>
 
 </configure>

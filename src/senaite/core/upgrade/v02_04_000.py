@@ -298,6 +298,28 @@ def migrate_analysisrequest_referencefields(tool):
     logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
 
 
+def get_relationship_key(obj, field):
+    """Returns the relationship from the given object and field, taking into
+    account the names of old relationships
+    """
+    # (<portal_type><field_name>, old_relationship_name)
+    relationships = dict([
+        ("AutoImportLogInstrument", "InstrumentImportLogs"),
+        ("ContactCCContact", "ContactContact"),
+        ("DepartmentManager", "DepartmentLabContact"),
+        ("InstrumentCalibration.Worker", "LabContactInstrumentCalibration"),
+        ("InstrumentCertification.Preparator", "LabContactInstrumentCertificatePreparator"),
+        ("InstrumentCertification.Validator", "LabContactInstrumentCertificateValidator"),
+        ("InstrumentValidation.Worker", "LabContactInstrumentValidation"),
+        ("InvoiceClient", "ClientInvoice"),
+        ("LabContactDepartments", "LabContactDepartment"),
+        ("WorksheetTemplateService", "WorksheetTemplateAnalysisService"),
+        ("WorksheetTemplateRestrictToMethod", "WorksheetTemplateMethod"),
+    ])
+    relationship = field.get_relationship_key(obj)
+    return relationships.get(relationship, relationship)
+
+
 def migrate_reference_fields(obj, field_names=None):
     """Migrates the reference fields with the names specified from the obj
     """
@@ -312,7 +334,7 @@ def migrate_reference_fields(obj, field_names=None):
         if not isinstance(field, UIDReferenceField):
             continue
 
-        ref_id = field.get_relationship_key(obj)
+        ref_id = get_relationship_key(obj, field)
         if not ref_id:
             logger.error("No relationship for field {}".format(field_name))
 
@@ -374,55 +396,11 @@ def rename_retestof_relationship(tool):
     logger.info("Rename RetestOf relationship [DONE]")
 
 
-def purge_backreferences(tool):
-    """Purges back-references that are no longer required
-    """
-    logger.info("Purge no longer required back-references ...")
-    portal_types = [
-        "Analysis",
-        "AnalysisRequest",
-        "AnalysisService",
-        "AnalysisSpec",
-        "ARReport",
-        "Batch",
-        "Calculation",
-        "DuplicateAnalysis",
-        "Instrument",
-        "LabContact",
-        "Laboratory",
-        "Method",
-        "ReferenceAnalysis",
-        "RejectAnalysis"
-        "Worksheet",
-    ]
-
-    uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type=portal_types)
-    total = len(brains)
-    for num, obj in enumerate(brains):
-        if num and num % 100 == 0:
-            logger.info("Processed objects: {}/{}".format(num, total))
-
-        if num and num % 1000 == 0:
-            # reduce memory size of the transaction
-            transaction.savepoint()
-
-        # Migrate the reference fields for current sample
-        obj = api.get_object(obj)
-        purge_backreferences_to(obj)
-
-        # Flush the object from memory
-        obj._p_deactivate()
-
-    logger.info("Purge no longer required back-references [DONE]")
-
-
 def purge_backreferences_to(obj):
     """Removes back-references that are no longer needed that point to the
     given object
     """
     fields = api.get_fields(obj)
-    portal_type = api.get_portal_type(obj)
 
     for field_name, field in fields.items():
         if not isinstance(field, UIDReferenceField):
@@ -438,7 +416,7 @@ def purge_backreferences_to(obj):
             references = [references]
 
         # Remove the back-references from these referenced objects to current
-        relationship = "{}{}".format(portal_type, field.getName())
+        relationship = get_relationship_key(obj, field)
         references = filter(None, references)
         for reference in references:
             refob = api.get_object(reference)
@@ -446,42 +424,17 @@ def purge_backreferences_to(obj):
             back_storage.pop(relationship, None)
 
 
-def purge_setup_backreferences(tool):
-    """Purges back-references that are no longer required from setup
+def migrate_and_purge_references(tool):
+    """Migrate existing references from ReferenceField that now rely on the
+    UIDReferenceField
     """
-    logger.info("Purge no longer required back-references from setup ...")
-    portal_types = [
-        "AnalysisCategory",
-        "AnalysisProfile",
-        "ARTemplate",
-        "Attachment",
-        "AutoImportLog",
-        "Batch",
-        "Client",
-        "Contact",
-        "Container",
-        "Department",
-        "Instrument",
-        "InstrumentCalibration",
-        "InstrumentCertification",
-        "InstrumentMaintenanceTask",
-        "InstrumentScheduledTask",
-        "InstrumentValidation",
-        "Invoice",
-        "LabContact",
-        "ReferenceSample",
-        "RejectAnalysis",
-        "Report",
-        "SamplePoint",
-        "SampleType",
-        "Worksheet",
-        "WorksheetTemplate",
-    ]
+    logger.info("Migrate and purge references ...")
 
-    uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type=portal_types)
-    total = len(brains)
-    for num, obj in enumerate(brains):
+    # Extract source UIDs from reference catalog
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    uids = ref_tool.uniqueValuesFor("sourceUID")
+    total = len(uids)
+    for num, uid in enumerate(uids):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -489,91 +442,15 @@ def purge_setup_backreferences(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        # Migrate the reference fields for current sample
-        obj = api.get_object(obj)
+        obj = api.get_object_by_uid(uid)
+
+        # Migrate reference fields
         migrate_reference_fields(obj)
 
-        # Purge references
+        # Purge no longer required back-references
         purge_backreferences_to(obj)
 
         # Flush the object from memory
         obj._p_deactivate()
 
-    logger.info("Purge no longer required back-references from setup [DONE]")
-
-
-def fix_missing_references(tool):
-    """Fix missing references due to a wrong old-relationship name, case were
-    not following the convention <portal_type><field_name>
-    """
-    # (portal_type, [(field_name, old_relationship name), ])
-    missing = dict([
-        ("AutoImportLog", [
-            ("Instrument", "InstrumentImportLogs")
-        ]),
-        ("Contact", [
-            ("CCContact", "ContactContact")
-        ]),
-        ("Department", [
-            ("Manager", "DepartmentLabContact")
-        ]),
-        ("InstrumentCalibration", [
-            ("Worker", "LabContactInstrumentCalibration"),
-        ]),
-        ("InstrumentCertification", [
-            ("Preparator", "LabContactInstrumentCertificatePreparator"),
-            ("Validator", "LabContactInstrumentCertificateValidator"),
-        ]),
-        ("InstrumentValidation", [
-            ("Worker", "LabContactInstrumentValidation"),
-        ]),
-        ("Invoice", [
-            ("Client", "ClientInvoice"),
-        ]),
-        ("LabContact", [
-            ("Departments", "LabContactDepartment")
-        ]),
-        ("WorksheetTemplate", [
-            ("Service", "WorksheetTemplateAnalysisService"),
-            ("RestrictToMethod", "WorksheetTemplateMethod"),
-        ]),
-    ])
-
-    logger.info("Fix missing references ...")
-
-    ref_tool = api.get_tool(REFERENCE_CATALOG)
-    uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type=missing.keys())
-    total = len(brains)
-    for num, obj in enumerate(brains):
-        if num and num % 100 == 0:
-            logger.info("Processed objects: {}/{}".format(num, total))
-
-        if num and num % 1000 == 0:
-            # reduce memory size of the transaction
-            transaction.savepoint()
-
-        obj = api.get_object(obj)
-        portal_type = api.get_portal_type(obj)
-        for field_name, relationship in missing.get(portal_type):
-            # Extract the referenced objects
-            references = obj.getRefs(relationship=relationship)
-            if not references:
-                # Processed already or no referenced objects
-                continue
-
-            # Assign the old-references
-            field = obj.getField(field_name)
-            if field.multiValued:
-                value = [api.get_uid(val) for val in references]
-            else:
-                value = api.get_uid(references[0])
-            field.set(obj, value)
-
-            # Remove this relationship from reference catalog
-            ref_tool.deleteReferences(obj, relationship=relationship)
-
-        # Flush the object from memory
-        obj._p_deactivate()
-
-    logger.info("Fix missing references [DONE]")
+    logger.info("Migrate and purge references [DONE]")
