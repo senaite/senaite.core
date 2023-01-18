@@ -332,7 +332,7 @@ def migrate_reference_fields(obj, field_names=None):
 
     fields = {}
     if field_names is None:
-        fields = api.get_fields()
+        fields = api.get_fields(obj)
     else:
         for field_name in field_names:
             fields[field_name] = obj.getField(field_name)
@@ -348,23 +348,30 @@ def migrate_reference_fields(obj, field_names=None):
             logger.error("No relationship for field {}".format(field_name))
 
         # Extract the referenced objects
-        references = obj.getRefs(relationship=ref_id)
+        references = get_raw_references(obj, ref_id)
         if not references:
             # Processed already or no referenced objects
             continue
 
         # Heal instances that return things like [None, None, None]
-        references = filter(api.is_object, references)
+        references = filter(api.is_uid, references)
 
         # Re-assign the object directly to the field
         if field.multiValued:
-            value = [api.get_uid(val) for val in references]
+            value = [val for val in references]
         else:
-            value = api.get_uid(references[0]) if references else None
+            value = references[0] if references else None
         field.set(obj, value)
 
         # Remove this relationship from reference catalog
         ref_tool.deleteReferences(obj, relationship=ref_id)
+
+
+def get_raw_references(obj, relationship):
+    uid = api.get_uid(obj)
+    cat = api.get_tool("reference_catalog")
+    brains = cat(sourceUID=uid, relationship=relationship)
+    return [brain.targetUID for brain in brains]
 
 
 def rename_retestof_relationship(tool):
