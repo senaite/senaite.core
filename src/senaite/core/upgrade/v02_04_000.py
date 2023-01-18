@@ -27,7 +27,6 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
-from plone.memoize.ram import cache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
