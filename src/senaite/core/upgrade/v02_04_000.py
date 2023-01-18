@@ -491,7 +491,8 @@ def migrate_and_purge_references(tool):
         obj = api.get_object_by_uid(uid, default=None)
         if not api.is_object(obj):
             # this one is corrupted
-            logger.warn("Wrong record with no sourceUID in reference catalog")
+            logger.warn("Wrong record with no valid sourceUID in reference "
+                        "catalog: {}".format(repr(uid)))
             continue
 
         # Migrate reference fields
