@@ -104,10 +104,15 @@ Unit = StringField(
     schemata="Description",
     write_permission=FieldEditAnalysisResult,
     widget=StringWidget(
-        label=_("Default Unit"),
+        label=_(
+            u"label_analysis_unit",
+            default=u"Default Unit"
+        ),
         description=_(
-            "The measurement units for this analysis service' results, e.g. "
-            "mg/l, ppm, dB, mV, etc."),
+            u"description_analysis_unit",
+            default=u"The measurement units for this analysis service' "
+                    u"results, e.g. mg/l, ppm, dB, mV, etc."
+        ),
     )
 )
 
@@ -132,9 +137,15 @@ UnitChoices = RecordsField(
         "value": 50,
     },
     widget=RecordsWidget(
-        label=_("Units for Selection"),
+        label=_(
+            u"label_analysis_unitchoices",
+            default=u"Units for Selection"
+        ),
         description=_(
-            "Provide a list of units that are suitable for the analysis. Ensure to include the default unit in this list. "  
+            u"description_analysis_unitchoices",
+            default=u"Provide a list of units that are suitable for the "
+                    u"analysis. Ensure to include the default unit in this "
+                    u"list"
         ),
     )
 )
