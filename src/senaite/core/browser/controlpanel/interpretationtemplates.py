@@ -21,9 +21,10 @@
 import collections
 
 from bika.lims import _
+from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.utils import get_link_for
-
+from plone.app.textfield import RichTextValue
 from senaite.app.listing import ListingView
 
 
@@ -57,6 +58,12 @@ class InterpretationTemplatesView(ListingView):
             ("Description", {
                 "title": _("Description"),
                 "index": "Description"}),
+            ("SampleTypes", {
+                "title": _("Sample Types"),
+                "sortable": False}),
+            ("Text", {
+                "title": _("Text"),
+                "sortable": False}),
         ))
 
         self.review_states = [
@@ -98,5 +105,23 @@ class InterpretationTemplatesView(ListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
+
         item["replace"]["Title"] = get_link_for(obj)
+
+        # List all linked sampletypes
+        sampletypes = obj.getSampleTypes()
+        if sampletypes:
+            titles = map(api.get_title, sampletypes)
+            item["SampleTypes"] = ", ".join(titles)
+            item["replace"]["SampleTypes"] = ", ".join(
+                map(get_link_for, sampletypes))
+
+        text = obj.text
+        if isinstance(text, RichTextValue):
+            # convert output to plain text
+            text._outputMimeType = "text/plain"
+            text = text.output
+        item["Text"] = text
+
         return item

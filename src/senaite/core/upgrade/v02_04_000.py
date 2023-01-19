@@ -19,19 +19,21 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-
-from bika.lims import api
 from bika.lims import LDL
 from bika.lims import UDL
+from bika.lims import api
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.content.interpretationtemplate import InterpretationTemplate
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.interface import alsoProvides
@@ -519,3 +521,32 @@ def migrate_and_purge_references(tool):
         obj._p_deactivate()
 
     logger.info("Migrate and purge references [DONE]")
+
+
+def migrate_interpretationtemplate_item_to_container(tool):
+    """Make interpretationtemplates folderish
+
+    Base class changed from Item -> Container
+
+    https://community.plone.org/t/changing-dx-content-type-base-class-from-item-to-container
+    http://blog.redturtle.it/2013/02/25/migrating-dexterity-items-to-dexterity-containers
+    """
+    logger.info("Migrate interpretationtemplates to be folderish ...")
+    catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "InterpretationTemplate",
+    }
+    results = catalog(query)
+
+    for brain in results:
+        obj = api.get_object(brain)
+        oid = obj.getId()
+        parent = api.get_parent(obj)
+        parent._delOb(oid)
+        obj.__class__ = InterpretationTemplate
+        parent._setOb(oid, obj)
+        BTreeFolder2Base._initBTrees(parent[oid])
+        parent[oid].reindexObject()
+
+    transaction.commit()
+    logger.info("Migrate interpretationtemplates to be folderish [DONE]")

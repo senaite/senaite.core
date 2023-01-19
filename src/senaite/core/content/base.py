@@ -16,13 +16,18 @@ class Container(BaseContainer):
     security = ClassSecurityInfo()
 
     @security.private
-    def accessor(self, fieldname):
+    def accessor(self, fieldname, raw=False):
         """Return the field accessor for the fieldname
         """
         schema = api.get_schema(self)
         if fieldname not in schema:
             return None
-        return schema[fieldname].get
+        field = schema[fieldname]
+        if raw:
+            if hasattr(field, "get_raw"):
+                return field.get_raw
+            return field.getRaw
+        return field.get
 
     @security.private
     def mutator(self, fieldname):
@@ -41,13 +46,18 @@ class Item(BaseItem):
     security = ClassSecurityInfo()
 
     @security.private
-    def accessor(self, fieldname):
+    def accessor(self, fieldname, raw=False):
         """Return the field accessor for the fieldname
         """
         schema = api.get_schema(self)
         if fieldname not in schema:
             return None
-        return schema[fieldname].get
+        field = schema[fieldname]
+        if raw:
+            if hasattr(field, "get_raw"):
+                return field.get_raw
+            return field.getRaw
+        return field.get
 
     @security.private
     def mutator(self, fieldname):
