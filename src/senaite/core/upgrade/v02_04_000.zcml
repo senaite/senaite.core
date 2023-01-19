@@ -134,7 +134,7 @@
       profile="senaite.core:default"/>
 
   <!-- Migrate interpretation templates from item -> container
-       https://github.com/senaite/senaite.core/pull/XXX -->
+       https://github.com/senaite/senaite.core/pull/2234 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Migrate interpretation templates to be folderish"
       description="Change interpretation template base class from item -> container"
