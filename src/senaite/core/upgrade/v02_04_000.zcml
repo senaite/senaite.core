@@ -133,4 +133,14 @@
       handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
       profile="senaite.core:default"/>
 
+  <!-- Migrate interpretation templates from item -> container
+       https://github.com/senaite/senaite.core/pull/XXX -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate interpretation templates to be folderish"
+      description="Change interpretation template base class from item -> container"
+      source="2413"
+      destination="2414"
+      handler="senaite.core.upgrade.v02_04_000.migrate_interpretationtemplate_item_to_container"
+      profile="senaite.core:default"/>
+
 </configure>
