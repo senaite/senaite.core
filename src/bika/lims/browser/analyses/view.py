@@ -1280,7 +1280,6 @@ class AnalysesView(ListingView):
             unit = item.get("Unit")
             if unit:
                 item["after"]["Uncertainty"] = self.render_unit(unit)
-            return
 
     def _folder_item_detection_limits(self, analysis_brain, item):
         """Fills the analysis' detection limits to the item passed in.
