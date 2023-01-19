@@ -1507,4 +1507,3 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
-

@@ -97,7 +97,6 @@ ScientificName = BooleanField(
     )
 )
 
-
 # The units of measurement used for representing results in reports and in
 # manage_results screen.
 Unit = StringField(
@@ -775,7 +774,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
-         
+
     @security.public
     def getDefaultVAT(self):
         """Return default VAT from bika_setup
