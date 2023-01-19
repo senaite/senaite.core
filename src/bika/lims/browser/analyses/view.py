@@ -134,7 +134,7 @@ class AnalysesView(ListingView):
             ("Calculation", {
                 "title": _("Calculation"),
                 "sortable": False,
-                "toggle": False}),           
+                "toggle": False}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -485,7 +485,6 @@ class AnalysesView(ListingView):
             })
         return vocab
 
-
     def get_instruments_vocabulary(self, analysis, method=None):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -697,7 +696,7 @@ class AnalysesView(ListingView):
         # Fill calculation and interim fields
         self._folder_item_calculation(obj, item)
         # Fill unit field
-        self._folder_item_unit(obj, item)        
+        self._folder_item_unit(obj, item)
         # Fill method
         self._folder_item_method(obj, item)
         # Fill instrument
@@ -734,6 +733,7 @@ class AnalysesView(ListingView):
         self._folder_item_remarks(obj, item)
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
+
         return item
 
     def folderitems(self):
@@ -1093,15 +1093,14 @@ class AnalysesView(ListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        if not self.is_analysis_edition_allowed(analysis_brain): 
+        if not self.is_analysis_edition_allowed(analysis_brain):
             return
 
         # Edition allowed
         voc = self.get_unit_vocabulary(analysis_brain)
         if voc:
             item["choices"]["Unit"] = voc
-            item["allow_edit"].append("Unit")    
-
+            item["allow_edit"].append("Unit")
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -1124,7 +1123,7 @@ class AnalysesView(ListingView):
                 item["replace"]["Method"] = get_link_for(method, tabindex="-1")
 
     def _on_unit_choice_change(self, uid=None, value=None, item=None, **kw):
-        """ updates the unit on selection of unit_choices. 
+        """ updates the unit on selection of unit_choices.
         """
         item["Unit"] = value
         unit = item.get("Unit")
@@ -1139,9 +1138,7 @@ class AnalysesView(ListingView):
 
         return item
 
-    
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
-
         """Update instrument and calculation when the method changes
 
         :param uid: object UID
@@ -1190,15 +1187,13 @@ class AnalysesView(ListingView):
         else:
             item["Instrument"] = _("Manual")
 
-
     def _on_unit_change(self, uid=None, value=None, item=None, **kw):
-        """ updates the rendered unit on selection of unit. 
+        """ updates the rendered unit on selection of unit.
         """
         item["after"]["Result"] = self.render_unit(value)
         uncertainty = item.get("Uncertainty")
         if uncertainty:
             item["after"]["Uncertainty"] = self.render_unit(value)
-
         elif "Uncertainty" in item["allow_edit"]:
             item["after"]["Uncertainty"] = self.render_unit(value)
         return item
@@ -1687,7 +1682,7 @@ class AnalysesView(ListingView):
             if self.is_instrument_required(obj):
                 return True
         return False
-        
+
     def is_unit_selection_column_required(self):
         """Returns whether the unit column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
