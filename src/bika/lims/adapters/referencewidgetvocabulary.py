@@ -63,6 +63,9 @@ class DefaultReferenceWidgetVocabulary(object):
         """Returns the search term
         """
         search_term = _c(self.request.get("searchTerm", ""))
+        # Normalize the search term
+        special = "*.!$%&/()=#+:'`´^"
+        search_term = filter(lambda it: it not in special, search_term)
         return search_term.lower().strip()
 
     @property

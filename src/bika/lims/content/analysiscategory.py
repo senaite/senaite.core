@@ -20,15 +20,14 @@
 
 import transaction
 from AccessControl import ClassSecurityInfo
+from bika.lims.browser.fields import UIDReferenceField
 from Products.Archetypes.Field import FloatField
-from Products.Archetypes.Field import ReferenceField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import TextAreaWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
 
@@ -53,12 +52,10 @@ Comments = TextField(
         label=_("Comments")),
 )
 
-Department = ReferenceField(
+Department = UIDReferenceField(
     "Department",
     required=1,
     allowed_types=("Department",),
-    relationship="AnalysisCategoryDepartment",
-    referenceClass=HoldingReference,
     widget=ReferenceWidget(
         label=_("Department"),
         description=_("The laboratory department"),

@@ -1227,10 +1227,9 @@ class AnalysesView(ListingView):
         attachments_names = []
         attachments_html = []
         analysis = self.get_object(obj)
-        for at in analysis.getAttachment():
-            at_file = at.getAttachmentFile()
-            url = "{}/at_download/AttachmentFile".format(api.get_url(at))
-            link = get_link(url, at_file.filename, tabindex="-1")
+        for attachment in analysis.getRawAttachment():
+            attachment = self.get_object(attachment)
+            link = self.get_attachment_link(attachment)
             attachments_html.append(link)
             filename = attachment.getFilename()
             attachments_names.append(filename)
@@ -1278,9 +1277,8 @@ class AnalysesView(ListingView):
                 item["after"]["Uncertainty"] = self.render_unit(unit)
             return
 
-        result = obj.getResult()
         formatted = format_uncertainty(
-            obj, result, decimalmark=self.dmk, sciformat=int(self.scinot))
+            obj, decimalmark=self.dmk, sciformat=int(self.scinot))
         if formatted:
             item["replace"]["Uncertainty"] = formatted
             item["before"]["Uncertainty"] = "± "
@@ -1605,12 +1603,21 @@ class AnalysesView(ListingView):
             return
 
         conditions = analysis.getConditions()
-        if conditions:
-            conditions = map(lambda it: ": ".join([it["title"], it["value"]]),
-                             conditions)
-            conditions = "<br/>".join(conditions)
-            service = item["replace"].get("Service") or item["Service"]
-            item["replace"]["Service"] = "{}<br/>{}".format(service, conditions)
+        if not conditions:
+            return
+
+        def to_str(condition):
+            title = condition.get("title")
+            value = condition.get("value", "")
+            if condition.get("type") == "file" and api.is_uid(value):
+                att = self.get_object(value)
+                value = self.get_attachment_link(att)
+            return ": ".join([title, str(value)])
+
+        # Display the conditions properly formatted
+        conditions = "<br/>".join([to_str(cond) for cond in conditions])
+        service = item["replace"].get("Service") or item["Service"]
+        item["replace"]["Service"] = "<br/>".join([service, conditions])
 
     def is_method_required(self, analysis):
         """Returns whether the render of the selection list with methods is

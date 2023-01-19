@@ -25,8 +25,10 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -34,23 +36,33 @@ from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import t
 from bika.lims.utils import to_unicode as _u
 from DateTime import DateTime
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import ComputedField
+from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import ComputedWidget
+from Products.Archetypes.Widget import StringWidget
+from Products.Archetypes.Widget import TextAreaWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ReferenceDefinition',
-        schemata = 'Description',
-        allowed_types = ('ReferenceDefinition',),
-        relationship = 'ReferenceSampleReferenceDefinition',
-        referenceClass = HoldingReference,
-        vocabulary = "getReferenceDefinitions",
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    UIDReferenceField(
+        "ReferenceDefinition",
+        schemata="Description",
+        allowed_types=("ReferenceDefinition",),
+        vocabulary="getReferenceDefinitions",
+        widget=ReferenceWidget(
             label=_("Reference Definition"),
+            showOn=True,
         ),
     ),
     BooleanField('Blank',
@@ -69,15 +81,14 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('Manufacturer',
-        schemata = 'Description',
-        allowed_types = ('Manufacturer',),
-        relationship = 'ReferenceSampleManufacturer',
-        vocabulary = "getManufacturers",
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    UIDReferenceField(
+        "Manufacturer",
+        schemata="Description",
+        allowed_types=("Manufacturer",),
+        vocabulary="getManufacturers",
+        widget=ReferenceWidget(
             label=_("Manufacturer"),
+            showOn=True,
         ),
     ),
     StringField('CatalogueNumber',

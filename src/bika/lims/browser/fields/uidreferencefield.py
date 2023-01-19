@@ -39,9 +39,8 @@ class ReferenceException(Exception):
 
 class UIDReferenceField(StringField):
     """A field that stores References as UID values.  This acts as a drop-in
-    replacement for Archetypes' ReferenceField.  A relationship is required
-    but if one is not provided, it will be composed from a concatenation
-    of `portal_type` + `fieldname`.
+    replacement for Archetypes' ReferenceField. If no relationship is provided,
+    the field won't keep backreferences in referenced objects
     """
     _properties = Field._properties.copy()
     _properties.update({
@@ -54,6 +53,16 @@ class UIDReferenceField(StringField):
     implements(IUIDReferenceField)
 
     security = ClassSecurityInfo()
+
+    @property
+    def keep_backreferences(self):
+        """Returns whether this field must keep back references. Returns False
+        if the value for property relationship is None or empty
+        """
+        relationship = getattr(self, "relationship", None)
+        if relationship and isinstance(relationship, six.string_types):
+            return True
+        return False
 
     def get_relationship_key(self, context):
         """Return the configured relationship key or generate a new one
@@ -99,27 +108,7 @@ class UIDReferenceField(StringField):
         return True
 
     @security.public
-    def get_object(self, context, value):
-        """Resolve a UID to an object.
-
-        :param context: context is the object containing the field's schema.
-        :type context: BaseContent
-        :param value: A UID.
-        :type value: string
-        :return: Returns a Content object.
-        :rtype: BaseContent
-        """
-        if not value:
-            return None
-        obj = _get_object(context, value)
-        if obj is None:
-            logger.warning(
-                "{}.{}: Resolving UIDReference failed for {}.  No object will "
-                "be returned.".format(context, self.getName(), value))
-        return obj
-
-    @security.public
-    def get_uid(self, context, value):
+    def get_uid(self, context, value, default=""):
         """Takes a brain or object (or UID), and returns a UID.
 
         :param context: context is the object who's schema contains this field.
@@ -129,20 +118,11 @@ class UIDReferenceField(StringField):
         :return: resolved UID.
         :rtype: string
         """
-        # Empty string or list with single empty string, are commonly
-        # passed to us from form submissions
-        if not value or value == ['']:
-            ret = ''
-        elif api.is_brain(value):
-            ret = value.UID
-        elif api.is_at_content(value) or api.is_dexterity_content(value):
-            ret = value.UID()
-        elif api.is_uid(value):
-            ret = value
-        else:
-            raise ReferenceException("{}.{}: Cannot resolve UID for {}".format(
-                context, self.getName(), value))
-        return ret
+        if api.is_object(value):
+            value = api.get_uid(value)
+        elif not api.is_uid(value):
+            value = default
+        return value
 
     @security.public
     def get(self, context, **kwargs):
@@ -155,18 +135,27 @@ class UIDReferenceField(StringField):
         :return: object or list of objects for multiValued fields.
         :rtype: BaseContent | list[BaseContent]
         """
-        value = StringField.get(self, context, **kwargs)
-        if not value:
-            return [] if self.multiValued else None
+        uids = StringField.get(self, context, **kwargs)
+        if not isinstance(uids, list):
+            uids = [uids]
+
+        # Do a direct search for all brains at once
+        uc = api.get_tool("uid_catalog")
+        references = uc(UID=uids)
+
+        # Keep the original order of items
+        references = sorted(references, key=lambda it: uids.index(it.UID))
+
+        # Return objects by default
+        full_objects = kwargs.pop("full_objects", True)
+        if full_objects:
+            references = [api.get_object(ref) for ref in references]
+
         if self.multiValued:
-            # Only return objects which actually exist; this is necessary here
-            # because there are no HoldingReferences. This opens the
-            # possibility that deletions leave hanging references.
-            ret = filter(
-                lambda x: x, [self.get_object(context, uid) for uid in value])
-        else:
-            ret = self.get_object(context, value)
-        return ret
+            return references
+        elif references:
+            return references[0]
+        return None
 
     @security.public
     def getRaw(self, context, aslist=False, **kwargs):
@@ -206,8 +195,6 @@ class UIDReferenceField(StringField):
         if initializing:
             return
 
-        # UID of the current object
-        uid = api.get_uid(context)
         # current set UIDs
         raw = self.getRaw(context) or []
         # handle single reference fields
@@ -215,21 +202,22 @@ class UIDReferenceField(StringField):
             raw = [raw, ]
         cur = set(raw)
         # UIDs to be set
-        new = set(map(api.get_uid, items))
+        uids = set(map(api.get_uid, items))
         # removed UIDs
-        removed = cur.difference(new)
+        removed = cur.difference(uids)
+        # missing UIDs
+        missing = uids.difference(cur)
 
         # Unlink removed UIDs from the source
-        for uid in removed:
-            source = api.get_object_by_uid(uid, None)
-            if source is None:
-                logger.warn("UID {} does not exist anymore".format(uid))
-                continue
+        uc = api.get_tool("uid_catalog")
+        for brain in uc(UID=list(removed)):
+            source = api.get_object(brain)
             self.unlink_reference(source, context)
 
-        # Link backrefs
-        for item in items:
-            self.link_reference(item, context)
+        # Link missing UIDs
+        for brain in uc(UID=list(missing)):
+            target = api.get_object(brain)
+            self.link_reference(target, context)
 
     @security.public
     def set(self, context, value, **kwargs):
@@ -244,61 +232,21 @@ class UIDReferenceField(StringField):
         :type kwargs: dict
         :return: None
         """
-        if self.multiValued:
-            if not value:
-                value = []
-            if type(value) not in (list, tuple):
-                value = [value, ]
-            ret = [self.get_object(context, val) for val in value if val]
-            self._set_backreferences(context, ret, **kwargs)
-            uids = [self.get_uid(context, r) for r in ret if r]
-            StringField.set(self, context, uids, **kwargs)
-        else:
-            # Sometimes we get given a list here with an empty string.
-            # This is generated by html forms with empty values.
-            # This is a single-valued field though, so:
-            if isinstance(value, list) and value:
-                if len(value) > 1:
-                    logger.warning(
-                        "Found values '\'{}\'' for singleValued field <{}>.{} "
-                        "- using only the first value in the list.".format(
-                            '\',\''.join(value), context.UID(), self.getName()))
-                value = value[0]
-            ret = self.get_object(context, value)
-            if ret:
-                self._set_backreferences(context, [ret, ], **kwargs)
-                uid = self.get_uid(context, ret)
-                StringField.set(self, context, uid, **kwargs)
-            else:
-                StringField.set(self, context, '', **kwargs)
+        if not isinstance(value, (list, tuple)):
+            value = [value]
 
+        # Extract uids and remove empties
+        uids = [self.get_uid(context, item) for item in value]
+        uids = filter(api.is_uid, uids)
 
-def _get_object(context, value):
-    """Resolve a UID to an object.
+        # Back-reference current object to referenced objects
+        if self.keep_backreferences:
+            self._set_backreferences(context, uids, **kwargs)
 
-    :param context: context is the object containing the field's schema.
-    :type context: BaseContent
-    :param value: A UID.
-    :type value: string
-    :return: Returns a Content object or None.
-    :rtype: BaseContent
-    """
-    if not value:
-        return None
-    if api.is_brain(value):
-        return api.get_object(value)
-    if api.is_object(value):
-        return value
-    if api.is_uid(value):
-        uc = api.get_tool('uid_catalog', context=context)
-        brains = uc(UID=value)
-        if len(brains) == 0:
-            # Broken Reference!
-            logger.warn("Reference on {} with UID {} is broken!"
-                        .format(repr(context), value))
-            return None
-        return brains[0].getObject()
-    return None
+        # Store the referenced objects as uids
+        if not self.multiValued:
+            uids = uids[0] if uids else ""
+        StringField.set(self, context, uids, **kwargs)
 
 
 def get_storage(context):

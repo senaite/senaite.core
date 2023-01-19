@@ -4,6 +4,24 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2231 Cannot set conditions with a '<' char when others are from type "file"
+- #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
+- #2228 Fix worksheet template title is not updated after template assignment
+- #2226 Add setting to CC responsible persons in publication emails
+- #2224 Fix wrong precision for exponential formatted uncertainties
+- #2219 Make `UIDReferenceField` to not keep back-references by default
+- #2209 Migrate AnalysisRequest's ReferenceField fields to UIDReferenceField
+- #2218 Improve performance of legacy AT `UIDReferenceField`'s setter
+- #2214 Remove `DefaultContainerType` field (stale) from AnalysisRequest
+- #2215 Fix ParseError when search term contains parenthesis in widget search
+- #2213 Purge ComputedField fields from AnalysisRequest related with Profiles
+- #2212 Improve performance of legacy AT `UIDReferenceField`'s getter
+- #2211 Remove `Profile` field (stale) from AnalysisRequest
+- #2207 Support for file upload on analysis (pre) conditions
+- #2208 Remove `default_method` from AnalysisRequest's Contact field
+- #2204 Fix traceback when retracting an analysis with a detection limit
+- #2202 Fix detection limit set manually is not displayed on result save
+- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments

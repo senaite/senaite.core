@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
-import sys
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -53,12 +52,10 @@ from bika.lims.workflow import skip
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -103,14 +100,11 @@ schema = BikaSchema.copy() + Schema((
         searchable=True,
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Method',
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        relationship='WorksheetMethod',
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
@@ -119,13 +113,11 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         required=0,
         allowed_types=('Instrument',),
         vocabulary='_getInstrumentsVoc',
-        relationship='WorksheetInstrument',
-        referenceClass=HoldingReference,
     ),
 
     RemarksField(
@@ -1076,9 +1068,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
-        # Store the Worksheet Template field
+        # Store the Worksheet Template field and reindex it
         self.getField('WorksheetTemplate').set(self, wst)
-
+        self.reindexObject(idxs=["getWorksheetTemplateTitle"])
+        
         if not wst:
             return
 
