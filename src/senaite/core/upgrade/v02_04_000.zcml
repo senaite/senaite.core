@@ -150,7 +150,7 @@
       description="Purge remaining back-references from AnalysisRequest types"
       source="2414"
       destination="2415"
-      handler="senaite.core.upgrade.v02_04_000.purge_backreferences"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences_analysisrequest"
       profile="senaite.core:default"/>
 
 </configure>
