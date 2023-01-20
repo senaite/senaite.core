@@ -177,7 +177,6 @@ schema = BikaSchema.copy() + Schema((
         'CCContact',
         multiValued=1,
         allowed_types=('Contact',),
-        relationship='AnalysisRequestCCContact',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
@@ -294,7 +293,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Batch',
         allowed_types=('Batch',),
-        relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
@@ -332,7 +330,6 @@ schema = BikaSchema.copy() + Schema((
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
-        relationship='AnalysisRequestSubGroup',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
@@ -363,7 +360,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
-        relationship='AnalysisRequestARTemplate',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditTemplate,
@@ -391,7 +387,6 @@ schema = BikaSchema.copy() + Schema((
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
-        relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditProfiles,
@@ -626,7 +621,6 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         primary_bound=True,  # field changes propagate to partitions
         allowed_types='AnalysisSpec',
-        relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSpecification,
@@ -677,7 +671,6 @@ schema = BikaSchema.copy() + Schema((
         'PublicationSpecification',
         required=0,
         allowed_types='AnalysisSpec',
-        relationship='AnalysisRequestPublicationSpec',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPublicationSpecifications,
@@ -968,7 +961,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Invoice',
         allowed_types=('Invoice',),
-        relationship='AnalysisRequestInvoice',
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
@@ -1179,7 +1171,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "DetachedFrom",
         allowed_types=("AnalysisRequest",),
-        relationship="AnalysisRequestDetachedFrom",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,

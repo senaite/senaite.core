@@ -143,4 +143,14 @@
       handler="senaite.core.upgrade.v02_04_000.migrate_interpretationtemplate_item_to_container"
       profile="senaite.core:default"/>
 
+  <!-- Purge remaining back-references from AnalysisRequest type
+       https://github.com/senaite/senaite.core/pull/2236 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge remaining back-references from AnalysisRequest type"
+      description="Purge remaining back-references from AnalysisRequest types"
+      source="2414"
+      destination="2415"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences_analysisrequest"
+      profile="senaite.core:default"/>
+
 </configure>
