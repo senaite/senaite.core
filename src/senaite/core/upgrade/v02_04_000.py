@@ -307,6 +307,10 @@ def get_relationship_key(obj, field):
     # (<portal_type><field_name>, old_relationship_name)
     relationships = dict([
         ("AutoImportLogInstrument", "InstrumentImportLogs"),
+        ("AnalysisRequestProfiles", "AnalysisRequestAnalysisProfiles"),
+        ("AnalysisRequestSpecification", "AnalysisRequestAnalysisSpec"),
+        ("AnalysisRequestPublicationSpecification", "AnalysisRequestPublicationSpec"),
+        ("AnalysisRequestTemplate", "AnalysisRequestARTemplate"),
         ("ContactCCContact", "ContactContact"),
         ("DepartmentManager", "DepartmentLabContact"),
         ("InstrumentCalibrationWorker", "LabContactInstrumentCalibration"),
