@@ -586,7 +586,7 @@ def migrate_interim_values_to_string(tool):
     logger.info("Migrate interim values to string ...")
 
     uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type="Analysis")
+    brains = uc(portal_type=["Analysis", "AnalysisService"])
     total = len(brains)
     for num, obj in enumerate(brains):
         if num and num % 100 == 0:
@@ -600,14 +600,16 @@ def migrate_interim_values_to_string(tool):
             value = interim.get("value")
             if type(value) is float:
                 interim["value"] = str(value)
-                logger.info("Converted interim value of %s from %f to %s"
-                            % (interim["keyword"], value, interim["value"]))
+                logger.info(
+                    "Converted float value for interim keyword '%s' %s -> '%s'"
+                    % (interim["keyword"], value, interim["value"]))
                 obj._p_changed = True
 
         if obj._p_changed:
             # set back modified interim fields
             obj.setInterimFields(interims)
-            logger.info("Updated interims for analysis %s" % api.get_path(obj))
+            logger.info("Updated interims for [%s] %s"
+                        % (api.get_portal_type(obj), api.get_path(obj)))
 
         if num and num % 1000 == 0:
             # reduce memory size of the transaction
