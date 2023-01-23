@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2237 Fix default value of interim choices and allow empty selection
 - #2234 Add interpretation template columns for assigned sampletypes and result text
 - #2234 Change base class for interpretation templates from Item -> Container
 - #2231 Cannot set conditions with a '<' char when others are from type "file"
