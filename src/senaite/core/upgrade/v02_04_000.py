@@ -578,3 +578,42 @@ def purge_backreferences_analysisrequest(tool):
         obj._p_deactivate()
 
     logger.info("Purge stale back-references from samples [DONE]")
+
+
+def migrate_interim_values_to_string(tool):
+    """Migrate all interim values to be string
+    """
+    logger.info("Migrate interim values to string ...")
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="Analysis")
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        # Purge back-references to current object
+        obj = api.get_object(obj)
+
+        interims = obj.getInterimFields()
+        for interim in interims:
+            value = interim.get("value")
+            if type(value) is float:
+                interim["value"] = str(value)
+                logger.info("Converted interim value of %s from %f to %s"
+                            % (interim["keyword"], value, interim["value"]))
+                obj._p_changed = True
+
+        if obj._p_changed:
+            # set back modified interim fields
+            obj.setInterimFields(interims)
+            logger.info("Updated interims for analysis %s" % api.get_path(obj))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Migrate interim values to string [DONE]")
