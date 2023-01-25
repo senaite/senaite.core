@@ -586,7 +586,8 @@ def migrate_interim_values_to_string(tool):
     logger.info("Migrate interim values to string ...")
 
     uc = api.get_tool("uid_catalog")
-    brains = uc(portal_type=["Analysis", "AnalysisService"])
+    brains = uc(portal_type=["Analysis", "AnalysisService",
+                             "ReferenceAnalysis", "DuplicateAnalysis"])
     total = len(brains)
     for num, obj in enumerate(brains):
         if num and num % 100 == 0:
