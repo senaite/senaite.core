@@ -1754,15 +1754,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
-            # Create the Analysis Request
-            sample = crar(client, self.request, record)
+            # Create as many samples as required
+            num_samples = record.get("NumSamples", 1)
+            num_samples = api.to_int(num_samples, default=1)
+            num_samples = num_samples if num_samples > 0 else 1
+            for idx in range(num_samples):
+                sample = crar(client, self.request, record)
 
-            # Create the attachments
-            for attachment_record in attachments:
-                self.create_attachment(sample, attachment_record)
+                # Create the attachments
+                for attachment_record in attachments:
+                    self.create_attachment(sample, attachment_record)
 
-            # Add the sample
-            samples.append(sample)
+                # Add the sample
+                samples.append(sample)
 
         return samples
 
