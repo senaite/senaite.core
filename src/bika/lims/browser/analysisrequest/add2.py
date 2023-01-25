@@ -1655,9 +1655,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     fielderrors["Contact"] = msg
 
             # Check if the number of samples per record is permitted
-            num_samples = record.get("NumSamples", 1)
-            num_samples = api.to_int(num_samples, default=1)
-            num_samples = num_samples if num_samples > 0 else 1
+            num_samples = self.get_num_samples(record)
             if num_samples > max_samples_record:
                 msg = _(u"error_analyssirequest_numsamples_above_max",
                         u"The number of samples to create for the record "
@@ -1775,9 +1773,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             attachments = record.pop("attachments", [])
 
             # Create as many samples as required
-            num_samples = record.get("NumSamples", 1)
-            num_samples = api.to_int(num_samples, default=1)
-            num_samples = num_samples if num_samples > 0 else 1
+            num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
                 sample = crar(client, self.request, record)
 
@@ -1789,6 +1785,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 samples.append(sample)
 
         return samples
+
+    def get_num_samples(self, record):
+        """Return the number of samples to create for the given record
+        """
+        num_samples = record.get("NumSamples", 1)
+        num_samples = api.to_int(num_samples, default=1)
+        return num_samples if num_samples > 0 else 1
 
     def get_max_samples_per_record(self):
         """Returns the maximum number of samples that can be created for each

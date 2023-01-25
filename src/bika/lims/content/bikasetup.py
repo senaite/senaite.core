@@ -1183,7 +1183,7 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             return setup.getMaxNumberOfSamplesAdd()
-        return False
+        return self.getField("MaxNumberOfSamplesAdd").default
 
     def setMaxNumberOfSamplesAdd(self, value):
         """Set the value in the senaite setup

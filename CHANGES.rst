@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2239 Allow to create multiple samples for each sample record in add form
 - #2238 Split the add sample's `ajax_form` function to make patching easier
 - #2234 Add interpretation template columns for assigned sampletypes and result text
 - #2234 Change base class for interpretation templates from Item -> Container

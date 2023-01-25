@@ -314,7 +314,7 @@ class Setup(Container):
         field 'Number of samples'
         """
         accessor = self.accessor("max_number_of_samples_add")
-        return accessor(self)
+        return api.to_int(accessor(self))
 
     @security.protected(permissions.ModifyPortalContent)
     def setMaxNumberOfSamplesAdd(self, value):
