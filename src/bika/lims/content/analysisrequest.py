@@ -1286,7 +1286,6 @@ schema = BikaSchema.copy() + Schema((
                 u"description_analysisrequest_numsamples",
                 default=u"Number of samples to create with the information "
                         u"provided"),
-            maxlength=3,
             # This field is only visible in add sample form
             visible={
                 "add": "edit",
