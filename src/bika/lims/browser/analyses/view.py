@@ -996,6 +996,7 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
+            interim_allow_empty = interim_field.get("allow_empty") == "on"
             interim_unit = interim_field.get("unit", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
             interim_field["formatted_value"] = interim_formatted
@@ -1036,6 +1037,11 @@ class AnalysesView(ListingView):
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                # Allow empty selection by adding an empty record to the list
+                if interim_allow_empty:
+                    empty = {"ResultValue": "", "ResultText": ""}
+                    dl = [empty] + list(dl)
+
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value

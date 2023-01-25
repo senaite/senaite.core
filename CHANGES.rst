@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2237 Fix default value of interim choices and allow empty selection
+- #2234 Add interpretation template columns for assigned sampletypes and result text
+- #2234 Change base class for interpretation templates from Item -> Container
+- #2231 Cannot set conditions with a '<' char when others are from type "file"
+- #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
+- #2228 Fix worksheet template title is not updated after template assignment
 - #2226 Add setting to CC responsible persons in publication emails
 - #2224 Fix wrong precision for exponential formatted uncertainties
 - #2219 Make `UIDReferenceField` to not keep back-references by default

@@ -70,7 +70,7 @@ class InterimFieldsField(RecordsField):
         },
         "subfield_types": {
             "hidden": "boolean",
-            "value": "float",
+            "value": "string",
             "choices": "string",
             "result_type": "selection",
             "allow_empty": "boolean",

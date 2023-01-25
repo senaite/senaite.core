@@ -18,17 +18,15 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoice
 from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import FileWidget
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.CMFPlone.utils import safe_unicode
@@ -43,17 +41,14 @@ schema = BikaSchema.copy() + Schema((
             label=_("Invoice PDF"),
         )
     ),
-    ReferenceField(
+    UIDReferenceField(
         "Client",
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=("Client",),
-        relationship="ClientInvoice",
     ),
-    ReferenceField(
+    UIDReferenceField(
         "AnalysisRequest",
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=("AnalysisRequest",),
         relationship="AnalysisRequestInvoice",
     ),

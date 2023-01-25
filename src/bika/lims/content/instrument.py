@@ -52,7 +52,6 @@ from Products.Archetypes.atapi import ImageField
 from Products.Archetypes.atapi import ImageWidget
 from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import PicklistWidget
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
@@ -71,11 +70,10 @@ from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentType',
         vocabulary='getInstrumentTypes',
         allowed_types=('InstrumentType',),
-        relationship='InstrumentInstrumentType',
         required=1,
         widget=ReferenceWidget(
             label=_("Instrument type"),
@@ -89,10 +87,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Manufacturer',
         allowed_types=('Manufacturer',),
-        relationship='InstrumentManufacturer',
         required=1,
         widget=ReferenceWidget(
             label=_("Manufacturer"),
@@ -106,10 +103,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Supplier',
         allowed_types=('Supplier',),
-        relationship='InstrumentSupplier',
         required=1,
         widget=ReferenceWidget(
             label=_("Supplier"),
@@ -152,7 +148,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Methods',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
@@ -280,11 +276,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentLocation',
         schemata='Additional info.',
         allowed_types=('InstrumentLocation', ),
-        relationship='InstrumentInstrumentLocation',
         required=0,
         widget=ReferenceWidget(
             label=_("Instrument Location"),

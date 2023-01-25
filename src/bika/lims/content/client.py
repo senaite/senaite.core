@@ -22,10 +22,10 @@ import six
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
+from bika.lims.browser.fields import UIDReferenceField
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
@@ -97,13 +97,12 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "DefaultCategories",
         schemata="Preferences",
         required=0,
         multiValued=1,
         allowed_types=("AnalysisCategory",),
-        relationship="ClientDefaultCategories",
         widget=ReferenceWidget(
             label=_("Default categories"),
             description=_(
@@ -118,14 +117,13 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "RestrictedCategories",
         schemata="Preferences",
         required=0,
         multiValued=1,
         validators=("restrictedcategoriesvalidator",),
         allowed_types=("AnalysisCategory",),
-        relationship="ClientRestrictedCategories",
         widget=ReferenceWidget(
             label=_("Restrict categories"),
             description=_("Show only selected categories in client views"),
