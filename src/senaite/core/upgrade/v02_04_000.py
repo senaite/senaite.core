@@ -593,10 +593,10 @@ def migrate_interim_values_to_string(tool):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
-        # Purge back-references to current object
+        # Migrate float values of interim fields
         obj = api.get_object(obj)
-
         interims = obj.getInterimFields()
+
         for interim in interims:
             value = interim.get("value")
             if type(value) is float:
