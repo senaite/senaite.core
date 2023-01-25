@@ -1593,7 +1593,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         fielderrors = {}
         errors = {"message": "", "fielderrors": {}}
 
-        attachments = {}
         valid_records = []
 
         # Validate required fields
@@ -1612,7 +1611,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # These files will be added later as attachments
             file_fields = filter(lambda f: f.endswith("_file"), record)
             uploads = map(lambda f: record.pop(f), file_fields)
-            attachments[n] = [self.to_attachment_record(f) for f in uploads]
+            attachments = [self.to_attachment_record(f) for f in uploads]
 
             # Required fields and their values
             required_keys = [field.getName() for field in fields
@@ -1667,7 +1666,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                             "Service": condition.get("uid"),
                             "Condition": condition.get("title"),
                         })
-                        attachments[n].append(att)
+                        attachments.append(att)
                     # Reset the condition value
                     filename = file_upload and file_upload.filename or ""
                     condition.value = filename
@@ -1692,6 +1691,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     continue
                 valid_record[fieldname] = fieldvalue
 
+            # add the attachments to the record
+            valid_record["attachments"] = filter(None, attachments)
+
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
 
@@ -1710,41 +1712,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Not valid, return immediately with an error response
                 return {"errors": validation_err}
 
-        # Process Form
-        actions = ActionHandlerPool.get_instance()
-        actions.queue_pool()
+        # create the samples
+        try:
+            samples = self.create_samples(valid_records)
+        except Exception as e:
+            errors["message"] = str(e)
+            logger.error(e, exc_info=True)
+            return {"errors": errors}
+
+        # We keep the title to check if AR is newly created
+        # and UID to print stickers
         ARs = OrderedDict()
-        for n, record in enumerate(valid_records):
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
-
-            if not client:
-                actions.resume()
-                raise RuntimeError("No client found")
-
-            # Create the Analysis Request
-            try:
-                ar = crar(
-                    client,
-                    self.request,
-                    record,
-                )
-            except Exception as e:
-                actions.resume()
-                errors["message"] = str(e)
-                logger.error(e, exc_info=True)
-                return {"errors": errors}
-
-            # We keep the title to check if AR is newly created
-            # and UID to print stickers
-            ARs[ar.Title()] = ar.UID()
-
-            # Create the attachments
-            ar_attachments = filter(None, attachments.get(n, []))
-            for attachment_record in ar_attachments:
-                self.create_attachment(ar, attachment_record)
-
-        actions.resume()
+        for sample in samples:
+            ARs[sample.Title()] = sample.UID()
 
         level = "info"
         if len(ARs) == 0:
@@ -1761,6 +1741,31 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         self.context.plone_utils.addPortalMessage(message, level)
 
         return self.handle_redirect(ARs.values(), message)
+
+    def create_samples(self, records):
+        """Creates the AnalysisRequest objects for the (validated) records
+        """
+        samples = []
+        for n, record in enumerate(records):
+            client_uid = record.get("Client")
+            client = self.get_object_by_uid(client_uid)
+            if not client:
+                raise ValueError("No client found")
+
+            # Pop the attachments
+            attachments = record.pop("attachments", [])
+
+            # Create the Analysis Request
+            sample = crar(client, self.request, record)
+
+            # Create the attachments
+            for attachment_record in attachments:
+                self.create_attachment(sample, attachment_record)
+
+            # Add the sample
+            samples.append(sample)
+
+        return samples
 
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
