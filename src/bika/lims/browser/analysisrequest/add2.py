@@ -36,7 +36,6 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from bika.lims.workflow import ActionHandlerPool
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from plone import protect
