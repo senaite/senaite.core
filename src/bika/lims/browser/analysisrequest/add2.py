@@ -1583,6 +1583,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if confirmation:
             return {"confirmation": confirmation}
 
+        # Get the maximum number of samples to create per record
+        max_samples_record = self.get_max_samples_per_record()
+
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
 
@@ -1649,6 +1652,22 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if parent_uid != record.get("Client"):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
+
+            # Check if the number of samples per record is permitted
+            num_samples = record.get("NumSamples", 1)
+            num_samples = api.to_int(num_samples, default=1)
+            num_samples = num_samples if num_samples > 0 else 1
+            if num_samples > max_samples_record:
+                msg = _(u"error_analyssirequest_numsamples_above_max",
+                        u"The number of samples to create for the record "
+                        u"'Sample ${record_index}' (${num_samples}) is above "
+                        u"${max_num_samples}",
+                        mapping={
+                            "record_index": n+1,
+                            "num_samples": num_samples,
+                            "max_num_samples": max_samples_record,
+                        })
+                fielderrors["NumSamples"] = self.context.translate(msg)
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
@@ -1769,6 +1788,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 samples.append(sample)
 
         return samples
+
+    def get_max_samples_per_record(self):
+        """Returns the maximum number of samples that can be created for each
+        record/column from the sample add form
+        """
+        setup = api.get_senaite_setup()
+        return setup.getMaxNumberOfSamplesAdd()
 
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
