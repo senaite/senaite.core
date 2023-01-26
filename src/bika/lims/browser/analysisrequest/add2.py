@@ -1666,7 +1666,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                         u"'Sample ${record_index}' (${num_samples}) is above "
                         u"${max_num_samples}",
                         mapping={
-                            "record_index": n+1,
+                            "record_index": num+1,
                             "num_samples": num_samples,
                             "max_num_samples": max_samples_record,
                         })
@@ -1799,6 +1799,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         num_samples = api.to_int(num_samples, default=1)
         return num_samples if num_samples > 0 else 1
 
+    @viewcache.memoize
     def get_max_samples_per_record(self):
         """Returns the maximum number of samples that can be created for each
         record/column from the sample add form
