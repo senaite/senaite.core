@@ -1749,7 +1749,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
-        for num, record in enumerate(records):
+        for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
             if not client:
