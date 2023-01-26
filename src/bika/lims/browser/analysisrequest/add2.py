@@ -1597,7 +1597,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         valid_records = []
 
         # Validate required fields
-        for n, record in enumerate(records):
+        for num, record in enumerate(records):
 
             # Process UID fields first and set their values to the linked field
             uid_fields = filter(lambda f: f.endswith("_uid"), record)
@@ -1678,7 +1678,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # If there are required fields missing, flag an error
             for field in missing:
-                fieldname = "{}-{}".format(field, n)
+                fieldname = "{}-{}".format(field, num)
                 msg = _("Field '{}' is required").format(safe_unicode(field))
                 fielderrors[fieldname] = msg
 
