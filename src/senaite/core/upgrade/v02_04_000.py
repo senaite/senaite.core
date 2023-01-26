@@ -640,14 +640,13 @@ def ensure_sample_client_fields_are_set(portal):
             transaction.savepoint()
 
         obj = api.get_object(obj)
-        field = obj.getField("Client")
-        value = field.get(obj)
+        client_uid = obj.getRawClient()
 
-        if not value:
+        if not client_uid:
             client = obj.getClient()
             logger.info("Set empty client field of sample %s -> %s" % (
                 api.get_path(obj), api.get_path(client)))
-            field.set(obj, client)
+            obj.setClient(client)
 
         # Flush the object from memory
         obj._p_deactivate()
