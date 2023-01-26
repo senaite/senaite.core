@@ -620,3 +620,36 @@ def migrate_interim_values_to_string(tool):
         obj._p_deactivate()
 
     logger.info("Migrate interim values to string [DONE]")
+
+
+def ensure_sample_client_fields_are_set(portal):
+    """Interate through all samples and ensure the `Client` field is set
+    """
+    logger.info("Ensure sample client fields are set ...")
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="AnalysisRequest")
+    total = len(brains)
+
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        obj = api.get_object(obj)
+        field = obj.getField("Client")
+        value = field.get(obj)
+
+        if not value:
+            client = obj.getClient()
+            logger.info("Set empty client field of sample %s -> %s" % (
+                api.get_path(obj), api.get_path(client)))
+            field.set(obj, client)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Ensure sample client fields are set [DONE]")
