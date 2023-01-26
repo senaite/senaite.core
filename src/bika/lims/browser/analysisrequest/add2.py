@@ -24,6 +24,7 @@ from datetime import datetime
 
 import six
 
+import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -1712,7 +1713,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # create the samples
         try:
-            samples = self.create_samples(valid_records)
+            samples = map(self.create_sample, valid_records)
         except Exception as e:
             errors["message"] = str(e)
             logger.error(e, exc_info=True)
@@ -1740,30 +1741,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return self.handle_redirect(ARs.values(), message)
 
-    def create_samples(self, records):
-        """Creates the AnalysisRequest objects for the (validated) records
+    def create_sample(self, record):
+        """Create a sample for the given record
         """
-        samples = []
-        for n, record in enumerate(records):
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
-            if not client:
-                raise ValueError("No client found")
+        client_uid = record.get("Client")
+        client = self.get_object_by_uid(client_uid)
+        if not client:
+            raise ValueError("No client found")
 
-            # Pop the attachments
-            attachments = record.pop("attachments", [])
+        # Pop the attachments
+        attachments = record.pop("attachments", [])
 
-            # Create the Analysis Request
-            sample = crar(client, self.request, record)
+        # Create the Analysis Request
+        sample = crar(client, self.request, record)
 
-            # Create the attachments
-            for attachment_record in attachments:
-                self.create_attachment(sample, attachment_record)
+        # Create the attachments
+        for attachment_record in attachments:
+            self.create_attachment(sample, attachment_record)
 
-            # Add the sample
-            samples.append(sample)
+        transaction.savepoint(optimistic=True)
 
-        return samples
+        return sample
 
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
