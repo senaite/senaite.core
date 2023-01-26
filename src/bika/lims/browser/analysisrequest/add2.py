@@ -1585,6 +1585,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
+        required_keys = [field.getName() for field in fields if field.required]
 
         # extract records from request
         records = self.get_records()
@@ -1613,8 +1614,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             attachments = [self.to_attachment_record(f) for f in uploads]
 
             # Required fields and their values
-            required_keys = [field.getName() for field in fields
-                             if field.required]
             required_values = [record.get(key) for key in required_keys]
             required_fields = dict(zip(required_keys, required_values))
 
