@@ -429,7 +429,8 @@ class AnalysisRequestAddView(BrowserView):
         elif client == api.get_current_client():
             # Current user is a Client contact. Use current contact
             current_user = api.get_current_user()
-            return api.get_user_contact(current_user, contact_types=["Contact"])
+            return api.get_user_contact(current_user,
+                                        contact_types=["Contact"])
 
         return None
 
@@ -1053,7 +1054,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "DateSampled": {"value": self.to_iso_date(obj.getDateSampled())},
             "SamplingDate": {"value": self.to_iso_date(obj.getSamplingDate())},
             "SampleType": self.to_field_value(sample_type),
-            "EnvironmentalConditions": {"value": obj.getEnvironmentalConditions()},
+            "EnvironmentalConditions": {
+                "value": obj.getEnvironmentalConditions(),
+            },
             "ClientSampleID": {"value": obj.getClientSampleID()},
             "ClientReference": {"value": obj.getClientReference()},
             "ClientOrderNumber": {"value": obj.getClientOrderNumber()},
@@ -1285,7 +1288,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj = self.get_object_by_uid(uid)
             if not obj:
                 continue
-            obj_info = self.get_object_info(obj, field_name, record=extra_fields)
+            obj_info = self.get_object_info(
+                obj, field_name, record=extra_fields)
             if not obj_info or "uid" not in obj_info:
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
