@@ -153,4 +153,12 @@
       handler="senaite.core.upgrade.v02_04_000.purge_backreferences_analysisrequest"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Convert interim values from type float to string"
+      description="Convert interim values from type float to string"
+      source="2415"
+      destination="2416"
+      handler="senaite.core.upgrade.v02_04_000.migrate_interim_values_to_string"
+      profile="senaite.core:default"/>
+
 </configure>
