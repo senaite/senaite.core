@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2241 Little improvement of getRaw function from legacy uidreference field
 - #2240 Explicitly set client on sample creation
 - #2237 Fix default value of interim choices and allow empty selection
 - #2234 Add interpretation template columns for assigned sampletypes and result text
