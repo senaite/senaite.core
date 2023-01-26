@@ -24,6 +24,7 @@ from datetime import datetime
 
 import six
 
+import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -429,7 +430,8 @@ class AnalysisRequestAddView(BrowserView):
         elif client == api.get_current_client():
             # Current user is a Client contact. Use current contact
             current_user = api.get_current_user()
-            return api.get_user_contact(current_user, contact_types=["Contact"])
+            return api.get_user_contact(current_user,
+                                        contact_types=["Contact"])
 
         return None
 
@@ -1053,7 +1055,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "DateSampled": {"value": self.to_iso_date(obj.getDateSampled())},
             "SamplingDate": {"value": self.to_iso_date(obj.getSamplingDate())},
             "SampleType": self.to_field_value(sample_type),
-            "EnvironmentalConditions": {"value": obj.getEnvironmentalConditions()},
+            "EnvironmentalConditions": {
+                "value": obj.getEnvironmentalConditions(),
+            },
             "ClientSampleID": {"value": obj.getClientSampleID()},
             "ClientReference": {"value": obj.getClientReference()},
             "ClientOrderNumber": {"value": obj.getClientOrderNumber()},
@@ -1285,7 +1289,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj = self.get_object_by_uid(uid)
             if not obj:
                 continue
-            obj_info = self.get_object_info(obj, field_name, record=extra_fields)
+            obj_info = self.get_object_info(
+                obj, field_name, record=extra_fields)
             if not obj_info or "uid" not in obj_info:
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
@@ -1589,6 +1594,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
+        required_keys = [field.getName() for field in fields if field.required]
 
         # extract records from request
         records = self.get_records()
@@ -1599,7 +1605,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         valid_records = []
 
         # Validate required fields
-        for n, record in enumerate(records):
+        for num, record in enumerate(records):
 
             # Process UID fields first and set their values to the linked field
             uid_fields = filter(lambda f: f.endswith("_uid"), record)
@@ -1617,8 +1623,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             attachments = [self.to_attachment_record(f) for f in uploads]
 
             # Required fields and their values
-            required_keys = [field.getName() for field in fields
-                             if field.required]
             required_values = [record.get(key) for key in required_keys]
             required_fields = dict(zip(required_keys, required_values))
 
@@ -1696,7 +1700,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # If there are required fields missing, flag an error
             for field in missing:
-                fieldname = "{}-{}".format(field, n)
+                fieldname = "{}-{}".format(field, num)
                 msg = _("Field '{}' is required").format(safe_unicode(field))
                 fielderrors[fieldname] = msg
 
@@ -1760,10 +1764,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return self.handle_redirect(ARs.values(), message)
 
     def create_samples(self, records):
-        """Creates the AnalysisRequest objects for the (validated) records
+        """Creates samples for the given records
         """
         samples = []
-        for n, record in enumerate(records):
+        for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
             if not client:
@@ -1780,6 +1784,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Create the attachments
                 for attachment_record in attachments:
                     self.create_attachment(sample, attachment_record)
+
+                transaction.savepoint(optimistic=True)
 
                 # Add the sample
                 samples.append(sample)
