@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2241 Little improvement of getRaw function from legacy uidreference field
+- #2238 Split the add sample's `ajax_form` function to make patching easier
 - #2240 Explicitly set client on sample creation
 - #2237 Fix default value of interim choices and allow empty selection
 - #2234 Add interpretation template columns for assigned sampletypes and result text
