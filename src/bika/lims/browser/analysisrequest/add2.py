@@ -1786,8 +1786,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     self.create_attachment(sample, attachment_record)
 
                 transaction.savepoint(optimistic=True)
-
-                # Add the sample
                 samples.append(sample)
 
         return samples
