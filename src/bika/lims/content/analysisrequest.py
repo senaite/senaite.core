@@ -25,6 +25,8 @@ from decimal import Decimal
 
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Widget import IntegerWidget
 from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
@@ -1269,7 +1271,31 @@ schema = BikaSchema.copy() + Schema((
     RecordsField(
         "ServiceConditions",
         widget=ComputedWidget(visible=False)
-    )
+    ),
+
+    # Number of samples to create on add form
+    IntegerField(
+        "NumSamples",
+        default=1,
+        widget=IntegerWidget(
+            label=_(
+                u"label_analysisrequest_numsamples",
+                default=u"Number of samples"
+            ),
+            description=_(
+                u"description_analysisrequest_numsamples",
+                default=u"Number of samples to create with the information "
+                        u"provided"),
+            # This field is only visible in add sample form
+            visible={
+                "add": "edit",
+                "view": "invisible",
+                "header_table": "invisible",
+                "secondary": "invisible",
+            },
+            render_own_label=True,
+        ),
+    ),
 )
 )
 

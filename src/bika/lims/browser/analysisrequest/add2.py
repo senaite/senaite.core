@@ -57,7 +57,8 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks"]
+SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
+                      "NumSamples"]
 
 
 def returns_json(func):
@@ -1588,6 +1589,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if confirmation:
             return {"confirmation": confirmation}
 
+        # Get the maximum number of samples to create per record
+        max_samples_record = self.get_max_samples_per_record()
+
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
         required_keys = [field.getName() for field in fields if field.required]
@@ -1653,6 +1657,20 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if parent_uid != record.get("Client"):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
+
+            # Check if the number of samples per record is permitted
+            num_samples = self.get_num_samples(record)
+            if num_samples > max_samples_record:
+                msg = _(u"error_analyssirequest_numsamples_above_max",
+                        u"The number of samples to create for the record "
+                        u"'Sample ${record_index}' (${num_samples}) is above "
+                        u"${max_num_samples}",
+                        mapping={
+                            "record_index": num+1,
+                            "num_samples": num_samples,
+                            "max_num_samples": max_samples_record,
+                        })
+                fielderrors["NumSamples"] = self.context.translate(msg)
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
@@ -1758,17 +1776,34 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
-            # Create the Analysis Request
-            sample = crar(client, self.request, record)
+            # Create as many samples as required
+            num_samples = self.get_num_samples(record)
+            for idx in range(num_samples):
+                sample = crar(client, self.request, record)
 
-            # Create the attachments
-            for attachment_record in attachments:
-                self.create_attachment(sample, attachment_record)
+                # Create the attachments
+                for attachment_record in attachments:
+                    self.create_attachment(sample, attachment_record)
 
-            transaction.savepoint(optimistic=True)
-            samples.append(sample)
+                transaction.savepoint(optimistic=True)
+                samples.append(sample)
 
         return samples
+
+    def get_num_samples(self, record):
+        """Return the number of samples to create for the given record
+        """
+        num_samples = record.get("NumSamples", 1)
+        num_samples = api.to_int(num_samples, default=1)
+        return num_samples if num_samples > 0 else 1
+
+    @viewcache.memoize
+    def get_max_samples_per_record(self):
+        """Returns the maximum number of samples that can be created for each
+        record/column from the sample add form
+        """
+        setup = api.get_senaite_setup()
+        return setup.getMaxNumberOfSamplesAdd()
 
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active

@@ -124,10 +124,31 @@ class ISetupSchema(model.Schema):
         ),
         default=True,
     )
+    max_number_of_samples_add = schema.Int(
+        title=_(
+            u"label_senaitesetup_maxnumberofsamplesadd",
+            default=u"Maximum value for 'Number of samples' field on "
+                    u"registration"
+        ),
+        description=_(
+            u"description_senaitesetup_maxnumberofsamplesadd",
+            default=u"Maximum number of samples that can be created in "
+                    u"accordance with the value set for the field 'Number of "
+                    u"samples' on the sample registration form"
+        ),
+        default=10
+    )
 
     ###
     # Fieldsets
     ###
+    model.fieldset(
+        "samples",
+        label=_("label_senaitesetup_fieldset_samples", default=u"Samples"),
+        fields=[
+            "max_number_of_samples_add",
+        ]
+    )
     model.fieldset(
         "analyses",
         label=_("label_senaitesetup_fieldset_analyses", default=u"Analyses"),
@@ -284,4 +305,22 @@ class Setup(Container):
         """Allow/Disallow to create samples without analyses
         """
         mutator = self.mutator("sample_analyses_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getMaxNumberOfSamplesAdd(self):
+        """Returns the maximum number of samples that can be created for each
+        column in sample add form in accordance with the value set for the
+        field 'Number of samples'
+        """
+        accessor = self.accessor("max_number_of_samples_add")
+        return api.to_int(accessor(self))
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setMaxNumberOfSamplesAdd(self, value):
+        """Sets the maximum number of samples that can be created for each
+        column in sample add form in accordance with the value set for the
+        field 'Number of samples'
+        """
+        mutator = self.mutator("max_number_of_samples_add")
         return mutator(self, value)

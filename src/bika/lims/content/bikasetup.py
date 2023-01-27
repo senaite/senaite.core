@@ -946,6 +946,25 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
+    IntegerField(
+        "MaxNumberOfSamplesAdd",
+        schemata="Analyses",
+        required=0,
+        default=10,
+        widget=IntegerWidget(
+            label=_(
+                u"label_senaitesetup_maxnumberofsamplesadd",
+                default=u"Maximum value for 'Number of samples' field on "
+                        u"registration"
+            ),
+            description=_(
+                u"description_senaitesetup_maxnumberofsamplesadd",
+                default=u"Maximum number of samples that can be created in "
+                        u"accordance with the value set for the field 'Number "
+                        u"of samples' on the sample registration form"
+            ),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
@@ -1156,6 +1175,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setSampleAnalysesRequired(value)
+
+    def getMaxNumberOfSamplesAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMaxNumberOfSamplesAdd()
+        return self.getField("MaxNumberOfSamplesAdd").default
+
+    def setMaxNumberOfSamplesAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setMaxNumberOfSamplesAdd(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
