@@ -161,13 +161,21 @@
       handler="senaite.core.upgrade.v02_04_000.migrate_interim_values_to_string"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ensure sample client fields are set"
+      description="Iterate through all samples and check if the `Client` schema field is set"
+      source="2416"
+      destination="2417"
+      handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
+      profile="senaite.core:default"/>
+
   <!-- Support for multi-component analyses
        https://github.com/senaite/senaite.core/pull/2120 -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 2.4.0: Support for multi-component analyses"
       description="Support for multi-component analyses"
-      source="2416"
-      destination="2417"
+      source="2417"
+      destination="2418"
       handler="senaite.core.upgrade.v02_04_000.setup_multi_component_analyses"
       profile="senaite.core:default"/>
 
