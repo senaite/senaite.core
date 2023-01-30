@@ -32,12 +32,9 @@ from bika.lims.interfaces import IProductivityReport
 from bika.lims.utils import createPdf
 from bika.lims.utils import getUsers
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8 as _c
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import REPORT_CATALOG
 from zope.component import getAdapters
