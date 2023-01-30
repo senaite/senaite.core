@@ -301,7 +301,7 @@ class SubmitForm(BrowserView):
         data = {"title": title, "Client": clientuid, "ReportFile": pdf}
         api.create(self.context, "Report", **data)
 
-        now = datetime.now().strftime("%Y%m%d")
+        now = datetime.now().strftime("%y%m%d%H%M%S")
         fn = "{}-{}.pdf".format(now, title)
 
         setheader = self.request.response.setHeader
