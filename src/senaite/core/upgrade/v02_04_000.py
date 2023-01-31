@@ -38,6 +38,7 @@ from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import uncatalog_brain
 from zope.interface import alsoProvides
 
 version = "2.4.0"  # Remember version number in metadata.xml and setup.py
@@ -166,10 +167,10 @@ def fix_traceback_retract_dl(tool):
     well as results that are DetectionLimit and stored as floats
     """
     logger.info("Migrate LDL, UDL and result fields to string ...")
-    cat = api.get_tool("uid_catalog")
+    uc = api.get_tool("uid_catalog")
     query = {"portal_type": ["AnalysisService", "Analysis",
                              "DuplicateAnalysis", "ReferenceAnalysis"]}
-    brains = cat.search(query)
+    brains = uc.search(query)
     total = len(brains)
 
     for num, brain in enumerate(brains):
@@ -181,6 +182,9 @@ def fix_traceback_retract_dl(tool):
             transaction.savepoint()
 
         obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
 
         # Migrate UDL to string
         field = obj.getField("UpperDetectionLimit")
@@ -414,6 +418,10 @@ def rename_retestof_relationship(tool):
 
         # find out if the current analysis is a retest
         obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
         field = obj.getField("RetestOf")
         retest_of = field.get(obj)
         if retest_of:
@@ -456,7 +464,7 @@ def purge_backreferences(tool):
     uc = api.get_tool("uid_catalog")
     brains = uc(portal_type=portal_types)
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -465,7 +473,10 @@ def purge_backreferences(tool):
             transaction.savepoint()
 
         # Purge back-references to current object
-        obj = api.get_object(obj)
+        obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -574,7 +585,7 @@ def purge_backreferences_analysisrequest(tool):
     uc = api.get_tool("uid_catalog")
     brains = uc(portal_type="AnalysisRequest")
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -583,7 +594,10 @@ def purge_backreferences_analysisrequest(tool):
             transaction.savepoint()
 
         # Purge back-references to current object
-        obj = api.get_object(obj)
+        obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -601,12 +615,15 @@ def migrate_interim_values_to_string(tool):
     brains = uc(portal_type=["Analysis", "AnalysisService",
                              "ReferenceAnalysis", "DuplicateAnalysis"])
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
         # Migrate float values of interim fields
-        obj = api.get_object(obj)
+        obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
         interims = obj.getInterimFields()
 
         for interim in interims:
@@ -643,7 +660,7 @@ def ensure_sample_client_fields_are_set(portal):
     brains = uc(portal_type="AnalysisRequest")
     total = len(brains)
 
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -651,7 +668,11 @@ def ensure_sample_client_fields_are_set(portal):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        obj = api.get_object(obj)
+        obj = api.get_object(brain)
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
         client_uid = obj.getRawClient()
 
         if not client_uid:
