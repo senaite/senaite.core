@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2245 Add missing translation for "Show more" (from app.listing)
+- #2243 Add ".pdf" extension to filenames for productivity reports
 - #2239 Allow to create multiple samples for each sample record in add form
 - #2241 Little improvement of getRaw function from legacy uidreference field
 - #2238 Split the add sample's `ajax_form` function to make patching easier
