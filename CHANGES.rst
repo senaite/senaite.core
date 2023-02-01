@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2245 Add missing translation for "Show more" (from app.listing)
 - #2243 Add ".pdf" extension to filenames for productivity reports
 - #2239 Allow to create multiple samples for each sample record in add form
 - #2241 Little improvement of getRaw function from legacy uidreference field
