@@ -20,7 +20,9 @@
 
 import importlib
 import os
+from datetime import datetime
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -30,12 +32,9 @@ from bika.lims.interfaces import IProductivityReport
 from bika.lims.utils import createPdf
 from bika.lims.utils import getUsers
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8 as _c
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import REPORT_CATALOG
 from zope.component import getAdapters
@@ -288,30 +287,27 @@ class SubmitForm(BrowserView):
         framed_output = self.frame_template()
 
         # this is the good part
-        result = createPdf(framed_output)
+        pdf = createPdf(framed_output)
 
         # remove temporary files
         for f in self.request['to_remove']:
             os.remove(f)
 
-        if result:
-            # Create new report object
-            reportid = self.context.generateUniqueId('Report')
-            report = _createObjectByType("Report", self.context, reportid)
-            report.edit(Client=clientuid)
-            report.processForm()
+        if not pdf:
+            return
 
-            # write pdf to report object
-            report.edit(title=output['report_title'], ReportFile=result)
-            report.reindexObject()
+        # Create new report object
+        title = output["report_title"]
+        data = {"title": title, "Client": clientuid, "ReportFile": pdf}
+        api.create(self.context, "Report", **data)
 
-            fn = "%s - %s" % (self.date.strftime(self.date_format_short),
-                              _u(output['report_title']))
+        now = datetime.now().strftime("%y%m%d%H%M%S")
+        fn = "{}-{}.pdf".format(now, title)
 
-            setheader = self.request.RESPONSE.setHeader
-            setheader('Content-Type', 'application/pdf')
-            setheader("Content-Disposition",
-                      "attachment;filename=\"%s\"" % _c(fn))
-            self.request.RESPONSE.write(result)
-
-        return
+        setheader = self.request.response.setHeader
+        setheader("Content-Type", "application/pdf")
+        setheader("Content-Disposition", "attachment; filename=\"%s\"" % fn)
+        setheader("Content-Length", len(pdf))
+        setheader("Cache-Control", "no-store")
+        setheader("Pragma", "no-cache")
+        self.request.response.write(pdf)

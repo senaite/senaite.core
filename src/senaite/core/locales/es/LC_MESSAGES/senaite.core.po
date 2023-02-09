@@ -1167,6 +1167,10 @@ msgstr "Clic para desplegar esta categoría"
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Haga clic para alternar la visibilidad o arrastre y suelte para cambiar el orden"
 
+# senaite.app.listing: Show more
+msgid "Show more"
+msgstr "Mostrar más"
+
 #: senaite/core/browser/samples/view.py:140
 msgid "Client"
 msgstr "Cliente"
