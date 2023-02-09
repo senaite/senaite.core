@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2246 Update ReactJS to version 18.2.0
 - #2245 Add missing translation for "Show more" (from app.listing)
 - #2243 Add ".pdf" extension to filenames for productivity reports
 - #2239 Allow to create multiple samples for each sample record in add form
