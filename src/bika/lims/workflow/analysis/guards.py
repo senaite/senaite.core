@@ -78,9 +78,11 @@ def on_guard(func):
         analysis = args[0]
         key = "%s:%s" % (func.__name__, analysis.UID())
         storage = IAnnotations(get_request())
-        storage[key] = True
+        storage[key] = api.to_int(storage.get(key), 0) + 1
+        logger.info("{}: {}".format(key, storage[key]))
         out = func(*args)
-        if key in storage:
+        storage[key] = api.to_int(storage.get(key), 1) - 1
+        if storage[key] < 1:
             del(storage[key])
         return out
     return decorator
@@ -272,11 +274,6 @@ def guard_verify(analysis):
         if not is_on_guard(multi_component, "verify"):
             return False
 
-        # Analyte can be verified if the multi-component can be verified or
-        # has been verified already
-        if not is_verified_or_verifiable(multi_component):
-            return False
-
     elif analysis.isMultiComponent():
 
         # Multi-component can be verified if all analytes can be verified or
@@ -341,11 +338,6 @@ def guard_retract(analysis):
         # the guard for the multiple component is being evaluated already in
         # the current recursive call
         if not is_on_guard(multi_component, "retract"):
-            return False
-
-        # Analyte can be retracted if the multi-component can be retracted or
-        # has been retracted already
-        if not is_retracted_or_retractable(multi_component):
             return False
 
     elif analysis.isMultiComponent():
