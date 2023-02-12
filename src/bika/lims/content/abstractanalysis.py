@@ -827,6 +827,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
                            html=True):
         """Formatted result:
+        0: If the result type is StringResult, return it without being formatted
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
         3. If the result is not floatable, return it without being formatted
@@ -853,6 +854,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             escaped: e.g: '<' and '>' (LDL and UDL for results like < 23.4).
         """
         result = self.getResult()
+                
+        # 0: The result is a StringResult, return without any formatting
+        isStringResult = self.StringResult
+        if isStringResult:
+            return '%s' % (result)
 
         # 1. The result is a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
