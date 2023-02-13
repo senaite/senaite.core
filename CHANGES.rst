@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2249 Fix APIError: None is not supported (upgrade 1.3.6)
 - #2198 Use portal as relative path for sticker icons (#2197 port)
 - #2108 Replace ParentAnalysisRequest ReferenceField by UIDReferenceField (#2069 port)
 - #2107 Replace Worksheet's Analysis ReferenceField by UIDReferenceField (#2022 port)

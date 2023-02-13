@@ -142,6 +142,9 @@ def fix_worksheet_analyses(worksheet):
     """
     # Get the referenced analyses via relationship
     analyses = worksheet.getRefs(relationship="WorksheetAnalysis")
+    # Purge non-valid records
+    # Fixes APIError: None is not supported
+    analyses = filter(None, analyses)
     analyses_uids = [api.get_uid(an) for an in analyses]
 
     new_layout = []
