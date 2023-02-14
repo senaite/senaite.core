@@ -1191,6 +1191,8 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
+            # we get a string value here!
+            value = api.to_float(value, default=10.0)
             setup.setMaxNumberOfSamplesAdd(value)
 
 

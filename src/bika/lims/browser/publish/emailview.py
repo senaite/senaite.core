@@ -300,7 +300,7 @@ class EmailView(BrowserView):
         subject = self.request.get("subject", None)
         if subject is not None:
             return subject
-        subject = self.context.translate(_("Analysis Results for {}"))
+        subject = self.context.translate(_(u"Analysis Results for {}"))
         return subject.format(self.client_name)
 
     @property
@@ -379,13 +379,15 @@ class EmailView(BrowserView):
     def lab_address(self):
         """Returns the laboratory print address
         """
-        return "<br/>".join(self.laboratory.getPrintAddress())
+        lab_address = self.laboratory.getPrintAddress()
+        return u"<br/>".join(map(api.safe_unicode, lab_address))
 
     @property
     def lab_name(self):
         """Returns the laboratory name
         """
-        return self.laboratory.getName()
+        lab_name = self.laboratory.getName()
+        return api.safe_unicode(lab_name)
 
     @property
     def exit_url(self):

@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2251 Fix UnicodeDecodeError in report email form
+- #2250 Fix cannot set string result with greater or less than symbols
+- #2247 Fix `AttributeError` when running upgrade 240x with stale brains
 - #2246 Update ReactJS to version 18.2.0
 - #2245 Add missing translation for "Show more" (from app.listing)
 - #2243 Add ".pdf" extension to filenames for productivity reports

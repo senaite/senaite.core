@@ -181,8 +181,9 @@ def fix_traceback_retract_dl(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
             uncatalog_brain(brain)
             continue
 
@@ -417,8 +418,9 @@ def rename_retestof_relationship(tool):
             transaction.savepoint()
 
         # find out if the current analysis is a retest
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
             uncatalog_brain(brain)
             continue
 
@@ -473,10 +475,12 @@ def purge_backreferences(tool):
             transaction.savepoint()
 
         # Purge back-references to current object
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
             uncatalog_brain(brain)
             continue
+
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -594,10 +598,12 @@ def purge_backreferences_analysisrequest(tool):
             transaction.savepoint()
 
         # Purge back-references to current object
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
             uncatalog_brain(brain)
             continue
+
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -620,11 +626,12 @@ def migrate_interim_values_to_string(tool):
             logger.info("Processed objects: {}/{}".format(num, total))
 
         # Migrate float values of interim fields
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+            interims = obj.getInterimFields()
+        except AttributeError:
             uncatalog_brain(brain)
             continue
-        interims = obj.getInterimFields()
 
         for interim in interims:
             value = interim.get("value")
@@ -668,8 +675,9 @@ def ensure_sample_client_fields_are_set(portal):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        obj = api.get_object(brain)
-        if not obj:
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
             uncatalog_brain(brain)
             continue
 
