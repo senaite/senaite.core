@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2251 Fix UnicodeDecodeError in report email form
 - #2247 Fix `AttributeError` when running upgrade 240x with stale brains
 - #2246 Update ReactJS to version 18.2.0
 - #2245 Add missing translation for "Show more" (from app.listing)
