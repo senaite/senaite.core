@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2255 Fix attachments from retracted or rejected analyses are not ignored
 - #2253 Allow to flush referencefields in sample header
 - #2251 Fix UnicodeDecodeError in report email form
 - #2250 Fix cannot set string result with greater or less than symbols
