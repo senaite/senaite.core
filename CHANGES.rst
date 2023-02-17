@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2254 Fix attachments to be ignored are included in email results view
+- #2253 Allow to flush referencefields in sample header
 - #2251 Fix UnicodeDecodeError in report email form
 - #2250 Fix cannot set string result with greater or less than symbols
 - #2247 Fix `AttributeError` when running upgrade 240x with stale brains
