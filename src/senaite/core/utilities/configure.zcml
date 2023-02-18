@@ -3,7 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <utility
-      provides="bika.lims.interfaces.INumberGenerator"
+      provides="senaite.core.interfaces.INumberGenerator"
       factory=".numbergenerator.NumberGenerator"
       />
 
