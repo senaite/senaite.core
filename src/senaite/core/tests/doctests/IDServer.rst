@@ -225,7 +225,7 @@ Change ID formats and create new `AnalysisRequest`:
 Re-seed and create a new `Batch`:
 
     >>> from zope.component import getUtility
-    >>> from bika.lims.numbergenerator import INumberGenerator
+    >>> from senaite.core.interfaces import INumberGenerator
     >>> ng = getUtility(INumberGenerator)
     >>> seed = ng.set_number("batch-BA", 10)
 
