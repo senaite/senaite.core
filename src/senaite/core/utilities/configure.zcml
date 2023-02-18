@@ -1,0 +1,10 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <utility
+      provides="bika.lims.interfaces.INumberGenerator"
+      factory=".numbergenerator.NumberGenerator"
+      />
+
+</configure>

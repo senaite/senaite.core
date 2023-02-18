@@ -21,9 +21,9 @@
 import thread
 
 from bika.lims import logger
-from bika.lims.interfaces import INumberGenerator
 from BTrees.OIBTree import OIBTree
 from plone import api
+from senaite.core.interfaces import INumberGenerator
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
