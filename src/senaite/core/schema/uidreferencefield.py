@@ -105,6 +105,7 @@ class UIDReferenceField(List, BaseField):
     def __init__(self, allowed_types=None, multi_valued=True, **kw):
         if allowed_types is None:
             allowed_types = ()
+        self.relationship = kw.get("relationship")
         self.allowed_types = allowed_types
         self.multi_valued = multi_valued
         super(UIDReferenceField, self).__init__(**kw)
