@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2256 Do not keep DX UID reference field back-references per default
+- #2257 Fix UnicodeEncode error when viewing report objects
 - #2254 Fix attachments to be ignored are included in email results view
 - #2253 Allow to flush referencefields in sample header
 - #2251 Fix UnicodeDecodeError in report email form
