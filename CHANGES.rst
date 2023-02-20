@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2258 Reduce conflict errors on number generation
 - #2256 Do not keep DX UID reference field back-references per default
 - #2257 Fix UnicodeEncode error when viewing report objects
 - #2254 Fix attachments to be ignored are included in email results view

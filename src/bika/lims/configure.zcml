@@ -72,9 +72,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <utility
-      provides="bika.lims.interfaces.INumberGenerator"
-      factory=".numbergenerator.NumberGenerator"
-      />
-
 </configure>
