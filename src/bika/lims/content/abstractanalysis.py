@@ -859,10 +859,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         result = self.getResult()
                 
         # 0: The result is a StringResult, return without any formatting
-        isStringResult = self.StringResult
-        if isStringResult:
-            return '%s' % (result)
-
+        string_result = self.getStringResult() is True
+        if string_result:
+            # return without further result handling
+            return result
+    
         # 1. The result is a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
         if dl:
