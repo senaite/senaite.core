@@ -1128,7 +1128,6 @@ class AnalysesView(ListingView):
                 item["Method"] = api.get_title(method)
                 item["replace"]["Method"] = get_link_for(method, tabindex="-1")
 
-
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
         """Update instrument and calculation when the method changes
 
