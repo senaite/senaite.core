@@ -19,14 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
-from plone.dexterity.content import Item
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IInterpretationTemplate
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -119,7 +118,7 @@ class IInterpretationTemplateSchema(model.Schema):
 
 @implementer(IInterpretationTemplate, IInterpretationTemplateSchema,
              IDeactivable)
-class InterpretationTemplate(Item):
+class InterpretationTemplate(Container):
     """Results Interpretation Template content
     """
     # Catalogs where this type will be catalogued
@@ -127,29 +126,6 @@ class InterpretationTemplate(Item):
 
     security = ClassSecurityInfo()
     exclude_from_nav = True
-
-    @security.private
-    def accessor(self, fieldname, raw=False):
-        """Return the field accessor for the fieldname
-        """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
-            return None
-        field = schema[fieldname]
-        if raw:
-            if hasattr(field, "get_raw"):
-                return field.get_raw
-            return field.getRaw
-        return field.get
-
-    @security.private
-    def mutator(self, fieldname):
-        """Return the field mutator for the fieldname
-        """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
-            return None
-        return schema[fieldname].set
 
     @security.protected(permissions.View)
     def getAnalysisTemplates(self):

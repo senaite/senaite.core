@@ -4,6 +4,24 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2258 Reduce conflict errors on number generation
+- #2256 Do not keep DX UID reference field back-references per default
+- #2257 Fix UnicodeEncode error when viewing report objects
+- #2254 Fix attachments to be ignored are included in email results view
+- #2253 Allow to flush referencefields in sample header
+- #2251 Fix UnicodeDecodeError in report email form
+- #2250 Fix cannot set string result with greater or less than symbols
+- #2247 Fix `AttributeError` when running upgrade 240x with stale brains
+- #2246 Update ReactJS to version 18.2.0
+- #2245 Add missing translation for "Show more" (from app.listing)
+- #2243 Add ".pdf" extension to filenames for productivity reports
+- #2239 Allow to create multiple samples for each sample record in add form
+- #2241 Little improvement of getRaw function from legacy uidreference field
+- #2238 Split the add sample's `ajax_form` function to make patching easier
+- #2240 Explicitly set client on sample creation
+- #2237 Fix default value of interim choices and allow empty selection
+- #2234 Add interpretation template columns for assigned sampletypes and result text
+- #2234 Change base class for interpretation templates from Item -> Container
 - #2231 Cannot set conditions with a '<' char when others are from type "file"
 - #2221 Migrate `ReferenceField` fields from setup types to `UIDReferenceField`
 - #2228 Fix worksheet template title is not updated after template assignment

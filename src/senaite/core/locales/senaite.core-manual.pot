@@ -53,6 +53,14 @@ msgstr ""
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
 
+# senaite.app.listing: Show more
+msgid "Show more"
+msgstr ""
+
+# senaite.app.listing: Export
+msgid "Export"
+msgstr ""
+
 # senaite.core.browser.modals.templates.create_worksheet.pt
 msgid "Select all"
 msgstr ""

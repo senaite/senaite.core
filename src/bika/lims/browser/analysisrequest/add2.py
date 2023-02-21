@@ -24,6 +24,7 @@ from datetime import datetime
 
 import six
 
+import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -36,7 +37,6 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from bika.lims.workflow import ActionHandlerPool
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from plone import protect
@@ -57,7 +57,8 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks"]
+SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
+                      "NumSamples"]
 
 
 def returns_json(func):
@@ -429,7 +430,8 @@ class AnalysisRequestAddView(BrowserView):
         elif client == api.get_current_client():
             # Current user is a Client contact. Use current contact
             current_user = api.get_current_user()
-            return api.get_user_contact(current_user, contact_types=["Contact"])
+            return api.get_user_contact(current_user,
+                                        contact_types=["Contact"])
 
         return None
 
@@ -1053,7 +1055,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "DateSampled": {"value": self.to_iso_date(obj.getDateSampled())},
             "SamplingDate": {"value": self.to_iso_date(obj.getSamplingDate())},
             "SampleType": self.to_field_value(sample_type),
-            "EnvironmentalConditions": {"value": obj.getEnvironmentalConditions()},
+            "EnvironmentalConditions": {
+                "value": obj.getEnvironmentalConditions(),
+            },
             "ClientSampleID": {"value": obj.getClientSampleID()},
             "ClientReference": {"value": obj.getClientReference()},
             "ClientOrderNumber": {"value": obj.getClientOrderNumber()},
@@ -1285,7 +1289,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj = self.get_object_by_uid(uid)
             if not obj:
                 continue
-            obj_info = self.get_object_info(obj, field_name, record=extra_fields)
+            obj_info = self.get_object_info(
+                obj, field_name, record=extra_fields)
             if not obj_info or "uid" not in obj_info:
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
@@ -1584,8 +1589,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if confirmation:
             return {"confirmation": confirmation}
 
+        # Get the maximum number of samples to create per record
+        max_samples_record = self.get_max_samples_per_record()
+
         # Get AR required fields (including extended fields)
         fields = self.get_ar_fields()
+        required_keys = [field.getName() for field in fields if field.required]
 
         # extract records from request
         records = self.get_records()
@@ -1593,11 +1602,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         fielderrors = {}
         errors = {"message": "", "fielderrors": {}}
 
-        attachments = {}
         valid_records = []
 
         # Validate required fields
-        for n, record in enumerate(records):
+        for num, record in enumerate(records):
 
             # Process UID fields first and set their values to the linked field
             uid_fields = filter(lambda f: f.endswith("_uid"), record)
@@ -1612,11 +1620,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # These files will be added later as attachments
             file_fields = filter(lambda f: f.endswith("_file"), record)
             uploads = map(lambda f: record.pop(f), file_fields)
-            attachments[n] = [self.to_attachment_record(f) for f in uploads]
+            attachments = [self.to_attachment_record(f) for f in uploads]
 
             # Required fields and their values
-            required_keys = [field.getName() for field in fields
-                             if field.required]
             required_values = [record.get(key) for key in required_keys]
             required_fields = dict(zip(required_keys, required_values))
 
@@ -1652,6 +1658,20 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 
+            # Check if the number of samples per record is permitted
+            num_samples = self.get_num_samples(record)
+            if num_samples > max_samples_record:
+                msg = _(u"error_analyssirequest_numsamples_above_max",
+                        u"The number of samples to create for the record "
+                        u"'Sample ${record_index}' (${num_samples}) is above "
+                        u"${max_num_samples}",
+                        mapping={
+                            "record_index": num+1,
+                            "num_samples": num_samples,
+                            "max_num_samples": max_samples_record,
+                        })
+                fielderrors["NumSamples"] = self.context.translate(msg)
+
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
@@ -1667,7 +1687,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                             "Service": condition.get("uid"),
                             "Condition": condition.get("title"),
                         })
-                        attachments[n].append(att)
+                        attachments.append(att)
                     # Reset the condition value
                     filename = file_upload and file_upload.filename or ""
                     condition.value = filename
@@ -1680,7 +1700,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # If there are required fields missing, flag an error
             for field in missing:
-                fieldname = "{}-{}".format(field, n)
+                fieldname = "{}-{}".format(field, num)
                 msg = _("Field '{}' is required").format(safe_unicode(field))
                 fielderrors[fieldname] = msg
 
@@ -1691,6 +1711,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if fieldvalue in ['', None]:
                     continue
                 valid_record[fieldname] = fieldvalue
+
+            # add the attachments to the record
+            valid_record["attachments"] = filter(None, attachments)
 
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
@@ -1710,41 +1733,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Not valid, return immediately with an error response
                 return {"errors": validation_err}
 
-        # Process Form
-        actions = ActionHandlerPool.get_instance()
-        actions.queue_pool()
+        # create the samples
+        try:
+            samples = self.create_samples(valid_records)
+        except Exception as e:
+            errors["message"] = str(e)
+            logger.error(e, exc_info=True)
+            return {"errors": errors}
+
+        # We keep the title to check if AR is newly created
+        # and UID to print stickers
         ARs = OrderedDict()
-        for n, record in enumerate(valid_records):
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
-
-            if not client:
-                actions.resume()
-                raise RuntimeError("No client found")
-
-            # Create the Analysis Request
-            try:
-                ar = crar(
-                    client,
-                    self.request,
-                    record,
-                )
-            except Exception as e:
-                actions.resume()
-                errors["message"] = str(e)
-                logger.error(e, exc_info=True)
-                return {"errors": errors}
-
-            # We keep the title to check if AR is newly created
-            # and UID to print stickers
-            ARs[ar.Title()] = ar.UID()
-
-            # Create the attachments
-            ar_attachments = filter(None, attachments.get(n, []))
-            for attachment_record in ar_attachments:
-                self.create_attachment(ar, attachment_record)
-
-        actions.resume()
+        for sample in samples:
+            ARs[sample.Title()] = sample.UID()
 
         level = "info"
         if len(ARs) == 0:
@@ -1761,6 +1762,48 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         self.context.plone_utils.addPortalMessage(message, level)
 
         return self.handle_redirect(ARs.values(), message)
+
+    def create_samples(self, records):
+        """Creates samples for the given records
+        """
+        samples = []
+        for record in records:
+            client_uid = record.get("Client")
+            client = self.get_object_by_uid(client_uid)
+            if not client:
+                raise ValueError("No client found")
+
+            # Pop the attachments
+            attachments = record.pop("attachments", [])
+
+            # Create as many samples as required
+            num_samples = self.get_num_samples(record)
+            for idx in range(num_samples):
+                sample = crar(client, self.request, record)
+
+                # Create the attachments
+                for attachment_record in attachments:
+                    self.create_attachment(sample, attachment_record)
+
+                transaction.savepoint(optimistic=True)
+                samples.append(sample)
+
+        return samples
+
+    def get_num_samples(self, record):
+        """Return the number of samples to create for the given record
+        """
+        num_samples = record.get("NumSamples", 1)
+        num_samples = api.to_int(num_samples, default=1)
+        return num_samples if num_samples > 0 else 1
+
+    @viewcache.memoize
+    def get_max_samples_per_record(self):
+        """Returns the maximum number of samples that can be created for each
+        record/column from the sample add form
+        """
+        setup = api.get_senaite_setup()
+        return setup.getMaxNumberOfSamplesAdd()
 
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active

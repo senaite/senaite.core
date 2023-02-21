@@ -1164,6 +1164,10 @@ msgstr ""
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
 
+# senaite.app.listing: Show more
+msgid "Show more"
+msgstr "Mostra'n més"
+
 #: senaite/core/browser/samples/view.py:140
 msgid "Client"
 msgstr "Client"

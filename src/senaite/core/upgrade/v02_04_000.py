@@ -19,21 +19,24 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-
-from bika.lims import api
 from bika.lims import LDL
 from bika.lims import UDL
+from bika.lims import api
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.content.interpretationtemplate import InterpretationTemplate
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import uncatalog_brain
 from zope.interface import alsoProvides
 
 version = "2.4.0"  # Remember version number in metadata.xml and setup.py
@@ -152,10 +155,10 @@ def fix_traceback_retract_dl(tool):
     well as results that are DetectionLimit and stored as floats
     """
     logger.info("Migrate LDL, UDL and result fields to string ...")
-    cat = api.get_tool("uid_catalog")
+    uc = api.get_tool("uid_catalog")
     query = {"portal_type": ["AnalysisService", "Analysis",
                              "DuplicateAnalysis", "ReferenceAnalysis"]}
-    brains = cat.search(query)
+    brains = uc.search(query)
     total = len(brains)
 
     for num, brain in enumerate(brains):
@@ -166,7 +169,11 @@ def fix_traceback_retract_dl(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        obj = api.get_object(brain)
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
 
         # Migrate UDL to string
         field = obj.getField("UpperDetectionLimit")
@@ -305,6 +312,10 @@ def get_relationship_key(obj, field):
     # (<portal_type><field_name>, old_relationship_name)
     relationships = dict([
         ("AutoImportLogInstrument", "InstrumentImportLogs"),
+        ("AnalysisRequestProfiles", "AnalysisRequestAnalysisProfiles"),
+        ("AnalysisRequestSpecification", "AnalysisRequestAnalysisSpec"),
+        ("AnalysisRequestPublicationSpecification", "AnalysisRequestPublicationSpec"),
+        ("AnalysisRequestTemplate", "AnalysisRequestARTemplate"),
         ("ContactCCContact", "ContactContact"),
         ("DepartmentManager", "DepartmentLabContact"),
         ("InstrumentCalibrationWorker", "LabContactInstrumentCalibration"),
@@ -395,7 +406,12 @@ def rename_retestof_relationship(tool):
             transaction.savepoint()
 
         # find out if the current analysis is a retest
-        obj = api.get_object(brain)
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
+
         field = obj.getField("RetestOf")
         retest_of = field.get(obj)
         if retest_of:
@@ -420,7 +436,6 @@ def purge_backreferences(tool):
     logger.info("Purge no longer required back-references ...")
     portal_types = [
         "Analysis",
-        "AnalysisRequest",
         "AnalysisService",
         "AnalysisSpec",
         "ARReport",
@@ -439,7 +454,7 @@ def purge_backreferences(tool):
     uc = api.get_tool("uid_catalog")
     brains = uc(portal_type=portal_types)
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -447,8 +462,13 @@ def purge_backreferences(tool):
             # reduce memory size of the transaction
             transaction.savepoint()
 
-        # Migrate the reference fields for current sample
-        obj = api.get_object(obj)
+        # Purge back-references to current object
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
+
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -519,3 +539,145 @@ def migrate_and_purge_references(tool):
         obj._p_deactivate()
 
     logger.info("Migrate and purge references [DONE]")
+
+
+def migrate_interpretationtemplate_item_to_container(tool):
+    """Make interpretationtemplates folderish
+
+    Base class changed from Item -> Container
+
+    https://community.plone.org/t/changing-dx-content-type-base-class-from-item-to-container
+    http://blog.redturtle.it/2013/02/25/migrating-dexterity-items-to-dexterity-containers
+    """
+    logger.info("Migrate interpretationtemplates to be folderish ...")
+    catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "InterpretationTemplate",
+    }
+    results = catalog(query)
+
+    for brain in results:
+        obj = api.get_object(brain)
+        oid = obj.getId()
+        parent = api.get_parent(obj)
+        parent._delOb(oid)
+        obj.__class__ = InterpretationTemplate
+        parent._setOb(oid, obj)
+        BTreeFolder2Base._initBTrees(parent[oid])
+        parent[oid].reindexObject()
+
+    transaction.commit()
+    logger.info("Migrate interpretationtemplates to be folderish [DONE]")
+
+
+def purge_backreferences_analysisrequest(tool):
+    """Purges back-references that are no longer required from AnalysisRequest
+    """
+    logger.info("Purge stale back-references from samples ...")
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Purge back-references to current object
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
+
+        purge_backreferences_to(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Purge stale back-references from samples [DONE]")
+
+
+def migrate_interim_values_to_string(tool):
+    """Migrate all interim values to be string
+    """
+    logger.info("Migrate interim values to string ...")
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type=["Analysis", "AnalysisService",
+                             "ReferenceAnalysis", "DuplicateAnalysis"])
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        # Migrate float values of interim fields
+        try:
+            obj = api.get_object(brain)
+            interims = obj.getInterimFields()
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
+
+        for interim in interims:
+            value = interim.get("value")
+            if type(value) is float:
+                interim["value"] = str(value)
+                logger.info(
+                    "Converted float value for interim keyword '%s' %s -> '%s'"
+                    % (interim["keyword"], value, interim["value"]))
+                obj._p_changed = True
+
+        if obj._p_changed:
+            # set back modified interim fields
+            obj.setInterimFields(interims)
+            logger.info("Updated interims for [%s] %s"
+                        % (api.get_portal_type(obj), api.get_path(obj)))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Migrate interim values to string [DONE]")
+
+
+def ensure_sample_client_fields_are_set(portal):
+    """Interate through all samples and ensure the `Client` field is set
+    """
+    logger.info("Ensure sample client fields are set ...")
+
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="AnalysisRequest")
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            uncatalog_brain(brain)
+            continue
+
+        client_uid = obj.getRawClient()
+
+        if not client_uid:
+            client = obj.getClient()
+            logger.info("Set empty client field of sample %s -> %s" % (
+                api.get_path(obj), api.get_path(client)))
+            obj.setClient(client)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Ensure sample client fields are set [DONE]")

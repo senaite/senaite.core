@@ -71,6 +71,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Don't pollute the dict param passed in
     values = dict(values.items())
 
+    # Explicitly set client instead of relying on the passed in vales.
+    # This might happen if this function is called programmatically outside of
+    # the sample add form.
+    values["Client"] = client
+
     # Resolve the Service uids of analyses to be added in the Sample. Values
     # passed-in might contain Profiles and also values that are not uids. Also,
     # additional analyses can be passed-in through either values or services
