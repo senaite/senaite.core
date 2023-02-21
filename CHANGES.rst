@@ -4,6 +4,13 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2258 Reduce conflict errors on number generation
+- #2256 Do not keep DX UID reference field back-references per default
+- #2257 Fix UnicodeEncode error when viewing report objects
+- #2254 Fix attachments to be ignored are included in email results view
+- #2253 Allow to flush referencefields in sample header
+- #2251 Fix UnicodeDecodeError in report email form
+- #2250 Fix cannot set string result with greater or less than symbols
 - #2247 Fix `AttributeError` when running upgrade 240x with stale brains
 - #2246 Update ReactJS to version 18.2.0
 - #2245 Add missing translation for "Show more" (from app.listing)

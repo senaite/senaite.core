@@ -473,8 +473,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
+        # Check if an string result is expected
+        string_result = self.getStringResult()
+
         # UDL/LDL directly entered in the results field
-        if val and val[0] in [LDL, UDL]:
+        if not string_result and val[:1] in [LDL, UDL]:
             # Strip off the detection limit operand from the result
             operand = val[0]
             val = val.replace(operand, "", 1).strip()

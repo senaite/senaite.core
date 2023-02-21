@@ -300,7 +300,7 @@ class EmailView(BrowserView):
         subject = self.request.get("subject", None)
         if subject is not None:
             return subject
-        subject = self.context.translate(_("Analysis Results for {}"))
+        subject = self.context.translate(_(u"Analysis Results for {}"))
         return subject.format(self.client_name)
 
     @property
@@ -379,13 +379,15 @@ class EmailView(BrowserView):
     def lab_address(self):
         """Returns the laboratory print address
         """
-        return "<br/>".join(self.laboratory.getPrintAddress())
+        lab_address = self.laboratory.getPrintAddress()
+        return u"<br/>".join(map(api.safe_unicode, lab_address))
 
     @property
     def lab_name(self):
         """Returns the laboratory name
         """
-        return self.laboratory.getName()
+        lab_name = self.laboratory.getName()
+        return api.safe_unicode(lab_name)
 
     @property
     def exit_url(self):
@@ -572,7 +574,15 @@ class EmailView(BrowserView):
         attachments = itertools.chain(
             sample.getAttachment(),
             *map(lambda an: an.getAttachment(), analyses))
-        attachments_data = map(self.get_attachment_data, attachments)
+
+        attachments_data = []
+        for attachment in attachments:
+            attachment_data = self.get_attachment_data(attachment)
+            if attachment_data.get("report_option") == "i":
+                # attachment to be ignored from results report
+                continue
+            attachments_data.append(attachment_data)
+
         pdf = self.get_pdf(report)
         filesize = "{} Kb".format(self.get_filesize(pdf))
         filename = self.get_report_filename(report)

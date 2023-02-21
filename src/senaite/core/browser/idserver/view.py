@@ -21,9 +21,9 @@
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.idserver import get_config
-from bika.lims.numbergenerator import INumberGenerator
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.interfaces import INumberGenerator
 from zope.component import getUtility
 from zope.interface import Interface
 from zope.interface import implements

@@ -616,11 +616,10 @@ def migrate_interim_values_to_string(tool):
         # Migrate float values of interim fields
         try:
             obj = api.get_object(brain)
+            interims = obj.getInterimFields()
         except AttributeError:
             uncatalog_brain(brain)
             continue
-
-        interims = obj.getInterimFields()
 
         for interim in interims:
             value = interim.get("value")

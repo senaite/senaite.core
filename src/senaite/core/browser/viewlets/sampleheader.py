@@ -23,6 +23,8 @@ from zope import event
 from zope.component import queryAdapter
 from zope.schema.interfaces import IField as IDXField
 
+_fieldname_not_in_form = object()
+
 
 class SampleHeaderViewlet(ViewletBase):
     """Header table with editable sample fields
@@ -56,7 +58,8 @@ class SampleHeaderViewlet(ViewletBase):
 
         for name, field in self.fields.items():
             value = self.get_field_value(field, form)
-            if value is None:
+
+            if value is _fieldname_not_in_form:
                 continue
 
             # Keep track of field-values
@@ -121,19 +124,25 @@ class SampleHeaderViewlet(ViewletBase):
         """
         fieldname = field.getName()
         if fieldname not in form:
-            return None
+            return _fieldname_not_in_form
+
+        fieldvalue = form[fieldname]
 
         # Handle (multiValued) reference fields
         # https://github.com/bikalims/bika.lims/issues/2270
         uid_fieldname = "{}_uid".format(fieldname)
         if uid_fieldname in form:
-            value = form[uid_fieldname]
+            # allow to reset the reference
+            if not fieldvalue:
+                value = ""
+            else:
+                value = form[uid_fieldname]
             if field.multiValued:
                 value = filter(None, value.split(","))
             return value
 
         # other fields
-        return form[fieldname]
+        return fieldvalue
 
     def grouper(self, iterable, n=3):
         """Splits an iterable into chunks of `n` items
