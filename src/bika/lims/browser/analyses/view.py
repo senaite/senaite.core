@@ -467,8 +467,8 @@ class AnalysesView(ListingView):
         The vocabulary is a list of dictionaries. Each dictionary has the
         following structure:
 
-            {'ResultValue': <method_UID>,
-             'ResultText': <method_Title>}
+            {'ResultValue': <unit>,
+             'ResultText': <unit>}
 
         :param analysis_brain: A single Analysis brain
         :type analysis_brain: CatalogBrain
