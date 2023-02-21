@@ -125,7 +125,7 @@ UnitChoices = RecordsField(
         "value",
     ),
     subfield_labels={
-        "value": _(" "),
+        "value": u"",
     },
     subfield_types={
         "value": "string",
