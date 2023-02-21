@@ -1122,21 +1122,6 @@ class AnalysesView(ListingView):
                 item["Method"] = api.get_title(method)
                 item["replace"]["Method"] = get_link_for(method, tabindex="-1")
 
-    def _on_unit_choice_change(self, uid=None, value=None, item=None, **kw):
-        """ updates the unit on selection of unit_choices.
-        """
-        item["Unit"] = value
-        unit = item.get("Unit")
-
-        item["after"]["Result"] = self.render_unit(unit)
-        uncertainty = item.get("Uncertainty")
-        if uncertainty:
-            item["after"]["Uncertainty"] = self.render_unit(unit)
-
-        elif "Uncertainty" in item["allow_edit"]:
-            item["after"]["Uncertainty"] = self.render_unit(unit)
-
-        return item
 
     def _on_method_change(self, uid=None, value=None, item=None, **kw):
         """Update instrument and calculation when the method changes
@@ -1190,6 +1175,8 @@ class AnalysesView(ListingView):
     def _on_unit_change(self, uid=None, value=None, item=None, **kw):
         """ updates the rendered unit on selection of unit.
         """
+        if not all([value, item]):
+            return None
         item["after"]["Result"] = self.render_unit(value)
         uncertainty = item.get("Uncertainty")
         if uncertainty:

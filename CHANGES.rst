@@ -22,6 +22,7 @@ Changelog
 - #2204 Fix traceback when retracting an analysis with a detection limit
 - #2202 Fix detection limit set manually is not displayed on result save
 - #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
+- #2201 Manual selection of units on results entry
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments
