@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2255 Fix attachments from retracted or rejected analyses are not ignored
+- #2201 Allow manual selection of units on results entry
+- #2258 Reduce conflict errors on number generation
+- #2256 Do not keep DX UID reference field back-references per default
+- #2257 Fix UnicodeEncode error when viewing report objects
 - #2254 Fix attachments to be ignored are included in email results view
 - #2253 Allow to flush referencefields in sample header
 - #2251 Fix UnicodeDecodeError in report email form
@@ -37,7 +41,7 @@ Changelog
 - #2208 Remove `default_method` from AnalysisRequest's Contact field
 - #2204 Fix traceback when retracting an analysis with a detection limit
 - #2202 Fix detection limit set manually is not displayed on result save
-- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
+- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments

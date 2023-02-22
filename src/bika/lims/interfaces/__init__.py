@@ -873,11 +873,6 @@ class IFrontPageAdapter(Interface):
         """
 
 
-class INumberGenerator(Interface):
-    """A utility to generates unique numbers by key
-    """
-
-
 class ITopRightHTMLComponentsHook(Interface):
     """Marker interface to hook html components in bikalisting
     """

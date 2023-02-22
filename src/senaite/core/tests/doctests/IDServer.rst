@@ -43,7 +43,7 @@ Needed Imports:
     >>> from bika.lims import alphanumber as alpha
     >>> from bika.lims import api
     >>> from bika.lims import idserver
-    >>> from bika.lims.interfaces import INumberGenerator
+    >>> from senaite.core.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
 
@@ -225,7 +225,7 @@ Change ID formats and create new `AnalysisRequest`:
 Re-seed and create a new `Batch`:
 
     >>> from zope.component import getUtility
-    >>> from bika.lims.numbergenerator import INumberGenerator
+    >>> from senaite.core.interfaces import INumberGenerator
     >>> ng = getUtility(INumberGenerator)
     >>> seed = ng.set_number("batch-BA", 10)
 
