@@ -169,4 +169,12 @@
       handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ignore attachments from invalid analyses"
+      description="Ignore attachments from invalid analyses"
+      source="2417"
+      destination="2418"
+      handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
+      profile="senaite.core:default"/>
+
 </configure>
