@@ -569,7 +569,15 @@ class EmailView(BrowserView):
         """Report data to be used in the template
         """
         sample = report.getAnalysisRequest()
-        analyses = sample.getAnalyses(full_objects=True)
+
+        # ignore attachments from cancelled, retracted and rejected analyses
+        analyses = []
+        skip = ["cancelled", "rejected", "retracted"]
+        for analysis in sample.getAnalyses(full_objects=True):
+            if api.get_review_status(analysis) in skip:
+                continue
+            analyses.append(analysis)
+
         # merge together sample + analyses attachments
         attachments = itertools.chain(
             sample.getAttachment(),

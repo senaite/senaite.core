@@ -681,3 +681,45 @@ def ensure_sample_client_fields_are_set(portal):
         obj._p_deactivate()
 
     logger.info("Ensure sample client fields are set [DONE]")
+
+
+def ignore_attachments_from_invalid_analyses(tool):
+    """Flag attachments from invalid analyses with "ignore" option, so they
+    are no longer rendered in results email view
+    """
+    logger.info("Flag attachments to ignore ...")
+    query = {
+        "portal_type": ["Analysis"],
+        "review_state": ["retracted", "rejected", "cancelled"],
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
+        # Ignore attachments of this analysis in results report
+        for attachment in obj.getAttachment():
+            report_option = attachment.getReportOption()
+            if report_option != "i":
+                attachment.setReportOption("i")
+            attachment._p_deactivate()
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Flag attachments to ignore [DONE]")
