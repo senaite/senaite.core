@@ -132,17 +132,13 @@ class SampleHeaderViewlet(ViewletBase):
         # https://github.com/bikalims/bika.lims/issues/2270
         uid_fieldname = "{}_uid".format(fieldname)
         if uid_fieldname in form:
-            # get the value from the corresponding `uid_<fieldname>` key
-            value = form[uid_fieldname]
-
-            # extract the assigned UIDs for multi-reference fields
+            # allow to reset the reference
+            if not fieldvalue:
+                value = ""
+            else:
+                value = form[uid_fieldname]
             if field.multiValued:
                 value = filter(None, value.split(","))
-
-            # allow to flush single reference fields
-            if not field.multiValued and not fieldvalue:
-                value = ""
-
             return value
 
         # other fields
