@@ -75,6 +75,11 @@ class IAjaxEditForm(Interface):
         """
 
 
+class INumberGenerator(Interface):
+    """A utility to generates unique numbers by key
+    """
+
+
 class IContainer(Interface):
     """SENAITE Base Container
     """
