@@ -65,7 +65,7 @@
                 <th class="pr-3" i18n:translate="">Size</th>
                 <th class="pr-3" i18n:translate="">Analysis</th>
                 <th class="pr-3" i18n:translate="">Keywords</th>
-                <th class="pr-3" i18n:translate="">Render in report</th>
+                <th class="pr-3" i18n:translate="">Render in Report</th>
                 <!-- Please do not move this column to be the first, because the
                       :records converter will somehow offset the True/False value of
                       the checkbox by -1 (the record before will be deleted) -->
@@ -203,7 +203,7 @@
                 <th class="pr-3" i18n:translate="">Type</th>
                 <th class="pr-3" i18n:translate="">Analysis</th>
                 <th class="pr-3" i18n:translate="">Keywords</th>
-                <th class="pr-3" i18n:translate="">Render in report</th>
+                <th class="pr-3" i18n:translate="">Render in Report</th>
               </tr>
             </thead>
             <tbody>
