@@ -715,9 +715,7 @@ def ignore_attachments_from_invalid_analyses(tool):
 
         # Ignore attachments of this analysis in results report
         for attachment in obj.getAttachment():
-            report_option = attachment.getReportOption()
-            if report_option != "i":
-                attachment.setReportOption("i")
+            attachment.setReportOption("i")
             attachment._p_deactivate()
 
         # Flush the object from memory

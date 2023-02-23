@@ -164,7 +164,7 @@ def after_retract(analysis):
 
     # Ignore attachments of this analysis in results report
     for attachment in analysis.getAttachment():
-        attachment.setReportOption("i")
+        attachment.setRenderInReport(False)
 
     # Retract our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "retract")
@@ -192,7 +192,7 @@ def after_reject(analysis):
 
     # Ignore attachments of this analysis in results report
     for attachment in analysis.getAttachment():
-        attachment.setReportOption("i")
+        attachment.setRenderInReport(False)
 
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")

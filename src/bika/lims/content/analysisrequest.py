@@ -2394,7 +2394,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # create a new attachment
             attachment = self.createAttachment(filedata, filename)
             # ignore the attachment in report
-            attachment.setReportOption("i")
+            attachment.setRenderInReport(False)
             # remove the image data base64 prefix
             html = html.replace(data_type, "")
             # remove the base64 image data with the attachment link

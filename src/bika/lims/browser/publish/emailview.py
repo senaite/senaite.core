@@ -611,7 +611,7 @@ class EmailView(BrowserView):
         filename = f.filename
         filesize = self.get_filesize(f)
         mimetype = f.getContentType()
-        report_option = attachment.getReportOption()
+        render_in_report = attachment.getRenderInReport()
 
         return {
             "obj": attachment,
@@ -622,7 +622,7 @@ class EmailView(BrowserView):
             "filesize": filesize,
             "filename": filename,
             "mimetype": mimetype,
-            "report_option": report_option,
+            "render_in_report": render_in_report,
         }
 
     def get_recipients_data(self, reports):
