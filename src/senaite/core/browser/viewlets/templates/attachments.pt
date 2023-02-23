@@ -11,7 +11,7 @@
   </button>
 
   <div id="ar-attachments-panel"
-       class="collapse card p-2 mb-3 bg-light"
+       tal:attributes="class string:card p-2 mb-3 bg-light ${view/toggle_css_class}"
        tal:define="attachments_view python:view.get_attachments_view()">
 
     <script type="text/javascript">
@@ -131,9 +131,8 @@
                 <td class="attachment-render-in-report text-center"
                     tal:define="render_in_report python:attachment.get('render_in_report', False)">
                   <input type="checkbox"
-                          tal:attributes="name string:attachments.RenderInReport:records:boolean;
-                                          checked python:render_in_report;
-                                          value python:render_in_report;"/>
+                         tal:attributes="name string:attachments.RenderInReport:records:boolean;
+                                         checked python:render_in_report;"/>
                   <input type="hidden"
                          tal:attributes="name string:attachments.RenderInReport:records:boolean:default;
                                          value python:False;"/>

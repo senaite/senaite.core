@@ -89,6 +89,16 @@ class AttachmentsView(BrowserView):
         # call the endpoint
         return action()
 
+    def get_redirect_url(self):
+        """Get the redirect URL depending on the context
+        """
+        url = self.context.absolute_url()
+        # workaround for Worksheets
+        if self.request["HTTP_REFERER"].endswith("manage_results"):
+            url = "{}/manage_results".format(url)
+        # we use this request parameter to keep the attachments viewlet open
+        return "{}?show_attachments=1".format(url)
+
     def add_status_message(self, message, level="info"):
         """Set a portal status message
         """
@@ -128,8 +138,7 @@ class AttachmentsView(BrowserView):
             self.add_status_message(_("Attachment(s) updated"))
         # set the attachments order to the annotation storage
         self.set_attachments_order(order)
-        # redirect back to the default view
-        return self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def action_add_to_ws(self):
         """Form action to add a new attachment in a worksheet
@@ -215,11 +224,7 @@ class AttachmentsView(BrowserView):
                 _("Please select an analysis or service for the attachment"),
                 level="warning")
 
-        if self.request['HTTP_REFERER'].endswith('manage_results'):
-            self.request.response.redirect('{}/manage_results'.format(
-                self.context.absolute_url()))
-        else:
-            self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def action_add(self):
         """Form action to add a new attachment
@@ -275,11 +280,7 @@ class AttachmentsView(BrowserView):
             self.add_status_message(
                 _("Attachment added to the current sample"))
 
-        if self.request["HTTP_REFERER"].endswith("manage_results"):
-            self.request.response.redirect('{}/manage_results'.format(
-                self.context.absolute_url()))
-        else:
-            self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def create_attachment(self, container, attachment_file, **kw):
         """Create an Attachment object in the given container
