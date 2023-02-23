@@ -586,9 +586,6 @@ class EmailView(BrowserView):
         attachments_data = []
         for attachment in attachments:
             attachment_data = self.get_attachment_data(attachment)
-            if attachment_data.get("report_option") == "i":
-                # attachment to be ignored from results report
-                continue
             attachments_data.append(attachment_data)
 
         pdf = self.get_pdf(report)
