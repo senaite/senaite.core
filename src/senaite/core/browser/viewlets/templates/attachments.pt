@@ -204,7 +204,7 @@
                 <th class="pr-3" i18n:translate="">Type</th>
                 <th class="pr-3" i18n:translate="">Analysis</th>
                 <th class="pr-3" i18n:translate="">Keywords</th>
-                <th class="pr-3" i18n:translate="">Report Option</th>
+                <th class="pr-3" i18n:translate="">Render in report</th>
               </tr>
             </thead>
             <tbody>
@@ -275,12 +275,12 @@
                   <!-- Attachment Keywords -->
                   <input class="form-control" name="AttachmentKeys"/>
                 </td>
-                <td>
+                <td class="text-center">
                   <input type="checkbox"
-                         name="RenderInReport"
+                         name="RenderInReport:boolean"
                          tal:attributes="value python:True;"/>
                   <input type="hidden"
-                         name="RenderInReport"
+                         name="RenderInReport:boolean:default"
                          tal:attributes="value python:False;"/>
                 </td>
               </tr>

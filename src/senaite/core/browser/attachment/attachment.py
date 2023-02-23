@@ -142,7 +142,7 @@ class AttachmentsView(BrowserView):
         analysis_uid = form.get("Analysis", None)
         attachment_type = form.get("AttachmentType", "")
         attachment_keys = form.get("AttachmentKeys", "")
-        report_option = form.get("ReportOption", "r")
+        render_in_report = form.get("RenderInReport", True)
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -160,7 +160,7 @@ class AttachmentsView(BrowserView):
                 attachment_file,
                 AttachmentType=attachment_type,
                 AttachmentKeys=attachment_keys,
-                ReportOption=report_option)
+                RenderInReport=render_in_report)
 
             others = analysis.getAttachment()
             attachments = []
@@ -190,7 +190,7 @@ class AttachmentsView(BrowserView):
                     attachment_file,
                     AttachmentType=attachment_type,
                     AttachmentKeys=attachment_keys,
-                    ReportOption=report_option)
+                    RenderInReport=render_in_report)
 
                 others = analysis.getAttachment()
                 attachments = []
@@ -232,7 +232,7 @@ class AttachmentsView(BrowserView):
         attachment_file = form.get("AttachmentFile_file", None)
         attachment_type = form.get("AttachmentType", "")
         attachment_keys = form.get("AttachmentKeys", "")
-        report_option = form.get("ReportOption", "r")
+        render_in_report = form.get("RenderInReport", True)
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -246,7 +246,7 @@ class AttachmentsView(BrowserView):
             attachment_file,
             AttachmentType=attachment_type,
             AttachmentKeys=attachment_keys,
-            ReportOption=report_option)
+            RenderInReport=render_in_report)
 
         # append the new UID to the end of the current order
         self.set_attachments_order(api.get_uid(attachment))
