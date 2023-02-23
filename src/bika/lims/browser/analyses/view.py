@@ -810,8 +810,14 @@ class AnalysesView(ListingView):
         # Display method and instrument columns only if at least one of the
         # analyses requires them to be displayed for selection
         self.columns["Method"]["toggle"] = self.is_method_column_required()
-        self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
-        self.columns["Unit"]["toggle"] = self.is_unit_selection_column_required()
+
+        show_instrument_column = self.is_instrument_column_required()
+        if "Instrument" in self.columns:
+            self.columns["Instrument"]["toggle"] = show_instrument_column
+
+        show_unit_column = self.is_unit_selection_column_required()
+        if "Unit" in self.columns:
+            self.columns["Unit"]["toggle"] = show_unit_column
 
         return items
 
