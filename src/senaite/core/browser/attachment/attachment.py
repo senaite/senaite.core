@@ -29,7 +29,6 @@ from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import security
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from BTrees.OOBTree import OOBTree
 from plone import protect
@@ -367,19 +366,23 @@ class AttachmentsView(BrowserView):
         attachment_uid = api.get_uid(attachment)
         attachment_file = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
-        report_option = attachment.getReportOption()
-        report_option_value = ATTACHMENT_REPORT_OPTIONS.getValue(report_option)
+        attachment_type_uid = ""
+        attachment_type_title = ""
+        render_in_report = attachment.getRenderInReport()
+
+        if attachment_type:
+            attachment_type_uid = api.get_uid(attachment_type)
+            attachment_type_title = api.get_title(attachment_type)
 
         return {
             "keywords": attachment.getAttachmentKeys(),
             "size": self.get_attachment_size(attachment),
             "name": attachment_file.filename,
-            "type_uid": api.get_uid(attachment_type) if attachment_type else "",
-            "type": api.get_title(attachment_type) if attachment_type else "",
+            "type_uid": attachment_type_uid,
+            "type": attachment_type_title,
             "absolute_url": attachment.absolute_url(),
             "UID": attachment_uid,
-            "report_option": report_option,
-            "report_option_value": report_option_value,
+            "render_in_report": render_in_report,
             "analysis": "",
         }
 
@@ -442,11 +445,6 @@ class AttachmentsView(BrowserView):
             "sort_order": "ascending"
         }
         return api.search(query, SETUP_CATALOG)
-
-    def get_attachment_report_options(self):
-        """Returns the valid attachment report options
-        """
-        return ATTACHMENT_REPORT_OPTIONS.items()
 
     @view.memoize
     def get_analyses(self):
