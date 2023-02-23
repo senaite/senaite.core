@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2259 Prevent string results from formatting and number conversion
 - #2201 Allow manual selection of units on results entry
 - #2258 Reduce conflict errors on number generation
 - #2256 Do not keep DX UID reference field back-references per default
