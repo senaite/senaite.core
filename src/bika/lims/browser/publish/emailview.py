@@ -568,8 +568,32 @@ class EmailView(BrowserView):
     def get_report_data(self, report):
         """Report data to be used in the template
         """
-        sample = report.getAnalysisRequest()
+        primary_sample = report.getAnalysisRequest()
+        samples = report.getContainedAnalysisRequests() or [primary_sample]
+        attachments_data = []
 
+        for sample in samples:
+            for attachment in self.get_all_sample_attachments(sample):
+                attachment_data = self.get_attachment_data(sample, attachment)
+                attachments_data.append(attachment_data)
+
+        pdf = self.get_pdf(report)
+        filesize = "{} Kb".format(self.get_filesize(pdf))
+        filename = self.get_report_filename(report)
+
+        return {
+            "primary_sample": primary_sample,
+            "attachments": attachments_data,
+            "pdf": pdf,
+            "obj": report,
+            "uid": api.get_uid(report),
+            "filesize": filesize,
+            "filename": filename,
+        }
+
+    def get_all_sample_attachments(self, sample):
+        """return all valid attachments of the given sample
+        """
         # ignore attachments from cancelled, retracted and rejected analyses
         analyses = []
         skip = ["cancelled", "rejected", "retracted"]
@@ -583,29 +607,9 @@ class EmailView(BrowserView):
             sample.getAttachment(),
             *map(lambda an: an.getAttachment(), analyses))
 
-        attachments_data = []
-        for attachment in attachments:
-            attachment_data = self.get_attachment_data(attachment)
-            if attachment_data.get("report_option") == "i":
-                # attachment to be ignored from results report
-                continue
-            attachments_data.append(attachment_data)
+        return list(attachments)
 
-        pdf = self.get_pdf(report)
-        filesize = "{} Kb".format(self.get_filesize(pdf))
-        filename = self.get_report_filename(report)
-
-        return {
-            "sample": sample,
-            "attachments": attachments_data,
-            "pdf": pdf,
-            "obj": report,
-            "uid": api.get_uid(report),
-            "filesize": filesize,
-            "filename": filename,
-        }
-
-    def get_attachment_data(self, attachment):
+    def get_attachment_data(self, sample, attachment):
         """Attachments data to be used in the template
         """
         f = attachment.getAttachmentFile()
@@ -614,9 +618,10 @@ class EmailView(BrowserView):
         filename = f.filename
         filesize = self.get_filesize(f)
         mimetype = f.getContentType()
-        report_option = attachment.getReportOption()
+        render_in_report = attachment.getRenderInReport()
 
         return {
+            "sample": sample,
             "obj": attachment,
             "attachment_type": attachment_type,
             "attachment_keys": attachment_keys,
@@ -625,7 +630,7 @@ class EmailView(BrowserView):
             "filesize": filesize,
             "filename": filename,
             "mimetype": mimetype,
-            "report_option": report_option,
+            "render_in_report": render_in_report,
         }
 
     def get_recipients_data(self, reports):

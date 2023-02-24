@@ -27,6 +27,7 @@ from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.config import UID_CATALOG
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -714,12 +715,50 @@ def ignore_attachments_from_invalid_analyses(tool):
 
         # Ignore attachments of this analysis in results report
         for attachment in obj.getAttachment():
-            report_option = attachment.getReportOption()
-            if report_option != "i":
-                attachment.setReportOption("i")
+            attachment.setReportOption("i")
             attachment._p_deactivate()
 
         # Flush the object from memory
         obj._p_deactivate()
 
     logger.info("Flag attachments to ignore [DONE]")
+
+
+def convert_attachment_report_options(tool):
+    """Convert raw ReportOption for new RenderInReport boolean field
+    """
+    logger.info("Convert attachment report options ...")
+    query = {
+        "portal_type": ["Attachment"],
+    }
+    brains = api.search(query, UID_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
+        raw_value = getattr(obj, "ReportOption", None)
+        if raw_value is not None:
+            value = raw_value == "r"
+            logger.info("Convert report otion {} -> {} for {}".format(
+                raw_value, value, api.get_path(obj)))
+            obj.setRenderInReport(value)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Convert attachment report options [DONE]")

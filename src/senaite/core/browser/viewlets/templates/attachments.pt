@@ -11,7 +11,7 @@
   </button>
 
   <div id="ar-attachments-panel"
-       class="collapse card p-2 mb-3 bg-light"
+       tal:attributes="class string:card p-2 mb-3 bg-light ${view/toggle_css_class}"
        tal:define="attachments_view python:view.get_attachments_view()">
 
     <script type="text/javascript">
@@ -41,9 +41,7 @@
                      can_edit attachments_view/can_edit_attachments;
                      can_delete attachments_view/can_delete_attachments;
                      attachments attachments_view/get_sorted_attachments;
-                     attachment_types attachments_view/get_attachment_types;
-                     report_options attachments_view/get_attachment_report_options">
-
+                     attachment_types attachments_view/get_attachment_types;">
       <!-- Attachments List -->
       <div id="attachments_update" class="ar_attachments_list">
 
@@ -67,11 +65,11 @@
                 <th class="pr-3" i18n:translate="">Size</th>
                 <th class="pr-3" i18n:translate="">Analysis</th>
                 <th class="pr-3" i18n:translate="">Keywords</th>
-                <th class="pr-3" i18n:translate="">Report Option</th>
+                <th class="pr-3" i18n:translate="">Render in Report</th>
                 <!-- Please do not move this column to be the first, because the
                       :records converter will somehow offset the True/False value of
                       the checkbox by -1 (the record before will be deleted) -->
-                <th class="pr-3" tal:condition="can_delete">Delete</th>
+                <th class="pr-3" i18n:translate="" tal:condition="can_delete">Remove</th>
               </tr>
             </thead>
             <tbody>
@@ -130,23 +128,17 @@
                         tal:content="attachment/keywords"/>
                 </td>
 
-                <td class="attachment-report-option">
-                  <!-- Attachment Report Option
-                        i=Ignore in Report
-                        r=Render in Report (default)
-                    -->
-                  <select name="ReportOption"
-                          class="form-control"
-                          tal:condition="can_edit"
-                          tal:attributes="name string:attachments.ReportOption:records;
-                                          data-attachment-uid string:${attachment/UID}">
-                    <option tal:repeat="item report_options"
-                            tal:attributes="value python:item[0];
-                                            selected python:item[0]==attachment['report_option']"
-                            tal:content="python: item[1]"/>
-                  </select>
-                  <span tal:condition="not:can_edit"
-                        tal:content="attachment/report_option_value"/>
+                <td class="attachment-render-in-report text-center"
+                    tal:define="render_in_report python:attachment.get('render_in_report', False)">
+                  <input type="checkbox"
+                         tal:attributes="name string:attachments.RenderInReport:records:boolean;
+                                         checked python:render_in_report;"/>
+                  <input type="hidden"
+                         tal:attributes="name string:attachments.RenderInReport:records:boolean:default;
+                                         value python:False;"/>
+                  <span i18n:translate=""
+                        tal:condition="not:can_edit"
+                        tal:content="python:'Yes' if attachment.get('can_edit') else 'No'"/>
                 </td>
 
                 <td class="attachment-delete" tal:condition="can_delete">
@@ -211,7 +203,7 @@
                 <th class="pr-3" i18n:translate="">Type</th>
                 <th class="pr-3" i18n:translate="">Analysis</th>
                 <th class="pr-3" i18n:translate="">Keywords</th>
-                <th class="pr-3" i18n:translate="">Report Option</th>
+                <th class="pr-3" i18n:translate="">Render in Report</th>
               </tr>
             </thead>
             <tbody>
@@ -282,17 +274,13 @@
                   <!-- Attachment Keywords -->
                   <input class="form-control" name="AttachmentKeys"/>
                 </td>
-                <td>
-                <!-- Attachment Report Option
-                      a=Attach to Report (default)
-                      i=Ignore in Report
-                      r=Render in Report
-                    -->
-                  <select name="ReportOption" class="form-control">
-                    <option tal:repeat="item report_options"
-                            tal:attributes="value python:item[0];"
-                            tal:content="python: item[1]"/>
-                  </select>
+                <td class="text-center">
+                  <input type="checkbox"
+                         name="RenderInReport:boolean"
+                         tal:attributes="value python:True;"/>
+                  <input type="hidden"
+                         name="RenderInReport:boolean:default"
+                         tal:attributes="value python:False;"/>
                 </td>
               </tr>
             </tbody>

@@ -177,4 +177,12 @@
       handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Convert attachment report options to boolean"
+      description="Convert attachment report option value for new schema field RenderInReport to True/False values"
+      source="2418"
+      destination="2419"
+      handler="senaite.core.upgrade.v02_04_000.convert_attachment_report_options"
+      profile="senaite.core:default"/>
+
 </configure>

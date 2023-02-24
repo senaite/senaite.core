@@ -36,6 +36,13 @@ class AttachmentsViewlet(ViewletBase):
     """
     template = ViewPageTemplateFile("templates/attachments.pt")
 
+    def toggle_css_class(self):
+        """CSS toggle class selector to keep attachments viewlet open
+        """
+        if self.request.get("show_attachments", False):
+            return "show"
+        return "collapse"
+
     def get_attachments_view(self):
         # refactored functionality into this separate Browser view, to be able
         # to have a form submit target.

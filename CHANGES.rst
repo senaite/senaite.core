@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2262 Simplify attachment render in report options to single checkbox
 - #2259 Prevent string results from formatting and number conversion
 - #2255 Fix attachments from retracted or rejected analyses are not ignored
 - #2201 Allow manual selection of units on results entry

@@ -147,7 +147,7 @@
                  class="attachments well row">
               <tal:reports repeat="report view/reports_data">
                 <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
-                <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                <div class="attachment d-inline-block pr-4">
                   <a href="#"
                      class="report-link"
                      target="_blank"
@@ -162,12 +162,12 @@
             </div>
 
             <div id="additional-attachments-container"
-                 class="attachments well row"
+                 class="attachments row"
                  tal:condition="python:any(attachments)">
               <!-- Additional Attachments -->
               <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
-                  <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                  <div class="attachment d-inline-block pr-4">
                     <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
                     <a href="#"
                        class="attachment-link"
@@ -183,7 +183,7 @@
                       <div class="attachment-info small">
                         <span tal:content="attachment/attachment_keys"/>
                         <span i18n:translate="">in</span>
-                        <span tal:content="report/sample/getId"/>
+                        <span tal:content="attachment/sample/getId"/>
                         <div class="fileinfo">
                           <span class="filetype" tal:content="attachment/mimetype"/>
                           <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
