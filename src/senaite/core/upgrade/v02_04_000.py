@@ -715,7 +715,11 @@ def ignore_attachments_from_invalid_analyses(tool):
 
         # Ignore attachments of this analysis in results report
         for attachment in obj.getAttachment():
-            attachment.setReportOption("i")
+            # set the value of the removed schema field directly for
+            # backwards compatibility and consistency
+            attachment.ReportOption = "i"
+            # set the new schema field value
+            attachment.setRenderInReport(False)
             attachment._p_deactivate()
 
         # Flush the object from memory
