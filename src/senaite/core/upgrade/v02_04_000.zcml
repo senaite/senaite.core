@@ -165,16 +165,8 @@
       title="SENAITE CORE 2.4.0: Ensure sample client fields are set"
       description="Iterate through all samples and check if the `Client` schema field is set"
       source="2416"
-      destination="2417"
-      handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Ignore attachments from invalid analyses"
-      description="Ignore attachments from invalid analyses"
-      source="2417"
       destination="2418"
-      handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
+      handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
@@ -183,6 +175,15 @@
       source="2418"
       destination="2419"
       handler="senaite.core.upgrade.v02_04_000.convert_attachment_report_options"
+      profile="senaite.core:default"/>
+
+  <!-- NOTE: This step was previously 2418, but needs to run *after* 2419 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ignore attachments from invalid analyses"
+      description="Ignore attachments from invalid analyses"
+      source="2419"
+      destination="2420"
+      handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
       profile="senaite.core:default"/>
 
 </configure>
