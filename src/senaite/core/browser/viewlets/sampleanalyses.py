@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.registry import get_registry_record
 
 
 class LabAnalysesViewlet(ViewletBase):
@@ -38,7 +39,9 @@ class LabAnalysesViewlet(ViewletBase):
         return self.context
 
     def is_collapsed(self):
-        return False
+        name = "sampleview_collapse_{}_analysis_table".format(
+            self.capture)
+        return get_registry_record(name, default=False)
 
     def available(self):
         """Returns true if this sample contains at least one analysis for the
