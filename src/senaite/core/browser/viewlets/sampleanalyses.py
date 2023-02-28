@@ -37,6 +37,9 @@ class LabAnalysesViewlet(ViewletBase):
     def sample(self):
         return self.context
 
+    def is_collapsed(self):
+        return False
+
     def available(self):
         """Returns true if this sample contains at least one analysis for the
         point of capture (capture)

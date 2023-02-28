@@ -1,5 +1,7 @@
 <div class="analysis-listing-table"
      tal:condition="python:view.available()"
+     tal:define="id string:table-${view/capture|other}-analyses;
+                 collapsed python:view.is_collapsed()"
      i18n:domain="senaite.core">
   <div class="row mb-4">
     <div class="col-sm-12">
@@ -7,13 +9,41 @@
       <!-- Analysis listing title and icon -->
       <h3 tal:define="icon view/icon_name|nothing;
                       title view/title|nothing"
+          class="d-inline-block"
           tal:condition="title">
         <img tal:condition="icon|nothing" tal:attributes="src string:senaite_theme/icon/${icon}"/>
-        <span i18n:translate="" tal:content="title"/>
+        <span class="align-middle" i18n:translate="" tal:content="title"/>
       </h3>
 
+      <!-- Toggle Button -->
+      <a href="#" class="text-decoration-none ml-2"
+          data-toggle="collapse"
+          tal:attributes="data-target string:#${id}">
+        <i tal:condition="collapsed" class="toggle-icon fas fa-toggle-off"></i>
+        <i tal:condition="not: collapsed" class="toggle-icon fas fa-toggle-on"></i>
+      </a>
+
       <!-- Analyis listing table -->
-      <span tal:replace="structure python:view.contents_table()"/>
+      <div tal:attributes="id id;
+                           class python:'collapse' if collapsed else 'show'">
+        <span tal:replace="structure python:view.contents_table()"/>
+      </div>
+
+      <!-- Toggle JS -->
+      <script type="text/javascript">
+       document.addEventListener("DOMContentLoaded", (event) => {
+         let id='<tal:id replace="id"></tal:id>';
+         let toggle_icon = $('a[data-target="#' + id + '"] i.toggle-icon');
+         $('#' + id).on('show.bs.collapse', function () {
+           toggle_icon.removeClass("fa-toggle-off");
+           toggle_icon.addClass("fa-toggle-on");
+         });
+         $('#' + id).on('hide.bs.collapse', function () {
+           toggle_icon.removeClass("fa-toggle-on");
+           toggle_icon.addClass("fa-toggle-off");
+         });
+       });
+      </script>
 
     </div>
   </div>
