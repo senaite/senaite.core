@@ -1,18 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.supermodel import model
 from zope import schema
-
-
-def default_sample_analysis_columns():
-    # Can not be imported on module level!
-    from bika.lims.browser.analyses.view import AnalysesView
-    context = api.get_portal()
-    request = api.get_request()
-    view = AnalysesView(context, request)
-    return view.columns.keys()
 
 
 class ISenaiteRegistry(model.Schema):
@@ -62,7 +52,26 @@ class ISampleViewRegistry(ISenaiteRegistry):
         ),
         value_type=schema.ASCIILine(),
         required=False,
-        defaultFactory=default_sample_analysis_columns,
+        default=[
+            "created",
+            "Service",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Unit",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Calculation",
+            "Attachments",
+            "SubmittedBy",
+            "Analyst",
+            "CaptureDate",
+            "DueDate",
+            "state_title",
+            "Hidden",
+        ],
     )
 
 
