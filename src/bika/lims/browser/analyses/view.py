@@ -26,7 +26,6 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -35,10 +34,11 @@ from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
+from bika.lims.permissions import FieldEditAnalysisConditions
 from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.permissions import TransitionVerify
@@ -59,6 +59,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -248,12 +249,40 @@ class AnalysesView(ListingView):
         self.append_partition_filters()
         if self.analysis_categories_enabled():
             self.show_categories = True
+        self.reorder_analysis_columns()
 
     def before_render(self):
         """Before render hook
         """
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
+
+    @viewcache.memoize
+    def get_default_column_sort_order(self):
+        """Return the default column order for analysis tables from the registry
+        """
+        name = "sampleview_analysis_columns_order"
+        return get_registry_record(name, default=[])
+
+    def reorder_analysis_columns(self):
+        """Reorder analysis columns based on registry configuration
+        """
+        columns = self.get_default_column_sort_order()
+        if not columns:
+            return
+        # get the default column order
+        default_columns = self.columns.keys()
+        # nothing to do if they are equal
+        if columns == default_columns:
+            return
+        # compute remaining/unordered columns
+        unordered_columns = filter(
+            lambda col: col not in columns, self.columns.keys())
+        # prepare the new sort order for the columns
+        ordered_columns = columns + unordered_columns
+        for rs in self.review_states:
+            # set a copy of the new ordered columns list
+            rs["columns"] = ordered_columns[:]
 
     @property
     @viewcache.memoize
