@@ -249,7 +249,6 @@ class AnalysesView(ListingView):
         self.append_partition_filters()
         if self.analysis_categories_enabled():
             self.show_categories = True
-        self.reorder_analysis_columns()
 
     def before_render(self):
         """Before render hook
