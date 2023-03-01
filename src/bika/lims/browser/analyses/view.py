@@ -120,29 +120,6 @@ class AnalysesView(ListingView):
                 "attr": "Title",
                 "index": "sortable_title",
                 "sortable": False}),
-            ("Method", {
-                "title": _("Method"),
-                "sortable": False,
-                "ajax": True,
-                "on_change": "_on_method_change",
-                "toggle": True}),
-            ("Instrument", {
-                "title": _("Instrument"),
-                "ajax": True,
-                "sortable": False,
-                "toggle": True}),
-            ("Calculation", {
-                "title": _("Calculation"),
-                "sortable": False,
-                "toggle": False}),
-            ("Analyst", {
-                "title": _("Analyst"),
-                "sortable": False,
-                "ajax": True,
-                "toggle": True}),
-            ("state_title", {
-                "title": _("Status"),
-                "sortable": False}),
             ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
@@ -168,23 +145,46 @@ class AnalysesView(ListingView):
             ("Specification", {
                 "title": _("Specification"),
                 "sortable": False}),
+            ("Method", {
+                "title": _("Method"),
+                "sortable": False,
+                "ajax": True,
+                "on_change": "_on_method_change",
+                "toggle": True}),
+            ("Instrument", {
+                "title": _("Instrument"),
+                "ajax": True,
+                "sortable": False,
+                "toggle": True}),
+            ("Calculation", {
+                "title": _("Calculation"),
+                "sortable": False,
+                "toggle": False}),
+            ("Attachments", {
+                "title": _("Attachments"),
+                "sortable": False}),
             ("retested", {
                 "title": _("Retested"),
                 "type": "boolean",
                 "sortable": False}),
-            ("Attachments", {
-                "title": _("Attachments"),
+            ("SubmittedBy", {
+                "title": _("Submitter"),
                 "sortable": False}),
+            ("Analyst", {
+                "title": _("Analyst"),
+                "sortable": False,
+                "ajax": True,
+                "toggle": True}),
             ("CaptureDate", {
                 "title": _("Captured"),
                 "index": "getResultCaptureDate",
                 "sortable": False}),
-            ("SubmittedBy", {
-                "title": _("Submitter"),
-                "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
                 "index": "getDueDate",
+                "sortable": False}),
+            ("state_title", {
+                "title": _("Status"),
                 "sortable": False}),
             ("Hidden", {
                 "title": _("Hidden"),
@@ -658,7 +658,6 @@ class AnalysesView(ListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
-        item['class']['retested'] = 'center'
         item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
 
         # Append info link before the service
@@ -789,9 +788,6 @@ class AnalysesView(ListingView):
                 pos = "Result" in state["columns"] and \
                       state["columns"].index("Uncertainty") + 1 or len(
                     state["columns"])
-                if "retested" in state["columns"]:
-                    state["columns"].remove("retested")
-                state["columns"].insert(pos, "retested")
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
