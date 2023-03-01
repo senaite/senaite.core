@@ -145,6 +145,10 @@ class AnalysesView(ListingView):
             ("Specification", {
                 "title": _("Specification"),
                 "sortable": False}),
+            ("retested", {
+                "title": _("Retested"),
+                "type": "boolean",
+                "sortable": False}),
             ("Method", {
                 "title": _("Method"),
                 "sortable": False,
@@ -162,10 +166,6 @@ class AnalysesView(ListingView):
                 "toggle": False}),
             ("Attachments", {
                 "title": _("Attachments"),
-                "sortable": False}),
-            ("retested", {
-                "title": _("Retested"),
-                "type": "boolean",
                 "sortable": False}),
             ("SubmittedBy", {
                 "title": _("Submitter"),
