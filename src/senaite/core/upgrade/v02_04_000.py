@@ -766,3 +766,11 @@ def convert_attachment_report_options(tool):
         obj._p_deactivate()
 
     logger.info("Convert attachment report options [DONE]")
+
+
+def import_registry(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "plone.app.registry")

@@ -10,6 +10,41 @@ class ISenaiteRegistry(model.Schema):
     """
 
 
+class ISampleViewRegistry(ISenaiteRegistry):
+    """Registry settings for sample settings
+    """
+    model.fieldset(
+        "sample_view",
+        label=_(u"Sample View"),
+        description=_("Configuration for the sample view"),
+        fields=[
+            "sampleview_collapse_field_analysis_table",
+            "sampleview_collapse_lab_analysis_table",
+            "sampleview_collapse_qc_analysis_table",
+        ],
+    )
+    sampleview_collapse_field_analysis_table = schema.Bool(
+        title=_("Collapse field analysis table"),
+        description=_("Collapse field analysis table in sample view"),
+        default=False,
+        required=False,
+    )
+
+    sampleview_collapse_lab_analysis_table = schema.Bool(
+        title=_("Collapse lab analysis table"),
+        description=_("Collapse lab analysis table in sample view"),
+        default=False,
+        required=False,
+    )
+
+    sampleview_collapse_qc_analysis_table = schema.Bool(
+        title=_("Collapse qc analysis table"),
+        description=_("Collapse qc analysis table in sample view"),
+        default=True,
+        required=False,
+    )
+
+
 class ISampleHeaderRegistry(ISenaiteRegistry):
     """Registry settings for sample header configuration
     """

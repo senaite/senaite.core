@@ -186,4 +186,12 @@
       handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample section rendering"
+      source="2420"
+      destination="2421"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
 </configure>

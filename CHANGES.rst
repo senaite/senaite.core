@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2264 Collapsible analyses listings in sample view
 - #2262 Simplify attachment render in report options to single checkbox
 - #2259 Prevent string results from formatting and number conversion
 - #2255 Fix attachments from retracted or rejected analyses are not ignored
