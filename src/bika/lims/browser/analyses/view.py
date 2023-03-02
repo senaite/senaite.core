@@ -283,9 +283,9 @@ class AnalysesView(ListingView):
             if not config:
                 continue
             # get the configured visibility for this column
-            visibility = config.get("visibility", True)
+            visible = config.get("visible", True)
             # toggle the visiblity of the column
-            self.columns[name]["toggle"] = visibility
+            self.columns[name]["toggle"] = visible
 
         # set the order in each review state
         for rs in self.review_states:

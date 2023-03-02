@@ -13,7 +13,7 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 
 class IColumn(Interface):
     visibility = schema.Bool(
-        title=_(u"Visibility"),
+        title=_(u"Visible"),
         required=True,
     )
     name = schema.ASCIILine(
@@ -27,24 +27,24 @@ def default_analysis_columns_config(context):
     """Deafult sample analysis columns
     """
     default = [
-        {"visibility": False, "name": "created"},
-        {"visibility": True, "name": "Service"},
-        {"visibility": True, "name": "DetectionLimitOperand"},
-        {"visibility": True, "name": "Result"},
-        {"visibility": True, "name": "Uncertainty"},
-        {"visibility": True, "name": "Unit"},
-        {"visibility": True, "name": "Specification"},
-        {"visibility": True, "name": "retested"},
-        {"visibility": True, "name": "Method"},
-        {"visibility": True, "name": "Instrument"},
-        {"visibility": True, "name": "Calculation"},
-        {"visibility": True, "name": "Attachments"},
-        {"visibility": True, "name": "SubmittedBy"},
-        {"visibility": True, "name": "Analyst"},
-        {"visibility": True, "name": "CaptureDate"},
-        {"visibility": True, "name": "DueDate"},
-        {"visibility": True, "name": "state_title"},
-        {"visibility": True, "name": "Hidden"},
+        {"visible": False, "name": "created"},
+        {"visible": True, "name": "Service"},
+        {"visible": True, "name": "DetectionLimitOperand"},
+        {"visible": True, "name": "Result"},
+        {"visible": True, "name": "Uncertainty"},
+        {"visible": True, "name": "Unit"},
+        {"visible": True, "name": "Specification"},
+        {"visible": True, "name": "retested"},
+        {"visible": True, "name": "Method"},
+        {"visible": True, "name": "Instrument"},
+        {"visible": True, "name": "Calculation"},
+        {"visible": True, "name": "Attachments"},
+        {"visible": True, "name": "SubmittedBy"},
+        {"visible": True, "name": "Analyst"},
+        {"visible": True, "name": "CaptureDate"},
+        {"visible": True, "name": "DueDate"},
+        {"visible": True, "name": "state_title"},
+        {"visible": True, "name": "Hidden"},
     ]
     return default[:]
 
