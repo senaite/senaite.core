@@ -829,20 +829,19 @@ class AnalysesView(ListingView):
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
-        self.items = items
 
         # Display method and instrument columns only if at least one of the
         # analyses requires them to be displayed for selection
-        show_method_column = self.is_method_column_required()
+        show_method_column = self.is_method_column_required(items)
         if "Method" in self.columns:
             self.columns["Method"]["toggle"] = show_method_column
 
-        show_instrument_column = self.is_instrument_column_required()
+        show_instrument_column = self.is_instrument_column_required(items)
         if "Instrument" in self.columns:
             self.columns["Instrument"]["toggle"] = show_instrument_column
 
         # show unit selection column only if required
-        show_unit_column = self.is_unit_selection_column_required()
+        show_unit_column = self.is_unit_selection_column_required(items)
         if "Unit" in self.columns:
             self.columns["Unit"]["toggle"] = show_unit_column
 
@@ -1685,34 +1684,34 @@ class AnalysesView(ListingView):
             return True
         return False
 
-    def is_method_column_required(self):
+    def is_method_column_required(self, items):
         """Returns whether the method column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for method selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_method_required(obj):
                 return True
         return False
 
-    def is_instrument_column_required(self):
+    def is_instrument_column_required(self, items):
         """Returns whether the instrument column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for instrument selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_instrument_required(obj):
                 return True
         return False
 
-    def is_unit_selection_column_required(self):
+    def is_unit_selection_column_required(self, items):
         """Returns whether the unit column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for unit selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_unit_choices_required(obj):
                 return True
