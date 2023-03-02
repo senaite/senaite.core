@@ -257,35 +257,25 @@ class AnalysesView(ListingView):
         self.request.set("disable_plone.rightcolumn", 1)
 
     @viewcache.memoize
-    def get_default_columns_config(self):
-        """Return the default column configuration from the registry
+    def get_default_columns_order(self):
+        """Return the default column order from the registry
 
-        :returns: OrderedDict of column name -> column config dictionary
+        :returns: List of column keys
         """
-        name = "sampleview_analysis_columns_config"
-        config = get_registry_record(name, default=[])
-        return OrderedDict(map(lambda dct: (dct.get("name"), dct), config))
+        name = "sampleview_analysis_columns_order"
+        return get_registry_record(name, default=[])
 
     def reorder_analysis_columns(self):
         """Reorder analysis columns based on registry configuration
         """
-        columns_config = self.get_default_columns_config()
-        if not columns_config:
+        columns_order = self.get_default_columns_order()
+        if not columns_order:
             return
         # compute columns that are missing in the config
         missing_columns = filter(
-            lambda col: col not in columns_config.keys(), self.columns.keys())
+            lambda col: col not in columns_order, self.columns.keys())
         # prepare the new sort order for the columns
-        ordered_columns = columns_config.keys() + missing_columns
-        # set the visibility of the columns
-        for name, column in self.columns.items():
-            config = columns_config.get(name)
-            if not config:
-                continue
-            # get the configured visibility for this column
-            visible = config.get("visible", True)
-            # toggle the visiblity of the column
-            self.columns[name]["toggle"] = visible
+        ordered_columns = columns_order + missing_columns
 
         # set the order in each review state
         for rs in self.review_states:

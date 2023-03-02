@@ -1,52 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import senaiteMessageFactory as _
-from plone.autoform import directives
 from plone.supermodel import model
-from senaite.core.schema.registry import DataGridRow
-from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from zope import schema
-from zope.interface import Interface
-from zope.interface import provider
-from zope.schema.interfaces import IContextAwareDefaultFactory
-
-
-class IColumn(Interface):
-    visible = schema.Bool(
-        title=_(u"Visible"),
-        required=True,
-    )
-    name = schema.ASCIILine(
-        title=_(u"Column Name"),
-        required=True,
-    )
-
-
-@provider(IContextAwareDefaultFactory)
-def default_analysis_columns_config(context):
-    """Deafult sample analysis columns
-    """
-    default = [
-        {"visible": False, "name": "created"},
-        {"visible": True, "name": "Service"},
-        {"visible": True, "name": "DetectionLimitOperand"},
-        {"visible": True, "name": "Result"},
-        {"visible": True, "name": "Uncertainty"},
-        {"visible": True, "name": "Unit"},
-        {"visible": True, "name": "Specification"},
-        {"visible": True, "name": "retested"},
-        {"visible": True, "name": "Method"},
-        {"visible": True, "name": "Instrument"},
-        {"visible": True, "name": "Calculation"},
-        {"visible": True, "name": "Attachments"},
-        {"visible": True, "name": "SubmittedBy"},
-        {"visible": True, "name": "Analyst"},
-        {"visible": True, "name": "CaptureDate"},
-        {"visible": True, "name": "DueDate"},
-        {"visible": True, "name": "state_title"},
-        {"visible": True, "name": "Hidden"},
-    ]
-    return default[:]
 
 
 class ISenaiteRegistry(model.Schema):
@@ -65,7 +21,7 @@ class ISampleViewRegistry(ISenaiteRegistry):
             "sampleview_collapse_field_analysis_table",
             "sampleview_collapse_lab_analysis_table",
             "sampleview_collapse_qc_analysis_table",
-            "sampleview_analysis_columns_config",
+            "sampleview_analysis_columns_order",
         ],
     )
     sampleview_collapse_field_analysis_table = schema.Bool(
@@ -89,22 +45,33 @@ class ISampleViewRegistry(ISenaiteRegistry):
         required=False,
     )
 
-    directives.widget(
-        "sampleview_analysis_columns_config",
-        DataGridWidgetFactory,
-        allow_reorder=True,
-        allow_delete=True,
-        auto_append=True)
-    sampleview_analysis_columns_config = schema.List(
-        title=_(u"Analysis columns config"),
+    sampleview_analysis_columns_order = schema.List(
+        title=_(u"Analysis columns order"),
         description=_(
-            u"Default column configuration for sample analysis listings"
+            u"Default column order for sample analysis listings"
         ),
-        value_type=DataGridRow(
-            title=u"Column",
-            schema=IColumn),
+        value_type=schema.ASCIILine(title=u"Column"),
         required=False,
-        defaultFactory=default_analysis_columns_config,
+        default=[
+            "created",
+            "Service",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Unit",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Calculation",
+            "Attachments",
+            "SubmittedBy",
+            "Analyst",
+            "CaptureDate",
+            "DueDate",
+            "state_title",
+            "Hidden",
+        ]
     )
 
 
