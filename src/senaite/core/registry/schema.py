@@ -12,7 +12,7 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 
 
 class IColumn(Interface):
-    visibility = schema.Bool(
+    visible = schema.Bool(
         title=_(u"Visible"),
         required=True,
     )
