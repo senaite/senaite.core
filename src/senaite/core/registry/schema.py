@@ -21,6 +21,7 @@ class ISampleViewRegistry(ISenaiteRegistry):
             "sampleview_collapse_field_analysis_table",
             "sampleview_collapse_lab_analysis_table",
             "sampleview_collapse_qc_analysis_table",
+            "sampleview_analysis_columns_order",
         ],
     )
     sampleview_collapse_field_analysis_table = schema.Bool(
@@ -42,6 +43,35 @@ class ISampleViewRegistry(ISenaiteRegistry):
         description=_("Collapse qc analysis table in sample view"),
         default=True,
         required=False,
+    )
+
+    sampleview_analysis_columns_order = schema.List(
+        title=_(u"Analysis columns order"),
+        description=_(
+            u"Default column order for sample analysis listings"
+        ),
+        value_type=schema.ASCIILine(title=u"Column"),
+        required=False,
+        default=[
+            "created",
+            "Service",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Unit",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Calculation",
+            "Attachments",
+            "SubmittedBy",
+            "Analyst",
+            "CaptureDate",
+            "DueDate",
+            "state_title",
+            "Hidden",
+        ]
     )
 
 

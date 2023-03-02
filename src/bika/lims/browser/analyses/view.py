@@ -26,7 +26,6 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -35,10 +34,11 @@ from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
+from bika.lims.permissions import FieldEditAnalysisConditions
 from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.permissions import TransitionVerify
@@ -59,6 +59,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -120,29 +121,6 @@ class AnalysesView(ListingView):
                 "attr": "Title",
                 "index": "sortable_title",
                 "sortable": False}),
-            ("Method", {
-                "title": _("Method"),
-                "sortable": False,
-                "ajax": True,
-                "on_change": "_on_method_change",
-                "toggle": True}),
-            ("Instrument", {
-                "title": _("Instrument"),
-                "ajax": True,
-                "sortable": False,
-                "toggle": True}),
-            ("Calculation", {
-                "title": _("Calculation"),
-                "sortable": False,
-                "toggle": False}),
-            ("Analyst", {
-                "title": _("Analyst"),
-                "sortable": False,
-                "ajax": True,
-                "toggle": True}),
-            ("state_title", {
-                "title": _("Status"),
-                "sortable": False}),
             ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
@@ -172,19 +150,42 @@ class AnalysesView(ListingView):
                 "title": _("Retested"),
                 "type": "boolean",
                 "sortable": False}),
+            ("Method", {
+                "title": _("Method"),
+                "sortable": False,
+                "ajax": True,
+                "on_change": "_on_method_change",
+                "toggle": True}),
+            ("Instrument", {
+                "title": _("Instrument"),
+                "ajax": True,
+                "sortable": False,
+                "toggle": True}),
+            ("Calculation", {
+                "title": _("Calculation"),
+                "sortable": False,
+                "toggle": False}),
             ("Attachments", {
                 "title": _("Attachments"),
-                "sortable": False}),
-            ("CaptureDate", {
-                "title": _("Captured"),
-                "index": "getResultCaptureDate",
                 "sortable": False}),
             ("SubmittedBy", {
                 "title": _("Submitter"),
                 "sortable": False}),
+            ("Analyst", {
+                "title": _("Analyst"),
+                "sortable": False,
+                "ajax": True,
+                "toggle": True}),
+            ("CaptureDate", {
+                "title": _("Captured"),
+                "index": "getResultCaptureDate",
+                "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
                 "index": "getDueDate",
+                "sortable": False}),
+            ("state_title", {
+                "title": _("Status"),
                 "sortable": False}),
             ("Hidden", {
                 "title": _("Hidden"),
@@ -254,6 +255,32 @@ class AnalysesView(ListingView):
         """
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
+
+    @viewcache.memoize
+    def get_default_columns_order(self):
+        """Return the default column order from the registry
+
+        :returns: List of column keys
+        """
+        name = "sampleview_analysis_columns_order"
+        return get_registry_record(name, default=[])
+
+    def reorder_analysis_columns(self):
+        """Reorder analysis columns based on registry configuration
+        """
+        columns_order = self.get_default_columns_order()
+        if not columns_order:
+            return
+        # compute columns that are missing in the config
+        missing_columns = filter(
+            lambda col: col not in columns_order, self.columns.keys())
+        # prepare the new sort order for the columns
+        ordered_columns = columns_order + missing_columns
+
+        # set the order in each review state
+        for rs in self.review_states:
+            # set a copy of the new ordered columns list
+            rs["columns"] = ordered_columns[:]
 
     @property
     @viewcache.memoize
@@ -658,7 +685,6 @@ class AnalysesView(ListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
-        item['class']['retested'] = 'center'
         item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
 
         # Append info link before the service
@@ -789,9 +815,6 @@ class AnalysesView(ListingView):
                 pos = "Result" in state["columns"] and \
                       state["columns"].index("Uncertainty") + 1 or len(
                     state["columns"])
-                if "retested" in state["columns"]:
-                    state["columns"].remove("retested")
-                state["columns"].insert(pos, "retested")
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
@@ -805,20 +828,19 @@ class AnalysesView(ListingView):
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
-        self.items = items
 
         # Display method and instrument columns only if at least one of the
         # analyses requires them to be displayed for selection
-        show_method_column = self.is_method_column_required()
+        show_method_column = self.is_method_column_required(items)
         if "Method" in self.columns:
             self.columns["Method"]["toggle"] = show_method_column
 
-        show_instrument_column = self.is_instrument_column_required()
+        show_instrument_column = self.is_instrument_column_required(items)
         if "Instrument" in self.columns:
             self.columns["Instrument"]["toggle"] = show_instrument_column
 
         # show unit selection column only if required
-        show_unit_column = self.is_unit_selection_column_required()
+        show_unit_column = self.is_unit_selection_column_required(items)
         if "Unit" in self.columns:
             self.columns["Unit"]["toggle"] = show_unit_column
 
@@ -1661,34 +1683,34 @@ class AnalysesView(ListingView):
             return True
         return False
 
-    def is_method_column_required(self):
+    def is_method_column_required(self, items):
         """Returns whether the method column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for method selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_method_required(obj):
                 return True
         return False
 
-    def is_instrument_column_required(self):
+    def is_instrument_column_required(self, items):
         """Returns whether the instrument column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for instrument selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_instrument_required(obj):
                 return True
         return False
 
-    def is_unit_selection_column_required(self):
+    def is_unit_selection_column_required(self, items):
         """Returns whether the unit column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for unit selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_unit_choices_required(obj):
                 return True
