@@ -7,6 +7,8 @@ from senaite.core.schema.registry import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from zope import schema
 from zope.interface import Interface
+from zope.interface import provider
+from zope.schema.interfaces import IContextAwareDefaultFactory
 
 
 class IColumn(Interface):
@@ -18,6 +20,33 @@ class IColumn(Interface):
         title=_(u"Column Name"),
         required=True,
     )
+
+
+@provider(IContextAwareDefaultFactory)
+def default_analysis_columns_config(context):
+    """Deafult sample analysis columns
+    """
+    default = [
+        {"visibility": False, "name": "created"},
+        {"visibility": True, "name": "Service"},
+        {"visibility": True, "name": "DetectionLimitOperand"},
+        {"visibility": True, "name": "Result"},
+        {"visibility": True, "name": "Uncertainty"},
+        {"visibility": True, "name": "Unit"},
+        {"visibility": True, "name": "Specification"},
+        {"visibility": True, "name": "retested"},
+        {"visibility": True, "name": "Method"},
+        {"visibility": True, "name": "Instrument"},
+        {"visibility": True, "name": "Calculation"},
+        {"visibility": True, "name": "Attachments"},
+        {"visibility": True, "name": "SubmittedBy"},
+        {"visibility": True, "name": "Analyst"},
+        {"visibility": True, "name": "CaptureDate"},
+        {"visibility": True, "name": "DueDate"},
+        {"visibility": True, "name": "state_title"},
+        {"visibility": True, "name": "Hidden"},
+    ]
+    return default
 
 
 class ISenaiteRegistry(model.Schema):
@@ -75,26 +104,7 @@ class ISampleViewRegistry(ISenaiteRegistry):
             title=u"Column",
             schema=IColumn),
         required=False,
-        default=[
-            {"visibility": False, "name": "created"},
-            {"visibility": True, "name": "Service"},
-            {"visibility": True, "name": "DetectionLimitOperand"},
-            {"visibility": True, "name": "Result"},
-            {"visibility": True, "name": "Uncertainty"},
-            {"visibility": True, "name": "Unit"},
-            {"visibility": True, "name": "Specification"},
-            {"visibility": True, "name": "retested"},
-            {"visibility": True, "name": "Method"},
-            {"visibility": True, "name": "Instrument"},
-            {"visibility": True, "name": "Calculation"},
-            {"visibility": True, "name": "Attachments"},
-            {"visibility": True, "name": "SubmittedBy"},
-            {"visibility": True, "name": "Analyst"},
-            {"visibility": True, "name": "CaptureDate"},
-            {"visibility": True, "name": "DueDate"},
-            {"visibility": True, "name": "state_title"},
-            {"visibility": True, "name": "Hidden"},
-        ],
+        defaultFactory=default_analysis_columns_config,
     )
 
 
