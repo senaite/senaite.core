@@ -194,4 +194,12 @@
       handler="senaite.core.upgrade.v02_04_000.import_registry"
       profile="senaite.core:default"/>
 
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample analyses columns config"
+      source="2421"
+      destination="2422"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
 </configure>
