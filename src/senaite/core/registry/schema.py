@@ -46,7 +46,7 @@ def default_analysis_columns_config(context):
         {"visibility": True, "name": "state_title"},
         {"visibility": True, "name": "Hidden"},
     ]
-    return default
+    return default[:]
 
 
 class ISenaiteRegistry(model.Schema):
