@@ -1,8 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import senaiteMessageFactory as _
+from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core.schema.registry import DataGridRow
+from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from zope import schema
+from zope.interface import Interface
+
+
+class IColumn(Interface):
+    visibility = schema.Bool(
+        title=_(u"Visibility"),
+        required=True,
+    )
+    name = schema.ASCIILine(
+        title=_(u"Column Name"),
+        required=True,
+    )
 
 
 class ISenaiteRegistry(model.Schema):
@@ -21,7 +36,7 @@ class ISampleViewRegistry(ISenaiteRegistry):
             "sampleview_collapse_field_analysis_table",
             "sampleview_collapse_lab_analysis_table",
             "sampleview_collapse_qc_analysis_table",
-            "sampleview_analysis_columns_order",
+            "sampleview_analysis_columns_config",
         ],
     )
     sampleview_collapse_field_analysis_table = schema.Bool(
@@ -45,32 +60,40 @@ class ISampleViewRegistry(ISenaiteRegistry):
         required=False,
     )
 
-    sampleview_analysis_columns_order = schema.List(
-        title=_(u"Analysis columns order"),
+    directives.widget(
+        "sampleview_analysis_columns_config",
+        DataGridWidgetFactory,
+        allow_reorder=True,
+        allow_delete=True,
+        auto_append=True)
+    sampleview_analysis_columns_config = schema.List(
+        title=_(u"Analysis columns config"),
         description=_(
-            u"Default sort order for sample analysis listings"
+            u"Default column configuration for sample analysis listings"
         ),
-        value_type=schema.ASCIILine(),
+        value_type=DataGridRow(
+            title=u"Column",
+            schema=IColumn),
         required=False,
         default=[
-            "created",
-            "Service",
-            "DetectionLimitOperand",
-            "Result",
-            "Uncertainty",
-            "Unit",
-            "Specification",
-            "retested",
-            "Method",
-            "Instrument",
-            "Calculation",
-            "Attachments",
-            "SubmittedBy",
-            "Analyst",
-            "CaptureDate",
-            "DueDate",
-            "state_title",
-            "Hidden",
+            {"visibility": False, "name": "created"},
+            {"visibility": True, "name": "Service"},
+            {"visibility": True, "name": "DetectionLimitOperand"},
+            {"visibility": True, "name": "Result"},
+            {"visibility": True, "name": "Uncertainty"},
+            {"visibility": True, "name": "Unit"},
+            {"visibility": True, "name": "Specification"},
+            {"visibility": True, "name": "retested"},
+            {"visibility": True, "name": "Method"},
+            {"visibility": True, "name": "Instrument"},
+            {"visibility": True, "name": "Calculation"},
+            {"visibility": True, "name": "Attachments"},
+            {"visibility": True, "name": "SubmittedBy"},
+            {"visibility": True, "name": "Analyst"},
+            {"visibility": True, "name": "CaptureDate"},
+            {"visibility": True, "name": "DueDate"},
+            {"visibility": True, "name": "state_title"},
+            {"visibility": True, "name": "Hidden"},
         ],
     )
 
