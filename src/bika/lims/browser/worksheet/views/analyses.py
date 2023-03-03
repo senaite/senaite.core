@@ -163,7 +163,6 @@ class AnalysesView(BaseView):
             for state in self.review_states:
                 state["custom_transitions"] = [self.set_analysis_remarks_modal]
 
-    @view.memoize
     def get_default_columns_order(self):
         """Return the default column order from the registry
 
