@@ -163,13 +163,14 @@ class AnalysesView(BaseView):
             for state in self.review_states:
                 state["custom_transitions"] = [self.set_analysis_remarks_modal]
 
+    @view.memoize
     def get_default_columns_order(self):
         """Return the default column order from the registry
 
         :returns: List of column keys
         """
         name = "worksheetview_analysis_columns_order"
-        columns_order = get_registry_record(name, default=[])
+        columns_order = get_registry_record(name, default=[]) or []
         # Always put `Pos` column first
         try:
             columns_order.remove("Pos")
