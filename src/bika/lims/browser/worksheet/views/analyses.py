@@ -35,6 +35,7 @@ from bika.lims.utils import t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.registry import get_registry_record
 
 
 class AnalysesView(BaseView):
@@ -76,15 +77,6 @@ class AnalysesView(BaseView):
             ("Service", {
                 "sortable": False,
                 "title": _("Analysis")}),
-            ("Method", {
-                "sortable": False,
-                "ajax": True,
-                "on_change": "_on_method_change",
-                "title": _("Method")}),
-            ("Instrument", {
-                "sortable": False,
-                "ajax": True,
-                "title": _("Instrument")}),
             ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
@@ -95,25 +87,34 @@ class AnalysesView(BaseView):
                 "title": _("Result"),
                 "ajax": True,
                 "sortable": False}),
+            ("Uncertainty", {
+                "sortable": False,
+                "title": _("+-")}),
+            ("Specification", {
+                "title": _("Specification"),
+                "sortable": False}),
             ("retested", {
                 "title": get_image("retested.png", title=t(_("Retested"))),
                 "toggle": False,
                 "type": "boolean"}),
-            ("Specification", {
-                "title": _("Specification"),
-                "sortable": False}),
-            ("Uncertainty", {
+            ("Method", {
                 "sortable": False,
-                "title": _("+-")}),
+                "ajax": True,
+                "on_change": "_on_method_change",
+                "title": _("Method")}),
+            ("Instrument", {
+                "sortable": False,
+                "ajax": True,
+                "title": _("Instrument")}),
+            ("Attachments", {
+                "sortable": False,
+                "title": _("Attachments")}),
             ("DueDate", {
                 "sortable": False,
                 "title": _("Due Date")}),
             ("state_title", {
                 "sortable": False,
                 "title": _("State")}),
-            ("Attachments", {
-                "sortable": False,
-                "title": _("Attachments")}),
         ))
 
         # Inject Remarks column for listing
@@ -151,12 +152,32 @@ class AnalysesView(BaseView):
             },
         ]
 
+    def update(self):
+        super(AnalysesView, self).update()
+        self.reorder_analysis_columns()
+
     def before_render(self):
         super(AnalysesView, self).before_render()
 
         if self.show_analysis_remarks_transition():
             for state in self.review_states:
                 state["custom_transitions"] = [self.set_analysis_remarks_modal]
+
+    @view.memoize
+    def get_default_columns_order(self):
+        """Return the default column order from the registry
+
+        :returns: List of column keys
+        """
+        name = "worksheetview_analysis_columns_order"
+        columns_order = get_registry_record(name, default=[])
+        # Always put `Pos` column first
+        try:
+            columns_order.remove("Pos")
+        except ValueError:
+            pass
+        columns_order.insert(0, "Pos")
+        return columns_order
 
     def show_analysis_remarks_transition(self):
         """Check if the analysis remarks transitions should be rendered
