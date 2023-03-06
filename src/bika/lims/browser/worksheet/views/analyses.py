@@ -487,6 +487,7 @@ class AnalysesView(BaseView):
         template = ViewPageTemplateFile("../templates/slot_header.pt")
         return template(self, data=data)
 
+    @view.memoize
     def get_slot_header_data(self, obj):
         """Prepare the data for the slot header template
         """
