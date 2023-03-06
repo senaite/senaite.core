@@ -62,31 +62,25 @@ class AnalysesTransposedView(AnalysesView):
             "before": {},
             "after": {},
             "replace": {},
+            "class": {},
             "allow_edit": [],
             "disabled": False,
             "state_class": "state-active",
+            "transposed_keys": [],
         }
         item.update(**kw)
         return item
 
     def folderitem(self, obj, item, index):
         item = super(AnalysesTransposedView, self).folderitem(obj, item, index)
-
         pos = str(item["Pos"])
         service = item["Service"]
+        keyword = obj.getKeyword
         review_state = item["review_state"]
 
         # Skip retracted folderitems and display only the retest
         if review_state in ["retracted"]:
             return item
-
-        # Append info link after the service
-        # see: bika.lims.site.coffee for the attached event handler
-        item["before"]["Result"] = get_link(
-            "analysisservice_info?service_uid={}&analysis_uid={}"
-            .format(item["service_uid"], item["uid"]),
-            value="<i class='fas fa-info-circle'></i>",
-            css_class="overlay_panel")
 
         # remember the column headers of the first row
         if "Pos" not in self.headers:
@@ -99,12 +93,26 @@ class AnalysesTransposedView(AnalysesView):
             self.headers["Pos"][pos] = header_item
 
         # remember the services, e.g. Calcium, Magnesium, Total Hardness etc.
-        if service not in self.services:
-            self.services[service] = self.make_empty_item(
-                column_key=service, item_key="Result")
-        if pos not in self.services[service]:
+        if keyword not in self.services:
+            transposed_item = self.make_empty_item(
+                column_key=keyword, item_key="Result")
+            # Append info link after the service
+            transposed_item["after"]["column_key"] = get_link(
+                "analysisservice_info?service_uid={}&analysis_uid={}"
+                .format(item["service_uid"], item["uid"]),
+                value="<i class='fas fa-info-circle'></i>",
+                css_class="overlay_panel")
+            transposed_item["replace"]["column_key"] = service
+            self.services[keyword] = transposed_item
+
+        # append all regular items that belong to this service
+        if pos not in self.services[keyword]:
+            # XXX Needed placeholder render the select checkbox
+            # item["before"]["Result"] = None
             # Add the item below its position
-            self.services[service][pos] = item
+            self.services[keyword][pos] = item
+            # Track the new transposed key for this item
+            self.services[keyword]["transposed_keys"].append(pos)
 
         return item
 
@@ -112,11 +120,18 @@ class AnalysesTransposedView(AnalysesView):
         super(AnalysesTransposedView, self).folderitems()
 
         # Insert the "column key" column
-        self.columns["column_key"] = {"title": ""}
+        self.columns["column_key"] = {
+            "title": "",
+            "sortable": False,
+        }
 
         # Insert the columns for the slots
         for pos in self.get_slots():
-            self.columns[pos] = {"title": "", "type": "transposed"}
+            self.columns[pos] = {
+                "title": "",
+                "type": "transposed",
+                "sortable": False,
+            }
 
         # Restrict visible columns
         self.review_states[0]["columns"] = ["column_key"] + self.get_slots()
@@ -134,8 +149,6 @@ class AnalysesTransposedView(AnalysesView):
 
         # listing fixtures
         self.total = len(transposed.keys())
-        self.show_select_column = False
-        self.show_select_all_checkbox = False
 
         # return the transposed rows
         return transposed.values()
