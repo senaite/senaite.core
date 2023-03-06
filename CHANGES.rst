@@ -4,6 +4,7 @@ Changelog
 2.4.0 (unreleased)
 ------------------
 
+- #2266 Change worksheet analysis column order for better results capturing
 - #2265 Change sample analysis column order for better results capturing
 - #2264 Collapsible analyses listings in sample view
 - #2262 Simplify attachment render in report options to single checkbox

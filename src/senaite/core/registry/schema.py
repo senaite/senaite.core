@@ -10,13 +10,49 @@ class ISenaiteRegistry(model.Schema):
     """
 
 
+class IWorksheetViewRegistry(ISenaiteRegistry):
+    """View settings for worksheets
+    """
+    model.fieldset(
+        "worksheet_view",
+        label=_(u"Worksheet View"),
+        description=_("Worksheet view configuration"),
+        fields=[
+            "worksheetview_analysis_columns_order",
+        ],
+    )
+
+    worksheetview_analysis_columns_order = schema.List(
+        title=_(u"Analysis columns order"),
+        description=_(
+            u"Default column order for worksheet analysis listings"
+        ),
+        value_type=schema.ASCIILine(title=u"Column"),
+        required=False,
+        default=[
+            "Pos",
+            "Service",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Attachments",
+            "DueDate",
+            "state_title",
+        ]
+    )
+
+
 class ISampleViewRegistry(ISenaiteRegistry):
-    """Registry settings for sample settings
+    """View settings for samples
     """
     model.fieldset(
         "sample_view",
         label=_(u"Sample View"),
-        description=_("Configuration for the sample view"),
+        description=_("Sample view configuration"),
         fields=[
             "sampleview_collapse_field_analysis_table",
             "sampleview_collapse_lab_analysis_table",

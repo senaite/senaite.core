@@ -263,7 +263,8 @@ class AnalysesView(ListingView):
         :returns: List of column keys
         """
         name = "sampleview_analysis_columns_order"
-        return get_registry_record(name, default=[])
+        columns_order = get_registry_record(name, default=[]) or []
+        return columns_order
 
     def reorder_analysis_columns(self):
         """Reorder analysis columns based on registry configuration
