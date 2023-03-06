@@ -25,11 +25,14 @@ from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import get_link
 from bika.lims.utils import t
 from plone.memoize import view
+from senaite.app.listing.interfaces import ITransposedListingView
+from zope.interface import implements
 
 
 class AnalysesTransposedView(AnalysesView):
     """Transposed Manage Results View for Worksheet Analyses
     """
+    implements(ITransposedListingView)
 
     def __init__(self, context, request):
         super(AnalysesTransposedView, self).__init__(context, request)
