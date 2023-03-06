@@ -107,8 +107,6 @@ class AnalysesTransposedView(AnalysesView):
 
         # append all regular items that belong to this service
         if pos not in self.services[keyword]:
-            # XXX Needed placeholder render the select checkbox
-            # item["before"]["Result"] = None
             # Add the item below its position
             self.services[keyword][pos] = item
             # Track the new transposed key for this item
