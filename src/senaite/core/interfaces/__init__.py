@@ -138,3 +138,23 @@ class IDynamicLocalRoles(Interface):
 class IInterpretationTemplate(Interface):
     """Marker interface for interpretation template objects
     """
+
+
+class ILabels(Interface):
+    """Marker interface for labels container
+    """
+
+
+class ILabel(Interface):
+    """Marker interface for labels
+    """
+
+
+class IHaveLabels(Interface):
+    """Marker interface for labeled objects
+    """
+
+
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
+    """
