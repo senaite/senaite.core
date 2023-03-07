@@ -229,6 +229,7 @@ def install(context):
     setup_catalogs_order(portal)
     setup_content_structure(portal)
     add_senaite_setup(portal)
+    add_senaite_setup_items(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
 
@@ -280,6 +281,18 @@ def add_senaite_setup(portal):
 
     # Reindex order
     portal.plone_utils.reindexOnReorder(portal)
+
+
+def add_senaite_setup_items(portal):
+    """Adds setup items to the new SENAITE setup
+    """
+    items = [
+        ("labels",  # ID
+         "Labels",  # Title
+         "Labels"),  # FTI
+    ]
+    setup = api.get_senaite_setup()
+    add_dexterity_items(setup, items)
 
 
 def add_dexterity_portal_items(portal):
