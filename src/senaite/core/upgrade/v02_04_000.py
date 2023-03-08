@@ -781,6 +781,10 @@ def setup_labels(tool):
     """Setup labels for SENAITE
     """
     logger.info("Setup Labels")
+
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
     items = [
         ("labels",
          "Labels",

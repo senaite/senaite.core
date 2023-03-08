@@ -108,6 +108,9 @@
     <type type_id="LabContacts">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
+    <type type_id="Labels">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
     <type type_id="LabProducts">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -216,6 +219,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="LabProduct">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Label">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Manufacturer">
