@@ -1880,6 +1880,30 @@ Unsupported types return either the default value or fail:
     >>> api.to_utf8(object(), default="")
     ''
 
+Check if an object is a string
+..............................
+
+This function checks if the given object is a string type.
+
+    >>> api.is_string("Hello World")
+    True
+
+    >>> api.is_string(u"Hello World")
+    True
+
+    >>> api.is_string(r"Hello World")
+    True
+
+    >>> api.is_string("")
+    True
+
+    >>> api.is_string(None)
+    False
+
+    >>> api.is_string(object)
+    False
+
+
 Check if an object is temporary
 ...............................
 

@@ -1689,3 +1689,12 @@ def is_temporary(obj):
         return meta_type == "TempFolder"
 
     return False
+
+
+def is_string(thing):
+    """Checks if the passed in object is a string type
+
+    :param thing: object to test
+    :returns: True if the object is a string
+    """
+    return isinstance(thing, six.string_types)
