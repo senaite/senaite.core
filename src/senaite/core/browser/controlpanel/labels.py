@@ -31,10 +31,7 @@ class LabelsView(ListingView):
         self.description = t(_("Grouping labels"))
 
         self.show_select_column = True
-        self.show_all = True
-        self.show_categories = True
-        self.expand_all_categories = False
-        self.categories = []
+        self.show_all = False
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -79,14 +76,8 @@ class LabelsView(ListingView):
         item["replace"]["Title"] = get_link_for(obj)
         item["Description"] = api.get_description(obj)
 
-        category = obj.getCategory() or _("Uncategorized")
-        item["category"] = category
-        if category not in self.categories:
-            self.categories.append(category)
-
         return item
 
     def folderitems(self):
         items = super(LabelsView, self).folderitems()
-        self.categories.sort()
         return items

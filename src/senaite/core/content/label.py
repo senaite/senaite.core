@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.api import label as label_api
 from senaite.core.interfaces import ILabel
-from senaite.core.schema import UIDReferenceField
 from zope import schema
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
 
 
 class ILabelSchema(model.Schema):
@@ -26,18 +26,19 @@ class ILabelSchema(model.Schema):
         required=False,
     )
 
-    directives.omitted("labeled")
-    labeled = UIDReferenceField(
-        title=_(u"Labeled objects"),
-        multi_valued=True,
-        description=_(u"Objects that are marked with this label"),
-        required=False,
-    )
-
-    category = schema.TextLine(
-        title=u"Category",
-        required=False,
-    )
+    @invariant
+    def validate_title(data):
+        """Checks if the title is unique
+        """
+        # https://community.plone.org/t/dexterity-unique-field-validation
+        context = getattr(data, "__context__", None)
+        if context is not None:
+            if context.title == data.title:
+                # nothing changed
+                return
+        labels = label_api.list_labels()
+        if data.title in labels:
+            raise Invalid(_("Label names must be unique"))
 
 
 @implementer(ILabel, ILabelSchema, IHideActionsMenu)
@@ -45,20 +46,3 @@ class Label(Container):
     """A container for labels
     """
     _catalogs = [SETUP_CATALOG]
-
-    def getCategory(self):
-        """Return the label category
-        """
-        accessor = self.accessor("category")
-        return accessor(self)
-
-    def setCategory(self, value):
-        """Set the label category
-        """
-        mutator = self.mutator("category")
-        return mutator(self, api.safe_unicode(value))
-
-    def getCategoryTitle(self):
-        """Leverage existing metadata
-        """
-        return self.getCategory()
