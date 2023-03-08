@@ -29,12 +29,12 @@ Setup the testing environment:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
     >>> user = api.get_current_user()
 
-Get all Labels
+List all Labels
 ..............
 
-Get all active labels in the system:
+List all active labels in the system:
 
-    >>> get_all_labels()
+    >>> list_labels()
     []
 
 Create some Labels
@@ -43,11 +43,21 @@ Create some Labels
 Create a bunch of labels:
 
     >>> new = map(create_label, ["Important", "Urgent", "Critical"])
-    >>> get_all_labels()
+    >>> list_labels()
     ['Urgent', 'Critical', 'Important']
 
 Duplicates are ignored per default:
 
     >>> new = create_label("Important")
-    >>> get_all_labels()
+    >>> list_labels()
     ['Urgent', 'Critical', 'Important']
+
+Label content objects
+.....................
+
+Basically all objects can be labeled, both AT or DX based.
+
+Try first to label some AT based objects
+
+    >>> client1 = api.create(portal.clients, "Client", Name="NARALABS", ClientID="NL")
+    >>> client2 = api.create(portal.clients, "Client", Name="RIDINGBYTES", ClientID="RB")
