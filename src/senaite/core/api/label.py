@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import six
-
 from bika.lims.api import create
 from bika.lims.api import get_object
 from bika.lims.api import get_senaite_setup
 from bika.lims.api import search
+from bika.lims.api import is_string
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import IHaveLabels
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
 
-def get_all_labels(show_inactive=False):
-    """Return all available labels
+def validate_label(label):
+    """Validates the label
+    """
+    if not is_string(label):
+        raise TypeError("Expected label of type string, got %s" % type(labels))
+    return True
+
+
+def query_labels(inactive=False, **kw):
+    """Fetch all labels by a catalog query
     """
     catalog = SETUP_CATALOG
     query = {
@@ -21,9 +28,17 @@ def get_all_labels(show_inactive=False):
         "is_active": True,
         "sort_on": "title",
     }
-    if show_inactive:
+    # Allow to update the query with the keywords
+    query.update(kw)
+    if inactive:
         del query["is_active"]
-    brains = search(query, catalog)
+    return search(query, catalog)
+
+
+def list_labels():
+    """List all label titles
+    """
+    brains = query_labels()
     labels = map(lambda b: b.Title, brains)
     return list(set(labels))
 
@@ -31,9 +46,8 @@ def get_all_labels(show_inactive=False):
 def create_label(label, skip_duplicates=True, **kw):
     """Create new labels
     """
-    if not isinstance(label, six.string_types):
-        raise TypeError("Labels must be of type string")
-    if skip_duplicates and label in get_all_labels():
+    validate_label(label)
+    if skip_duplicates and label in list_labels():
         return None
     setup = get_senaite_setup()
     container = setup.get("labels")
@@ -60,6 +74,7 @@ def has_labels(obj):
 def add_label(obj, label):
     """Add a label to the object
     """
+    validate_label(label)
     obj = get_object(obj)
     alsoProvides(obj, IHaveLabels)
     labels = obj.getLabels()
