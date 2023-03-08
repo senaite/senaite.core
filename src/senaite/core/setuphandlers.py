@@ -168,6 +168,7 @@ CATALOG_MAPPINGS = (
     ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("LabContact", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Label", [SETUP_CATALOG]),
     ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Manufacturer", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Method", [SETUP_CATALOG, PORTAL_CATALOG]),
