@@ -36,7 +36,7 @@ class ILabelSchema(model.Schema):
             if context.title == data.title:
                 # nothing changed
                 return
-        labels = label_api.list_labels()
+        labels = label_api.list_labels(inactive=True)
         if data.title in labels:
             raise Invalid(_("Label names must be unique"))
 

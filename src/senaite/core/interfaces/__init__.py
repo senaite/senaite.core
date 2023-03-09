@@ -153,3 +153,8 @@ class ILabel(Interface):
 class IHaveLabels(Interface):
     """Marker interface for labeled objects
     """
+
+
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
+    """

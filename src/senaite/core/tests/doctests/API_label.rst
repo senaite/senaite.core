@@ -61,3 +61,7 @@ Try first to label some AT based objects
 
     >>> client1 = api.create(portal.clients, "Client", Name="NARALABS", ClientID="NL")
     >>> client2 = api.create(portal.clients, "Client", Name="RIDINGBYTES", ClientID="RB")
+
+Link to an existing label by name:
+
+    >>> add_label(client1, "Important")
