@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from bika.lims.api import create
 from bika.lims.api import get_object
 from bika.lims.api import get_senaite_setup
 from bika.lims.api import is_string
 from bika.lims.api import search
-from persistent.list import PersistentList
 from senaite.core import logger
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
@@ -19,33 +19,23 @@ FIELD_NAME = "ExtLabels"
 LABEL_STORAGE = "senaite.core.labels"
 
 
-def get_storage(obj):
-    """Get or create the audit log storage for the given object
+def get_storage(obj, default=None):
+    """Get label storage for the given object
 
     :param obj: Content object
-    :returns: PersistentList
+    :returns: tuple
     """
     annotation = IAnnotations(obj)
-    if annotation.get(LABEL_STORAGE) is None:
-        annotation[LABEL_STORAGE] = PersistentList()
-    return annotation[LABEL_STORAGE]
+    return annotation.get(LABEL_STORAGE, default)
 
 
-def validate_label(label):
-    """Validates the label
+def set_storage(obj, value):
+    """Set the
     """
-    if not is_string(label):
-        raise TypeError("Expected label of type string, got %s" % type(label))
-    return True
-
-
-def is_label(obj):
-    """Checks if the given object is a label
-
-    :param obj: Object to check
-    :returns: True if the object is a label
-    """
-    return ILabel.providedBy(obj)
+    if not isinstance(value, tuple):
+        raise TypeError("Expected type tuple, got %s" % type(value))
+    annotation = IAnnotations(obj)
+    annotation[LABEL_STORAGE] = value
 
 
 def query_labels(inactive=False, **kw):
@@ -65,7 +55,7 @@ def query_labels(inactive=False, **kw):
 
 
 def get_label_by_name(name, inactive=True):
-    """Fetch a label by name
+    """Fetch a label object by name
 
     :param name: Name of the label
     :returns: Label object or None
@@ -76,85 +66,104 @@ def get_label_by_name(name, inactive=True):
     elif len(found) > 1:
         logger.warn("Found more than one label for '%s'"
                     "Returning the first label only" % name)
-    return found[0]
+    return api.get_object(found[0])
 
 
 def list_labels(inactive=False, **kw):
-    """List all label titles
+    """List the titles of all global labels
+
+    :returns: List of label titles
     """
     brains = query_labels(inactive=inactive, **kw)
-    labels = map(lambda b: b.Title, brains)
+    labels = map(api.get_title, brains)
     return list(set(labels))
 
 
 def create_label(label, **kw):
-    """Create new labels
+    """Create a new label
     """
-    validate_label(label)
-    # Do not reate duplicate labels
-    existing_label = get_label_by_name(label, inactive=True)
-    if existing_label:
-        return existing_label
+    if not api.is_string(label):
+        return None
+    # Do not create duplicate labels
+    existing = get_label_by_name(label, inactive=True)
+    if existing:
+        return existing
+    # Create a new labels object
     setup = get_senaite_setup()
     return create(setup.labels, "Label", title=label, **kw)
 
 
-def get_labels(obj):
-    """Get the attached labels from the annotation storage of the object
+def is_label_object(obj):
+    """Checks if the given object is a label object
+
+    :param obj: Object to check
+    :returns: True if the object is a label
+    """
+    return ILabel.providedBy(obj)
+
+
+def to_labels(labels):
+    """Convert labels into a list of strings
+
+    :returns: List of label strings
+    """
+    if not isinstance(labels, list):
+        labels = [labels]
+    out = set()
+    for label in labels:
+        if is_label_object(label):
+            out.add(api.get_title(label))
+        elif is_string(label):
+            out.add(label)
+        else:
+            # ignore the rest
+            continue
+    return list(out)
+
+
+def get_obj_labels(obj):
+    """Get assigned labels of the given object
+
+    :returns: tuple of string labels
     """
     obj = get_object(obj)
     if not IHaveLabels.providedBy(obj):
-        return []
+        return tuple()
+    labels = get_storage(obj)
+    return labels
 
 
-def set_labels(obj, value):
-    """Set the labels in the annotation storage of the object
-    """
-
-
-def has_labels(obj):
-    """Check if the object has labels
-    """
-    return len(get_labels(obj)) > 0
-
-
-def add_label(obj, label):
-    """Add a label to the object
+def add_obj_labels(obj, labels):
+    """Add labels to the object
 
     :param obj: the object to label
-    :param label: string or label object to add
-    :returns: True if the object was labeled
+    :param labels: string or list of labels to add
+    :returns: The new labels
     """
+    labels = to_labels(labels)
     # handle string labels
-    if is_string(label):
-        label = create_label(label)
-    obj = get_object(obj)
+    obj = api.get_object(obj)
     # Mark the object for schema extension
     alsoProvides(obj, ICanHaveLabels)
-    labels = getLabels()
-    if label in labels:
-        return False
-    # set the label with the extended setter
-    setLabels(label)
-    # add marker interface
+    new_labels = set(get_obj_labels(obj))
+    for label in labels:
+        new_labels.add(label)
+    set_storage(obj, tuple(sorted(new_labels)))
     alsoProvides(obj, IHaveLabels)
-    return True
+    return get_obj_labels(obj)
 
 
-def del_label(obj, label):
-    """Remove a label from the object
+def del_obj_labels(obj, labels):
+    """Remove labels from the object
     """
-    # handle string labels
-    if is_string(label):
-        label = create_label(label)
+    labels = to_labels(labels)
     obj = get_object(obj)
     # Mark the object for schema extension
     alsoProvides(obj, ICanHaveLabels)
-    labels = get_labels(obj)
-    if label not in labels:
-        return False
-    new_labels = filter(lambda l: l == label, labels)
-    obj.setLabels(new_labels)
-    if not labels:
+    new_labels = set(get_obj_labels(obj))
+    for label in labels:
+        new_labels.remove(label)
+    set_storage(obj, tuple(sorted(new_labels)))
+    if not new_labels:
         noLongerProvides(obj, IHaveLabels)
     return True
