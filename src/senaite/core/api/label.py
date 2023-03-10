@@ -99,6 +99,7 @@ def is_label_object(obj):
     :param obj: Object to check
     :returns: True if the object is a label
     """
+    obj = api.get_object(obj)
     return ILabel.providedBy(obj)
 
 
