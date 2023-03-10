@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.4.0 (unreleased)
+2.4.0 (2023-03-10)
 ------------------
 
 - #2268 Add samplepoint information to worksheet slot header

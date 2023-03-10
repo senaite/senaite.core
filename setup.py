@@ -28,7 +28,6 @@ setup(
     version=version,
     description="SENAITE LIMS CORE",
     long_description=open("README.rst").read() + "\n" +
-    open("RELEASE_NOTES.rst").read() + "\n" +
     open("CHANGES.rst").read() + "\n",
     # Get more strings from
     # http://pypi.python.org/pypi?:action=list_classifiers
