@@ -1,9 +1,16 @@
 Changelog
 =========
 
-2.4.0 (unreleased)
+
+2.5.0 (unreleased)
 ------------------
 
+
+
+2.4.0 (2023-03-10)
+------------------
+
+- #2268 Add samplepoint information to worksheet slot header
 - #2267 Worksheet transposed layout fixtures
 - #2266 Change worksheet analysis column order for better results capturing
 - #2265 Change sample analysis column order for better results capturing

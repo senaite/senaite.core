@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- 2.3.0 to 2.4.0 -->
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.4.0"
+      source="2.3.0"
+      destination="2.4.0"
+      handler="senaite.core.upgrade.v02_04_000.upgrade"
+      profile="senaite.core:default"/>
+
   <!-- Reindex QC Analyses
        https://github.com/senaite/senaite.core/pull/2157 -->
   <genericsetup:upgradeStep

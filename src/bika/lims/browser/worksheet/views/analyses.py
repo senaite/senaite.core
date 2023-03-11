@@ -507,11 +507,17 @@ class AnalysesView(BaseView):
         parent_img_text = ""
         additional_parent_icons = []
 
-        sample_type_obj = None
+        sample_type = None
         sample_type_title = ""
         sample_type_url = ""
         sample_type_img = ""
         sample_type_img_text = ""
+
+        sample_point = None
+        sample_point_title = ""
+        sample_point_url = ""
+        sample_point_img = ""
+        sample_point_img_text = ""
 
         if IDuplicateAnalysis.providedBy(obj):
             # item
@@ -538,6 +544,13 @@ class AnalysesView(BaseView):
             sample_type_url = api.get_url(sample_type)
             sample_type_img = "sampletype.png"
             sample_type_img_text = t(_("Sample Type"))
+            # sample point
+            sample_point = request.getSamplePoint()
+            if sample_point:
+                sample_point_title = request.getSamplePointTitle()
+                sample_point_url = api.get_url(sample_point)
+                sample_point_img = "samplepoint.png"
+                sample_point_img_text = t(_("Sample Point"))
         elif IReferenceAnalysis.providedBy(obj):
             # item
             sample = obj.getSample()
@@ -585,6 +598,14 @@ class AnalysesView(BaseView):
             sample_type_img = "sampletype.png"
             sample_type_img_text = t(_("Sample Type"))
 
+            # sample point
+            sample_point = request.getSamplePoint()
+            if sample_point:
+                sample_point_title = request.getSamplePointTitle()
+                sample_point_url = api.get_url(sample_point)
+                sample_point_img = "samplepoint.png"
+                sample_point_img_text = t(_("Sample Point"))
+
         return {
             # item
             "item_obj": item_obj,
@@ -600,11 +621,17 @@ class AnalysesView(BaseView):
             "parent_img": get_image(parent_img, title=parent_img_text),
             "additional_parent_icons": additional_parent_icons,
             # sample type
-            "sample_type_obj": sample_type_obj,
+            "sample_type_obj": sample_type,
             "sample_type_title": sample_type_title,
             "sample_type_url": sample_type_url,
             "sample_type_img": get_image(
                 sample_type_img, title=sample_type_img_text),
+            # sample point
+            "sample_point_obj": sample_point,
+            "sample_point_title": sample_point_title,
+            "sample_point_url": sample_point_url,
+            "sample_point_img": get_image(
+                sample_point_img, title=sample_point_img_text),
         }
 
     def render_remarks_tag(self, ar):
