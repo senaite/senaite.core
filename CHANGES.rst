@@ -4,7 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
-- no changes yet
+- #2272 Allow to configure the position of additional value columns
 
 
 2.4.1 (2023-03-11)
