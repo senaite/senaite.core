@@ -7,6 +7,12 @@ Changelog
 
 
 
+2.4.1 (2023-03-11)
+------------------
+
+- #2270 Fix TypeError in Analysis Service's view
+
+
 2.4.0 (2023-03-10)
 ------------------
 
