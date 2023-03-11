@@ -283,6 +283,16 @@ class AnalysesView(ListingView):
             # set a copy of the new ordered columns list
             rs["columns"] = ordered_columns[:]
 
+    def calculate_interim_columns_position(self, review_state):
+        """Calculate at which position the interim columns should be inserted
+        """
+        columns = review_state.get("columns", [])
+        if "AdditionalValues" in columns:
+            return columns.index("AdditionalValues")
+        if "Result" in columns:
+            return columns.index("Result")
+        return len(columns)
+
     @property
     @viewcache.memoize
     def senaite_theme(self):
@@ -802,20 +812,10 @@ class AnalysesView(ListingView):
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
-                # InterimFields are displayed in review_state
-                # They are anyway available through View.columns though.
-                # In case of hidden fields, the calcs.py should check
-                # calcs/services
-                # for additional InterimFields!!
-                pos = "Result" in state["columns"] and \
-                      state["columns"].index("Result") or len(state["columns"])
+                pos = self.calculate_interim_columns_position(state)
                 for col_id in interim_keys:
                     if col_id not in state["columns"]:
                         state["columns"].insert(pos, col_id)
-                # retested column is added after Result.
-                pos = "Result" in state["columns"] and \
-                      state["columns"].index("Uncertainty") + 1 or len(
-                    state["columns"])
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
