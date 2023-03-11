@@ -77,6 +77,11 @@ if __name__ == "__main__":
         # make a mapping of path -> file data
         for path in file_paths:
             lines = open(path, "r").readlines()
+
+            # Skip Script (Python) files
+            if lines and lines[0].startswith("## Script (Python)"):
+                continue
+
             data[path] = lines
 
     # walk the directory
