@@ -1,10 +1,16 @@
 Changelog
 =========
 
-
 2.5.0 (unreleased)
 ------------------
 
+- no changes yet
+
+
+2.4.1 (2023-03-11)
+------------------
+
+- #2271 Fix TypeError in Analysis Service's view
 
 
 2.4.0 (2023-03-10)
