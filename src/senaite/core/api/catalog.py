@@ -249,8 +249,8 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     # convert to unicode
     term = safe_unicode(qs)
 
-    # splits the string on all non alphanumeric characters
-    tokens = re.split(r"[^\w]", term, flags=re.U | re.I)
+    # splits the string on all non alphanumeric characters except -
+    tokens = re.split(r"[^\w-]", term, flags=re.U | re.I)
 
     # filter out all empty tokens
     tokens = filter(None, tokens)
