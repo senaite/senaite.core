@@ -18,7 +18,12 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core import logger
+from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -44,3 +49,19 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def rebuild_sample_zctext_index_and_lexicon(tool):
+    """Recreate sample listing_searchable_text ZCText index and Lexicon
+    """
+    # remove the existing index
+    index = "listing_searchable_text"
+    del_index(SAMPLE_CATALOG, index)
+    # remove the Lexicon
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    if "Lexicon" in catalog.objectIds():
+        catalog.manage_delObjects("Lexicon")
+    # recreate the index + lexicon
+    add_index(SAMPLE_CATALOG, index, "ZCTextIndex")
+    # reindex
+    reindex_index(SAMPLE_CATALOG, index)
