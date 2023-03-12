@@ -28,7 +28,6 @@ from bika.lims.api import safe_unicode
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
 from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.ZCatalog.interfaces import IZCatalog
-from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
 
