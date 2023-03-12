@@ -115,4 +115,4 @@ def listing_searchable_text(instance):
         batch = obj.getBatch()
         entries.add(batch.getBatchID() if batch else '')
 
-    return u" ".join(list(entries))
+    return u" ".join(map(api.safe_unicode, entries))
