@@ -113,6 +113,6 @@ def listing_searchable_text(instance):
         entries.add(samplepoint.Title() if samplepoint else '')
 
         batch = obj.getBatch()
-        entries.add(batch.getBatchID() if batch else '')
+        entries.add(batch.getId() if batch else '')
 
     return u" ".join(map(api.safe_unicode, entries))
