@@ -102,6 +102,10 @@ def listing_searchable_text(instance):
         entries.add(obj.getClientSampleID())
 
         # we use this approach to bypass the computed fields
+        client = obj.getClient()
+        entries.add(client.getName())
+        entries.add(client.getClientID())
+
         sampletype = obj.getSampleType()
         entries.add(sampletype.Title() if sampletype else '')
 
