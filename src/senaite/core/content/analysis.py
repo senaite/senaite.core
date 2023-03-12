@@ -557,7 +557,7 @@ class Analysis(Container):
     def getSample(self):
         return api.get_parent(self)
 
-    
+
     def getRequest(self):
         return self.getSample()
 
@@ -617,7 +617,7 @@ class Analysis(Container):
 
     def getAnalysisService(self):
         return self.getService()
-    
+
     def getRawAnalysisService(self):
         return self.getRawService()
 
