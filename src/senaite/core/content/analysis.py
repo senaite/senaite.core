@@ -384,7 +384,6 @@ class Analysis(Container):
         accessor = self.accessor("service", raw=True)
         return accessor(self)
 
-    @deprecated("Use getRawService instead")
     def getServiceUID(self):
         return self.getRawService()
 
@@ -558,22 +557,18 @@ class Analysis(Container):
     def getSample(self):
         return api.get_parent(self)
 
-    # DEPRECATED
-    @deprecated("Use getSample instead")
+    
     def getRequest(self):
         return self.getSample()
 
-    @deprecated("Use getSample().getId() instead")
     def getRequestID(self):
         sample = self.getSample()
         return sample.getId() if sample else None
 
-    @deprecated("Use getSample().UID() instead")
     def getRequestUID(self):
         sample = self.getSample()
         return sample.UID() if sample else None
 
-    @deprecated("Use getRequest().absolute_url() instead")
     def getRequestURL(self):
         sample = self.getSample()
         return sample.absolute_url() if sample else None
@@ -582,71 +577,56 @@ class Analysis(Container):
         sample = self.getSample()
         return sample.getClient() if sample else None
 
-    @deprecated("Use getClient().getId() instead")
     def getClientID(self):
         client = self.getClient()
         return client.getId() if client else None
 
-    @deprecated("Use getClient().UID() instead")
     def getClientUID(self):
         client = self.getClient()
         return client.UID() if client else None
 
-    @deprecated("Use getClient().Title() instead")
     def getClientTitle(self):
         client = self.getClient()
         return client.Title() if client else None
 
-    @deprecated("Use getClient().getClientURL() instead")
     def getClientURL(self):
         client = self.getClient()
         return client.absolute_url() if client else None
 
-    @deprecated("Use getSubmitted() instead")
     def getResultCaptureDate(self):
         return self.getSubmitted()
 
-    @deprecated("Use setSubmitted(value) instead")
     def setResultCaptureDate(self, value):
         self.setSubmitted(value)
 
-    @deprecated("Use getRawRetests() instead")
     def getRawRetest(self):
         uids = self.getRawRetests()
         return uids[0] if uids else None
 
-    @deprecated("Use getRetests() instead")
     def getRetest(self):
         uids = self.getRawRetests()
         if not uids:
             return None
         return api.get_object(uids[0], default=None)
 
-    @deprecated("Use getResultRanges() instead")
     def getResultsRange(self):
         return self.getResultRanges()
 
-    @deprecated("Use setResultRanges(value) instead")
     def setResultsRange(self, value):
         self.setResultRanges(value)
 
-    @deprecated("Use getService() instead")
     def getAnalysisService(self):
         return self.getService()
     
-    @deprecated("use getRawService() instead")
     def getRawAnalysisService(self):
         return self.getRawService()
 
-    @deprecated("Use setService() instead")
     def setAnalysisService(self, value):
         self.setService(value)
 
-    @deprecated("Use getAdditionalValues() instead")
     def getInterimFields(self):
         return self.getAdditionalValues()
 
-    @deprecated("Use setAdditionalValues() instead")
     def setInterimFields(self, values):
         return self.setAdditionalValues(values)
 
