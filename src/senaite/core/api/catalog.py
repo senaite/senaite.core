@@ -250,7 +250,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     term = safe_unicode(qs)
 
     # splits the string on unsupported characters
-    tokens = re.split(r"[^\w\-\_\.\%\<\>]", term, flags=re.U | re.I)
+    tokens = re.split(r"[^\w\-\_\.\%\<\>\+\{\}]", term, flags=re.U | re.I)
 
     # filter out all empty tokens
     tokens = filter(None, tokens)
