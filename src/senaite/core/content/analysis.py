@@ -17,7 +17,9 @@
 #
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
+import copy
 
+import json
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import deprecated
@@ -30,6 +32,9 @@ from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.workflow.analysis import STATE_REJECTED
+from bika.lims.workflow.analysis import STATE_RETRACTED
+from datetime import datetime
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -37,6 +42,7 @@ from senaite.core.content.base import Container
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.uidreferencefield import get_backrefs
+from six import string_types
 from zope import schema
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -117,12 +123,29 @@ class IAnalysisSchema(model.Schema):
         required=False,
     )
 
-    # AbstractBaseAnalysis.ShortTitle
+    # AbstractBaseAnalysis
     short_title = schema.TextLine(
-        title=_(u"label_analysis_short_title", u"Short title")
+        title=_(u"label_analysis_short_title", u"Short title"),
+        description=_(
+            u"description_analysis_short_title",
+            u"Text to be used instead of the title when listed in column"
+            u"headings. HTML formatting is allowed"
+        ),
     )
 
-    # AbstractBaseAnalysis.Hidden
+    sort_key = schema.Float(
+        title=_(u"label_analysis_sort_key", u"Sort key"),
+        description=_(
+            u"description_analysis_sort_key",
+            u"Float value from 0.0 - 1000.0 indicating the sort order. "
+            u"Duplicate values are sorted alphabetically"
+        )
+    )
+
+    keyword = schema.TextLine(
+        title=_(u"label_analysis_keyword", u"Keyword"),
+    )
+
     #form.write_permission(result=FieldEditAnalysisHidden)
     hidden = schema.Bool(
         title=_(u"label_analysis_hidden", u"Hidden"),
@@ -132,6 +155,14 @@ class IAnalysisSchema(model.Schema):
     price = schema.TextLine(
         title=_(u"label_analysis_price", u"Price (excluding VAT)"),
         default=u"0.00"
+    )
+
+    point_of_capture = schema.TextLine(
+        default=u"lab",
+    )
+
+    self_verification_enabled = schema.Bool(
+        default=False,
     )
 
     # AbstractAnalysis.AnalysisService
@@ -144,6 +175,13 @@ class IAnalysisSchema(model.Schema):
         allowed_types=("AnalysisService", ),
         multi_valued=False,
         required=True,
+    )
+
+    # TODO Remove Calculation field
+    calculation = UIDReferenceField(
+        allowed_types=("Calculation", ),
+        multi_valued=False,
+        required=False
     )
     
     # AbstractAnalysis.Result
@@ -285,6 +323,36 @@ class Analysis(Container):
 
     # AbstractBaseAnalysis
     @security.protected(permissions.View)
+    def getShortTitle(self):
+        accessor = self.accessor("short_title")
+        return api.to_utf8(accessor(self), default="")
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setShortTitle(self, value):
+        mutator = self.mutator("short_title")
+        mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
+    def getSortKey(self):
+        accessor = self.accessor("sort_key")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSortKey(self, value):
+        mutator = self.mutator("sort_key")
+        mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getKeyword(self):
+        accessor = self.accessor("keyword")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setKeyword(self, value):
+        mutator = self.mutator("keyword")
+        mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
     def getHidden(self):
         accessor = self.accessor("hidden")
         return accessor(self)
@@ -316,9 +384,31 @@ class Analysis(Container):
         accessor = self.accessor("service", raw=True)
         return accessor(self)
 
+    @deprecated("Use getRawService instead")
+    def getServiceUID(self):
+        return self.getRawService()
+
     @security.protected(permissions.ModifyPortalContent)
     def setService(self, value):
         mutator = self.mutator("service")
+        mutator(self, value)
+    
+    # TODO Remove Calculation field
+    @security.protected(permissions.View)
+    def getCalculation(self):
+        accessor = self.accessor("calculation")
+        return accessor(self)
+
+    # TODO Remove Calculation field
+    @security.protected(permissions.View)
+    def getRawCalculation(self):
+        accessor = self.accessor("calculation", raw=True)
+        return accessor(self)
+    
+    # TODO Remove Calculation field
+    @security.protected(permissions.View)
+    def setCalculation(self, value):
+        mutator = self.mutator("calculation")
         mutator(self, value)
 
     @security.protected(permissions.View)
@@ -329,6 +419,38 @@ class Analysis(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setResult(self, value):
         mutator = self.mutator("result")
+        value = str(value)
+        mutator(self, api.safe_unicode(value))
+        self.setResultCaptureDate(datetime.now())
+
+    @security.protected(permissions.View)
+    def getPointOfCapture(self):
+        accessor = self.accessor("point_of_capture")
+        return api.to_utf8(accessor(self), "")
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPointOfCapture(self, value):
+        mutator = self.mutator("point_of_capture")
+        mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
+    def getSelfVerificationEnabled(self):
+        accessor = self.accessor("self_verification_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSelfVerificationEnabled(self, value):
+        mutator = self.mutator("self_verification_enabled")
+        mutator(self, value)
+        
+    @security.protected(permissions.View)
+    def getUncertainty(self):
+        accessor = self.accessor("uncertainty")
+        return api.to_utf8(accessor(self), "")
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setUncertainty(self, value):
+        mutator = self.mutator("uncertainty")
         mutator(self, api.safe_unicode(value))
 
     @security.protected(permissions.View)
@@ -345,6 +467,11 @@ class Analysis(Container):
     def getSubmittedBy(self):
         accessor = self.accessor("submitted_by")
         return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSubmittedBy(self, value):
+        # Done in the transition
+        return
 
     @security.protected(permissions.View)
     def getRetestOf(self):
@@ -378,7 +505,17 @@ class Analysis(Container):
     def setResultRanges(self, value):
         mutator = self.mutator("result_ranges")
         mutator(self, value)
-    
+
+    @security.protected(permissions.View)
+    def getAdditionalValues(self):
+        accessor = self.accessor("additional_values")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAdditionalValues(self, value):
+        mutator = self.mutator("additional_values")
+        mutator(self, value)
+
     # AbstractRoutineAnalysis
     @security.protected(permissions.View)
     def getInternalUse(self):
@@ -402,6 +539,20 @@ class Analysis(Container):
     def setConditions(self, value):
         # TODO Not yet implemented
         pass
+
+    @security.protected(permissions.View)
+    def getDateReceived(self):
+        request = self.getRequest()
+        if request:
+            ar_date = request.getDateReceived()
+            if ar_date and self.created() > ar_date:
+                return self.created()
+            return ar_date
+        return None
+
+    @security.protected(permissions.View)
+    def isSampleReceived(self):
+        return self.getDateReceived() and True or False
 
     # RoutineAnalysis
     def getSample(self):
@@ -479,13 +630,242 @@ class Analysis(Container):
     def setResultsRange(self, value):
         self.setResultRanges(value)
 
-    # Proxy to legacy AT content type
     @deprecated("Use getService() instead")
     def getAnalysisService(self):
         return self.getService()
+    
+    @deprecated("use getRawService() instead")
+    def getRawAnalysisService(self):
+        return self.getRawService()
 
     @deprecated("Use setService() instead")
     def setAnalysisService(self, value):
         self.setService(value)
 
+    @deprecated("Use getAdditionalValues() instead")
+    def getInterimFields(self):
+        return self.getAdditionalValues()
+
+    @deprecated("Use setAdditionalValues() instead")
+    def setInterimFields(self, values):
+        return self.setAdditionalValues(values)
+
+    def setInterimValue(self, keyword, value):
+        """Sets a value to an interim of this analysis
+        :param keyword: the keyword of the interim
+        :param value: the value for the interim
+        """
+        # Ensure value format integrity
+        if value is None:
+            value = ""
+        elif isinstance(value, string_types):
+            value = value.strip()
+        elif isinstance(value, (list, tuple, set, dict)):
+            value = json.dumps(value)
+
+        # Ensure result integrity regards to None, empty and 0 values
+        interims = copy.deepcopy(self.getAdditionalValues())
+        for interim in interims:
+            if interim.get("keyword") == keyword:
+                interim["value"] = str(value)
+        self.setAdditionalValues(interims)
+
+    @security.public
+    def getDependents(self, with_retests=False, recursive=False):
+        """
+        Returns a list of siblings who depend on us to calculate their result.
+        :param with_retests: If false, dependents with retests are dismissed
+        :param recursive: If true, returns all dependents recursively down
+        :type with_retests: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
+        """
+        def is_dependent(analysis):
+            # Never consider myself as dependent
+            if analysis.UID() == self.UID():
+                return False
+
+            # Never consider analyses from same service as dependents
+            self_service_uid = self.getRawAnalysisService()
+            if analysis.getRawAnalysisService() == self_service_uid:
+                return False
+
+            # Without calculation, no dependency relationship is possible
+            calculation = analysis.getCalculation()
+            if not calculation:
+                return False
+
+            # Calculation must have the service I belong to
+            services = calculation.getRawDependentServices()
+            return self_service_uid in services
+
+        request = self.getRequest()
+        if request.isPartition():
+            parent = request.getParentAnalysisRequest()
+            siblings = parent.getAnalyses(full_objects=True)
+        else:
+            siblings = self.getSiblings(with_retests=with_retests)
+
+        dependents = filter(lambda sib: is_dependent(sib), siblings)
+        if not recursive:
+            return dependents
+
+        # Return all dependents recursively
+        deps = dependents
+        for dep in dependents:
+            down_dependencies = dep.getDependents(with_retests=with_retests,
+                                                  recursive=True)
+            deps.extend(down_dependencies)
+        return deps
+
+    @security.public
+    def getDependencies(self, with_retests=False, recursive=False):
+        """
+        Return a list of siblings who we depend on to calculate our result.
+        :param with_retests: If false, siblings with retests are dismissed
+        :param recursive: If true, looks for dependencies recursively up
+        :type with_retests: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
+        """
+        calc = self.getCalculation()
+        if not calc:
+            return []
+
+        # If the calculation this analysis is bound does not have analysis
+        # keywords (only interims), no need to go further
+        service_uids = calc.getRawDependentServices()
+
+        # Ensure we exclude ourselves
+        service_uid = self.getRawAnalysisService()
+        service_uids = filter(lambda serv: serv != service_uid, service_uids)
+        if len(service_uids) == 0:
+            return []
+
+        dependencies = []
+        for sibling in self.getSiblings(with_retests=with_retests):
+            # We get all analyses that depend on me, also if retracted (maybe
+            # I am one of those that are retracted!)
+            deps = map(api.get_uid, sibling.getDependents(with_retests=True))
+            if self.UID() in deps:
+                dependencies.append(sibling)
+                if recursive:
+                    # Append the dependencies of this dependency
+                    up_deps = sibling.getDependencies(with_retests=with_retests,
+                                                      recursive=True)
+                    dependencies.extend(up_deps)
+
+        # Exclude analyses of same service as me to prevent max recursion depth
+        return filter(lambda dep: dep.getRawAnalysisService() != service_uid,
+                      dependencies)
+
+
+    @security.public
+    def getSiblings(self, with_retests=False):
+        """
+        Returns the list of analyses of the Analysis Request to which this
+        analysis belongs to, but with the current analysis excluded.
+        :param with_retests: If false, siblings with retests are dismissed
+        :type with_retests: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
+        """
+        request = self.getRequest()
+        if not request:
+            return []
+
+        siblings = []
+        retracted_states = [STATE_RETRACTED, STATE_REJECTED]
+        for sibling in request.getAnalyses(full_objects=True):
+            if api.get_uid(sibling) == self.UID():
+                # Exclude me from the list
+                continue
+
+            if not with_retests:
+                if api.get_workflow_status_of(sibling) in retracted_states:
+                    # Exclude retracted analyses
+                    continue
+                elif sibling.isRetested():
+                    # Exclude analyses with a retest
+                    continue
+
+            siblings.append(sibling)
+
+        return siblings
+
+    def isRetested(self):
+        """Returns whether this analysis has been retested or not
+        """
+        if self.getRawRetest():
+            return True
+        return False
+
+    @security.public
+    def getNumberOfVerifications(self):
+        return len(self.getVerificators())
+    
+    def getNumberOfRequiredVerifications(self):
+        return 1
+
+    @security.public
+    def getNumberOfRemainingVerifications(self):
+        required = self.getNumberOfRequiredVerifications()
+        done = self.getNumberOfVerifications()
+        if done >= required:
+            return 0
+        return required - done
+
+    # TODO Workflow - analysis . Remove?
+    @security.public
+    def getLastVerificator(self):
+        verifiers = self.getVerificators()
+        return verifiers and verifiers[-1] or None
+
+    @security.public
+    def getVerificators(self):
+        """Returns the user ids of the users that verified this analysis
+        """
+        verifiers = list()
+        actions = ["verify", "multi_verify"]
+        for event in api.get_review_history(self):
+            if event['action'] in actions:
+                verifiers.append(event['actor'])
+        sorted(verifiers, reverse=True)
+        return verifiers
+
+    def getAttachmentRequired(self):
+        return False
+
+
+    @security.public
+    def getWorksheetUID(self):
+        """This method is used to populate catalog values
+        Returns WS UID if this analysis is assigned to a worksheet, or None.
+        """
+        uids = get_backrefs(self, relationship="WorksheetAnalysis")
+        if not uids:
+            return None
+
+        if len(uids) > 1:
+            return None
+
+        return uids[0]
+
+    @security.public
+    def getWorksheet(self):
+        """Returns the Worksheet to which this analysis belongs to, or None
+        """
+        worksheet_uid = self.getWorksheetUID()
+        return api.get_object_by_uid(worksheet_uid, None)
+
+    # Proxy to legacy AT content type
     AnalysisService = property(getAnalysisService, setAnalysisService)
+    Calculation = property(getCalculation, setCalculation)
+    Keyword = property(getKeyword, setKeyword)
+    ShortTitle = property(getShortTitle, setShortTitle)
+    SortKey = property(getSortKey, setSortKey)
+    Uncertainty = property(getUncertainty, setUncertainty)
+    InterimFields = property(getAdditionalValues, setAdditionalValues)
+    PointOfCapture = property(getPointOfCapture, setPointOfCapture)
+    Analyst = property(getSubmittedBy, setSubmittedBy)
+    SelfVerificationEnabled = property(getSelfVerificationEnabled, setSelfVerificationEnabled)

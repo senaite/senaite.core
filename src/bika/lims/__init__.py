@@ -186,6 +186,7 @@ def deprecated(comment=None, replacement=None):
     """
     def decorator(func):
         def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
             message = "Call to deprecated function '{}.{}'".format(
                 func.__module__,
                 func.__name__)

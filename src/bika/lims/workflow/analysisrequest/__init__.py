@@ -45,6 +45,7 @@ def do_action_to_analyses(analysis_request, transition_id, all_analyses=False):
     if all_analyses:
         analyses = analysis_request.getAnalyses(full_objects=True)
     else:
-        analyses = analysis_request.objectValues("Analysis")
+        analyses = analysis_request.objectValues()
+        analyses = filter(lambda an: an.portal_type == "Analysis", analyses)
     for analysis in analyses:
         do_action_for(analysis, transition_id)

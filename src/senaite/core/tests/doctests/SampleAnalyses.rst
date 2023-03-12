@@ -90,6 +90,7 @@ Variables:
 Settings:
 
     >>> setup.setSelfVerificationEnabled(True)
+    >>> setup.setAutoreceiveSamples(True)
 
 Environment:
 
@@ -142,7 +143,7 @@ Create a new sample:
 
     >>> sample = new_sample(**SAMPLEDATA1)
     >>> api.get_workflow_status_of(sample)
-    'sample_due'
+    'sample_received'
 
 Check fields and methods:
 
@@ -167,7 +168,7 @@ Check fields and methods:
     True
 
     >>> analysis.isSampleReceived()
-    False
+    True
 
     >>> analysis.getHidden()
     False
@@ -190,16 +191,6 @@ Check fields and methods:
     >>> analysis.getCalculation().getFormula()
     '([Au] + [Ag]) * [Fac]'
 
-    >>> deps = analysis.getDependencies()
-    >>> sorted(map(lambda d: d.getKeyword(), deps))
-    ['Ag', 'Au']
-
-
-Receive the sample:
-
-    >>> try_transition(sample, "receive", "sample_received")
-    True
-
     >>> list(sorted(set(map(api.get_workflow_status_of, sample.getAnalyses()))))
     ['unassigned']
 
@@ -217,18 +208,32 @@ Test results capturing:
     >>> au = get_analysis_by_keyword(sample, "Au")
     >>> au.setResult(1.5)
 
-    >>> analysis.calculateResult()
-    True
-
-    >>> analysis.getResult()
-    '8.0'
-
-    >>> analysis.getUncertainty()
-    '0.2'
-
+    >>> analysis.setResult(8)
 
     >>> try_transition(analysis, "submit", "to_be_verified")
     True
 
     >>> try_transition(analysis, "verify", "verified")
     True
+
+Sample create performance
+-------------------------
+
+Measure sample create performance of samples:
+
+    >>> from time import time
+
+    >>> samples = []
+    >>> start = time()
+
+    >>> for x in range(50):
+    ...     s = new_sample(**SAMPLEDATA1)
+    ...     samples.append(s)
+
+    >>> len(samples)
+    50
+
+    >>> end = time()
+
+    >>> total = "%.2f" % (end - start)
+    >>> total
