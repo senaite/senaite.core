@@ -44,3 +44,16 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def setup_dx_analyses(tool):
+    logger.info("Setup DX Analyses ...")
+
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    # Import type info and workflow for Analysis type
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    logger.info("Setup DX Analyses [DONE]")

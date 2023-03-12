@@ -10,4 +10,13 @@
       handler=".v02_05_000.upgrade"
       profile="senaite.core:default"/>
 
+  <!-- Setup DX Analyses -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Setup DX Analyses"
+      description="Setup the DX Analysis type"
+      source="2500"
+      destination="2501"
+      handler="senaite.core.upgrade.v02_05_000.setup_dx_analyses"
+      profile="senaite.core:default"/>
+
 </configure>
