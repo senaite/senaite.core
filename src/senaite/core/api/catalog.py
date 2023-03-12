@@ -149,8 +149,7 @@ def add_zc_text_index(catalog, index, lex_id="Lexicon", indexed_attrs=None):
         # create the lexicon first
         splitter = Splitter()
         casenormalizer = CaseNormalizer()
-        stopwordremover = StopWordAndSingleCharRemover()
-        pipeline = [splitter, casenormalizer, stopwordremover]
+        pipeline = [splitter, casenormalizer]
         lexicon = PLexicon(lex_id, "Lexicon", *pipeline)
         catalog._setObject(lex_id, lexicon)
 
