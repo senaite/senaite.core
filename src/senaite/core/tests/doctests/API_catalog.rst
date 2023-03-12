@@ -176,7 +176,7 @@ Searching for multiple unicode words:
 Searching for a concatenated word:
 
     >>> capi.to_searchable_text_qs("H2O-0001")
-    u'H2O* AND 0001*'
+    u'H2O-0001*'
 
 Searching for two words:
 
@@ -195,17 +195,29 @@ All wildcards are removed and replaced with `*` to avoid parse errors:
 
 Search with special characters:
 
+    >>> capi.to_searchable_text_qs("H2O_0001")
+    u'H2O_0001*'
+
+    >>> capi.to_searchable_text_qs("H2O.0001")
+    u'H2O.0001*'
+
+    >>> capi.to_searchable_text_qs("H2O<>0001")
+    u'H2O<>0001*'
+
+    >>> capi.to_searchable_text_qs("H2O%0001")
+    u'H2O%0001*'
+
     >>> capi.to_searchable_text_qs("'H2O-0001'")
-    u'H2O* AND 0001*'
+    u'H2O-0001*'
 
     >>> capi.to_searchable_text_qs("\'H2O-0001\'")
-    u'H2O* AND 0001*'
+    u'H2O-0001*'
 
     >>> capi.to_searchable_text_qs("(H2O-0001)*")
-    u'H2O* AND 0001*'
+    u'H2O-0001*'
 
     >>> capi.to_searchable_text_qs("****([H2O-0001])****")
-    u'H2O* AND 0001*'
+    u'H2O-0001*'
 
     >>> capi.to_searchable_text_qs("********************")
     u''
