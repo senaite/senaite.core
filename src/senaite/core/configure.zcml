@@ -24,6 +24,7 @@
   <include package=".schema" />
   <include package=".upgrade" />
   <include package=".utilities" />
+  <include package=".vocabularies" />
   <include package=".z3cform" />
 
   <!-- portal skins -->

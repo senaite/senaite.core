@@ -1,0 +1,11 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Operator vocabularies -->
+  <utility
+      name="senaite.core.vocabularies.operators.LowerThanOperators"
+      component=".operators.LowerThanOperatorsFactory"/>
+  <utility
+      name="senaite.core.vocabularies.operators.GreaterThanOperators"
+      component=".operators.GreaterThanOperatorsFactory"/>
+
+</configure>
