@@ -207,6 +207,12 @@ Search with special characters:
     >>> capi.to_searchable_text_qs("H2O%0001")
     u'H2O%0001*'
 
+    >>> capi.to_searchable_text_qs("H2O:0001")
+    u'H2O:0001*'
+
+    >>> capi.to_searchable_text_qs("H2O/0001")
+    u'H2O/0001*'
+
     >>> capi.to_searchable_text_qs("'H2O-0001'")
     u'H2O-0001*'
 
@@ -231,7 +237,7 @@ Search with special characters:
     >>> capi.to_searchable_text_qs("*H2O*")
     u'H2O*'
 
-    >>> capi.to_searchable_text_qs("And the question is: AND OR maybe NOT AND")
+    >>> capi.to_searchable_text_qs("And the question is AND OR maybe NOT AND")
     u'the* AND question* AND is* AND OR maybe* AND NOT*'
 
     >>> capi.to_searchable_text_qs("AND OR")
