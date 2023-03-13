@@ -21,6 +21,7 @@
 import re
 
 import six
+from six.moves.urllib.parse import unquote_plus
 
 from bika.lims.api import APIError
 from bika.lims.api import get_tool
@@ -251,7 +252,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
         return True
 
     # convert to unicode
-    term = safe_unicode(qs)
+    term = unquote_plus(safe_unicode(qs))
 
     # Wildcards at the beginning are not allowed and therefore removed!
     first_char = term[0] if len(term) > 0 else ""
@@ -260,6 +261,8 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     # splits the string on unsupported characters
     regex = r"[^\w\-\_\.\%\<\>\+\{\}\:\/\?\$]"
+    # splits the string on all characters that do not match the regex
+    regex = r"[^\w\-\_\.\%\<\>\+\{\}\:\/\?\$\"]"
 
     # allow only words when searching just a single character
     if len(term) == 1:
