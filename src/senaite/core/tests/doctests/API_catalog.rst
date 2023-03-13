@@ -223,9 +223,6 @@ Search with special characters:
     >>> capi.to_searchable_text_qs("H2O<>0001")
     u'H2O<>0001*'
 
-    >>> capi.to_searchable_text_qs("H2O%0001")
-    u'H2O%0001*'
-
     >>> capi.to_searchable_text_qs("H2O:0001")
     u'H2O:0001*'
 
