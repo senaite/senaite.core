@@ -6,13 +6,13 @@ from archetypes.schemaextender.interfaces import ISchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaModifier
 from bika.lims import senaiteMessageFactory as _
 from Products.CMFCore import permissions
-from senaite.core.browser.widgets import ReferenceWidget
-from senaite.core.extender import ExtUIDReferenceField
+from senaite.core.browser.widgets.queryselect import QuerySelectWidget
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import ISenaiteCore
+from senaite.core.extender import ExtStringField
 from zope.component import adapts
 from zope.interface import implements
-from senaite.core.catalog import SETUP_CATALOG
 
 
 class LabelSchemaExtender(object):
@@ -27,36 +27,40 @@ class LabelSchemaExtender(object):
 
     fields = [
         # Labels
-        ExtUIDReferenceField(
+        ExtStringField(
             "ExtLabels",
-            allowed_types=("Label",),
             required=False,
             mode="rw",
-            schema="Labels",
+            schemata="Labels",
             read_permission=permissions.View,
             write_permission=permissions.ModifyPortalContent,
-            widget=ReferenceWidget(
+            widget=QuerySelectWidget(
                 label=_("Labels"),
                 description=_("Attached labels"),
-                catalog_name=SETUP_CATALOG,
-                base_query={
+                render_own_label=True,
+                catalog=SETUP_CATALOG,
+                search_index="Title",
+                value_key="title",
+                search_wildcard=True,
+                multi_valued=True,
+                allow_user_value=True,
+                hide_input_after_select=False,
+                i18n_domain="senaite.core",
+                query={
                     "portal_type": "Label",
                     "is_active": True,
                     "sort_on": "title",
                 },
-                showOn=True,
-                popup_width="400px",
-                colModel=[
+                columns=[
                     {
-                        "columnName": "Title", "width": "100",
-                        "label": _("Name"),
+                        "name": "title",
+                        "width": "100",
+                        "align": "left",
+                        "label": _(u"Label"),
                     },
                 ],
-                ui_item="Title",
-                render_own_label=True,
-                size=20,
-                i18n_domain="senaite.core",
-            )),
+            )
+        ),
     ]
 
     def __init__(self, context):
