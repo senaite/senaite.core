@@ -260,7 +260,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
         term = term.replace(first_char, "", 1)
 
     # splits the string on all characters that do not match the regex
-    regex = r"[^\w\-\_\.\<\>\+\{\}\:\/\?\$\"]"
+    regex = r"[^\w\-\_\.\<\>\+\{\}\:\/\?\$]"
 
     # allow only words when searching just a single character
     if len(term) == 1:
