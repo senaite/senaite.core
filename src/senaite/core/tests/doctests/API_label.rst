@@ -70,3 +70,24 @@ Add a string label:
 Add multiple labels:
 
     >>> add_obj_labels(client1, ["Important", "Urgent", "SENAITE", "Label"])
+    ('Important', 'Label', 'SENAITE', 'Urgent')
+
+Labels are alway sorted before they are stored:
+
+    >>> add_obj_labels(client1, ["A", "Z"])
+    ('A', 'Important', 'Label', 'SENAITE', 'Urgent', 'Z')
+
+Labels can be also removed:
+
+    >>> del_obj_labels(client1, "A")
+    ('Important', 'Label', 'SENAITE', 'Urgent', 'Z')
+
+Non existing labels are simple ignored:
+
+    >>> del_obj_labels(client1, "X")
+    ('Important', 'Label', 'SENAITE', 'Urgent', 'Z')
+
+Remove all labels:
+
+    >>> del_obj_labels(client1, get_obj_labels(client1))
+    ()

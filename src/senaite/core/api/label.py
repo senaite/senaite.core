@@ -114,8 +114,8 @@ def to_labels(labels):
 
     :returns: List of label strings
     """
-    if not isinstance(labels, list):
-        labels = [labels]
+    if not isinstance(labels, (tuple, list, set)):
+        labels = tuple((labels, ))
     out = set()
     for label in labels:
         if is_label_object(label):
@@ -125,7 +125,7 @@ def to_labels(labels):
         else:
             # ignore the rest
             continue
-    return list(out)
+    return tuple(out)
 
 
 def get_obj_labels(obj):
@@ -181,7 +181,7 @@ def del_obj_labels(obj, labels):
     # prepare the set of new labels
     new_labels = set(get_obj_labels(obj))
     for label in to_labels(labels):
-        new_labels.remove(label)
+        new_labels.discard(label)
     # set the new labels
     set_obj_labels(obj, new_labels)
     return get_obj_labels(obj)
