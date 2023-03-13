@@ -1,10 +1,17 @@
 Changelog
 =========
 
-
 2.5.0 (unreleased)
 ------------------
 
+- #2273 Improve performance for sample listing index
+- #2272 Allow to configure the position of additional value columns
+
+
+2.4.1 (2023-03-11)
+------------------
+
+- #2271 Fix TypeError in Analysis Service's view
 
 
 2.4.0 (2023-03-10)

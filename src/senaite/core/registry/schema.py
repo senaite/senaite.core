@@ -50,6 +50,7 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
         default=[
             "Pos",
             "Service",
+            "AdditionalValues",
             "DetectionLimitOperand",
             "Result",
             "Uncertainty",
@@ -109,6 +110,7 @@ class ISampleViewRegistry(ISenaiteRegistry):
         default=[
             "created",
             "Service",
+            "AdditionalValues",
             "DetectionLimitOperand",
             "Result",
             "Uncertainty",
