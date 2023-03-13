@@ -163,6 +163,30 @@ Without wildcard:
     >>> capi.to_searchable_text_qs("sample", wildcard=False)
     u'sample'
 
+Wildcards at the beginning of the searchterms are not supported:
+
+    >>> capi.to_searchable_text_qs("?H2O")
+    u'H2O*'
+
+    >>> capi.to_searchable_text_qs("*H2O")
+    u'H2O*'
+
+Wildcards at the end of the searchterms are retained:
+
+    >>> capi.to_searchable_text_qs("H2O?")
+    u'H2O?'
+
+    >>> capi.to_searchable_text_qs("H2O*")
+    u'H2O*'
+
+If the search contains only a single character, it needs to be a word:
+
+    >>> capi.to_searchable_text_qs("W")
+    u'W*'
+
+    >>> capi.to_searchable_text_qs("$")
+    u''
+
 Searching for a unicode word:
 
     >>> capi.to_searchable_text_qs("AäOöUüZ")
@@ -187,11 +211,6 @@ Tricky query strings (with and/or in words or in between):
 
     >>> capi.to_searchable_text_qs("Fresh and Funky Oranges from Andorra")
     u'Fresh* AND Funky* AND Oranges* AND from* AND Andorra*'
-
-All wildcards are removed and replaced with `*` to avoid parse errors:
-
-    >>> capi.to_searchable_text_qs("Ca? OR Mg?")
-    u'Ca* OR Mg*'
 
 Search with special characters:
 
@@ -227,12 +246,6 @@ Search with special characters:
 
     >>> capi.to_searchable_text_qs("********************")
     u''
-
-    >>> capi.to_searchable_text_qs("????????????????????")
-    u''
-
-    >>> capi.to_searchable_text_qs("?H2O?")
-    u'H2O*'
 
     >>> capi.to_searchable_text_qs("*H2O*")
     u'H2O*'

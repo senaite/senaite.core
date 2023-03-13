@@ -226,6 +226,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     :returns: sarchable text string
     """
     OPERATORS = ["AND", "OR"]
+    WILDCARDS = ["*", "?"]
 
     if op not in OPERATORS:
         op = "AND"
@@ -234,6 +235,9 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     def is_op(token):
         return token.upper() in OPERATORS
+
+    def is_wc(char):
+        return char in WILDCARDS
 
     def append_op_after(index, token, tokens):
         # do not append an operator after the last token
@@ -249,8 +253,19 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     # convert to unicode
     term = safe_unicode(qs)
 
+    # Wildcards at the beginning are not allowed and therefore removed!
+    first_char = term[0] if len(term) > 0 else ""
+    if is_wc(first_char):
+        term = term.replace(first_char, "", 1)
+
     # splits the string on unsupported characters
-    tokens = re.split(r"[^\w\-\_\.\%\<\>\+\{\}\:\/]", term, flags=re.U | re.I)
+    regex = r"[^\w\-\_\.\%\<\>\+\{\}\:\/\?\$]"
+
+    # allow only words when searching just a single character
+    if len(term) == 1:
+        regex = r"[^\w]"
+
+    tokens = re.split(regex, term, flags=re.U | re.I)
 
     # filter out all empty tokens
     tokens = filter(None, tokens)
@@ -267,13 +282,16 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     for num, token in enumerate(tokens):
 
+        # retain wildcards at the end of a token
+        last_token_char = token[-1] if len(token) > 0 else ""
+
         # append operators without changes and continue
         if is_op(token):
             parts.append(token.upper())
             continue
 
         # append wildcard to token
-        if wildcard and not is_op(token):
+        if wildcard and not is_op(token) and not is_wc(last_token_char):
             token = token + "*"
 
         # append the token
