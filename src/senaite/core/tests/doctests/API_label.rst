@@ -66,3 +66,7 @@ Add a string label:
 
     >>> add_obj_labels(client1, "Important")
     ('Important',)
+
+Add multiple labels:
+
+    >>> add_obj_labels(client1, ["Important", "Urgent", "SENAITE", "Label"])
