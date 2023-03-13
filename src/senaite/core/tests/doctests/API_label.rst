@@ -30,9 +30,9 @@ Setup the testing environment:
     >>> user = api.get_current_user()
 
 List all Labels
-..............
+...............
 
-List all active labels in the system:
+List all active global labels in the system:
 
     >>> list_labels()
     []
@@ -40,7 +40,7 @@ List all active labels in the system:
 Create some Labels
 ..................
 
-Create a bunch of labels:
+Create global labels:
 
     >>> new = map(create_label, ["Important", "Urgent", "Critical"])
     >>> list_labels()

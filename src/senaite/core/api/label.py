@@ -23,6 +23,7 @@ def get_storage(obj, default=None):
     """Get label storage for the given object
 
     :param obj: Content object
+    :param default: default value to return
     :returns: tuple
     """
     annotation = IAnnotations(obj)
@@ -30,7 +31,10 @@ def get_storage(obj, default=None):
 
 
 def set_storage(obj, value):
-    """Set the
+    """Set the label stroage for the given object
+
+    :param obj: The object to store the labels
+    :param value: Tuple of labels
     """
     if not isinstance(value, tuple):
         raise TypeError("Expected type tuple, got %s" % type(value))
@@ -134,37 +138,48 @@ def get_obj_labels(obj):
     return labels
 
 
+def set_obj_labels(obj, labels):
+    """Set the given labels to the object label storage
+    """
+    obj = api.get_object(obj)
+    # always sort the labels before setting it to the storage
+    set_storage(obj, tuple(sorted(labels)))
+    # mark the object with the proper interface
+    if not labels:
+        noLongerProvides(obj, IHaveLabels)
+    else:
+        alsoProvides(obj, IHaveLabels)
+
+
 def add_obj_labels(obj, labels):
-    """Add labels to the object
+    """Add one ore more labels to the object
 
     :param obj: the object to label
     :param labels: string or list of labels to add
     :returns: The new labels
     """
-    labels = to_labels(labels)
-    # handle string labels
     obj = api.get_object(obj)
     # Mark the object for schema extension
     alsoProvides(obj, ICanHaveLabels)
+    # prepare the set of new labels
     new_labels = set(get_obj_labels(obj))
-    for label in labels:
+    for label in to_labels(labels):
         new_labels.add(label)
-    set_storage(obj, tuple(sorted(new_labels)))
-    alsoProvides(obj, IHaveLabels)
+    # set the new labels
+    set_obj_labels(obj, new_labels)
     return get_obj_labels(obj)
 
 
 def del_obj_labels(obj, labels):
     """Remove labels from the object
     """
-    labels = to_labels(labels)
-    obj = get_object(obj)
+    obj = api.get_object(obj)
     # Mark the object for schema extension
     alsoProvides(obj, ICanHaveLabels)
+    # prepare the set of new labels
     new_labels = set(get_obj_labels(obj))
-    for label in labels:
+    for label in to_labels(labels):
         new_labels.remove(label)
-    set_storage(obj, tuple(sorted(new_labels)))
-    if not new_labels:
-        noLongerProvides(obj, IHaveLabels)
-    return True
+    # set the new labels
+    set_obj_labels(obj, new_labels)
+    return get_obj_labels(obj)
