@@ -120,7 +120,7 @@ def to_labels(labels):
     for label in labels:
         if is_label_object(label):
             out.add(api.get_title(label))
-        elif is_string(label):
+        elif label and is_string(label):
             out.add(label)
         else:
             # ignore the rest
