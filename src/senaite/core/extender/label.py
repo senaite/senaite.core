@@ -37,7 +37,7 @@ class LabelSchemaExtender(object):
             widget=QuerySelectWidget(
                 label=_("Labels"),
                 description=_("Attached labels"),
-                render_own_label=True,
+                render_own_label=False,
                 catalog=SETUP_CATALOG,
                 search_index="Title",
                 value_key="title",
