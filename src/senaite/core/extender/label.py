@@ -10,7 +10,7 @@ from senaite.core.browser.widgets.queryselect import QuerySelectWidget
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import ISenaiteCore
-from senaite.core.extender import ExtStringField
+from senaite.core.extender import ExtTextField
 from zope.component import adapts
 from zope.interface import implements
 
@@ -27,7 +27,7 @@ class LabelSchemaExtender(object):
 
     fields = [
         # Labels
-        ExtStringField(
+        ExtTextField(
             "ExtLabels",
             required=False,
             mode="rw",
