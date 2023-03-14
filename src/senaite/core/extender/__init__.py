@@ -13,5 +13,5 @@ class ExtLabelField(ExtensionField, LinesField):
         return labels
 
     def set(self, instance, value, **kw):
-        labels = value.split("\r\n")
-        label_api.add_obj_labels(instance, labels)
+        labels = filter(None, value.split("\r\n"))
+        return label_api.set_obj_labels(instance, labels)
