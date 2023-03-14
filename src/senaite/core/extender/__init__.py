@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from archetypes.schemaextender.field import ExtensionField
-from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Field import TextField
+from Products.Archetypes.Field import LinesField
+from senaite.core.api import label as label_api
 
 
-class ExtUIDReferenceField(ExtensionField, UIDReferenceField):
-    """Extended UID Reference Field
+class ExtLabelField(ExtensionField, LinesField):
+    """Extended Field for Labels
     """
 
+    def get(self, instance, **kw):
+        labels = label_api.get_obj_labels(instance)
+        return labels
 
-class ExtStringField(ExtensionField, StringField):
-    """Extended String Field
-    """
-
-
-class ExtTextField(ExtensionField, TextField):
-    """Extended Text Field
-    """
+    def set(self, instance, value, **kw):
+        labels = value.split("\r\n")
+        label_api.add_obj_labels(instance, labels)
