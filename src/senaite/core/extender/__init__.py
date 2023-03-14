@@ -8,7 +8,6 @@ from senaite.core.api import label as label_api
 class ExtLabelField(ExtensionField, LinesField):
     """Extended Field for Labels
     """
-
     def get(self, instance, **kw):
         labels = label_api.get_obj_labels(instance)
         return labels
