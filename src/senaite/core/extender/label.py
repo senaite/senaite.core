@@ -8,9 +8,10 @@ from bika.lims import senaiteMessageFactory as _
 from Products.CMFCore import permissions
 from senaite.core.browser.widgets.queryselect import QuerySelectWidget
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.config.fields import AT_LABEL_FIELD
+from senaite.core.extender import ExtLabelField
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import ISenaiteCore
-from senaite.core.extender import ExtLabelField
 from zope.component import adapts
 from zope.interface import implements
 
@@ -28,7 +29,7 @@ class LabelSchemaExtender(object):
     fields = [
         # Labels
         ExtLabelField(
-            "ExtLabels",
+            AT_LABEL_FIELD,
             required=False,
             mode="rw",
             schemata="Labels",

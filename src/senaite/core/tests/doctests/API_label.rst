@@ -99,6 +99,35 @@ Remove all labels:
     ()
 
 
+Schema extension
+................
+
+Objects with labels are automatically schema extended to allow to add/remove
+labels over the user interface.
+
+The schema extension is controlled over the `ICanHaveLabels` interface:
+
+    >>> from senaite.core.interfaces import ICanHaveLabels
+    >>> from senaite.core.config.fields import AT_LABEL_FIELD
+
+    >>> client4 = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
+
+    >>> ICanHaveLabels.providedBy(client4)
+    False
+
+    >>> AT_LABEL_FIELD in api.get_fields(client4)
+    False
+
+    >>> add_obj_labels(client4, "Demo")
+    ('Demo',)
+
+    >>> ICanHaveLabels.providedBy(client4)
+    True
+
+    >>> AT_LABEL_FIELD in api.get_fields(client4)
+    True
+
+
 Search Labels
 .............
 
