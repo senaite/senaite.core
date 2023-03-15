@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="senaite.core.content.labels.ILabels"
+      name="labeled_objects"
+      class=".labeled_objects.LabeledObjectsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+</configure>
