@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from senaite.core.api import label as label_api
+from bika.lims import api
 from plone.indexer import indexer
-from senaite.core.interfaces import ICanHaveLabels
+from senaite.core.api import label as label_api
+from senaite.core.interfaces import IHaveLabels
 
 
-@indexer(ICanHaveLabels)
+@indexer(IHaveLabels)
 def labels(instance):
     """Returns a list of labels for the given instance
     """
-    return label_api.get_obj_labels(instance)
+    labels = label_api.get_obj_labels(instance)
+    return map(api.safe_unicode, labels)

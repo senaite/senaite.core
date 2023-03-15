@@ -39,7 +39,6 @@ INDEXES = BASE_INDEXES + [
     ("getKeyword", "", "FieldIndex"),
     ("instrumenttype_title", "", "KeywordIndex"),
     ("instrument_title", "", "KeywordIndex"),
-    ("labels", "", "KeywordIndex"),
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("method_available_uid", "", "KeywordIndex"),
     ("point_of_capture", "", "FieldIndex"),

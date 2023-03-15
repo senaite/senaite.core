@@ -125,6 +125,7 @@ INDEXES = (
     (PORTAL_CATALOG, "review_state", "", "FieldIndex"),
     (PORTAL_CATALOG, "sample_uid", "", "KeywordIndex"),
     (PORTAL_CATALOG, "title", "", "FieldIndex"),
+    (PORTAL_CATALOG, "labels", "", "KeywordIndex"),
 )
 
 COLUMNS = (

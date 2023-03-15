@@ -185,3 +185,18 @@ def del_obj_labels(obj, labels):
     # set the new labels
     set_obj_labels(obj, new_labels)
     return get_obj_labels(obj)
+
+
+def search_objects_with_label(label, catalogs=None, **kw):
+    """Search for objects having one or more of the given labels
+    """
+    labels = to_labels(label)
+    query = {
+        "labels": map(api.safe_unicode, labels),
+        "sort_on": "title",
+    }
+    # Allow to update the query with the keywords
+    query.update(kw)
+    if not catalogs:
+        return search(query)
+    return search(query, catalogs)
