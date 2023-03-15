@@ -35,8 +35,6 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.content.interpretationtemplate import InterpretationTemplate
-from senaite.core.setuphandlers import add_dexterity_items
-from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
@@ -776,22 +774,3 @@ def import_registry(tool):
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, "plone.app.registry")
-
-
-def setup_labels(tool):
-    """Setup labels for SENAITE
-    """
-    logger.info("Setup Labels")
-    portal = api.get_portal()
-
-    tool.runImportStepFromProfile(profile, "typeinfo")
-    tool.runImportStepFromProfile(profile, "workflow")
-    setup_core_catalogs(portal)
-
-    items = [
-        ("labels",
-         "Labels",
-         "Labels")
-    ]
-    setup = api.get_senaite_setup()
-    add_dexterity_items(setup, items)

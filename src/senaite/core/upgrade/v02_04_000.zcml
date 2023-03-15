@@ -218,12 +218,4 @@
       handler="senaite.core.upgrade.v02_04_000.import_registry"
       profile="senaite.core:default"/>
 
-  <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Setup Labels"
-      description="Setup Labels"
-      source="2423"
-      destination="2424"
-      handler="senaite.core.upgrade.v02_04_000.setup_labels"
-      profile="senaite.core:default"/>
-
 </configure>
