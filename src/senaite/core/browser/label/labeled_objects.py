@@ -30,6 +30,7 @@ class LabeledObjectsView(ListingView):
 
         t = self.context.translate
         self.title = t(_("Labeled Objects"))
+        self.description = t(_("List all objects with labels"))
 
         self.show_select_column = True
         self.show_all = False
