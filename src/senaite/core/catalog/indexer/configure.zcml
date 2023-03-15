@@ -9,6 +9,7 @@
 
   <!-- Label Indexer -->
   <adapter name="labels" factory=".label.labels"/>
+  <adapter name="listing_searchable_text" factory=".label.listing_searchable_text"/>
 
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>

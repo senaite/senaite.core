@@ -12,3 +12,21 @@ def labels(instance):
     """
     labels = label_api.get_obj_labels(instance)
     return map(api.safe_unicode, labels)
+
+
+@indexer(IHaveLabels)
+def listing_searchable_text(instance):
+    """Retrieves most commonly searched values for fulltext search
+
+    :returns: string with search terms
+    """
+    entries = set()
+
+    labels = label_api.get_obj_labels(instance)
+    if labels:
+        entries.update(set(labels))
+
+    entries.add(instance.getId())
+    entries.add(instance.Title())
+
+    return u" ".join(map(api.safe_unicode, entries))

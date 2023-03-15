@@ -12,6 +12,7 @@ CATALOG_TITLE = "Senaite Label Catalog"
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("labels", "", "KeywordIndex"),
+    ("listing_searchable_text", "", "ZCTextIndex"),
 ]
 
 COLUMNS = []
