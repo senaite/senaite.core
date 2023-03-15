@@ -28,7 +28,7 @@ class LabelsView(ListingView):
 
         t = self.context.translate
         self.title = t(_("Labels"))
-        self.description = t(_("Grouping labels"))
+        self.description = t(_("Add default selectable labels"))
 
         self.show_select_column = True
         self.show_all = False
