@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
@@ -354,7 +354,7 @@ class TestCalculations(DataTestCase):
                         or an.isUpperDetectionLimit():
                         operator = an.getDetectionLimitOperand()
                         strres = f['analyses'][key].replace(operator, '')
-                        self.assertEqual(an.getResult(), float(strres))
+                        self.assertEqual(an.getResult(), strres)
                     else:
                         self.assertEqual(an.getResult(), f['analyses'][key])
                 elif key == self.calcservice.getKeyword():

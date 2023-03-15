@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-10-03 21:23+0000\n"
+"POT-Creation-Date: 2023-03-10 15:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2022\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -30,7 +30,7 @@ msgstr "Andere Formate"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
-msgstr "Regel für die ganze Seite anwenden"
+msgstr "Regel systemweit anwenden"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:123
 msgid "Available add-ons"
@@ -79,7 +79,7 @@ msgstr "Zum übergeordneten Verzeichnis"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:222
 msgid "Go to the folder where you want the rule to apply, or at the site root, click on 'rule' tab, and then locally setup the rules."
-msgstr "Gehen Sie zu dem Ordner, auf den die Regel angewendet werden soll, oder klicken Sie im Stammverzeichnis der Seite auf die Registerkarte „Regel“ und richten Sie die Regeln dann lokal ein."
+msgstr "Gehen Sie zu dem Ordner, auf den die Regel angewendet werden soll, oder klicken Sie im Stammverzeichnis des Systems auf die Registerkarte „Regel“ und richten Sie die Regeln dann lokal ein."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "Go to the upgrade page"
@@ -141,11 +141,11 @@ msgstr "Server:"
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:13
 msgid "Site Setup"
-msgstr "Seitenkonfiguration"
+msgstr "Systemkonfiguration"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
-msgstr "Seitentitel"
+msgstr "Titel"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "The content types that should be shown in the navigation and site map."
@@ -157,7 +157,7 @@ msgstr "Die Regel ist aktiviert, führt aber nichts aus, da sie nirgendwo zugewi
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "The site configuration is outdated and needs to be upgraded. Please ${link_continue_with_the_upgrade}."
-msgstr "Die Seitenkonfiguration ist veraltet und muss aktualisiert werden. Bitte ${link_continue_with_the_upgrade}."
+msgstr "Die Systemkonfiguration ist veraltet und muss aktualisiert werden. Bitte ${link_continue_with_the_upgrade}."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:87
 msgid "There is no upgrade procedure defined for this addon. Please consult the addon documentation for upgrade information, or contact the addon author."
@@ -308,7 +308,7 @@ msgstr "Verwenden Sie das folgende Formular, um Inhaltsregeln zu definieren, zu 
 #. Default: "The languages in which the site should be translatable."
 #: senaite/core/profiles/default/registry.xml
 msgid "description_available_languages"
-msgstr "Sprachen, in die Ihre Seite übersetzbar ist."
+msgstr "Sprachen, in die Ihr System übersetzbar ist."
 
 #. Default: "Please set a descriptive title for the rule."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:266
@@ -323,7 +323,7 @@ msgstr "Diese Regel wird den folgenden Inhalten zugewiesen:"
 #. Default: "Configuration area for Plone and add-on Products."
 #: senaite/core/browser/controlpanel/templates/overview.pt:19
 msgid "description_control_panel"
-msgstr "Konfigurationsbereich für Plone und Add-Ons."
+msgstr "Konfigurationsbereich für SENAITE und Add-Ons."
 
 #. Default: "Required for the language selector viewlet to be rendered."
 #: senaite/core/profiles/default/registry.xml
@@ -338,7 +338,7 @@ msgstr "Notwendig für die Sprachauswahl."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
 #, fuzzy
 msgid "description_debug_mode"
-msgstr "Der \\\"debug mode\\\" ist aktiviert. Dieser Modus ist für Seiten vorgesehen, an denen noch entwickelt wird. Er ermöglicht es, Konfigurationsänderungen sofort zu sehen, aber verlangsamt die Seite insgesamt. Um den Modus zu deaktivieren, stoppen Sie den Server, setzen Sie 'debug-mode=off' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
+msgstr "Der \\\"debug mode\\\" ist aktiviert. Dieser Modus ist für Systeme vorgesehen, an denen noch entwickelt wird. Er ermöglicht es, Konfigurationsänderungen sofort zu sehen, aber verlangsamt die Seite insgesamt. Um den Modus zu deaktivieren, stoppen Sie den Server, setzen Sie 'debug-mode=off' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
 
 #. here. Note that this doesn't actually delete the group or user, it is only
 #. removed from this group."
@@ -413,7 +413,7 @@ msgstr "Wenn Sie bestimmte Kategorien von Portlets sperren oder entsperren möch
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
 #, fuzzy
 msgid "description_production_mode"
-msgstr "Der \\\"production mode\\\" ist aktiviert. Dies ist der bevorzugte Modus für eine öffentliche Plone-Seite, aber einige Konfigurationsänderungen werden erst nach Serverneustart aktiv. Falls dies eine Entwicklungsinstanz ist und Sie den  \\\"debug mode\\\" aktivieren wollen, stoppen Sie den Server, setzen Sie 'debug-mode=on' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
+msgstr "Der \\\"production mode\\\" ist aktiviert. Dies ist der bevorzugte Modus für einen öffentlichen Server, aber einige Konfigurationsänderungen werden erst nach Serverneustart aktiv. Falls dies eine Entwicklungsinstanz ist und Sie den  \\\"debug mode\\\" aktivieren wollen, stoppen Sie den Server, setzen Sie 'debug-mode=on' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
 
 #. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."

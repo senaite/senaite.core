@@ -20,7 +20,10 @@
 
 import itertools
 import re
+from datetime import datetime
+
 import six
+
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -36,14 +39,12 @@ from bika.lims.interfaces import IARReport
 from bika.lims.interfaces import IIdServer
 from bika.lims.interfaces import IIdServerTypeID
 from bika.lims.interfaces import IIdServerVariables
-from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
-from datetime import datetime
 from Products.ATContentTypes.utils import DT2dt
+from senaite.core.interfaces import INumberGenerator
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component import queryAdapter
-
 
 AR_TYPES = [
     "AnalysisRequest",
@@ -67,16 +68,7 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
 def get_backreferences(obj, relationship):
     """Returns the backreferences
     """
-    refs = get_backuidreferences(obj, relationship)
-
-    # TODO remove after all ReferenceField get ported to UIDReferenceField
-    # At this moment, there are still some content types that are using the
-    # ReferenceField, so we need to fallback to traditional getBackReferences
-    # for these cases.
-    if not refs:
-        refs = obj.getBackReferences(relationship)
-
-    return refs
+    return get_backuidreferences(obj, relationship)
 
 
 def get_contained_items(obj, spec):
@@ -179,7 +171,7 @@ def get_secondary_count(context, default=0):
     if not primary:
         return default
 
-    return len(primary.getSecondaryAnalysisRequests())
+    return len(primary.getRawSecondaryAnalysisRequests())
 
 
 def is_ar(context):
@@ -419,6 +411,10 @@ def get_counted_number(context, config, variables, **kw):
 
     # get the counter type, which is either "backreference" or "contained"
     counter_type = config.get("counter_type")
+    if counter_type == "backreference":
+        logger.warn("Counter type 'backreference' is obsolete! "
+                    "Please use 'contained' instead. Alternatively, use "
+                    "'generated' instead of 'counter' as the sequence type")
 
     # the counter reference is either the "relationship" for
     # "backreference" or the meta type for contained objects

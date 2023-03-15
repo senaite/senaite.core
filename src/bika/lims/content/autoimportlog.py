@@ -19,16 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import config
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAutoImportLog
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import DateTimeField
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import TextField
-from Products.Archetypes.references import HoldingReference
 from zope.interface import implements
 
 schema = BikaSchema.copy() + atapi.Schema((
@@ -39,11 +38,9 @@ schema = BikaSchema.copy() + atapi.Schema((
         default="",
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Instrument",
         allowed_types=("Instrument",),
-        referenceClass=HoldingReference,
-        relationship="InstrumentImportLogs",
     ),
 
     StringField(

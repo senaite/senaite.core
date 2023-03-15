@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from itertools import islice
 
@@ -22,6 +40,8 @@ from senaite.core.interfaces import IDataManager
 from zope import event
 from zope.component import queryAdapter
 from zope.schema.interfaces import IField as IDXField
+
+_fieldname_not_in_form = object()
 
 
 class SampleHeaderViewlet(ViewletBase):
@@ -56,7 +76,8 @@ class SampleHeaderViewlet(ViewletBase):
 
         for name, field in self.fields.items():
             value = self.get_field_value(field, form)
-            if value is None:
+
+            if value is _fieldname_not_in_form:
                 continue
 
             # Keep track of field-values
@@ -121,19 +142,29 @@ class SampleHeaderViewlet(ViewletBase):
         """
         fieldname = field.getName()
         if fieldname not in form:
-            return None
+            return _fieldname_not_in_form
+
+        fieldvalue = form[fieldname]
 
         # Handle (multiValued) reference fields
         # https://github.com/bikalims/bika.lims/issues/2270
         uid_fieldname = "{}_uid".format(fieldname)
         if uid_fieldname in form:
+            # get the value from the corresponding `uid_<fieldname>` key
             value = form[uid_fieldname]
+
+            # extract the assigned UIDs for multi-reference fields
             if field.multiValued:
                 value = filter(None, value.split(","))
+
+            # allow to flush single reference fields
+            if not field.multiValued and not fieldvalue:
+                value = ""
+
             return value
 
         # other fields
-        return form[fieldname]
+        return fieldvalue
 
     def grouper(self, iterable, n=3):
         """Splits an iterable into chunks of `n` items

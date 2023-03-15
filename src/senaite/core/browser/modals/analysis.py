@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2022 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import copy
@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import FieldEditAnalysisConditions
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
+from bika.lims.content.attachment import Attachment
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
@@ -78,7 +79,36 @@ class SetAnalysisConditionsView(BrowserView):
             choices = condition.get("choices", "")
             options = filter(None, choices.split("|"))
             condition.update({"options": options})
-        return conditions
+
+            if condition.get("type") == "file":
+                uid = condition.get("value")
+                condition["attachment"] = self.get_attachment_info(uid)
+
+        # Move conditions from "file" type to the end:
+        #   Cannot set conditions with a '<' char when others are from file
+        #   https://github.com/senaite/senaite.core/pulls/2231
+        def files_last(condition1, condition2):
+            type1 = condition1.get("type")
+            type2 = condition2.get("type")
+            if "file" not in [type1, type2]:
+                return 0
+            return 1 if type1 == "file" else -1
+        return sorted(conditions, cmp=files_last)
+
+    def get_attachment_info(self, uid):
+        attachment = api.get_object_by_uid(uid, default=None)
+        if not isinstance(attachment, Attachment):
+            return {}
+
+        url = api.get_url(attachment)
+        at_file = attachment.getAttachmentFile()
+        return {
+            "uid": api.get_uid(attachment),
+            "id": api.get_id(attachment),
+            "url": url,
+            "download_url": "{}/at_download/AttachmentFile".format(url),
+            "filename": at_file.filename,
+        }
 
     def handle_submit(self):
         analysis = self.get_analysis()
@@ -87,8 +117,18 @@ class SetAnalysisConditionsView(BrowserView):
             message = _("Not allowed to update conditions: {}").format(title)
             return self.redirect(message=message, level="error")
 
-        # Update the conditions
+        # Sort the conditions as they were initially set
         conditions = self.request.form.get("conditions", [])
+        original = self.get_analysis().getConditions(empties=True)
+        original = [cond.get("title") for cond in original]
+
+        def original_order(condition1, condition2):
+            index1 = original.index(condition1.get("title"))
+            index2 = original.index(condition2.get("title"))
+            return (index1 > index2) - (index1 < index2)
+        conditions = sorted(conditions, cmp=original_order)
+
+        # Update the conditions
         analysis.setConditions(conditions)
         message = _("Analysis conditions updated: {}").format(title)
         return self.redirect(message=message)

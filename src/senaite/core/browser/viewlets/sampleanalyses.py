@@ -15,13 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.registry import get_registry_record
 
 
 class LabAnalysesViewlet(ViewletBase):
@@ -36,6 +37,11 @@ class LabAnalysesViewlet(ViewletBase):
     @property
     def sample(self):
         return self.context
+
+    def is_collapsed(self):
+        name = "sampleview_collapse_{}_analysis_table".format(
+            self.capture)
+        return get_registry_record(name, default=False)
 
     def available(self):
         """Returns true if this sample contains at least one analysis for the

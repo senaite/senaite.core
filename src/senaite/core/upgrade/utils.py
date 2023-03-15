@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -368,3 +368,20 @@ def delete_object(obj):
     uncatalog_object(obj)
     parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=True)
+
+
+def uncatalog_brain(brain):
+    """Uncatalog a stale catalog entry
+    """
+    if not api.is_brain(brain):
+        return False
+
+    catalog = brain.aq_parent
+    uid = brain.UID
+    path = brain.getPath()
+    logger.warn(80*"*")
+    logger.warn("Removing stale catalog entry for catalog %s: %s -> %s"
+                % (catalog.getId(), uid, path))
+    logger.warn(80*"*")
+    catalog.uncatalog_object(path)
+    return True

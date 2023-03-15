@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import datetime
@@ -2280,13 +2280,13 @@ class Analysis_Requests(WorksheetImporter):
                              getFullname=row['CCContact_Fullname'])[0].getObject()
                 obj.setCCContact(contact)
             if row['AnalysisProfile_title']:
-                profile = pc(portal_type="AnalysisProfile",
-                             title=row['AnalysisProfile_title'].getObject())
-                obj.setProfile(profile)
+                profiles = pc(portal_type="AnalysisProfile",
+                              title=row['AnalysisProfile_title'])[0].getObject()
+                obj.setProfiles([profiles])
             if row['ARTemplate_title']:
                 template = pc(portal_type="ARTemplate",
                              title=row['ARTemplate_title'])[0].getObject()
-                obj.setProfile(template)
+                obj.setTemplate(template)
 
             obj.unmarkCreationFlag()
 

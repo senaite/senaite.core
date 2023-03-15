@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- 2.3.0 to 2.4.0 -->
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.4.0"
+      source="2.3.0"
+      destination="2.4.0"
+      handler="senaite.core.upgrade.v02_04_000.upgrade"
+      profile="senaite.core:default"/>
+
   <!-- Reindex QC Analyses
        https://github.com/senaite/senaite.core/pull/2157 -->
   <genericsetup:upgradeStep
@@ -31,6 +39,183 @@
       source="2402"
       destination="2403"
       handler="senaite.core.upgrade.v02_04_000.fix_sample_actions_not_translated"
+      profile="senaite.core:default"/>
+
+  <!-- Use portal as relative path for sticker icon
+       https://github.com/senaite/senaite.core/pull/2197 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Use portal as relative path for sticker icons"
+      description="Use portal as relative path for sticker icons"
+      source="2403"
+      destination="2404"
+      handler="senaite.core.upgrade.v02_04_000.import_typeinfo"
+      profile="senaite.core:default"/>
+
+  <!-- Fix traceback when retracting an analysis with a detection limit
+       https://github.com/senaite/senaite.core/pull/2204 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Fix traceback when retracting DL"
+      description="Fix traceback when retracting an analysis with a detection limit"
+      source="2404"
+      destination="2405"
+      handler="senaite.core.upgrade.v02_04_000.fix_traceback_retract_dl"
+      profile="senaite.core:default"/>
+
+  <!-- Purge ComputedField from AnalysisRequest related with Profiles
+       https://github.com/senaite/senaite.core/pull/2213 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge ComputedField from AnalysisRequest related with Profiles"
+      description="Purge ComputedField from AnalysisRequest related with Profiles"
+      source="2405"
+      destination="2406"
+      handler="senaite.core.upgrade.v02_04_000.purge_computed_fields_profile"
+      profile="senaite.core:default"/>
+
+  <!-- Remove `DefaultContainerType` field (stale) from AnalysisRequest
+       https://github.com/senaite/senaite.core/pull/2214 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Remove `DefaultContainerType` field (stale) from AnalysisRequest"
+      description="Remove `DefaultContainerType` field (stale) from AnalysisRequest"
+      source="2406"
+      destination="2407"
+      handler="senaite.core.upgrade.v02_04_000.remove_default_container_type"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate ReferenceField from AnalysisRequest to UIDReferenceField
+       https://github.com/senaite/senaite.core/pull/2209 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate ReferenceField from AnalysisRequest"
+      description="Migrate ReferenceField from AnalysisRequest to UIDReferenceField"
+      source="2407"
+      destination="2408"
+      handler="senaite.core.upgrade.v02_04_000.migrate_analysisrequest_referencefields"
+      profile="senaite.core:default"/>
+
+  <!-- Rename RetestOf relationship
+       https://github.com/senaite/senaite.core/pull/2219 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Rename RetestOf relationship"
+      description="Rename RetestOf relationship to AnalysisRetestOf"
+      source="2408"
+      destination="2409"
+      handler="senaite.core.upgrade.v02_04_000.rename_retestof_relationship"
+      profile="senaite.core:default"/>
+
+  <!-- Purge back-references that are no longer required
+       https://github.com/senaite/senaite.core/pull/2219 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge back-references that are no longer required"
+      description="Purge back-references from UIDReferenceField that are no longer required"
+      source="2409"
+      destination="2410"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
+      source="2410"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
+      source="2411"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate references from catalog
+       https://github.com/senaite/senaite.core/pull/2231 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
+      source="2412"
+      destination="2413"
+      handler="senaite.core.upgrade.v02_04_000.migrate_and_purge_references"
+      profile="senaite.core:default"/>
+
+  <!-- Migrate interpretation templates from item -> container
+       https://github.com/senaite/senaite.core/pull/2234 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate interpretation templates to be folderish"
+      description="Change interpretation template base class from item -> container"
+      source="2413"
+      destination="2414"
+      handler="senaite.core.upgrade.v02_04_000.migrate_interpretationtemplate_item_to_container"
+      profile="senaite.core:default"/>
+
+  <!-- Purge remaining back-references from AnalysisRequest type
+       https://github.com/senaite/senaite.core/pull/2236 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge remaining back-references from AnalysisRequest type"
+      description="Purge remaining back-references from AnalysisRequest types"
+      source="2414"
+      destination="2415"
+      handler="senaite.core.upgrade.v02_04_000.purge_backreferences_analysisrequest"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Convert interim values from type float to string"
+      description="Convert interim values from type float to string"
+      source="2415"
+      destination="2416"
+      handler="senaite.core.upgrade.v02_04_000.migrate_interim_values_to_string"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ensure sample client fields are set"
+      description="Iterate through all samples and check if the `Client` schema field is set"
+      source="2416"
+      destination="2418"
+      handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Convert attachment report options to boolean"
+      description="Convert attachment report option value for new schema field RenderInReport to True/False values"
+      source="2418"
+      destination="2419"
+      handler="senaite.core.upgrade.v02_04_000.convert_attachment_report_options"
+      profile="senaite.core:default"/>
+
+  <!-- NOTE: This step was previously 2418, but needs to run *after* 2419 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ignore attachments from invalid analyses"
+      description="Ignore attachments from invalid analyses"
+      source="2419"
+      destination="2420"
+      handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample section rendering"
+      source="2420"
+      destination="2421"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample analyses columns config"
+      source="2421"
+      destination="2422"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for worksheet analyses columns config"
+      source="2422"
+      destination="2423"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
       profile="senaite.core:default"/>
 
 </configure>

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
@@ -73,6 +73,11 @@ class IAjaxEditForm(Interface):
                      Contains at least `form`, `name`, `value`
         :returns: A dictionary with update instructions for the frontend logic
         """
+
+
+class INumberGenerator(Interface):
+    """A utility to generates unique numbers by key
+    """
 
 
 class IContainer(Interface):

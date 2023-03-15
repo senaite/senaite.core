@@ -15,36 +15,36 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import thread
-import logging
-from bika.lims.interfaces import INumberGenerator
+
+from bika.lims import logger
 from BTrees.OIBTree import OIBTree
 from plone import api
+from senaite.core.interfaces import INumberGenerator
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
-
-
 lock = thread.allocate_lock()
 
-logger = logging.getLogger("bika.lims.idserver")
-
-STORAGE_KEY  = "bika.lims.numbercounter"
-STORAGE_HASH = "bika.lims.numbercounter.hash"
-
+STORAGE_KEY = "bika.lims.numbercounter"
 NUMBER_STORAGE = "bika.lims.consecutive_numbers_storage"
+
+
+def get_portal():
+    return api.portal.getSite()
 
 
 def get_storage_location():
     """ get the portal with the plone.api
     """
-    location = api.portal.getSite()
+    location = get_portal()
     if location.get('bika_setup', False):
         location = location['bika_setup']
     return location
+
 
 def get_portal_annotation():
     """ annotation storage bound to the portal
@@ -63,7 +63,7 @@ class NumberGenerator(object):
         """
         annotation = get_portal_annotation()
         if annotation.get(NUMBER_STORAGE) is None:
-            annotation[NUMBER_STORAGE]  = OIBTree()
+            annotation[NUMBER_STORAGE] = OIBTree()
         return annotation[NUMBER_STORAGE]
 
     def flush(self):
@@ -97,43 +97,35 @@ class NumberGenerator(object):
     def get_number(self, key):
         """ get the next consecutive number
         """
-        storage = self.storage
-
-        logger.debug("NUMBER before => %s" % storage.get(key, '-'))
+        logger.debug("NUMBER before => %s" % self.storage.get(key, '-'))
         try:
             logger.debug("*** consecutive number lock acquire ***")
             lock.acquire()
             try:
-                counter = storage[key]
-                storage[key] = counter + 1
+                counter = self.storage[key]
+                self.storage[key] = counter + 1
             except KeyError:
-                storage[key] = 1
+                self.storage[key] = 1
         finally:
             logger.debug("*** consecutive number lock release ***")
-            self.storage._p_changed = True
             lock.release()
 
-        logger.debug("NUMBER after => %s" % storage.get(key, '-'))
-        return storage[key]
+        logger.debug("NUMBER after => %s" % self.storage.get(key, '-'))
+        return self.storage[key]
 
     def set_number(self, key, value):
         """ set a key's value
         """
-        storage = self.storage
-
         if not isinstance(value, int):
             logger.error("set_number: Value must be an integer")
             return
-
         try:
             lock.acquire()
-            storage[key] = value
+            self.storage[key] = value
         finally:
-            self.storage._p_changed = True
             lock.release()
 
-        return storage[key]
-
+        return self.storage[key]
 
     def generate_number(self, key="default"):
         """ get a number

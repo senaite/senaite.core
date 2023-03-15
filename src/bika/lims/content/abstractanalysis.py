@@ -66,7 +66,8 @@ AnalysisService = UIDReferenceField(
 Attachment = UIDReferenceField(
     'Attachment',
     multiValued=1,
-    allowed_types=('Attachment',)
+    allowed_types=('Attachment',),
+    relationship='AnalysisAttachment'
 )
 
 # The final result of the analysis is stored here.  The field contains a
@@ -88,7 +89,8 @@ ResultCaptureDate = DateTimeField(
 
 # Returns the retracted analysis this analysis is a retest of
 RetestOf = UIDReferenceField(
-    'RetestOf'
+    'RetestOf',
+    relationship="AnalysisRetestOf",
 )
 
 # If the result is outside of the detection limits of the method or instrument,
@@ -329,13 +331,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         else:
             value = ""
-            # Restore the DetectionLimitSelector, cause maybe its visibility
-            # was changed because allow manual detection limit was enabled and
-            # the user set a result with "<" or ">"
-            if manual_dl:
-                service = self.getAnalysisService()
-                selector = service.getDetectionLimitSelector()
-                self.setDetectionLimitSelector(selector)
 
         # Set the result
         self.getField("Result").set(self, result)
@@ -353,14 +348,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isLowerDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is a lower detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default LDL." % (self.id, result))
         return AbstractBaseAnalysis.getLowerDetectionLimit(self)
 
     # Method getUpperDetectionLimit overrides method of class BaseAnalysis
@@ -373,14 +366,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         if self.isUpperDetectionLimit():
             result = self.getResult()
-            try:
-                # in this case, the result itself is the LDL.
-                return float(result)
-            except (TypeError, ValueError):
-                logger.warn("The result for the analysis %s is a lower "
-                            "detection limit, but not floatable: '%s'. "
-                            "Returnig AS's default LDL." %
-                            (self.id, result))
+            if api.is_floatable(result):
+                return result
+
+            logger.warn("The result for the analysis %s is an upper detection "
+                        "limit, but not floatable: '%s'. Returning AS's "
+                        "default UDL." % (self.id, result))
         return AbstractBaseAnalysis.getUpperDetectionLimit(self)
 
     @security.public
@@ -482,36 +473,38 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
-        # UDL/LDL directly entered in the results field
-        if val and val[0] in [LDL, UDL]:
-            # Result prefixed with LDL/UDL
-            oper = val[0]
-            # Strip off LDL/UDL from the result
-            val = val.replace(oper, "", 1)
-            # Check if the value is indeterminate / non-floatable
-            try:
-                val = float(val)
-            except (ValueError, TypeError):
-                val = value
+        # Check if an string result is expected
+        string_result = self.getStringResult()
 
-            # We dismiss the operand and the selector visibility unless the user
-            # is allowed to manually set the detection limit or the DL selector
-            # is visible.
-            allow_manual = self.getAllowManualDetectionLimit()
+        # UDL/LDL directly entered in the results field
+        if not string_result and val[:1] in [LDL, UDL]:
+            # Strip off the detection limit operand from the result
+            operand = val[0]
+            val = val.replace(operand, "", 1).strip()
+
+            # Result becomes the detection limit
             selector = self.getDetectionLimitSelector()
-            if allow_manual or selector:
-                # Ensure visibility of the detection limit selector
-                self.setDetectionLimitSelector(True)
+            allow_manual = self.getAllowManualDetectionLimit()
+            if any([selector, allow_manual]):
 
                 # Set the detection limit operand
-                self.setDetectionLimitOperand(oper)
+                self.setDetectionLimitOperand(operand)
 
                 if not allow_manual:
-                    # Override value by default DL
-                    if oper == LDL:
+                    # Manual introduction of DL is not permitted
+                    if operand == LDL:
+                        # Result is default LDL
                         val = self.getLowerDetectionLimit()
                     else:
+                        # Result is default UDL
                         val = self.getUpperDetectionLimit()
+
+        elif not self.getDetectionLimitSelector():
+            # User cannot choose the detection limit from a selection list,
+            # but might be allowed to manually enter the dl with the result.
+            # If so, reset the detection limit operand, cause the previous
+            # entered result might be an DL, but current doesn't
+            self.setDetectionLimitOperand("")
 
         # Update ResultCapture date if necessary
         if not val:
@@ -837,6 +830,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
                            html=True):
         """Formatted result:
+        0: If the result type is StringResult, return it without being formatted
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
         3. If the result is not floatable, return it without being formatted
@@ -863,7 +857,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             escaped: e.g: '<' and '>' (LDL and UDL for results like < 23.4).
         """
         result = self.getResult()
-
+                
+        # 0: The result is a StringResult, return without any formatting
+        string_result = self.getStringResult() is True
+        if string_result:
+            # return without further result handling
+            return result
+    
         # 1. The result is a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
         if dl:
@@ -1139,7 +1139,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getRawRetest(self):
         """Returns the UID of the retest that comes from this analysis, if any
         """
-        relationship = "{}RetestOf".format(self.portal_type)
+        relationship = self.getField("RetestOf").relationship
         uids = get_backreferences(self, relationship)
         if not uids:
             return None

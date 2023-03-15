@@ -21,10 +21,12 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -32,16 +34,14 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from DateTime import DateTime
 from plone.app.blob.field import FileField
 from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import registerType
-
 
 schema = BikaSchema.copy() + Schema((
 
@@ -52,26 +52,23 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "AttachmentType",
         required=0,
         allowed_types=("AttachmentType",),
-        relationship="AttachmentAttachmentType",
         widget=ReferenceWidget(
             label=_("Attachment Type"),
         ),
     ),
 
-    StringField(
-        "ReportOption",
-        searchable=True,
-        vocabulary=ATTACHMENT_REPORT_OPTIONS,
-        widget=SelectionWidget(
-            label=_("Report Options"),
-            checkbox_bound=0,
-            format="select",
+    BooleanField(
+        "RenderInReport",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Render attachment in report"),
+            description=_(
+                "Only images can be rendered in the report directly"),
             visible=True,
-            default="r",
         ),
     ),
 
@@ -143,12 +140,10 @@ class Attachment(BaseFolder, ClientAwareMixin):
 
         :returns: sorted list of ARs, where the latest AR comes first
         """
-        rc = api.get_tool("reference_catalog")
-        refs = rc.getBackReferences(self, "AnalysisRequestAttachment")
+        uids = get_backreferences(self, "AnalysisRequestAttachment")
         # fetch the objects by UID and handle nonexisting UIDs gracefully
-        ars = map(lambda ref: api.get_object_by_uid(ref.sourceUID, None), refs)
-        # filter out None values (nonexisting UIDs)
-        ars = filter(None, ars)
+        uc = api.get_tool("uid_catalog")
+        ars = [api.get_object(brain) for brain in uc(UID=uids)]
         # sort by physical path, so that attachments coming from an AR with a
         # higher "-Rn" suffix get sorted correctly.
         # N.B. the created date is the same, hence we can not use it
@@ -161,11 +156,10 @@ class Attachment(BaseFolder, ClientAwareMixin):
         :returns: sorted list of ANs, where the latest AN comes first
         """
         # Fetch the linked Analyses UIDs
-        refs = get_backreferences(self, "AnalysisAttachment")
+        uids = get_backreferences(self, "AnalysisAttachment")
         # fetch the objects by UID and handle nonexisting UIDs gracefully
-        ans = map(lambda uid: api.get_object_by_uid(uid, None), refs)
-        # filter out None values (nonexisting UIDs)
-        ans = filter(None, ans)
+        uc = api.get_tool("uid_catalog")
+        ans = [api.get_object(brain) for brain in uc(UID=uids)]
         # sort by physical path, so that attachments coming from an AR with a
         # higher "-Rn" suffix get sorted correctly.
         # N.B. the created date is the same, hence we can not use it
@@ -234,6 +228,28 @@ class Attachment(BaseFolder, ClientAwareMixin):
         """Return current date
         """
         return DateTime()
+
+    @security.public
+    def getFilename(self):
+        """Returns the filename of the underlying File object
+        """
+        att_file = self.getAttachmentFile()
+        return att_file.filename
+
+    @deprecated(comment="Removed in 3.x", replacement="getRenderInReport")
+    def getReportOption(self):
+        """BBB: returns "r" if RenderInReport is True, otherwise "i"
+        """
+        if not self.getRenderInReport():
+            return "i"
+        return "r"
+
+    @deprecated(comment="Removed in 3.x", replacement="setRenderInReport")
+    def setReportOption(self, value):
+        """BBB: set RenderInReport to True if the passed in value is "r",
+                and for all other values to False
+        """
+        self.setRenderInReport(value == "r")
 
 
 registerType(Attachment, PROJECTNAME)

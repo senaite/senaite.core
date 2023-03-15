@@ -26,7 +26,6 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import FieldEditAnalysisConditions
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -35,10 +34,11 @@ from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
+from bika.lims.permissions import FieldEditAnalysisConditions
 from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.permissions import TransitionVerify
@@ -59,6 +59,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -120,6 +121,35 @@ class AnalysesView(ListingView):
                 "attr": "Title",
                 "index": "sortable_title",
                 "sortable": False}),
+            ("DetectionLimitOperand", {
+                "title": _("DL"),
+                "sortable": False,
+                "ajax": True,
+                "autosave": True,
+                "toggle": False}),
+            ("Result", {
+                "title": _("Result"),
+                "input_width": "6",
+                "input_class": "ajax_calculate numeric",
+                "ajax": True,
+                "sortable": False}),
+            ("Uncertainty", {
+                "title": _("+-"),
+                "ajax": True,
+                "sortable": False}),
+            ("Unit", {
+                "title": _("Unit"),
+                "sortable": False,
+                "ajax": True,
+                "on_change": "_on_unit_change",
+                "toggle": True}),
+            ("Specification", {
+                "title": _("Specification"),
+                "sortable": False}),
+            ("retested", {
+                "title": _("Retested"),
+                "type": "boolean",
+                "sortable": False}),
             ("Method", {
                 "title": _("Method"),
                 "sortable": False,
@@ -135,50 +165,27 @@ class AnalysesView(ListingView):
                 "title": _("Calculation"),
                 "sortable": False,
                 "toggle": False}),
+            ("Attachments", {
+                "title": _("Attachments"),
+                "sortable": False}),
+            ("SubmittedBy", {
+                "title": _("Submitter"),
+                "sortable": False}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
                 "ajax": True,
                 "toggle": True}),
-            ("state_title", {
-                "title": _("Status"),
-                "sortable": False}),
-            ("DetectionLimitOperand", {
-                "title": _("DL"),
-                "sortable": False,
-                "ajax": True,
-                "autosave": True,
-                "toggle": False}),
-            ("Result", {
-                "title": _("Result"),
-                "input_width": "6",
-                "input_class": "ajax_calculate numeric",
-                "ajax": True,
-                "sortable": False}),
-            ("Specification", {
-                "title": _("Specification"),
-                "sortable": False}),
-            ("Uncertainty", {
-                "title": _("+-"),
-                "ajax": True,
-                "sortable": False}),
-            ("retested", {
-                "title": _("Retested"),
-                "type": "boolean",
-                "sortable": False}),
-            ("Attachments", {
-                "title": _("Attachments"),
-                "sortable": False}),
             ("CaptureDate", {
                 "title": _("Captured"),
                 "index": "getResultCaptureDate",
                 "sortable": False}),
-            ("SubmittedBy", {
-                "title": _("Submitter"),
-                "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
                 "index": "getDueDate",
+                "sortable": False}),
+            ("state_title", {
+                "title": _("Status"),
                 "sortable": False}),
             ("Hidden", {
                 "title": _("Hidden"),
@@ -248,6 +255,43 @@ class AnalysesView(ListingView):
         """
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
+
+    @viewcache.memoize
+    def get_default_columns_order(self):
+        """Return the default column order from the registry
+
+        :returns: List of column keys
+        """
+        name = "sampleview_analysis_columns_order"
+        columns_order = get_registry_record(name, default=[]) or []
+        return columns_order
+
+    def reorder_analysis_columns(self):
+        """Reorder analysis columns based on registry configuration
+        """
+        columns_order = self.get_default_columns_order()
+        if not columns_order:
+            return
+        # compute columns that are missing in the config
+        missing_columns = filter(
+            lambda col: col not in columns_order, self.columns.keys())
+        # prepare the new sort order for the columns
+        ordered_columns = columns_order + missing_columns
+
+        # set the order in each review state
+        for rs in self.review_states:
+            # set a copy of the new ordered columns list
+            rs["columns"] = ordered_columns[:]
+
+    def calculate_interim_columns_position(self, review_state):
+        """Calculate at which position the interim columns should be inserted
+        """
+        columns = review_state.get("columns", [])
+        if "AdditionalValues" in columns:
+            return columns.index("AdditionalValues")
+        if "Result" in columns:
+            return columns.index("Result")
+        return len(columns)
 
     @property
     @viewcache.memoize
@@ -454,6 +498,31 @@ class AnalysesView(ListingView):
             })
         return vocab
 
+    def get_unit_vocabulary(self, analysis_brain):
+        """Returns a vocabulary with all the units available for the passed in
+        analysis.
+
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+
+            {'ResultValue': <unit>,
+             'ResultText': <unit>}
+
+        :param analysis_brain: A single Analysis brain
+        :type analysis_brain: CatalogBrain
+        :returns: A list of dicts
+        """
+        obj = self.get_object(analysis_brain)
+        # Get unit choices
+        unit_choices = obj.getUnitChoices()
+        vocab = []
+        for unit in unit_choices:
+            vocab.append({
+                "ResultValue": unit['value'],
+                "ResultText": unit['value'],
+            })
+        return vocab
+
     def get_instruments_vocabulary(self, analysis, method=None):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -627,7 +696,6 @@ class AnalysesView(ListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
-        item['class']['retested'] = 'center'
         item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
 
         # Append info link before the service
@@ -664,6 +732,8 @@ class AnalysesView(ListingView):
         self._folder_item_result(obj, item)
         # Fill calculation and interim fields
         self._folder_item_calculation(obj, item)
+        # Fill unit field
+        self._folder_item_unit(obj, item)
         # Fill method
         self._folder_item_method(obj, item)
         # Fill instrument
@@ -742,23 +812,10 @@ class AnalysesView(ListingView):
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
-                # InterimFields are displayed in review_state
-                # They are anyway available through View.columns though.
-                # In case of hidden fields, the calcs.py should check
-                # calcs/services
-                # for additional InterimFields!!
-                pos = "Result" in state["columns"] and \
-                      state["columns"].index("Result") or len(state["columns"])
+                pos = self.calculate_interim_columns_position(state)
                 for col_id in interim_keys:
                     if col_id not in state["columns"]:
                         state["columns"].insert(pos, col_id)
-                # retested column is added after Result.
-                pos = "Result" in state["columns"] and \
-                      state["columns"].index("Uncertainty") + 1 or len(
-                    state["columns"])
-                if "retested" in state["columns"]:
-                    state["columns"].remove("retested")
-                state["columns"].insert(pos, "retested")
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
@@ -772,12 +829,21 @@ class AnalysesView(ListingView):
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
-        self.items = items
 
         # Display method and instrument columns only if at least one of the
         # analyses requires them to be displayed for selection
-        self.columns["Method"]["toggle"] = self.is_method_column_required()
-        self.columns["Instrument"]["toggle"] = self.is_instrument_column_required()
+        show_method_column = self.is_method_column_required(items)
+        if "Method" in self.columns:
+            self.columns["Method"]["toggle"] = show_method_column
+
+        show_instrument_column = self.is_instrument_column_required(items)
+        if "Instrument" in self.columns:
+            self.columns["Instrument"]["toggle"] = show_instrument_column
+
+        # show unit selection column only if required
+        show_unit_column = self.is_unit_selection_column_required(items)
+        if "Unit" in self.columns:
+            self.columns["Unit"]["toggle"] = show_unit_column
 
         return items
 
@@ -785,7 +851,7 @@ class AnalysesView(ListingView):
         """Render HTML element for unit
         """
         if css_class is None:
-            css_class = "unit d-inline-block py-2 small text-secondary"
+            css_class = "unit d-inline-block py-2 small text-secondary text-nowrap"
         return "<span class='{css_class}'>{unit}</span>".format(
             unit=unit, css_class=css_class)
 
@@ -892,6 +958,14 @@ class AnalysesView(ListingView):
             if self.is_result_edition_allowed(analysis_brain):
                 item["allow_edit"].append("Result")
 
+            # Display the DL operand (< or >) in the results entry field if
+            # the manual entry of DL is set, but DL selector is hidden
+            allow_manual = obj.getAllowManualDetectionLimit()
+            selector = obj.getDetectionLimitSelector()
+            if allow_manual and not selector:
+                operand = obj.getDetectionLimitOperand()
+                item["Result"] = "{} {}".format(operand, result).strip()
+
             # Prepare result options
             choices = obj.getResultOptions()
             if choices:
@@ -975,6 +1049,7 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
+            interim_allow_empty = interim_field.get("allow_empty") == "on"
             interim_unit = interim_field.get("unit", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
             interim_field["formatted_value"] = interim_formatted
@@ -1015,6 +1090,11 @@ class AnalysesView(ListingView):
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                # Allow empty selection by adding an empty record to the list
+                if interim_allow_empty:
+                    empty = {"ResultValue": "", "ResultText": ""}
+                    dl = [empty] + list(dl)
+
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
@@ -1044,6 +1124,21 @@ class AnalysesView(ListingView):
 
         item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
+
+    def _folder_item_unit(self, analysis_brain, item):
+        """Fills the analysis' unit to the item passed in.
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            return
+
+        # Edition allowed
+        voc = self.get_unit_vocabulary(analysis_brain)
+        if voc:
+            item["choices"]["Unit"] = voc
+            item["allow_edit"].append("Unit")
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -1114,6 +1209,19 @@ class AnalysesView(ListingView):
         else:
             item["Instrument"] = _("Manual")
 
+    def _on_unit_change(self, uid=None, value=None, item=None, **kw):
+        """ updates the rendered unit on selection of unit.
+        """
+        if not all([value, item]):
+            return None
+        item["after"]["Result"] = self.render_unit(value)
+        uncertainty = item.get("Uncertainty")
+        if uncertainty:
+            item["after"]["Uncertainty"] = self.render_unit(value)
+        elif "Uncertainty" in item["allow_edit"]:
+            item["after"]["Uncertainty"] = self.render_unit(value)
+        return item
+
     def _folder_item_analyst(self, obj, item):
         obj = self.get_object(obj)
         analyst = obj.getAnalyst()
@@ -1138,12 +1246,12 @@ class AnalysesView(ListingView):
         attachments_names = []
         attachments_html = []
         analysis = self.get_object(obj)
-        for at in analysis.getAttachment():
-            at_file = at.getAttachmentFile()
-            url = "{}/at_download/AttachmentFile".format(api.get_url(at))
-            link = get_link(url, at_file.filename, tabindex="-1")
+        for attachment in analysis.getRawAttachment():
+            attachment = self.get_object(attachment)
+            link = self.get_attachment_link(attachment)
             attachments_html.append(link)
-            attachments_names.append(at_file.filename)
+            filename = attachment.getFilename()
+            attachments_names.append(filename)
 
         if attachments_html:
             item["replace"]["Attachments"] = "<br/>".join(attachments_html)
@@ -1152,6 +1260,14 @@ class AnalysesView(ListingView):
         elif analysis.getAttachmentRequired():
             img = get_image("warning.png", title=_("Attachment required"))
             item["replace"]["Attachments"] = img
+
+    def get_attachment_link(self, attachment):
+        """Returns a well-formed link for the attachment passed in
+        """
+        filename = attachment.getFilename()
+        att_url = api.get_url(attachment)
+        url = "{}/at_download/AttachmentFile".format(att_url)
+        return get_link(url, filename, tabindex="-1")
 
     def _folder_item_uncertainty(self, analysis_brain, item):
         """Fills the analysis' uncertainty to the item passed in.
@@ -1173,16 +1289,21 @@ class AnalysesView(ListingView):
         allow_edit = self.is_uncertainty_edition_allowed(analysis_brain)
         if allow_edit:
             item["Uncertainty"] = obj.getUncertainty()
+            item["before"]["Uncertainty"] = "± "
             item["allow_edit"].append("Uncertainty")
+            unit = item.get("Unit")
+            if unit:
+                item["after"]["Uncertainty"] = self.render_unit(unit)
             return
 
-        result = obj.getResult()
         formatted = format_uncertainty(
-            obj, result, decimalmark=self.dmk, sciformat=int(self.scinot))
+            obj, decimalmark=self.dmk, sciformat=int(self.scinot))
         if formatted:
             item["replace"]["Uncertainty"] = formatted
             item["before"]["Uncertainty"] = "± "
-            item["after"]["Uncertainty"] = obj.getUnit()
+            unit = item.get("Unit")
+            if unit:
+                item["after"]["Uncertainty"] = self.render_unit(unit)
 
     def _folder_item_detection_limits(self, analysis_brain, item):
         """Fills the analysis' detection limits to the item passed in.
@@ -1500,12 +1621,21 @@ class AnalysesView(ListingView):
             return
 
         conditions = analysis.getConditions()
-        if conditions:
-            conditions = map(lambda it: ": ".join([it["title"], it["value"]]),
-                             conditions)
-            conditions = "<br/>".join(conditions)
-            service = item["replace"].get("Service") or item["Service"]
-            item["replace"]["Service"] = "{}<br/>{}".format(service, conditions)
+        if not conditions:
+            return
+
+        def to_str(condition):
+            title = condition.get("title")
+            value = condition.get("value", "")
+            if condition.get("type") == "file" and api.is_uid(value):
+                att = self.get_object(value)
+                value = self.get_attachment_link(att)
+            return ": ".join([title, str(value)])
+
+        # Display the conditions properly formatted
+        conditions = "<br/>".join([to_str(cond) for cond in conditions])
+        service = item["replace"].get("Service") or item["Service"]
+        item["replace"]["Service"] = "<br/>".join([service, conditions])
 
     def is_method_required(self, analysis):
         """Returns whether the render of the selection list with methods is
@@ -1543,24 +1673,46 @@ class AnalysesView(ListingView):
         # a method is selected
         return len(instruments) > 0
 
-    def is_method_column_required(self):
+    def is_unit_choices_required(self, analysis):
+        """Returns whether the render of the unit choice selection list is
+        required for the analysis passed-in.
+        :param analysis: Brain or object that represents an analysis
+        """
+        # Always return true if the analysis has unitchoices
+        analysis = self.get_object(analysis)
+        if analysis.getUnitChoices():
+            return True
+        return False
+
+    def is_method_column_required(self, items):
         """Returns whether the method column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for method selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_method_required(obj):
                 return True
         return False
 
-    def is_instrument_column_required(self):
+    def is_instrument_column_required(self, items):
         """Returns whether the instrument column has to be rendered or not.
         Returns True if at least one of the analyses from the listing requires
         the list for instrument selection to be rendered
         """
-        for item in self.items:
+        for item in items:
             obj = item.get("obj")
             if self.is_instrument_required(obj):
+                return True
+        return False
+
+    def is_unit_selection_column_required(self, items):
+        """Returns whether the unit column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for unit selection to be rendered
+        """
+        for item in items:
+            obj = item.get("obj")
+            if self.is_unit_choices_required(obj):
                 return True
         return False

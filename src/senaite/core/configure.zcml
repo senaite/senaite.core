@@ -23,6 +23,7 @@
   <include package=".registry" />
   <include package=".schema" />
   <include package=".upgrade" />
+  <include package=".utilities" />
   <include package=".z3cform" />
 
   <!-- portal skins -->

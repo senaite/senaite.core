@@ -27,6 +27,7 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import PartitionSetupField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.partitionsetupfield import getContainers
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -98,6 +99,7 @@ Calculation = UIDReferenceField(
     "Calculation",
     schemata="Method",
     required=0,
+    relationship="AnalysisServiceCalculation",
     vocabulary="_default_calculation_vocabulary",
     allowed_types=("Calculation", ),
     accessor="getRawCalculation",
@@ -143,7 +145,6 @@ Preservation = UIDReferenceField(
     multiValued=0,
     widget=ReferenceWidget(
         visible=False,
-        checkbox_bound=0,
         label=_("Default Preservation"),
         description=_(
             "Select a default preservation for this analysis service. If the "
@@ -164,7 +165,6 @@ Container = UIDReferenceField(
     multiValued=0,
     widget=ReferenceWidget(
         visible=False,
-        checkbox_bound=0,
         label=_("Default Container"),
         description=_(
             "Select the default container to be used for this analysis "
@@ -259,6 +259,7 @@ Conditions = RecordsField(
             ('number', _('Number')),
             ('checkbox', _('Checkbox')),
             ('select', _('Select')),
+            ('file', _('File upload')),
         )),
     },
     widget=RecordsWidget(
@@ -566,8 +567,10 @@ class AnalysisService(AbstractBaseAnalysis):
         Removes this service from all assigned Profiles and Templates.
         """
         # Remove the service from profiles to which is assigned
-        profiles = self.getBackReferences("AnalysisProfileAnalysisService")
-        for profile in profiles:
+        uc = api.get_tool("uid_catalog")
+        uids = get_backreferences(self, "AnalysisProfileAnalysisService")
+        for brain in uc(UID=uids):
+            profile = api.get_object(brain)
             profile.remove_service(self)
 
         # Remove the service from templates to which is assigned

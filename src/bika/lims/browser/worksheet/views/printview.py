@@ -453,7 +453,8 @@ class PrintView(BrowserView):
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
         andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
-        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
+        andict['formatted_uncertainty'] = format_uncertainty(
+            analysis, decimalmark=decimalmark, sciformat=int(scinot))
 
         # Out of range?
         andict['outofrange'] = is_out_of_range(analysis)[0]

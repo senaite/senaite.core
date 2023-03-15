@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Recreate listing_searchable_text ZCText index and Lexicon in Sample Catalog"
+      description="Rebuild listing_searchable_text and Lexicon for better performance"
+      source="2500"
+      destination="2501"
+      handler=".v02_05_000.rebuild_sample_zctext_index_and_lexicon"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.5.0"
+      source="2423"
+      destination="2500"
+      handler=".v02_05_000.upgrade"
+      profile="senaite.core:default"/>
+
+</configure>

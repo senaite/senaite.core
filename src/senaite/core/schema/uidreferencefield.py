@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import six
 
@@ -53,19 +71,17 @@ def on_object_created(object, event):
         value = field.get(object)
         # handle single valued reference fields
         if api.is_object(value):
-            logger.info(
-                "Adding back reference from %s -> %s" % (
-                    value, object))
             if field.link_backref(value, object):
-                notify_reference_created(field, object, value)
+                logger.info(
+                    "Added back reference from %s -> %s" % (value, object))
+            notify_reference_created(field, object, value)
         # handle multi valued reference fields
         elif isinstance(value, list):
             for ref in value:
-                logger.info(
-                    "Adding back reference from %s -> %s" % (
-                        ref, object))
                 if field.link_backref(ref, object):
-                    notify_reference_created(field, object, ref)
+                    logger.info(
+                        "Added back reference from %s -> %s" % (ref, object))
+                notify_reference_created(field, object, ref)
 
 
 def get_backrefs(context, relationship, as_objects=False):
@@ -107,6 +123,7 @@ class UIDReferenceField(List, BaseField):
     def __init__(self, allowed_types=None, multi_valued=True, **kw):
         if allowed_types is None:
             allowed_types = ()
+        self.relationship = kw.get("relationship")
         self.allowed_types = allowed_types
         self.multi_valued = multi_valued
         super(UIDReferenceField, self).__init__(**kw)
@@ -147,8 +164,21 @@ class UIDReferenceField(List, BaseField):
 
         :returns: storage key to lookup back references
         """
-        portal_type = api.get_portal_type(context)
-        return "%s.%s" % (portal_type, self.__name__)
+        relationship = getattr(self, "relationship", None)
+        if not relationship:
+            portal_type = api.get_portal_type(context)
+            relationship = "%s.%s" % (portal_type, self.__name__)
+        return relationship
+
+    @property
+    def keep_backreferences(self):
+        """Returns whether this field must keep back references. Returns False
+        if the value for property relationship is None or empty
+        """
+        relationship = getattr(self, "relationship", None)
+        if relationship and isinstance(relationship, six.string_types):
+            return True
+        return False
 
     def get_uid(self, value):
         """Value -> UID
@@ -227,8 +257,8 @@ class UIDReferenceField(List, BaseField):
 
         # unlink backreferences of removed UIDs
         for removed_obj in removed_objs:
-            if self.unlink_backref(removed_obj, object):
-                notify_reference_destroyed(self, object, removed_obj)
+            self.unlink_backref(removed_obj, object)
+            notify_reference_destroyed(self, object, removed_obj)
 
         super(UIDReferenceField, self).set(object, uids)
 
@@ -239,6 +269,9 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the backref points to (our object)
         :returns: True when the backref was removed, False otherwise
         """
+        # only unlink backreference if a `relationship` key is explicitly set
+        if not self.keep_backreferences:
+            return False
 
         # Target might be a behavior instead of the object itself
         target = self._get_content_object(target)
@@ -272,6 +305,9 @@ class UIDReferenceField(List, BaseField):
         :param target: the object where the backref points to (our object)
         :returns: True when the backref was written
         """
+        # only link backreference if a `relationship` key is explicitly set
+        if not self.keep_backreferences:
+            return False
 
         # Target might be a behavior instead of the object itself
         target = self._get_content_object(target)

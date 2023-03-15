@@ -15,9 +15,8 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
 
 import collections
 
@@ -201,8 +200,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("getProfilesTitle", {
                 "title": _("Profile"),
-                "sortable": True,
-                "index": "getProfilesTitle",
+                "sortable": False,
                 "toggle": False}),
             ("getAnalysesNum", {
                 "title": _("Number of Analyses"),
@@ -762,7 +760,7 @@ class SamplesView(ListingView):
         """
         if not isinstance(date, DateTime):
             return ""
-        return dtime.date_to_string("%Y-%m-%d %H:%M")
+        return dtime.date_to_string(date, fmt="%Y-%m-%d %H:%M")
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()

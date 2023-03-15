@@ -72,10 +72,6 @@ STD_TYPES = DisplayList((
     ('c', _('Control')),
     ('b', _('Blank')),
 ))
-ATTACHMENT_REPORT_OPTIONS = DisplayList((
-    ('r', _('Render in Report')),
-    ('i', _('Ignore in Report')),
-))
 GENDERS = DisplayList((
     ('male', _('Male')),
     ('female', _('Female')),

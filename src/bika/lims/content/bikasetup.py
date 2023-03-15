@@ -37,7 +37,6 @@ from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from Products.Archetypes.atapi import BooleanField
@@ -61,6 +60,7 @@ from Products.CMFCore.utils import getToolByName
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
@@ -651,6 +651,21 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=15,
         ),
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "AlwaysCCResponsiblesInReportEmail",
+        schemata="Notifications",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_always_cc_responsibles_in_report_emails",
+                default="Always send publication email to responsibles"),
+            description=_(
+                "description_bikasetup_always_cc_responsibles_in_report_emails",
+                default="When selected, the responsible persons of all "
+                "involved lab departments will receive publication emails."),
+        ),
+    ),
     BooleanField(
         'NotifyOnSampleRejection',
         schemata="Notifications",
@@ -931,6 +946,25 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
+    IntegerField(
+        "MaxNumberOfSamplesAdd",
+        schemata="Analyses",
+        required=0,
+        default=10,
+        widget=IntegerWidget(
+            label=_(
+                u"label_senaitesetup_maxnumberofsamplesadd",
+                default=u"Maximum value for 'Number of samples' field on "
+                        u"registration"
+            ),
+            description=_(
+                u"description_senaitesetup_maxnumberofsamplesadd",
+                default=u"Maximum number of samples that can be created in "
+                        u"accordance with the value set for the field 'Number "
+                        u"of samples' on the sample registration form"
+            ),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
@@ -1058,6 +1092,22 @@ class BikaSetup(folder.ATFolder):
         if setup:
             setup.setEmailBodySamplePublication(value)
 
+    def getAlwaysCCResponsiblesInReportEmail(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAlwaysCCResponsiblesInReportEmail()
+
+    def setAlwaysCCResponsiblesInReportEmail(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAlwaysCCResponsiblesInReportEmail(value)
+
     def getEnableGlobalAuditlog(self):
         """Get the value from the senaite setup
         """
@@ -1125,6 +1175,25 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setSampleAnalysesRequired(value)
+
+    def getMaxNumberOfSamplesAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMaxNumberOfSamplesAdd()
+        return self.getField("MaxNumberOfSamplesAdd").default
+
+    def setMaxNumberOfSamplesAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # we get a string value here!
+            value = api.to_int(value, default=10)
+            setup.setMaxNumberOfSamplesAdd(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
