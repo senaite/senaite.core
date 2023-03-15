@@ -38,15 +38,15 @@ class LabeledObjectsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Title"),
-                "index": "sortable_title"}),
+                "index": "title"}),
             ("Type", {
                 "title": _("Type"),
                 "toggle": True,
-            }),
+                "index": "portal_type"}),
             ("Labels", {
                 "title": _("Labels"),
                 "toggle": True,
-            }),
+                "sortable": False}),
         ))
 
         self.review_states = [
