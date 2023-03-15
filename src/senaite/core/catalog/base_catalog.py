@@ -56,7 +56,6 @@ INDEXES = [
     ("review_state", "", "FieldIndex"),
     ("title", "", "FieldIndex"),
     ("UID", "", "UUIDIndex"),
-    ("labels", "", "KeywordIndex"),
 ]
 
 COLUMNS = [

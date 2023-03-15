@@ -7,6 +7,7 @@ from bika.lims.api import get_senaite_setup
 from bika.lims.api import is_string
 from bika.lims.api import search
 from senaite.core import logger
+from senaite.core.catalog import LABEL_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import IHaveLabels
@@ -128,6 +129,20 @@ def to_labels(labels):
     return tuple(out)
 
 
+def catalog_object(obj):
+    """Catalog the object in the label catalog
+    """
+    catalog = api.get_tool(LABEL_CATALOG)
+    catalog.catalog_object(obj)
+
+
+def uncatalog_object(obj):
+    """Uncatalog the object from the label catalog
+    """
+    catalog = api.get_tool(LABEL_CATALOG)
+    catalog.uncatalog_object(obj)
+
+
 def get_obj_labels(obj):
     """Get assigned labels of the given object
 
@@ -149,9 +164,10 @@ def set_obj_labels(obj, labels):
     # mark the object with the proper interface
     if not labels:
         noLongerProvides(obj, IHaveLabels)
+        uncatalog_object(obj)
     else:
         alsoProvides(obj, IHaveLabels)
-    obj.reindexObject(idxs=["labels"])
+        catalog_object(obj)
 
 
 def add_obj_labels(obj, labels):
@@ -188,7 +204,7 @@ def del_obj_labels(obj, labels):
     return get_obj_labels(obj)
 
 
-def search_objects_by_label(label, catalogs=None, **kw):
+def search_objects_by_label(label, **kw):
     """Search for objects having one or more of the given labels
     """
     labels = to_labels(label)
@@ -198,6 +214,4 @@ def search_objects_by_label(label, catalogs=None, **kw):
     }
     # Allow to update the query with the keywords
     query.update(kw)
-    if not catalogs:
-        return search(query)
-    return search(query, catalogs)
+    return search(query, catalog=LABEL_CATALOG)

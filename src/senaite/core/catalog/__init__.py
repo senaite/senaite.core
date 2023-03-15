@@ -26,8 +26,9 @@ from senaite.core.catalog.auditlog_catalog import \
 from senaite.core.catalog.auditlog_catalog import AuditlogCatalog
 from senaite.core.catalog.autoimportlog_catalog import \
     CATALOG_ID as AUTOIMPORTLOG_CATALOG
-from senaite.core.catalog.autoimportlog_catalog import \
-    AutoImportLogCatalog
+from senaite.core.catalog.autoimportlog_catalog import AutoImportLogCatalog
+from senaite.core.catalog.label_catalog import CATALOG_ID as LABEL_CATALOG
+from senaite.core.catalog.label_catalog import LabelCatalog
 from senaite.core.catalog.report_catalog import CATALOG_ID as REPORT_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.catalog.sample_catalog import CATALOG_ID as SAMPLE_CATALOG

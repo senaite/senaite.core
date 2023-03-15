@@ -44,6 +44,7 @@ from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
+from senaite.core.catalog import LabelCatalog
 from senaite.core.catalog import ReportCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
@@ -105,11 +106,12 @@ CATALOGS = (
     AnalysisCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
+    LabelCatalog,
+    ReportCatalog,
     SampleCatalog,
     SenaiteCatalog,
     SetupCatalog,
     WorksheetCatalog,
-    ReportCatalog,
 )
 
 INDEXES = (
@@ -125,7 +127,6 @@ INDEXES = (
     (PORTAL_CATALOG, "review_state", "", "FieldIndex"),
     (PORTAL_CATALOG, "sample_uid", "", "KeywordIndex"),
     (PORTAL_CATALOG, "title", "", "FieldIndex"),
-    (PORTAL_CATALOG, "labels", "", "KeywordIndex"),
 )
 
 COLUMNS = (
