@@ -7,6 +7,7 @@ Running this test from the buildout directory::
 
     bin/test test_textual_doctests -t API_label
 
+
 Test Setup
 ..........
 
@@ -19,6 +20,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
+
 Environment Setup
 .................
 
@@ -29,6 +31,7 @@ Setup the testing environment:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
     >>> user = api.get_current_user()
 
+
 List all Labels
 ...............
 
@@ -36,6 +39,7 @@ List all active global labels in the system:
 
     >>> list_labels()
     []
+
 
 Create some Labels
 ..................
@@ -52,6 +56,7 @@ Duplicates are ignored per default:
     >>> list_labels()
     ['Urgent', 'Critical', 'Important']
 
+
 Label content objects
 .....................
 
@@ -61,6 +66,7 @@ Try first to label some AT based objects
 
     >>> client1 = api.create(portal.clients, "Client", Name="NARALABS", ClientID="NL")
     >>> client2 = api.create(portal.clients, "Client", Name="RIDINGBYTES", ClientID="RB")
+    >>> client3 = api.create(portal.clients, "Client", Name="SENAITE", ClientID="SNT")
 
 Add a string label:
 
@@ -92,6 +98,7 @@ Remove all labels:
     >>> del_obj_labels(client1, get_obj_labels(client1))
     ()
 
+
 Search Labels
 .............
 
@@ -99,6 +106,7 @@ Labels can be searched via the API and return all labeled objects:
 
     >>> l1 = add_obj_labels(client1, ["SENAITE", "Barcelona", "Spain"])
     >>> l2 = add_obj_labels(client2, ["SENAITE", "Fürth", "Germany"])
+    >>> l3 = add_obj_labels(client3, ["SENAITE", "LIMS"])
 
     >>> results = search_objects_by_label("Spain")
     >>> len(results) == 1
@@ -110,4 +118,14 @@ Labels can be searched via the API and return all labeled objects:
     >>> len(results) == 1
     True
     >>> api.get_object(results[0]) == client2
+    True
+
+    >>> results = search_objects_by_label("Fürth")
+    >>> len(results) == 1
+    True
+    >>> api.get_object(results[0]) == client2
+    True
+
+    >>> results = search_objects_by_label(["SENAITE"])
+    >>> len(results) == 3
     True
