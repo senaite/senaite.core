@@ -223,7 +223,7 @@ class AnalysisSpecificationView(BikaListingView):
         # get the category
         if self.show_categories_enabled():
             category = obj.getCategoryTitle()
-            if (category,cat_order)  not in self.categories:
+            if (category,cat_order) not in self.categories:
                 self.categories.append((category,cat_order))
             item["category"] = category
 
