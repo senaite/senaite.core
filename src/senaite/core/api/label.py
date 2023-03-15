@@ -151,6 +151,7 @@ def set_obj_labels(obj, labels):
         noLongerProvides(obj, IHaveLabels)
     else:
         alsoProvides(obj, IHaveLabels)
+    obj.reindexObject(idxs=["labels"])
 
 
 def add_obj_labels(obj, labels):
@@ -187,7 +188,7 @@ def del_obj_labels(obj, labels):
     return get_obj_labels(obj)
 
 
-def search_objects_with_label(label, catalogs=None, **kw):
+def search_objects_by_label(label, catalogs=None, **kw):
     """Search for objects having one or more of the given labels
     """
     labels = to_labels(label)

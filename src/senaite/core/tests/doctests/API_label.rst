@@ -100,13 +100,13 @@ Labels can be searched via the API and return all labeled objects:
     >>> l1 = add_obj_labels(client1, ["SENAITE", "Barcelona", "Spain"])
     >>> l2 = add_obj_labels(client2, ["SENAITE", "Fürth", "Germany"])
 
-    >>> results = search_objects_with_label("Spain")
+    >>> results = search_objects_by_label("Spain")
     >>> len(results) == 1
     True
     >>> api.get_object(results[0]) == client1
     True
 
-    >>> results = search_objects_with_label("Fürth")
+    >>> results = search_objects_by_label("Fürth")
     >>> len(results) == 1
     True
     >>> api.get_object(results[0]) == client2
