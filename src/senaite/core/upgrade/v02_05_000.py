@@ -77,6 +77,7 @@ def setup_labels(tool):
 
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "plone.app.registry")
     setup_core_catalogs(portal)
 
     items = [
