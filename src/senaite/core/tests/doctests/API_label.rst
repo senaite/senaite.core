@@ -28,6 +28,7 @@ Setup the testing environment:
 
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = api.get_setup()
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
     >>> user = api.get_current_user()
 
@@ -125,6 +126,28 @@ The schema extension is controlled over the `ICanHaveLabels` interface:
     True
 
     >>> AT_LABEL_FIELD in api.get_fields(client4)
+    True
+
+Schema extension for dexterity types works via behaviors:
+
+    >>> from senaite.core.config.fields import DX_LABEL_FIELD
+
+    >>> container1 = api.create(setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
+    >>> container2 = api.create(setup.sample_containers, "SampleContainer", title="Plastic Bottle", Capacity="500ml")
+
+    >>> ICanHaveLabels.providedBy(container1)
+    False
+
+    >>> DX_LABEL_FIELD in api.get_fields(container1)
+    False
+
+    >>> add_obj_labels(container1, "Bottles")
+    ('Bottles',)
+
+    >>> ICanHaveLabels.providedBy(container1)
+    True
+
+    >>> DX_LABEL_FIELD in api.get_fields(container1)
     True
 
 
