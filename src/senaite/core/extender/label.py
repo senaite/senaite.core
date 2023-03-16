@@ -60,6 +60,8 @@ class LabelSchemaExtender(object):
                         "label": _(u"Label"),
                     },
                 ],
+                display_template="<a href='${url}'>${title}</a>",
+                limit=5,
             )
         ),
     ]

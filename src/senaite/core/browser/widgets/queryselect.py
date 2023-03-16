@@ -122,6 +122,7 @@ class QuerySelectWidget(TypesWidget):
             "data-multi_valued": self.multi_valued,
             "data-search_index": self.search_index,
             "data-search_wildcard": self.search_wildcard,
+            "data-display_template": self.display_template,
             "data-limit": self.limit,
             "data-allow_user_value": self.allow_user_value,
             "data-hide_input_after_select": self.hide_input_after_select,
