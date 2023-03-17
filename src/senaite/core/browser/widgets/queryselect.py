@@ -97,35 +97,28 @@ class QuerySelectWidget(TypesWidget):
             value = [value]
         return value
 
-    def get_api_url(self, field, context):
-        """JSON API URL to use for this widget
-        """
-        portal = api.get_portal()
-        portal_url = api.get_url(portal)
-        api_url = self.lookup("api_url", field, context)
-        if not api_url:
-            api_url = "{}/@@API/senaite/v1".format(portal_url)
-        return api_url
-
     def get_input_widget_attributes(self, context, field, value):
         """Return input widget attributes for the ReactJS component
         """
         attributes = {
             "data-id": field.getName(),
             "data-name": field.getName(),
-            "data-api_url": self.get_api_url(field, context),
-            "data-catalog": self.catalog,
-            "data-query": self.query,
             "data-values": self.to_value(value),
-            "data-value_key": self.value_key,
-            "data-columns": self.columns,
-            "data-multi_valued": self.multi_valued,
-            "data-search_index": self.search_index,
-            "data-search_wildcard": self.search_wildcard,
-            "data-display_template": self.display_template,
-            "data-limit": self.limit,
-            "data-allow_user_value": self.allow_user_value,
-            "data-hide_input_after_select": self.hide_input_after_select,
+            "data-value_key": getattr(self, "value_key", "uid"),
+            "data-api_url": self.get_api_url(),
+            "data-query": getattr(self, "query", {}),
+            "data-catalog": getattr(self, "catalog", "portal_catalog"),
+            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-search_wildcard": getattr(self, "search_wildcard", True),
+            "data-allow_user_value": getattr(self, "allow_user_value", False),
+            "data-columns": getattr(self, "columns", []),
+            "data-display_template": getattr(self, "display_template", None),
+            "data-limit": getattr(self, "limit", 5),
+            "data-multi_valued": getattr(self, "multi_valued", True),
+            "data-disabled": getattr(self, "disabled", False),
+            "data-readonly": getattr(self, "readonly", False),
+            "data-hide_input_after_select": getattr(
+                self, "hide_user_input_after_select", False),
         }
 
         for key, value in attributes.items():
@@ -135,6 +128,14 @@ class QuerySelectWidget(TypesWidget):
             attributes[key] = json.dumps(value)
 
         return attributes
+
+    def get_api_url(self):
+        """JSON API URL to use for this widget
+        """
+        portal = api.get_portal()
+        portal_url = api.get_url(portal)
+        api_url = "{}/@@API/senaite/v1".format(portal_url)
+        return api_url
 
 
 registerWidget(QuerySelectWidget, title="QuerySelectWidget")
