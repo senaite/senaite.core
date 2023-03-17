@@ -150,11 +150,14 @@ class ILabel(Interface):
     """
 
 
-class IHaveLabels(Interface):
-    """Marker interface for labeled objects
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
     """
 
 
-class ICanHaveLabels(Interface):
-    """Marker interface for labeled capable objects
+class IHaveLabels(ICanHaveLabels):
+    """Marker interface for labeled objects
+
+    NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
+          fields for already labeled objects
     """
