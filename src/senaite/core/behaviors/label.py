@@ -104,12 +104,10 @@ class LabelSchema(object):
 
     def __init__(self, context):
         self.context = context
-        self._schema = None
 
     @security.protected(permissions.View)
     def get_labels(self):
-        labels = label_api.get_obj_labels(self.context)
-        return labels
+        return label_api.get_obj_labels(self.context)
 
     @security.protected(permissions.ModifyPortalContent)
     def set_labels(self, value):
