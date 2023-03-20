@@ -46,7 +46,11 @@ class ILabelRegistry(ISenaiteRegistry):
     directives.widget(label_enabled_portal_types=CheckBoxFieldWidget)
     label_enabled_portal_types = schema.List(
         title=_("Types with labels"),
-        description=_("Types that support labels directly"),
+        description=_(
+            "Types that support labels directly.<br/>"
+            "NOTE: In cluster setups, other instances need to be "
+            "restarted manually for the changes to take place!"
+         ),
         value_type=schema.Choice(
             vocabulary="plone.app.vocabularies.PortalTypes",
         ),
