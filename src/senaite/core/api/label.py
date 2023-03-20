@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.api import create
 from bika.lims.api import get_object
 from bika.lims.api import get_senaite_setup
 from bika.lims.api import is_string
 from bika.lims.api import search
-from senaite.core import logger
+from plone.dexterity.utils import resolveDottedName
+from Products.Archetypes.atapi import listTypes
+from Products.CMFPlone.utils import classDoesNotImplement
+from Products.CMFPlone.utils import classImplements
 from senaite.core.catalog import LABEL_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
@@ -227,3 +231,33 @@ def search_objects_by_label(label, **kw):
     # Allow to update the query with the keywords
     query.update(kw)
     return search(query, catalog=LABEL_CATALOG)
+
+
+def get_klass(portal_type):
+    """Returns the implementation class of the given portal type
+    """
+    portal_types = api.get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+
+    if fti.product:
+        at_types = listTypes(fti.product)
+        for t in at_types:
+            if not t.get("portal_type") == portal_type:
+                continue
+            return t.get("klass")
+    else:
+        return resolveDottedName(fti.klass)
+
+
+def enable_labels_for_type(portal_type):
+    """Enable labels for all objects of the given type
+    """
+    klass = get_klass(portal_type)
+    classImplements(klass, ICanHaveLabels)
+
+
+def disable_labels_for_type(portal_type):
+    """Disable labels for all objects of the given type
+    """
+    klass = get_klass(portal_type)
+    classDoesNotImplement(klass, ICanHaveLabels)

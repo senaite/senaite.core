@@ -204,6 +204,44 @@ Disable the label schema fields again:
     False
 
 
+Enable labels for **all** objects of a certain AT type:
+
+    >>> enable_labels_for_type("Client")
+
+    >>> at_type = api.create(portal.clients, "Client", Name="New Client", ClientID="C1")
+
+    >>> ICanHaveLabels.providedBy(at_type)
+    True
+
+Disable labels for **all** objects of a certain AT type:
+
+    >>> disable_labels_for_type("Client")
+
+    >>> at_type = api.create(portal.clients, "Client", Name="New Client", ClientID="C2")
+
+    >>> ICanHaveLabels.providedBy(at_type)
+    False
+
+
+Enable labels for **all** objects of a certain DX type:
+
+    >>> enable_labels_for_type("InterpretationTemplate")
+
+    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+
+    >>> ICanHaveLabels.providedBy(dx_type)
+    True
+
+Disable labels for **all** objects of a certain DX type:
+
+    >>> disable_labels_for_type("InterpretationTemplate")
+
+    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+
+    >>> ICanHaveLabels.providedBy(dx_type)
+    False
+
+
 Search Labels
 .............
 
