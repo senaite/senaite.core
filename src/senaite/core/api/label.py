@@ -209,6 +209,10 @@ def add_obj_labels(obj, labels):
 
 def del_obj_labels(obj, labels):
     """Remove labels from the object
+
+    :param obj: the object where the labels should be removed
+    :param labels: string or list of labels to remove
+    :returns: The new labels
     """
     obj = api.get_object(obj)
     # prepare the set of new labels
@@ -222,6 +226,9 @@ def del_obj_labels(obj, labels):
 
 def search_objects_by_label(label, **kw):
     """Search for objects having one or more of the given labels
+
+    :param label: string or list of labels to search
+    :returns: Catalog results (brains)
     """
     labels = to_labels(label)
     query = {
@@ -235,6 +242,9 @@ def search_objects_by_label(label, **kw):
 
 def get_klass(portal_type):
     """Returns the implementation class of the given portal type
+
+    :param portal_type: The portal_type to lookup the class for
+    :returns: Class object
     """
     portal_types = api.get_tool("portal_types")
     fti = portal_types.getTypeInfo(portal_type)
@@ -251,6 +261,8 @@ def get_klass(portal_type):
 
 def enable_labels_for_type(portal_type):
     """Enable labels for all objects of the given type
+
+    :param portal_type: The portal_type to enable labeling
     """
     klass = get_klass(portal_type)
     classImplements(klass, ICanHaveLabels)
@@ -258,6 +270,8 @@ def enable_labels_for_type(portal_type):
 
 def disable_labels_for_type(portal_type):
     """Disable labels for all objects of the given type
+
+    :param portal_type: The portal_type to disable labeling
     """
     klass = get_klass(portal_type)
     classDoesNotImplement(klass, ICanHaveLabels)
