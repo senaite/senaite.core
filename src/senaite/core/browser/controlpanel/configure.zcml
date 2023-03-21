@@ -5,7 +5,7 @@
 
   <include package="bika.lims" file="permissions.zcml" />
 
-  <!-- Instrument Locations -->
+  <!-- Labels -->
   <browser:page
       for="senaite.core.content.labels.ILabels"
       name="view"
