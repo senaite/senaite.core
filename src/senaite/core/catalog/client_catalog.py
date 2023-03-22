@@ -20,7 +20,8 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
-    "getClientID"
+    "getClientID",
+    "getName",
 ]
 
 TYPES = [
