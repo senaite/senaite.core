@@ -85,7 +85,7 @@ def list_labels(inactive=False, **kw):
     """
     brains = query_labels(inactive=inactive, **kw)
     labels = map(api.get_title, brains)
-    return list(set(labels))
+    return list(labels)
 
 
 def create_label(label, **kw):
