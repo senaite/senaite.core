@@ -445,6 +445,28 @@ def is_at_content(brain_or_object):
     return isinstance(brain_or_object, BaseObject)
 
 
+def is_dx_type(portal_type):
+    """Checks if the portal type is DX based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is DX based
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        return False
+    return True
+
+
+def is_at_type(portal_type):
+    """Checks if the portal type is AT based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is AT based
+    """
+    return not is_dx_type(portal_type)
+
+
 def is_folderish(brain_or_object):
     """Checks if the passed in object is folderish
 

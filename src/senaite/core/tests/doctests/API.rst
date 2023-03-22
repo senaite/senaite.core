@@ -320,7 +320,13 @@ This function checks if an object is a `Dexterity` content type::
     >>> api.is_dexterity_content(portal)
     False
 
-We currently have no `Dexterity` contents, so testing this comes later...
+It is also possible to check by portal type::
+
+    >>> api.is_dx_type("InterpretationTemplate")
+    True
+
+    >>> api.is_dx_type("Client")
+    False
 
 
 Checking if an Object is an AT Content
@@ -335,6 +341,15 @@ This function checks if an object is an `Archetypes` content type::
     False
 
     >>> api.is_at_content(object())
+    False
+
+
+It is also possible to check by portal type::
+
+    >>> api.is_at_type("Client")
+    True
+
+    >>> api.is_at_type("InterpretationTemplate")
     False
 
 
