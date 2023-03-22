@@ -95,6 +95,6 @@ def setup_client_catalog(tool):
     """
     logger.info("Setup Client Catalog ...")
     portal = api.get_portal()
-    setup_core_catalogs(portal)
     setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
     logger.info("Setup Client Catalog [DONE]")
