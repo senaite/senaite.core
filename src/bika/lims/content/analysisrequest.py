@@ -248,13 +248,14 @@ schema = BikaSchema.copy() + Schema((
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
             colModel=[
-                {"columnName": "Client Name", "width": "70", "label": _(
-                    "Name"), "align": "left"},
+                {"columnName": "getName", "width": "70", "label": _(
+                    "Client Name"), "align": "left"},
                 {"columnName": "getClientID", "width": "30", "label": _(
                     "Client ID"), "align": "left"},
                 # UID is required in colModel
                 {"columnName": "UID", "hidden": True},
             ],
+            ui_item="getName",
             showOn=True,
         ),
     ),
