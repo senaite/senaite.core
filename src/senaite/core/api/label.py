@@ -151,8 +151,6 @@ def get_obj_labels(obj):
     :returns: tuple of string labels
     """
     obj = get_object(obj)
-    if not IHaveLabels.providedBy(obj):
-        return tuple()
     labels = get_storage(obj, default=tuple())
     return labels
 
