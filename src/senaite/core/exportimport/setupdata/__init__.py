@@ -40,7 +40,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
-from senaite.core.cata.lg import CLIENT_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from zope.event import notify
 from zope.interface import implements
