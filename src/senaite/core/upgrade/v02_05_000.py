@@ -30,6 +30,7 @@ from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import uncatalog_brain
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -97,4 +98,15 @@ def setup_client_catalog(tool):
     portal = api.get_portal()
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    uncatalog_type("Client", catalog="portal_catalog")
     logger.info("Setup Client Catalog [DONE]")
+
+
+def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
+    """Uncatalog all entries of the given type from the catalog
+    """
+    query = {"portal_type": portal_type}
+    query.update(kw)
+    brains = api.search(query, catalog=catalog)
+    for brain in brains:
+        uncatalog_brain(brain)
