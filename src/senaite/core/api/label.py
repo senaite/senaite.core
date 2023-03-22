@@ -153,7 +153,7 @@ def get_obj_labels(obj):
     obj = get_object(obj)
     if not IHaveLabels.providedBy(obj):
         return tuple()
-    labels = get_storage(obj)
+    labels = get_storage(obj, default=tuple())
     return labels
 
 
