@@ -211,7 +211,7 @@ We will demonstrate the usage on the client object we created above::
 
 Now we show it with catalog results::
 
-    >>> brains = api.search(portal_type="Client")
+    >>> brains = api.search({"portal_type": "Client"})
     >>> brains
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
@@ -626,12 +626,6 @@ This function unifies all SENAITE LIMS catalog to a single search interface::
     >>> results = api.search({'portal_type': 'Client'})
     >>> results
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
-
-Multiple content types are also supported::
-
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder'], 'sort_on': 'getId'})
-    >>> map(api.get_id, results)
-    ['client-1', 'clients']
 
 Now we create some objects which are located in the `senaite_catalog_setup`::
 
