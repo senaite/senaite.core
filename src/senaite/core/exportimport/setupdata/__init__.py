@@ -28,7 +28,6 @@ import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
@@ -41,6 +40,8 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.cata.lg import CLIENT_CATALOG
+from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from zope.event import notify
 from zope.interface import implements
 
@@ -566,10 +567,10 @@ class Client_Contacts(WorksheetImporter):
 
     def Import(self):
         portal_groups = getToolByName(self.context, 'portal_groups')
-        pc = getToolByName(self.context, 'portal_catalog')
+        cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
-            client = pc(portal_type="Client",
-                        getName=row['Client_title'])
+            client = cat(portal_type="Client",
+                         getName=row['Client_title'])
             if len(client) == 0:
                 client_contact = "%(Firstname)s %(Surname)s" % row
                 error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
@@ -1165,13 +1166,13 @@ class Sample_Points(WorksheetImporter):
     def Import(self):
         setup_folder = self.context.bika_setup.bika_samplepoints
         bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        pc = getToolByName(self.context, 'portal_catalog')
+        cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
             if not row['title']:
                 continue
             if row['Client_title']:
                 client_title = row['Client_title']
-                client = pc(portal_type="Client", getName=client_title)
+                client = cat(portal_type="Client", getName=client_title)
                 if len(client) == 0:
                     error = "Sample Point %s: Client invalid: '%s'. The Sample point will not be uploaded."
                     logger.error(error, row['title'], client_title)
