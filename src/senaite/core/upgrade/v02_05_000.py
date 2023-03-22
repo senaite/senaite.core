@@ -26,6 +26,7 @@ from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -87,3 +88,13 @@ def setup_labels(tool):
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
+
+
+def setup_client_catalog(tool):
+    """Setup client catalog
+    """
+    logger.info("Setup Client Catalog ...")
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+    setup_catalog_mappings(portal)
+    logger.info("Setup Client Catalog [DONE]")
