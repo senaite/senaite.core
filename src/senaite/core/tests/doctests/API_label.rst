@@ -48,14 +48,14 @@ Create some Labels
 Create global labels:
 
     >>> new = map(create_label, ["Important", "Urgent", "Critical"])
-    >>> list_labels()
-    ['Urgent', 'Critical', 'Important']
+    >>> list_labels(sort_on="title")
+    ['Critical', 'Important', 'Urgent']
 
 Duplicates are ignored per default:
 
     >>> new = create_label("Important")
-    >>> list_labels()
-    ['Urgent', 'Critical', 'Important']
+    >>> list_labels(sort_on="title")
+    ['Critical', 'Important', 'Urgent']
 
 
 Label content objects
