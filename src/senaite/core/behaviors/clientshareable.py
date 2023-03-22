@@ -79,15 +79,15 @@ class IClientShareableBehavior(model.Schema):
         display_template="<a href='${url}'>${title}</a>",
         columns=[
             {
-                "name": "title",
-                "width": "30",
-                "align": "left",
-                "label": _(u"Title"),
-            }, {
-                "name": "description",
+                "name": "getName",
                 "width": "70",
                 "align": "left",
-                "label": _(u"Description"),
+                "label": _(u"Client Name"),
+            }, {
+                "name": "getClientID",
+                "width": "30",
+                "align": "left",
+                "label": _(u"Client ID"),
             },
         ],
         limit=15,
