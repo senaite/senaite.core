@@ -514,6 +514,46 @@ def get_schema(brain_or_object):
     fail("{} has no Schema.".format(brain_or_object))
 
 
+def get_behaviors(portal_type):
+    """List all behaviors
+
+    :param portal_type: DX portal type name
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    return fti.behaviors
+
+
+def enable_behavior(portal_type, behavior_id):
+    """Enable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to enable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+
+    if behavior_id not in fti.behaviors:
+        fti.behaviors += (behavior_id, )
+
+
+def disable_behavior(portal_type, behavior_id):
+    """Disable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to disable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    fti.behaviors = tuple(filter(lambda b: b != behavior_id, fti.behaviors))
+
+
 def get_fields(brain_or_object):
     """Get a name to field mapping of the object
 

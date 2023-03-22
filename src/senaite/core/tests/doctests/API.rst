@@ -370,6 +370,34 @@ Catalog brains are also supported::
     <Products.Archetypes.Schema.Schema object at 0x...>
 
 
+
+Getting the behaviors of a type
+...............................
+
+Dexterity contents might extend schema fields over a behavior.
+This function shows the current active behaviors:
+
+    >>> api.get_behaviors("SampleContainer")
+    (...)
+
+It is possible to enable behaviors dynamically:
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
+
+    >>> api.enable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    True
+
+And remove it again:
+
+    >>> api.disable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
+
+
 Getting the Fields of a Content
 ...............................
 
