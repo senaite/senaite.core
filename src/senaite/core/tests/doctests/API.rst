@@ -915,8 +915,9 @@ This function returns the review state of a given object::
 
 It should also work for catalog brains::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> results = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
+    >>> from senaite.core.catalog import CLIENT_CATALOG
+    >>> client_catalog = api.get_tool(CLIENT_CATALOG)
+    >>> results = client_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
     >>> len(results)
     1
     >>> api.get_review_status(results[0]) == review_state
