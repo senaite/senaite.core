@@ -1739,7 +1739,8 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
-    if UID_RX.match(obj.id):
+    obj_id = get_id(obj) or get_uid(obj)
+    if UID_RX.match(obj_id):
         return True
 
     parent = aq_parent(aq_inner(obj))
