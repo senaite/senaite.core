@@ -4,10 +4,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from plone.autoform.interfaces import IFormFieldProvider
-from plone.behavior.interfaces import IBehaviorAssignable
-from plone.behavior.registration import BehaviorRegistration
-from plone.dexterity.behavior import DexterityBehaviorAssignable
-from plone.dexterity.schema import SCHEMA_CACHE
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from Products.CMFCore import permissions
@@ -19,37 +15,6 @@ from zope import schema
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import provider
-
-
-@implementer(IBehaviorAssignable)
-class LabelBehaviorAssignable(DexterityBehaviorAssignable):
-    """Extend label behavior if the context provides the interface `ICanHaveLabels`
-    """
-    def __init__(self, context):
-        self.context = context
-
-    def supports(self, behavior_interface):
-        for behavior in self.enumerateBehaviors():
-            if behavior_interface in behavior.interface._implied:
-                return True
-        return False
-
-    def enumerateBehaviors(self):
-        portal_type = self.context.portal_type
-        for behavior in SCHEMA_CACHE.behavior_registrations(portal_type):
-            yield behavior
-        # additionally yield the schema registration
-        yield self.label_registration
-
-    @property
-    def label_registration(self):
-        return BehaviorRegistration(
-            title="Label schema extender",
-            description="Adds the ability to add/remove labels",
-            interface=ILabelSchema,
-            marker=None,
-            factory=LabelSchema,
-        )
 
 
 @provider(IFormFieldProvider)
