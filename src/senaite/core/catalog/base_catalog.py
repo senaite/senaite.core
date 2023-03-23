@@ -93,7 +93,7 @@ class BaseCatalog(CatalogTool):
     def mapped_catalog_types(self):
         return TYPES
 
-    def is_indexable(self, obj):
+    def supports_indexing(self, obj):
         """Checks if the object can be indexed
         """
         if not (base_hasattr(obj, "reindexObject")):
@@ -153,7 +153,7 @@ class BaseCatalog(CatalogTool):
             __traceback_info__ = path
 
             # skip non-indexable types
-            if not self.is_indexable(obj):
+            if not self.supports_indexing(obj):
                 return
 
             # get the porta type of this object
