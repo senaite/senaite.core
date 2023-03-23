@@ -122,3 +122,9 @@ class LabelSchema(object):
         return label_api.set_obj_labels(self.context, labels)
 
     ext_labels = property(get_labels, set_labels)
+
+    def getLabels(self):
+        return self.get_labels
+
+    def setLabels(self, value):
+        return self.set_labels(value)
