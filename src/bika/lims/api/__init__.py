@@ -1739,15 +1739,16 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
-    obj_id = get_id(obj) or get_uid(obj)
-    if UID_RX.match(obj_id):
+    obj_id = get_id(obj)
+    if obj_id is None or UID_RX.match(obj_id):
         return True
 
     parent = aq_parent(aq_inner(obj))
     if not parent:
         return True
 
-    if UID_RX.match(parent.id):
+    parent_id = get_id(parent)
+    if parent_id is None or UID_RX.match(parent_id):
         return True
 
     if is_at_content(obj):
