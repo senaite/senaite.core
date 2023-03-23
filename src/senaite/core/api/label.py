@@ -21,6 +21,7 @@ from zope.interface import noLongerProvides
 
 FIELD_NAME = "ExtLabels"
 LABEL_STORAGE = "senaite.core.labels"
+BEHAVIOR_ID = ICanHaveLabels.__identifier__
 
 
 def get_storage(obj, default=None):
@@ -243,6 +244,9 @@ def enable_labels_for_type(portal_type):
     """
     klass = get_klass(portal_type)
     classImplements(klass, ICanHaveLabels)
+    # enable behavior for DX types
+    if api.is_dx_type(portal_type):
+        api.enable_behavior(portal_type, BEHAVIOR_ID)
 
 
 def disable_labels_for_type(portal_type):
@@ -252,3 +256,6 @@ def disable_labels_for_type(portal_type):
     """
     klass = get_klass(portal_type)
     classDoesNotImplement(klass, ICanHaveLabels)
+    # disable behavior
+    if api.is_dx_type(portal_type):
+        api.disable_behavior(portal_type, BEHAVIOR_ID)
