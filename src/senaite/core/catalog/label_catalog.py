@@ -18,6 +18,8 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = []
 
+TYPES = []
+
 
 @implementer(ILabelCatalog)
 class LabelCatalog(BaseCatalog):
