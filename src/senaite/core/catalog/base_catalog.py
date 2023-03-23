@@ -102,6 +102,16 @@ class BaseCatalog(CatalogTool):
             return False
         return True
 
+    def is_obj_indexable(self, obj, portal_type, mapped_types):
+        """Checks if the object can be indexed
+        """
+        if portal_type in mapped_types:
+            return True
+        if api.is_dexterity_content(obj):
+            multiplex_catalogs = getattr(obj, "_catalogs", [])
+            return self.id in multiplex_catalogs
+        return False
+
     def get_portal_type(self, obj):
         """Returns the portal type of the object
         """
@@ -161,21 +171,9 @@ class BaseCatalog(CatalogTool):
 
             try:
                 # only consider mapped types if we have them set
-                if mapped_types and portal_type in mapped_types:
-                    # NOTE: This method indexes only the object in this
-                    #       catalog, but does not take DX multiplexing into
-                    #       consideration.
+                if self.is_obj_indexable(obj, portal_type, mapped_types):
                     self._reindexObject(obj, idxs=idxs)  # bypass queue
                     self.log_progress()
-                elif api.is_dexterity_content(obj):
-                    # NOTE: Catalog multiplexing is only available for DX types
-                    #       and stores the catalogs in a variable `_catalogs`.
-                    multiplex_catalogs = getattr(obj, "_catalogs", [])
-                    if self.id in multiplex_catalogs:
-                        self._reindexObject(obj, idxs=idxs)  # bypass queue
-                        self.log_progress()
-                else:
-                    return
             except TypeError:
                 # Catalogs have 'indexObject' as well, but they
                 # take different args, and will fail

@@ -4,6 +4,7 @@ from App.class_init import InitializeClass
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
 from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.interfaces import ILabelCatalog
+from senaite.core.interfaces import IHaveLabels
 from zope.interface import implementer
 
 CATALOG_ID = "senaite_catalog_label"
@@ -17,8 +18,6 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = []
 
-TYPES = []
-
 
 @implementer(ILabelCatalog)
 class LabelCatalog(BaseCatalog):
@@ -27,9 +26,8 @@ class LabelCatalog(BaseCatalog):
     def __init__(self):
         BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
 
-    @property
-    def mapped_catalog_types(self):
-        return TYPES
+    def is_obj_indexable(self, obj, portal_type, mapped_types):
+        return IHaveLabels.providedBy(obj)
 
 
 InitializeClass(LabelCatalog)
