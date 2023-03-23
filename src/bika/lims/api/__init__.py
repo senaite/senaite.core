@@ -43,6 +43,7 @@ from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -539,6 +540,8 @@ def enable_behavior(portal_type, behavior_id):
 
     if behavior_id not in fti.behaviors:
         fti.behaviors += (behavior_id, )
+        # invalidate schema cache
+        notify(SchemaInvalidatedEvent(portal_type))
 
 
 def disable_behavior(portal_type, behavior_id):
@@ -552,6 +555,8 @@ def disable_behavior(portal_type, behavior_id):
     if fti.product:
         raise TypeError("Expected DX type, got AT type instead.")
     fti.behaviors = tuple(filter(lambda b: b != behavior_id, fti.behaviors))
+    # invalidate schema cache
+    notify(SchemaInvalidatedEvent(portal_type))
 
 
 def get_fields(brain_or_object):
