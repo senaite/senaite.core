@@ -152,26 +152,10 @@ def get_obj_labels(obj):
     return labels
 
 
-def enable_label_schema(obj):
-    """Enable the label schema for this object
-    """
-    # Add marker interface for AT and DX schema extension
-    alsoProvides(obj, ICanHaveLabels)
-
-
-def disable_label_schema(obj):
-    """Disable the label schema for this object
-    """
-    # Remove marker interface for AT and DX schema extension
-    noLongerProvides(obj, ICanHaveLabels)
-
-
 def set_obj_labels(obj, labels):
     """Set the given labels to the object label storage
     """
     obj = api.get_object(obj)
-    # Always mark the object for schema extension
-    enable_label_schema(obj)
     # always sort the labels before setting it to the storage
     set_storage(obj, tuple(sorted(labels)))
     # mark the object with the proper interface
