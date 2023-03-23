@@ -16,7 +16,6 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import IHaveLabels
 from senaite.core.interfaces import ILabel
-from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
@@ -31,8 +30,7 @@ def get_storage(obj, default=None):
     :param default: default value to return
     :returns: tuple
     """
-    annotation = IAnnotations(obj)
-    return annotation.get(LABEL_STORAGE, default)
+    return getattr(obj, LABEL_STORAGE, default)
 
 
 def set_storage(obj, value):
@@ -43,8 +41,7 @@ def set_storage(obj, value):
     """
     if not isinstance(value, tuple):
         raise TypeError("Expected type tuple, got %s" % type(value))
-    annotation = IAnnotations(obj)
-    annotation[LABEL_STORAGE] = value
+    setattr(obj, LABEL_STORAGE, value)
 
 
 def query_labels(inactive=False, **kw):
