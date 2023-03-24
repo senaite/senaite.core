@@ -18,6 +18,7 @@ INDEXES = BASE_INDEXES + [
 ]
 
 COLUMNS = BASE_COLUMNS + [
+    "getLabels",
 ]
 
 TYPES = []
