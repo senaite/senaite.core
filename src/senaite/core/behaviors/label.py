@@ -66,10 +66,10 @@ class ILabelSchema(model.Schema):
     fieldset(
         "labels",
         label=u"Labels",
-        fields=["ext_labels"])
+        fields=["ExtLabels"])
 
     directives.widget(
-        "ext_labels",
+        "ExtLabels",
         QuerySelectWidgetFactory,
         catalog=SETUP_CATALOG,
         search_index="Title",
@@ -94,9 +94,9 @@ class ILabelSchema(model.Schema):
         display_template="<a href='${url}'>${title}</a>",
         limit=5,
     )
-    ext_labels = schema.List(
-        title=_(u"label_ext_labels", default=u"Labels"),
-        description=_(u"description_ext_labels", default=u"Attached labels"),
+    ExtLabels = schema.List(
+        title=_(u"label_ExtLabels", default=u"Labels"),
+        description=_(u"description_ExtLabels", default=u"Attached labels"),
         value_type=schema.TextLine(title=u"Label"),
         required=False,
     )
@@ -113,18 +113,12 @@ class LabelSchema(object):
         self.context = context
 
     @security.protected(permissions.View)
-    def get_labels(self):
+    def getExtLabels(self):
         return label_api.get_obj_labels(self.context)
 
     @security.protected(permissions.ModifyPortalContent)
-    def set_labels(self, value):
+    def setExtLabels(self, value):
         labels = label_api.to_labels(value)
         return label_api.set_obj_labels(self.context, labels)
 
-    ext_labels = property(get_labels, set_labels)
-
-    def getLabels(self):
-        return self.get_labels
-
-    def setLabels(self, value):
-        return self.set_labels(value)
+    ExtLabels = property(getExtLabels, setExtLabels)
