@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from App.class_init import InitializeClass
+from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
 from senaite.core.catalog.base_catalog import BaseCatalog
-from senaite.core.interfaces import ILabelCatalog
 from senaite.core.interfaces import IHaveLabels
+from senaite.core.interfaces import ILabelCatalog
 from zope.interface import implementer
 
 CATALOG_ID = "senaite_catalog_label"
@@ -16,7 +17,9 @@ INDEXES = BASE_INDEXES + [
     ("listing_searchable_text", "", "ZCTextIndex"),
 ]
 
-COLUMNS = []
+COLUMNS = BASE_COLUMNS + [
+    "ExtLabels",
+]
 
 TYPES = []
 
