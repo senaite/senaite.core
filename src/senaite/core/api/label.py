@@ -16,12 +16,11 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import IHaveLabels
 from senaite.core.interfaces import ILabel
-from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
-FIELD_NAME = "ExtLabels"
 LABEL_STORAGE = "senaite.core.labels"
+BEHAVIOR_ID = ICanHaveLabels.__identifier__
 
 
 def get_storage(obj, default=None):
@@ -31,8 +30,7 @@ def get_storage(obj, default=None):
     :param default: default value to return
     :returns: tuple
     """
-    annotation = IAnnotations(obj)
-    return annotation.get(LABEL_STORAGE, default)
+    return getattr(obj, LABEL_STORAGE, default)
 
 
 def set_storage(obj, value):
@@ -43,8 +41,7 @@ def set_storage(obj, value):
     """
     if not isinstance(value, tuple):
         raise TypeError("Expected type tuple, got %s" % type(value))
-    annotation = IAnnotations(obj)
-    annotation[LABEL_STORAGE] = value
+    setattr(obj, LABEL_STORAGE, value)
 
 
 def query_labels(inactive=False, **kw):
@@ -85,7 +82,7 @@ def list_labels(inactive=False, **kw):
     """
     brains = query_labels(inactive=inactive, **kw)
     labels = map(api.get_title, brains)
-    return list(set(labels))
+    return list(labels)
 
 
 def create_label(label, **kw):
@@ -108,9 +105,7 @@ def is_label_object(obj):
     :param obj: Object to check
     :returns: True if the object is a label
     """
-    if not api.is_object(obj):
-        return False
-    obj = api.get_object(obj)
+    obj = api.get_object(obj, default=None)
     return ILabel.providedBy(obj)
 
 
@@ -153,32 +148,14 @@ def get_obj_labels(obj):
     :returns: tuple of string labels
     """
     obj = get_object(obj)
-    if not IHaveLabels.providedBy(obj):
-        return tuple()
-    labels = get_storage(obj)
+    labels = get_storage(obj, default=tuple())
     return labels
-
-
-def enable_label_schema(obj):
-    """Enable the label schema for this object
-    """
-    # Add marker interface for AT and DX schema extension
-    alsoProvides(obj, ICanHaveLabels)
-
-
-def disable_label_schema(obj):
-    """Disable the label schema for this object
-    """
-    # Remove marker interface for AT and DX schema extension
-    noLongerProvides(obj, ICanHaveLabels)
 
 
 def set_obj_labels(obj, labels):
     """Set the given labels to the object label storage
     """
     obj = api.get_object(obj)
-    # Always mark the object for schema extension
-    enable_label_schema(obj)
     # always sort the labels before setting it to the storage
     set_storage(obj, tuple(sorted(labels)))
     # mark the object with the proper interface
@@ -266,6 +243,9 @@ def enable_labels_for_type(portal_type):
     """
     klass = get_klass(portal_type)
     classImplements(klass, ICanHaveLabels)
+    # enable behavior for DX types
+    if api.is_dx_type(portal_type):
+        api.enable_behavior(portal_type, BEHAVIOR_ID)
 
 
 def disable_labels_for_type(portal_type):
@@ -275,3 +255,6 @@ def disable_labels_for_type(portal_type):
     """
     klass = get_klass(portal_type)
     classDoesNotImplement(klass, ICanHaveLabels)
+    # disable behavior
+    if api.is_dx_type(portal_type):
+        api.disable_behavior(portal_type, BEHAVIOR_ID)

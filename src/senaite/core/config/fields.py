@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
-AT_LABEL_FIELD = "ExtLabels"
-DX_LABEL_FIELD = "ext_labels"
+AT_LABEL_FIELD = "Labels"
+DX_LABEL_FIELD = "Labels"

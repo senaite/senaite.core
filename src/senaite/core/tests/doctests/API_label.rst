@@ -48,14 +48,14 @@ Create some Labels
 Create global labels:
 
     >>> new = map(create_label, ["Important", "Urgent", "Critical"])
-    >>> list_labels()
-    ['Urgent', 'Critical', 'Important']
+    >>> list_labels(sort_on="title")
+    ['Critical', 'Important', 'Urgent']
 
 Duplicates are ignored per default:
 
     >>> new = create_label("Important")
-    >>> list_labels()
-    ['Urgent', 'Critical', 'Important']
+    >>> list_labels(sort_on="title")
+    ['Critical', 'Important', 'Urgent']
 
 
 Label content objects
@@ -148,61 +148,6 @@ Schema extension for dexterity types works via behaviors:
 
     >>> DX_LABEL_FIELD in api.get_fields(container1)
     True
-
-
-Manually enable/disable schema fields for AT/DX contents:
-
-    >>> at_content = api.create(portal.clients, "Client", Name="Archetype", ClientID="AT")
-    >>> dx_content = api.create(setup.sample_containers, "SampleContainer", title="Dexterity", Capacity="500ml")
-
-By default these types have no extended label fields:
-
-    >>> ICanHaveLabels.providedBy(at_content)
-    False
-
-    >>> ICanHaveLabels.providedBy(dx_content)
-    False
-
-    >>> AT_LABEL_FIELD in api.get_fields(at_content)
-    False
-
-    >>> DX_LABEL_FIELD in api.get_fields(dx_content)
-    False
-
-Enable the label schema fields:
-
-    >>> enable_label_schema(at_content)
-    >>> enable_label_schema(dx_content)
-
-    >>> ICanHaveLabels.providedBy(at_content)
-    True
-
-    >>> ICanHaveLabels.providedBy(dx_content)
-    True
-
-    >>> AT_LABEL_FIELD in api.get_fields(at_content)
-    True
-
-    >>> DX_LABEL_FIELD in api.get_fields(dx_content)
-    True
-
-Disable the label schema fields again:
-
-    >>> disable_label_schema(at_content)
-    >>> disable_label_schema(dx_content)
-
-    >>> ICanHaveLabels.providedBy(at_content)
-    False
-
-    >>> ICanHaveLabels.providedBy(dx_content)
-    False
-
-    >>> AT_LABEL_FIELD in api.get_fields(at_content)
-    False
-
-    >>> DX_LABEL_FIELD in api.get_fields(dx_content)
-    False
-
 
 Enable labels for **all** objects of a certain AT type:
 

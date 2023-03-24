@@ -43,6 +43,7 @@ from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -445,6 +446,28 @@ def is_at_content(brain_or_object):
     return isinstance(brain_or_object, BaseObject)
 
 
+def is_dx_type(portal_type):
+    """Checks if the portal type is DX based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is DX based
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        return False
+    return True
+
+
+def is_at_type(portal_type):
+    """Checks if the portal type is AT based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is AT based
+    """
+    return not is_dx_type(portal_type)
+
+
 def is_folderish(brain_or_object):
     """Checks if the passed in object is folderish
 
@@ -490,6 +513,50 @@ def get_schema(brain_or_object):
     if is_at_content(obj):
         return obj.Schema()
     fail("{} has no Schema.".format(brain_or_object))
+
+
+def get_behaviors(portal_type):
+    """List all behaviors
+
+    :param portal_type: DX portal type name
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    return fti.behaviors
+
+
+def enable_behavior(portal_type, behavior_id):
+    """Enable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to enable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+
+    if behavior_id not in fti.behaviors:
+        fti.behaviors += (behavior_id, )
+        # invalidate schema cache
+        notify(SchemaInvalidatedEvent(portal_type))
+
+
+def disable_behavior(portal_type, behavior_id):
+    """Disable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to disable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    fti.behaviors = tuple(filter(lambda b: b != behavior_id, fti.behaviors))
+    # invalidate schema cache
+    notify(SchemaInvalidatedEvent(portal_type))
 
 
 def get_fields(brain_or_object):
@@ -1672,14 +1739,16 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
-    if UID_RX.match(obj.id):
+    obj_id = getattr(aq_base(obj), "id", None)
+    if obj_id is None or UID_RX.match(obj_id):
         return True
 
     parent = aq_parent(aq_inner(obj))
     if not parent:
         return True
 
-    if UID_RX.match(parent.id):
+    parent_id = getattr(aq_base(parent), "id", None)
+    if parent_id is None or UID_RX.match(parent_id):
         return True
 
     if is_at_content(obj):

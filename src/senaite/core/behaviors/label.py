@@ -22,6 +22,7 @@ from zope.interface import provider
 
 
 @implementer(IBehaviorAssignable)
+@adapter(ICanHaveLabels)
 class LabelBehaviorAssignable(DexterityBehaviorAssignable):
     """Extend label behavior if the context provides the interface `ICanHaveLabels`
     """
@@ -36,10 +37,16 @@ class LabelBehaviorAssignable(DexterityBehaviorAssignable):
 
     def enumerateBehaviors(self):
         portal_type = self.context.portal_type
-        for behavior in SCHEMA_CACHE.behavior_registrations(portal_type):
+        behaviors = SCHEMA_CACHE.behavior_registrations(portal_type)
+        registered = False
+        for behavior in behaviors:
+            if behavior.marker == ICanHaveLabels:
+                registered = True
             yield behavior
-        # additionally yield the schema registration
-        yield self.label_registration
+        # additionally yield the schema registration if it was not already
+        # registered via the FTI
+        if not registered:
+            yield self.label_registration
 
     @property
     def label_registration(self):
@@ -47,7 +54,7 @@ class LabelBehaviorAssignable(DexterityBehaviorAssignable):
             title="Label schema extender",
             description="Adds the ability to add/remove labels",
             interface=ILabelSchema,
-            marker=None,
+            marker=ICanHaveLabels,
             factory=LabelSchema,
         )
 
@@ -59,10 +66,10 @@ class ILabelSchema(model.Schema):
     fieldset(
         "labels",
         label=u"Labels",
-        fields=["ext_labels"])
+        fields=["Labels"])
 
     directives.widget(
-        "ext_labels",
+        "Labels",
         QuerySelectWidgetFactory,
         catalog=SETUP_CATALOG,
         search_index="Title",
@@ -87,9 +94,9 @@ class ILabelSchema(model.Schema):
         display_template="<a href='${url}'>${title}</a>",
         limit=5,
     )
-    ext_labels = schema.List(
-        title=_(u"label_ext_labels", default=u"Labels"),
-        description=_(u"description_ext_labels", default=u"Attached labels"),
+    Labels = schema.List(
+        title=_(u"label_Labels", default=u"Labels"),
+        description=_(u"description_Labels", default=u"Attached labels"),
         value_type=schema.TextLine(title=u"Label"),
         required=False,
     )
@@ -106,12 +113,12 @@ class LabelSchema(object):
         self.context = context
 
     @security.protected(permissions.View)
-    def get_labels(self):
+    def getLabels(self):
         return label_api.get_obj_labels(self.context)
 
     @security.protected(permissions.ModifyPortalContent)
-    def set_labels(self, value):
+    def setLabels(self, value):
         labels = label_api.to_labels(value)
         return label_api.set_obj_labels(self.context, labels)
 
-    ext_labels = property(get_labels, set_labels)
+    Labels = property(getLabels, setLabels)
