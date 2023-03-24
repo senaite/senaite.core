@@ -19,7 +19,6 @@ from senaite.core.interfaces import ILabel
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
-FIELD_NAME = "ExtLabels"
 LABEL_STORAGE = "senaite.core.labels"
 BEHAVIOR_ID = ICanHaveLabels.__identifier__
 
