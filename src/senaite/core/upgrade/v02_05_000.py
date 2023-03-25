@@ -97,12 +97,16 @@ def setup_client_catalog(tool):
     """
     logger.info("Setup Client Catalog ...")
     portal = api.get_portal()
+
+    # setup and rebuild client_catalog
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
-    # do a complete catalog rebuild
     client_catalog = api.get_tool(CLIENT_CATALOG)
     client_catalog.clearFindAndRebuild()
+
+    # portal_catalog cleanup
     uncatalog_type("Client", catalog="portal_catalog")
+
     logger.info("Setup Client Catalog [DONE]")
 
 
