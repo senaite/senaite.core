@@ -23,6 +23,7 @@ from senaite.core import logger
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_dexterity_items
@@ -98,6 +99,9 @@ def setup_client_catalog(tool):
     portal = api.get_portal()
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    # do a complete catalog rebuild
+    client_catalog = api.get_tool(CLIENT_CATALOG)
+    client_catalog.clearFindAndRebuild()
     uncatalog_type("Client", catalog="portal_catalog")
     logger.info("Setup Client Catalog [DONE]")
 
