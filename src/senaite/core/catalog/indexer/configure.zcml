@@ -7,7 +7,7 @@
   <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
   <adapter name="sortable_title" factory=".generic.sortable_title"/>
 
-  <!-- Label Indexer -->
+  <!-- Client Indexer -->
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
 
   <!-- Label Indexer -->
