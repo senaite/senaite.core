@@ -4,6 +4,9 @@
   <!-- SENAITE Registry -->
   <records interface="senaite.core.registry.schema.ISenaiteRegistry" />
 
+  <!-- Registry for label configuration -->
+  <records interface="senaite.core.registry.schema.ILabelRegistry" />
+
   <!-- Registry for worksheet view configuration -->
   <records interface="senaite.core.registry.schema.IWorksheetViewRegistry" />
 

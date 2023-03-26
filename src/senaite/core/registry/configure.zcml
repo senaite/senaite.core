@@ -13,4 +13,17 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+
+  <subscriber
+      for="senaite.core.registry.schema.ILabelRegistry
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".subscribers.update_label_types"
+      />
+
+  <subscriber
+      for="zope.component.interfaces.ISite
+           zope.traversing.interfaces.IBeforeTraverseEvent"
+      handler=".subscribers.init_labels"
+      />
+
 </configure>

@@ -320,7 +320,13 @@ This function checks if an object is a `Dexterity` content type::
     >>> api.is_dexterity_content(portal)
     False
 
-We currently have no `Dexterity` contents, so testing this comes later...
+It is also possible to check by portal type::
+
+    >>> api.is_dx_type("InterpretationTemplate")
+    True
+
+    >>> api.is_dx_type("Client")
+    False
 
 
 Checking if an Object is an AT Content
@@ -335,6 +341,15 @@ This function checks if an object is an `Archetypes` content type::
     False
 
     >>> api.is_at_content(object())
+    False
+
+
+It is also possible to check by portal type::
+
+    >>> api.is_at_type("Client")
+    True
+
+    >>> api.is_at_type("InterpretationTemplate")
     False
 
 
@@ -353,6 +368,34 @@ Catalog brains are also supported::
 
     >>> api.get_schema(brain)
     <Products.Archetypes.Schema.Schema object at 0x...>
+
+
+
+Getting the behaviors of a type
+...............................
+
+Dexterity contents might extend schema fields over a behavior.
+This function shows the current active behaviors:
+
+    >>> api.get_behaviors("SampleContainer")
+    (...)
+
+It is possible to enable behaviors dynamically:
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
+
+    >>> api.enable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    True
+
+And remove it again:
+
+    >>> api.disable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
 
 
 Getting the Fields of a Content
@@ -1879,6 +1922,30 @@ Unsupported types return either the default value or fail:
 
     >>> api.to_utf8(object(), default="")
     ''
+
+Check if an object is a string
+..............................
+
+This function checks if the given object is a string type.
+
+    >>> api.is_string("Hello World")
+    True
+
+    >>> api.is_string(u"Hello World")
+    True
+
+    >>> api.is_string(r"Hello World")
+    True
+
+    >>> api.is_string("")
+    True
+
+    >>> api.is_string(None)
+    False
+
+    >>> api.is_string(object)
+    False
+
 
 Check if an object is temporary
 ...............................

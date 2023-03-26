@@ -13,6 +13,14 @@
       replacement=".archetypes.isTemporary"
       />
 
+  <monkey:patch
+      description="Patch `BaseObject.getLabels` for catalog metadata"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="getLabels"
+      ignoreOriginal="True"
+      replacement=".archetypes.getLabels"
+      />
+
   <!-- Port #1865 for dexterity contents to avoid duplicate catalog entries when using `api.create` -->
   <monkey:patch
       description="Patch `DexterityContent.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
@@ -20,6 +28,14 @@
       original="isTemporary"
       ignoreOriginal="True"
       replacement=".dexterity.isTemporary"
+      />
+
+  <monkey:patch
+      description="Patch `DexterityContent.getLabels` for catalog metadata"
+      class="plone.dexterity.content.DexterityContent"
+      original="getLabels"
+      ignoreOriginal="True"
+      replacement=".dexterity.getLabels"
       />
 
   <monkey:patch

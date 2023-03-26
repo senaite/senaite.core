@@ -44,6 +44,7 @@ from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
+from senaite.core.catalog import LabelCatalog
 from senaite.core.catalog import ReportCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
@@ -105,11 +106,12 @@ CATALOGS = (
     AnalysisCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
+    LabelCatalog,
+    ReportCatalog,
     SampleCatalog,
     SenaiteCatalog,
     SetupCatalog,
     WorksheetCatalog,
-    ReportCatalog,
 )
 
 INDEXES = (
@@ -168,6 +170,7 @@ CATALOG_MAPPINGS = (
     ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("LabContact", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Label", [SETUP_CATALOG]),
     ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Manufacturer", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Method", [SETUP_CATALOG, PORTAL_CATALOG]),
@@ -229,6 +232,7 @@ def install(context):
     setup_catalogs_order(portal)
     setup_content_structure(portal)
     add_senaite_setup(portal)
+    add_senaite_setup_items(portal)
     add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
 
@@ -280,6 +284,18 @@ def add_senaite_setup(portal):
 
     # Reindex order
     portal.plone_utils.reindexOnReorder(portal)
+
+
+def add_senaite_setup_items(portal):
+    """Adds setup items to the new SENAITE setup
+    """
+    items = [
+        ("labels",  # ID
+         "Labels",  # Title
+         "Labels"),  # FTI
+    ]
+    setup = api.get_senaite_setup()
+    add_dexterity_items(setup, items)
 
 
 def add_dexterity_portal_items(portal):

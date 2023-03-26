@@ -25,6 +25,8 @@ from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -65,3 +67,23 @@ def rebuild_sample_zctext_index_and_lexicon(tool):
     add_index(SAMPLE_CATALOG, index, "ZCTextIndex")
     # reindex
     reindex_index(SAMPLE_CATALOG, index)
+
+
+def setup_labels(tool):
+    """Setup labels for SENAITE
+    """
+    logger.info("Setup Labels")
+    portal = api.get_portal()
+
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "plone.app.registry")
+    setup_core_catalogs(portal)
+
+    items = [
+        ("labels",
+         "Labels",
+         "Labels")
+    ]
+    setup = api.get_senaite_setup()
+    add_dexterity_items(setup, items)
