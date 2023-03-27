@@ -199,7 +199,7 @@ Getting an Object
 Getting the object from a catalog brain is a common task.
 
 This function provides an unified interface to portal objects **and** brains.
-Furthermore it is idempotent, so it can be called multiple times in a row::
+Furthermore it is idempotent, so it can be called multiple times in a row.
 
 We will demonstrate the usage on the client object we created above::
 
@@ -211,8 +211,7 @@ We will demonstrate the usage on the client object we created above::
 
 Now we show it with catalog results::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog(portal_type="Client")
+    >>> brains = api.search({"portal_type": "Client"})
     >>> brains
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
@@ -671,12 +670,6 @@ This function unifies all SENAITE LIMS catalog to a single search interface::
     >>> results
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
-Multiple content types are also supported::
-
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder'], 'sort_on': 'getId'})
-    >>> map(api.get_id, results)
-    ['client-1', 'clients']
-
 Now we create some objects which are located in the `senaite_catalog_setup`::
 
     >>> instruments = bika_setup.bika_instruments
@@ -958,8 +951,7 @@ This function returns the review state of a given object::
 
 It should also work for catalog brains::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> results = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
+    >>> results = api.search({"portal_type": "Client", "UID": api.get_uid(client)})
     >>> len(results)
     1
     >>> api.get_review_status(results[0]) == review_state

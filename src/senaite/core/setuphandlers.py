@@ -36,6 +36,7 @@ from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
@@ -45,6 +46,7 @@ from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
 from senaite.core.catalog import LabelCatalog
+from senaite.core.catalog import ClientCatalog
 from senaite.core.catalog import ReportCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
@@ -106,6 +108,7 @@ CATALOGS = (
     AnalysisCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
+    ClientCatalog,
     LabelCatalog,
     ReportCatalog,
     SampleCatalog,
@@ -153,7 +156,7 @@ CATALOG_MAPPINGS = (
     ("Batch", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("BatchLabel", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Calculation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Client", [PORTAL_CATALOG]),
+    ("Client", [CLIENT_CATALOG]),
     ("Contact", [PORTAL_CATALOG]),
     ("Container", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("ContainerType", [SETUP_CATALOG, PORTAL_CATALOG]),
