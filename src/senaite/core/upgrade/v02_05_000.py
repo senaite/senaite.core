@@ -119,7 +119,6 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     for brain in brains:
         uncatalog_brain(brain)
 
-
 def setup_catalogs(tool):
     """Setup all core catalogs and ensure all indexes are present
     """
