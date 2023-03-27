@@ -24,6 +24,7 @@ import six
 from six.moves.urllib.parse import unquote_plus
 
 from bika.lims.api import APIError
+from bika.lims.api import get_request
 from bika.lims.api import get_tool
 from bika.lims.api import safe_unicode
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
@@ -175,7 +176,7 @@ def reindex_index(catalog, index):
     if index not in indexes:
         return False
 
-    catalog.manage_reindexIndex(index)
+    catalog.manage_reindexIndex(index, REQUEST=get_request())
     return True
 
 

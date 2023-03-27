@@ -118,3 +118,15 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     brains = api.search(query, catalog=catalog)
     for brain in brains:
         uncatalog_brain(brain)
+
+
+def setup_catalogs(tool):
+    """Setup all core catalogs and ensure all indexes are present
+    """
+    logger.info("Setup Catalogs ...")
+    portal = api.get_portal()
+
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+
+    logger.info("Setup Catalogs [DONE]")
