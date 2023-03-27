@@ -1,0 +1,59 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Add permissions -->
+  <permission id="senaite.core.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
+
+  <!-- Field permissions -->
+  <permission id="senaite.core.permissions.FieldEditBatch" title="senaite.core: Field: Edit Batch"/>
+  <permission id="senaite.core.permissions.FieldEditClient" title="senaite.core: Field: Edit Client"/>
+  <permission id="senaite.core.permissions.FieldEditClientOrderNumber" title="senaite.core: Field: Edit Client Order Number"/>
+  <permission id="senaite.core.permissions.FieldEditClientReference" title="senaite.core: Field: Edit Client Reference"/>
+  <permission id="senaite.core.permissions.FieldEditClientSampleID" title="senaite.core: Field: Edit Client Sample ID"/>
+  <permission id="senaite.core.permissions.FieldEditComposite" title="senaite.core: Field: Edit Composite"/>
+  <permission id="senaite.core.permissions.FieldEditContact" title="senaite.core: Field: Edit Contact"/>
+  <permission id="senaite.core.permissions.FieldEditContainer" title="senaite.core: Field: Edit Container"/>
+  <permission id="senaite.core.permissions.FieldEditDatePreserved" title="senaite.core: Field: Edit Date Preserved"/>
+  <permission id="senaite.core.permissions.FieldEditDateReceived" title="senaite.core: Field: Edit Date Received"/>
+  <permission id="senaite.core.permissions.FieldEditDateSampled" title="senaite.core: Field: Edit Date Sampled"/>
+  <permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="senaite.core: Field: Edit Environmental Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditInternalUse" title="senaite.core: Field: Edit Internal Use"/>
+  <permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="senaite.core: Field: Edit Invoice Exclude"/>
+  <permission id="senaite.core.permissions.FieldEditMemberDiscount" title="senaite.core: Field: Edit Member Discount"/>
+  <permission id="senaite.core.permissions.FieldEditPreservation" title="senaite.core: Field: Edit Preservation"/>
+  <permission id="senaite.core.permissions.FieldEditPreserver" title="senaite.core: Field: Edit Preserver"/>
+  <permission id="senaite.core.permissions.FieldEditPriority" title="senaite.core: Field: Edit Priority"/>
+  <permission id="senaite.core.permissions.FieldEditProfiles" title="senaite.core: Field: Edit Profiles"/>
+  <permission id="senaite.core.permissions.FieldEditRemarks" title="senaite.core: Field: Edit Remarks"/>
+  <permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="senaite.core: Field: Edit Publication Specification"/>
+  <permission id="senaite.core.permissions.FieldEditRejectionReasons" title="senaite.core: Field: Edit Rejection Reasons"/>
+  <permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="senaite.core: Field: Edit Results Interpretation"/>
+  <permission id="senaite.core.permissions.FieldEditSampleCondition" title="senaite.core: Field: Edit Sample Condition"/>
+  <permission id="senaite.core.permissions.FieldEditSamplePoint" title="senaite.core: Field: Edit Sample Point"/>
+  <permission id="senaite.core.permissions.FieldEditSampleType" title="senaite.core: Field: Edit Sample Type"/>
+  <permission id="senaite.core.permissions.FieldEditSampler" title="senaite.core: Field: Edit Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDate" title="senaite.core: Field: Edit Sampling Date"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="senaite.core: Field: Edit Sampling Deviation"/>
+  <permission id="senaite.core.permissions.FieldEditScheduledSampler" title="senaite.core: Field: Edit Scheduled Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSpecification" title="senaite.core: Field: Edit Specification"/>
+  <permission id="senaite.core.permissions.FieldEditStorageLocation" title="senaite.core: Field: Edit Storage Location"/>
+  <permission id="senaite.core.permissions.FieldEditTemplate" title="senaite.core: Field: Edit Template"/>
+
+  <!-- Workflow permissions -->
+  <permission id="senaite.core.permissions.TransitionCancelAnalysisRequest" title="senaite.core: Transition: Cancel Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionDetachSamplePartition" title="senaite.core: Transition: Detach Sample Partition" />
+  <permission id="senaite.core.permissions.TransitionReinstateAnalysisRequest" title="senaite.core: Transition: Reinstate Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionInvalidate" title="senaite.core: Transition: Invalidate"/>
+  <permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
+  <permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
+  <permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
+  <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
+  <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
+  <permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
+  <permission id="senaite.core.permissions.TransitionDispatchSample" title="senaite.core: Transition: Dispatch Sample"/>
+  <permission id="senaite.core.permissions.TransitionRestoreSample" title="senaite.core: Transition: Restore Sample"/>
+  <permission id="senaite.core.permissions.TransitionCreatePartitions" title="senaite.core: Transition: Create Partitions"/>
+  <permission id="senaite.core.permissions.TransitionMultiResults" title="senaite.core: Transition: Multi Results"/>
+
+</configure>

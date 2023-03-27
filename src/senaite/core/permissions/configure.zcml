@@ -3,5 +3,6 @@
 
   <!-- package includes -->
   <include package=".worksheet" />
+  <include package=".sample" />
 
 </configure>
