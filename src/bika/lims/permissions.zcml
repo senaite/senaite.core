@@ -3,6 +3,12 @@
     i18n_domain="senaite.core">
 
 <!--
+
+  NOTE: PERMISSIONS GET MOVED INTO senaite.core.permissions!
+
+-->
+
+<!--
     All the available permissions are defined here. Each new line will be a
     new permission. Each permission has two attributes: a short ID and a
     long title. The ID will be used for zope3-like permissions such as ZCML
