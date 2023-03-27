@@ -34,8 +34,6 @@ from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
-from senaite.core.api import dtime
-from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
 from senaite.core.interfaces import IDataManager
 from zope import event
 from zope.component import queryAdapter
