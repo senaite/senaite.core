@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2282 Fix sample reports retrieval
 - #2280 Remove custom date rendering in sample header
 - #2278 Client catalog
 - #2276 Senaite labels
