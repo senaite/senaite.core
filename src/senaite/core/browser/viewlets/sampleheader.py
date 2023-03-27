@@ -203,17 +203,6 @@ class SampleHeaderViewlet(ViewletBase):
             if adapter is not None:
                 return adapter(field)
 
-            # TODO: Refactor to adapter
-            # Returns the localized date
-            if self.is_datetime_field(field):
-                value = field.get(self.context)
-                if not value:
-                    return None
-                return dtime.ulocalized_time(value,
-                                             long_format=True,
-                                             context=self.context,
-                                             request=self.request)
-
         return None
 
     def get_field_label(self, field, mode="view"):
@@ -303,14 +292,6 @@ class SampleHeaderViewlet(ViewletBase):
         if mode == "view":
             return False
         return field.required
-
-    def is_datetime_field(self, field):
-        """Check if the field is a date field
-        """
-        if self.is_at_field(field):
-            widget = self.get_widget(field)
-            return isinstance(widget, DateTimeWidget)
-        return False
 
     def is_at_field(self, field):
         """Check if the field is an AT field
