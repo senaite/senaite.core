@@ -63,43 +63,6 @@ class ReportsListingView(BikaListingView):
         self.show_workflow_action_buttons = True
         self.pagesize = 30
 
-        help_email_text = _(
-            "Open email form to send the selected reports to the recipients. "
-            "This will also publish the contained samples of the reports "
-            "after the email was successfully sent.")
-
-        self.send_email_transition = {
-            "id": "send_email",
-            "title": _("Email"),
-            "url": "email",
-            "css_class": "btn btn-outline-secondary",
-            "help": help_email_text,
-        }
-
-        help_publish_text = _(
-            "Manually publish all contained samples of the selected reports.")
-
-        self.publish_samples_transition = {
-            "id": "publish_samples",
-            "title": _("Publish"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=publish_samples",
-            "css_class": "btn-outline-success",
-            "help": help_publish_text,
-        }
-
-        help_download_reports_text = _(
-            "Download selected reports")
-
-        self.download_reports_transition = {
-            "id": "download_reports",
-            "title": _("Download"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=download_reports",
-            "css_class": "btn-outline-secondary",
-            "help": help_download_reports_text,
-        }
-
         self.columns = collections.OrderedDict((
             ("Info", {
                 "title": "",
@@ -131,13 +94,62 @@ class ReportsListingView(BikaListingView):
                 "title": "All",
                 "contentFilter": {},
                 "columns": self.columns.keys(),
-                "custom_transitions": [
-                    self.send_email_transition,
-                    self.publish_samples_transition,
-                    self.download_reports_transition,
-                ]
             },
         ]
+
+    def before_render(self):
+        """Before render hook
+        """
+        # hook in custom transitions
+
+    @property
+    def custom_transition_email(self):
+        """Custom transition to send reports via email
+        """
+        help_email_text = _(
+            "Open email form to send the selected reports to the recipients. "
+            "This will also publish the contained samples of the reports "
+            "after the email was successfully sent.")
+
+        return {
+            "id": "send_email",
+            "title": _("Email"),
+            "url": "email",
+            "css_class": "btn btn-outline-secondary",
+            "help": help_email_text,
+        }
+
+    @property
+    def custom_transition_download(self):
+        """Custom transition to download reports
+        """
+        help_download_reports_text = _(
+            "Download selected reports")
+
+        return {
+            "id": "download_reports",
+            "title": _("Download"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=download_reports",
+            "css_class": "btn-outline-secondary",
+            "help": help_download_reports_text,
+        }
+
+    @property
+    def custom_transition_publish(self):
+        """Custom transition to publish reports w/o sending email
+        """
+        help_publish_text = _(
+            "Manually publish all contained samples of the selected reports.")
+
+        return {
+            "id": "publish_samples",
+            "title": _("Publish"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=publish_samples",
+            "css_class": "btn-outline-success",
+            "help": help_publish_text,
+        }
 
     def get_filesize(self, pdf):
         """Compute the filesize of the PDF
