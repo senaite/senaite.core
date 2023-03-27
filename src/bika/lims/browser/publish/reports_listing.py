@@ -28,6 +28,7 @@ from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.permissions.sample import can_publish
 from ZODB.POSException import POSKeyError
 
 
@@ -94,13 +95,27 @@ class ReportsListingView(BikaListingView):
                 "title": "All",
                 "contentFilter": {},
                 "columns": self.columns.keys(),
+                "custom_transitions": [],
             },
         ]
 
     def before_render(self):
         """Before render hook
         """
+        self.init_custom_transitions()
+
+    def init_custom_transitions(self):
+        """Add custom transitions
+        """
+        custom_transitions = [
+            self.custom_transition_download,
+        ]
+        if can_publish(self.context):
+            custom_transitions.append(self.custom_transition_email)
+            custom_transitions.append(self.custom_transition_publish)
         # hook in custom transitions
+        for state in self.review_states:
+            state["custom_transitions"].extend(custom_transitions)
 
     @property
     def custom_transition_email(self):
