@@ -6,6 +6,7 @@ Changelog
 
 - #2282 Fix sample reports retrieval
 - #2280 Remove custom date rendering in sample header
+- #2279 Allow all custom transitions in sample report listing
 - #2278 Client catalog
 - #2276 Senaite labels
 - #2275 Fix wrong result when both "Result options" and "String" are enabled
