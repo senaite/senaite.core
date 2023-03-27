@@ -238,13 +238,21 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="senaite.core.permissions.TransitionPublishResults" />
 
-  <!-- Client: "download_reports" action in the report listing
+  <!-- Client/Sample: "download_reports" action in the report listing
 
   Downloads all PDFs in a single archive
   -->
   <adapter
     name="workflow_action_download_reports"
     for="bika.lims.interfaces.IClient
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".client.WorkflowActionDownloadReportsAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+  <!-- sample context -->
+  <adapter
+    name="workflow_action_download_reports"
+    for="bika.lims.interfaces.IAnalysisRequest
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".client.WorkflowActionDownloadReportsAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
