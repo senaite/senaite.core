@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2279 Allow all custom transitions in sample report listing
 - #2278 Client catalog
 - #2276 Senaite labels
 - #2275 Fix wrong result when both "Result options" and "String" are enabled
