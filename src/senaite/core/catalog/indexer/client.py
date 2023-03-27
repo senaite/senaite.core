@@ -23,4 +23,8 @@ def client_searchable_text(instance):
     # extend address lines
     tokens.extend(instance.getPrintAddress())
 
-    return u" ".join(map(api.safe_unicode, set(tokens)))
+    # remove duplicates and filter out emtpies
+    tokens = filter(None, set(tokens))
+
+    # return a single unicode string with all the concatenated tokens
+    return u" ".join(map(api.safe_unicode, tokens))
