@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-03-10 15:14+0000\n"
+"POT-Creation-Date: 2023-03-27 13:56+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2023\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
@@ -246,7 +246,7 @@ msgstr "Activar"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:71
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:72
-#: senaite/core/browser/controlpanel/samplecontainers.py:80
+#: senaite/core/browser/controlpanel/labels.py:50
 msgid "Active"
 msgstr "Activo/a"
 
@@ -257,7 +257,7 @@ msgstr "Actor"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:43
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:47
-#: senaite/core/browser/controlpanel/samplecontainers.py:42
+#: senaite/core/browser/controlpanel/labels.py:24
 msgid "Add"
 msgstr "Nuevo..."
 
@@ -302,6 +302,10 @@ msgstr "Añadir análisis del perfil seleccionado a la plantilla"
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
 msgstr "Añadir reglas de estilo CSS personalizadas para el logo (e.g. height:15px;width;150px;)"
 
+#: senaite/core/browser/controlpanel/labels.py:31
+msgid "Add default selectable labels"
+msgstr ""
+
 #: senaite/core/browser/viewlets/templates/attachments.pt:202
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:38
 msgid "Add new Attachment"
@@ -334,6 +338,10 @@ msgstr "Campos de resultado adicionales"
 #: senaite/core/z3cform/widgets/address.py:119
 msgid "Address"
 msgstr "Dirección"
+
+#: senaite/core/behaviors/configure.zcml:34
+msgid "Adds the ability to add/remove labels"
+msgstr ""
 
 #: senaite/core/behaviors/configure.zcml:23
 msgid "Adds the ability to share a content across clients"
@@ -370,7 +378,7 @@ msgstr "Agencia"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:81
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:84
-#: senaite/core/browser/controlpanel/samplecontainers.py:90
+#: senaite/core/browser/controlpanel/labels.py:60
 msgid "All"
 msgstr "Todos"
 
@@ -565,7 +573,7 @@ msgstr "Tipo de análisis"
 msgid "Analysis category"
 msgstr "Categoría de análisis"
 
-#: senaite/core/registry/schema.py:44
+#: senaite/core/registry/schema.py:74
 msgid "Analysis columns order"
 msgstr "Orden de columnas para listados de análisis"
 
@@ -673,6 +681,10 @@ msgstr "Debe seleccionar dos opciones como mínimo"
 #: senaite/core/browser/viewlets/templates/attachments.pt:241
 msgid "Attach to Sample"
 msgstr "Adjuntar a la muestra"
+
+#: senaite/core/extender/label.py:40
+msgid "Attached labels"
+msgstr ""
 
 #: bika/lims/content/analysisrequest.py:950
 #: bika/lims/content/attachment.py:51
@@ -1098,7 +1110,7 @@ msgid "Changes Saved"
 msgstr "Cambios guardados."
 
 #: senaite/core/browser/samples/manage_sample_fields.py:104
-#: senaite/core/browser/viewlets/sampleheader.py:101
+#: senaite/core/browser/viewlets/sampleheader.py:99
 msgid "Changes saved."
 msgstr "Cambios guardados."
 
@@ -1247,27 +1259,27 @@ msgstr "Código del sitio"
 msgid "Code the the shelf"
 msgstr "Código del estante"
 
-#: senaite/core/registry/schema.py:82
+#: senaite/core/registry/schema.py:113
 msgid "Collapse field analysis table"
 msgstr "Ocultar la tabla con los análisis de campo"
 
-#: senaite/core/registry/schema.py:83
+#: senaite/core/registry/schema.py:114
 msgid "Collapse field analysis table in sample view"
 msgstr "Ocultar la tabla con los análisis de campo en la vista de muestra"
 
-#: senaite/core/registry/schema.py:89
+#: senaite/core/registry/schema.py:120
 msgid "Collapse lab analysis table"
 msgstr "Ocultar la tabla con análisis de laboratorio"
 
-#: senaite/core/registry/schema.py:90
+#: senaite/core/registry/schema.py:121
 msgid "Collapse lab analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de laboratorio en la vista de muestra"
 
-#: senaite/core/registry/schema.py:96
+#: senaite/core/registry/schema.py:127
 msgid "Collapse qc analysis table"
 msgstr "Ocultar la tabla con análisis de control de calidad QC"
 
-#: senaite/core/registry/schema.py:97
+#: senaite/core/registry/schema.py:128
 msgid "Collapse qc analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de conrol de calidad QC en la vista de muestra"
 
@@ -1311,7 +1323,7 @@ msgstr "Condiciones de análisis a ser rellenadas durante el registro de muestra
 msgid "Confidence Level %"
 msgstr "% Nivel de confianza"
 
-#: senaite/core/registry/schema.py:139
+#: senaite/core/registry/schema.py:171
 msgid "Configuration for the sample header information"
 msgstr "Configuración de la sección de cabecera de muestra"
 
@@ -1743,11 +1755,11 @@ msgstr "Método de conservación por defecto"
 msgid "Default categories"
 msgstr "Categorías por defecto"
 
-#: senaite/core/registry/schema.py:104
+#: senaite/core/registry/schema.py:135
 msgid "Default column order for sample analysis listings"
 msgstr "Orden por defecto de las columns para listado de análisis de muestra"
 
-#: senaite/core/registry/schema.py:45
+#: senaite/core/registry/schema.py:75
 msgid "Default column order for worksheet analysis listings"
 msgstr "Orden por defecto de las columnas para listado de análisis de hojas de trabajo"
 
@@ -2385,7 +2397,7 @@ msgstr "El campo '{}' es obligatorio"
 msgid "Field Analyses"
 msgstr "Análisis de campo"
 
-#: senaite/core/registry/schema.py:192
+#: senaite/core/registry/schema.py:224
 msgid "Field Name"
 msgstr "Nombre del campo"
 
@@ -2397,7 +2409,7 @@ msgstr "Conservación fuera del laboratorio"
 msgid "Field Title"
 msgstr "Título del campo"
 
-#: senaite/core/registry/schema.py:190
+#: senaite/core/registry/schema.py:222
 msgid "Field visibility"
 msgstr "Visibilidad del campo"
 
@@ -2690,7 +2702,7 @@ msgstr "Procedimiento de calibración en el laboratorio"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:76
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:78
-#: senaite/core/browser/controlpanel/samplecontainers.py:85
+#: senaite/core/browser/controlpanel/labels.py:55
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -3054,9 +3066,33 @@ msgstr "Productos del laboratorio"
 msgid "Lab URL"
 msgstr "URL del laboratorio"
 
-#: bika/lims/controlpanel/bika_batchlabels.py:68
+#: senaite/core/behaviors/label.py:91
+#: senaite/core/extender/label.py:60
+#: senaite/core/profiles/default/types/Label.xml
 msgid "Label"
 msgstr "Etiqueta"
+
+#: senaite/core/registry/schema.py:40
+msgid "Label configuration"
+msgstr ""
+
+#: senaite/core/content/label.py:41
+msgid "Label names must be unique"
+msgstr ""
+
+#: senaite/core/behaviors/configure.zcml:34
+msgid "Label schema extender"
+msgstr ""
+
+#: senaite/core/browser/label/labeled_objects.py:32
+msgid "Labeled Objects"
+msgstr ""
+
+#: senaite/core/browser/controlpanel/labels.py:30
+#: senaite/core/browser/label/labeled_objects.py:47
+#: senaite/core/extender/label.py:39
+msgid "Labels"
+msgstr ""
 
 #: bika/lims/content/laboratory.py:199
 #: bika/lims/profiles/default/types/Laboratory.xml
@@ -3137,6 +3173,10 @@ msgstr "Linkar usuario"
 #: bika/lims/browser/templates/login_details.pt:147
 msgid "Link an existing User"
 msgstr "Linka un usuario existente"
+
+#: senaite/core/browser/label/labeled_objects.py:33
+msgid "List all objects with labels"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:593
 msgid "List of possible final results. When set, no custom result is allowed on results entry and user has to choose from these values"
@@ -3857,7 +3897,7 @@ msgstr "Número de análisis solicitados y publicados por departamento y expresa
 msgid "Number of copies"
 msgstr "Número de copias"
 
-#: senaite/core/registry/schema.py:158
+#: senaite/core/registry/schema.py:190
 msgid "Number of prominent columns"
 msgstr "Número de columnas prominentes"
 
@@ -3878,7 +3918,7 @@ msgstr "Número de verificaciones requeridas antes de que un resultado determina
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Número de verificaciones necesarias de diferentes usuarios antes de que un resultado determinado para este análisis se considere como 'verificado'. La opción establecida aquí tiene prioridad sobre la opción establecida en la Configuración general."
 
-#: senaite/core/registry/schema.py:167
+#: senaite/core/registry/schema.py:199
 msgid "Number of standard columns"
 msgstr "Número de columnas estándar"
 
@@ -4324,7 +4364,7 @@ msgid "Progress"
 msgstr "Progreso"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:103
-#: senaite/core/registry/schema.py:176
+#: senaite/core/registry/schema.py:208
 msgid "Prominent fields"
 msgstr "Campos destacados"
 
@@ -4853,11 +4893,11 @@ msgstr "Restablecer"
 msgid "Routine Analyses"
 msgstr "Análisis rutinarios"
 
-#: senaite/core/configure.zcml:45
+#: senaite/core/configure.zcml:46
 msgid "SENAITE CORE"
 msgstr "SENAITE CORE"
 
-#: senaite/core/configure.zcml:45
+#: senaite/core/configure.zcml:46
 msgid "SENAITE CORE Add-on"
 msgstr "SENAITE CORE Add-on"
 
@@ -4921,7 +4961,7 @@ msgstr "Contenedor de muestra"
 msgid "Sample Containers"
 msgstr "Contenedores de muestras"
 
-#: senaite/core/registry/schema.py:138
+#: senaite/core/registry/schema.py:170
 msgid "Sample Header"
 msgstr "Cabecera de muestra"
 
@@ -4980,7 +5020,7 @@ msgstr "Prefijo del tipo de muestra"
 msgid "Sample Types"
 msgstr "Tipos de muestras"
 
-#: senaite/core/registry/schema.py:72
+#: senaite/core/registry/schema.py:103
 msgid "Sample View"
 msgstr "Vista de muestra"
 
@@ -5026,7 +5066,7 @@ msgstr "Tipo de muestra"
 msgid "Sample types"
 msgstr "Tipos de muestra"
 
-#: senaite/core/registry/schema.py:73
+#: senaite/core/registry/schema.py:104
 msgid "Sample view configuration"
 msgstr "Configuración de la vista de muestra"
 
@@ -5512,7 +5552,7 @@ msgstr "Más"
 msgid "Show only selected categories in client views"
 msgstr "Solo muestra las categorías seleccionadas a las vistas de cliente"
 
-#: senaite/core/registry/schema.py:151
+#: senaite/core/registry/schema.py:183
 msgid "Show standard fields"
 msgstr "Mostrar los campos estándar"
 
@@ -5598,7 +5638,7 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr "Especifique el valor de incertidumbre para un rango dado, por ejemplo, para resultados en un rango con un mínimo de 0 y un máximo de 10, donde el valor de incertidumbre es 0.5 - un resultado de 6.67 se informará como 6.67 +- 0.5. También puede especificar el valor de incertidumbre como un porcentaje del valor del resultado, agregando un '%' al valor ingresado en la columna 'Valor de incertidumbre', por ejemplo, para resultados en un rango con un mínimo de 10.01 y un máximo de 100, donde el valor de incertidumbre es del 2% - un resultado de 100 se informará como 100 +- 2. Por favor, asegúrese de que los rangos sucesivos sean continuos, por ejemplo, 0.00 - 10.00 es seguido por 10.01 - 20.00, 20.01 - 30.00 etc."
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
-#: senaite/core/registry/schema.py:183
+#: senaite/core/registry/schema.py:215
 msgid "Standard fields"
 msgstr "Campos estándar"
 
@@ -6204,7 +6244,7 @@ msgstr "Consejo. Los documentos adjuntos no se cargarán a menos que estén pres
 
 #: senaite/core/behaviors/clientshareable.py:84
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:56
-#: senaite/core/browser/widgets/referencewidget.py:53
+#: senaite/core/browser/controlpanel/labels.py:38
 msgid "Title"
 msgstr "Título"
 
@@ -6266,7 +6306,7 @@ msgstr "Pendientes de verificar"
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
 msgstr "Para probar el cálculo, puedes introducir valores aquí para todos los parámetros del cálculo. Esto incluye los campos provisionales definidos anteriormente, así como los servicios de los que depende este cálculo para calcular los resultados."
 
-#: senaite/core/registry/schema.py:152
+#: senaite/core/registry/schema.py:184
 msgid "Toggle visibility of standard sample header fields"
 msgstr "Alternar la visibilidad de los campos estándar de la cabecera de muestra"
 
@@ -6317,6 +6357,7 @@ msgstr "Martes"
 msgid "Turnaround time (h)"
 msgstr "Tiempo de respuesta (h)"
 
+#: senaite/core/browser/label/labeled_objects.py:43
 #: senaite/core/browser/viewlets/templates/attachments.pt:64
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:39
 msgid "Type"
@@ -6345,6 +6386,14 @@ msgstr "Tipo de contenedor"
 #: senaite/core/browser/controlpanel/templates/setupview.pt:27
 msgid "Type to filter ..."
 msgstr "Escriba para filtrar ..."
+
+#: senaite/core/registry/schema.py:49
+msgid "Types that support labels directly.<br/>NOTE: In cluster setups, other instances need to be restarted manually for the changes to take place!"
+msgstr ""
+
+#: senaite/core/registry/schema.py:48
+msgid "Types with labels"
+msgstr ""
 
 #: bika/lims/browser/worksheet/views/printview.py:149
 msgid "Unable to load the template"
@@ -6779,7 +6828,7 @@ msgstr "Ver el sitio de SENAITE"
 msgid "Visibility"
 msgstr "Visibilidad"
 
-#: senaite/core/registry/schema.py:191
+#: senaite/core/registry/schema.py:223
 msgid "Visible fields"
 msgstr "Campos visibles"
 
@@ -6883,11 +6932,11 @@ msgstr "Plantilla para hoja de trabajo"
 msgid "Worksheet Templates"
 msgstr "Plantillas para hojas de trabajo"
 
-#: senaite/core/registry/schema.py:36
+#: senaite/core/registry/schema.py:66
 msgid "Worksheet View"
 msgstr "Vista de hoja de trabajo"
 
-#: senaite/core/registry/schema.py:37
+#: senaite/core/registry/schema.py:67
 msgid "Worksheet view configuration"
 msgstr "Configuración de la vista de hoja de trabajo"
 
@@ -7009,6 +7058,11 @@ msgstr "días"
 msgid "deactivate"
 msgstr "desactivar"
 
+#. Default: "Attached labels"
+#: senaite/core/behaviors/label.py:99
+msgid "description_Labels"
+msgstr ""
+
 #. mg/l, ppm, dB, mV, etc."
 #. Default: "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
 #: bika/lims/content/abstractbaseanalysis.py:111
@@ -7125,6 +7179,11 @@ msgstr "horas: {} minutos: {} días: {}"
 #: bika/lims/browser/publish/templates/email.pt:185
 msgid "in"
 msgstr "en"
+
+#. Default: "Labels"
+#: senaite/core/behaviors/label.py:98
+msgid "label_Labels"
+msgstr ""
 
 #. Default: "Add to the following groups:"
 #: bika/lims/browser/templates/login_details.pt:279
@@ -7336,7 +7395,7 @@ msgstr "semanal"
 msgid "yearly"
 msgstr "anual"
 
-#: bika/lims/browser/analyses/view.py:570
+#: bika/lims/browser/analyses/view.py:580
 msgid "{} (Out of date)"
 msgstr "{} (Caducado)"
 
