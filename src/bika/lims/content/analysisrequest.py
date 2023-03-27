@@ -23,10 +23,6 @@ import functools
 import re
 from decimal import Decimal
 
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from Products.Archetypes.config import UID_CATALOG
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.Widget import IntegerWidget
 from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
@@ -41,6 +37,7 @@ from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
@@ -114,7 +111,10 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
+from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.public import Schema
+from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
@@ -124,6 +124,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
@@ -241,11 +242,20 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name="portal_catalog",
+            catalog_name=CLIENT_CATALOG,
             base_query={"is_active": True,
                         "sort_limit": 30,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
+            colModel=[
+                {"columnName": "getName", "width": "70", "label": _(
+                    "Client Name"), "align": "left"},
+                {"columnName": "getClientID", "width": "30", "label": _(
+                    "Client ID"), "align": "left"},
+                # UID is required in colModel
+                {"columnName": "UID", "hidden": True},
+            ],
+            ui_item="getName",
             showOn=True,
         ),
     ),

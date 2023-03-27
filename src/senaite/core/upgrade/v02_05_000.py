@@ -23,12 +23,15 @@ from senaite.core import logger
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import uncatalog_brain
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -87,3 +90,31 @@ def setup_labels(tool):
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
+
+
+def setup_client_catalog(tool):
+    """Setup client catalog
+    """
+    logger.info("Setup Client Catalog ...")
+    portal = api.get_portal()
+
+    # setup and rebuild client_catalog
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+    client_catalog = api.get_tool(CLIENT_CATALOG)
+    client_catalog.clearFindAndRebuild()
+
+    # portal_catalog cleanup
+    uncatalog_type("Client", catalog="portal_catalog")
+
+    logger.info("Setup Client Catalog [DONE]")
+
+
+def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
+    """Uncatalog all entries of the given type from the catalog
+    """
+    query = {"portal_type": portal_type}
+    query.update(kw)
+    brains = api.search(query, catalog=catalog)
+    for brain in brains:
+        uncatalog_brain(brain)
