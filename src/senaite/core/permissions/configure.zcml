@@ -2,7 +2,7 @@
            i18n_domain="senaite.core">
 
   <!-- package includes -->
-  <include package=".worksheet" />
   <include package=".sample" />
+  <include package=".worksheet" />
 
 </configure>
