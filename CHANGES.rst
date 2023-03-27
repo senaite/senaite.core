@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2280 Remove custom date rendering in sample header
 - #2276 Senaite labels
 - #2275 Fix wrong result when both "Result options" and "String" are enabled
 - #2273 Improve performance for sample listing index
