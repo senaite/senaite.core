@@ -125,6 +125,7 @@ from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
@@ -1645,26 +1646,61 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 return True
         return False
 
+    def getRawReports(self, inlcude_provisional=True, **kw):
+        """Returns catalog search results of relevant publication reports
+
+        :param kw: Catalog query params
+        :returns: Catalog brains
+        """
+        uid = api.get_uid(self)
+        client = self.getClient()
+        client_path = api.get_path(client)
+
+        query = {
+            "portal_type": "ARReport",
+            "path": {
+                "query": client_path,
+                "depth": 2,
+            },
+            # search all reports, where the current sample UID is included
+            "sample_uid": [uid],
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
+        query.update(kw)
+        return api.search(query, catalog=REPORT_CATALOG)
+
+    def getReports(self):
+        """Returns a list of publication report objects
+
+        :returns: List of report objects
+        """
+        return list(map(api.get_object, self.getRawReports()))
+
+    def getReportUIDs(self):
+        """Returns a list of publication report UIDs
+        """
+        return list(map(api.get_uid, self.getRawReports()))
+
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
             0 -> Never printed.
             1 -> Printed after last publish
             2 -> Printed but republished afterwards.
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        if review_state not in ['published']:
+        if not self.getDatePublished():
             return "0"
-        report_list = sorted(self.objectValues('ARReport'),
-                             key=lambda report: report.getDatePublished())
+
+        report_list = self.getRawReports()
         if not report_list:
             return "0"
+
         last_report = report_list[-1]
-        if last_report.getDatePrinted():
+        if last_report.getDatePrinted:
             return "1"
         else:
             for report in report_list:
-                if report.getDatePrinted():
+                if report.getDatePrinted:
                     return "2"
         return "0"
 

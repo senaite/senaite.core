@@ -37,9 +37,10 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
-    "getClientTitle"
+    "getClientTitle",
     "getClientURL",
     "getCreatorFullName",
+    "getDatePrinted",
     "getFileSize",
 ]
 

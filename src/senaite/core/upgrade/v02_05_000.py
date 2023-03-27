@@ -20,10 +20,13 @@
 
 from bika.lims import api
 from senaite.core import logger
+from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_dexterity_items
@@ -130,3 +133,22 @@ def setup_catalogs(tool):
     setup_core_catalogs(portal)
 
     logger.info("Setup Catalogs [DONE]")
+
+
+def update_report_catalog(self):
+    """Update indexes in report catalog and add new metadata columns
+    """
+    logger.info("Update report catalog ...")
+    portal = api.get_portal()
+
+    # ensure new indexes are created
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+
+    # remove columns
+    del_column(REPORT_CATALOG, "getClientTitlegetClientURL")
+
+    # add columns
+    add_column(REPORT_CATALOG, "getDatePrinted")
+
+    logger.info("Update report catalog [DONE]")
