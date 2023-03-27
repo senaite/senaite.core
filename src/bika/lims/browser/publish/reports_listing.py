@@ -23,16 +23,16 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
+from senaite.app.listing import ListingView
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.permissions.sample import can_publish
 from ZODB.POSException import POSKeyError
 
 
-class ReportsListingView(BikaListingView):
+class ReportsListingView(ListingView):
     """Listing view of all generated reports
     """
 
