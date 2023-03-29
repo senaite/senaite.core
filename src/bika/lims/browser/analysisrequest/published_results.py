@@ -47,19 +47,3 @@ class AnalysisRequestPublishedResults(ReportsListingView):
             "sort_on": "created",
             "sort_order": "descending",
         }
-
-        # disable the searchbox in this listing
-        self.show_search = False
-
-        # only allow the email transition at this level
-        self.review_states = [
-            {
-                "id": "default",
-                "title": "All",
-                "contentFilter": {},
-                "columns": self.columns.keys(),
-                "custom_transitions": [
-                    self.send_email_transition,
-                ]
-            },
-        ]

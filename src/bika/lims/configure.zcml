@@ -12,6 +12,7 @@
   <includeDependencies package="." />
 
   <!-- Include permissions -->
+  <include package="senaite.core.permissions" />
   <include file="permissions.zcml" />
 
   <five:registerPackage package="." initialize=".initialize" />
