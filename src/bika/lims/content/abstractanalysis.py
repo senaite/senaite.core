@@ -882,7 +882,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # If string result, return without any formatting
         if self.getStringResult():
-            return result
+            return cgi.escape(result) if html else result
 
         # If a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
