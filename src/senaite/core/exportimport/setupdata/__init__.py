@@ -41,6 +41,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from zope.event import notify
 from zope.interface import implements
@@ -1688,8 +1689,8 @@ class Analysis_Specifications(WorksheetImporter):
 
     def Import(self):
         bucket = {}
-        pc = getToolByName(self.context, "portal_catalog")
-        bsc = getToolByName(self.context, "senaite_catalog_setup")
+        client_catalog = getToolByName(self.context, CLIENT_CATALOG)
+        setup_catalog = getToolByName(self.context, SETUP_CATALOG)
         # collect up all values into the bucket
         for row in self.get_rows(3):
             title = row.get("Title", False)
@@ -1716,12 +1717,14 @@ class Analysis_Specifications(WorksheetImporter):
                 if parent == "lab":
                     folder = self.context.bika_setup.bika_analysisspecs
                 else:
-                    proxy = pc(portal_type="Client", getName=safe_unicode(parent))[0]
+                    proxy = client_catalog(
+                        portal_type="Client", getName=safe_unicode(parent))[0]
                     folder = proxy.getObject()
                 st = bucket[parent][title]["sampletype"]
                 resultsrange = bucket[parent][title]["resultsrange"]
                 if st:
-                    st_uid = bsc(portal_type="SampleType", title=safe_unicode(st))[0].UID
+                    st_uid = setup_catalog(
+                        portal_type="SampleType", title=safe_unicode(st))[0].UID
                 obj = _createObjectByType("AnalysisSpec", folder, tmpID())
                 obj.edit(title=title)
                 obj.setResultsRange(resultsrange)
