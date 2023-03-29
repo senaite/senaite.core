@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import json
 
@@ -106,21 +124,34 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         context = context.__of__(self.context)
         return context
 
-    def attr(self, name, default=None):
-        """Get the named attribute of the widget or the field
+    def lookup(self, name, field, context, default=None):
+        """Check if the context has an override for the given named property
+
+        The context can either define an attribute or a method with the
+        following naming convention:
+
+            <fieldname>_<propertyname>
+
+        If an attribute or method is found, this value will be returned,
+        otherwise the lookup will return the default value
         """
-        value = getattr(self, name, _marker)
-        if value is _marker:
-            return default
-        if isinstance(value, six.string_types):
-            context = self.get_context()
-            if base_hasattr(context, value):
-                attr = getattr(context, value)
-                if callable(attr):
-                    attr = attr()
-                if attr:
-                    value = attr
-        return value
+
+        # check if the current context defines an attribute or method for the
+        # given property
+        key = "{}_{}".format(field.getName(), name)
+        if base_hasattr(context, key):
+            attr = getattr(context, key, default)
+            if callable(attr):
+                # call the context method with additional information
+                attr = attr(name=name,
+                            widget=self,
+                            field=field,
+                            context=context,
+                            default=default)
+            return attr
+
+        # return the widget attribute
+        return getattr(self, name, default)
 
     def get_value(self):
         """Extract the value from the request or get it from the field
@@ -137,64 +168,36 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             value = [value]
         return value
 
-    def get_catalog(self):
-        return self.attr("catalog", "portal_catalog")
-
-    def get_query(self):
-        return self.attr("query", {})
-
-    def get_search_index(self):
-        return self.attr("search_index", "")
-
-    def get_value_key(self):
-        return self.attr("value_key", "uid")
-
-    def get_limit(self):
-        return self.attr("limit", 25)
-
-    def get_search_wildcard(self):
-        return self.attr("search_wildcard", True)
-
-    def get_allow_user_value(self):
-        """Allow the user to enter a custom value
-        """
-        return self.attr("allow_user_value", False)
-
-    def get_columns(self):
-        return self.attr("columns", [])
-
-    def is_multi_valued(self):
-        return self.attr("multi_valued", False)
-
-    def get_hide_input_after_select(self):
-        return self.attr("hide_input_after_select", False)
-
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
         """
+        context = self.get_context()
         values = self.get_value()
         attributes = {
             "data-id": self.id,
             "data-name": self.name,
             "data-values": values,
-            "data-value_key": self.get_value_key(),
+            "data-value_key": getattr(self, "value_key", "uid"),
             "data-api_url": self.get_api_url(),
-            "data-query": self.get_query(),
-            "data-catalog": self.get_catalog(),
-            "data-search_index": self.get_search_index(),
-            "data-search_wildcard": self.get_search_wildcard(),
-            "data-allow_user_value": self.get_allow_user_value(),
-            "data-columns": self.get_columns(),
-            "data-display_template": None,
-            "data-limit": self.get_limit(),
-            "data-multi_valued": self.is_multi_valued(),
-            "data-disabled": self.disabled or False,
-            "data-readonly": self.readonly or False,
-            "data-hide_input_after_select": self.get_hide_input_after_select(),
+            "data-query": getattr(self, "query", {}),
+            "data-catalog": getattr(self, "catalog", "portal_catalog"),
+            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-search_wildcard": getattr(self, "search_wildcard", True),
+            "data-allow_user_value": getattr(self, "allow_user_value", False),
+            "data-columns": getattr(self, "columns", []),
+            "data-display_template": getattr(self, "display_template", None),
+            "data-limit": getattr(self, "limit", 5),
+            "data-multi_valued": getattr(self, "multi_valued", True),
+            "data-disabled": getattr(self, "disabled", False),
+            "data-readonly": getattr(self, "readonly", False),
+            "data-hide_input_after_select": getattr(
+                self, "hide_user_input_after_select", False),
         }
 
-        # convert all attributes to JSON
         for key, value in attributes.items():
+            # lookup attributes for overrides
+            value = self.lookup(key, self.field, context, default=value)
+            # convert all attributes to JSON
             attributes[key] = json.dumps(value)
 
         return attributes

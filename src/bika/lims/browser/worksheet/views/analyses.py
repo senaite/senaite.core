@@ -35,6 +35,7 @@ from bika.lims.utils import t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.registry import get_registry_record
 
 
 class AnalysesView(BaseView):
@@ -76,15 +77,6 @@ class AnalysesView(BaseView):
             ("Service", {
                 "sortable": False,
                 "title": _("Analysis")}),
-            ("Method", {
-                "sortable": False,
-                "ajax": True,
-                "on_change": "_on_method_change",
-                "title": _("Method")}),
-            ("Instrument", {
-                "sortable": False,
-                "ajax": True,
-                "title": _("Instrument")}),
             ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
@@ -95,25 +87,34 @@ class AnalysesView(BaseView):
                 "title": _("Result"),
                 "ajax": True,
                 "sortable": False}),
+            ("Uncertainty", {
+                "sortable": False,
+                "title": _("+-")}),
+            ("Specification", {
+                "title": _("Specification"),
+                "sortable": False}),
             ("retested", {
                 "title": get_image("retested.png", title=t(_("Retested"))),
                 "toggle": False,
                 "type": "boolean"}),
-            ("Specification", {
-                "title": _("Specification"),
-                "sortable": False}),
-            ("Uncertainty", {
+            ("Method", {
                 "sortable": False,
-                "title": _("+-")}),
+                "ajax": True,
+                "on_change": "_on_method_change",
+                "title": _("Method")}),
+            ("Instrument", {
+                "sortable": False,
+                "ajax": True,
+                "title": _("Instrument")}),
+            ("Attachments", {
+                "sortable": False,
+                "title": _("Attachments")}),
             ("DueDate", {
                 "sortable": False,
                 "title": _("Due Date")}),
             ("state_title", {
                 "sortable": False,
                 "title": _("State")}),
-            ("Attachments", {
-                "sortable": False,
-                "title": _("Attachments")}),
         ))
 
         # Inject Remarks column for listing
@@ -151,12 +152,32 @@ class AnalysesView(BaseView):
             },
         ]
 
+    def update(self):
+        super(AnalysesView, self).update()
+        self.reorder_analysis_columns()
+
     def before_render(self):
         super(AnalysesView, self).before_render()
 
         if self.show_analysis_remarks_transition():
             for state in self.review_states:
                 state["custom_transitions"] = [self.set_analysis_remarks_modal]
+
+    @view.memoize
+    def get_default_columns_order(self):
+        """Return the default column order from the registry
+
+        :returns: List of column keys
+        """
+        name = "worksheetview_analysis_columns_order"
+        columns_order = get_registry_record(name, default=[]) or []
+        # Always put `Pos` column first
+        try:
+            columns_order.remove("Pos")
+        except ValueError:
+            pass
+        columns_order.insert(0, "Pos")
+        return columns_order
 
     def show_analysis_remarks_transition(self):
         """Check if the analysis remarks transitions should be rendered
@@ -470,6 +491,7 @@ class AnalysesView(BaseView):
         template = ViewPageTemplateFile("../templates/slot_header.pt")
         return template(self, data=data)
 
+    @view.memoize
     def get_slot_header_data(self, obj):
         """Prepare the data for the slot header template
         """
@@ -489,11 +511,17 @@ class AnalysesView(BaseView):
         parent_img_text = ""
         additional_parent_icons = []
 
-        sample_type_obj = None
+        sample_type = None
         sample_type_title = ""
         sample_type_url = ""
         sample_type_img = ""
         sample_type_img_text = ""
+
+        sample_point = None
+        sample_point_title = ""
+        sample_point_url = ""
+        sample_point_img = ""
+        sample_point_img_text = ""
 
         if IDuplicateAnalysis.providedBy(obj):
             # item
@@ -520,6 +548,13 @@ class AnalysesView(BaseView):
             sample_type_url = api.get_url(sample_type)
             sample_type_img = "sampletype.png"
             sample_type_img_text = t(_("Sample Type"))
+            # sample point
+            sample_point = request.getSamplePoint()
+            if sample_point:
+                sample_point_title = request.getSamplePointTitle()
+                sample_point_url = api.get_url(sample_point)
+                sample_point_img = "samplepoint.png"
+                sample_point_img_text = t(_("Sample Point"))
         elif IReferenceAnalysis.providedBy(obj):
             # item
             sample = obj.getSample()
@@ -567,6 +602,14 @@ class AnalysesView(BaseView):
             sample_type_img = "sampletype.png"
             sample_type_img_text = t(_("Sample Type"))
 
+            # sample point
+            sample_point = request.getSamplePoint()
+            if sample_point:
+                sample_point_title = request.getSamplePointTitle()
+                sample_point_url = api.get_url(sample_point)
+                sample_point_img = "samplepoint.png"
+                sample_point_img_text = t(_("Sample Point"))
+
         return {
             # item
             "item_obj": item_obj,
@@ -582,11 +625,17 @@ class AnalysesView(BaseView):
             "parent_img": get_image(parent_img, title=parent_img_text),
             "additional_parent_icons": additional_parent_icons,
             # sample type
-            "sample_type_obj": sample_type_obj,
+            "sample_type_obj": sample_type,
             "sample_type_title": sample_type_title,
             "sample_type_url": sample_type_url,
             "sample_type_img": get_image(
                 sample_type_img, title=sample_type_img_text),
+            # sample point
+            "sample_point_obj": sample_point,
+            "sample_point_title": sample_point_title,
+            "sample_point_url": sample_point_url,
+            "sample_point_img": get_image(
+                sample_point_img, title=sample_point_img_text),
         }
 
     def render_remarks_tag(self, ar):

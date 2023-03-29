@@ -1,0 +1,47 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <!-- Support for multi-component analyses
+       https://github.com/senaite/senaite.core/pull/2120 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.5.0: Support for multi-component analyses"
+      description="Support for multi-component analyses"
+      source="2503"
+      destination="2504"
+      handler="senaite.core.upgrade.v02_05_000.setup_multi_component_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Client Catalog"
+      description="Create client catalog and clean up client related indexes and metadata from portal catalog"
+      source="2502"
+      destination="2503"
+      handler=".v02_05_000.setup_client_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.5.0: Setup Labels"
+      description="Setup Labels"
+      source="2501"
+      destination="2502"
+      handler="senaite.core.upgrade.v02_05_000.setup_labels"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Recreate listing_searchable_text ZCText index and Lexicon in Sample Catalog"
+      description="Rebuild listing_searchable_text and Lexicon for better performance"
+      source="2500"
+      destination="2501"
+      handler=".v02_05_000.rebuild_sample_zctext_index_and_lexicon"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.5.0"
+      source="2423"
+      destination="2500"
+      handler=".v02_05_000.upgrade"
+      profile="senaite.core:default"/>
+
+</configure>

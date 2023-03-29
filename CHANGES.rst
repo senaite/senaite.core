@@ -1,10 +1,39 @@
 Changelog
 =========
 
-2.4.0 (unreleased)
+2.5.0 (unreleased)
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2280 Remove custom date rendering in sample header
+- #2278 Client catalog
+- #2276 Senaite labels
+- #2275 Fix wrong result when both "Result options" and "String" are enabled
+- #2273 Improve performance for sample listing index
+- #2272 Allow to configure the position of additional value columns
+
+
+2.4.1 (2023-03-11)
+------------------
+
+- #2271 Fix TypeError in Analysis Service's view
+
+
+2.4.0 (2023-03-10)
+------------------
+
+- #2268 Add samplepoint information to worksheet slot header
+- #2267 Worksheet transposed layout fixtures
+- #2266 Change worksheet analysis column order for better results capturing
+- #2265 Change sample analysis column order for better results capturing
+- #2264 Collapsible analyses listings in sample view
+- #2262 Simplify attachment render in report options to single checkbox
+- #2259 Prevent string results from formatting and number conversion
+- #2255 Fix attachments from retracted or rejected analyses are not ignored
+- #2201 Allow manual selection of units on results entry
+- #2258 Reduce conflict errors on number generation
+- #2256 Do not keep DX UID reference field back-references per default
+- #2257 Fix UnicodeEncode error when viewing report objects
 - #2254 Fix attachments to be ignored are included in email results view
 - #2253 Allow to flush referencefields in sample header
 - #2251 Fix UnicodeDecodeError in report email form
@@ -37,7 +66,7 @@ Changelog
 - #2208 Remove `default_method` from AnalysisRequest's Contact field
 - #2204 Fix traceback when retracting an analysis with a detection limit
 - #2202 Fix detection limit set manually is not displayed on result save
-- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled 
+- #2203 Fix empty date sampled in samples listing when sampling workflow is enabled
 - #2197 Use portal as relative path for sticker icons
 - #2196 Order sample analyses by sortable title on get per default
 - #2193 Fix analyst cannot import results from instruments

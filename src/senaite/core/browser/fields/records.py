@@ -15,11 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+import six
 
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
+from bika.lims import api
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.Registry import registerPropertyType
 from Products.PythonScripts.standard import html_quote
@@ -96,8 +99,12 @@ class RecordsField(RecordField):
         raw = self.getRaw(instance)[idx].get(subfield, '')
         if type(raw) in (type(()), type([])):
             raw = joinWith.join(raw)
+        if isinstance(raw, six.string_types):
+            raw = api.to_utf8(raw)
+        else:
+            raw = str(raw)
         # Prevent XSS attacks by quoting all user input
-        raw = html_quote(str(raw))
+        raw = html_quote(raw)
         # this is now very specific
         if subfield == 'email':
             return self.hideEmail(raw, instance)
@@ -125,7 +132,7 @@ class RecordsField(RecordField):
 
     # convert the records to persistent dictionaries
     def _to_dict(self, value):
-        if type(value) != list or type(value) !=tuple:
+        if type(value) != list or type(value) != tuple:
             if type(value) == dict:
                 value = [value]
             elif type(value) == str:

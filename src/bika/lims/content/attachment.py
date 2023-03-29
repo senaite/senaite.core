@@ -21,12 +21,12 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -34,14 +34,14 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from DateTime import DateTime
 from plone.app.blob.field import FileField
 from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import registerType
-
 
 schema = BikaSchema.copy() + Schema((
 
@@ -61,16 +61,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    StringField(
-        "ReportOption",
-        searchable=True,
-        vocabulary=ATTACHMENT_REPORT_OPTIONS,
-        widget=SelectionWidget(
-            label=_("Report Options"),
-            checkbox_bound=0,
-            format="select",
+    BooleanField(
+        "RenderInReport",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Render attachment in report"),
+            description=_(
+                "Only images can be rendered in the report directly"),
             visible=True,
-            default="r",
         ),
     ),
 
@@ -237,6 +235,21 @@ class Attachment(BaseFolder, ClientAwareMixin):
         """
         att_file = self.getAttachmentFile()
         return att_file.filename
+
+    @deprecated(comment="Removed in 3.x", replacement="getRenderInReport")
+    def getReportOption(self):
+        """BBB: returns "r" if RenderInReport is True, otherwise "i"
+        """
+        if not self.getRenderInReport():
+            return "i"
+        return "r"
+
+    @deprecated(comment="Removed in 3.x", replacement="setRenderInReport")
+    def setReportOption(self, value):
+        """BBB: set RenderInReport to True if the passed in value is "r",
+                and for all other values to False
+        """
+        self.setRenderInReport(value == "r")
 
 
 registerType(Attachment, PROJECTNAME)

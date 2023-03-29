@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -56,9 +56,15 @@ class SetupView(BrowserView):
 
     @property
     def setup(self):
-        """Returns the Senaite Setup Object
+        """Returns the old Setup Object
         """
         return api.get_setup()
+
+    @property
+    def senaite_setup(self):
+        """Returns the new Setup Object
+        """
+        return api.get_senaite_setup()
 
     @memoize_contextless
     def get_icon_for(self, brain, **kw):
@@ -73,7 +79,10 @@ class SetupView(BrowserView):
         """
         query = {
             "path": {
-                "query": api.get_path(self.setup),
+                "query": [
+                    api.get_path(self.setup),
+                    api.get_path(self.senaite_setup),
+                ],
                 "depth": 1,
             },
         }

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2022 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -27,10 +27,11 @@ from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from Products.CMFCore import permissions
 from senaite.core.behaviors.utils import get_behavior_schema
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.interface import provider
 
 
@@ -68,7 +69,7 @@ class IClientShareableBehavior(model.Schema):
     directives.widget(
         "clients",
         UIDReferenceWidgetFactory,
-        catalog="portal_catalog",
+        catalog=CLIENT_CATALOG,
         query={
             "portal_type": "Client",
             "is_active": True,
@@ -78,15 +79,15 @@ class IClientShareableBehavior(model.Schema):
         display_template="<a href='${url}'>${title}</a>",
         columns=[
             {
-                "name": "title",
-                "width": "30",
-                "align": "left",
-                "label": _(u"Title"),
-            }, {
-                "name": "description",
+                "name": "getName",
                 "width": "70",
                 "align": "left",
-                "label": _(u"Description"),
+                "label": _(u"Client Name"),
+            }, {
+                "name": "getClientID",
+                "width": "30",
+                "align": "left",
+                "label": _(u"Client ID"),
             },
         ],
         limit=15,

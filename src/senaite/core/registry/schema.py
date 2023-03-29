@@ -1,13 +1,164 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
+from plone.autoform import directives
 from plone.supermodel import model
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
+
 from zope import schema
 
 
 class ISenaiteRegistry(model.Schema):
     """Senaite registry schema
     """
+
+
+class ILabelRegistry(ISenaiteRegistry):
+    """Label settings
+    """
+    model.fieldset(
+        "label_enabled_portal_types",
+        label=_(u"Labels"),
+        description=_("Label configuration"),
+        fields=[
+            "label_enabled_portal_types",
+        ],
+    )
+
+    directives.widget(label_enabled_portal_types=CheckBoxFieldWidget)
+    label_enabled_portal_types = schema.List(
+        title=_("Types with labels"),
+        description=_(
+            "Types that support labels directly.<br/>"
+            "NOTE: In cluster setups, other instances need to be "
+            "restarted manually for the changes to take place!"
+         ),
+        value_type=schema.Choice(
+            vocabulary="plone.app.vocabularies.PortalTypes",
+        ),
+        required=False,
+    )
+
+
+class IWorksheetViewRegistry(ISenaiteRegistry):
+    """View settings for worksheets
+    """
+    model.fieldset(
+        "worksheet_view",
+        label=_(u"Worksheet View"),
+        description=_("Worksheet view configuration"),
+        fields=[
+            "worksheetview_analysis_columns_order",
+        ],
+    )
+
+    worksheetview_analysis_columns_order = schema.List(
+        title=_(u"Analysis columns order"),
+        description=_(
+            u"Default column order for worksheet analysis listings"
+        ),
+        value_type=schema.ASCIILine(title=u"Column"),
+        required=False,
+        default=[
+            "Pos",
+            "Service",
+            "AdditionalValues",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Attachments",
+            "DueDate",
+            "state_title",
+        ]
+    )
+
+
+class ISampleViewRegistry(ISenaiteRegistry):
+    """View settings for samples
+    """
+    model.fieldset(
+        "sample_view",
+        label=_(u"Sample View"),
+        description=_("Sample view configuration"),
+        fields=[
+            "sampleview_collapse_field_analysis_table",
+            "sampleview_collapse_lab_analysis_table",
+            "sampleview_collapse_qc_analysis_table",
+            "sampleview_analysis_columns_order",
+        ],
+    )
+    sampleview_collapse_field_analysis_table = schema.Bool(
+        title=_("Collapse field analysis table"),
+        description=_("Collapse field analysis table in sample view"),
+        default=False,
+        required=False,
+    )
+
+    sampleview_collapse_lab_analysis_table = schema.Bool(
+        title=_("Collapse lab analysis table"),
+        description=_("Collapse lab analysis table in sample view"),
+        default=False,
+        required=False,
+    )
+
+    sampleview_collapse_qc_analysis_table = schema.Bool(
+        title=_("Collapse qc analysis table"),
+        description=_("Collapse qc analysis table in sample view"),
+        default=True,
+        required=False,
+    )
+
+    sampleview_analysis_columns_order = schema.List(
+        title=_(u"Analysis columns order"),
+        description=_(
+            u"Default column order for sample analysis listings"
+        ),
+        value_type=schema.ASCIILine(title=u"Column"),
+        required=False,
+        default=[
+            "created",
+            "Service",
+            "AdditionalValues",
+            "DetectionLimitOperand",
+            "Result",
+            "Uncertainty",
+            "Unit",
+            "Specification",
+            "retested",
+            "Method",
+            "Instrument",
+            "Calculation",
+            "Attachments",
+            "SubmittedBy",
+            "Analyst",
+            "CaptureDate",
+            "DueDate",
+            "state_title",
+            "Hidden",
+        ]
+    )
 
 
 class ISampleHeaderRegistry(ISenaiteRegistry):

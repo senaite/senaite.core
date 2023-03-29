@@ -21,14 +21,14 @@
 from setuptools import setup
 from setuptools import find_packages
 
-version = "2.4.0"
+version = "2.5.0"
+
 
 setup(
     name="senaite.core",
     version=version,
     description="SENAITE LIMS CORE",
     long_description=open("README.rst").read() + "\n" +
-    open("RELEASE_NOTES.rst").read() + "\n" +
     open("CHANGES.rst").read() + "\n",
     # Get more strings from
     # http://pypi.python.org/pypi?:action=list_classifiers

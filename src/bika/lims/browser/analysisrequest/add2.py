@@ -1099,7 +1099,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return {
             "AttachmentFile": fileupload,
             "AttachmentType": "",
-            "ReportOption": "",
+            "RenderInReport": False,
             "AttachmentKeys": "",
             "Service": "",
         }

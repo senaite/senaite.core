@@ -1,0 +1,13 @@
+<div class="slot-header"
+     i18n:domain="senaite.core"
+     tal:define="labels options/labels;">
+
+  <ul class="list-unstyled d-table-row">
+    <li tal:repeat="label labels" class="d-inline-block">
+      <div class="p-1 mb-1 mr-1 bg-light border rounded small">
+        <span tal:replace="python:label"/>
+      </div>
+    </li>
+  </ul>
+
+</div>

@@ -102,11 +102,51 @@ ScientificName = BooleanField(
 Unit = StringField(
     'Unit',
     schemata="Description",
+    write_permission=FieldEditAnalysisResult,
     widget=StringWidget(
-        label=_("Unit"),
+        label=_(
+            u"label_analysis_unit",
+            default=u"Default Unit"
+        ),
         description=_(
-            "The measurement units for this analysis service' results, e.g. "
-            "mg/l, ppm, dB, mV, etc."),
+            u"description_analysis_unit",
+            default=u"The measurement units for this analysis service' "
+                    u"results, e.g. mg/l, ppm, dB, mV, etc."
+        ),
+    )
+)
+
+# A selection of units that are able to update Unit. 
+UnitChoices = RecordsField(
+    "UnitChoices",
+    schemata="Description",
+    type="UnitChoices",
+    subfields=(
+        "value",
+    ),
+    subfield_labels={
+        "value": u"",
+    },
+    subfield_types={
+        "value": "string",
+    },
+    subfield_sizes={
+        "value": 20,
+    },
+    subfield_maxlength={
+        "value": 50,
+    },
+    widget=RecordsWidget(
+        label=_(
+            u"label_analysis_unitchoices",
+            default=u"Units for Selection"
+        ),
+        description=_(
+            u"description_analysis_unitchoices",
+            default=u"Provide a list of units that are suitable for the "
+                    u"analysis. Ensure to include the default unit in this "
+                    u"list"
+        ),
     )
 )
 
@@ -686,6 +726,7 @@ schema = BikaSchema.copy() + Schema((
     ProtocolID,
     ScientificName,
     Unit,
+    UnitChoices,
     Precision,
     ExponentialFormatPrecision,
     LowerDetectionLimit,
@@ -744,13 +785,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
-
-    @security.public
-    def getUnit(self):
-        """Returns the Unit
-        """
-        unit = self.Schema().getField("Unit").get(self) or ""
-        return unit.strip()
 
     @security.public
     def getDefaultVAT(self):

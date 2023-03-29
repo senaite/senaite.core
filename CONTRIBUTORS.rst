@@ -27,19 +27,21 @@ contributions descending.
 - Dhruv Khattar, dhruv@khattarindia.com
 - witekdev, witekdev@gmail.com
 - Anderson Smith, andersonsmith183@gmail.com
-- Javis Sullivan, javissullivan@gmail.com
 - Leonid Toporkov, leonid.toporkov@gmail.com
+- Javis Sullivan, javissullivan@gmail.com
 - toropok, leonid.toporkov@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Jean Jordaan, jean.jordaan@gmail.com
 - MoffatMore, 12894381+MoffatMore@users.noreply.github.com
+- Stefan Gruber, s.gruber@liscon.de
 - krishan Chopra, krishanchopra61@yahoo.in
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
 - Anton Zhuchkov, antonzh85@gmail.com
-- Stefan Gruber, s.gruber@liscon.de
 - Siyamalan, 20146320+siyamalan@users.noreply.github.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
+- RML-IAEA, 95472242+RML-IAEA@users.noreply.github.com
+- luthando5, 104898641+luthando5@users.noreply.github.com
 - goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
 - Bugerman58, antonzh85@gmail.com

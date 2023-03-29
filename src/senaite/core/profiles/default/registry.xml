@@ -4,6 +4,15 @@
   <!-- SENAITE Registry -->
   <records interface="senaite.core.registry.schema.ISenaiteRegistry" />
 
+  <!-- Registry for label configuration -->
+  <records interface="senaite.core.registry.schema.ILabelRegistry" />
+
+  <!-- Registry for worksheet view configuration -->
+  <records interface="senaite.core.registry.schema.IWorksheetViewRegistry" />
+
+  <!-- Registry for sample view configuration -->
+  <records interface="senaite.core.registry.schema.ISampleViewRegistry" />
+
   <!-- Registry for sample header configuration -->
   <records interface="senaite.core.registry.schema.ISampleHeaderRegistry" />
 

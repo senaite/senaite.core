@@ -1,0 +1,10 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <utility
+      provides="senaite.core.interfaces.INumberGenerator"
+      factory=".numbergenerator.NumberGenerator"
+      />
+
+</configure>

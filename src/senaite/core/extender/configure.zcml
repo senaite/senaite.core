@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Labeled contents -->
+  <adapter
+      factory=".label.LabelSchemaExtender"
+      name="label-extender"
+      provides="archetypes.schemaextender.interfaces.ISchemaExtender"/>
+
+  <adapter
+      factory=".label.LabelSchemaModifier"
+      name="label-modifier"
+      provides="archetypes.schemaextender.interfaces.ISchemaModifier"/>
+
+</configure>

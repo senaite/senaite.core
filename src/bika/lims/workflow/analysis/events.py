@@ -173,6 +173,10 @@ def after_retract(analysis):
     # Mark this analysis as IRetracted
     alsoProvides(analysis, IRetracted)
 
+    # Ignore attachments of this analysis in results report
+    for attachment in analysis.getAttachment():
+        attachment.setRenderInReport(False)
+
     # Retract our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "retract")
 
@@ -202,6 +206,10 @@ def after_reject(analysis):
 
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
+
+    # Ignore attachments of this analysis in results report
+    for attachment in analysis.getAttachment():
+        attachment.setRenderInReport(False)
 
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")

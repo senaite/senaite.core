@@ -33,7 +33,7 @@
         </a>
       </td>
     </tr>
-    <tr>
+    <tr tal:condition="nocall:data/sample_type_obj">
       <td></td>
       <td>
         <!-- Sample Type Icon -->
@@ -42,6 +42,18 @@
         <a href=""
            tal:attributes="href data/sample_type_url|nothing">
           <span tal:replace="data/sample_type_title|nothing"/>
+        </a>
+      </td>
+    </tr>
+    <tr tal:condition="nocall:data/sample_point_obj">
+      <td></td>
+      <td>
+        <!-- Sample Point Icon -->
+        <img class="img" tal:replace="structure data/sample_point_img|nothing"/>
+        <!-- Parent Title Link -->
+        <a href=""
+           tal:attributes="href data/sample_point_url|nothing">
+          <span tal:replace="data/sample_point_title|nothing"/>
         </a>
       </td>
     </tr>

@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from itertools import islice
 
@@ -16,8 +34,6 @@ from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
-from senaite.core.api import dtime
-from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
 from senaite.core.interfaces import IDataManager
 from zope import event
 from zope.component import queryAdapter
@@ -132,13 +148,17 @@ class SampleHeaderViewlet(ViewletBase):
         # https://github.com/bikalims/bika.lims/issues/2270
         uid_fieldname = "{}_uid".format(fieldname)
         if uid_fieldname in form:
-            # allow to reset the reference
-            if not fieldvalue:
-                value = ""
-            else:
-                value = form[uid_fieldname]
+            # get the value from the corresponding `uid_<fieldname>` key
+            value = form[uid_fieldname]
+
+            # extract the assigned UIDs for multi-reference fields
             if field.multiValued:
                 value = filter(None, value.split(","))
+
+            # allow to flush single reference fields
+            if not field.multiValued and not fieldvalue:
+                value = ""
+
             return value
 
         # other fields
@@ -180,17 +200,6 @@ class SampleHeaderViewlet(ViewletBase):
             # return immediately if we have an adapter
             if adapter is not None:
                 return adapter(field)
-
-            # TODO: Refactor to adapter
-            # Returns the localized date
-            if self.is_datetime_field(field):
-                value = field.get(self.context)
-                if not value:
-                    return None
-                return dtime.ulocalized_time(value,
-                                             long_format=True,
-                                             context=self.context,
-                                             request=self.request)
 
         return None
 
@@ -281,14 +290,6 @@ class SampleHeaderViewlet(ViewletBase):
         if mode == "view":
             return False
         return field.required
-
-    def is_datetime_field(self, field):
-        """Check if the field is a date field
-        """
-        if self.is_at_field(field):
-            widget = self.get_widget(field)
-            return isinstance(widget, DateTimeWidget)
-        return False
 
     def is_at_field(self, field):
         """Check if the field is an AT field

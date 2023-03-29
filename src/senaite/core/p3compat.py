@@ -15,10 +15,8 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-# Python 3 compatibility module
 
 def cmp(a, b):
     """Polyfill for the `cmp` builtin function

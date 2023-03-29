@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import datetime
@@ -28,7 +28,6 @@ import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
@@ -41,6 +40,9 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
 from zope.event import notify
 from zope.interface import implements
 
@@ -566,10 +568,10 @@ class Client_Contacts(WorksheetImporter):
 
     def Import(self):
         portal_groups = getToolByName(self.context, 'portal_groups')
-        pc = getToolByName(self.context, 'portal_catalog')
+        cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
-            client = pc(portal_type="Client",
-                        getName=row['Client_title'])
+            client = cat(portal_type="Client",
+                         getName=row['Client_title'])
             if len(client) == 0:
                 client_contact = "%(Firstname)s %(Surname)s" % row
                 error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
@@ -1165,13 +1167,13 @@ class Sample_Points(WorksheetImporter):
     def Import(self):
         setup_folder = self.context.bika_setup.bika_samplepoints
         bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        pc = getToolByName(self.context, 'portal_catalog')
+        cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
             if not row['title']:
                 continue
             if row['Client_title']:
                 client_title = row['Client_title']
-                client = pc(portal_type="Client", getName=client_title)
+                client = cat(portal_type="Client", getName=client_title)
                 if len(client) == 0:
                     error = "Sample Point %s: Client invalid: '%s'. The Sample point will not be uploaded."
                     logger.error(error, row['title'], client_title)
@@ -1687,8 +1689,8 @@ class Analysis_Specifications(WorksheetImporter):
 
     def Import(self):
         bucket = {}
-        pc = getToolByName(self.context, "portal_catalog")
-        bsc = getToolByName(self.context, "senaite_catalog_setup")
+        client_catalog = getToolByName(self.context, CLIENT_CATALOG)
+        setup_catalog = getToolByName(self.context, SETUP_CATALOG)
         # collect up all values into the bucket
         for row in self.get_rows(3):
             title = row.get("Title", False)
@@ -1715,12 +1717,14 @@ class Analysis_Specifications(WorksheetImporter):
                 if parent == "lab":
                     folder = self.context.bika_setup.bika_analysisspecs
                 else:
-                    proxy = pc(portal_type="Client", getName=safe_unicode(parent))[0]
+                    proxy = client_catalog(
+                        portal_type="Client", getName=safe_unicode(parent))[0]
                     folder = proxy.getObject()
                 st = bucket[parent][title]["sampletype"]
                 resultsrange = bucket[parent][title]["resultsrange"]
                 if st:
-                    st_uid = bsc(portal_type="SampleType", title=safe_unicode(st))[0].UID
+                    st_uid = setup_catalog(
+                        portal_type="SampleType", title=safe_unicode(st))[0].UID
                 obj = _createObjectByType("AnalysisSpec", folder, tmpID())
                 obj.edit(title=title)
                 obj.setResultsRange(resultsrange)

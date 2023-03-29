@@ -20,10 +20,6 @@
 
 import collections
 
-from Products.CMFCore.permissions import ModifyPortalContent
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -33,6 +29,10 @@ from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from bika.lims.utils import get_registry_value
+from plone.app.content.browser.interfaces import IFolderContentsView
+from Products.CMFCore.permissions import ModifyPortalContent
+from senaite.core.catalog import CLIENT_CATALOG
+from zope.interface import implements
 
 
 class ClientFolderContentsView(BikaListingView):
@@ -54,6 +54,7 @@ class ClientFolderContentsView(BikaListingView):
         self.landing_page = get_registry_value(
             self._LANDING_PAGE_REGISTRY_KEY, self._DEFAULT_LANDING_PAGE)
 
+        self.catalog = CLIENT_CATALOG
         self.contentFilter = {
             "portal_type": "Client",
             "sort_on": "sortable_title",

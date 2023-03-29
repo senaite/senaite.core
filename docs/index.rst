@@ -21,7 +21,6 @@ Table of Contents:
    adapters/index
    utilities/index
    doctests
-   release_notes
    changelog
 
 

@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- 2.3.0 to 2.4.0 -->
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.4.0"
+      source="2.3.0"
+      destination="2.4.0"
+      handler="senaite.core.upgrade.v02_04_000.upgrade"
+      profile="senaite.core:default"/>
+
   <!-- Reindex QC Analyses
        https://github.com/senaite/senaite.core/pull/2157 -->
   <genericsetup:upgradeStep
@@ -165,18 +173,49 @@
       title="SENAITE CORE 2.4.0: Ensure sample client fields are set"
       description="Iterate through all samples and check if the `Client` schema field is set"
       source="2416"
-      destination="2417"
+      destination="2418"
       handler="senaite.core.upgrade.v02_04_000.ensure_sample_client_fields_are_set"
       profile="senaite.core:default"/>
 
-  <!-- Support for multi-component analyses
-       https://github.com/senaite/senaite.core/pull/2120 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Support for multi-component analyses"
-      description="Support for multi-component analyses"
-      source="2417"
-      destination="2418"
-      handler="senaite.core.upgrade.v02_04_000.setup_multi_component_analyses"
+      title="SENAITE CORE 2.4.0: Convert attachment report options to boolean"
+      description="Convert attachment report option value for new schema field RenderInReport to True/False values"
+      source="2418"
+      destination="2419"
+      handler="senaite.core.upgrade.v02_04_000.convert_attachment_report_options"
+      profile="senaite.core:default"/>
+
+  <!-- NOTE: This step was previously 2418, but needs to run *after* 2419 -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Ignore attachments from invalid analyses"
+      description="Ignore attachments from invalid analyses"
+      source="2419"
+      destination="2420"
+      handler="senaite.core.upgrade.v02_04_000.ignore_attachments_from_invalid_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample section rendering"
+      source="2420"
+      destination="2421"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for sample analyses columns config"
+      source="2421"
+      destination="2422"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Update configuration registry"
+      description="Update configuration registry for worksheet analyses columns config"
+      source="2422"
+      destination="2423"
+      handler="senaite.core.upgrade.v02_04_000.import_registry"
       profile="senaite.core:default"/>
 
 </configure>

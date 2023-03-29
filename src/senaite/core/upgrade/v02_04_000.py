@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2022 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import transaction
@@ -27,6 +27,7 @@ from bika.lims.browser.fields.uidreferencefield import get_storage
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.config import UID_CATALOG
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -34,8 +35,6 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.content.interpretationtemplate import InterpretationTemplate
-from senaite.core.setuphandlers import add_catalog_index
-from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
@@ -87,16 +86,6 @@ def reindex_qc_analyses(tool):
         obj._p_deactivate()
 
     logger.info("Reindexing QC Analyses [DONE]")
-
-
-def setup_multi_component_analyses(tool):
-    """Adds the isAnalyte index to the analysis catalog
-    """
-    cat = api.get_tool(ANALYSIS_CATALOG)
-    logger.info("Setup multi-component analyses {} ...".format(cat.id))
-    if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
-        reindex_catalog_index(cat, "isAnalyte")
-    logger.info("Setup multi-component analyses {} [DONE]".format(cat.id))
 
 
 def mark_retracted_and_rejected_analyses(tool):
@@ -693,3 +682,95 @@ def ensure_sample_client_fields_are_set(portal):
         obj._p_deactivate()
 
     logger.info("Ensure sample client fields are set [DONE]")
+
+
+def ignore_attachments_from_invalid_analyses(tool):
+    """Flag attachments from invalid analyses with "ignore" option, so they
+    are no longer rendered in results email view
+    """
+    logger.info("Flag attachments to ignore ...")
+    query = {
+        "portal_type": ["Analysis"],
+        "review_state": ["retracted", "rejected", "cancelled"],
+    }
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
+        # Ignore attachments of this analysis in results report
+        for attachment in obj.getAttachment():
+            # set the value of the removed schema field directly for
+            # backwards compatibility and consistency
+            attachment.ReportOption = "i"
+            # set the new schema field value
+            attachment.setRenderInReport(False)
+            attachment._p_deactivate()
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Flag attachments to ignore [DONE]")
+
+
+def convert_attachment_report_options(tool):
+    """Convert raw ReportOption for new RenderInReport boolean field
+    """
+    logger.info("Convert attachment report options ...")
+    query = {
+        "portal_type": ["Attachment"],
+    }
+    brains = api.search(query, UID_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        try:
+            obj = api.get_object(brain)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
+        raw_value = getattr(obj, "ReportOption", None)
+        if raw_value is not None:
+            value = raw_value == "r"
+            logger.info("Convert report otion {} -> {} for {}".format(
+                raw_value, value, api.get_path(obj)))
+            obj.setRenderInReport(value)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Convert attachment report options [DONE]")
+
+
+def import_registry(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "plone.app.registry")

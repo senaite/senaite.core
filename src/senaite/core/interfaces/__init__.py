@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
@@ -75,6 +75,11 @@ class IAjaxEditForm(Interface):
         """
 
 
+class INumberGenerator(Interface):
+    """A utility to generates unique numbers by key
+    """
+
+
 class IContainer(Interface):
     """SENAITE Base Container
     """
@@ -132,4 +137,27 @@ class IDynamicLocalRoles(Interface):
 
 class IInterpretationTemplate(Interface):
     """Marker interface for interpretation template objects
+    """
+
+
+class ILabels(Interface):
+    """Marker interface for labels container
+    """
+
+
+class ILabel(Interface):
+    """Marker interface for labels
+    """
+
+
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
+    """
+
+
+class IHaveLabels(ICanHaveLabels):
+    """Marker interface for labeled objects
+
+    NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
+          fields for already labeled objects
     """

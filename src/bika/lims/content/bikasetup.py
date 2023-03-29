@@ -37,7 +37,6 @@ from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from Products.Archetypes.atapi import BooleanField
@@ -61,6 +60,7 @@ from Products.CMFCore.utils import getToolByName
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from zope.interface import implements
@@ -1192,7 +1192,7 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             # we get a string value here!
-            value = api.to_float(value, default=10.0)
+            value = api.to_int(value, default=10)
             setup.setMaxNumberOfSamplesAdd(value)
 
 

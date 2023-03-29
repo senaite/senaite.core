@@ -20,7 +20,10 @@
 
 import itertools
 import re
+from datetime import datetime
+
 import six
+
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -36,14 +39,12 @@ from bika.lims.interfaces import IARReport
 from bika.lims.interfaces import IIdServer
 from bika.lims.interfaces import IIdServerTypeID
 from bika.lims.interfaces import IIdServerVariables
-from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
-from datetime import datetime
 from Products.ATContentTypes.utils import DT2dt
+from senaite.core.interfaces import INumberGenerator
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component import queryAdapter
-
 
 AR_TYPES = [
     "AnalysisRequest",

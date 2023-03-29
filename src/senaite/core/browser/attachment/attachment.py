@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import six
@@ -29,7 +29,6 @@ from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import security
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from BTrees.OOBTree import OOBTree
 from plone import protect
@@ -90,6 +89,16 @@ class AttachmentsView(BrowserView):
         # call the endpoint
         return action()
 
+    def get_redirect_url(self):
+        """Get the redirect URL depending on the context
+        """
+        url = self.context.absolute_url()
+        # workaround for Worksheets
+        if self.request["HTTP_REFERER"].endswith("manage_results"):
+            url = "{}/manage_results".format(url)
+        # we use this request parameter to keep the attachments viewlet open
+        return "{}?show_attachments=1".format(url)
+
     def add_status_message(self, message, level="info"):
         """Set a portal status message
         """
@@ -129,8 +138,7 @@ class AttachmentsView(BrowserView):
             self.add_status_message(_("Attachment(s) updated"))
         # set the attachments order to the annotation storage
         self.set_attachments_order(order)
-        # redirect back to the default view
-        return self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def action_add_to_ws(self):
         """Form action to add a new attachment in a worksheet
@@ -143,7 +151,7 @@ class AttachmentsView(BrowserView):
         analysis_uid = form.get("Analysis", None)
         attachment_type = form.get("AttachmentType", "")
         attachment_keys = form.get("AttachmentKeys", "")
-        report_option = form.get("ReportOption", "r")
+        render_in_report = form.get("RenderInReport", True)
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -161,7 +169,7 @@ class AttachmentsView(BrowserView):
                 attachment_file,
                 AttachmentType=attachment_type,
                 AttachmentKeys=attachment_keys,
-                ReportOption=report_option)
+                RenderInReport=render_in_report)
 
             others = analysis.getAttachment()
             attachments = []
@@ -191,7 +199,7 @@ class AttachmentsView(BrowserView):
                     attachment_file,
                     AttachmentType=attachment_type,
                     AttachmentKeys=attachment_keys,
-                    ReportOption=report_option)
+                    RenderInReport=render_in_report)
 
                 others = analysis.getAttachment()
                 attachments = []
@@ -216,11 +224,7 @@ class AttachmentsView(BrowserView):
                 _("Please select an analysis or service for the attachment"),
                 level="warning")
 
-        if self.request['HTTP_REFERER'].endswith('manage_results'):
-            self.request.response.redirect('{}/manage_results'.format(
-                self.context.absolute_url()))
-        else:
-            self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def action_add(self):
         """Form action to add a new attachment
@@ -233,7 +237,7 @@ class AttachmentsView(BrowserView):
         attachment_file = form.get("AttachmentFile_file", None)
         attachment_type = form.get("AttachmentType", "")
         attachment_keys = form.get("AttachmentKeys", "")
-        report_option = form.get("ReportOption", "r")
+        render_in_report = form.get("RenderInReport", True)
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -247,7 +251,7 @@ class AttachmentsView(BrowserView):
             attachment_file,
             AttachmentType=attachment_type,
             AttachmentKeys=attachment_keys,
-            ReportOption=report_option)
+            RenderInReport=render_in_report)
 
         # append the new UID to the end of the current order
         self.set_attachments_order(api.get_uid(attachment))
@@ -276,11 +280,7 @@ class AttachmentsView(BrowserView):
             self.add_status_message(
                 _("Attachment added to the current sample"))
 
-        if self.request["HTTP_REFERER"].endswith("manage_results"):
-            self.request.response.redirect('{}/manage_results'.format(
-                self.context.absolute_url()))
-        else:
-            self.request.response.redirect(self.context.absolute_url())
+        return self.request.response.redirect(self.get_redirect_url())
 
     def create_attachment(self, container, attachment_file, **kw):
         """Create an Attachment object in the given container
@@ -367,19 +367,23 @@ class AttachmentsView(BrowserView):
         attachment_uid = api.get_uid(attachment)
         attachment_file = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
-        report_option = attachment.getReportOption()
-        report_option_value = ATTACHMENT_REPORT_OPTIONS.getValue(report_option)
+        attachment_type_uid = ""
+        attachment_type_title = ""
+        render_in_report = attachment.getRenderInReport()
+
+        if attachment_type:
+            attachment_type_uid = api.get_uid(attachment_type)
+            attachment_type_title = api.get_title(attachment_type)
 
         return {
             "keywords": attachment.getAttachmentKeys(),
             "size": self.get_attachment_size(attachment),
             "name": attachment_file.filename,
-            "type_uid": api.get_uid(attachment_type) if attachment_type else "",
-            "type": api.get_title(attachment_type) if attachment_type else "",
+            "type_uid": attachment_type_uid,
+            "type": attachment_type_title,
             "absolute_url": attachment.absolute_url(),
             "UID": attachment_uid,
-            "report_option": report_option,
-            "report_option_value": report_option_value,
+            "render_in_report": render_in_report,
             "analysis": "",
         }
 
@@ -442,11 +446,6 @@ class AttachmentsView(BrowserView):
             "sort_order": "ascending"
         }
         return api.search(query, SETUP_CATALOG)
-
-    def get_attachment_report_options(self):
-        """Returns the valid attachment report options
-        """
-        return ATTACHMENT_REPORT_OPTIONS.items()
 
     @view.memoize
     def get_analyses(self):

@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2023 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from threading import RLock
 
@@ -75,7 +93,7 @@ class BaseCatalog(CatalogTool):
     def mapped_catalog_types(self):
         return TYPES
 
-    def is_indexable(self, obj):
+    def supports_indexing(self, obj):
         """Checks if the object can be indexed
         """
         if not (base_hasattr(obj, "reindexObject")):
@@ -83,6 +101,16 @@ class BaseCatalog(CatalogTool):
         if not (safe_callable(obj.reindexObject)):
             return False
         return True
+
+    def is_obj_indexable(self, obj, portal_type, mapped_types):
+        """Checks if the object can be indexed
+        """
+        if portal_type in mapped_types:
+            return True
+        if api.is_dexterity_content(obj):
+            multiplex_catalogs = getattr(obj, "_catalogs", [])
+            return self.id in multiplex_catalogs
+        return False
 
     def get_portal_type(self, obj):
         """Returns the portal type of the object
@@ -135,7 +163,7 @@ class BaseCatalog(CatalogTool):
             __traceback_info__ = path
 
             # skip non-indexable types
-            if not self.is_indexable(obj):
+            if not self.supports_indexing(obj):
                 return
 
             # get the porta type of this object
@@ -143,21 +171,9 @@ class BaseCatalog(CatalogTool):
 
             try:
                 # only consider mapped types if we have them set
-                if mapped_types and portal_type in mapped_types:
-                    # NOTE: This method indexes only the object in this
-                    #       catalog, but does not take DX multiplexing into
-                    #       consideration.
+                if self.is_obj_indexable(obj, portal_type, mapped_types):
                     self._reindexObject(obj, idxs=idxs)  # bypass queue
                     self.log_progress()
-                elif api.is_dexterity_content(obj):
-                    # NOTE: Catalog multiplexing is only available for DX types
-                    #       and stores the catalogs in a variable `_catalogs`.
-                    multiplex_catalogs = getattr(obj, "_catalogs", [])
-                    if self.id in multiplex_catalogs:
-                        self._reindexObject(obj, idxs=idxs)  # bypass queue
-                        self.log_progress()
-                else:
-                    return
             except TypeError:
                 # Catalogs have 'indexObject' as well, but they
                 # take different args, and will fail

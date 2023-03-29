@@ -63,6 +63,7 @@ The field can be used for dexterity types:
 
     >>> class IContentSchema(Interface):
     ...     contact = UIDReferenceField(title=u"Contact",
+    ...                                 relationship="Content.contact",
     ...                                 allowed_types=("Contact", ),
     ...                                 multi_valued=True)
 

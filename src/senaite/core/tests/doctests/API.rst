@@ -199,7 +199,7 @@ Getting an Object
 Getting the object from a catalog brain is a common task.
 
 This function provides an unified interface to portal objects **and** brains.
-Furthermore it is idempotent, so it can be called multiple times in a row::
+Furthermore it is idempotent, so it can be called multiple times in a row.
 
 We will demonstrate the usage on the client object we created above::
 
@@ -211,8 +211,7 @@ We will demonstrate the usage on the client object we created above::
 
 Now we show it with catalog results::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog(portal_type="Client")
+    >>> brains = api.search({"portal_type": "Client"})
     >>> brains
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
@@ -320,7 +319,13 @@ This function checks if an object is a `Dexterity` content type::
     >>> api.is_dexterity_content(portal)
     False
 
-We currently have no `Dexterity` contents, so testing this comes later...
+It is also possible to check by portal type::
+
+    >>> api.is_dx_type("InterpretationTemplate")
+    True
+
+    >>> api.is_dx_type("Client")
+    False
 
 
 Checking if an Object is an AT Content
@@ -335,6 +340,15 @@ This function checks if an object is an `Archetypes` content type::
     False
 
     >>> api.is_at_content(object())
+    False
+
+
+It is also possible to check by portal type::
+
+    >>> api.is_at_type("Client")
+    True
+
+    >>> api.is_at_type("InterpretationTemplate")
     False
 
 
@@ -353,6 +367,34 @@ Catalog brains are also supported::
 
     >>> api.get_schema(brain)
     <Products.Archetypes.Schema.Schema object at 0x...>
+
+
+
+Getting the behaviors of a type
+...............................
+
+Dexterity contents might extend schema fields over a behavior.
+This function shows the current active behaviors:
+
+    >>> api.get_behaviors("SampleContainer")
+    (...)
+
+It is possible to enable behaviors dynamically:
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
+
+    >>> api.enable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    True
+
+And remove it again:
+
+    >>> api.disable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
 
 
 Getting the Fields of a Content
@@ -627,12 +669,6 @@ This function unifies all SENAITE LIMS catalog to a single search interface::
     >>> results = api.search({'portal_type': 'Client'})
     >>> results
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
-
-Multiple content types are also supported::
-
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder'], 'sort_on': 'getId'})
-    >>> map(api.get_id, results)
-    ['client-1', 'clients']
 
 Now we create some objects which are located in the `senaite_catalog_setup`::
 
@@ -915,8 +951,7 @@ This function returns the review state of a given object::
 
 It should also work for catalog brains::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> results = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
+    >>> results = api.search({"portal_type": "Client", "UID": api.get_uid(client)})
     >>> len(results)
     1
     >>> api.get_review_status(results[0]) == review_state
@@ -1879,6 +1914,30 @@ Unsupported types return either the default value or fail:
 
     >>> api.to_utf8(object(), default="")
     ''
+
+Check if an object is a string
+..............................
+
+This function checks if the given object is a string type.
+
+    >>> api.is_string("Hello World")
+    True
+
+    >>> api.is_string(u"Hello World")
+    True
+
+    >>> api.is_string(r"Hello World")
+    True
+
+    >>> api.is_string("")
+    True
+
+    >>> api.is_string(None)
+    False
+
+    >>> api.is_string(object)
+    False
+
 
 Check if an object is temporary
 ...............................
