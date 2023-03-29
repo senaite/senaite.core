@@ -83,6 +83,11 @@ enabled, the system returns the string value "as-is" without any processing:
     >>> sample = new_sample([Cu])
 
     >>> cu = get_analysis(sample, Cu)
+    >>> cu.setResult(1.23456789)
+    >>> cu.getResult()
+    '1.23456789'
+    >>> cu.getFormattedResult()
+    '1.23456789'
     >>> cu.setResult('0')
     >>> cu.getResult()
     '0'
