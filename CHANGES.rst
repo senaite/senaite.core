@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2282 Fix sample reports retrieval
+- #2284 Fix the email sent on sample rejection is not text/html
 - #2279 Allow all custom transitions in sample report listing
 - #2280 Remove custom date rendering in sample header
 - #2279 Allow all custom transitions in sample report listing
