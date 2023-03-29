@@ -594,4 +594,5 @@ def get_rejection_mail(sample, rejection_pdf=None):
         to_addr=_to,
         subj=_("%s has been rejected") % api.get_id(sample),
         body=email_body,
+        html=True,
         attachments=attachments)
