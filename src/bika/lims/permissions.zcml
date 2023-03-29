@@ -2,11 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
+
 <!--
 
   NOTE: PERMISSIONS GET MOVED INTO senaite.core.permissions!
 
 -->
+  <include package="senaite.core.permissions" />
 
 <!--
     All the available permissions are defined here. Each new line will be a
