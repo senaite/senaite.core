@@ -40,7 +40,6 @@ COLUMNS = BASE_COLUMNS + [
     "getClientTitle",
     "getClientURL",
     "getCreatorFullName",
-    "getDatePrinted",
     "getFileSize",
 ]
 

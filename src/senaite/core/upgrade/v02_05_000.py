@@ -148,8 +148,6 @@ def update_report_catalog(self):
 
     # remove columns
     del_column(REPORT_CATALOG, "getClientTitlegetClientURL")
-
-    # add columns
-    add_column(REPORT_CATALOG, "getDatePrinted")
+    del_column(REPORT_CATALOG, "getDatePrinted")
 
     logger.info("Update report catalog [DONE]")
