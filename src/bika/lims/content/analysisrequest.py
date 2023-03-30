@@ -1661,11 +1661,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         return list(map(api.get_object, self.getRawReports()))
 
-    def getReportUIDs(self):
-        """Returns a list of report UIDs
-        """
-        return self.getRawReports()
-
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
             0 -> Never printed.
