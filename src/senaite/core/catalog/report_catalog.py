@@ -32,6 +32,7 @@ INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("getClientUID", "", "FieldIndex"),
     ("arreport_searchable_text", "", "ZCTextIndex"),
+    ("sample_uid", "", "KeywordIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

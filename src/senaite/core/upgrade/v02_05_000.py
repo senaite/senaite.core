@@ -33,8 +33,8 @@ from senaite.core.setuphandlers import reindex_catalog_index
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import uncatalog_brain
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import uncatalog_brain
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -121,6 +121,17 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     brains = api.search(query, catalog=catalog)
     for brain in brains:
         uncatalog_brain(brain)
+
+def setup_catalogs(tool):
+    """Setup all core catalogs and ensure all indexes are present
+    """
+    logger.info("Setup Catalogs ...")
+    portal = api.get_portal()
+
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+
+    logger.info("Setup Catalogs [DONE]")
 
 
 def setup_multi_component_analyses(tool):

@@ -232,3 +232,43 @@ This function composes a new MIME message:
     5/sfV5M/kISv300AAAAASUVORK5CYII=
     ...
     <BLANKLINE>
+
+By default, the body is not encoded as html:
+
+    >>> body = "<p>Check out the new SENAITE website: $url</p>"
+    >>> message = compose_email("from@senaite.com",
+    ...                         ["to@senaite.com", "to2@senaite.com"],
+    ...                         "Test Émail",
+    ...                         body,
+    ...                         attachments=[filepath],
+    ...                         url="https://www.senaite.com")
+
+    >>> print(message)
+    From ...
+    ...
+    MIME-Version: 1.0
+    Content-Type: text/plain; charset="utf-8"
+    Content-Transfer-Encoding: quoted-printable
+    <BLANKLINE>
+    <p>Check out the new SENAITE website: https://www.senaite.com</p>
+    ...
+
+Unless the html parameter is set to True:
+
+    >>> message = compose_email("from@senaite.com",
+    ...                         ["to@senaite.com", "to2@senaite.com"],
+    ...                         "Test Émail",
+    ...                         body,
+    ...                         html=True,
+    ...                         attachments=[filepath],
+    ...                         url="https://www.senaite.com")
+
+    >>> print(message)
+    From ...
+    ...
+    MIME-Version: 1.0
+    Content-Type: text/html; charset="utf-8"
+    Content-Transfer-Encoding: quoted-printable
+    <BLANKLINE>
+    <p>Check out the new SENAITE website: https://www.senaite.com</p>
+    ...

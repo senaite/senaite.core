@@ -14,6 +14,14 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add index to report catalog"
+      description="Add missing index `sample_uid` to report catalog"
+      source="2503"
+      destination="2504"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Setup Client Catalog"
       description="Create client catalog and clean up client related indexes and metadata from portal catalog"
       source="2502"
