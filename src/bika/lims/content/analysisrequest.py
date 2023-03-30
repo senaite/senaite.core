@@ -1679,15 +1679,15 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not report_uids:
             return "0"
 
-        reports = map(api.get_object, report_uids)
-
-        last_report = reports[-1]
+        last_report = api.get_object(report_uids[-1])
         if last_report.getDatePrinted():
             return "1"
-        else:
-            for report in reports:
-                if report.getDatePrinted():
-                    return "2"
+
+        for report_uid in report_uids[:-1]:
+            report = api.get_object(report_uid)
+            if report.getDatePrinted():
+                return "2"
+
         return "0"
 
     @security.protected(View)
