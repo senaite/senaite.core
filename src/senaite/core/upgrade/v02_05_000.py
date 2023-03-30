@@ -75,6 +75,7 @@ def rebuild_sample_zctext_index_and_lexicon(tool):
     reindex_index(SAMPLE_CATALOG, index)
 
 
+@upgradestep(product, version)
 def setup_labels(tool):
     """Setup labels for SENAITE
     """
