@@ -20,7 +20,6 @@
 
 from bika.lims import api
 from senaite.core import logger
-from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
