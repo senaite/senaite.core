@@ -19,13 +19,43 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
+from plone.autoform import directives
 from plone.supermodel import model
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
+
 from zope import schema
 
 
 class ISenaiteRegistry(model.Schema):
     """Senaite registry schema
     """
+
+
+class ILabelRegistry(ISenaiteRegistry):
+    """Label settings
+    """
+    model.fieldset(
+        "label_enabled_portal_types",
+        label=_(u"Labels"),
+        description=_("Label configuration"),
+        fields=[
+            "label_enabled_portal_types",
+        ],
+    )
+
+    directives.widget(label_enabled_portal_types=CheckBoxFieldWidget)
+    label_enabled_portal_types = schema.List(
+        title=_("Types with labels"),
+        description=_(
+            "Types that support labels directly.<br/>"
+            "NOTE: In cluster setups, other instances need to be "
+            "restarted manually for the changes to take place!"
+         ),
+        value_type=schema.Choice(
+            vocabulary="plone.app.vocabularies.PortalTypes",
+        ),
+        required=False,
+    )
 
 
 class IWorksheetViewRegistry(ISenaiteRegistry):

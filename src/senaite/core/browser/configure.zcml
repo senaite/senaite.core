@@ -26,6 +26,7 @@
   <include package=".globals"/>
   <include package=".idserver"/>
   <include package=".install"/>
+  <include package=".label"/>
   <include package=".login"/>
   <include package=".main_template"/>
   <include package=".modals"/>

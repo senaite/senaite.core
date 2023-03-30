@@ -138,3 +138,26 @@ class IDynamicLocalRoles(Interface):
 class IInterpretationTemplate(Interface):
     """Marker interface for interpretation template objects
     """
+
+
+class ILabels(Interface):
+    """Marker interface for labels container
+    """
+
+
+class ILabel(Interface):
+    """Marker interface for labels
+    """
+
+
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
+    """
+
+
+class IHaveLabels(ICanHaveLabels):
+    """Marker interface for labeled objects
+
+    NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
+          fields for already labeled objects
+    """

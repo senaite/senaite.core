@@ -4,6 +4,30 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add index to report catalog"
+      description="Add missing index `sample_uid` to report catalog"
+      source="2503"
+      destination="2504"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Client Catalog"
+      description="Create client catalog and clean up client related indexes and metadata from portal catalog"
+      source="2502"
+      destination="2503"
+      handler=".v02_05_000.setup_client_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.5.0: Setup Labels"
+      description="Setup Labels"
+      source="2501"
+      destination="2502"
+      handler="senaite.core.upgrade.v02_05_000.setup_labels"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Recreate listing_searchable_text ZCText index and Lexicon in Sample Catalog"
       description="Rebuild listing_searchable_text and Lexicon for better performance"
       source="2500"

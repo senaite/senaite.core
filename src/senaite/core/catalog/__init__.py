@@ -18,6 +18,7 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+# flake8:noqa:F401
 from senaite.core.catalog.analysis_catalog import \
     CATALOG_ID as ANALYSIS_CATALOG
 from senaite.core.catalog.analysis_catalog import AnalysisCatalog
@@ -26,8 +27,11 @@ from senaite.core.catalog.auditlog_catalog import \
 from senaite.core.catalog.auditlog_catalog import AuditlogCatalog
 from senaite.core.catalog.autoimportlog_catalog import \
     CATALOG_ID as AUTOIMPORTLOG_CATALOG
-from senaite.core.catalog.autoimportlog_catalog import \
-    AutoImportLogCatalog
+from senaite.core.catalog.autoimportlog_catalog import AutoImportLogCatalog
+from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
+from senaite.core.catalog.client_catalog import ClientCatalog
+from senaite.core.catalog.label_catalog import CATALOG_ID as LABEL_CATALOG
+from senaite.core.catalog.label_catalog import LabelCatalog
 from senaite.core.catalog.report_catalog import CATALOG_ID as REPORT_CATALOG
 from senaite.core.catalog.report_catalog import ReportCatalog
 from senaite.core.catalog.sample_catalog import CATALOG_ID as SAMPLE_CATALOG

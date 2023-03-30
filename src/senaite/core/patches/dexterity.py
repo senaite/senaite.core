@@ -19,6 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from senaite.core.api.label import get_obj_labels
+
+
+def getLabels(self):
+    return get_obj_labels(self)
 
 
 def isTemporary(self):

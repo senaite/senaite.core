@@ -40,6 +40,109 @@ bika.lims.PermName or bika.lims.permissions.PermName are
 both valid.
 """
 
+# flake8:noqa
+
+from zope import deprecation
+
+from senaite.core.permissions import AddAnalysisRequest
+from senaite.core.permissions import FieldEditBatch
+from senaite.core.permissions import FieldEditClient
+from senaite.core.permissions import FieldEditClientOrderNumber
+from senaite.core.permissions import FieldEditClientReference
+from senaite.core.permissions import FieldEditClientSampleID
+from senaite.core.permissions import FieldEditComposite
+from senaite.core.permissions import FieldEditContact
+from senaite.core.permissions import FieldEditContainer
+from senaite.core.permissions import FieldEditDatePreserved
+from senaite.core.permissions import FieldEditDateReceived
+from senaite.core.permissions import FieldEditDateSampled
+from senaite.core.permissions import FieldEditEnvironmentalConditions
+from senaite.core.permissions import FieldEditInternalUse
+from senaite.core.permissions import FieldEditInvoiceExclude
+from senaite.core.permissions import FieldEditMemberDiscount
+from senaite.core.permissions import FieldEditPreservation
+from senaite.core.permissions import FieldEditPreserver
+from senaite.core.permissions import FieldEditPriority
+from senaite.core.permissions import FieldEditProfiles
+from senaite.core.permissions import FieldEditPublicationSpecifications
+from senaite.core.permissions import FieldEditRejectionReasons
+from senaite.core.permissions import FieldEditRemarks
+from senaite.core.permissions import FieldEditResultsInterpretation
+from senaite.core.permissions import FieldEditSampleCondition
+from senaite.core.permissions import FieldEditSamplePoint
+from senaite.core.permissions import FieldEditSampler
+from senaite.core.permissions import FieldEditSampleType
+from senaite.core.permissions import FieldEditSamplingDate
+from senaite.core.permissions import FieldEditSamplingDeviation
+from senaite.core.permissions import FieldEditScheduledSampler
+from senaite.core.permissions import FieldEditSpecification
+from senaite.core.permissions import FieldEditStorageLocation
+from senaite.core.permissions import FieldEditTemplate
+from senaite.core.permissions import TransitionCancelAnalysisRequest
+from senaite.core.permissions import TransitionCreatePartitions
+from senaite.core.permissions import TransitionDetachSamplePartition
+from senaite.core.permissions import TransitionDispatchSample
+from senaite.core.permissions import TransitionInvalidate
+from senaite.core.permissions import TransitionMultiResults
+from senaite.core.permissions import TransitionPreserveSample
+from senaite.core.permissions import TransitionPublishResults
+from senaite.core.permissions import TransitionReceiveSample
+from senaite.core.permissions import TransitionReinstateAnalysisRequest
+from senaite.core.permissions import TransitionRejectSample
+from senaite.core.permissions import TransitionRestoreSample
+from senaite.core.permissions import TransitionSampleSample
+from senaite.core.permissions import TransitionScheduleSampling
+
+deprecation.deprecated("AddAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditBatch", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClient", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientOrderNumber", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientReference", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientSampleID", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditComposite", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditContact", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditContainer", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDatePreserved", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDateReceived", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDateSampled", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditEnvironmentalConditions", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditInternalUse", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditInvoiceExclude", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditMemberDiscount", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPreservation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPreserver", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPriority", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditProfiles", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPublicationSpecifications","Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditRejectionReasons", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditRemarks", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditResultsInterpretation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampleCondition", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplePoint", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampler", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampleType", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplingDate", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplingDeviation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditScheduledSampler", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSpecification", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditStorageLocation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditTemplate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionCancelAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionCreatePartitions", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionDetachSamplePartition", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionDispatchSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionInvalidate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionMultiResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionPreserveSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionPublishResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReceiveSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReinstateAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRejectSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRestoreSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionSampleSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionScheduleSampling", "Moved to senaite.core.permissions")
+
+
 # Add Permissions
 # ===============
 # For "Add" permissions, keep the name of the variable as "Add<portal_type>".
@@ -49,7 +152,6 @@ both valid.
 AddAnalysis = "senaite.core: Add Analysis"
 AddAnalysisCategory = "senaite.core: Add AnalysisCategory"
 AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
-AddAnalysisRequest = "senaite.core: Add AnalysisRequest"
 AddAnalysisService = "senaite.core: Add AnalysisService"
 AddAnalysisSpec = "senaite.core: Add AnalysisSpec"
 AddARTemplate = "senaite.core: Add ARTemplate"
@@ -100,22 +202,6 @@ TransitionVerify = "senaite.core: Transition: Verify"
 TransitionAssignAnalysis = "senaite.core: Transition: Assign Analysis"
 TransitionUnassignAnalysis = "senaite.core: Transition: Unassign Analysis"
 
-# Transition permissions (Analysis Request)
-TransitionCancelAnalysisRequest = "senaite.core: Transition: Cancel Analysis Request"
-TransitionDetachSamplePartition = "senaite.core: Transition: Detach Sample Partition"
-TransitionReinstateAnalysisRequest = "senaite.core: Transition: Reinstate Analysis Request"
-TransitionInvalidate = "senaite.core: Transition Invalidate"
-TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
-TransitionPublishResults = "senaite.core: Transition: Publish Results"
-TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
-TransitionRejectSample = "senaite.core: Transition: Reject Sample"
-TransitionSampleSample = "senaite.core: Transition: Sample Sample"
-TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
-TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
-TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
-TransitionCreatePartitions = "senaite.core: Transition: Create Partitions"
-TransitionMultiResults = "senaite.core: Transition: Multi Results"
-
 
 # Type-specific permissions
 # =========================
@@ -130,40 +216,6 @@ SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
 
 # Field Permissions
 # =================
-# Field permissions (Analysis Request)
-FieldEditBatch = "senaite.core: Field: Edit Batch"
-FieldEditClient = "senaite.core: Field: Edit Client"
-FieldEditClientOrderNumber = "senaite.core: Field: Edit Client Order Number"
-FieldEditClientReference = "senaite.core: Field: Edit Client Reference"
-FieldEditClientSampleID = "senaite.core: Field: Edit Client Sample ID"
-FieldEditComposite = "senaite.core: Field: Edit Composite"
-FieldEditContact = "senaite.core: Field: Edit Contact"
-FieldEditContainer = "senaite.core: Field: Edit Container"
-FieldEditDatePreserved = "senaite.core: Field: Edit Date Preserved"
-FieldEditDateReceived = "senaite.core: Field: Edit Date Received"
-FieldEditDateSampled = "senaite.core: Field: Edit Date Sampled"
-FieldEditEnvironmentalConditions = "senaite.core: Field: Edit Environmental Conditions"
-FieldEditInternalUse = "senaite.core: Field: Edit Internal Use"
-FieldEditInvoiceExclude = "senaite.core: Field: Edit Invoice Exclude"
-FieldEditMemberDiscount = "senaite.core: Field: Edit Member Discount"
-FieldEditPreservation = "senaite.core: Field: Edit Preservation"
-FieldEditPreserver = "senaite.core: Field: Edit Preserver"
-FieldEditPriority = "senaite.core: Field: Edit Priority"
-FieldEditProfiles = "senaite.core: Field: Edit Profiles"
-FieldEditPublicationSpecifications = "senaite.core: Field: Edit Publication Specification"
-FieldEditRejectionReasons = "senaite.core: Field: Edit Rejection Reasons"
-FieldEditRemarks = "senaite.core: Field: Edit Remarks"
-FieldEditResultsInterpretation = "senaite.core: Field: Edit Results Interpretation"
-FieldEditSampleCondition = "senaite.core: Field: Edit Sample Condition"
-FieldEditSamplePoint = "senaite.core: Field: Edit Sample Point"
-FieldEditSampleType = "senaite.core: Field: Edit Sample Type"
-FieldEditSampler = "senaite.core: Field: Edit Sampler"
-FieldEditSamplingDate = "senaite.core: Field: Edit Sampling Date"
-FieldEditSamplingDeviation = "senaite.core: Field: Edit Sampling Deviation"
-FieldEditScheduledSampler = "senaite.core: Field: Edit Scheduled Sampler"
-FieldEditSpecification = "senaite.core: Field: Edit Specification"
-FieldEditStorageLocation = "senaite.core: Field: Edit Storage Location"
-FieldEditTemplate = "senaite.core: Field: Edit Template"
 
 # Field permissions (Analysis and alike)
 FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"

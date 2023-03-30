@@ -22,4 +22,28 @@
       factory=".clientshareable.ClientShareableFactory"
       for=".IClientShareable"/>
 
+  <!-- Extended schema fields for labels on dexterity based contents -->
+  <plone:behavior
+      title="Label schema extender"
+      description="Adds the ability to add/remove labels"
+      name="senaite.core.interfaces.ICanHaveLabels"
+      provides=".label.ILabelSchema"
+      marker="senaite.core.interfaces.ICanHaveLabels"
+      factory=".label.LabelSchema"
+      for="plone.dexterity.interfaces.IDexterityContent"
+      />
+
+  <!-- Adapter to dynamically extend the label schema fields for dexterity contents
+
+       Usually the behavior needs to be registered for the FTI of each type to
+       make it work for *all* contents of this type.
+
+       Since we want to enable/disable the extended fields based on the marker
+       interface `ICanHaveLabels`, we want provide the behavior dynamically for
+       each object individually.
+
+       This makes it behave the same way as for AT schema extender.
+  -->
+  <adapter factory=".label.LabelBehaviorAssignable" />
+
 </configure>

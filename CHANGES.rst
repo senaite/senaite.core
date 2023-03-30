@@ -5,6 +5,13 @@ Changelog
 ------------------
 
 - #2191 Apply category sort order on analysis specifications
+- #2285 Fix string results with html characters not displayed after submit
+- #2284 Fix the email sent on sample rejection is not text/html
+- #2279 Allow all custom transitions in sample report listing
+- #2280 Remove custom date rendering in sample header
+- #2278 Client catalog
+- #2276 Senaite labels
+- #2275 Fix wrong result when both "Result options" and "String" are ena
 - #2273 Improve performance for sample listing index
 - #2272 Allow to configure the position of additional value columns
 
