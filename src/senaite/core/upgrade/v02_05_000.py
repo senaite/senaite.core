@@ -72,6 +72,7 @@ def rebuild_sample_zctext_index_and_lexicon(tool):
     reindex_index(SAMPLE_CATALOG, index)
 
 
+@upgradestep(product, version)
 def setup_labels(tool):
     """Setup labels for SENAITE
     """
@@ -118,6 +119,7 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     brains = api.search(query, catalog=catalog)
     for brain in brains:
         uncatalog_brain(brain)
+
 
 def setup_catalogs(tool):
     """Setup all core catalogs and ensure all indexes are present
