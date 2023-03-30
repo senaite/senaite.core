@@ -7,7 +7,6 @@ Changelog
 - #2282 Fix sample reports retrieval
 - #2285 Fix string results with html characters not displayed after submit
 - #2284 Fix the email sent on sample rejection is not text/html
-- #2279 Allow all custom transitions in sample report listing
 - #2280 Remove custom date rendering in sample header
 - #2279 Allow all custom transitions in sample report listing
 - #2278 Client catalog
