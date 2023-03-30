@@ -1646,41 +1646,26 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 return True
         return False
 
-    def getRawReports(self, inlcude_provisional=True, **kw):
-        """Returns catalog search results of relevant publication reports
+    def getRawReports(self):
+        """Returns UIDs of reports with a reference to this sample
 
-        :param kw: Catalog query params
-        :returns: Catalog brains
+        see: ARReport.ContainedAnalysisRequests field
+
+        :returns: List of report UIDs
         """
-        uid = api.get_uid(self)
-        client = self.getClient()
-        client_path = api.get_path(client)
-
-        query = {
-            "portal_type": "ARReport",
-            "path": {
-                "query": client_path,
-                "depth": 2,
-            },
-            # search all reports, where the current sample UID is included
-            "sample_uid": [uid],
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        query.update(kw)
-        return api.search(query, catalog=REPORT_CATALOG)
+        return get_backreferences(self, "ARReportAnalysisRequest")
 
     def getReports(self):
-        """Returns a list of publication report objects
+        """Returns a list of report objects
 
         :returns: List of report objects
         """
         return list(map(api.get_object, self.getRawReports()))
 
     def getReportUIDs(self):
-        """Returns a list of publication report UIDs
+        """Returns a list of report UIDs
         """
-        return list(map(api.get_uid, self.getRawReports()))
+        return self.getRawReports()
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
@@ -1691,16 +1676,18 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not self.getDatePublished():
             return "0"
 
-        report_list = self.getRawReports()
-        if not report_list:
+        report_uids = self.getRawReports()
+        if not report_uids:
             return "0"
 
-        last_report = report_list[-1]
-        if last_report.getDatePrinted:
+        reports = map(api.get_object, report_uids)
+
+        last_report = reports[-1]
+        if last_report.getDatePrinted():
             return "1"
         else:
-            for report in report_list:
-                if report.getDatePrinted:
+            for report in reports:
+                if report.getDatePrinted():
                     return "2"
         return "0"
 
