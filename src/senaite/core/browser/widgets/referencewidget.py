@@ -38,9 +38,7 @@ from zope.component import getAdapters
 class ReferenceWidget(StringWidget):
     _properties = StringWidget._properties.copy()
     _properties.update({
-        "macro": "senaite_widgets/referencewidget",
-        "helper_js": ("senaite_widgets/referencewidget.js",),
-        "helper_css": ("senaite_widgets/referencewidget.css",),
+        "macro": "senaite_widgets/uidreferencewidget",
 
         "url": "referencewidget_search",
         "catalog_name": "portal_catalog",
