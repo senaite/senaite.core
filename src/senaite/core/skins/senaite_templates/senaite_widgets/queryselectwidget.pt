@@ -3,7 +3,7 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="senaite.patient">
+      i18n:domain="senaite.core">
   <body>
 
     <!-- VIEW MACRO -->
