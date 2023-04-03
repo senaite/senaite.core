@@ -31,11 +31,11 @@ from bika.lims.utils import to_unicode as _u
 from plone import protect
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
-from zope.publisher.interfaces import IPublishTraverse
-from zope.interface import implementer
 from Products.CMFPlone.utils import base_hasattr
 from senaite.app.supermodel.model import SuperModel
 from zope.component import getAdapters
+from zope.interface import implementer
+from zope.publisher.interfaces import IPublishTraverse
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
 
