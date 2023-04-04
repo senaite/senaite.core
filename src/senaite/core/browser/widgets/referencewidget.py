@@ -27,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IReferenceWidgetVocabulary
-from bika.lims.utils import to_unicode as _u
 from plone import protect
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -46,7 +45,6 @@ class ReferenceWidget(StringWidget):
     _properties = StringWidget._properties.copy()
     _properties.update({
         "macro": "senaite_widgets/uidreferencewidget",
-
 
         # OLD PROPERTIES BELOW THIS LINE
         "url": "referencewidget_search",
