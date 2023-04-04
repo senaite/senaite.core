@@ -33,6 +33,8 @@ from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
 from senaite.app.supermodel.model import SuperModel
+from senaite.jsonapi import request as req
+from senaite.jsonapi.api import get_batch
 from zope.component import getAdapters
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
@@ -343,9 +345,10 @@ class ReferenceWidget(StringWidget):
 registerWidget(ReferenceWidget, title="Reference Widget")
 
 
+# TODO: Refactor to own module, e.g. in `senaite.core.z3cform` package
 @implementer(IPublishTraverse)
 class ajaxReferenceWidgetSearch(BrowserView):
-    """ Source for jquery combo dropdown box
+    """Search endpoint for new UID referencewidget
     """
 
     def __init__(self, context, request):
@@ -360,61 +363,6 @@ class ajaxReferenceWidgetSearch(BrowserView):
         self.traverse_subpath.append(name)
         return self
 
-    @property
-    def num_page(self):
-        """Returns the number of page to render
-        """
-        return api.to_int(self.request.get("page", None), default=1)
-
-    @property
-    def num_rows_page(self):
-        """Returns the number of rows per page to render
-        """
-        return api.to_int(self.request.get("rows", None), default=10)
-
-    def get_field_names(self):
-        """Return the field names to get values for
-        """
-        col_model = self.request.get("colModel", None)
-        if not col_model:
-            return ["UID",]
-
-        names = []
-        col_model = json.loads(_u(col_model))
-        if isinstance(col_model, (list, tuple)):
-            names = map(lambda c: c.get("columnName", "").strip(), col_model)
-
-        # UID is used by reference widget to know the object that the user
-        # selected from the popup list
-        if "UID" not in names:
-            names.append("UID")
-
-        return filter(None, names)
-
-    def get_data_record(self, brain, field_names):
-        """Returns a dict with the column values for the given brain
-        """
-        record = {}
-        model = None
-
-        for field_name in field_names:
-            # First try to get the value directly from the brain
-            value = getattr(brain, field_name, None)
-
-            # No metadata for this column name
-            if value is None:
-                logger.warn("Not a metadata field: {}".format(field_name))
-                model = model or SuperModel(brain)
-                value = model.get(field_name, None)
-                if callable(value):
-                    value = value()
-
-            # '&nbsp;' instead of '' because empty div fields don't render
-            # correctly in combo results table
-            record[field_name] = value or "&nbsp;"
-
-        return record
-
     def search(self):
         """Returns the list of brains that match with the request criteria
         """
@@ -425,28 +373,12 @@ class ajaxReferenceWidgetSearch(BrowserView):
             brains.extend(adapter())
         return brains
 
-    def to_data_rows(self, brains):
-        """Returns a list of dictionaries representing the values of each brain
+    def get_endpoint(self):
+        """Calculate the enpoint for the given request
         """
-        fields = self.get_field_names()
-        return map(lambda brain: self.get_data_record(brain, fields), brains)
-
-    def to_json_payload(self, data_rows):
-        """Returns the json payload
-        """
-        num_rows = len(data_rows)
-        num_page = self.num_page
-        num_rows_page = self.num_rows_page
-
-        pages = num_rows / num_rows_page
-        pages += divmod(num_rows, num_rows_page)[1] and 1 or 0
-        start = (num_page - 1) * num_rows_page
-        end = num_page * num_rows_page
-        payload = {"page": num_page,
-                   "total": pages,
-                   "records": num_rows,
-                   "rows": data_rows[start:end]}
-        return json.dumps(payload)
+        qs = self.request.get_header("query_string")
+        url = self.request.getURL()
+        return "{}?{}".format(url, qs)
 
     def __call__(self):
         protect.CheckAuthenticator(self.request)
@@ -454,8 +386,10 @@ class ajaxReferenceWidgetSearch(BrowserView):
         # Do the search
         brains = self.search()
 
-        # Generate the data rows to display
-        data_rows = self.to_data_rows(brains)
-
-        # Return the payload
-        return self.to_json_payload(data_rows)
+        size = req.get_batch_size()
+        start = req.get_batch_start()
+        complete = req.get_complete(default=True)
+        endpoint = self.get_endpoint()
+        batch = get_batch(brains, size, start,
+                          endpoint=endpoint, complete=complete)
+        return json.dumps(batch)
