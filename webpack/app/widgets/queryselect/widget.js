@@ -28,6 +28,7 @@ class QuerySelectWidgetController extends React.Component {
       focused: 0,  // current result that has the focus
       padding: 3,  // page padding
       complete: false,  // wake up objects
+      results_table_width: "500px",  // width of the search results table
     }
 
     // Root input HTML element
@@ -56,6 +57,7 @@ class QuerySelectWidgetController extends React.Component {
       "readonly",  // if true, the field is rendered as not editable
       "padding",  // number of pages to show in navigation before and after the current
       "complete",  // wake-up object search
+      "results_table_width",  // width of the results table
     ]
 
     // Query data keys and set state with parsed JSON value
@@ -610,6 +612,7 @@ class QuerySelectWidgetController extends React.Component {
             values={this.state.values}
             value_key={this.state.value_key}
             searchterm={this.state.searchterm}
+            width={this.state.results_table_width}
             results={this.state.results}
             loading={this.state.loading}
             focused={this.state.focused}

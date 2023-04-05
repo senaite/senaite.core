@@ -56,6 +56,7 @@ class ReferenceWidget(StringWidget):
         "padding": 3,
         "display_template": None,
         "hide_input_after_select": False,
+        "results_table_width": "500px",
 
         # BBB: OLD PROPERTIES
         "url": "referencewidget_search",
