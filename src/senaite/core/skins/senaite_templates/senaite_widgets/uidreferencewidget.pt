@@ -10,11 +10,11 @@
     <metal:view_macro define-macro="view">
       <div metal:define-slot="inside"
            tal:define="value python:accessor();
-                       labels python:widget.to_value(value)">
+                       uids python:widget.to_value(value)">
         <ul class="list-unstyled d-table-row">
-          <li tal:repeat="label labels" class="d-inline-block">
+          <li tal:repeat="uid uids" class="d-inline-block">
             <div class="p-1 mb-1 mr-1 bg-light border rounded">
-              <span tal:replace="structure python:widget.render_reference(context, field, label)"/>
+              <span tal:replace="structure python:widget.render_reference(context, field, uid)"/>
             </div>
           </li>
         </ul>
