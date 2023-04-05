@@ -73,7 +73,7 @@ class QuerySelectWidgetController extends React.Component {
     });
 
     // Bind callbacks to current context
-    this.search = this.search.bind(this);
+    this.search = this.debounce(this.search).bind(this);
     this.goto_page = this.goto_page.bind(this);
     this.clear_results = this.clear_results.bind(this);
     this.select = this.select.bind(this);
@@ -103,6 +103,21 @@ class QuerySelectWidgetController extends React.Component {
     document.removeEventListener("keydown", this.on_keydown, false);
     document.removeEventListener("click", this.on_click, false);
   }
+
+  /*
+   * Throttle wrapper
+   */
+  debounce(func) {
+    let timer;
+    return function (...args) {
+      const context = this;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        func.apply(context, args);
+      }, 500);
+    };
+  };
 
   /*
    * Fix overflow at the bottom or at the right of the container
