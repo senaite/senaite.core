@@ -16,6 +16,7 @@ INDEXES = BASE_INDEXES + [
     ("getClientID", "", "FieldIndex"),
     ("getName", "", "FieldIndex"),
     ("sortable_title", "", "FieldIndex"),
+    ("Title", "", "ZCTextIndex"),  # needed for reference fields
 ]
 
 COLUMNS = BASE_COLUMNS + [
