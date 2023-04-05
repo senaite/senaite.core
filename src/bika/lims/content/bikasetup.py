@@ -25,7 +25,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES

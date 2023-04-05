@@ -28,7 +28,7 @@ from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable

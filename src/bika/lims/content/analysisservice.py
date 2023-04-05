@@ -30,7 +30,7 @@ from bika.lims.browser.fields.partitionsetupfield import getContainers
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis

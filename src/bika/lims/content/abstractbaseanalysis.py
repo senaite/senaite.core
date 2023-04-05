@@ -24,7 +24,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis

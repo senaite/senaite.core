@@ -39,7 +39,7 @@ from zope.interface import implements
 from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME

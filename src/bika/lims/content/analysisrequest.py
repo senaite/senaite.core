@@ -41,7 +41,7 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
