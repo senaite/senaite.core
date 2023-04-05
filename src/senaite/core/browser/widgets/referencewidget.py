@@ -18,6 +18,7 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
 import json
 import string
 
@@ -28,12 +29,9 @@ from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
-from senaite.core.browser.widgets.referencewidget_search import \
-    IReferenceWidgetDataProvider
-from zope.component import getAdapters
 
 DEFAULT_SEARCH_CATALOG = "uid_catalog"
-DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
 IGNORE_COLUMNS = ["UID"]
 
 
@@ -98,12 +96,13 @@ class ReferenceWidget(StringWidget):
         :param value: The curent field value (list of UIDs)
         """
         uids = self.get_value(context, field, value)
+        template = self.get_display_template(context, field, DISPLAY_TEMPLATE)
         attributes = {
             "data-id": field.getName(),
             "data-name": field.getName(),
             "data-values": uids,
             "data-records": dict(zip(uids, map(
-                lambda uid: self.get_ref_data(context, field, uid), uids))),
+                lambda uid: self.get_render_data(uid, template), uids))),
             "data-value_key": getattr(self, "value_key", "uid"),
             "data-api_url": getattr(self, "url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
@@ -112,8 +111,7 @@ class ReferenceWidget(StringWidget):
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),
-            "data-display_template": getattr(
-                self, "display_template", DISPLAY_TEMPLATE),
+            "data-display_template": template,
             "data-limit": getattr(self, "limit", 5),
             "data-multi_valued": getattr(self, "multi_valued", True),
             "data-disabled": getattr(self, "disabled", False),
@@ -345,25 +343,37 @@ class ReferenceWidget(StringWidget):
             value = [value]
         return map(api.get_uid, value)
 
-    def get_ref_data(self, context, field, uid):
-        """Extract the data for the ference item
+    def get_render_data(self, uid, template):
+        """Provides the needed data to render the display template from the UID
 
-        :param brain: ZCatalog Brain Object
-        :returns: Dictionary with extracted attributes
+        :returns: Dictionary with data needed to render the display template
         """
-        data = {}
-        for name, adapter in getAdapters(
-                (context, api.get_request()), IReferenceWidgetDataProvider):
-            data.update(adapter.to_dict(uid, data=dict(data)))
+        regex = r"\{(.*?)\}"
+        names = re.findall(regex, template)
+
+        obj = api.get_object(uid)
+        data = {
+            "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
+            "Title": api.get_title(obj),
+            "Description": api.get_description(obj),
+        }
+        for name in names:
+            if name not in data:
+                value = getattr(obj, name, None)
+                if callable(value):
+                    value = value()
+                data[name] = value
+
         return data
 
     def render_reference(self, context, field, uid):
         """Returns a rendered HTML element for the reference
         """
-        template = string.Template(
-            self.get_display_template(context, field, uid))
+        display_template = self.get_display_template(context, field, uid)
+        template = string.Template(display_template)
         try:
-            data = self.get_ref_data(context, field, uid)
+            data = self.get_render_data(uid, display_template)
         except ValueError as e:
             # Current user might not have privileges to view this object
             logger.error(e.message)

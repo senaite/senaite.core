@@ -2,6 +2,7 @@
 
 import json
 
+import Missing
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IReferenceWidgetVocabulary
@@ -9,15 +10,17 @@ from plone import protect
 from senaite.jsonapi import request as req
 from senaite.jsonapi.api import make_batch
 from zope.component import getAdapters
+from zope.interface import Interface
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
-from zope.interface import Interface
 
-DEFAULT_COLUMNS = ["Title", "Description"]
+_marker = object()
+MISSING_VALUES = [_marker, Missing.Value]
 
 
 class IReferenceWidgetDataProvider(Interface):
-    pass
+    """Extract required data for the reference widget
+    """
 
 
 @implementer(IReferenceWidgetDataProvider)
@@ -36,18 +39,63 @@ class ReferenceWidgetDataProvider(object):
         """
         return self.request.get("column_names", [])
 
-    def to_dict(self, object_or_uid, data=None, **kw):
+    def lookup(self, brain_or_object, name, default=None):
+        """Lookup a named attribute on the brain/object
+        """
+        value = getattr(brain_or_object, name, _marker)
+
+        # wake up the object
+        if value is _marker:
+            brain_or_object = api.get_object(brain_or_object)
+            value = getattr(brain_or_object, name, _marker)
+
+        if value in MISSING_VALUES:
+            return default
+
+        if callable(value):
+            value = value()
+
+        try:
+            json.dumps(value)
+            return value
+        except TypeError:
+            # not JSON serializable
+            return default
+
+    def to_dict(self, reference, data=None, **kw):
         """Return the required data for the given object or uid
 
-        :param object_or_uid: Catalog Brain, AT/DX object or UID
+        :param reference: Catalog Brain, AT/DX object or UID
         :param data: Dictionary of collected data
         """
+        info = {}
 
-        info = {
-            "uid": api.get_uid(object_or_uid),
-            "Title": api.get_title(object_or_uid),
-            "Description": api.get_description(object_or_uid),
-        }
+        if isinstance(data, dict):
+            info.update(data)
+
+        # Fetch the object if an UID is passed
+        if api.is_uid(reference):
+            brain_or_object = api.get_object(reference)
+        else:
+            brain_or_object = reference
+
+        # always include base information
+        info.update({
+            "uid": api.get_uid(brain_or_object),
+            "url": api.get_url(brain_or_object),
+            "Title": api.get_title(brain_or_object),
+            "Description": api.get_description(brain_or_object),
+        })
+
+        columns = self.get_columns()
+
+        # always include all brain metadata
+        if api.is_brain(brain_or_object):
+            columns.extend(brain_or_object.schema())
+
+        for column in self.get_columns():
+            if column not in info:
+                info[column] = self.lookup(brain_or_object, column, default="")
 
         return info
 
