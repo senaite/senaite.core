@@ -41,5 +41,4 @@
 <!-- Note: Styles refer to images and cannot be merged by webpack -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/jquery-ui.min.css" />
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/theme.css" />
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css" />
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++resource++plone.app.jquerytools.overlays.css" />
