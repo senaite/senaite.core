@@ -80,7 +80,7 @@ class ReferenceWidget(StringWidget):
             "data-name": field.getName(),
             "data-values": self.to_value(value),
             "data-value_key": getattr(self, "value_key", "uid"),
-            "data-api_url": "referencewidget_search",
+            "data-api_url": getattr(self, "url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
             "data-catalog": getattr(self, "catalog", "portal_catalog"),
             "data-search_index": getattr(self, "search_index", "Title"),
@@ -105,13 +105,20 @@ class ReferenceWidget(StringWidget):
 
         return attributes
 
-    def get_api_url(self, context, field, default=None):
+    def get_api_url(self, field, context, default=None):
         """JSON API URL to use for this widget
+
+        NOTE: we need to call the search view on the correct context to allow
+              context adapter registrations for IReferenceWidgetVocabulary!
         """
-        portal = api.get_portal()
-        portal_url = api.get_url(portal)
-        api_url = "{}/referencewidget_search".format(portal_url)
-        return api_url
+        # ensure we have an absolute url for the current context
+        url = api.get_url(context)
+        # normalize portal factory urls
+        url = url.split("/portal_factory")[0]
+        # ensure the search path does not contain already the url
+        search_path = self.url.split(url)[-1]
+        # return the absolute search url
+        return "/".join([url, search_path])
 
     def lookup(self, name, context, field, default=None):
         """Check if the context has an override for the given named property
