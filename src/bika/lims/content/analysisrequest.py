@@ -167,12 +167,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -200,12 +200,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -359,7 +359,7 @@ schema = BikaSchema.copy() + Schema((
                  'label': _('Title'), 'align': 'left'},
                 {'columnName': 'Description', 'width': '70',
                  'label': _('Description'), 'align': 'left'},
-                {'columnName': 'SortKey', 'hidden': True},
+                {'columnName': 'getSortKey', 'hidden': True},
                 {'columnName': 'UID', 'hidden': True},
             ],
             base_query={'is_active': True},
@@ -650,7 +650,7 @@ schema = BikaSchema.copy() + Schema((
                         "sort_order": "ascending"},
             search_fields=('listing_searchable_text',),
             colModel=[
-                {'columnName': 'contextual_title',
+                {'columnName': 'Title',
                  'width': '30',
                  'label': _('Title'),
                  'align': 'left'},
@@ -661,7 +661,7 @@ schema = BikaSchema.copy() + Schema((
                 # UID is required in colModel
                 {'columnName': 'UID', 'hidden': True},
             ],
-            ui_item="contextual_title",
+            ui_item="Title",
             showOn=True,
         ),
     ),
