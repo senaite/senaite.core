@@ -2,15 +2,18 @@
 
 import json
 
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IReferenceWidgetVocabulary
 from plone import protect
+from senaite.app.supermodel import SuperModel
 from senaite.jsonapi import request as req
 from senaite.jsonapi.api import make_batch
-from senaite.jsonapi.interfaces import IInfo
 from zope.component import getAdapters
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
+
+DEFAULT_COLUMNS = ["Title", "Description"]
 
 
 # Make route provider for senaite.jsonapi
@@ -44,7 +47,16 @@ class ReferenceWidgetSearch(BrowserView):
     def get_info(self, brain):
         """Extract the data for the result items
         """
-        info = IInfo(brain).to_dict()
+        model = SuperModel(brain)
+        info = model.to_dict()
+        column_names = self.request.form.get("column_names", DEFAULT_COLUMNS)
+        for column in column_names:
+            if column not in info:
+                value = getattr(model.instance, column, None)
+                if callable(value):
+                    value = value()
+                if api.is_string(value):
+                    info[column] = value
         return info
 
     def __call__(self):

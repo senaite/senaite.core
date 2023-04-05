@@ -16,6 +16,7 @@ class QuerySelectWidgetController extends React.Component {
       value_key: "uid",  // result object key that has the submit value stored
       records: {},  // mapping of value -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
+      columns: [],  // Columns to show
       searchterm: "",  // the search term that was entered by the user
       loading: false,  // loading flag when searching for results
       count: 0,  // count of results (coming from `senaite.jsonapi`)
@@ -26,6 +27,7 @@ class QuerySelectWidgetController extends React.Component {
       b_start: 1,  // batch start for pagination (see `senaite.jsonapi.batch`)
       focused: 0,  // current result that has the focus
       padding: 3,  // page padding
+      complete: false,  // wake up objects
     }
 
     // Root input HTML element
@@ -53,6 +55,7 @@ class QuerySelectWidgetController extends React.Component {
       "disabled",  // if true, the field is rendered as not editable
       "readonly",  // if true, the field is rendered as not editable
       "padding",  // number of pages to show in navigation before and after the current
+      "complete",  // wake-up object search
     ]
 
     // Query data keys and set state with parsed JSON value
@@ -233,12 +236,27 @@ class QuerySelectWidgetController extends React.Component {
 
     let query = Object.assign({
       limit: this.state.limit,
-      complete: 1,
+      complete: this.state.complete,
+      column_names: this.get_column_names(),
     }, options, this.state.query);
 
     // inject the search index
     query[search_index] = search_term;
     return query;
+  }
+
+  /*
+   * Extract the required column names that we want
+   *
+   * This method parses the `name` keys of the column definition
+   * which can be used by the endpoint to prepare the data for us
+   *
+   * @returns {Array} of column names
+   */
+  get_column_names() {
+    let names = new Set();
+    this.state.columns.forEach((column) => names.add(column.name));
+    return Array.from(names);
   }
 
   /*
