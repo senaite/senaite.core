@@ -28,7 +28,9 @@ from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
-from senaite.app.supermodel import SuperModel
+from senaite.core.browser.widgets.referencewidget_search import \
+    IReferenceWidgetDataProvider
+from zope.component import getAdapters
 
 DEFAULT_SEARCH_CATALOG = "uid_catalog"
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
@@ -100,7 +102,7 @@ class ReferenceWidget(StringWidget):
             "data-name": field.getName(),
             "data-values": uids,
             "data-records": dict(zip(uids, map(
-                lambda uid: self.get_obj_info(context, field, uid), uids))),
+                lambda uid: self.get_ref_data(context, field, uid), uids))),
             "data-value_key": getattr(self, "value_key", "uid"),
             "data-api_url": getattr(self, "url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
@@ -342,35 +344,17 @@ class ReferenceWidget(StringWidget):
             value = [value]
         return map(api.get_uid, value)
 
-    def get_obj_info(self, context, field, uid):
-        """Returns a dictionary with the object info
+    def get_ref_data(self, context, field, uid):
+        """Extract the data for the ference item
 
-        NOTE: We just return the required columns
+        :param brain: ZCatalog Brain Object
+        :returns: Dictionary with extracted attributes
         """
-        info = {"uid": uid}
-
-        # we fetch required attributes from the supermodel
-        model = SuperModel(uid)
-        if not model.instance:
-            return info
-
-        # always add the URL to render the link
-        info["url"] = api.get_url(model)
-
-        # fetch the columns
-        columns = self.get_columns(context, field, [])
-        names = map(lambda col: col.get("name"), columns)
-        for name in names:
-            if not name:
-                continue
-            attr = getattr(model, name, None)
-            if callable(attr):
-                attr = attr()
-            if not api.is_string(attr):
-                continue
-            info[name] = attr
-
-        return info
+        data = {}
+        for name, adapter in getAdapters(
+                (context, api.get_request()), IReferenceWidgetDataProvider):
+            data.update(adapter.to_dict(uid, data=dict(data)))
+        return data
 
     def render_reference(self, context, field, uid):
         """Returns a rendered HTML element for the reference
@@ -378,13 +362,13 @@ class ReferenceWidget(StringWidget):
         template = string.Template(
             self.get_display_template(context, field, uid))
         try:
-            obj_info = self.get_obj_info(context, field, uid)
+            data = self.get_ref_data(context, field, uid)
         except ValueError as e:
             # Current user might not have privileges to view this object
             logger.error(e.message)
             return ""
 
-        return template.safe_substitute(obj_info)
+        return template.safe_substitute(data)
 
 
 registerWidget(ReferenceWidget, title="Reference Widget")

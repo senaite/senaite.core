@@ -12,4 +12,10 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencewidget_search.ReferenceWidgetDataProvider"
+      />
+
 </configure>

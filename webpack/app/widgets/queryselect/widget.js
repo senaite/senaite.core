@@ -253,6 +253,7 @@ class QuerySelectWidgetController extends React.Component {
       limit: this.state.limit,
       complete: this.state.complete,
       column_names: this.get_column_names(),
+      field_name: this.state.name,
     }, options, this.state.query);
 
     // inject the search index

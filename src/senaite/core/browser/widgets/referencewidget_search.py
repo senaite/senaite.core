@@ -6,14 +6,50 @@ from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IReferenceWidgetVocabulary
 from plone import protect
-from senaite.app.supermodel import SuperModel
 from senaite.jsonapi import request as req
 from senaite.jsonapi.api import make_batch
 from zope.component import getAdapters
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
+from zope.interface import Interface
 
 DEFAULT_COLUMNS = ["Title", "Description"]
+
+
+class IReferenceWidgetDataProvider(Interface):
+    pass
+
+
+@implementer(IReferenceWidgetDataProvider)
+class ReferenceWidgetDataProvider(object):
+    def __init__(self, context, request):
+        self.request = request
+        self.context = context
+
+    def get_field_name(self):
+        """Return the field name
+        """
+        return self.request.get("field_name", None)
+
+    def get_columns(self):
+        """Return the requested columns
+        """
+        return self.request.get("column_names", [])
+
+    def to_dict(self, object_or_uid, data=None, **kw):
+        """Return the required data for the given object or uid
+
+        :param object_or_uid: Catalog Brain, AT/DX object or UID
+        :param data: Dictionary of collected data
+        """
+
+        info = {
+            "uid": api.get_uid(object_or_uid),
+            "Title": api.get_title(object_or_uid),
+            "Description": api.get_description(object_or_uid),
+        }
+
+        return info
 
 
 # Make route provider for senaite.jsonapi
@@ -38,26 +74,22 @@ class ReferenceWidgetSearch(BrowserView):
         """Returns the list of brains that match with the request criteria
         """
         brains = []
-
-        for name, adapter in getAdapters((self.context, self.request),
-                                         IReferenceWidgetVocabulary):
+        for name, adapter in getAdapters(
+                (self.context, self.request), IReferenceWidgetVocabulary):
             brains.extend(adapter())
         return brains
 
-    def get_info(self, brain):
-        """Extract the data for the result items
+    def get_ref_data(self, brain):
+        """Extract the data for the ference item
+
+        :param brain: ZCatalog Brain Object
+        :returns: Dictionary with extracted attributes
         """
-        model = SuperModel(brain)
-        info = model.to_dict()
-        column_names = self.request.form.get("column_names", DEFAULT_COLUMNS)
-        for column in column_names:
-            if column not in info:
-                value = getattr(model.instance, column, None)
-                if callable(value):
-                    value = value()
-                if api.is_string(value):
-                    info[column] = value
-        return info
+        data = {}
+        for name, adapter in getAdapters(
+                (self.context, self.request), IReferenceWidgetDataProvider):
+            data.update(adapter.to_dict(brain, data=dict(data)))
+        return data
 
     def __call__(self):
         protect.CheckAuthenticator(self.request)
@@ -75,6 +107,6 @@ class ReferenceWidgetSearch(BrowserView):
             "page": batch.get_pagenumber(),
             "pages": batch.get_numpages(),
             "count": batch.get_sequence_length(),
-            "items": map(self.get_info, batch.get_batch()),
+            "items": map(self.get_ref_data, batch.get_batch()),
         }
         return json.dumps(data)
