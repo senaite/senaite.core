@@ -227,7 +227,6 @@ module.exports = {
         src: [
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
           "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
-          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
@@ -253,7 +252,6 @@ module.exports = {
         src: [
           "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/jquery-ui.min.css",
           "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/theme.css",
-          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css",
         ],
         dest: code => ({
           "thirdparty.css":new CleanCSS({}).minify(code).styles,
