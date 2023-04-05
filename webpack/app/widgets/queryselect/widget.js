@@ -579,6 +579,7 @@ class QuerySelectWidgetController extends React.Component {
           <SearchField
             className="queryselectwidget-search-field"
             name="query-select-search"
+            loading={this.state.loading}
             disabled={this.is_disabled()}
             on_search={this.search}
             on_clear={this.clear_results}
@@ -594,6 +595,7 @@ class QuerySelectWidgetController extends React.Component {
             value_key={this.state.value_key}
             searchterm={this.state.searchterm}
             results={this.state.results}
+            loading={this.state.loading}
             focused={this.state.focused}
             count={this.state.count}
             page={this.state.page}

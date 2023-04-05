@@ -178,7 +178,8 @@ class SearchField extends React.Component {
                     style={{zIndex: 0}}
                     disabled={this.props.disabled}
                     onClick={this.on_search_click}>
-              <i className="fas fa-search"></i>
+              {!this.props.loading && <i className="fas fa-search"></i>}
+              {this.props.loading && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}
             </button>
           </div>
         </div>
