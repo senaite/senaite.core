@@ -25,20 +25,14 @@ import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IReferenceWidgetVocabulary
-from plone import protect
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
 from senaite.app.supermodel.model import SuperModel
-from senaite.jsonapi import request as req
-from senaite.jsonapi.api import get_batch
-from zope.component import getAdapters
-from zope.interface import implementer
-from zope.publisher.interfaces import IPublishTraverse
+from senaite.jsonapi import uest as req
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
+MAKE_LOWER_CASE = ["Title", "Description"]
 
 
 class ReferenceWidget(StringWidget):
@@ -166,6 +160,8 @@ class ReferenceWidget(StringWidget):
 
         # BBB: ui_item
         ui_item = getattr(self, "ui_item", None),
+        if ui_item in MAKE_LOWER_CASE:
+            ui_item = ui_item.lower()
         if ui_item is not None:
             return "<a href='${url}' _target='blank'>${%s}</a>" % ui_item
 
@@ -220,13 +216,34 @@ class ReferenceWidget(StringWidget):
 
         columns = []
         for col in col_model:
+            name = col.get("columnName")
+            # XXX: Workaround for JSON API schema mapping
+            if name in MAKE_LOWER_CASE:
+                name = name.lower()
+            # skip UID fields
+            if name == "UID":
+                continue
             columns.append({
-                "name": col.get("columnName", ""),
-                "width": col.get("width", ""),
+                "name": name,
+                "width": col.get("width", "50%"),
                 "align": col.get("align", "left"),
                 "label": col.get("label", ""),
             })
         return columns
+
+    def get_search_index(self, field, context, default=None):
+        """Lookup the search index for fulltext searches
+        """
+        prop = getattr(self, "search_index", None)
+        if prop is not None:
+            return prop
+
+        # BBB: search_fields
+        search_fields = getattr(self, "search_fields", [])
+        if len(search_fields) > 0:
+            return search_fields[0]
+
+        return default
 
     def to_value(self, value):
         """Extract the value from the request or get it from the field
@@ -269,125 +286,5 @@ class ReferenceWidget(StringWidget):
 
         return template.safe_substitute(obj_info)
 
-    ###
-    # OLD STUFF BELOW THIS LINE
-    ###
-    def get_search_url(self, context):
-        """Prepare an absolute search url for the combobox
-        """
-        # ensure we have an absolute url for the current context
-        url = api.get_url(context)
-        # normalize portal factory urls
-        url = url.split("portal_factory")[0]
-        # ensure the search path does not contain already the url
-        search_path = self.url.split(url)[-1]
-        # return the absolute search url
-        return "/".join([url, search_path])
-
-    def get_combogrid_options(self, context, fieldName):
-        colModel = self.colModel
-        if "UID" not in [x["columnName"] for x in colModel]:
-            colModel.append({"columnName": "UID", "hidden": True})
-
-        options = {
-            "url": self.get_search_url(context),
-            "colModel": colModel,
-            "showOn": self.showOn,
-            "width": self.popup_width,
-            "sord": self.sord,
-            "sidx": self.sidx,
-            "force_all": self.force_all,
-            "search_fields": self.search_fields,
-            "discard_empty": self.discard_empty,
-            "minLength": self.minLength,
-            "resetButton": self.resetButton,
-            "searchIcon": self.searchIcon,
-            "delay": self.delay,
-        }
-        return json.dumps(options)
-
-    def get_base_query(self, context, fieldName):
-        base_query = self.base_query
-        if callable(base_query):
-            try:
-                base_query = base_query(context, self, fieldName)
-            except TypeError:
-                base_query = base_query()
-        if base_query and isinstance(base_query, six.string_types):
-            base_query = json.loads(base_query)
-
-        # portal_type: use field allowed types
-        field = context.Schema().getField(fieldName)
-        allowed_types = getattr(field, "allowed_types", None)
-        allowed_types_method = getattr(field, "allowed_types_method", None)
-        if allowed_types_method:
-            meth = getattr(context, allowed_types_method)
-            allowed_types = meth(field)
-        # If field has no allowed_types defined, use widget"s portal_type prop
-        base_query["portal_type"] = allowed_types \
-            if allowed_types \
-            else self.portal_types
-
-        return json.dumps(base_query)
-
-    def initial_uid_field_value(self, value):
-        if type(value) in (list, tuple):
-            ret = ",".join([v.UID() for v in value])
-        elif isinstance(value, six.string_types):
-            ret = value
-        else:
-            ret = value.UID() if value else value
-        return ret
-
 
 registerWidget(ReferenceWidget, title="Reference Widget")
-
-
-# TODO: Refactor to own module, e.g. in `senaite.core.z3cform` package
-@implementer(IPublishTraverse)
-class ajaxReferenceWidgetSearch(BrowserView):
-    """Search endpoint for new UID referencewidget
-    """
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-        self.traverse_subpath = []
-
-    def publishTraverse(self, request, name):
-        """Called before __call__ for each path name and allows to dispatch
-        subpaths to methods
-        """
-        self.traverse_subpath.append(name)
-        return self
-
-    def search(self):
-        """Returns the list of brains that match with the request criteria
-        """
-        brains = []
-        # TODO Legacy
-        for name, adapter in getAdapters((self.context, self.request),
-                                         IReferenceWidgetVocabulary):
-            brains.extend(adapter())
-        return brains
-
-    def get_endpoint(self):
-        """Calculate the enpoint for the given request
-        """
-        qs = self.request.get_header("query_string")
-        url = self.request.getURL()
-        return "{}?{}".format(url, qs)
-
-    def __call__(self):
-        protect.CheckAuthenticator(self.request)
-
-        # Do the search
-        brains = self.search()
-
-        size = req.get_batch_size()
-        start = req.get_batch_start()
-        complete = req.get_complete(default=True)
-        endpoint = self.get_endpoint()
-        batch = get_batch(brains, size, start,
-                          endpoint=endpoint, complete=complete)
-        return json.dumps(batch)
