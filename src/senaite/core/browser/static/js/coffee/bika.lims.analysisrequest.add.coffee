@@ -83,7 +83,7 @@ class window.AnalysisRequestAdd
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
     # Generic onchange event handler for reference fields
-    $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
+    $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
 
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
@@ -592,20 +592,8 @@ class window.AnalysisRequestAdd
      * Return the value of a single/multi reference field
     ###
     $field = $(field)
-    if $field.attr("multivalued") is undefined
-      return []
-
-    multivalued = $field.attr("multivalued") == "1"
-
-    if not multivalued
-      return [$field.val()]
-
-    $parent = field.closest("div.field")
-    uids = $("input[type=hidden]", $parent)?.val()
-    if not uids
-      return []
-
-    return uids.split(",")
+    value = $field.val()
+    return value.split("\n")
 
 
   set_template: (arnum, template) =>
@@ -765,9 +753,9 @@ class window.AnalysisRequestAdd
     el = event.currentTarget
     $el = $(el)
     has_value = @get_reference_field_value $el
-    uid = $el.attr "uid"
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+
     if field_name in ["Template", "Profiles"]
       # These fields have it's own event handler
       return
@@ -776,10 +764,6 @@ class window.AnalysisRequestAdd
 
     # Flush depending fields
     me.flush_fields_for field_name, arnum
-
-    # Manually flush UID field if the field does not have a selected value
-    if not has_value
-      $("input[type=hidden]", $el.parent()).val("")
 
     # trigger form:changed event
     $(me).trigger "form:changed"
