@@ -348,12 +348,13 @@ class QuerySelectWidgetController extends React.Component {
     if (values.indexOf(value) == -1) {
       values.push(value);
     }
-    this.setState({values: values});
+    this.setState({values: values}, () => {
+      // manually trigger a select event when the state is set
+      this.trigger_custom_event("select", {value: value});
+    });
     if (values.length > 0 && !this.state.multi_valued) {
       this.clear_results();
     }
-    // manually trigger a select event
-    this.trigger_custom_event("select", {value: value});
     return values;
   }
 
