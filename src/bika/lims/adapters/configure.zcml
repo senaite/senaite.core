@@ -34,6 +34,11 @@
       factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
     <adapter
+      for="bika.lims.interfaces.IContact
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
+    <adapter
       for="bika.lims.interfaces.IAnalysisRequest
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"

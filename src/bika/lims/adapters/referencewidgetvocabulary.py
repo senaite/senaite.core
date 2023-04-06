@@ -69,7 +69,7 @@ class DefaultReferenceWidgetVocabulary(object):
         # Get the raw query to use
         # Raw query is built from base query baseline, including additional
         # parameters defined in the request and the search query as well
-        query = self.query
+        query = self.get_raw_query()
         if not query:
             return []
 
