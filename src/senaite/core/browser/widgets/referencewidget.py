@@ -85,6 +85,16 @@ class ReferenceWidget(StringWidget):
         "portal_types": {},
     })
 
+    def process_form(self, instance, field, form, empty_marker=None,
+                     emptyReturnsMarker=False, validating=True):
+        """Convert the stored UIDs from the text field for the UID reference field
+        """
+        value = form.get(field.getName(), "")
+        if not value:
+            return [], {}
+        uids = value.split("\r\n")
+        return uids, {}
+
     def get_input_widget_attributes(self, context, field, value):
         """Return input widget attributes for the ReactJS component
 
