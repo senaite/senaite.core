@@ -10,7 +10,7 @@
     <metal:view_macro define-macro="view">
       <div metal:define-slot="inside"
            tal:define="value python:accessor();
-                       uids python:widget.to_value(value)">
+                       uids python:widget.get_value(context, field, value)">
         <ul class="list-unstyled d-table-row">
           <li tal:repeat="uid uids" class="d-inline-block">
             <div class="p-1 mb-1 mr-1 bg-light border rounded">
