@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2288 Fix client dropdown on batch add
 - #2282 Fix sample reports retrieval
 - #2285 Fix string results with html characters not displayed after submit
 - #2284 Fix the email sent on sample rejection is not text/html
