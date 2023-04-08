@@ -486,8 +486,8 @@ class window.AnalysisRequestAdd
   set_reference_field_query: (field, query, type="base_query") =>
     ###
      * Set the catalog search query for the given reference field
-     * XXX This is lame! The field should provide a proper API.
     ###
+
 
     catalog_name = field.attr "catalog_name"
     return unless catalog_name
@@ -535,7 +535,6 @@ class window.AnalysisRequestAdd
   set_reference_field: (field, uid, title) =>
     ###
      * Set the value and the uid of a reference field
-     * XXX This is lame! The field should handle this on data change.
     ###
 
     me = this
@@ -1099,16 +1098,13 @@ class window.AnalysisRequestAdd
     # the record data of the first AR
     record_one = @records_snapshot[0]
 
-    # ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
-    # don't cooperate and the multiValued div must be copied.
+    # reference widget
     if $(td1).find('.ArchetypesReferenceWidget').length > 0
       console.debug "-> Copy reference field"
 
       el = $(td1).find(".ArchetypesReferenceWidget")
-      field = el.find("input[type=text]")
-      uid = field.attr("uid")
+      field = el.find("textarea")
       value = field.val()
-      mvl = el.find(".multiValued-listing")
 
       $.each [1..ar_count], (arnum) ->
         # skip the first column
@@ -1116,23 +1112,13 @@ class window.AnalysisRequestAdd
 
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find(".ArchetypesReferenceWidget")
-        _field = _el.find("input[type=text]")
+        _field = _el.find("textarea")
 
-        # flush the field completely
-        me.flush_reference_field _field
-
-        if mvl.length > 0
-          # multi valued reference field
-          $.each mvl.children(), (idx, item) ->
-            uid = $(item).attr "uid"
-            value = $(item).text()
-            me.set_reference_field _field, uid, value
-        else
-          # single reference field
-          me.set_reference_field _field, uid, value
+        # set the textarea
+        me.native_set_value(_field[0], value)
 
         # notify that the field changed
-        $(_field).trigger "change"
+        $(_field).trigger "select"
 
       # trigger form:changed event
       $(me).trigger "form:changed"

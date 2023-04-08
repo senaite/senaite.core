@@ -98,7 +98,7 @@
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", this.on_analysis_checkbox_click);
-      $("body").on("selected change", "input[type='text'].referencewidget", this.on_referencefield_value_changed);
+      $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
@@ -507,7 +507,6 @@
 
       /*
        * Set the catalog search query for the given reference field
-       * XXX This is lame! The field should provide a proper API.
        */
       catalog_name = field.attr("catalog_name");
       if (!catalog_name) {
@@ -543,7 +542,6 @@
 
       /*
        * Set the value and the uid of a reference field
-       * XXX This is lame! The field should handle this on data change.
        */
       var $field, $parent, div, existing_uids, fieldname, img, me, mvl, portal_url, src, uids, uids_field;
       me = this;
@@ -591,21 +589,10 @@
       /*
        * Return the value of a single/multi reference field
        */
-      var $field, $parent, multivalued, ref, uids;
+      var $field, value;
       $field = $(field);
-      if ($field.attr("multivalued") === void 0) {
-        return [];
-      }
-      multivalued = $field.attr("multivalued") === "1";
-      if (!multivalued) {
-        return [$field.val()];
-      }
-      $parent = field.closest("div.field");
-      uids = (ref = $("input[type=hidden]", $parent)) != null ? ref.val() : void 0;
-      if (!uids) {
-        return [];
-      }
-      return uids.split(",");
+      value = $field.val();
+      return value.split("\n");
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -754,12 +741,11 @@
       /*
        * Generic event handler for when a field value changes
        */
-      var $el, arnum, el, field_name, has_value, me, uid;
+      var $el, arnum, el, field_name, has_value, me;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       has_value = this.get_reference_field_value($el);
-      uid = $el.attr("uid");
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
       if (field_name === "Template" || field_name === "Profiles") {
@@ -767,9 +753,6 @@
       }
       console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
       me.flush_fields_for(field_name, arnum);
-      if (!has_value) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
       return $(me).trigger("form:changed");
     };
 
@@ -1053,7 +1036,7 @@
        * Copies the value of the first field in this row to the remaining.
        * XXX Refactor
        */
-      var $el, $td1, $tr, ar_count, el, field, i, me, mvl, record_one, results, td1, tr, uid, value;
+      var $el, $td1, $tr, ar_count, el, field, i, me, record_one, results, td1, tr, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
       el = event.target;
@@ -1070,10 +1053,8 @@
       if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
         console.debug("-> Copy reference field");
         el = $(td1).find(".ArchetypesReferenceWidget");
-        field = el.find("input[type=text]");
-        uid = field.attr("uid");
+        field = el.find("textarea");
         value = field.val();
-        mvl = el.find(".multiValued-listing");
         $.each((function() {
           results = [];
           for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
@@ -1085,18 +1066,9 @@
           }
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
-          _field = _el.find("input[type=text]");
-          me.flush_reference_field(_field);
-          if (mvl.length > 0) {
-            $.each(mvl.children(), function(idx, item) {
-              uid = $(item).attr("uid");
-              value = $(item).text();
-              return me.set_reference_field(_field, uid, value);
-            });
-          } else {
-            me.set_reference_field(_field, uid, value);
-          }
-          return $(_field).trigger("change");
+          _field = _el.find("textarea");
+          me.native_set_value(_field[0], value);
+          return $(_field).trigger("select");
         });
         $(me).trigger("form:changed");
         return;
@@ -1112,7 +1084,7 @@
           for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(arnum) {
-          var _el, _td;
+          var _el, _td, uid;
           if (!(arnum > 0)) {
             return;
           }
