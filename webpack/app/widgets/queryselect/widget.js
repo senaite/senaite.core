@@ -196,7 +196,7 @@ class QuerySelectWidgetController extends React.Component {
    */
   parse_json(value) {
     try {
-      return JSON.parse(value)
+      return JSON.parse(value);
     } catch (error) {
       console.error(`Could not parse "${value}" to JSON`);
     }
