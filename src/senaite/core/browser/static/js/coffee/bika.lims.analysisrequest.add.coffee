@@ -82,7 +82,7 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
-    # Generic onchange event handler for reference fields
+    # Select/Deselect event handler for reference fields
     $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
 
     # Analysis lock button clicked
@@ -462,74 +462,33 @@ class window.AnalysisRequestAdd
     ###
      * Empty the reference field and restore the search query
     ###
+    return unless field.length > 0
 
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-
-    # flush values
-    field.val("")
-    $("input[type=hidden]", field.parent()).val("")
-    $(".multiValued-listing", field.parent()).empty()
+    # trigger native JS event for ReactJS
+    event = new CustomEvent "flush"
+    field[0].dispatchEvent(event)
 
     # restore the original search query
     @reset_reference_field_query field
+
 
   reset_reference_field_query: (field) =>
     ###
      * Restores the catalog search query for the given reference field
     ###
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-    query = JSON.parse field.attr "base_query"
-    @set_reference_field_query field, query
+    return unless field.length > 0
+    this.set_reference_field_query(field, {})
 
-  set_reference_field_query: (field, query, type="base_query") =>
+
+  set_reference_field_query: (field, query) =>
     ###
      * Set the catalog search query for the given reference field
     ###
-
-
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-
-    # get the combogrid options
-    options = JSON.parse field.attr "combogrid_options"
-
-    # we have absolute URLs now
-    # https://github.com/senaite/senaite.core/pull/1917
-    url = options.url
-
-    # prepare the new query url
-    url += "?_authenticator=#{@get_authenticator()}"
-    url += "&catalog_name=#{catalog_name}"
-    url += "&colModel=#{JSON.stringify options.colModel}"
-    url += "&search_fields=#{JSON.stringify options.search_fields}"
-    url += "&discard_empty=#{JSON.stringify options.discard_empty}"
-    url += "&minLength=#{JSON.stringify options.minLength}"
-
-    # get the current query (either "base_query" or "search_query" attribute)
-    catalog_query = JSON.parse field.attr type
-    # update this query with the passed in query
-    $.extend catalog_query, query
-
-    new_query = JSON.stringify catalog_query
-    console.debug "set_reference_field_query: query=#{new_query}"
-
-    if type is 'base_query'
-      url += "&base_query=#{new_query}"
-      url += "&search_query=#{field.attr('search_query')}"
-    else
-      url += "&base_query=#{field.attr('base_query')}"
-      url += "&search_query=#{new_query}"
-
-    options.url = url
-    options.force_all = "false"
-
-    field.combogrid options
-    field.attr "search_query", "{}"
-
-    # close on any open searchbox to force reload on the next focus
-    field.trigger("blur")
+    return unless field.length > 0
+    # set the new query
+    search_query = JSON.stringify(query)
+    field.attr("data-search_query", search_query)
+    console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
 
 
   set_reference_field: (field, uid, title) =>
