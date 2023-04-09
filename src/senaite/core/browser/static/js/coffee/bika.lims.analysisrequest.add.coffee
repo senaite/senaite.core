@@ -464,7 +464,7 @@ class window.AnalysisRequestAdd
     ###
     return unless field.length > 0
 
-    # trigger native JS event for ReactJS
+    # trigger native JS CustomEvent for ReactJS
     event = new CustomEvent "flush"
     field[0].dispatchEvent(event)
 
@@ -1073,6 +1073,11 @@ class window.AnalysisRequestAdd
         _el = $(_td).find(".ArchetypesReferenceWidget")
         _field = _el.find("textarea")
 
+        # RectJS queryselect widget provides the JSON data of the selected
+        # records in the `data-records` attribute.
+        # This is needed because otherwise we would only see the raw UID value
+        # (or another Ajax call would be needed.)
+        _el.attr("data-records", el[0].dataset.records);
         # set the textarea
         me.native_set_value(_field[0], value)
 

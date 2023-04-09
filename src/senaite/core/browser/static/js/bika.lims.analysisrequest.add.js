@@ -116,12 +116,15 @@
     };
 
     AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
+      var timeout;
+      if (execAsap == null) {
+        execAsap = true;
+      }
 
       /*
        * Debounce a function call
        * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
        */
-      var timeout;
       timeout = null;
       return function() {
         var args, delayed, obj;
@@ -474,14 +477,12 @@
       /*
        * Empty the reference field and restore the search query
        */
-      var catalog_name;
-      catalog_name = field.attr("catalog_name");
-      if (!catalog_name) {
+      var event;
+      if (!(field.length > 0)) {
         return;
       }
-      field.val("");
-      $("input[type=hidden]", field.parent()).val("");
-      $(".multiValued-listing", field.parent()).empty();
+      event = new CustomEvent("flush");
+      field[0].dispatchEvent(event);
       return this.reset_reference_field_query(field);
     };
 
@@ -490,52 +491,24 @@
       /*
        * Restores the catalog search query for the given reference field
        */
-      var catalog_name, query;
-      catalog_name = field.attr("catalog_name");
-      if (!catalog_name) {
+      if (!(field.length > 0)) {
         return;
       }
-      query = JSON.parse(field.attr("base_query"));
-      return this.set_reference_field_query(field, query);
+      return this.set_reference_field_query(field, {});
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query, type) {
-      var catalog_name, catalog_query, new_query, options, url;
-      if (type == null) {
-        type = "base_query";
-      }
+    AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
 
       /*
        * Set the catalog search query for the given reference field
        */
-      catalog_name = field.attr("catalog_name");
-      if (!catalog_name) {
+      var search_query;
+      if (!(field.length > 0)) {
         return;
       }
-      options = JSON.parse(field.attr("combogrid_options"));
-      url = options.url;
-      url += "?_authenticator=" + (this.get_authenticator());
-      url += "&catalog_name=" + catalog_name;
-      url += "&colModel=" + (JSON.stringify(options.colModel));
-      url += "&search_fields=" + (JSON.stringify(options.search_fields));
-      url += "&discard_empty=" + (JSON.stringify(options.discard_empty));
-      url += "&minLength=" + (JSON.stringify(options.minLength));
-      catalog_query = JSON.parse(field.attr(type));
-      $.extend(catalog_query, query);
-      new_query = JSON.stringify(catalog_query);
-      console.debug("set_reference_field_query: query=" + new_query);
-      if (type === 'base_query') {
-        url += "&base_query=" + new_query;
-        url += "&search_query=" + (field.attr('search_query'));
-      } else {
-        url += "&base_query=" + (field.attr('base_query'));
-        url += "&search_query=" + new_query;
-      }
-      options.url = url;
-      options.force_all = "false";
-      field.combogrid(options);
-      field.attr("search_query", "{}");
-      return field.trigger("blur");
+      search_query = JSON.stringify(query);
+      field.attr("data-search_query", search_query);
+      return console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
     };
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, uid, title) {
@@ -1067,6 +1040,7 @@
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
           _field = _el.find("textarea");
+          _el.attr("data-records", el[0].dataset.records);
           me.native_set_value(_field[0], value);
           return $(_field).trigger("select");
         });
