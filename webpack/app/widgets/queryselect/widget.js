@@ -370,6 +370,17 @@ class QuerySelectWidgetController extends React.Component {
     if (values.indexOf(value) == -1) {
       values.push(value);
     }
+    // Expose the JSON records of the selected values (UIDs) to the
+    // `data-records` attribute of the root element.
+    // This is a tweak to allow to copy the field values in Sample Add Form.
+    // Otherwise, the other fields would only see the raw value (UID) instead of
+    // the display template.
+    let records = {};
+    values.forEach((value) => {
+      records[value] = this.state.records[value];
+    });
+    this.root_el.setAttribute("data-records", JSON.stringify(records));
+
     this.setState({values: values}, () => {
       // manually trigger a select event when the state is set
       this.trigger_custom_event("select", {value: value});
@@ -444,6 +455,13 @@ class QuerySelectWidgetController extends React.Component {
     if (!current_values && !values) {
       // nothing to do
       return;
+    }
+
+    // Inject the records of the root element to parse the set values properly.
+    // Currently only needed in Sample Add Form if fields are copied.
+    let records = this.parse_json(this.root_el.dataset.records);
+    if (records != null) {
+      this.state["records"] = records;
     }
 
     for (const value of values) {
