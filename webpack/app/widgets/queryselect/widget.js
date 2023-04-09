@@ -263,7 +263,26 @@ class QuerySelectWidgetController extends React.Component {
 
     // inject the search index
     query[search_index] = search_term;
+
+    // allow to custom search query cascading
+    query = Object.assign(this.get_search_query(), query);
+
     return query;
+  }
+
+  /*
+   * Read custom search query from the root element
+   *
+   * This allows external code to set a custom search query to the field for filtering
+   *
+   * @returns {Object} The search query object
+   */
+  get_search_query() {
+    let query = this.root_el.dataset.search_query;
+    if (query == null) {
+      return {};
+    }
+    return JSON.parse(query);
   }
 
   /*
