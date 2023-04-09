@@ -32,7 +32,7 @@ class QuerySelectWidgetController extends React.Component {
     }
 
     // Root input HTML element
-    let el = props.root_el;
+    this.root_el = props.root_el;
 
     // Data keys located at the root element
     // -> initial values are set from the widget class
@@ -62,7 +62,7 @@ class QuerySelectWidgetController extends React.Component {
 
     // Query data keys and set state with parsed JSON value
     for (let key of data_keys) {
-      let value = el.dataset[key];
+      let value = this.root_el.dataset[key];
       if (value === undefined) {
         continue;
       }
@@ -86,6 +86,7 @@ class QuerySelectWidgetController extends React.Component {
     this.on_keydown = this.on_keydown.bind(this);
     this.on_click = this.on_click.bind(this);
     this.focus_row = this.focus_row.bind(this);
+    this.on_flush = this.on_flush.bind(this);
 
     return this
   }
@@ -94,6 +95,7 @@ class QuerySelectWidgetController extends React.Component {
     // Bind event listeners of the document
     document.addEventListener("keydown", this.on_keydown, false);
     document.addEventListener("click", this.on_click, false)
+    this.root_el.addEventListener("flush", this.on_flush, false);
   }
 
   componentDidUpdate() {
@@ -104,6 +106,7 @@ class QuerySelectWidgetController extends React.Component {
     // Remove event listeners of the document
     document.removeEventListener("keydown", this.on_keydown, false);
     document.removeEventListener("click", this.on_click, false);
+    this.root_el.removeEventListener("flush", this.on_flush, false);
   }
 
   /*
@@ -547,6 +550,17 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Clear values and results
+   */
+  flush() {
+    this.clear_results();
+    this.setState({
+      values: [],
+      loading: false,
+    })
+  }
+
+  /*
    * Clear results from the state
    */
   clear_results() {
@@ -557,6 +571,9 @@ class QuerySelectWidgetController extends React.Component {
       pages: 1,
       next_url: null,
       prev_url: null,
+      b_start: 1,
+      focused: 0,
+      searchterm: ""
     });
   }
 
@@ -580,6 +597,13 @@ class QuerySelectWidgetController extends React.Component {
     if (!widget.contains(target)) {
       this.clear_results();
     }
+  }
+
+  /*
+   * ReactJS event handler for flush events
+   */
+  on_flush(event) {
+    this.flush();
   }
 
   render() {
