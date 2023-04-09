@@ -62,6 +62,16 @@ class ReferenceWidgetDataProvider(object):
             # not JSON serializable
             return default
 
+    def get_base_info(self, brain_or_object):
+        """Return the base information for the brain or object
+        """
+        return {
+            "uid": api.get_uid(brain_or_object),
+            "url": api.get_url(brain_or_object),
+            "Title": self.lookup(brain_or_object, "Title", ""),
+            "Description": self.lookup(brain_or_object, "Description", ""),
+        }
+
     def to_dict(self, reference, data=None, **kw):
         """Return the required data for the given object or uid
 
@@ -80,12 +90,7 @@ class ReferenceWidgetDataProvider(object):
             brain_or_object = reference
 
         # always include base information
-        info.update({
-            "uid": api.get_uid(brain_or_object),
-            "url": api.get_url(brain_or_object),
-            "Title": api.get_title(brain_or_object),
-            "Description": api.get_description(brain_or_object),
-        })
+        info.update(self.get_base_info(brain_or_object))
 
         columns = self.get_columns()
 
