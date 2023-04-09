@@ -23,35 +23,29 @@
 
     <!-- EDIT MACRO -->
     <metal:edit_macro define-macro="edit">
-      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-        <div metal:fill-slot="widget_body">
-          <tal:values define="value python:field.getEditAccessor(here)() or [];
-                              session_value python:here.session_restore_value(fieldName, value);
-                              cached_value python:request.get(fieldName, session_value);
-                              value python:cached_value or value;
-                              required field/required|nothing;
-                              required python: required and 'required' or None;
-                              error_id python:errors.get(fieldName);
-                              i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
+      <tal:values define="value python:field.getEditAccessor(here)() or [];
+                          session_value python:here.session_restore_value(fieldName, value);
+                          cached_value python:request.get(fieldName, session_value);
+                          value python:cached_value or value;
+                          required field/required|nothing;
+                          required python: required and 'required' or None;
+                          error_id python:errors.get(fieldName);
+                          i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
 
-            <div tal:attributes="class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ';
-                                data-required python:required and '1' or '0';
-                                data-fieldname string:${fieldName}">
-
-              <!-- QUERYSELECT -->
-              <div class="senaite-queryselect-widget-input"
-                  tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
-                  tal:attributes="python:widget_attrs;">
-                <!-- ReactJS controlled component -->
-              </div>
-
-              <div class="fieldErrorBox" tal:condition="required"></div>
-              <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
-
-            </div>
-          </tal:values>
+        <!-- QUERYSELECT -->
+        <div class="senaite-queryselect-widget-input"
+             tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
+             tal:attributes="id python:fieldName;
+                    class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' senaite-queryselect-widget-input ';
+                    data-required python:required and '1' or '0';
+                    python:widget_attrs;">
+          <!-- ReactJS controlled component -->
         </div>
-      </metal:use>
+
+        <div class="fieldErrorBox" tal:condition="required"></div>
+        <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
+
+      </tal:values>
     </metal:edit_macro>
 
     <metal:search_macro define-macro="search">
