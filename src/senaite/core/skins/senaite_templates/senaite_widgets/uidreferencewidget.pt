@@ -41,7 +41,8 @@
               <!-- UID Reference -->
               <div class="senaite-uidreference-widget-input"
                    tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
-                   tal:attributes="python:widget_attrs;">
+                   tal:attributes="id python:fieldName;
+                                   python:widget_attrs;">
                 <!-- ReactJS controlled component -->
               </div>
 
