@@ -266,7 +266,7 @@ class ReferenceWidget(StringWidget):
         if prop:
             return prop
 
-        base_query = getattr(self, "base_query", {})
+        base_query = self.get_base_query(context, field)
 
         # extend portal_type filter
         allowed_types = getattr(field, "allowed_types", None)
@@ -279,6 +279,22 @@ class ReferenceWidget(StringWidget):
             allowed_types = [allowed_types]
 
         base_query["portal_type"] = list(allowed_types)
+
+        return base_query
+
+    def get_base_query(self, context, field):
+        """BBB: Get the base query from the widget
+
+        NOTE: Base query can be a callable that can take
+        """
+        base_query = getattr(self, "base_query", {})
+        if callable(base_query):
+            try:
+                base_query = base_query(context, self, field.getName())
+            except TypeError:
+                base_query = base_query()
+        if api.is_string(base_query):
+            base_query = json.loads(base_query)
 
         return base_query
 
