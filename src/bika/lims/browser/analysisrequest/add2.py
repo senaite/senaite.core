@@ -126,12 +126,13 @@ class AnalysisRequestAddView(BrowserView):
         setup = api.get_setup()
         return setup.getSampleAnalysesRequired()
 
+    @viewcache.memoize
     def get_currency(self):
         """Returns the configured currency
         """
         setup = api.get_setup()
         currency = setup.getCurrency()
-        currencies = locales.getLocale('en').numbers.currencies
+        currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
 
     def get_ar_count(self):
