@@ -22,6 +22,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from bika.lims import api
+from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDatetimeField
@@ -187,7 +188,19 @@ class DatetimeWidget(HTMLInputWidget, Widget):
             value = dm.query()
         if not dtime.is_date(value):
             return None
-        return self.to_localized_time(value)
+
+        try:
+            return self.to_localized_time(value)
+        except ValueError as err:
+            if "year >= 1900" not in err.message:
+                raise
+
+            # Python uses the platform C library’s strftime implementation
+            # that does not allow dates before 1900.
+            # Fallback to hardcoded iso style and rely on or own api
+            logger.warn(err.message)
+            fmt = '%Y-%m-%d %H:%M' if self.show_time else '%Y-%m-%d'
+            return dtime.date_to_string(value, fmt)
 
     def to_datetime(self, value):
         """convert date string to datetime object with tz
