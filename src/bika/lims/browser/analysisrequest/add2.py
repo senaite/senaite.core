@@ -86,7 +86,6 @@ class AnalysisRequestAddView(BrowserView):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
         self.setup = api.get_setup()
-        self.request.set("disable_plone.rightcolumn", 1)
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
