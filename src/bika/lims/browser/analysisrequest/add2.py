@@ -30,6 +30,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
@@ -59,18 +60,6 @@ from zope.publisher.interfaces import IPublishTraverse
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples"]
-
-
-def returns_json(func):
-    """Decorator for functions which return JSON
-    """
-    def decorator(*args, **kwargs):
-        instance = args[0]
-        request = getattr(instance, 'request', None)
-        request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
-        return json.dumps(result)
-    return decorator
 
 
 def cache_key(method, self, obj):
