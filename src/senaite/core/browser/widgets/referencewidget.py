@@ -51,6 +51,7 @@ class ReferenceWidget(StringWidget):
         "allow_user_value": False,
         "search_wildcard": True,
         "value_key": "uid",
+        "value_query_index": "UID",
         "padding": 3,
         "display_template": None,
         "hide_input_after_select": False,
@@ -114,6 +115,8 @@ class ReferenceWidget(StringWidget):
             "data-records": dict(zip(uids, map(
                 lambda uid: self.get_render_data(uid, template), uids))),
             "data-value_key": getattr(self, "value_key", "uid"),
+            "data-value_query_index": getattr(
+                self, "value_query_index", "UID"),
             "data-api_url": getattr(self, "url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
             "data-catalog": getattr(self, "catalog", "portal_catalog"),
