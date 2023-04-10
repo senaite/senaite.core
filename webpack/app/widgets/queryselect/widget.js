@@ -14,6 +14,7 @@ class QuerySelectWidgetController extends React.Component {
     // Internal state
     this.state = {
       value_key: "uid",  // result object key that has the submit value stored
+      value_query_index: "UID",  // field index to query for values
       records: {},  // mapping of value -> result record
       results: [],  // `items` list of search results coming from `senaite.jsonapi`
       columns: [],  // Columns to show
@@ -48,6 +49,7 @@ class QuerySelectWidgetController extends React.Component {
       "search_wildcard",  // make the search term a wildcard search
       "limit",  // limit to display on one page
       "value_key",  // key that contains the value that is stored
+      "value_query_index",  // field index to use for value queries
       "allow_user_value",  // allow the user to enter custom values
       "columns",  // columns to be displayed in the results popup
       "display_template",  // template to use for the selected values
@@ -87,6 +89,7 @@ class QuerySelectWidgetController extends React.Component {
     this.on_click = this.on_click.bind(this);
     this.focus_row = this.focus_row.bind(this);
     this.on_flush = this.on_flush.bind(this);
+    this.on_sync = this.on_sync.bind(this);
 
     return this
   }
@@ -96,6 +99,7 @@ class QuerySelectWidgetController extends React.Component {
     document.addEventListener("keydown", this.on_keydown, false);
     document.addEventListener("click", this.on_click, false)
     this.root_el.addEventListener("flush", this.on_flush, false);
+    this.root_el.addEventListener("sync", this.on_sync, false);
   }
 
   componentDidUpdate() {
@@ -107,6 +111,7 @@ class QuerySelectWidgetController extends React.Component {
     document.removeEventListener("keydown", this.on_keydown, false);
     document.removeEventListener("click", this.on_click, false);
     this.root_el.removeEventListener("flush", this.on_flush, false);
+    this.root_el.removeEventListener("sync", this.on_sync, false);
   }
 
   /*
@@ -598,6 +603,35 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Fetch the records for the given values with an explicit value search
+   */
+  sync_records(values) {
+    values = values || this.state.values;
+    // get the current records
+    let records = Object.assign(this.state.records, {})
+    // check which values have no records
+    let missing = values.filter((value) => !(value in records))
+    // nothing to do if we have records for all values
+    if (missing.length == 0) return;
+    // prepare a query for the missing values
+    let index = this.state.value_query_index || "UID";
+    let value_query = {};
+    value_query[index] = missing;
+    let query = this.make_query(value_query);
+    let promise = this.api.search(this.state.catalog, query);
+    this.toggle_loading(true);
+    promise.then((data) => {
+      let items = data.items || [];
+      for (let item of items) {
+        let value = item[this.state.value_key];
+        records[value] = item;
+      }
+      this.toggle_loading(false);
+      this.setState({records: records});
+    });
+  }
+
+  /*
    * Clear results from the state
    */
   clear_results() {
@@ -641,6 +675,18 @@ class QuerySelectWidgetController extends React.Component {
    */
   on_flush(event) {
     this.flush();
+  }
+
+  /*
+   * ReactJS event handler for sync events
+   */
+  on_sync(event) {
+    let values = event.detail.values || [];
+    let is_array = {}.toString.call( values ) === '[object Array]';
+    if (!is_array) {
+      values = values.split("/n");
+    }
+    this.sync_records(values);
   }
 
   render() {
