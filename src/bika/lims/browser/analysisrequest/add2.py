@@ -116,7 +116,7 @@ class AnalysisRequestAddView(BrowserView):
         logger.debug("get_object_by_uid::UID={}".format(uid))
         obj = api.get_object_by_uid(uid, None)
         if obj is None:
-            logger.warn("!! No object found for UID #{} !!")
+            logger.warn("!! No object found for UID '%s' !!" % uid)
         return obj
 
     @viewcache.memoize
