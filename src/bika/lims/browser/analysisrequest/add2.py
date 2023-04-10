@@ -23,7 +23,6 @@ from collections import OrderedDict
 from datetime import datetime
 
 import six
-
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -36,6 +35,7 @@ from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
+from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -736,6 +736,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         raise TypeError("{} is neiter an instance of DateTime nor datetime"
                         .format(repr(dt)))
 
+    def is_uid_reference_field(self, fieldname):
+        """Checks if the field is a UID reference field
+        """
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        if field is None:
+            return False
+        return IUIDReferenceField.providedBy(field)
+
     def get_records(self):
         """Returns a list of AR records
 
@@ -759,6 +768,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for key in keys:
                 new_key = key.replace(s1, "")
                 value = form.get(key)
+                if self.is_uid_reference_field(new_key):
+                    # handle new UID reference fields that store references in a
+                    # textarea (one UID per line)
+                    uids = value.split("\r\n")
+                    # remove empties
+                    value = list(filter(None, uids))
                 record[new_key] = value
             records.append(record)
         return records
@@ -1251,14 +1266,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         metadata = {}
         extra_fields = {}
         for key, value in record.items():
-            if not key.endswith("_uid"):
-                continue
-
-            # This is a reference field (ends with _uid), so we add the
-            # metadata key, even if there is no way to handle objects this
-            # field refers to
-            metadata_key = key.replace("_uid", "")
-            metadata_key = "{}_metadata".format(metadata_key.lower())
+            metadata_key = "{}_metadata".format(key.lower())
             metadata[metadata_key] = {}
 
             if not value:
@@ -1424,7 +1432,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
-        field_name = key.replace("_uid", "").lower()
+        field_name = key.lower()
         obj_key = api.get_cache_key(obj)
         return "-".join([field_name, obj_key] + kw.keys())
 
@@ -1436,7 +1444,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         :return: dict that represents the object
         """
         # Check if there is a function to handle objects for this field
-        field_name = key.replace("_uid", "")
+        field_name = key
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
@@ -1506,8 +1514,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             arservice_vat_amount = 0.00
             services_from_priced_profile = []
 
-            profile_uids = record.get("Profiles_uid", "").split(",")
-            profile_uids = filter(lambda x: x, profile_uids)
+            profile_uids = record.get("Profiles", [])
             profiles = map(self.get_object_by_uid, profile_uids)
             services = map(self.get_object_by_uid, record.get("Analyses", []))
 
@@ -1606,15 +1613,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Validate required fields
         for num, record in enumerate(records):
-
-            # Process UID fields first and set their values to the linked field
-            uid_fields = filter(lambda f: f.endswith("_uid"), record)
-            for field in uid_fields:
-                name = field.replace("_uid", "")
-                value = record.get(field)
-                if "," in value:
-                    value = value.split(",")
-                record[name] = value
 
             # Extract file uploads (fields ending with _file)
             # These files will be added later as attachments

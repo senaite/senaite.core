@@ -435,13 +435,9 @@
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum);
                                   val python:view.fieldvalues.get(newFieldName)"
                       tal:attributes="arnum python:arnum; fieldName python:newFieldName">
-
                     <input type="hidden"
-                           tal:attributes="value val/Title|nothing;
+                           tal:attributes="value val/UID|val|nothing;
                                            name newFieldName;"/>
-                    <input type="hidden"
-                           tal:attributes="value val/UID|nothing;
-                                           name python:'{}_uid'.format(newFieldName);"/>
                   </td>
                 </tal:columns>
               </tr>
