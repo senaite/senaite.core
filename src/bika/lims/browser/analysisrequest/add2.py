@@ -18,7 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
 from collections import OrderedDict
 from datetime import datetime
 
@@ -126,7 +125,6 @@ class AnalysisRequestAddView(BrowserView):
         setup = api.get_setup()
         return setup.getSampleAnalysesRequired()
 
-    @viewcache.memoize
     def get_currency(self):
         """Returns the configured currency
         """
