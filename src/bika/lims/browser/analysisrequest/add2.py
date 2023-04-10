@@ -771,17 +771,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns a list of parsed UIDs from a single form field identified by
         the given key.
 
-        A form field ending with `_uid` can contain an empty value, a
-        single UID or multiple UIDs separated by a comma.
+        A form field of an UID reference can contain an empty value, a single
+        UID or multiple UIDs separated by a \r\n.
 
         This method parses the UID value and returns a list of non-empty UIDs.
         """
-        value = record.get(key, None)
-        if value is None:
+        if not self.is_uid_reference_field(key):
             return []
-        if isinstance(value, six.string_types):
-            value = value.split(",")
-        return filter(lambda uid: uid, value)
+        value = record.get(key, None)
+        if not value:
+            return []
+        if api.is_string(value):
+            value = value.split("\r\n")
+        return list(filter(None, value))
 
     @cache(cache_key)
     def get_base_info(self, obj):
