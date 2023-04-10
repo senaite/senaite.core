@@ -758,8 +758,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 new_key = key.replace(s1, "")
                 value = form.get(key)
                 if self.is_uid_reference_field(new_key):
-                    # handle new UID reference fields that store references in a
-                    # textarea (one UID per line)
+                    # handle new UID reference fields that store references in
+                    # a textarea (one UID per line)
                     uids = value.split("\r\n")
                     # remove empties
                     value = list(filter(None, uids))
