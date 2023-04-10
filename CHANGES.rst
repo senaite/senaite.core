@@ -4,7 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
-- #2292 Make datetimewidget to display dates before 1900 in iso format
+- #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
 - #2288 Fix client dropdown on batch add
 - #2282 Fix sample reports retrieval
 - #2285 Fix string results with html characters not displayed after submit
