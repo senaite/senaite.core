@@ -724,6 +724,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         raise TypeError("{} is neiter an instance of DateTime nor datetime"
                         .format(repr(dt)))
 
+    @viewcache.memoize
     def is_uid_reference_field(self, fieldname):
         """Checks if the field is a UID reference field
         """
