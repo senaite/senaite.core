@@ -836,9 +836,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "CCContact": {
                 "getParentUID": [uid]
             },
-            "InvoiceContact": {
-                "getParentUID": [uid]
-            },
             "SamplePoint": {
                 "getClientUID": [uid, ""],
             },
@@ -1161,7 +1158,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Client": [
                 "Contact",
                 "CCContact",
-                "InvoiceContact",
                 "SamplePoint",
                 "Template",
                 "Profiles",
@@ -1189,7 +1185,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "ContainerType",
                 "DateSampled",
                 "EnvironmentalConditions",
-                "InvoiceContact",
                 "Preservation",
                 "Profiles",
                 "SampleCondition",
