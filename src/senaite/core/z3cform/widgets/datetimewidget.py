@@ -195,9 +195,9 @@ class DatetimeWidget(HTMLInputWidget, Widget):
             if "year >= 1900" not in err.message:
                 raise
 
-            # Python uses the platform C library’s strftime implementation
-            # that does not allow dates before 1900.
-            # Fallback to hardcoded iso style and rely on or own api
+            # Python uses the platform C library’s strftime implementation,
+            # that does not allow dates before 1900. Fallback to hardcoded iso
+            # style and rely on our dime api
             logger.warn(err.message)
             fmt = '%Y-%m-%d %H:%M' if self.show_time else '%Y-%m-%d'
             return dtime.date_to_string(value, fmt)
