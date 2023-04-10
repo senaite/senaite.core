@@ -794,6 +794,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info = {
             "id": api.get_id(obj),
             "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
             "title": api.get_title(obj),
             "field_values": {},
             "filter_queries": {},
