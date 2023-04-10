@@ -92,9 +92,9 @@ class window.AnalysisRequestAdd
     # Analysis Template changed
     $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
-    $("body").on "selected", "tr[fieldname=Profiles] input[type='text']", @on_analysis_profile_selected
+    $("body").on "select", "tr[fieldname=Profiles] textarea", @on_analysis_profile_selected
     # Analysis Profile deselected
-    $("body").on "click", "tr[fieldname=Profiles] img.deletebtn", @on_analysis_profile_removed
+    $("body").on "deselect", "tr[fieldname=Profiles] textarea", @on_analysis_profile_removed
     # Copy button clicked
     $("body").on "click", "img.copybutton", @on_copy_button_click
 
@@ -113,7 +113,7 @@ class window.AnalysisRequestAdd
     $(this).on "ajax:end", @on_ajax_end
 
 
-  debounce: (func, threshold, execAsap) =>
+  debounce: (func, threshold, execAsap=true) =>
     ###
      * Debounce a function call
      * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
@@ -920,14 +920,8 @@ class window.AnalysisRequestAdd
      * Eventhandler when an Analysis Profile was selected.
     ###
     console.debug "°°° on_analysis_profile_selected °°°"
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-
     # trigger form:changed event
-    $(me).trigger "form:changed"
+    $(this).trigger "form:changed"
 
 
   # Note: Context of callback bound to this object

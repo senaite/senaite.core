@@ -102,8 +102,8 @@
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
-      $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
-      $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
+      $("body").on("select", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_selected);
+      $("body").on("deselect", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_removed);
       $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
@@ -897,13 +897,8 @@
       /*
        * Eventhandler when an Analysis Profile was selected.
        */
-      var $el, el, me, uid;
       console.debug("°°° on_analysis_profile_selected °°°");
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      return $(me).trigger("form:changed");
+      return $(this).trigger("form:changed");
     };
 
     AnalysisRequestAdd.prototype.on_analysis_profile_removed = function(event) {
