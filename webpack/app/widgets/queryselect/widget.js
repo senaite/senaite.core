@@ -265,7 +265,7 @@ class QuerySelectWidgetController extends React.Component {
     query[search_index] = search_term;
 
     // allow to custom search query cascading
-    query = Object.assign(this.get_search_query(), query);
+    query = Object.assign(query, this.get_search_query());
 
     return query;
   }
