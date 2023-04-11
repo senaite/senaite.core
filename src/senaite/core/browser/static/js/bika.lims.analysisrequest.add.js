@@ -107,8 +107,8 @@
       $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
-      $(this).on("form:changed", this.debounce(this.recalculate_records, 1500));
-      $(this).on("services:changed", this.debounce(this.recalculate_prices, 3000));
+      $(this).on("form:changed", this.debounce(this.recalculate_records, 1000));
+      $(this).on("services:changed", this.debounce(this.recalculate_prices, 2000));
       $(this).on("data:updated", this.debounce(this.update_form));
       $(this).on("data:updated", this.debounce(this.hide_all_service_info));
       $(this).on("ajax:start", this.on_ajax_start);
