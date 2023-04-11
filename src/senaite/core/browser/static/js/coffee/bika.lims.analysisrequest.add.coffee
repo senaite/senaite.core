@@ -897,7 +897,7 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
-    uid = $el.attr "uid"
+    uid = $el.val()
     arnum = $el.closest("[arnum]").attr "arnum"
 
     record = @records_snapshot[arnum]

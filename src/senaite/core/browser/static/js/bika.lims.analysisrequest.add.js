@@ -883,7 +883,7 @@
       me = this;
       el = event.currentTarget;
       $el = $(el);
-      uid = $el.attr("uid");
+      uid = $el.val();
       arnum = $el.closest("[arnum]").attr("arnum");
       record = this.records_snapshot[arnum];
       profile_metadata = record.profiles_metadata[uid];
