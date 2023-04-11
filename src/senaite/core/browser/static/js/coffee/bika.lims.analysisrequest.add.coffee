@@ -113,7 +113,7 @@ class window.AnalysisRequestAdd
     $(this).on "ajax:end", @on_ajax_end
 
 
-  debounce: (func, threshold, execAsap=true) =>
+  debounce: (func, threshold, execAsap) =>
     ###
      * Debounce a function call
      * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
@@ -495,54 +495,17 @@ class window.AnalysisRequestAdd
     ###
      * Set the value and the uid of a reference field
     ###
+    return unless field.length > 0
 
-    me = this
-    $field = $(field)
-
-    # If the field doesn't exist in the form, avoid trying to set it's values
-    if ! $field.length
-      console.debug "field #{field} does not exist, skip set_reference_field"
-      return
-    $parent = field.closest("div.field")
-    fieldname = field.attr "name"
-
+    fieldname = JSON.parse field.data("name")
     console.debug "set_reference_field:: field=#{fieldname} uid=#{uid} title=#{title}"
+    textarea = field.find("textarea").first()
 
-    uids_field = $("input[type=hidden]", $parent)
-    existing_uids = uids_field.val()
+    # Ensure we have the records for the set UIDs to display a proper template
+    event = new CustomEvent "sync", {detail: {values: [uid]}}
+    field[0].dispatchEvent(event)
 
-    # uid is already selected
-    if existing_uids.indexOf(uid) >= 0
-      return
-
-    # nothing in the field -> uid is the first entry
-    if existing_uids.length == 0
-      uids_field.val uid
-    else
-      # append to the list
-      uids = uids_field.val().split(",")
-      uids.push uid
-      uids_field.val uids.join ","
-
-    # set the title as the value
-    $field.val title
-
-    # handle multivalued reference fields
-    mvl = $(".multiValued-listing", $parent)
-    if mvl.length > 0
-      portal_url = @get_portal_url()
-      src = "#{portal_url}/senaite_theme/icon/delete"
-      img = $("<img class='deletebtn' width='16' />")
-      img.attr "src", src
-      img.attr "data-contact-title", title
-      img.attr "fieldname", fieldname
-      img.attr "uid", uid
-      div = $("<div class='reference_multi_item'/>")
-      div.attr "uid", uid
-      div.append img
-      div.append title
-      mvl.append div
-      $field.val("")
+    this.native_set_value(textarea[0], uid)
 
 
   get_reference_field_value: (field) =>
@@ -1066,17 +1029,18 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find(".ArchetypesReferenceWidget")
         _field = _el.find("textarea")
+        _field_name = _el.closest("tr[fieldname]").attr "fieldname"
+
+        me.flush_fields_for _field_name, arnum
 
         # RectJS queryselect widget provides the JSON data of the selected
         # records in the `data-records` attribute.
         # This is needed because otherwise we would only see the raw UID value
         # (or another Ajax call would be needed.)
         _el.attr("data-records", el[0].dataset.records);
-        # set the textarea
-        me.native_set_value(_field[0], value)
 
-        # notify that the field changed
-        $(_field).trigger "select"
+        # set the textarea (this triggers a select event on the field)
+        me.native_set_value(_field[0], value)
 
       # trigger form:changed event
       $(me).trigger "form:changed"
@@ -1226,8 +1190,8 @@ class window.AnalysisRequestAdd
     if setter
       setter.call(input, value)
 
-    evt = new Event("input", {bubbles: true})
-    input.dispatchEvent(evt)
+    event = new Event("input", {bubbles: true})
+    input.dispatchEvent(event)
 
 
   # Note: Context of callback bound to this object

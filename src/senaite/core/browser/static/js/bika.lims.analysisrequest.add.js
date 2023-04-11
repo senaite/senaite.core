@@ -116,15 +116,12 @@
     };
 
     AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
-      var timeout;
-      if (execAsap == null) {
-        execAsap = true;
-      }
 
       /*
        * Debounce a function call
        * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
        */
+      var timeout;
       timeout = null;
       return function() {
         var args, delayed, obj;
@@ -516,45 +513,20 @@
       /*
        * Set the value and the uid of a reference field
        */
-      var $field, $parent, div, existing_uids, fieldname, img, me, mvl, portal_url, src, uids, uids_field;
-      me = this;
-      $field = $(field);
-      if (!$field.length) {
-        console.debug("field " + field + " does not exist, skip set_reference_field");
+      var event, fieldname, textarea;
+      if (!(field.length > 0)) {
         return;
       }
-      $parent = field.closest("div.field");
-      fieldname = field.attr("name");
+      fieldname = JSON.parse(field.data("name"));
       console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid + " title=" + title);
-      uids_field = $("input[type=hidden]", $parent);
-      existing_uids = uids_field.val();
-      if (existing_uids.indexOf(uid) >= 0) {
-        return;
-      }
-      if (existing_uids.length === 0) {
-        uids_field.val(uid);
-      } else {
-        uids = uids_field.val().split(",");
-        uids.push(uid);
-        uids_field.val(uids.join(","));
-      }
-      $field.val(title);
-      mvl = $(".multiValued-listing", $parent);
-      if (mvl.length > 0) {
-        portal_url = this.get_portal_url();
-        src = portal_url + "/senaite_theme/icon/delete";
-        img = $("<img class='deletebtn' width='16' />");
-        img.attr("src", src);
-        img.attr("data-contact-title", title);
-        img.attr("fieldname", fieldname);
-        img.attr("uid", uid);
-        div = $("<div class='reference_multi_item'/>");
-        div.attr("uid", uid);
-        div.append(img);
-        div.append(title);
-        mvl.append(div);
-        return $field.val("");
-      }
+      textarea = field.find("textarea").first();
+      event = new CustomEvent("sync", {
+        detail: {
+          values: [uid]
+        }
+      });
+      field[0].dispatchEvent(event);
+      return this.native_set_value(textarea[0], uid);
     };
 
     AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
@@ -1028,16 +1000,17 @@
           for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
           return results;
         }).apply(this), function(arnum) {
-          var _el, _field, _td;
+          var _el, _field, _field_name, _td;
           if (!(arnum > 0)) {
             return;
           }
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
           _field = _el.find("textarea");
+          _field_name = _el.closest("tr[fieldname]").attr("fieldname");
+          me.flush_fields_for(_field_name, arnum);
           _el.attr("data-records", el[0].dataset.records);
-          me.native_set_value(_field[0], value);
-          return $(_field).trigger("select");
+          return me.native_set_value(_field[0], value);
         });
         $(me).trigger("form:changed");
         return;
@@ -1231,7 +1204,7 @@
      */
 
     AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
-      var evt, setter;
+      var event, setter;
       setter = null;
       if (input.tagName === "TEXTAREA") {
         setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
@@ -1245,10 +1218,10 @@
       if (setter) {
         setter.call(input, value);
       }
-      evt = new Event("input", {
+      event = new Event("input", {
         bubbles: true
       });
-      return input.dispatchEvent(evt);
+      return input.dispatchEvent(event);
     };
 
     AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
