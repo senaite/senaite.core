@@ -101,9 +101,9 @@ class window.AnalysisRequestAdd
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @debounce @recalculate_records, 1500
+    $(this).on "form:changed", @debounce @recalculate_records, 1000
     # recalculate prices after services changed
-    $(this).on "services:changed", @debounce @recalculate_prices, 3000
+    $(this).on "services:changed", @debounce @recalculate_prices, 2000
     # update form from records after the data changed
     $(this).on "data:updated", @debounce @update_form
     # hide open service info after data changed
