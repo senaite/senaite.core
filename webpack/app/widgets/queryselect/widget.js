@@ -465,14 +465,22 @@ class QuerySelectWidgetController extends React.Component {
       return;
     }
 
-    // Inject the records of the root element to parse the set values properly.
-    // Currently only needed in Sample Add Form if fields are copied.
+    // Inject the provided records of the root element
+    // This allows to bypass the additional fetch to the server.
+    // Currently only used in Sample Add Form when values are copied.
     let records = this.parse_json(this.root_el.dataset.records);
     if (records != null) {
       this.state["records"] = records;
     }
 
+    let to_sync = []
+
     for (const value of values) {
+      // check a sync is needed
+      if (this.state.records[value] == null) {
+        to_sync.push(value);
+      }
+
       if (current_values.indexOf(value) > -1) {
         // value not changed -> continue
         continue;
@@ -490,8 +498,15 @@ class QuerySelectWidgetController extends React.Component {
       }
     }
 
-    // set the state with the new values
-    this.setState({values: values});
+    // ensure we have valid records and set the values
+    if (to_sync.length > 0) {
+      this.sync_records(to_sync).then(() => {
+        this.setState({values: values});
+      });
+    } else {
+      // set the state with the new values
+      this.setState({values: values});
+    }
   }
 
   /*
@@ -607,6 +622,8 @@ class QuerySelectWidgetController extends React.Component {
 
   /*
    * Fetch the records for the given values with an explicit value search
+   *
+   * NOTE: This will make a new catalog search using the value_query_index to fetch the items from the server!
    */
   sync_records(values) {
     values = values || this.state.values;
@@ -632,6 +649,7 @@ class QuerySelectWidgetController extends React.Component {
       this.toggle_loading(false);
       this.setState({records: records});
     });
+    return promise;
   }
 
   /*
