@@ -35,6 +35,9 @@ class QuerySelectWidgetController extends React.Component {
     // Root input HTML element
     this.root_el = props.root_el;
 
+    // Body boundaries
+    this.body_rect = document.body.getBoundingClientRect();
+
     // Data keys located at the root element
     // -> initial values are set from the widget class
     const data_keys = [
@@ -155,33 +158,26 @@ class QuerySelectWidgetController extends React.Component {
     let dropdown_bottom_pos = dropdown_rect.y + dropdown_rect.height;
     let dropdown_right_pos = dropdown_rect.x + dropdown_rect.width;
 
-    // check if we are off screen within our parent container
-    let container = dropdown.closest(".container-fluid");
-    if (!container) {
-      return;
-    }
-
     // get the bottom and right position of our container
-    let container_rect = container.getBoundingClientRect();
-    let container_bottom_pos = container_rect.y + container_rect.height;
-    let container_right_pos = container_rect.x + container_rect.width;
-
-    // get the space we have below the search field
-    let field_space_below = container_bottom_pos - field_rect.y;
+    let current_body_rect = document.body.getBoundingClientRect();
 
     console.debug(`FIELD RECT: ${JSON.stringify(field_rect)}`);
     console.debug(`DROPDOWN RECT: ${JSON.stringify(dropdown_rect)}`);
-    console.debug(`CONTAINER RECT: ${JSON.stringify(container_rect)}`);
-    // dropdown overflows at the bottom of the container
-    if (dropdown_bottom_pos > container_bottom_pos) {
-      dropdown.style.bottom = "10px";
-      dropdown.style.transform = `translateY(${(container_bottom_pos - field_bottom_pos) - field_space_below}px)`;
-    }
-    // dropdown overflows at the right
-    if (dropdown_right_pos > container_right_pos) {
-      dropdown.style.right = "10px";
-      dropdown.style.transform = `translateX(${(container_right_pos - field_right_pos)}px)`;
-    }
+    console.debug(`BODY RECT: ${JSON.stringify(current_body_rect)}`);
+
+    // Let the dropdown stick below the field
+    dropdown.style.transform = `translate(${current_body_rect.x - this.body_rect.x}px, ${current_body_rect.y - this.body_rect.y}px)`;
+
+    // // dropdown overflows at the bottom of the container
+    // if (dropdown_bottom_pos > container_bottom_pos) {
+    //   dropdown.style.bottom = "10px";
+    //   dropdown.style.transform = `translateY(${(container_bottom_pos - field_bottom_pos) - field_space_below}px)`;
+    // }
+    // // dropdown overflows at the right
+    // if (dropdown_right_pos > container_right_pos) {
+    //   dropdown.style.right = "10px";
+    //   dropdown.style.transform = `translateX(${(container_right_pos - field_right_pos)}px)`;
+    // }
   }
 
   /*
