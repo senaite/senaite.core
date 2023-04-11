@@ -1614,7 +1614,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # it therefore from the list of required fields to let empty
             # columns pass the required check below.
             if record.get("Client", False):
-                required_fields.pop('Client', None)
+                required_fields.pop("Client", None)
 
             # Check if analyses are required for sample registration
             if not self.analyses_required():
