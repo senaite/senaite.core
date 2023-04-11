@@ -103,7 +103,7 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   componentDidUpdate() {
-    this.fix_dropdown_overflow();
+    this.fix_dropdown_position();
   }
 
   componentWillUnmount() {
@@ -132,10 +132,10 @@ class QuerySelectWidgetController extends React.Component {
   /*
    * Fix overflow at the bottom or at the right of the container
    */
-  fix_dropdown_overflow() {
+  fix_dropdown_position() {
     let widget = this.props.root_el;
 
-    let field = widget.querySelector(".queryselectwidget-search-field");
+    let field = widget.querySelector(".queryselectwidget-search-field input");
     let dropdown = widget.querySelector(".queryselectwidget-results-container");
 
     if (!dropdown) {
@@ -153,7 +153,7 @@ class QuerySelectWidgetController extends React.Component {
     let dropdown_right_pos = dropdown_rect.x + dropdown_rect.width;
 
     // check if we are off screen within our parent container
-    let container = dropdown.closest(".table-responsive") || dropdown.closest(".container-fluid");
+    let container = dropdown.closest(".container-fluid");
     if (!container) {
       return;
     }
@@ -715,7 +715,7 @@ class QuerySelectWidgetController extends React.Component {
             on_blur={this.select_focused}
           />}
           <SearchResults
-            className="queryselectwidget-results-container position-absolute shadow-lg border border-light rounded-lg bg-white mt-2 p-1"
+            className="queryselectwidget-results-container position-fixed shadow-lg border border-light rounded-lg bg-white mt-2 p-1"
             columns={this.state.columns}
             values={this.state.values}
             value_key={this.state.value_key}
