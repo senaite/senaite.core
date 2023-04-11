@@ -145,36 +145,40 @@ class QuerySelectWidgetController extends React.Component {
       return;
     }
 
-    // get the bottom and right position of the field
     let field_rect = field.getBoundingClientRect();
-    let field_bottom_pos = field_rect.y + field_rect.height;
-    let field_right_pos = field_rect.x + field_rect.width;
-
-    // get the bottom and right position of the dropdown
     let dropdown_rect = dropdown.getBoundingClientRect();
-    let dropdown_bottom_pos = dropdown_rect.y + dropdown_rect.height;
-    let dropdown_right_pos = dropdown_rect.x + dropdown_rect.width;
-
-    // get the bottom and right position of our container
     let body_rect = document.body.getBoundingClientRect();
 
     console.debug(`FIELD RECT: ${JSON.stringify(field_rect)}`);
     console.debug(`DROPDOWN RECT: ${JSON.stringify(dropdown_rect)}`);
     console.debug(`BODY RECT: ${JSON.stringify(body_rect)}`);
 
-    // Let the dropdown stick below the field
-    dropdown.style.transform = `translate(${body_rect.x}px, ${body_rect.y}px)`;
+    let body_height = body_rect.height;
+    let body_width = body_rect.width;
 
-    // // dropdown overflows at the bottom of the container
-    // if (dropdown_bottom_pos > container_bottom_pos) {
-    //   dropdown.style.bottom = "10px";
-    //   dropdown.style.transform = `translateY(${(container_bottom_pos - field_bottom_pos) - field_space_below}px)`;
-    // }
-    // // dropdown overflows at the right
-    // if (dropdown_right_pos > container_right_pos) {
-    //   dropdown.style.right = "10px";
-    //   dropdown.style.transform = `translateX(${(container_right_pos - field_right_pos)}px)`;
-    // }
+    let dropdown_height = dropdown_rect.height;
+    let dropdown_width = dropdown_rect.width;
+
+    // Let the dropdown stick below the field
+    let transform = {
+      X: `translateX(${body_rect.x}px)`,
+      Y: `translateY(${body_rect.y}px)`
+    }
+
+    // dropdown overflows at the right
+    if (field_rect.left + dropdown_width > body_width) {
+      console.debug("Fix dropdown overflow right!")
+      transform["X"] = `translateX(${(body_rect.x - dropdown_width + field_rect.width)}px)`;
+    }
+
+    // dropdown will overflow at the bottom of the body
+    // Note: The 16px is to provide the same spacing to the search field, which is controlled by mt-2 (8px).
+    if (field_rect.bottom + dropdown_height > body_height) {
+      console.debug("Fix dropdown overflow bottom!")
+      transform["Y"] = `translateY(${body_rect.y - dropdown_height - field_rect.height - 16}px)`;
+    }
+
+    dropdown.style.transform = `${transform["X"]} ${transform["Y"]}`;
   }
 
   /*
