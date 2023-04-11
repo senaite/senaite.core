@@ -40,6 +40,7 @@
       this.set_template = bind(this.set_template, this);
       this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field = bind(this.set_reference_field, this);
+      this.set_reference_field_records = bind(this.set_reference_field_records, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
       this.get_base_url = bind(this.get_base_url, this);
@@ -201,7 +202,7 @@
     AnalysisRequestAdd.prototype.get_flush_settings = function() {
 
       /*
-       * Retrieve the flush settings
+       * Retrieve the flush settings mapping (field name -> list of other fields to flush)
        */
       return this.ajax_post_form("get_flush_settings").done(function(settings) {
         console.debug("Flush settings:", settings);
@@ -250,6 +251,8 @@
 
       /*
        * Update form according to the server data
+       *
+       * Records provided from the server (see ajax_recalculate_records)
        */
       var me;
       console.debug("*** update_form ***");
@@ -349,7 +352,7 @@
     AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
 
       /*
-       * Sets default field values to dependents
+       * Set default field values to dependents
        */
       var me;
       me = this;
@@ -361,7 +364,7 @@
     AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
 
       /*
-       * Apply search filters to dependendents
+       * Set default field value
        */
       var field, me, values_json;
       me = this;
@@ -374,7 +377,7 @@
       }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if ((values.uid != null) && (values.title != null)) {
-        return me.set_reference_field(field, values.uid, values.title);
+        return me.set_reference_field(field, values.uid);
       } else if (values.value != null) {
         if (typeof values.value === "boolean") {
           return field.prop("checked", values.value);
@@ -423,13 +426,11 @@
       /*
        * Empty the reference field and restore the search query
        */
-      var event;
       if (!(field.length > 0)) {
         return;
       }
       this.reset_reference_field_query(field);
-      event = new CustomEvent("flush");
-      return field[0].dispatchEvent(event);
+      return this.set_reference_field(field, "");
     };
 
     AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
@@ -457,24 +458,33 @@
       return console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field = function(field, uid, title) {
+    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
 
       /*
-       * Set the value and the uid of a reference field
+       * Set data-records to display the UID of a reference field
        */
-      var event, fieldname, textarea;
+      var $field, existing_records, new_records;
+      if (records == null) {
+        records = {};
+      }
+      $field = $(field);
+      existing_records = JSON.parse($field.attr("data-records") || '{}');
+      new_records = Object.assign(existing_records, records);
+      return $field.attr("data-records", JSON.stringify(new_records));
+    };
+
+    AnalysisRequestAdd.prototype.set_reference_field = function(field, uid) {
+
+      /*
+       * Set the UID of a reference field
+       */
+      var fieldname, textarea;
       if (!(field.length > 0)) {
         return;
       }
       fieldname = JSON.parse(field.data("name"));
-      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid + " title=" + title);
-      textarea = field.find("textarea").first();
-      event = new CustomEvent("sync", {
-        detail: {
-          values: [uid]
-        }
-      });
-      field[0].dispatchEvent(event);
+      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
+      textarea = field.find("textarea");
       return this.native_set_value(textarea[0], uid);
     };
 
@@ -483,10 +493,11 @@
       /*
        * Return the value of a single/multi reference field
        */
-      var $field, value;
+      var $field, $textarea, value;
       $field = $(field);
-      value = $field.val();
-      return value.split("\n");
+      $textarea = $field.find("textarea");
+      value = $textarea.val();
+      return value;
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -494,11 +505,10 @@
       /*
        * Apply the template data to all fields of arnum
        */
-      var field, me, template_field, template_uid, textarea, title, uid;
+      var field, me, template_field, template_uid, uid, value;
       me = this;
       template_field = $("#Template-" + arnum);
-      textarea = template_field.find("textarea");
-      template_uid = textarea.val();
+      template_uid = this.get_reference_field_value(template_field);
       if (arnum in this.applied_templates) {
         if (this.applied_templates[arnum] === template_uid) {
           console.debug("Skipping already applied template");
@@ -507,22 +517,22 @@
       }
       this.applied_templates[arnum] = template_uid;
       field = $("#SampleType-" + arnum);
-      if (!field.val()) {
+      value = this.get_reference_field_value(value);
+      if (!value) {
         uid = template.sample_type_uid;
-        title = template.sample_type_title;
-        this.set_reference_field(field, uid, title);
+        this.set_reference_field(field, uid);
       }
       field = $("#SamplePoint-" + arnum);
-      if (!field.val()) {
+      value = this.get_reference_field_value(value);
+      if (!value) {
         uid = template.sample_point_uid;
-        title = template.sample_point_title;
-        this.set_reference_field(field, uid, title);
+        this.set_reference_field(field, uid);
       }
       field = $("#Profiles-" + arnum);
-      if (!field.val()) {
+      value = this.get_reference_field_value(value);
+      if (!value) {
         uid = template.analysis_profile_uid;
-        title = template.analysis_profile_title;
-        this.set_reference_field(field, uid, title);
+        this.set_reference_field(field, uid);
       }
       field = $("#Remarks-" + arnum);
       if (!field.val()) {
@@ -631,7 +641,7 @@
     AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
 
       /*
-       * Generic event handler for when a field value changes
+       * Generic event handler for when a reference field value changed
        */
       var $el, arnum, el, field_name, me;
       me = this;
@@ -863,7 +873,7 @@
        * Copies the value of the first field in this row to the remaining.
        * XXX Refactor
        */
-      var $el, $td1, $tr, ar_count, el, field, i, me, record_one, results, td1, tr, value;
+      var $el, $td1, $tr, ar_count, el, i, me, record_one, records, results, td1, tr, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
       el = event.target;
@@ -880,24 +890,23 @@
       if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
         console.debug("-> Copy reference field");
         el = $(td1).find(".ArchetypesReferenceWidget");
-        field = el.find("textarea");
-        value = field.val();
+        records = JSON.parse(el.attr("data-records")) || {};
+        value = me.get_reference_field_value(el);
         $.each((function() {
           results = [];
           for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
           return results;
         }).apply(this), function(arnum) {
-          var _el, _field, _field_name, _td;
+          var _el, _field_name, _td;
           if (!(arnum > 0)) {
             return;
           }
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
-          _field = _el.find("textarea");
           _field_name = _el.closest("tr[fieldname]").attr("fieldname");
           me.flush_fields_for(_field_name, arnum);
-          _el.attr("data-records", el[0].dataset.records);
-          return me.native_set_value(_field[0], value);
+          me.set_reference_field_records(_el, records);
+          return me.set_reference_field(_el, value);
         });
         $(me).trigger("form:changed");
         return;

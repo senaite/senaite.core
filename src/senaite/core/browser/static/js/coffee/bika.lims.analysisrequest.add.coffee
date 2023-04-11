@@ -378,7 +378,7 @@ class window.AnalysisRequestAdd
 
     if values.uid? and values.title?
       # This is a reference field
-      me.set_reference_field field, values.uid, values.title
+      me.set_reference_field field, values.uid
 
     else if values.value?
       # This is a normal input field
@@ -423,10 +423,8 @@ class window.AnalysisRequestAdd
 
     # restore the original search query
     @reset_reference_field_query field
-
-    # trigger native JS CustomEvent for ReactJS
-    event = new CustomEvent "flush"
-    field[0].dispatchEvent(event)
+    # set emtpy value
+    @set_reference_field field, ""
 
 
   reset_reference_field_query: (field) =>
@@ -448,20 +446,27 @@ class window.AnalysisRequestAdd
     console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
 
 
-  set_reference_field: (field, uid, title) =>
+  set_reference_field_records: (field, records) =>
     ###
-     * Set the value and the uid of a reference field
+     * Set data-records to display the UID of a reference field
+    ###
+    records ?= {}
+    $field = $(field)
+
+    existing_records = JSON.parse($field.attr("data-records") or '{}')
+    new_records = Object.assign(existing_records, records)
+    $field.attr("data-records", JSON.stringify(new_records))
+
+
+  set_reference_field: (field, uid) =>
+    ###
+     * Set the UID of a reference field
     ###
     return unless field.length > 0
 
     fieldname = JSON.parse field.data("name")
-    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid} title=#{title}"
-    textarea = field.find("textarea").first()
-
-    # Ensure we have the records for the set UIDs to display a proper template
-    event = new CustomEvent "sync", {detail: {values: [uid]}}
-    field[0].dispatchEvent(event)
-
+    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
+    textarea = field.find("textarea")
     this.native_set_value(textarea[0], uid)
 
 
@@ -470,8 +475,9 @@ class window.AnalysisRequestAdd
      * Return the value of a single/multi reference field
     ###
     $field = $(field)
-    value = $field.val()
-    return value.split("\n")
+    $textarea = $field.find("textarea")
+    value = $textarea.val()
+    return value
 
 
   set_template: (arnum, template) =>
@@ -482,8 +488,7 @@ class window.AnalysisRequestAdd
 
     # apply template only once
     template_field = $("#Template-#{arnum}")
-    textarea = template_field.find("textarea")
-    template_uid = textarea.val()
+    template_uid = @get_reference_field_value(template_field)
 
     if arnum of @applied_templates
       # Allow to remove fields set by the template
@@ -496,24 +501,24 @@ class window.AnalysisRequestAdd
 
     # set the sample type
     field = $("#SampleType-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(value)
+    if not value
       uid = template.sample_type_uid
-      title = template.sample_type_title
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the sample point
     field = $("#SamplePoint-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(value)
+    if not value
       uid = template.sample_point_uid
-      title = template.sample_point_title
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the analysis profile
     field = $("#Profiles-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(value)
+    if not value
       uid = template.analysis_profile_uid
-      title = template.analysis_profile_title
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the remarks
     field = $("#Remarks-#{arnum}")
@@ -626,7 +631,7 @@ class window.AnalysisRequestAdd
 
   on_referencefield_value_changed: (event) =>
     ###
-     * Generic event handler for when a field value changes
+     * Generic event handler for when a reference field value changed
     ###
     me = this
     el = event.currentTarget
@@ -898,28 +903,29 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy reference field"
 
       el = $(td1).find(".ArchetypesReferenceWidget")
-      field = el.find("textarea")
-      value = field.val()
+      records = JSON.parse(el.attr("data-records")) or {}
+      value = me.get_reference_field_value(el)
 
       $.each [1..ar_count], (arnum) ->
-        # skip the first column
+        # skip the first (source) column
         return unless arnum > 0
 
+        # find the reference widget of the next column
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find(".ArchetypesReferenceWidget")
-        _field = _el.find("textarea")
-        _field_name = _el.closest("tr[fieldname]").attr "fieldname"
 
+        # XXX: Needed?
+        _field_name = _el.closest("tr[fieldname]").attr "fieldname"
         me.flush_fields_for _field_name, arnum
 
         # RectJS queryselect widget provides the JSON data of the selected
         # records in the `data-records` attribute.
         # This is needed because otherwise we would only see the raw UID value
         # (or another Ajax call would be needed.)
-        _el.attr("data-records", el[0].dataset.records);
+        me.set_reference_field_records(_el, records)
 
         # set the textarea (this triggers a select event on the field)
-        me.native_set_value(_field[0], value)
+        me.set_reference_field(_el, value)
 
       # trigger form:changed event
       $(me).trigger "form:changed"
