@@ -189,7 +189,7 @@
     AnalysisRequestAdd.prototype.get_global_settings = function() {
 
       /*
-       * Submit all form values to the server to recalculate the records
+       * Fetch global settings from the setup, e.g. show_prices
        */
       return this.ajax_post_form("get_global_settings").done(function(settings) {
         console.debug("Global Settings:", settings);

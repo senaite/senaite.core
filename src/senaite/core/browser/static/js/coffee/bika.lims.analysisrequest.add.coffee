@@ -189,7 +189,7 @@ class window.AnalysisRequestAdd
 
   get_global_settings: =>
     ###
-     * Submit all form values to the server to recalculate the records
+     * Fetch global settings from the setup, e.g. show_prices
     ###
     @ajax_post_form("get_global_settings").done (settings) ->
       console.debug "Global Settings:", settings
