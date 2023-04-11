@@ -201,7 +201,7 @@ class window.AnalysisRequestAdd
 
   get_flush_settings: =>
     ###
-     * Retrieve the flush settings
+     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
     ###
     @ajax_post_form("get_flush_settings").done (settings) ->
       console.debug "Flush settings:", settings
@@ -244,6 +244,8 @@ class window.AnalysisRequestAdd
   update_form: (event, records) =>
     ###
      * Update form according to the server data
+     *
+     * Records provided from the server (see ajax_recalculate_records)
     ###
     console.debug "*** update_form ***"
 
@@ -350,7 +352,7 @@ class window.AnalysisRequestAdd
 
   apply_dependent_values: (arnum, record) ->
     ###
-     * Sets default field values to dependents
+     * Set default field values to dependents
     ###
     me = this
     $.each record.field_values, (field_name, values) ->
@@ -359,7 +361,7 @@ class window.AnalysisRequestAdd
 
   apply_dependent_value: (arnum, field_name, values) ->
     ###
-     * Apply search filters to dependendents
+     * Set default field value
     ###
     me = this
     values_json = JSON.stringify values
@@ -367,6 +369,8 @@ class window.AnalysisRequestAdd
 
     if values.if_empty? and values.if_empty is true
       # Set the value if the field is empty only
+      # XXX Can it be a reference field here?
+      #     If yes, we need to fetch the value from the containing textarea!
       if field.val()
         return
 
