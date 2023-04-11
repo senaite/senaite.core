@@ -90,6 +90,7 @@ class QuerySelectWidgetController extends React.Component {
     this.focus_row = this.focus_row.bind(this);
     this.on_flush = this.on_flush.bind(this);
     this.on_sync = this.on_sync.bind(this);
+    this.fix_dropdown_position = this.fix_dropdown_position.bind(this);
 
     return this
   }
@@ -100,6 +101,7 @@ class QuerySelectWidgetController extends React.Component {
     document.addEventListener("click", this.on_click, false)
     this.root_el.addEventListener("flush", this.on_flush, false);
     this.root_el.addEventListener("sync", this.on_sync, false);
+    document.addEventListener("scroll", this.fix_dropdown_position, false);
   }
 
   componentDidUpdate() {
@@ -112,6 +114,7 @@ class QuerySelectWidgetController extends React.Component {
     document.removeEventListener("click", this.on_click, false);
     this.root_el.removeEventListener("flush", this.on_flush, false);
     this.root_el.removeEventListener("sync", this.on_sync, false);
+    document.removeEventListener("scroll", this.fix_dropdown_position, false);
   }
 
   /*
@@ -166,6 +169,9 @@ class QuerySelectWidgetController extends React.Component {
     // get the space we have below the search field
     let field_space_below = container_bottom_pos - field_rect.y;
 
+    console.debug(`FIELD RECT: ${JSON.stringify(field_rect)}`);
+    console.debug(`DROPDOWN RECT: ${JSON.stringify(dropdown_rect)}`);
+    console.debug(`CONTAINER RECT: ${JSON.stringify(container_rect)}`);
     // dropdown overflows at the bottom of the container
     if (dropdown_bottom_pos > container_bottom_pos) {
       dropdown.style.bottom = "10px";
