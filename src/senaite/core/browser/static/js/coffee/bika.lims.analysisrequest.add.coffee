@@ -66,37 +66,44 @@ class window.AnalysisRequestAdd
      *
     ###
     console.debug "AnalysisRequestAdd::bind_eventhandler"
+
     # Categories header clicked
     $("body").on "click", ".service-listing-header", @on_service_listing_header_click
     # Category toggle button clicked
     $("body").on "click", "tr.category", @on_service_category_click
-    # Save button clicked
-    $("body").on "click", "[name='save_button']", @on_form_submit
-    # Save and copy button clicked
-    $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
-    # Cancel button clicked
-    $("body").on "click", "[name='cancel_button']", @on_cancel
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
-    # Select/Deselect event handler for reference fields
-    $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
 
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
-    # Analysis Template changed
-    $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
+    # Copy button clicked
+    $("body").on "click", "img.copybutton", @on_copy_button_click
+
+    # Generic select/deselect event handler for reference fields
+    $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
+
+    # Analysis Template selected
+    $("body").on "select", "tr[fieldname=Template] textarea", @on_analysis_template_selected
+    # Analysis Template removed
+    $("body").on "deselect", "tr[fieldname=Template] textarea", @on_analysis_template_removed
+
     # Analysis Profile selected
     $("body").on "select", "tr[fieldname=Profiles] textarea", @on_analysis_profile_selected
     # Analysis Profile deselected
     $("body").on "deselect", "tr[fieldname=Profiles] textarea", @on_analysis_profile_removed
-    # Copy button clicked
-    $("body").on "click", "img.copybutton", @on_copy_button_click
+
+    # Save button clicked
+    $("body").on "click", "[name='save_button']", @on_form_submit
+    # Save and copy button clicked
+    $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
+    # Cancel button clicked
+    $("body").on "click", "[name='cancel_button']", @on_cancel
 
     ### internal events ###
 
@@ -265,9 +272,6 @@ class window.AnalysisRequestAdd
         # service is included in a profile
         if uid of record.service_to_profiles
           lock.show()
-        # service is part of the template
-        # if uid of record.service_to_templates
-        #   lock.show()
 
         # select the service
         me.set_service arnum, uid, yes
@@ -318,57 +322,6 @@ class window.AnalysisRequestAdd
     if base_url.search("/portal_factory") >= 0
       return base_url.split("/portal_factory")[0]
     return base_url.split("/ar_add")[0]
-
-
-  get_authenticator: =>
-    ###
-     * Get the authenticator value
-    ###
-    return $("input[name='_authenticator']").val()
-
-
-  get_form: =>
-    ###
-     * Return the form element
-    ###
-    return $("#analysisrequest_add_form")
-
-
-  get_fields: (arnum) =>
-    ###
-     * Get all fields of the form
-    ###
-    form = @get_form()
-
-    fields_selector = "tr[fieldname] td[arnum] input"
-    if arnum?
-      fields_selector = "tr[fieldname] td[arnum=#{arnum}] input"
-    fields = $(fields_selector, form)
-    return fields
-
-
-  get_field_by_id: (id, arnum) =>
-    ###
-     * Query the field by id
-    ###
-
-    # split the fieldname from the suffix
-    [name, suffix] = id.split "_"
-
-    # append the arnum
-    field_id = "#{name}-#{arnum}"
-
-    # append the suffix if it is there
-    if suffix?
-      field_id = "#{field_id}_#{suffix}"
-
-    # prepend a hash if it is not there
-    if not id.startsWith "#"
-      field_id = "##{field_id}"
-
-    console.debug "get_field_by_id: $(#{field_id})"
-    # query the field
-    return $(field_id)
 
 
   typeIsArray = Array.isArray || (value) ->
@@ -464,12 +417,12 @@ class window.AnalysisRequestAdd
     ###
     return unless field.length > 0
 
+    # restore the original search query
+    @reset_reference_field_query field
+
     # trigger native JS CustomEvent for ReactJS
     event = new CustomEvent "flush"
     field[0].dispatchEvent(event)
-
-    # restore the original search query
-    @reset_reference_field_query field
 
 
   reset_reference_field_query: (field) =>
@@ -521,15 +474,15 @@ class window.AnalysisRequestAdd
     ###
      * Apply the template data to all fields of arnum
     ###
-
     me = this
 
     # apply template only once
-    field = $("#Template-#{arnum}")
-    uid = field.attr "uid"
-    template_uid = template.uid
+    template_field = $("#Template-#{arnum}")
+    textarea = template_field.find("textarea")
+    template_uid = textarea.val()
 
     if arnum of @applied_templates
+      # Allow to remove fields set by the template
       if @applied_templates[arnum] == template_uid
         console.debug "Skipping already applied template"
         return
@@ -542,7 +495,6 @@ class window.AnalysisRequestAdd
     if not field.val()
       uid = template.sample_type_uid
       title = template.sample_type_title
-      @flush_reference_field field
       @set_reference_field field, uid, title
 
     # set the sample point
@@ -550,7 +502,6 @@ class window.AnalysisRequestAdd
     if not field.val()
       uid = template.sample_point_uid
       title = template.sample_point_title
-      @flush_reference_field field
       @set_reference_field field, uid, title
 
     # set the analysis profile
@@ -558,7 +509,6 @@ class window.AnalysisRequestAdd
     if not field.val()
       uid = template.analysis_profile_uid
       title = template.analysis_profile_title
-      @flush_reference_field field
       @set_reference_field field, uid, title
 
     # set the remarks
@@ -574,6 +524,10 @@ class window.AnalysisRequestAdd
     $.each template.service_uids, (index, uid) ->
       # select the service
       me.set_service arnum, uid, yes
+
+    # set the template field again
+    # XXX how to avoid that setting the sample types flushes the template field?
+    @set_reference_field template_field, template_uid
 
 
   set_service: (arnum, uid, checked) =>
@@ -673,7 +627,6 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
-    has_value = @get_reference_field_value $el
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
 
@@ -776,106 +729,28 @@ class window.AnalysisRequestAdd
     dialog = @template_dialog "service-dependant-template", context, buttons
 
 
-  on_analysis_template_changed: (event) =>
+  on_analysis_template_selected: (event) =>
     ###
-     * Eventhandler when an Analysis Template was changed.
+     * Eventhandler when an Analysis Template was selected.
     ###
+    console.debug "°°° on_analysis_template_selected °°°"
+    # trigger form:changed event
+    $(this).trigger "form:changed"
 
-    me = this
+
+  on_analysis_template_removed: (event) =>
+    ###
+     * Eventhandler when an Analysis Template was removed.
+    ###
+    console.debug "°°° on_analysis_template_removed °°°"
+
     el = event.currentTarget
     $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
     arnum = $el.closest("[arnum]").attr "arnum"
-    has_template_selected = $el.val()
-    console.debug "°°° on_analysis_template_change::UID=#{uid} Template=#{val}°°°"
-
-    # remember the set uid to handle later removal
-    if uid
-      $el.attr "previous_uid", uid
-    else
-      uid = $el.attr "previous_uid"
-
-    # deselect the template if the field is empty
-    if not has_template_selected and uid
-      # forget the applied template
-      @applied_templates[arnum] = null
-
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-      record = @records_snapshot[arnum]
-      template_metadata = record.template_metadata[uid]
-      template_services = []
-
-      # prepare a list of services used by the template with the given UID
-      $.each record.template_to_services[uid], (index, uid) ->
-        # service might be deselected before and thus, absent
-        if uid of record.service_metadata
-          template_services.push record.service_metadata[uid]
-
-      if template_services.length
-        context = {}
-        context["template"] = template_metadata
-        context["services"] = template_services
-
-        dialog = @template_dialog "template-remove-template", context
-        dialog.on "yes", ->
-          # deselect the services
-          $.each template_services, (index, service) ->
-            me.set_service arnum, service.uid, no
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-        dialog.on "no", ->
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-
-      # deselect the profile coming from the template
-      # XXX: This is crazy and need to get refactored!
-      if template_metadata.analysis_profile_uid
-        field = $("#Profiles-#{arnum}")
-
-        # uid and title of the selected profile
-        uid = template_metadata.analysis_profile_uid
-        title = template_metadata.analysis_profile_title
-
-        # get the parent field wrapper (field is only the input)
-        $parent = field.closest("div.field")
-
-        # search for the multi item and remove it
-        item = $(".reference_multi_item[uid=#{uid}]", $parent)
-        if item.length
-          item.remove()
-          # remove the uid from the hidden field
-          uids_field = $("input[type=hidden]", $parent)
-          existing_uids = uids_field.val().split(",")
-          remove_index = existing_uids.indexOf(uid)
-          if remove_index > -1
-            existing_uids.splice remove_index, 1
-          uids_field.val existing_uids.join ","
-
-      # deselect the samplepoint
-      if template_metadata.sample_point_uid
-        field = $("#SamplePoint-#{arnum}")
-        @flush_reference_field(field)
-
-      # deselect the sampletype
-      if template_metadata.sample_type_uid
-        field = $("#SampleType-#{arnum}")
-        @flush_reference_field(field)
-
-      # flush the remarks field
-      if template_metadata.remarks
-        field = $("#Remarks-#{arnum}")
-        field.text ""
-
-      # reset the composite checkbox
-      if template_metadata.composite
-        field = $("#Composite-#{arnum}")
-        field.prop "checked", no
+    @applied_templates[arnum] = null
 
     # trigger form:changed event
-    $(me).trigger "form:changed"
+    $(this).trigger "form:changed"
 
 
   on_analysis_profile_selected: (event) =>

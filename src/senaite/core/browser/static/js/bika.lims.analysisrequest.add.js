@@ -29,7 +29,8 @@
       this.on_analysis_checkbox_click = bind(this.on_analysis_checkbox_click, this);
       this.on_analysis_profile_removed = bind(this.on_analysis_profile_removed, this);
       this.on_analysis_profile_selected = bind(this.on_analysis_profile_selected, this);
-      this.on_analysis_template_changed = bind(this.on_analysis_template_changed, this);
+      this.on_analysis_template_removed = bind(this.on_analysis_template_removed, this);
+      this.on_analysis_template_selected = bind(this.on_analysis_template_selected, this);
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
@@ -41,10 +42,6 @@
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
-      this.get_field_by_id = bind(this.get_field_by_id, this);
-      this.get_fields = bind(this.get_fields, this);
-      this.get_form = bind(this.get_form, this);
-      this.get_authenticator = bind(this.get_authenticator, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
       this.update_form = bind(this.update_form, this);
@@ -92,19 +89,20 @@
       console.debug("AnalysisRequestAdd::bind_eventhandler");
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
       $("body").on("click", "tr.category", this.on_service_category_click);
-      $("body").on("click", "[name='save_button']", this.on_form_submit);
-      $("body").on("click", "[name='save_and_copy_button']", this.on_form_submit);
-      $("body").on("click", "[name='cancel_button']", this.on_cancel);
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", this.on_analysis_checkbox_click);
-      $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
-      $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
+      $("body").on("click", "img.copybutton", this.on_copy_button_click);
+      $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
+      $("body").on("select", "tr[fieldname=Template] textarea", this.on_analysis_template_selected);
+      $("body").on("deselect", "tr[fieldname=Template] textarea", this.on_analysis_template_removed);
       $("body").on("select", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_selected);
       $("body").on("deselect", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_removed);
-      $("body").on("click", "img.copybutton", this.on_copy_button_click);
+      $("body").on("click", "[name='save_button']", this.on_form_submit);
+      $("body").on("click", "[name='save_and_copy_button']", this.on_form_submit);
+      $("body").on("click", "[name='cancel_button']", this.on_cancel);
 
       /* internal events */
       $(this).on("form:changed", this.debounce(this.recalculate_records, 1000));
@@ -325,55 +323,6 @@
       return base_url.split("/ar_add")[0];
     };
 
-    AnalysisRequestAdd.prototype.get_authenticator = function() {
-
-      /*
-       * Get the authenticator value
-       */
-      return $("input[name='_authenticator']").val();
-    };
-
-    AnalysisRequestAdd.prototype.get_form = function() {
-
-      /*
-       * Return the form element
-       */
-      return $("#analysisrequest_add_form");
-    };
-
-    AnalysisRequestAdd.prototype.get_fields = function(arnum) {
-
-      /*
-       * Get all fields of the form
-       */
-      var fields, fields_selector, form;
-      form = this.get_form();
-      fields_selector = "tr[fieldname] td[arnum] input";
-      if (arnum != null) {
-        fields_selector = "tr[fieldname] td[arnum=" + arnum + "] input";
-      }
-      fields = $(fields_selector, form);
-      return fields;
-    };
-
-    AnalysisRequestAdd.prototype.get_field_by_id = function(id, arnum) {
-
-      /*
-       * Query the field by id
-       */
-      var field_id, name, ref, suffix;
-      ref = id.split("_"), name = ref[0], suffix = ref[1];
-      field_id = name + "-" + arnum;
-      if (suffix != null) {
-        field_id = field_id + "_" + suffix;
-      }
-      if (!id.startsWith("#")) {
-        field_id = "#" + field_id;
-      }
-      console.debug("get_field_by_id: $(" + field_id + ")");
-      return $(field_id);
-    };
-
     typeIsArray = Array.isArray || function(value) {
 
       /*
@@ -478,9 +427,9 @@
       if (!(field.length > 0)) {
         return;
       }
+      this.reset_reference_field_query(field);
       event = new CustomEvent("flush");
-      field[0].dispatchEvent(event);
-      return this.reset_reference_field_query(field);
+      return field[0].dispatchEvent(event);
     };
 
     AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
@@ -545,11 +494,11 @@
       /*
        * Apply the template data to all fields of arnum
        */
-      var field, me, template_uid, title, uid;
+      var field, me, template_field, template_uid, textarea, title, uid;
       me = this;
-      field = $("#Template-" + arnum);
-      uid = field.attr("uid");
-      template_uid = template.uid;
+      template_field = $("#Template-" + arnum);
+      textarea = template_field.find("textarea");
+      template_uid = textarea.val();
       if (arnum in this.applied_templates) {
         if (this.applied_templates[arnum] === template_uid) {
           console.debug("Skipping already applied template");
@@ -561,21 +510,18 @@
       if (!field.val()) {
         uid = template.sample_type_uid;
         title = template.sample_type_title;
-        this.flush_reference_field(field);
         this.set_reference_field(field, uid, title);
       }
       field = $("#SamplePoint-" + arnum);
       if (!field.val()) {
         uid = template.sample_point_uid;
         title = template.sample_point_title;
-        this.flush_reference_field(field);
         this.set_reference_field(field, uid, title);
       }
       field = $("#Profiles-" + arnum);
       if (!field.val()) {
         uid = template.analysis_profile_uid;
         title = template.analysis_profile_title;
-        this.flush_reference_field(field);
         this.set_reference_field(field, uid, title);
       }
       field = $("#Remarks-" + arnum);
@@ -584,9 +530,10 @@
       }
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      return $.each(template.service_uids, function(index, uid) {
+      $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
       });
+      return this.set_reference_field(template_field, template_uid);
     };
 
     AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {
@@ -686,11 +633,10 @@
       /*
        * Generic event handler for when a field value changes
        */
-      var $el, arnum, el, field_name, has_value, me;
+      var $el, arnum, el, field_name, me;
       me = this;
       el = event.currentTarget;
       $el = $(el);
-      has_value = this.get_reference_field_value($el);
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
       if (field_name === "Template" || field_name === "Profiles") {
@@ -782,86 +728,27 @@
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_template_changed = function(event) {
+    AnalysisRequestAdd.prototype.on_analysis_template_selected = function(event) {
 
       /*
-       * Eventhandler when an Analysis Template was changed.
+       * Eventhandler when an Analysis Template was selected.
        */
-      var $el, $parent, arnum, context, dialog, el, existing_uids, field, has_template_selected, item, me, record, remove_index, template_metadata, template_services, title, uid, uids_field, val;
-      me = this;
+      console.debug("°°° on_analysis_template_selected °°°");
+      return $(this).trigger("form:changed");
+    };
+
+    AnalysisRequestAdd.prototype.on_analysis_template_removed = function(event) {
+
+      /*
+       * Eventhandler when an Analysis Template was removed.
+       */
+      var $el, arnum, el;
+      console.debug("°°° on_analysis_template_removed °°°");
       el = event.currentTarget;
       $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
       arnum = $el.closest("[arnum]").attr("arnum");
-      has_template_selected = $el.val();
-      console.debug("°°° on_analysis_template_change::UID=" + uid + " Template=" + val + "°°°");
-      if (uid) {
-        $el.attr("previous_uid", uid);
-      } else {
-        uid = $el.attr("previous_uid");
-      }
-      if (!has_template_selected && uid) {
-        this.applied_templates[arnum] = null;
-        $("input[type=hidden]", $el.parent()).val("");
-        record = this.records_snapshot[arnum];
-        template_metadata = record.template_metadata[uid];
-        template_services = [];
-        $.each(record.template_to_services[uid], function(index, uid) {
-          if (uid in record.service_metadata) {
-            return template_services.push(record.service_metadata[uid]);
-          }
-        });
-        if (template_services.length) {
-          context = {};
-          context["template"] = template_metadata;
-          context["services"] = template_services;
-          dialog = this.template_dialog("template-remove-template", context);
-          dialog.on("yes", function() {
-            $.each(template_services, function(index, service) {
-              return me.set_service(arnum, service.uid, false);
-            });
-            return $(me).trigger("form:changed");
-          });
-          dialog.on("no", function() {
-            return $(me).trigger("form:changed");
-          });
-        }
-        if (template_metadata.analysis_profile_uid) {
-          field = $("#Profiles-" + arnum);
-          uid = template_metadata.analysis_profile_uid;
-          title = template_metadata.analysis_profile_title;
-          $parent = field.closest("div.field");
-          item = $(".reference_multi_item[uid=" + uid + "]", $parent);
-          if (item.length) {
-            item.remove();
-            uids_field = $("input[type=hidden]", $parent);
-            existing_uids = uids_field.val().split(",");
-            remove_index = existing_uids.indexOf(uid);
-            if (remove_index > -1) {
-              existing_uids.splice(remove_index, 1);
-            }
-            uids_field.val(existing_uids.join(","));
-          }
-        }
-        if (template_metadata.sample_point_uid) {
-          field = $("#SamplePoint-" + arnum);
-          this.flush_reference_field(field);
-        }
-        if (template_metadata.sample_type_uid) {
-          field = $("#SampleType-" + arnum);
-          this.flush_reference_field(field);
-        }
-        if (template_metadata.remarks) {
-          field = $("#Remarks-" + arnum);
-          field.text("");
-        }
-        if (template_metadata.composite) {
-          field = $("#Composite-" + arnum);
-          field.prop("checked", false);
-        }
-      }
-      return $(me).trigger("form:changed");
+      this.applied_templates[arnum] = null;
+      return $(this).trigger("form:changed");
     };
 
     AnalysisRequestAdd.prototype.on_analysis_profile_selected = function(event) {
