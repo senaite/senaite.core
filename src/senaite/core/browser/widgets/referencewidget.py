@@ -91,9 +91,21 @@ class ReferenceWidget(StringWidget):
         """Convert the stored UIDs from the text field for the UID reference field
         """
         value = form.get(field.getName(), "")
-        if not value:
-            return [], {}
-        uids = value.split("\r\n")
+
+        if api.is_string(value):
+            uids = value.split("\r\n")
+        elif isinstance(value, (list, tuple, set)):
+            uids = filter(api.is_uid, value)
+        elif api.is_object(value):
+            uids = [api.get_uid(value)]
+        else:
+            uids = []
+
+        # handle custom setters that expect only a UID, e.g. setSpecification
+        multi_valued = getattr(field, "multiValued", self.multi_valued)
+        if not multi_valued:
+            uids = uids[0] if len(uids) > 0 else ""
+
         return uids, {}
 
     def get_input_widget_attributes(self, context, field, value):

@@ -733,6 +733,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return False
         return IUIDReferenceField.providedBy(field)
 
+    @viewcache.memoize
+    def is_multi_reference_field(self, fieldname):
+        """Checks if the field is a multi UID reference field
+        """
+        if not self.is_uid_reference_field(fieldname):
+            return False
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        return getattr(field, "multiValued", False)
+
     def get_records(self):
         """Returns a list of AR records
 
@@ -761,7 +771,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     # a textarea (one UID per line)
                     uids = value.split("\r\n")
                     # remove empties
-                    value = list(filter(None, uids))
+                    uids = list(filter(None, uids))
+                    if self.is_multi_reference_field(new_key):
+                        value = uids
+                    else:
+                        value = uids[0] if len(uids) > 0 else ""
                 record[new_key] = value
             records.append(record)
         return records
