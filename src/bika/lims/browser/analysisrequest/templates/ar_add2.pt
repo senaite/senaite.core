@@ -8,6 +8,8 @@
     <metal:block fill-slot="senaite_legacy_resources"
                  tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
+              tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/datetimewidget.js'"></script>
+      <script type="text/javascript"
               tal:attributes="src python:portal.absolute_url() + '/bika_widgets/rejectionwidget.js'"></script>
       <!-- AR Add form -->
       <script type="text/javascript"
