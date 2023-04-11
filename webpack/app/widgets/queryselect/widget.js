@@ -35,9 +35,6 @@ class QuerySelectWidgetController extends React.Component {
     // Root input HTML element
     this.root_el = props.root_el;
 
-    // Body boundaries
-    this.body_rect = document.body.getBoundingClientRect();
-
     // Data keys located at the root element
     // -> initial values are set from the widget class
     const data_keys = [
@@ -159,14 +156,14 @@ class QuerySelectWidgetController extends React.Component {
     let dropdown_right_pos = dropdown_rect.x + dropdown_rect.width;
 
     // get the bottom and right position of our container
-    let current_body_rect = document.body.getBoundingClientRect();
+    let body_rect = document.body.getBoundingClientRect();
 
     console.debug(`FIELD RECT: ${JSON.stringify(field_rect)}`);
     console.debug(`DROPDOWN RECT: ${JSON.stringify(dropdown_rect)}`);
-    console.debug(`BODY RECT: ${JSON.stringify(current_body_rect)}`);
+    console.debug(`BODY RECT: ${JSON.stringify(body_rect)}`);
 
     // Let the dropdown stick below the field
-    dropdown.style.transform = `translate(${current_body_rect.x - this.body_rect.x}px, ${current_body_rect.y - this.body_rect.y}px)`;
+    dropdown.style.transform = `translate(${body_rect.x}px, ${body_rect.y}px)`;
 
     // // dropdown overflows at the bottom of the container
     // if (dropdown_bottom_pos > container_bottom_pos) {
