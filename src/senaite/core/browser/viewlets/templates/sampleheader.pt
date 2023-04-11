@@ -181,9 +181,6 @@
   </div>
 
   <tal:js tal:define="portal context/@@plone_portal_state/portal;">
-    <!-- needed for reference fields -->
-    <script type="text/javascript"
-            tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/referencewidget.js'"></script>
     <!-- needed for datetime fields -->
     <script type="text/javascript"
         tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/datetimewidget.js'"></script>
