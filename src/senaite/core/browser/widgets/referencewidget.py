@@ -324,8 +324,8 @@ class ReferenceWidget(StringWidget):
         :param default: The default property value
         :returns: List column records to display
         """
-        prop = getattr(self, "columns", None)
-        if prop is not None:
+        prop = getattr(self, "columns", [])
+        if len(prop) > 0:
             return prop
 
         # BBB: colModel
