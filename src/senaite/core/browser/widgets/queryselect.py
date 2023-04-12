@@ -56,16 +56,16 @@ class QuerySelectWidget(StringWidget):
         "results_table_width": "500px",
     })
 
-    # def process_form(self, instance, field, form, empty_marker=None,
-    #                  emptyReturnsMarker=False, validating=True):
-    #     """Convert value from textarea field into a list
-    #     """
-    #     value = form.get(field.getName(), "")
+    def process_form(self, instance, field, form, empty_marker=None,
+                     emptyReturnsMarker=False, validating=True):
+        """Convert value from textarea field into a list
+        """
+        value = form.get(field.getName(), "")
 
-    #     if api.is_string(value):
-    #         value = value.split("\r\n")
+        if api.is_string(value):
+            value = value.split("\r\n")
 
-    #     return value, {}
+        return value, {}
 
     def get_input_widget_attributes(self, context, field, value):
         """Return input widget attributes for the ReactJS component
@@ -77,14 +77,14 @@ class QuerySelectWidget(StringWidget):
         :param field: The current field of the widget
         :param value: The curent field value (list of UIDs)
         """
-        uids = self.get_value(context, field, value)
+        values = self.get_value(context, field, value)
         template = self.get_display_template(context, field, DISPLAY_TEMPLATE)
         attributes = {
             "data-id": field.getName(),
             "data-name": field.getName(),
-            "data-values": uids,
-            "data-records": dict(zip(uids, map(
-                lambda uid: self.get_render_data(uid, template), uids))),
+            "data-values": values,
+            "data-records": dict(zip(values, map(
+                lambda uid: self.get_render_data(uid, template), values))),
             "data-value_key": getattr(self, "value_key", "title"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "getId"),
@@ -174,16 +174,6 @@ class QuerySelectWidget(StringWidget):
         # return the absolute search url
         return "/".join([url, search_path])
 
-    def get_multi_valued(self, context, field, default=None):
-        """Lookup if the field is single or multi valued
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: True if the field is multi valued, otherwise False
-        """
-        return self.multi_valued
-
     def get_display_template(self, context, field, default=None):
         """Lookup the display template
 
@@ -195,56 +185,6 @@ class QuerySelectWidget(StringWidget):
         """
         # check if the new `display_template` property is set
         prop = getattr(self, "display_template", None)
-        if prop is not None:
-            return prop
-        return default
-
-    def get_catalog(self, context, field, default=None):
-        """Lookup the catalog to query
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: Catalog name to query
-        """
-        # check if the new `catalog` property is set
-        prop = getattr(self, "catalog", None)
-        if prop is not None:
-            return prop
-        return default
-
-    def get_query(self, context, field, default=None):
-        """Lookup the catalog query
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: Base catalog query
-        """
-        prop = getattr(self, "query", None)
-        if prop:
-            return prop
-        return default
-
-    def get_columns(self, context, field, default=None):
-        """Lookup the columns to show in the results popup
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: List column records to display
-        """
-        return getattr(self, "columns", default)
-
-    def get_search_index(self, context, field, default=None):
-        """Lookup the search index for fulltext searches
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: ZCText compatible search index
-        """
-        prop = getattr(self, "search_index", None)
         if prop is not None:
             return prop
         return default

@@ -27,37 +27,22 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
-from Products.Archetypes.Widget import StringWidget
-from Products.CMFPlone.utils import base_hasattr
+from senaite.core.browser.widgets.queryselect import QuerySelectWidget
 
 DEFAULT_SEARCH_CATALOG = "uid_catalog"
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
 IGNORE_COLUMNS = ["UID"]
 
 
-class ReferenceWidget(StringWidget):
+class ReferenceWidget(QuerySelectWidget):
+    """UID Reference Widget
+    """
     widget_selector = "uidreference"
-    _properties = StringWidget._properties.copy()
+    _properties = QuerySelectWidget._properties.copy()
     _properties.update({
-        "macro": "senaite_widgets/referencewidget",
 
-        # NEW PROPERTIES
-        "query": {},
-        "limit": 5,
-        "catalog": None,
-        "columns": [],
-        "api_url": "referencewidget_search",
-        "disabled": False,
-        "readonly": False,
-        "multi_valued": False,
-        "allow_user_value": False,
-        "search_wildcard": True,
         "value_key": "uid",
         "value_query_index": "UID",
-        "padding": 3,
-        "display_template": None,
-        "hide_input_after_select": False,
-        "results_table_width": "500px",
 
         # BBB: OLD PROPERTIES
         "url": "referencewidget_search",
@@ -109,114 +94,6 @@ class ReferenceWidget(StringWidget):
             uids = uids[0] if len(uids) > 0 else ""
 
         return uids, {}
-
-    def get_input_widget_attributes(self, context, field, value):
-        """Return input widget attributes for the ReactJS component
-
-        This method get called from the page template to populate the
-        attributes that are used by the ReactJS widget component.
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param value: The curent field value (list of UIDs)
-        """
-        uids = self.get_value(context, field, value)
-        template = self.get_display_template(context, field, DISPLAY_TEMPLATE)
-        attributes = {
-            "data-id": field.getName(),
-            "data-name": field.getName(),
-            "data-values": uids,
-            "data-records": dict(zip(uids, map(
-                lambda uid: self.get_render_data(uid, template), uids))),
-            "data-value_key": getattr(self, "value_key", "uid"),
-            "data-value_query_index": getattr(
-                self, "value_query_index", "UID"),
-            "data-api_url": getattr(self, "api_url", "referencewidget_search"),
-            "data-query": getattr(self, "query", {}),
-            "data-catalog": getattr(self, "catalog", "portal_catalog"),
-            "data-search_index": getattr(self, "search_index", "Title"),
-            "data-search_wildcard": getattr(self, "search_wildcard", True),
-            "data-allow_user_value": getattr(self, "allow_user_value", False),
-            "data-columns": getattr(self, "columns", []),
-            "data-display_template": template,
-            "data-limit": getattr(self, "limit", 5),
-            "data-multi_valued": getattr(self, "multi_valued", True),
-            "data-disabled": getattr(self, "disabled", False),
-            "data-readonly": getattr(self, "readonly", False),
-            "data-hide_input_after_select": getattr(
-                self, "hide_user_input_after_select", True),
-        }
-
-        for key, value in attributes.items():
-            # lookup attributes for overrides
-            value = self.lookup(key, context, field, default=value)
-            # convert all attributes to JSON
-            attributes[key] = json.dumps(value)
-
-        return attributes
-
-    def lookup(self, name, context, field, default=None):
-        """Check if the context has an override for the given named property
-
-        The context can either define an attribute or a method with the
-        following naming convention:
-
-            <fieldname>_<propertyname>
-
-        If an attribute or method is found, this value will be returned,
-        otherwise the lookup will return the default value
-
-        :param name: The name of a method to lookup
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value for the given name
-        :returns: New value for the named property
-        """
-
-        # check if the current context defines an attribute or method for the
-        # given property
-        key = "{}_{}".format(field.getName(), name)
-        if base_hasattr(context, key):
-            attr = getattr(context, key, default)
-            if callable(attr):
-                # call the context method with additional information
-                attr = attr(name=name,
-                            widget=self,
-                            field=field,
-                            context=context,
-                            default=default)
-            return attr
-
-        # BBB: call custom getter to map old widget properties
-        key = name.replace("data-", "", 1)
-        getter = "get_{}".format(key)
-        method = getattr(self, getter, None)
-        if callable(method):
-            return method(context, field, default=None)
-
-        # return the widget attribute
-        return getattr(self, name, default)
-
-    def get_api_url(self, context, field, default=None):
-        """JSON API URL to use for this widget
-
-        NOTE: we need to call the search view on the correct context to allow
-              context adapter registrations for IReferenceWidgetVocabulary!
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: API URL that is contacted when the search changed
-        """
-        # ensure we have an absolute url for the current context
-        url = api.get_url(context)
-        # normalize portal factory urls
-        url = url.split("/portal_factory")[0]
-        # ensure the search path does not contain already the url
-        api_url = getattr(self, "url", self.api_url)
-        search_path = api_url.split(url)[-1]
-        # return the absolute search url
-        return "/".join([url, search_path])
 
     def get_multi_valued(self, context, field, default=None):
         """Lookup if the field is single or multi valued
