@@ -36,7 +36,7 @@ IGNORE_COLUMNS = ["UID"]
 
 
 class ReferenceWidget(StringWidget):
-    widget_type = "uidreference"
+    widget_selector = "uidreference"
     _properties = StringWidget._properties.copy()
     _properties.update({
         "macro": "senaite_widgets/referencewidget",
