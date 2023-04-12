@@ -45,7 +45,8 @@ class ReferenceWidget(StringWidget):
         "query": {},
         "limit": 5,
         "catalog": None,
-        "api_url": None,
+        "columns": [],
+        "api_url": "referencewidget_search",
         "disabled": False,
         "readonly": False,
         "multi_valued": False,
@@ -130,7 +131,7 @@ class ReferenceWidget(StringWidget):
             "data-value_key": getattr(self, "value_key", "uid"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "UID"),
-            "data-api_url": getattr(self, "url", "referencewidget_search"),
+            "data-api_url": getattr(self, "api_url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
             "data-catalog": getattr(self, "catalog", "portal_catalog"),
             "data-search_index": getattr(self, "search_index", "Title"),
@@ -212,7 +213,8 @@ class ReferenceWidget(StringWidget):
         # normalize portal factory urls
         url = url.split("/portal_factory")[0]
         # ensure the search path does not contain already the url
-        search_path = self.url.split(url)[-1]
+        api_url = getattr(self, "url", self.api_url)
+        search_path = api_url.split(url)[-1]
         # return the absolute search url
         return "/".join([url, search_path])
 
