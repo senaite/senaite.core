@@ -19,43 +19,100 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import string
 
-import six
-
-from AccessControl import ClassSecurityInfo
 from bika.lims import api
+from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
-from Products.Archetypes.Widget import TypesWidget
+from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
 
-_marker = object
+DISPLAY_TEMPLATE = "<div>${title}</div>"
+DEFAULT_SEARCH_CATALOG = "uid_catalog"
 
 
-class QuerySelectWidget(TypesWidget):
-    """AT Backport of Dexterity Queryselect Widget
-
-    https://github.com/senaite/senaite.core/pull/2177
+class QuerySelectWidget(StringWidget):
+    """Generic select widget to query items from a catalog search
     """
-    security = ClassSecurityInfo()
-    _properties = TypesWidget._properties.copy()
+    widget_selector = "queryselect"
+    _properties = StringWidget._properties.copy()
     _properties.update({
-        "macro": "senaite_widgets/queryselectwidget",
+        "macro": "senaite_widgets/referencewidget",
         "query": {},
-        "limit": 25,
-        "catalog": "portal_catalog",
-        "api_url": None,
+        "limit": 5,
+        "catalog": None,
+        "columns": [],
+        "api_url": "referencewidget_search",
         "disabled": False,
         "readonly": False,
-        "multi_valued": False,
+        "multi_valued": True,
         "allow_user_value": False,
         "search_wildcard": True,
         "value_key": "uid",
+        "value_query_index": "getId",
         "padding": 3,
         "display_template": None,
         "hide_input_after_select": False,
+        "results_table_width": "500px",
     })
 
-    def lookup(self, name, field, context, default=None):
+    # def process_form(self, instance, field, form, empty_marker=None,
+    #                  emptyReturnsMarker=False, validating=True):
+    #     """Convert value from textarea field into a list
+    #     """
+    #     value = form.get(field.getName(), "")
+
+    #     if api.is_string(value):
+    #         value = value.split("\r\n")
+
+    #     return value, {}
+
+    def get_input_widget_attributes(self, context, field, value):
+        """Return input widget attributes for the ReactJS component
+
+        This method get called from the page template to populate the
+        attributes that are used by the ReactJS widget component.
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param value: The curent field value (list of UIDs)
+        """
+        uids = self.get_value(context, field, value)
+        template = self.get_display_template(context, field, DISPLAY_TEMPLATE)
+        attributes = {
+            "data-id": field.getName(),
+            "data-name": field.getName(),
+            "data-values": uids,
+            "data-records": dict(zip(uids, map(
+                lambda uid: self.get_render_data(uid, template), uids))),
+            "data-value_key": getattr(self, "value_key", "title"),
+            "data-value_query_index": getattr(
+                self, "value_query_index", "getId"),
+            "data-api_url": getattr(self, "api_url", "referencewidget_search"),
+            "data-query": getattr(self, "query", {}),
+            "data-catalog": getattr(self, "catalog", DEFAULT_SEARCH_CATALOG),
+            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-search_wildcard": getattr(self, "search_wildcard", True),
+            "data-allow_user_value": getattr(self, "allow_user_value", False),
+            "data-columns": getattr(self, "columns", []),
+            "data-display_template": template,
+            "data-limit": getattr(self, "limit", 5),
+            "data-multi_valued": getattr(self, "multi_valued", True),
+            "data-disabled": getattr(self, "disabled", False),
+            "data-readonly": getattr(self, "readonly", False),
+            "data-hide_input_after_select": getattr(
+                self, "hide_user_input_after_select", True),
+        }
+
+        for key, value in attributes.items():
+            # lookup attributes for overrides
+            value = self.lookup(key, context, field, default=value)
+            # convert all attributes to JSON
+            attributes[key] = json.dumps(value)
+
+        return attributes
+
+    def lookup(self, name, context, field, default=None):
         """Check if the context has an override for the given named property
 
         The context can either define an attribute or a method with the
@@ -65,6 +122,12 @@ class QuerySelectWidget(TypesWidget):
 
         If an attribute or method is found, this value will be returned,
         otherwise the lookup will return the default value
+
+        :param name: The name of a method to lookup
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value for the given name
+        :returns: New value for the named property
         """
 
         # check if the current context defines an attribute or method for the
@@ -81,14 +144,121 @@ class QuerySelectWidget(TypesWidget):
                             default=default)
             return attr
 
+        # BBB: call custom getter to map old widget properties
+        key = name.replace("data-", "", 1)
+        getter = "get_{}".format(key)
+        method = getattr(self, getter, None)
+        if callable(method):
+            return method(context, field, default=None)
+
         # return the widget attribute
         return getattr(self, name, default)
 
-    def to_value(self, value):
+    def get_api_url(self, context, field, default=None):
+        """JSON API URL to use for this widget
+
+        NOTE: we need to call the search view on the correct context to allow
+              context adapter registrations for IReferenceWidgetVocabulary!
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: API URL that is contacted when the search changed
+        """
+        # ensure we have an absolute url for the current context
+        url = api.get_url(context)
+        # normalize portal factory urls
+        url = url.split("/portal_factory")[0]
+        # ensure the search path does not contain already the url
+        search_path = self.api_url.split(url)[-1]
+        # return the absolute search url
+        return "/".join([url, search_path])
+
+    def get_multi_valued(self, context, field, default=None):
+        """Lookup if the field is single or multi valued
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: True if the field is multi valued, otherwise False
+        """
+        return self.multi_valued
+
+    def get_display_template(self, context, field, default=None):
+        """Lookup the display template
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Template that is interpolated by the JS widget with the
+                  mapped values found in records
+        """
+        # check if the new `display_template` property is set
+        prop = getattr(self, "display_template", None)
+        if prop is not None:
+            return prop
+        return default
+
+    def get_catalog(self, context, field, default=None):
+        """Lookup the catalog to query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Catalog name to query
+        """
+        # check if the new `catalog` property is set
+        prop = getattr(self, "catalog", None)
+        if prop is not None:
+            return prop
+        return default
+
+    def get_query(self, context, field, default=None):
+        """Lookup the catalog query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Base catalog query
+        """
+        prop = getattr(self, "query", None)
+        if prop:
+            return prop
+        return default
+
+    def get_columns(self, context, field, default=None):
+        """Lookup the columns to show in the results popup
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: List column records to display
+        """
+        return getattr(self, "columns", default)
+
+    def get_search_index(self, context, field, default=None):
+        """Lookup the search index for fulltext searches
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: ZCText compatible search index
+        """
+        prop = getattr(self, "search_index", None)
+        if prop is not None:
+            return prop
+        return default
+
+    def get_value(self, context, field, value=None):
         """Extract the value from the request or get it from the field
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param value: The current set value
+        :returns: List of UIDs
         """
         # the value might come from the request, e.g. on object creation
-        if isinstance(value, six.string_types):
+        if api.is_string(value):
             value = filter(None, value.split("\r\n"))
         # we handle always lists in the templates
         if value is None:
@@ -97,45 +267,28 @@ class QuerySelectWidget(TypesWidget):
             value = [value]
         return value
 
-    def get_input_widget_attributes(self, context, field, value):
-        """Return input widget attributes for the ReactJS component
+    def get_render_data(self, reference, template):
+        """Provides the needed data to render the display template
+
+        :returns: Dictionary with data needed to render the display template
         """
-        attributes = {
-            "data-id": field.getName(),
-            "data-name": field.getName(),
-            "data-values": self.to_value(value),
-            "data-value_key": getattr(self, "value_key", "uid"),
-            "data-api_url": self.get_api_url(),
-            "data-query": getattr(self, "query", {}),
-            "data-catalog": getattr(self, "catalog", "portal_catalog"),
-            "data-search_index": getattr(self, "search_index", "Title"),
-            "data-search_wildcard": getattr(self, "search_wildcard", True),
-            "data-allow_user_value": getattr(self, "allow_user_value", False),
-            "data-columns": getattr(self, "columns", []),
-            "data-display_template": getattr(self, "display_template", None),
-            "data-limit": getattr(self, "limit", 5),
-            "data-multi_valued": getattr(self, "multi_valued", True),
-            "data-disabled": getattr(self, "disabled", False),
-            "data-readonly": getattr(self, "readonly", False),
-            "data-hide_input_after_select": getattr(
-                self, "hide_user_input_after_select", False),
+        return {
+            "title": reference,
         }
 
-        for key, value in attributes.items():
-            # lookup attributes for overrides
-            value = self.lookup(key, field, context, default=value)
-            # convert all attributes to JSON
-            attributes[key] = json.dumps(value)
-
-        return attributes
-
-    def get_api_url(self):
-        """JSON API URL to use for this widget
+    def render_reference(self, context, field, reference):
+        """Returns a rendered HTML element for the reference
         """
-        portal = api.get_portal()
-        portal_url = api.get_url(portal)
-        api_url = "{}/@@API/senaite/v1".format(portal_url)
-        return api_url
+        display_template = self.get_display_template(context, field, reference)
+        template = string.Template(display_template)
+        try:
+            data = self.get_render_data(reference, display_template)
+        except ValueError as e:
+            # Current user might not have privileges to view this object
+            logger.error(e.message)
+            return ""
+
+        return template.safe_substitute(data)
 
 
 registerWidget(QuerySelectWidget, title="QuerySelectWidget")
