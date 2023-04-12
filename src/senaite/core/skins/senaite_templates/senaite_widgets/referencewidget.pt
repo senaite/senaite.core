@@ -10,11 +10,11 @@
     <metal:view_macro define-macro="view">
       <div metal:define-slot="inside"
            tal:define="value python:accessor();
-                       uids python:widget.get_value(context, field, value)">
+                       refs python:widget.get_value(context, field, value)">
         <ul class="list-unstyled d-table-row">
-          <li tal:repeat="uid uids" class="d-inline-block">
+          <li tal:repeat="ref refs" class="d-inline-block">
             <div class="p-1 mb-1 mr-1 bg-light border rounded">
-              <span tal:replace="structure python:widget.render_reference(context, field, uid)"/>
+              <span tal:replace="structure python:widget.render_reference(context, field, ref)"/>
             </div>
           </li>
         </ul>
@@ -32,13 +32,33 @@
                           error_id python:errors.get(fieldName);
                           i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
 
-        <!-- UID Reference -->
-        <div class="senaite-uidreference-widget-input"
-             tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
+        <tal:ifLabel tal:condition="not: widget/render_own_label | nothing">
+          <label class="formQuestion"
+                 tal:attributes="for python:fieldName">
+            <span tal:replace="python:widget.Label(here)"
+                  i18n:translate="" />
+            <span class="required"
+                  tal:condition="field/required"
+                  title="Required"
+                  i18n:attributes="title title_required;">&nbsp;</span>
+            <span class="formHelp"
+                  tal:define="description python:widget.Description(here)"
+                  tal:content="structure description"
+                  tal:attributes="id string:${fieldName}_help"
+                  i18n:translate="">
+              Help
+            </span>
+          </label>
+        </tal:ifLabel>
+
+        <!-- Reference -->
+        <div class="senaite-reference-widget-input"
+             tal:define="class_name string:senaite-${widget/widget_type|reference}-widget-input;
+                         widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
              tal:attributes="id python:fieldName;
-                    class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' senaite-uidreference-widget-input ';
-                    data-required python:required and '1' or '0';
-                    python:widget_attrs;">
+                             class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + class_name;
+                             data-required python:required and '1' or '0';
+                             python:widget_attrs;">
           <!-- ReactJS controlled component -->
         </div>
 
