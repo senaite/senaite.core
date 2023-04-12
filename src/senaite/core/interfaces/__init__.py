@@ -161,3 +161,12 @@ class IHaveLabels(ICanHaveLabels):
     NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
           fields for already labeled objects
     """
+
+
+class IReferenceWidgetDataProvider(Interface):
+    """Extract required data for the reference widget
+    """
+
+    def to_dict():
+        """Provide a dictionary with JSON serializable object information
+        """

@@ -54,4 +54,11 @@
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
 
+  <!-- Adapter that provides data for the referencewidget render template -->
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencewidget.ReferenceWidgetDataProvider"
+      />
+
 </configure>
