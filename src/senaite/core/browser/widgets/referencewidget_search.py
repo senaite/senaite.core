@@ -37,7 +37,11 @@ class ReferenceWidgetDataProvider(object):
     def get_columns(self):
         """Return the requested columns
         """
-        return self.request.get("column_names", [])
+        columns = self.request.get("column_names", [])
+        if api.is_string(columns):
+            # seems to be converted to string only if only one column exists.
+            return [columns]
+        return columns
 
     def lookup(self, brain_or_object, name, default=None):
         """Lookup a named attribute on the brain/object
