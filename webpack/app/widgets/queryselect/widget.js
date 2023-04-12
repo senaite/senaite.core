@@ -255,7 +255,7 @@ class QuerySelectWidgetController extends React.Component {
 
     // allow to search a custom index
     // NOTE: This should be a ZCTextIndex!
-    let search_index = this.state.search_index || "q";
+    let search_index = this.state.search_index || "Title";
     let search_term = this.state.searchterm;
 
     if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
@@ -636,9 +636,9 @@ class QuerySelectWidgetController extends React.Component {
     // prepare a query for the missing values
     let index = this.state.value_query_index || "UID";
     let value_query = {};
+    // Query the values only w/o any other filters
     value_query[index] = missing;
-    let query = this.make_query(value_query);
-    let promise = this.api.search(this.state.catalog, query);
+    let promise = this.api.search(this.state.catalog, value_query);
     this.toggle_loading(true);
     promise.then((data) => {
       let items = data.items || [];
