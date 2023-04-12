@@ -12,12 +12,11 @@ CATALOG_TITLE = "Senaite Client Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
-    ("Title", "", "ZCTextIndex"),
+    ("Title", "", "ZCTextIndex"),  # needed for reference fields
     ("client_searchable_text", "", "ZCTextIndex"),
     ("getClientID", "", "FieldIndex"),
     ("getName", "", "FieldIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("Title", "", "ZCTextIndex"),  # needed for reference fields
 ]
 
 COLUMNS = BASE_COLUMNS + [
