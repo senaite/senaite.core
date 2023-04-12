@@ -54,13 +54,15 @@ class LabelSchemaExtender(object):
                 },
                 columns=[
                     {
-                        "name": "title",
-                        "width": "100",
+                        "name": "Title",
                         "align": "left",
                         "label": _(u"Label"),
+                    }, {
+                        "name": "Description",
+                        "align": "left",
+                        "label": _(u"Description"),
                     },
                 ],
-                display_template="<a href='${url}'>${title}</a>",
                 limit=5,
             )
         ),
