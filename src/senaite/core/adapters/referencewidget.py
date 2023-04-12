@@ -62,6 +62,7 @@ class ReferenceWidgetDataProvider(object):
             "url": api.get_url(brain_or_object),
             "Title": self.lookup(brain_or_object, "Title", ""),
             "Description": self.lookup(brain_or_object, "Description", ""),
+            "review_state": api.get_review_status(brain_or_object),
         }
 
     def to_dict(self, reference, data=None, **kw):
