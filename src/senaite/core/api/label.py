@@ -242,7 +242,11 @@ def enable_labels_for_type(portal_type):
     :param portal_type: The portal_type to enable labeling
     """
     klass = get_klass(portal_type)
-    classImplements(klass, ICanHaveLabels)
+    try:
+        classImplements(klass, ICanHaveLabels)
+    except AttributeError:
+        # '_ImmutableDeclaration' object has no attribute 'declared'
+        logger.error("Type '{}' does not support labels".format(portal_type))
     # enable behavior for DX types
     if api.is_dx_type(portal_type):
         api.enable_behavior(portal_type, BEHAVIOR_ID)
@@ -254,7 +258,11 @@ def disable_labels_for_type(portal_type):
     :param portal_type: The portal_type to disable labeling
     """
     klass = get_klass(portal_type)
-    classDoesNotImplement(klass, ICanHaveLabels)
+    try:
+        classDoesNotImplement(klass, ICanHaveLabels)
+    except AttributeError:
+        # '_ImmutableDeclaration' object has no attribute 'declared'
+        logger.error("Type '{}' does not support labels".format(portal_type))
     # disable behavior
     if api.is_dx_type(portal_type):
         api.disable_behavior(portal_type, BEHAVIOR_ID)
