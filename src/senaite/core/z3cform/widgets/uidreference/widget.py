@@ -56,6 +56,11 @@ class UIDReferenceWidget(QuerySelectWidget):
         """
         return "uid"
 
+    def get_value_query_index(self, context, field, default=None):
+        """Index that needs to be queried to fetch the data for the current values
+        """
+        return "UID"
+
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
