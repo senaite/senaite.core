@@ -41,11 +41,11 @@ class SelectedValues extends React.Component {
     let selected_values = this.get_selected_values();
 
     for (let value of selected_values) {
-      let context = this.props.records[value];
+      let context = this.props.records[value] || {};
       let review_state = context.review_state || "default";
       items.push(
         <li value={value} className="d-inline-block">
-          <div className="p-1 mb-1 mr-1 bg-light border rounded field-validation">
+          <div className="d-flex flex-nowrap p-1 mb-1 mr-1 bg-light border rounded field-validation">
             <span className={"state-" + review_state}
                   dangerouslySetInnerHTML={{__html: this.render_display_template(value)}}></span>
             <button value={value}
