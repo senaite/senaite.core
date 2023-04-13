@@ -446,6 +446,7 @@ Values returned by TranslationService and dtime's ulocalized_time are
 consistent:
 
     >>> ts = get_tool("translation_service")
+    >>> dt = "2022-12-14"
     >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
     >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
     >>> ts_dt == dt_dt
@@ -453,14 +454,12 @@ consistent:
 
     >>> dt = datetime(2022,12,14)
     >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
-    '2022-12-14 00:00'
     >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
     >>> ts_dt == dt_dt
     True
 
     >>> dt = DateTime(2022,12,14)
     >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
-    '2022-12-14 00:00'
     >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
     >>> ts_dt == dt_dt
     True
