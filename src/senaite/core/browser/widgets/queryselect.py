@@ -119,7 +119,7 @@ class QuerySelectWidget(StringWidget):
         The context can either define an attribute or a method with the
         following naming convention (all lower case):
 
-            get_<fieldname>_<propertyname>
+            get_wiget_<fieldname>_<propertyname>
 
         If an attribute or method is found, this value will be returned,
         otherwise the lookup will return the default value
@@ -134,7 +134,7 @@ class QuerySelectWidget(StringWidget):
         key = name.replace("data-", "", 1)
         # check if the current context defines an attribute or method for the
         # given property
-        context_key = "get_{}_{}".format(field.getName(), key).lower()
+        context_key = "get_widget_{}_{}".format(field.getName(), key).lower()
         if base_hasattr(context, context_key):
             attr = getattr(context, context_key, default)
             if callable(attr):
