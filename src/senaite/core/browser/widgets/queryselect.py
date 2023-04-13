@@ -130,7 +130,8 @@ class QuerySelectWidget(StringWidget):
         :param default: The default property value for the given name
         :returns: New value for the named property
         """
-
+        # Remove the data prefix
+        key = name.replace("data-", "", 1)
         # check if the current context defines an attribute or method for the
         # given property
         key = "{}_{}".format(field.getName(), name)
@@ -146,7 +147,6 @@ class QuerySelectWidget(StringWidget):
             return attr
 
         # BBB: call custom getter to map old widget properties
-        key = name.replace("data-", "", 1)
         getter = "get_{}".format(key)
         method = getattr(self, getter, None)
         if callable(method):
