@@ -18,5 +18,6 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from .widget import QuerySelectDataConverter  # noqa: F401
 from .widget import QuerySelectWidget  # noqa: F401
 from .widget import QuerySelectWidgetFactory  # noqa: F401
