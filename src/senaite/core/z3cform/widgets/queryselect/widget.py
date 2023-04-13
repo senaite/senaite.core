@@ -137,13 +137,12 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         values = self.get_value()
         field = self.field
 
-        template = self.get_display_template(context, field, DISPLAY_TEMPLATE)
         attributes = {
             "data-id": self.id,
             "data-name": self.name,
             "data-values": values,
             "data-records": dict(zip(values, map(
-                lambda ref: self.get_render_data(ref, template), values))),
+                lambda ref: self.get_render_data(ref), values))),
             "data-value_key": getattr(self, "value_key", "title"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "title"),
@@ -154,7 +153,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),
-            "data-display_template": template,
+            "data-display_template": getattr(
+                self, "display_template", DISPLAY_TEMPLATE),
             "data-limit": getattr(self, "limit", 5),
             "data-multi_valued": getattr(self, "multi_valued", True),
             "data-disabled": getattr(self, "disabled", False),
@@ -235,28 +235,13 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         # return the absolute search url
         return "/".join([url, search_path])
 
-    def get_display_template(self, context, field, default=None):
-        """Lookup the display template
-
-        :param context: The current context of the field
-        :param field: The current field of the widget
-        :param default: The default property value
-        :returns: Template that is interpolated by the JS widget with the
-                  mapped values found in records
-        """
-        # check if the new `display_template` property is set
-        prop = getattr(self, "display_template", None)
-        if prop is not None:
-            return prop
-        return default
-
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
         # get the processed value from the `update` method
         value = self.value
         # the value might come from the request, e.g. on object creation
-        if isinstance(value, six.string_types):
+        if api.is_string(value):
             value = IDataConverter(self).toFieldValue(value)
         # we handle always lists in the templates
         if value is None:
@@ -265,7 +250,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             value = [value]
         return value
 
-    def get_render_data(self, reference, template):
+    def get_render_data(self, reference):
         """Provides the needed data to render the display template
 
         :returns: Dictionary with data needed to render the display template
@@ -278,13 +263,13 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "review_state": "active",
         }
 
-    def render_reference(self, context, field, reference):
+    def render_reference(self, reference):
         """Returns a rendered HTML element for the reference
         """
-        display_template = self.get_display_template(context, field, reference)
+        display_template = getattr(self, "display_template", DISPLAY_TEMPLATE)
         template = string.Template(display_template)
         try:
-            data = self.get_render_data(reference, display_template)
+            data = self.get_render_data(reference)
         except ValueError as e:
             # Current user might not have privileges to view this object
             logger.error(e.message)
