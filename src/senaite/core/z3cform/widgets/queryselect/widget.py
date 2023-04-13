@@ -152,8 +152,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),
-            "data-display_template": getattr(
-                self, "display_template", DISPLAY_TEMPLATE),
+            "data-display_template": getattr(self, "display_template", None),
             "data-limit": getattr(self, "limit", 5),
             "data-multi_valued": getattr(self, "multi_valued", True),
             "data-disabled": getattr(self, "disabled", False),
@@ -234,6 +233,14 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         # return the absolute search url
         return "/".join([url, search_path])
 
+    def get_display_template(self, context, field, default=None):
+        """Return the display template to use
+        """
+        template = getattr(self, "display_template", None)
+        if template is not None:
+            return template
+        return DISPLAY_TEMPLATE
+
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
@@ -265,7 +272,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def render_reference(self, reference):
         """Returns a rendered HTML element for the reference
         """
-        display_template = getattr(self, "display_template", DISPLAY_TEMPLATE)
+        context = self.get_context()
+        display_template = self.get_display_template(context, self.field)
         template = string.Template(display_template)
         try:
             data = self.get_render_data(reference)

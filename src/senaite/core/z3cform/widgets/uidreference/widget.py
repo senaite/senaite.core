@@ -61,6 +61,14 @@ class UIDReferenceWidget(QuerySelectWidget):
         """
         return "UID"
 
+    def get_display_template(self, context, field, default=None):
+        """Return the display template to use
+        """
+        template = getattr(self, "display_template", None)
+        if template is not None:
+            return template
+        return DISPLAY_TEMPLATE
+
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
@@ -82,7 +90,8 @@ class UIDReferenceWidget(QuerySelectWidget):
         :returns: Dictionary with data needed to render the display template
         """
         regex = r"\{(.*?)\}"
-        template = getattr(self, "display_template", DISPLAY_TEMPLATE)
+        context = self.get_context()
+        template = self.get_display_template(context, self.field)
         names = re.findall(regex, template)
 
         obj = api.get_object(uid)
@@ -100,20 +109,6 @@ class UIDReferenceWidget(QuerySelectWidget):
                 data[name] = value
 
         return data
-
-    def render_reference(self, reference):
-        """Returns a rendered HTML element for the reference
-        """
-        display_template = getattr(self, "display_template", DISPLAY_TEMPLATE)
-        template = string.Template(display_template)
-        try:
-            data = self.get_render_data(reference)
-        except ValueError as e:
-            # Current user might not have privileges to view this object
-            logger.error(e.message)
-            return ""
-
-        return template.safe_substitute(data)
 
 
 @adapter(IUIDReferenceField, ISenaiteFormLayer)
