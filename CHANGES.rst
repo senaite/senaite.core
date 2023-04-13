@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
 - #2297 Fix wrong characters on sample invalidation emails
 - #2288 Fix client dropdown on batch add
 - #2282 Fix sample reports retrieval
