@@ -34,7 +34,6 @@ from DateTime import DateTime
 from DateTime.DateTime import DateError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
-from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope.i18n import translate
 
 
