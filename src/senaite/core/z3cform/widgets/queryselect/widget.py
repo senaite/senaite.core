@@ -174,9 +174,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """Check if the context has an override for the given named property
 
         The context can either define an attribute or a method with the
-        following naming convention:
+        following naming convention (all lower case):
 
-            <fieldname>_<propertyname>
+            get_<fieldname>_<propertyname>
 
         If an attribute or method is found, this value will be returned,
         otherwise the lookup will return the default value
@@ -191,9 +191,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         key = name.replace("data-", "", 1)
         # check if the current context defines an attribute or method for the
         # given property
-        key = "{}_{}".format(field.getName(), name)
-        if base_hasattr(context, key):
-            attr = getattr(context, key, default)
+        context_key = "get_{}_{}".format(field.getName(), key).lower()
+        if base_hasattr(context, context_key):
+            attr = getattr(context, context_key, default)
             if callable(attr):
                 # call the context method with additional information
                 attr = attr(name=name,
