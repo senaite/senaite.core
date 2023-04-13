@@ -214,7 +214,11 @@ class QuerySelectWidget(StringWidget):
         :returns: Dictionary with data needed to render the display template
         """
         return {
-            "title": reference,
+            "uid": "",
+            "url": "",
+            "Title": reference,
+            "Description": "",
+            "review_state": "active",
         }
 
     def render_reference(self, context, field, reference):
