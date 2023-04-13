@@ -35,6 +35,7 @@ from bika.lims.utils import get_link_for
 from collections import OrderedDict
 from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
+from Products.PlonePAS.plugins.ufactory import PloneUser
 from Products.PlonePAS.tools.memberdata import MemberData
 from zope.interface import implements
 
@@ -227,26 +228,28 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         return compose_email(from_addr=lab_email, to_addr=recipients,
                              subj=subject, body=body, html=True)
 
-    def get_email_address(self, contact_member_email):
+    def get_email_address(self, contact_user_email):
         """Returns the email address for the contact, member or email
         """
-        if is_valid_email_address(contact_member_email):
-            return contact_member_email
+        if is_valid_email_address(contact_user_email):
+            return contact_user_email
 
-        if IContact.providedBy(contact_member_email):
-            contact_email = contact_member_email.getEmailAddress()
+        if IContact.providedBy(contact_user_email):
+            contact_email = contact_user_email.getEmailAddress()
             return self.get_email_address(contact_email)
 
-        if isinstance(contact_member_email, MemberData):
+        if isinstance(contact_user_email, MemberData):
+            contact_user_email = contact_user_email.getUser()
+
+        if isinstance(contact_user_email, PloneUser):
             # Try with the contact's email first
-            user = contact_member_email.getUser()
-            contact = api.get_user_contact(user)
+            contact = api.get_user_contact(contact_user_email)
             contact_email = self.get_email_address(contact)
             if contact_email:
                 return contact_email
 
             # Fallback to member's email
-            user_email = user.getProperty("email")
+            user_email = contact_user_email.getProperty("email")
             return self.get_email_address(user_email)
 
         return None
