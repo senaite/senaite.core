@@ -172,10 +172,8 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         """Convert time to localized time
         """
         dt = self.to_datetime(time)
-        ts = api.get_tool("translation_service")
         long_format = True if self.show_time else False
-        return ts.ulocalized_time(
-            dt, long_format, time_only, self.context, domain="senaite.core")
+        return dtime.to_localized_time(dt, long_format, time_only)
 
     def get_display_value(self):
         """Returns the localized date value
