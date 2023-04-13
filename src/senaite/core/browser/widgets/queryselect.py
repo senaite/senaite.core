@@ -27,7 +27,8 @@ from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFPlone.utils import base_hasattr
 
-DISPLAY_TEMPLATE = "<div>${title}</div>"
+# See IReferenceWidgetDataProvider for provided object data
+DISPLAY_TEMPLATE = "<div>${Title}</div>"
 DEFAULT_SEARCH_CATALOG = "uid_catalog"
 
 
@@ -48,8 +49,8 @@ class QuerySelectWidget(StringWidget):
         "multi_valued": True,
         "allow_user_value": False,
         "search_wildcard": True,
-        "value_key": "uid",
-        "value_query_index": "getId",
+        "value_key": "title",
+        "value_query_index": "title",
         "padding": 3,
         "display_template": None,
         "hide_input_after_select": False,
@@ -84,7 +85,7 @@ class QuerySelectWidget(StringWidget):
             "data-name": field.getName(),
             "data-values": values,
             "data-records": dict(zip(values, map(
-                lambda uid: self.get_render_data(uid, template), values))),
+                lambda ref: self.get_render_data(ref, template), values))),
             "data-value_key": getattr(self, "value_key", "title"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "getId"),
@@ -149,7 +150,7 @@ class QuerySelectWidget(StringWidget):
         getter = "get_{}".format(key)
         method = getattr(self, getter, None)
         if callable(method):
-            return method(context, field, default=None)
+            return method(context, field, default=default)
 
         # return the widget attribute
         return getattr(self, name, default)
