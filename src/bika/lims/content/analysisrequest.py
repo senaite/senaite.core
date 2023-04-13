@@ -243,6 +243,7 @@ schema = BikaSchema.copy() + Schema((
                 'header_table': 'prominent',
             },
             catalog_name=CLIENT_CATALOG,
+            search_index="client_searchable_text",
             base_query={"is_active": True,
                         "sort_limit": 30,
                         "sort_on": "sortable_title",
