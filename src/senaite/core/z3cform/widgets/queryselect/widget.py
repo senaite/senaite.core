@@ -241,6 +241,11 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             return template
         return DISPLAY_TEMPLATE
 
+    def get_multi_valued(self, context, field, default=None):
+        """Returns if the field is multi valued or not
+        """
+        return getattr(self.field, "multi_valued", default)
+
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
