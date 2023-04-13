@@ -51,6 +51,11 @@ class UIDReferenceWidget(QuerySelectWidget):
     """
     klass = u"senaite-uidreference-widget-input"
 
+    def get_value_key(self, context, field, default=None):
+        """Returns the data key that should be set as the value
+        """
+        return "uid"
+
     def get_value(self):
         """Extract the value from the request or get it from the field
         """
