@@ -172,8 +172,8 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         """Convert time to localized time
         """
         dt = self.to_datetime(time)
-        long_fmt = True if self.show_time else False
-        return dtime.to_localized_time(dt, long_fmt, time_only, self.context)
+        long_format = True if self.show_time else False
+        return dtime.to_localized_time(dt, long_format, time_only)
 
     def get_display_value(self):
         """Returns the localized date value

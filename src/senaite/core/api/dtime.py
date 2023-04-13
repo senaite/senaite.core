@@ -29,6 +29,7 @@ import six
 import pytz
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.api import get_tool
 from DateTime import DateTime
 from DateTime.DateTime import DateError
 from DateTime.DateTime import SyntaxError
@@ -364,12 +365,12 @@ def to_localized_time(dt, long_format=None, time_only=None,
     :returns: The formatted date as string
     :rtype: string
     """
-    dt = to_DT(dt)
     if not dt:
         return default
 
     try:
-        time_str = ulocalized_time(
+        ts = get_tool("translation_service")
+        time_str = ts.ulocalized_time(
             dt, long_format, time_only, context, "senaite.core", request)
     except ValueError:
         # Handle dates < 1900
@@ -392,5 +393,5 @@ def to_localized_time(dt, long_format=None, time_only=None,
                 formatstring = "%H:%M"  # 03:14
             else:
                 formatstring = "[INTERNAL ERROR]"
-        time_str = date_to_string(dt, formatstring)
+        time_str = date_to_string(dt, formatstring, default=default)
     return time_str

@@ -13,6 +13,7 @@ Test Setup
 
 Imports:
 
+    >>> from bika.lims.api import get_tool
     >>> from senaite.core.api import dtime
 
 Define some variables:
@@ -436,3 +437,59 @@ Check 24h vs 12h format:
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
     >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
     '1755-08-01 11:01 PM'
+
+
+Localization
+............
+
+Values returned by TranslationService and dtime's ulocalized_time are
+consistent:
+
+    >>> ts = get_tool("translation_service")
+    >>> dt = "2022-12-14"
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    '2022-12-14 01:00'
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '2022-12-14 01:00'
+
+    >>> dt = datetime(2022,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    '2022-12-14 00:00'
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '2022-12-14 00:00'
+
+    >>> dt = DateTime(2022,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    '2022-12-14 00:00'
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '2022-12-14 00:00'
+
+But when a date with a year before 1900 is used, dtime's does fallback to
+standard ISO format, while TranslationService fails:
+
+    >>> dt = "1889-12-14"
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
+
+    >>> dt = datetime(1889,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
+
+    >>> dt = DateTime(1889,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
