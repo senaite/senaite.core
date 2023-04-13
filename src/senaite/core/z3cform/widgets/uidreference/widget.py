@@ -80,7 +80,8 @@ class UIDReferenceWidget(QuerySelectWidget):
             return []
         if not isinstance(value, (list, tuple)):
             value = [value]
-        return map(api.get_uid, value)
+        # just to be sure (paranoid)
+        return [uid for uid in value if api.is_uid(uid)]
 
     def get_render_data(self, uid):
         """Provides the needed data to render the display template from the UID
