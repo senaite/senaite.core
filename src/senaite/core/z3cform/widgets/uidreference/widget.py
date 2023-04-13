@@ -19,8 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
+import string
 
 from bika.lims import api
+from bika.lims import logger
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
@@ -88,6 +90,20 @@ class UIDReferenceWidget(QuerySelectWidget):
                 data[name] = value
 
         return data
+
+    def render_reference(self, reference):
+        """Returns a rendered HTML element for the reference
+        """
+        display_template = getattr(self, "display_template", DISPLAY_TEMPLATE)
+        template = string.Template(display_template)
+        try:
+            data = self.get_render_data(reference)
+        except ValueError as e:
+            # Current user might not have privileges to view this object
+            logger.error(e.message)
+            return ""
+
+        return template.safe_substitute(data)
 
 
 @adapter(IUIDReferenceField, ISenaiteFormLayer)
