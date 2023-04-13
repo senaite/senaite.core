@@ -19,10 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
-import string
 
 from bika.lims import api
-from bika.lims import logger
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
