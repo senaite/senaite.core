@@ -21,7 +21,6 @@
 import json
 import string
 
-import six
 from bika.lims import api
 from bika.lims import logger
 from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
