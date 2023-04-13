@@ -226,7 +226,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         url = api.get_url(context)
         # normalize portal factory urls
         url = url.split("/portal_factory")[0]
-        # get the URL
+        # get the API URL
         api_url = getattr(self, "api_url", default)
         # ensure the search path does not contain already the url
         search_path = api_url.split(url)[-1]

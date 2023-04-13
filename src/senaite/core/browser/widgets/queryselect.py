@@ -170,8 +170,10 @@ class QuerySelectWidget(StringWidget):
         url = api.get_url(context)
         # normalize portal factory urls
         url = url.split("/portal_factory")[0]
+        # get the API URL
+        api_url = getattr(self, "api_url", default)
         # ensure the search path does not contain already the url
-        search_path = self.api_url.split(url)[-1]
+        search_path = api_url.split(url)[-1]
         # return the absolute search url
         return "/".join([url, search_path])
 
