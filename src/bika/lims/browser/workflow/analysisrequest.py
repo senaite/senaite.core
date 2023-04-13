@@ -239,13 +239,14 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
 
         if isinstance(contact_member_email, MemberData):
             # Try with the contact's email first
-            contact = api.get_user_contact(contact_member_email)
+            user = contact_member_email.getUser()
+            contact = api.get_user_contact(user)
             contact_email = self.get_email_address(contact)
             if contact_email:
                 return contact_email
 
             # Fallback to member's email
-            user_email = contact_member_email.getProperty("email")
+            user_email = user.getProperty("email")
             return self.get_email_address(user_email)
 
         return None
