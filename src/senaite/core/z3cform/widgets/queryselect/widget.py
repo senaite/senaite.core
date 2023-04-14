@@ -164,8 +164,10 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         }
 
         for key, value in attributes.items():
+            # Remove the data prefix
+            name = key.replace("data-", "", 1)
             # lookup attributes for overrides
-            value = self.lookup(key, context, field, default=value)
+            value = self.lookup(name, context, field, default=value)
             # convert all attributes to JSON
             attributes[key] = json.dumps(value)
 
@@ -188,11 +190,10 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         :param default: The default property value for the given name
         :returns: New value for the named property
         """
-        # Remove the data prefix
-        key = name.replace("data-", "", 1)
+
         # check if the current context defines an attribute or method for the
         # given property
-        context_key = "get_widget_{}_{}".format(field.getName(), key).lower()
+        context_key = "get_widget_{}_{}".format(field.getName(), name).lower()
         if base_hasattr(context, context_key):
             attr = getattr(context, context_key, default)
             if callable(attr):
@@ -204,8 +205,16 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
                             default=default)
             return attr
 
+        # BBB: Allow named methods for query/columns
+        if name in ["query", "columns"]:
+            value = getattr(self, name, None)
+            if api.is_string(value):
+                method = getattr(context, value, None)
+                if callable(method):
+                    return method()
+
         # BBB: call custom getter to map old widget properties
-        getter = "get_{}".format(key)
+        getter = "get_{}".format(name)
         method = getattr(self, getter, None)
         if callable(method):
             return method(context, field, default=default)
