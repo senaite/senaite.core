@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IReferenceWidgetVocabulary
 from bika.lims.utils import get_client
+from Products.ZCTextIndex.ParseTree import ParseError
 from zope.interface import implements
 
 ALLOWED_QUERY_KEYS = [
@@ -76,7 +77,10 @@ class DefaultReferenceWidgetVocabulary(object):
         # Do the search
         logger.info("Reference Widget Raw Query for catalog {}: {}"
                     .format(self.catalog_name, repr(query)))
-        brains = api.search(query, self.catalog_name)
+        try:
+            brains = api.search(query, self.catalog_name)
+        except ParseError:
+            brains = []
         logger.info("Found {} results".format(len(brains)))
         return brains
 
