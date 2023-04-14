@@ -35,7 +35,16 @@ form[action*='-controlpanel'],
 form[name='sampleheader_form'],
 form[name='listing_form'],
 form[name='edit_form'] {
-    input:not([type='submit'],[name*='__ac']), select {
+    input, select {
+        width: auto;
+    }
+    input:not(
+        [type='button'],
+        [type='submit'],
+        [type='checkbox'],
+        [type='number'],
+        [name*='__ac']
+    ), select {
         width: 250px!important;
         max-width: 250px;
     }
