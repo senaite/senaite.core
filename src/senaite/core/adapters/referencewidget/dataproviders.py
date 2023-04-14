@@ -57,11 +57,15 @@ class ReferenceWidgetDataProvider(object):
     def get_base_info(self, brain_or_object):
         """Return the base information for the brain or object
         """
+        title = self.lookup(brain_or_object, "Title", "")
+        description = self.lookup(brain_or_object, "Description", "")
         return {
             "uid": api.get_uid(brain_or_object),
             "url": api.get_url(brain_or_object),
-            "Title": self.lookup(brain_or_object, "Title", ""),
-            "Description": self.lookup(brain_or_object, "Description", ""),
+            "Title": title,
+            "title": title,
+            "Description": description,
+            "description": description,
             "review_state": api.get_review_status(brain_or_object),
         }
 
