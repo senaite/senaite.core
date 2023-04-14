@@ -1,4 +1,5 @@
 import React from "react";
+import "./SearchField.css"
 
 
 /** Input field that triggers a search query
@@ -152,7 +153,7 @@ class SearchField extends React.Component {
   render() {
     return (
       <div className={this.props.className}>
-        <div className="input-group">
+        <div className="input-group searchfield">
           <input type="text"
                  autoComplete="off"
                  name={this.props.name}
@@ -165,7 +166,6 @@ class SearchField extends React.Component {
                  onFocus={this.on_focus}
                  onBlur={this.on_blur}
                  placeholder={this.props.placeholder}
-                 style={{maxWidth: "160px"}}
           />
           <div className="input-group-append">
             <button className="btn btn-sm btn-outline-secondary"
