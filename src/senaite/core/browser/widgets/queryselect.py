@@ -35,7 +35,9 @@ DEFAULT_SEARCH_CATALOG = "uid_catalog"
 class QuerySelectWidget(StringWidget):
     """Generic select widget to query items from a catalog search
     """
-    widget_selector = "queryselect"
+    # CSS class that is picked up by the ReactJS component
+    klass = u"senaite-queryselect-widget-input"
+
     _properties = StringWidget._properties.copy()
     _properties.update({
         "macro": "senaite_widgets/referencewidget",

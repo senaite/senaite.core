@@ -37,7 +37,9 @@ IGNORE_COLUMNS = ["UID"]
 class ReferenceWidget(QuerySelectWidget):
     """UID Reference Widget
     """
-    widget_selector = "uidreference"
+    # CSS class that is picked up by the ReactJS component
+    klass = u"senaite-uidreference-widget-input"
+
     _properties = QuerySelectWidget._properties.copy()
     _properties.update({
 
