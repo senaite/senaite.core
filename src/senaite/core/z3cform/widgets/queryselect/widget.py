@@ -122,6 +122,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         fti = portal_types[portal_type]
         factory = getUtility(IFactory, fti.factory)
         context = factory("temporary")
+        # mark the context as temporary
+        context._temporary_ = True
         # hook into acquisition chain
         context = context.__of__(self.context)
         return context
@@ -224,8 +226,19 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """
         # ensure we have an absolute url for the current context
         url = api.get_url(context)
-        # normalize portal factory urls
-        url = url.split("/portal_factory")[0]
+
+        # NOTE: The temporary context created by `self.get_context` when if we
+        #       are in the ++add++ creation form for Dexterity contents exists
+        #       only for the current request and will be gone after response.
+        #       Therefore, the search view called later will result in a 404!
+        if getattr(context, "_temporary_", False):
+            form = self.get_form()
+            portal_type = getattr(form, "portal_type", "")
+            parent_url = api.get_url(self.context)
+            # provide a dynamically created context for the search view to call
+            # the right search adapters.
+            url = "{}/@@temporary_context/{}".format(parent_url, portal_type)
+
         # get the API URL
         api_url = getattr(self, "api_url", default)
         # ensure the search path does not contain already the url
