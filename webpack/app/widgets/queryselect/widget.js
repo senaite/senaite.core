@@ -295,6 +295,22 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Get the column configuration from the state
+   *
+   * @returns {Array} column configuration
+   */
+  get_columns() {
+    let columns = this.state.columns || [];
+    if ({}.toString.call(columns) != '[object Array]') {
+      columns = [
+        {name: "title", label: "Title"},
+        {name: "description", label: "Description"},
+      ];
+    }
+    return columns;
+  }
+
+  /*
    * Extract the required column names that we want
    *
    * This method parses the `name` keys of the column definition
@@ -304,7 +320,8 @@ class QuerySelectWidgetController extends React.Component {
    */
   get_column_names() {
     let names = new Set();
-    this.state.columns.forEach((column) => names.add(column.name));
+    let columns = this.get_columns();
+    columns.forEach((column) => names.add(column.name));
     return Array.from(names);
   }
 
@@ -743,7 +760,7 @@ class QuerySelectWidgetController extends React.Component {
           />}
           <SearchResults
             className="queryselectwidget-results-container position-fixed shadow-lg border border-light rounded-lg bg-white mt-2 p-1"
-            columns={this.state.columns}
+            columns={this.get_columns()}
             values={this.state.values}
             value_key={this.state.value_key}
             searchterm={this.state.searchterm}
