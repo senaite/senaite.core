@@ -91,7 +91,7 @@ class ReferenceWidgetDataProvider(object):
         if api.is_brain(brain_or_object):
             columns.extend(brain_or_object.schema())
 
-        for column in self.get_columns():
+        for column in columns:
             if column not in info:
                 info[column] = self.lookup(brain_or_object, column, default="")
 
