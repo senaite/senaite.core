@@ -18,5 +18,17 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.adapters.referencewidget.vocabularies import DefaultReferenceWidgetVocabulary
-from senaite.core.adapters.referencewidget.vocabularies import ClientAwareReferenceWidgetVocabulary
+# flake8:noqa
+
+# BBB: Remove for senaite.core 3.0.0
+from senaite.core.adapters.referencewidget.vocabularies import \
+    ClientAwareReferenceWidgetVocabulary
+from senaite.core.adapters.referencewidget.vocabularies import \
+    DefaultReferenceWidgetVocabulary
+from zope import deprecation
+
+deprecation.deprecated("DefaultReferenceWidgetVocabulary",
+                       "Moved to senaite.core.interfaces.widget")
+
+deprecation.deprecated("ClientAwareReferenceWidgetVocabulary",
+                       "Moved to senaite.core.interfaces.widget")
