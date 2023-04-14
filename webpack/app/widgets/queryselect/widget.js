@@ -141,7 +141,7 @@ class QuerySelectWidgetController extends React.Component {
     let field = widget.querySelector(".queryselectwidget-search-field input");
     let dropdown = widget.querySelector(".queryselectwidget-results-container");
 
-    if (!dropdown) {
+    if (!field || !dropdown) {
       return;
     }
 
