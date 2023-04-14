@@ -493,11 +493,14 @@
       /*
        * Return the value of a single/multi reference field
        */
-      var $field, $textarea, value;
+      var $field, $textarea;
       $field = $(field);
-      $textarea = $field.find("textarea");
-      value = $textarea.val();
-      return value;
+      if ($field.type === "textarea") {
+        $textarea = $field;
+      } else {
+        $textarea = $field.find("textarea");
+      }
+      return $textarea.val();
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -775,17 +778,17 @@
       /*
        * Eventhandler when an Analysis Profile was removed.
        */
-      var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, record, uid;
+      var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, profile_uid, record;
       console.debug("°°° on_analysis_profile_removed °°°");
       me = this;
       el = event.currentTarget;
       $el = $(el);
-      uid = $el.val();
       arnum = $el.closest("[arnum]").attr("arnum");
+      profile_uid = event.detail.value;
       record = this.records_snapshot[arnum];
-      profile_metadata = record.profiles_metadata[uid];
+      profile_metadata = record.profiles_metadata[profile_uid];
       profile_services = [];
-      $.each(record.profile_to_services[uid], function(index, uid) {
+      $.each(record.profile_to_services[profile_uid], function(index, uid) {
         return profile_services.push(record.service_metadata[uid]);
       });
       context = {};

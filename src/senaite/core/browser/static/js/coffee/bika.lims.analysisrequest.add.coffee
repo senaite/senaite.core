@@ -475,9 +475,11 @@ class window.AnalysisRequestAdd
      * Return the value of a single/multi reference field
     ###
     $field = $(field)
-    $textarea = $field.find("textarea")
-    value = $textarea.val()
-    return value
+    if $field.type is "textarea"
+      $textarea = $field
+    else
+      $textarea = $field.find("textarea")
+    return $textarea.val()
 
 
   set_template: (arnum, template) =>
@@ -781,15 +783,17 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
-    uid = $el.val()
     arnum = $el.closest("[arnum]").attr "arnum"
 
+    # The event detail tells us which profile UID has been deselected
+    profile_uid = event.detail.value
+
     record = @records_snapshot[arnum]
-    profile_metadata = record.profiles_metadata[uid]
+    profile_metadata = record.profiles_metadata[profile_uid]
     profile_services = []
 
     # prepare a list of services used by the profile with the given UID
-    $.each record.profile_to_services[uid], (index, uid) ->
+    $.each record.profile_to_services[profile_uid], (index, uid) ->
       profile_services.push record.service_metadata[uid]
 
     context = {}
