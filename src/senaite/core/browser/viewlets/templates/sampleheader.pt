@@ -211,10 +211,6 @@
      article#content header { margin-bottom: 0; }
      form[name="sampleheader_form"] div.field { margin-bottom: 0; }
      /* Increase fields for better editing experience */
-     form[name="sampleheader_form"] select             { width: 220px!important; }
-     form[name="sampleheader_form"] input[type="text"] { width: 220px!important; }
-     form[name="sampleheader_form"] input[type="date"] { width: 130px!important; }
-     form[name="sampleheader_form"] input[type="time"] { width: 90px!important; }
     </style>
   </tal:css>
 

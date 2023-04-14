@@ -1,5 +1,5 @@
 /* CSS rules for the search field
  */
 
-div.searchfield { max-width: 250px; flex-wrap: nowrap }
+div.searchfield { width: 250px; flex-wrap: nowrap }
 div.searchfield input { width: auto!important; }
