@@ -265,6 +265,7 @@ class QuerySelectWidgetController extends React.Component {
     let query = Object.assign({
       limit: this.state.limit,
       complete: this.state.complete,
+      // we pass the column names to the search endpoint to provide the right data of the brain/object
       column_names: this.get_column_names(),
       field_name: this.state.name,
     }, options, this.state.query);
@@ -635,7 +636,12 @@ class QuerySelectWidgetController extends React.Component {
     if (missing.length == 0) return;
     // prepare a query for the missing values
     let index = this.state.value_query_index || "UID";
-    let value_query = {};
+    let value_query = {
+      complete: this.state.complete,
+      // we pass the column names to the search endpoint to provide the right data of the brain/object
+      column_names: this.get_column_names(),
+      field_name: this.state.name,
+    };
     // Query the values only w/o any other filters
     value_query[index] = missing;
     let promise = this.api.search(this.state.catalog, value_query);
