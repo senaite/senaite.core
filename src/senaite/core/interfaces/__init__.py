@@ -19,9 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.datamanager import IDataManager
-from zope.interface import Interface
 from senaite.core.interfaces.catalog import *
+from senaite.core.interfaces.datamanager import IDataManager
+from senaite.core.interfaces.widget import *
+from zope.interface import Interface
 
 
 class ISenaiteCore(Interface):
@@ -161,12 +162,3 @@ class IHaveLabels(ICanHaveLabels):
     NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
           fields for already labeled objects
     """
-
-
-class IReferenceWidgetDataProvider(Interface):
-    """Extract required data for the reference widget
-    """
-
-    def to_dict():
-        """Provide a dictionary with JSON serializable object information
-        """

@@ -1,6 +1,9 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="senaite.core">
 
+  <!-- package includes -->
+  <include package=".referencewidget" />
+
   <class class="ZPublisher.HTTPRequest.FileUpload">
     <implements interface=".interfaces.ISenaiteFileUpload" />
   </class>
@@ -53,12 +56,5 @@
       provides="senaite.core.interfaces.IDynamicLocalRoles"
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
-
-  <!-- Adapter that provides data for the referencewidget render template -->
-  <adapter
-      for="zope.interface.Interface
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidget.ReferenceWidgetDataProvider"
-      />
 
 </configure>

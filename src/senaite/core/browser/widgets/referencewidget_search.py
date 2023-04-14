@@ -3,9 +3,9 @@
 import json
 
 from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IReferenceWidgetVocabulary
 from plone import protect
-from senaite.core.interfaces import IReferenceWidgetDataProvider
+from senaite.core.interfaces.widget import IReferenceWidgetDataProvider
+from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
 from senaite.jsonapi import request as req
 from senaite.jsonapi.api import make_batch
 from zope.component import getAdapters

@@ -22,6 +22,7 @@ from zope.interface import Interface
 
 # BBB: Only kept for backwards compatibility
 from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
+from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
 
 
 class ISenaiteSiteRoot(Interface):
@@ -613,15 +614,6 @@ class IIdServerTypeID(Interface):
         """Returns the type id for the context passed in the constructor, that
         is used for custom ID formatting, regardless of the real portal type of
         the context. Return None if no type id can be resolved by this adapter
-        """
-
-
-class IReferenceWidgetVocabulary(Interface):
-    """Return values for reference widgets in AR contexts
-    """
-
-    def __call__(**kwargs):
-        """Call method
         """
 
 
