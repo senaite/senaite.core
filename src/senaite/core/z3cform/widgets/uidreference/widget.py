@@ -21,6 +21,8 @@
 import re
 
 from bika.lims import api
+from bika.lims import logger
+from bika.lims import senaiteMessageFactory as _
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
@@ -58,6 +60,45 @@ class UIDReferenceWidget(QuerySelectWidget):
         """Index that needs to be queried to fetch the data for the current values
         """
         return "UID"
+
+    def get_query(self, context, field, default=None):
+        """Ensure the allowed types are in the query
+
+        NOTE: This method is called from `self.lookup` as the last resort if no
+              custom query method or callable was found for this widget.
+        """
+        query = getattr(self, "query", {})
+        if not isinstance(query, dict):
+            logger.error(
+                "Invalid query provided for field '%s'" % field.getName())
+            query = {}
+
+        # ensure the query is always limited to the allowed types
+        allowed_types = field.get_allowed_types()
+        query["portal_type"] = list(allowed_types)
+
+        return query
+
+    def get_columns(self, context, field, default=None):
+        """Ensure default columns if not set
+
+        NOTE: This method is called from `self.lookup` as the last resort if no
+              custom columns method or callable was found for this widget.
+        """
+        columns = getattr(self, "columns", [])
+        if not isinstance(columns, list):
+            logger.error(
+                "Invalid columns provided for field '%s'" % field.getName())
+            columns = []
+
+        # Provide default columns
+        if not columns:
+            columns = [
+                {"name": "Title", "label": _("Title")},
+                {"name": "Description", "label": _("Description")},
+            ]
+
+        return columns
 
     def get_display_template(self, context, field, default=None):
         """Return the display template to use
