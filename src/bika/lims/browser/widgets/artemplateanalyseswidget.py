@@ -301,7 +301,7 @@ class ARTemplateAnalysesWidget(TypesWidget):
         services = set(services + dependencies)
 
         # get the profile
-        profile_uid = form.get("AnalysisProfile_uid")
+        profile_uid = form.get("AnalysisProfile")
         if profile_uid:
             profile = api.get_object_by_uid(profile_uid)
             # update the services with those from the profile
