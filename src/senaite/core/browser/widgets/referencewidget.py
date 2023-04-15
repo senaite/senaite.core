@@ -182,7 +182,7 @@ class ReferenceWidget(QuerySelectWidget):
     def get_base_query(self, context, field):
         """BBB: Get the base query from the widget
 
-        NOTE: Base query can be a callable that can take
+        NOTE: Base query can be a callable
         """
         base_query = getattr(self, "base_query", {})
         if callable(base_query):
