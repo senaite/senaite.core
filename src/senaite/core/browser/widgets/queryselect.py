@@ -135,8 +135,8 @@ class QuerySelectWidget(StringWidget):
         :returns: New value for the named property
         """
 
-        # check if the current context defines an attribute or method for the
-        # given property
+        # check if the current context defines an attribute or a method for the
+        # given property following our naming convention
         context_key = "get_widget_{}_{}".format(field.getName(), name).lower()
         if base_hasattr(context, context_key):
             attr = getattr(context, context_key, default)
@@ -149,15 +149,19 @@ class QuerySelectWidget(StringWidget):
                             default=default)
             return attr
 
-        # BBB: Allow named methods for query/columns
+        # Allow named methods for query/columns
         if name in ["query", "columns"]:
             value = getattr(self, name, None)
+            # allow named methods from the context class
             if api.is_string(value):
                 method = getattr(context, value, None)
                 if callable(method):
                     return method()
+            # allow function objects directly
+            if callable(value):
+                return value()
 
-        # BBB: call custom getter to map old widget properties
+        # Call custom getter from the widget class
         getter = "get_{}".format(name)
         method = getattr(self, getter, None)
         if callable(method):
