@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims.api.security import check_permission
-from bika.lims.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisRemarks
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
