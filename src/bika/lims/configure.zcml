@@ -9,10 +9,13 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <!-- https://community.plone.org/t/includedependencies-package-what-does-it-do-plone-6/14780 -->
+  <!-- <includeDependencies package="." /> -->
+
   <!-- Include permissions -->
   <include package="senaite.core.permissions" />
-
-  <five:registerPackage package="." initialize=".initialize" />
 
   <include package=".adapters" />
   <include package=".browser" />
