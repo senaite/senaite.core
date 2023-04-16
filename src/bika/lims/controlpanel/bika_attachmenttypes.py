@@ -27,7 +27,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAttachmentTypes
-from bika.lims.permissions import AddAttachmentType
+from senaite.core.permissions import AddAttachmentType
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema

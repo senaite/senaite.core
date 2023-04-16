@@ -57,7 +57,7 @@ def get_mapped_permissions_for(brain_or_object):
     translated by the function `AccessControl.Permission.pname` to a valid
     attribute name:
 
-    >>> from bika.lims.permissions import FieldEditAnalysisResult
+    >>> from senaite.core.permissions import FieldEditAnalysisResult
     >>> AccessControl.Permission import pname
     >>> pname(FieldEditAnalysisResult)
     _Field__Edit_Result_Permission

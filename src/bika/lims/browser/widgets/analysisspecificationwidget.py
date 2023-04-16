@@ -27,7 +27,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
-from bika.lims.permissions import FieldEditSpecification
+from senaite.core.permissions import FieldEditSpecification
 from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link

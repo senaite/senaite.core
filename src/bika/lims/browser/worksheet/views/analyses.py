@@ -29,7 +29,7 @@ from bika.lims.browser.analyses import AnalysesView as BaseView
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisRemarks
 from bika.lims.utils import get_image
 from bika.lims.utils import t
 from bika.lims.utils import to_int

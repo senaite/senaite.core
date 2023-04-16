@@ -26,7 +26,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IStorageLocations
-from bika.lims.permissions import AddStorageLocation
+from senaite.core.permissions import AddStorageLocation
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder

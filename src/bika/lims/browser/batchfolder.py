@@ -22,7 +22,7 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.permissions import AddBatch
+from senaite.core.permissions import AddBatch
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
 from plone.memoize import view
