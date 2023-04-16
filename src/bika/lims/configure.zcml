@@ -9,11 +9,8 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
-  <includeDependencies package="." />
-
   <!-- Include permissions -->
-  <include package="senaite.core.permissions" />
-  <include file="permissions.zcml" />
+  <!-- <include package="senaite.core.permissions" /> -->
 
   <five:registerPackage package="." initialize=".initialize" />
 
