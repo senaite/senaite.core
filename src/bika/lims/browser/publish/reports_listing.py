@@ -102,6 +102,7 @@ class ReportsListingView(ListingView):
     def before_render(self):
         """Before render hook
         """
+        super(ReportsListingView, self).before_render()
         self.init_custom_transitions()
 
     def init_custom_transitions(self):

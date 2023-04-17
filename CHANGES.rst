@@ -5,10 +5,15 @@ Changelog
 ------------------
 
 - #2120 Support for Multiple component analysis
+- #2299 Fix KeyError: 'prefs_main_template' after installation
+- #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
+- #2297 Fix wrong characters on sample invalidation emails
+- #2288 Fix client dropdown on batch add
+- #2282 Fix sample reports retrieval
 - #2285 Fix string results with html characters not displayed after submit
 - #2284 Fix the email sent on sample rejection is not text/html
-- #2279 Allow all custom transitions in sample report listing
 - #2280 Remove custom date rendering in sample header
+- #2279 Allow all custom transitions in sample report listing
 - #2278 Client catalog
 - #2276 Senaite labels
 - #2275 Fix wrong result when both "Result options" and "String" are enabled

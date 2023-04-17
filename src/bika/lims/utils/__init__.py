@@ -663,11 +663,12 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
             dst_schema[fieldname].set(dst, value)
 
 
-def get_link(href, value=None, **kwargs):
+def get_link(href, value=None, csrf=True, **kwargs):
     """
     Returns a well-formed link. If href is None/empty, returns an empty string
     :param href: value to be set for attribute href
     :param value: the text to be displayed. If None, the href itself is used
+    :param value: if True, the CSRF token is added in the href
     :param kwargs: additional attributes and values
     :return: a well-formed html anchor
     """
@@ -676,7 +677,7 @@ def get_link(href, value=None, **kwargs):
     anchor_value = value and value or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token
-    if href.startswith("http"):
+    if csrf and href.startswith("http"):
         href = addTokenToUrl(href)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 

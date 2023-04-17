@@ -21,10 +21,12 @@
 from bika.lims import api
 from senaite.core import logger
 from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import add_catalog_index
@@ -75,6 +77,7 @@ def rebuild_sample_zctext_index_and_lexicon(tool):
     reindex_index(SAMPLE_CATALOG, index)
 
 
+@upgradestep(product, version)
 def setup_labels(tool):
     """Setup labels for SENAITE
     """
@@ -122,6 +125,7 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     for brain in brains:
         uncatalog_brain(brain)
 
+
 def setup_catalogs(tool):
     """Setup all core catalogs and ensure all indexes are present
     """
@@ -134,11 +138,18 @@ def setup_catalogs(tool):
     logger.info("Setup Catalogs [DONE]")
 
 
-def setup_multi_component_analyses(tool):
-    """Adds the isAnalyte index to the analysis catalog
+def update_report_catalog(self):
+    """Update indexes in report catalog and add new metadata columns
     """
-    cat = api.get_tool(ANALYSIS_CATALOG)
-    logger.info("Setup multi-component analyses {} ...".format(cat.id))
-    if add_catalog_index(cat, "isAnalyte", "", "BooleanIndex"):
-        reindex_catalog_index(cat, "isAnalyte")
-    logger.info("Setup multi-component analyses {} [DONE]".format(cat.id))
+    logger.info("Update report catalog ...")
+    portal = api.get_portal()
+
+    # ensure new indexes are created
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+
+    # remove columns
+    del_column(REPORT_CATALOG, "getClientTitlegetClientURL")
+    del_column(REPORT_CATALOG, "getDatePrinted")
+
+    logger.info("Update report catalog [DONE]")

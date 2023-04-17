@@ -3,14 +3,28 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-  <!-- Support for multi-component analyses
-       https://github.com/senaite/senaite.core/pull/2120 -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.5.0: Support for multi-component analyses"
-      description="Support for multi-component analyses"
-      source="2503"
-      destination="2504"
-      handler="senaite.core.upgrade.v02_05_000.setup_multi_component_analyses"
+      title="SENAITE CORE 2.5.0: Additional index for analyses catalog"
+      description="Add isAnalyte index in analyses catalog"
+      source="2506"
+      destination="2507"
+      handler="senaite.core.upgrade.v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Additional index/metadata for client catalog"
+      description="Add searchable Title index and Description metadata for relation fields"
+      source="2505"
+      destination="2506"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix report catalog indexes"
+      description="Fix indexes in report catalog and add metadata"
+      source="2504"
+      destination="2505"
+      handler=".v02_05_000.update_report_catalog"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
