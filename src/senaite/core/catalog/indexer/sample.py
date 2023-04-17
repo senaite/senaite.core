@@ -20,8 +20,11 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISampleCatalog
+from zope.component import getAdapters
 
 
 @indexer(IAnalysisRequest)
@@ -114,5 +117,19 @@ def listing_searchable_text(instance):
 
         batch = obj.getBatch()
         entries.add(batch.getId() if batch else '')
+
+    # Allow to extend search tokens via adapters
+    for name, adapter in getAdapters((instance, api.get_tool(SAMPLE_CATALOG)),
+                                     IListingSearchableTextProvider):
+        value = adapter()
+        if isinstance(value, (list, tuple)):
+            values = map(api.to_searchable_text_metadata, value)
+            entries.update(values)
+        else:
+            value = api.to_searchable_text_metadata(value)
+            entries.add(value)
+
+    # Remove empties
+    entries = filter(None, entries)
 
     return u" ".join(map(api.safe_unicode, entries))
