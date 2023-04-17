@@ -22,7 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.permissions import FieldEditResultsInterpretation
+from senaite.core.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.layout.viewlets import ViewletBase
 from plone.app.textfield import RichTextValue

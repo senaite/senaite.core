@@ -23,7 +23,7 @@ import collections
 from bika.lims import _
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.permissions import AddAnalysisSpec
+from senaite.core.permissions import AddAnalysisSpec
 from bika.lims.utils import get_link
 from plone.dexterity.content import Container
 from plone.supermodel import model

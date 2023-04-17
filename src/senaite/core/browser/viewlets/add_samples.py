@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IBatch
-from bika.lims.permissions import AddAnalysisRequest
+from senaite.core.permissions import AddAnalysisRequest
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize.instance import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile

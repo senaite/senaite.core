@@ -29,8 +29,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IBatchBookView
-from bika.lims.permissions import AddAnalysisRequest
-from bika.lims.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import AddAnalysisRequest
+from senaite.core.permissions import FieldEditAnalysisResult
 from bika.lims.utils import t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer

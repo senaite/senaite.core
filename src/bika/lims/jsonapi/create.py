@@ -22,7 +22,7 @@ from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
-from bika.lims.permissions import AccessJSONAPI
+from senaite.core.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider

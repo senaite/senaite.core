@@ -31,9 +31,9 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
-from bika.lims.permissions import FieldEditAnalysisHidden
-from bika.lims.permissions import FieldEditAnalysisRemarks
-from bika.lims.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
 from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import BooleanField
