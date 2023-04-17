@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2299 Fix KeyError: 'prefs_main_template' after installation
 - #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
 - #2297 Fix wrong characters on sample invalidation emails
 - #2288 Fix client dropdown on batch add
