@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2300 Re-add searchable text provider adapters for sample catalog listing_searchable_text index
 - #2298 Move all permissions into senaite.core
 - #2299 Fix KeyError: 'prefs_main_template' after installation
 - #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
