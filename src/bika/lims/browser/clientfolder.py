@@ -23,8 +23,8 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import AddClient
-from bika.lims.permissions import ManageAnalysisRequests
+from senaite.core.permissions import AddClient
+from senaite.core.permissions import ManageAnalysisRequests
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link

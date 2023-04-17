@@ -21,7 +21,7 @@
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_analysisspecs import AnalysisSpecsView
-from bika.lims.permissions import AddAnalysisSpec
+from senaite.core.permissions import AddAnalysisSpec
 
 
 class ClientAnalysisSpecsView(AnalysisSpecsView):

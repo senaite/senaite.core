@@ -26,7 +26,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplePoints
-from bika.lims.permissions import AddSamplePoint
+from senaite.core.permissions import AddSamplePoint
 from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema

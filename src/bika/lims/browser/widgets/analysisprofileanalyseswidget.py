@@ -26,7 +26,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import FieldEditProfiles
+from senaite.core.permissions import FieldEditProfiles
 from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
