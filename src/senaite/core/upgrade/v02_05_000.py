@@ -162,6 +162,10 @@ def create_client_groups(tool):
         obj = api.get_object(client)
         logger.info("Processing client %s/%s: %s"
                     % (num+1, total, obj.getName()))
+
+        # recreate the group
+        obj.remove_group()
+
         group = obj.create_group()
         # add all linked client contacts to the group
         for contact in obj.getContacts():

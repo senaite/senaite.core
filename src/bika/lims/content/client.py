@@ -197,12 +197,35 @@ class Client(Organisation):
         :returns: Client group object
         """
         group = self.get_group()
+
+        # return the existing Group immediately
         if group:
             return group
+
         portal_groups = api.get_tool("portal_groups")
         group_id = self.getClientID()
-        portal_groups.addGroup(group_id, properties={"title": self.getName()})
+        group_name = self.getName()
+
+        # Create a new Client Group
+        # NOTE: The global "Client" role is necessary for the client contacts
+        portal_groups.addGroup(group_id, roles=["Client"], title=group_name)
+
+        # Grant the group the "Owner" role on ourself
+        api.security.grant_local_roles_for(self, ["Owner"],  group)
+
         return self.get_group()
+
+    @security.private
+    def remove_group(self):
+        """Remove the client group
+        """
+        group = self.get_group()
+        if not group:
+            return False
+        portal_groups = api.get_tool("portal_groups")
+        group_id = self.getClientID()
+        portal_groups.removeGroup(group_id)
+        return True
 
     @security.private
     def add_user_to_group(self, user):
