@@ -175,27 +175,56 @@ class Client(Organisation):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePublic("getContactFromUsername")
+    @security.public
+    def get_group(self):
+        """Returns our client group
 
+        :returns: Client group object
+        """
+        portal_groups = api.get_tool("portal_groups")
+        group_id = self.getClientID()
+        return portal_groups.getGroupById(group_id)
+
+    @security.private
+    def create_group(self):
+        """Create a new client group
+
+        :returns: Client group object
+        """
+        group = self.get_group()
+        if group:
+            return group
+        portal_groups = api.get_tool("portal_groups")
+        group_id = self.getClientID()
+        portal_groups.addGroup(group_id, properties={"title": self.getName()})
+        return self.get_group()
+
+    @security.public
     def getContactFromUsername(self, username):
         for contact in self.objectValues("Contact"):
             if contact.getUsername() == username:
                 return contact.UID()
 
-    def getContacts(self, only_active=True):
+    @security.public
+    def getContacts(self, active=True):
         """Return an array containing the contacts from this Client
         """
-        contacts = self.objectValues("Contact")
-        if only_active:
-            contacts = filter(api.is_active, contacts)
-        return contacts
+        path = api.get_path(self)
+        query = {
+            "portal_type": "Contact",
+            "path": {"query": path},
+            "is_active": active,
+        }
+        brains = api.search(query)
+        contacts = map(api.get_object, brains)
+        return list(contacts)
 
+    @security.public
     def getDecimalMark(self):
         """Return the decimal mark to be used on reports for this client
 
@@ -208,6 +237,7 @@ class Client(Organisation):
             return self.Schema()["DecimalMark"].get(self)
         return self.bika_setup.getDecimalMark()
 
+    @security.public
     def getCountry(self, default=None):
         """Return the Country from the Physical or Postal Address
         """
@@ -215,6 +245,7 @@ class Client(Organisation):
         postal_address = self.getPostalAddress().get("country", default)
         return physical_address or postal_address
 
+    @security.public
     def getProvince(self, default=None):
         """Return the Province from the Physical or Postal Address
         """
@@ -222,6 +253,7 @@ class Client(Organisation):
         postal_address = self.getPostalAddress().get("state", default)
         return physical_address or postal_address
 
+    @security.public
     def getDistrict(self, default=None):
         """Return the Province from the Physical or Postal Address
         """

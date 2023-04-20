@@ -162,13 +162,7 @@ def create_client_groups(tool):
         obj = api.get_object(client)
         logger.info("Processing client %s/%s: %s"
                     % (num+1, total, obj.getName()))
-        group = get_client_group(obj)
-        if not group:
-            group = create_client_group(obj)
-        else:
-            # set the group name
-            group_name = "Client: %s" % obj.getName()
-            group.setProperties(title=group_name)
+        group = obj.create_group()
         # add all linked client contacts to the group
         for contact in obj.getContacts():
             user = contact.getUser()
@@ -179,22 +173,3 @@ def create_client_groups(tool):
             api.user.add_group(group, user)
 
     logger.info("Create client groups [DONE]")
-
-
-def get_client_group(client):
-    """Create or get client group
-    """
-    group_id = client.getClientID()
-    portal_groups = api.get_tool("portal_groups")
-    return portal_groups.getGroupById(group_id)
-
-
-def create_client_group(client):
-    """Create or get client group
-    """
-    group_id = client.getClientID()
-    group_name = "Client: %s" % client.getName()
-    logger.info("Creating new group '%s'" % group_id)
-    portal_groups = api.get_tool("portal_groups")
-    portal_groups.addGroup(group_id, properties={"title": group_name})
-    return get_client_group(client)
