@@ -173,7 +173,6 @@ class Client(Organisation):
     implements(IClient, IDeactivable)
 
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
 
     def _renameAfterCreation(self, check_auto_id=False):
