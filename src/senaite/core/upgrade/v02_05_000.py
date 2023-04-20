@@ -135,7 +135,7 @@ def setup_catalogs(tool):
     logger.info("Setup Catalogs [DONE]")
 
 
-def update_report_catalog(self):
+def update_report_catalog(tool):
     """Update indexes in report catalog and add new metadata columns
     """
     logger.info("Update report catalog ...")
@@ -150,3 +150,51 @@ def update_report_catalog(self):
     del_column(REPORT_CATALOG, "getDatePrinted")
 
     logger.info("Update report catalog [DONE]")
+
+
+def create_client_groups(tool):
+    """Create for all Clients an explicit Group
+    """
+    logger.info("Create client groups ...")
+    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
+    total = len(clients)
+    for num, client in enumerate(clients):
+        obj = api.get_object(client)
+        logger.info("Processing client %s/%s: %s"
+                    % (num+1, total, obj.getName()))
+        group = get_client_group(obj)
+        if not group:
+            group = create_client_group(obj)
+        else:
+            # set the group name
+            group_name = "Client: %s" % obj.getName()
+            group.setProperties(title=group_name)
+        # add all linked client contacts to the group
+        for contact in obj.getContacts():
+            user = contact.getUser()
+            if not user:
+                continue
+            logger.info("Adding user '%s' to the client group '%s'"
+                        % (user.getId(), group.getId()))
+            api.user.add_group(group, user)
+
+    logger.info("Create client groups [DONE]")
+
+
+def get_client_group(client):
+    """Create or get client group
+    """
+    group_id = client.getClientID()
+    portal_groups = api.get_tool("portal_groups")
+    return portal_groups.getGroupById(group_id)
+
+
+def create_client_group(client):
+    """Create or get client group
+    """
+    group_id = client.getClientID()
+    group_name = "Client: %s" % client.getName()
+    logger.info("Creating new group '%s'" % group_id)
+    portal_groups = api.get_tool("portal_groups")
+    portal_groups.addGroup(group_id, properties={"title": group_name})
+    return get_client_group(client)
