@@ -170,6 +170,6 @@ def create_client_groups(tool):
                 continue
             logger.info("Adding user '%s' to the client group '%s'"
                         % (user.getId(), group.getId()))
-            api.user.add_group(group, user)
+            obj.add_user_to_group(user)
 
     logger.info("Create client groups [DONE]")

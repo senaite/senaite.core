@@ -204,6 +204,24 @@ class Client(Organisation):
         portal_groups.addGroup(group_id, properties={"title": self.getName()})
         return self.get_group()
 
+    @security.private
+    def add_user_to_group(self, user):
+        """Add a user to the client group
+        """
+        group = self.get_group()
+        if not group:
+            group = self.create_group()
+        return api.user.add_group(group, user)
+
+    @security.private
+    def del_user_from_group(self, user):
+        """Add a user to the client group
+        """
+        group = self.get_group()
+        if not group:
+            group = self.create_group()
+        return api.user.del_group(group, user)
+
     @security.public
     def getContactFromUsername(self, username):
         for contact in self.objectValues("Contact"):
