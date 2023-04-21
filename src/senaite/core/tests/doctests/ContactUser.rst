@@ -123,10 +123,10 @@ Linking the user to a client contact grants access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Clients` group::
+Linking a user adds this user to the `Client` group::
 
-    >>> clients_group = ploneapi.group.get("Clients")
-    >>> user1.getId() in clients_group.getAllGroupMemberIds()
+    >>> client_group = contact1.aq_parent.get_group()
+    >>> user1.getId() in client_group.getAllGroupMemberIds()
     True
 
 This gives the user the global `Client` role::

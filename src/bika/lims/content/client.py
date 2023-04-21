@@ -174,10 +174,19 @@ class Client(Organisation):
 
     security = ClassSecurityInfo()
     schema = schema
+    GROUP_KEY = "_client_group_id"
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    @property
+    def group_id(self):
+        """Client group ID
+        """
+        if not hasattr(self, self.GROUP_KEY):
+            setattr(self, self.GROUP_KEY, self.getClientID() or self.getId())
+        return getattr(self, self.GROUP_KEY)
 
     @security.public
     def get_group(self):
@@ -186,8 +195,7 @@ class Client(Organisation):
         :returns: Client group object
         """
         portal_groups = api.get_tool("portal_groups")
-        group_id = self.getClientID()
-        return portal_groups.getGroupById(group_id)
+        return portal_groups.getGroupById(self.group_id)
 
     @security.private
     def create_group(self):
@@ -202,17 +210,18 @@ class Client(Organisation):
             return group
 
         portal_groups = api.get_tool("portal_groups")
-        group_id = self.getClientID()
         group_name = self.getName()
 
         # Create a new Client Group
         # NOTE: The global "Client" role is necessary for the client contacts
-        portal_groups.addGroup(group_id, roles=["Client"], title=group_name)
+        portal_groups.addGroup(self.group_id,
+                               roles=["Client"],
+                               title=group_name)
 
         # Grant the group the "Owner" role on ourself
         # NOTE: This will grant each member of this group later immediate
         #       access to all exisiting objects with the same role.
-        self.manage_setLocalRoles(group_id, ["Owner"])
+        self.manage_setLocalRoles(self.group_id, ["Owner"])
 
         return self.get_group()
 
