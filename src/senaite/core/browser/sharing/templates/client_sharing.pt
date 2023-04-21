@@ -1,6 +1,7 @@
 <!-- Override from plone.app.workflow.browser.sharing
 
-     Bootstrap styles
+     - Bootstrap styles
+     - Help Text changed
 
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
