@@ -212,7 +212,7 @@ class Client(Organisation):
         # Grant the group the "Owner" role on ourself
         # NOTE: This will grant each member of this group later immediate
         #       access to all exisiting objects with the same role.
-        api.security.grant_local_roles_for(self, ["Owner"],  group)
+        self.manage_setLocalRoles(group_id, ["Owner"])
 
         return self.get_group()
 
