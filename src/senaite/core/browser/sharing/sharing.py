@@ -2,6 +2,7 @@
 
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.memoize.instance import memoize
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.interfaces import IClient
 
 # Ignore default Plone roles
@@ -17,6 +18,7 @@ class SharingView(BaseView):
     """Custom Sharing View especially for client context
     """
     STICKY = ()
+    template = ViewPageTemplateFile("templates/client_sharing.pt")
 
     def __call__(self):
         # always ensure the client group is visible
