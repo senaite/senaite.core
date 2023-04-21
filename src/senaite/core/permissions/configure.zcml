@@ -1,6 +1,16 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="senaite.core">
 
+  <!-- Local roles managed in the @@sharing view -->
+  <utility name="Analyst" factory=".localroles.AnalystRole" />
+  <!-- <utility name="Owner" factory=".localroles.OwnerRole" /> -->
+  <utility name="LabClerk" factory=".localroles.LabClerkRole" />
+  <utility name="Preserver" factory=".localroles.PreserverRole" />
+  <utility name="Sampler" factory=".localroles.SamplerRole" />
+  <utility name="Verifier" factory=".localroles.VerifierRole" />
+  <utility name="LabManager" factory=".localroles.LabManagerRole" />
+  <utility name="Manager" factory=".localroles.ManagerRole" />
+
   <!-- package includes -->
   <include package=".sample" />
   <include package=".worksheet" />
