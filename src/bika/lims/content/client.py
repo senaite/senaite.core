@@ -210,18 +210,23 @@ class Client(Organisation):
         portal_groups.addGroup(group_id, roles=["Client"], title=group_name)
 
         # Grant the group the "Owner" role on ourself
+        # NOTE: This will grant each member of this group later immediate
+        #       access to all exisiting objects with the same role.
         api.security.grant_local_roles_for(self, ["Owner"],  group)
 
         return self.get_group()
 
     @security.private
     def remove_group(self):
-        """Remove the client group
+        """Remove the own client group
+
+        :returns: True if the group was removed, otherwise False
         """
         group = self.get_group()
         if not group:
             return False
         portal_groups = api.get_tool("portal_groups")
+        # Use the client ID for the group ID
         group_id = self.getClientID()
         portal_groups.removeGroup(group_id)
         return True
@@ -229,6 +234,9 @@ class Client(Organisation):
     @security.private
     def add_user_to_group(self, user):
         """Add a user to the client group
+
+        :param user: user/group object or user/group ID
+        :returns: list of new group IDs
         """
         group = self.get_group()
         if not group:
@@ -238,6 +246,9 @@ class Client(Organisation):
     @security.private
     def del_user_from_group(self, user):
         """Add a user to the client group
+
+        :param user: user/group object or user/group ID
+        :returns: list of new group IDs
         """
         group = self.get_group()
         if not group:
