@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add content actions"
+      description="Add content actions for client sharing page"
+      source="2508"
+      destination="2509"
+      handler=".v02_05_000.add_content_actions"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Reindex client object security"
       description="Reindex object security for all clients including their contents"
       source="2507"

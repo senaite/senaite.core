@@ -40,6 +40,22 @@ from senaite.core.upgrade.utils import uncatalog_brain
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+CONTENT_ACTIONS = [
+    # portal_type, action
+    ("Client", {
+        "id": "manage_access",
+        "name": "Manage Access",
+        "action": "string:${object_url}/@@sharing",
+        "permission": "Sharing page: Delegate roles",
+        "category": "object",
+        "visible": True,
+        "icon_expr": "",
+        "link_target": "",
+        "condition": "",
+        "insert_after": "edit",
+    }),
+]
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -212,3 +228,42 @@ def _recursive_reindex_object_security(obj):
         for child_obj in obj.objectValues():
             _recursive_reindex_object_security(child_obj)
     obj.reindexObject(idxs=["allowedRolesAndUsers"])
+
+
+def add_content_actions(tool):
+    logger.info("Add cotent actions ...")
+    portal_types = api.get_tool("portal_types")
+    for record in CONTENT_ACTIONS:
+        portal_type, action = record
+        type_info = portal_types.getTypeInfo(portal_type)
+        action_id = action.get("id")
+        # remove any previous added actions with the same ID
+        _remove_action(type_info, action_id)
+        # pop out the position info
+        insert_after = action.pop("insert_after", None)
+        # add the action
+        type_info.addAction(**action)
+        # sort the action to the right position
+        actions = type_info._cloneActions()
+        action_ids = map(lambda a: a.id, actions)
+        if insert_after in action_ids:
+            ref_index = action_ids.index(insert_after)
+            index = action_ids.index(action_id)
+            action = actions.pop(index)
+            actions.insert(ref_index + 1, action)
+            type_info._actions = tuple(actions)
+
+        logger.info("Added action id '%s' to '%s'",
+                    action_id, portal_type)
+    logger.info("Add content actions [DONE]")
+
+
+def _remove_action(type_info, action_id):
+    """Removes the action id from the type passed in
+    """
+    actions = map(lambda action: action.id, type_info._actions)
+    if action_id not in actions:
+        return True
+    index = actions.index(action_id)
+    type_info.deleteActions([index])
+    return _remove_action(type_info, action_id)

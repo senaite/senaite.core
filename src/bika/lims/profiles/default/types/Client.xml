@@ -36,6 +36,7 @@
   <alias from="analysisrequests" to="base_view"/>
   <alias from="edit" to="base_edit"/>
   <alias from="view" to="base_view"/>
+  <alias from="sharing" to="@@sharing" />
 
   <action title="Edit"
           action_id="edit"
@@ -45,6 +46,17 @@
           i18n:domain="senaite.core"
           visible="True">
     <permission value="Modify portal content"/>
+  </action>
+
+  <!-- Manage Client Access / Sharing -->
+  <action title="Manage Access"
+          action_id="manage_access"
+          category="object"
+          url_expr="string:${object_url}/@@sharing"
+          i18n:attributes="title"
+          i18n:domain="senaite.core"
+          visible="True">
+    <permission value="Sharing page: Delegate roles"/>
   </action>
 
   <action title="Contacts"
