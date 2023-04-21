@@ -18,6 +18,8 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
+from Acquisition import aq_base
 from bika.lims import api
 from senaite.core import logger
 from senaite.core.api.catalog import add_index
@@ -177,3 +179,36 @@ def create_client_groups(tool):
             obj.add_user_to_group(user)
 
     logger.info("Create client groups [DONE]")
+
+
+def reindex_client_security(tool):
+    """Reindex client object security to grant the owner role for the client
+       group to all contents
+    """
+    logger.info("Reindex client security ...")
+
+    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
+    total = len(clients)
+    for num, client in enumerate(clients):
+        obj = api.get_object(client)
+        logger.info("Processing client %s/%s: %s"
+                    % (num+1, total, obj.getName()))
+        _recursive_reindex_object_security(obj)
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Reindex client security [DONE]")
+
+
+def _recursive_reindex_object_security(obj):
+    """Recursively reindex object security for the given object
+    """
+    if hasattr(aq_base(obj), "objectValues"):
+        for child_obj in obj.objectValues():
+            _recursive_reindex_object_security(child_obj)
+    obj.reindexObject(idxs=["allowedRolesAndUsers"])
