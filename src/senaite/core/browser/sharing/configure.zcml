@@ -7,7 +7,7 @@
         name="sharing"
         for="*"
         class=".sharing.SharingView"
-        permission="plone.DelegateRoles"
+        permission="senaite.core.permissions.ManageBika"
         layer="senaite.core.interfaces.ISenaiteCore"
         />
 

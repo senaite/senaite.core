@@ -36,6 +36,7 @@ from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
+from senaite.core.permissions import ManageBika
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -46,7 +47,10 @@ CONTENT_ACTIONS = [
         "id": "manage_access",
         "name": "Manage Access",
         "action": "string:${object_url}/@@sharing",
-        "permission": "Sharing page: Delegate roles",
+        # NOTE: We use this permission to hide the action from logged in client
+        # contacts
+        "permission": ManageBika,
+        # "permission": "Sharing page: Delegate roles",
         "category": "object",
         "visible": True,
         "icon_expr": "",

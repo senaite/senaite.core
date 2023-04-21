@@ -56,7 +56,9 @@
           i18n:attributes="title"
           i18n:domain="senaite.core"
           visible="True">
-    <permission value="Sharing page: Delegate roles"/>
+    <!--Use Manage permission to hide action from logged in client contacts -->
+    <!-- <permission value="Sharing page: Delegate roles"/> -->
+    <permission value="senaite.core: Manage Bika"/>
   </action>
 
   <action title="Contacts"
