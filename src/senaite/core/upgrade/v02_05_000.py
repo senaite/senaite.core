@@ -30,13 +30,14 @@ from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.permissions import ManageBika
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
-from senaite.core.permissions import ManageBika
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -271,3 +272,13 @@ def _remove_action(type_info, action_id):
     index = actions.index(action_id)
     type_info.deleteActions([index])
     return _remove_action(type_info, action_id)
+
+
+def import_rolemap(tool):
+    """Import rolemap step from profiles
+    """
+    logger.info("Import Rolemappings ...")
+    portal = tool.aq_inner.aq_parent
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
+    _run_import_step(portal, "rolemap", profile=profile)
+    logger.info("Import Rolemappings [DONE]")

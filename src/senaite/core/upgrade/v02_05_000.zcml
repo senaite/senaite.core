@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import Rolemap"
+      description="Import Rolemap for Analysis Permissions"
+      source="2509"
+      destination="2510"
+      handler=".v02_05_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Add content actions"
       description="Add content actions for client sharing page"
       source="2508"
