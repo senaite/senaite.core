@@ -144,12 +144,6 @@
 
     <!-- SENAITE PERMISSIONS -->
     <!-- Add Permissions -->
-    <permission name="senaite.core: Add Analysis" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Add AnalysisCategory" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -716,27 +710,6 @@
     </permission>
 
     <!-- Field permissions (Analysis and alike) -->
-    <permission name="senaite.core: Field: Edit Analysis Hidden" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Publisher"/>
-    </permission>
-    <permission name="senaite.core: Field: Edit Analysis Result" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="senaite.core: Field: Edit Analysis Remarks" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
-    <permission name="senaite.core: Field: Edit Analysis Conditions" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
 
     <!-- Behavioral permissions -->
     <permission name="senaite.core: Access JSON API" acquire="False">
