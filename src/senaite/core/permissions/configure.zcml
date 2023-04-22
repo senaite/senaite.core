@@ -12,6 +12,7 @@
   <utility name="Manager" factory=".localroles.ManagerRole" />
 
   <!-- package includes -->
+  <include package=".analysis" />
   <include package=".sample" />
   <include package=".worksheet" />
 
@@ -24,7 +25,6 @@
   /-->
 
   <!-- Add Permissions -->
-  <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
   <permission id="senaite.core.permissions.AddAnalysisCategory" title="senaite.core: Add AnalysisCategory"/>
   <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
   <permission id="senaite.core.permissions.AddAnalysisService" title="senaite.core: Add AnalysisService"/>
@@ -70,9 +70,6 @@
   <permission id="senaite.core.permissions.TransitionReopen" title="senaite.core: Transition: Reopen"/>
 
   <!-- Transition Permissions (Analysis and alike) -->
-  <permission id="senaite.core.permissions.TransitionRetest" title="senaite.core: Transition: Retest"/>
-  <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
-  <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
   <permission id="senaite.core.permissions.TransitionAssignAnalysis" title="senaite.core: Transition: Assign Analysis"/>
   <permission id="senaite.core.permissions.TransitionUnassignAnalysis" title="senaite.core: Transition: Unassign Analysis"/>
 
@@ -80,12 +77,6 @@
   <permission id="senaite.core.permissions.SampleAddAttachment" title="senaite.core: Sample: Add Attachment"/>
   <permission id="senaite.core.permissions.SampleEditAttachment" title="senaite.core: Sample: Edit Attachment"/>
   <permission id="senaite.core.permissions.SampleDeleteAttachment" title="senaite.core: Sample: Delete Attachment"/>
-
-  <!-- Field Permissions -->
-  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisConditions" title="senaite.core: Field: Edit Analysis Conditions"/>
 
   <!-- Behavioral Permissions -->
   <permission id="senaite.core.permissions.AccessJSONAPI" title="senaite.core: Access JSON API"/>

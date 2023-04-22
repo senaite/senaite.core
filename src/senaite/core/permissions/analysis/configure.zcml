@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Add permissions -->
+  <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+
+  <!-- Field permissions -->
+  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisConditions" title="senaite.core: Field: Edit Analysis Conditions"/>
+
+  <!-- Transition permissions -->
+  <permission id="senaite.core.permissions.TransitionRetest" title="senaite.core: Transition: Retest"/>
+  <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
+  <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
+
+</configure>

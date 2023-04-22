@@ -20,6 +20,16 @@
 
 # flake8:noqa
 
+# Analysis permissions
+from .analysis.permissions import AddAnalysis
+from .analysis.permissions import FieldEditAnalysisConditions
+from .analysis.permissions import FieldEditAnalysisHidden
+from .analysis.permissions import FieldEditAnalysisRemarks
+from .analysis.permissions import FieldEditAnalysisResult
+from .analysis.permissions import TransitionRetest
+from .analysis.permissions import TransitionRetract
+from .analysis.permissions import TransitionVerify
+
 # Sample permissions
 from .sample.permissions import AddAnalysisRequest
 from .sample.permissions import FieldEditBatch
@@ -85,7 +95,6 @@ from .worksheet.permissions import WorksheetAddAttachment
 # When the module gets initialized (bika.lims.__init__), the function initialize
 # will look through these Add permissions attributes when registering types and
 # will automatically associate them with their types.
-AddAnalysis = "senaite.core: Add Analysis"
 AddAnalysisCategory = "senaite.core: Add AnalysisCategory"
 AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
 AddAnalysisService = "senaite.core: Add AnalysisService"
@@ -132,9 +141,6 @@ TransitionClose = "senaite.core: Transition: Close"
 TransitionReopen = "senaite.core: Transition: Reopen"
 
 # Transition permissions (Analysis and alike)
-TransitionRetest = "senaite.core: Transition: Retest"
-TransitionRetract = "senaite.core: Transition: Retract"
-TransitionVerify = "senaite.core: Transition: Verify"
 TransitionAssignAnalysis = "senaite.core: Transition: Assign Analysis"
 TransitionUnassignAnalysis = "senaite.core: Transition: Unassign Analysis"
 
@@ -148,18 +154,6 @@ SampleAddAttachment = "senaite.core: Sample: Add Attachment"
 SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
 # Displays the "Delete" checkbox
 SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
-
-
-# Field Permissions
-# =================
-
-# Field permissions (Analysis and alike)
-FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
-# Allows the edition of the result from an Analysis, as well as the assignment,
-# edition or removal of attachment.
-FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
-FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
-FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
 
 
 # Behavioral permissions
