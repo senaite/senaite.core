@@ -6,47 +6,34 @@
   <!-- Add permissions -->
   <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
 
-  <!-- Field permissions -->
 
-  <!-- Attachment Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisAttachment" title="senaite.core: Field: View Analysis Attachment"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisAttachment" title="senaite.core: Field: Edit Analysis Attachment"/>
-  <!-- Result Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisResult" title="senaite.core: Field: View Analysis Result"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
-  <!-- Detection Limit Operand Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisDetectionLimitOperand" title="senaite.core: Field: View Analysis Detection Limit Operand"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisDetectionLimitOperand" title="senaite.core: Field: Edit Analysis Detection Limit Operand"/>
-  <!-- Analyst Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisAnalyst" title="senaite.core: Field: View Analysis Analyst"/>
+  <!-- Field permissions -->
   <permission id="senaite.core.permissions.FieldEditAnalysisAnalyst" title="senaite.core: Field: Edit Analysis Analyst"/>
-  <!-- Result Capture Date Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisResultCaptureDate" title="senaite.core: Field: View Analysis Result Capture Date"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisResultCaptureDate" title="senaite.core: Field: Edit Analysis Result Capture Date"/>
-  <!-- Uncertainty Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisUncertainty" title="senaite.core: Field: View Analysis Uncertainty"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisUncertainty" title="senaite.core: Field: Edit Analysis Uncertainty"/>
-  <!-- Interim Fields Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisInterimFields" title="senaite.core: Field: View Analysis Interim Fields"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisInterimFields" title="senaite.core: Field: Edit Analysis Interim Fields"/>
-  <!-- Calculation Field -->
-  <permission id="senaite.core.permissions.FieldViewCalculation" title="senaite.core: Field: View Analysis Calculation"/>
-  <permission id="senaite.core.permissions.FieldEditCalculation" title="senaite.core: Field: Edit Analysis Calculation"/>
-  <!-- Results Range Field -->
-  <permission id="senaite.core.permissions.FieldViewResultsRange" title="senaite.core: Field: View Analysis Results Range"/>
-  <permission id="senaite.core.permissions.FieldEditResultsRange" title="senaite.core: Field: Edit Analysis Results Range"/>
-  <!-- Number of required Verifications Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisNumberOfRequiredVerifications" title="senaite.core: Field: View Analysis Number of required Verifications"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisNumberOfRequiredVerifications" title="senaite.core: Field: Edit Analysis Number of required Verifications"/>
-  <!-- Hidden Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisHidden" title="senaite.core: Field: View Analysis Hidden"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
-  <!-- Remarks Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisRemarks" title="senaite.core: Field: View Analysis Remarks"/>
-  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
-  <!-- Analysis Conditions Field -->
-  <permission id="senaite.core.permissions.FieldViewAnalysisConditions" title="senaite.core: Field: View Analysis Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisAttachment" title="senaite.core: Field: Edit Analysis Attachment"/>
   <permission id="senaite.core.permissions.FieldEditAnalysisConditions" title="senaite.core: Field: Edit Analysis Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisDetectionLimitOperand" title="senaite.core: Field: Edit Analysis Detection Limit Operand"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisInterimFields" title="senaite.core: Field: Edit Analysis Interim Fields"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisNumberOfRequiredVerifications" title="senaite.core: Field: Edit Analysis Number of required Verifications"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisResultCaptureDate" title="senaite.core: Field: Edit Analysis Result Capture Date"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisUncertainty" title="senaite.core: Field: Edit Analysis Uncertainty"/>
+  <permission id="senaite.core.permissions.FieldEditCalculation" title="senaite.core: Field: Edit Analysis Calculation"/>
+  <permission id="senaite.core.permissions.FieldEditResultsRange" title="senaite.core: Field: Edit Analysis Results Range"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisAnalyst" title="senaite.core: Field: View Analysis Analyst"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisAttachment" title="senaite.core: Field: View Analysis Attachment"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisConditions" title="senaite.core: Field: View Analysis Conditions"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisDetectionLimitOperand" title="senaite.core: Field: View Analysis Detection Limit Operand"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisHidden" title="senaite.core: Field: View Analysis Hidden"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisInterimFields" title="senaite.core: Field: View Analysis Interim Fields"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisNumberOfRequiredVerifications" title="senaite.core: Field: View Analysis Number of required Verifications"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisRemarks" title="senaite.core: Field: View Analysis Remarks"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisResult" title="senaite.core: Field: View Analysis Result"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisResultCaptureDate" title="senaite.core: Field: View Analysis Result Capture Date"/>
+  <permission id="senaite.core.permissions.FieldViewAnalysisUncertainty" title="senaite.core: Field: View Analysis Uncertainty"/>
+  <permission id="senaite.core.permissions.FieldViewCalculation" title="senaite.core: Field: View Analysis Calculation"/>
+  <permission id="senaite.core.permissions.FieldViewResultsRange" title="senaite.core: Field: View Analysis Results Range"/>
 
 
   <!-- Transition permissions -->

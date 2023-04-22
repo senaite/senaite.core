@@ -49,6 +49,8 @@ from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.p3compat import cmp
+from senaite.core.permissions import FieldEditAnalysisConditions
+from senaite.core.permissions import FieldViewAnalysisConditions
 from zope.interface import implements
 
 Methods = UIDReferenceField(
@@ -206,6 +208,8 @@ Conditions = RecordsField(
     "Conditions",
     schemata="Advanced",
     type="conditions",
+    read_permission=FieldViewAnalysisConditions,
+    write_permission=FieldEditAnalysisConditions,
     subfields=(
         "title",
         "description",

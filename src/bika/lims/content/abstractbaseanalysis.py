@@ -31,9 +31,6 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
-from senaite.core.permissions import FieldEditAnalysisHidden
-from senaite.core.permissions import FieldEditAnalysisRemarks
-from senaite.core.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
 from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import BooleanField
@@ -55,6 +52,11 @@ from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import FieldViewAnalysisHidden
+from senaite.core.permissions import FieldViewAnalysisRemarks
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
@@ -639,7 +641,7 @@ Hidden = BooleanField(
     'Hidden',
     schemata="Analysis",
     default=False,
-    read_permission=View,
+    read_permission=FieldViewAnalysisHidden,
     write_permission=FieldEditAnalysisHidden,
     widget=BooleanWidget(
         label=_("Hidden"),
@@ -713,10 +715,10 @@ ProtocolID = StringField(
 
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
-    'Remarks',
-    read_permission=View,
+    "Remarks",
+    read_permission=FieldViewAnalysisRemarks,
     write_permission=FieldEditAnalysisRemarks,
-    schemata='Description'
+    schemata="Description"
 )
 
 schema = BikaSchema.copy() + Schema((

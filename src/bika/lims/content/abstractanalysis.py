@@ -23,7 +23,6 @@ import copy
 import json
 import math
 from decimal import Decimal
-from six import string_types
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -41,8 +40,6 @@ from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from senaite.core.permissions import FieldEditAnalysisResult
-from senaite.core.permissions import ViewResults
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
@@ -54,28 +51,52 @@ from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
-from Products.CMFCore.permissions import View
+from senaite.core.permissions import FieldEditAnalysisAnalyst
+from senaite.core.permissions import FieldEditAnalysisAttachment
+from senaite.core.permissions import FieldEditAnalysisCalculation
+from senaite.core.permissions import FieldEditAnalysisDetectionLimitOperand
+from senaite.core.permissions import FieldEditAnalysisInterimFields
+from senaite.core.permissions import \
+    FieldEditAnalysisNumberOfRequiredVerifications
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import FieldEditAnalysisResultCaptureDate
+from senaite.core.permissions import FieldEditAnalysisResultsRange
+from senaite.core.permissions import FieldEditAnalysisUncertainty
+from senaite.core.permissions import FieldViewAnalysisAnalyst
+from senaite.core.permissions import FieldViewAnalysisAttachment
+from senaite.core.permissions import FieldViewAnalysisCalculation
+from senaite.core.permissions import FieldViewAnalysisDetectionLimitOperand
+from senaite.core.permissions import FieldViewAnalysisInterimFields
+from senaite.core.permissions import \
+    FieldViewAnalysisNumberOfRequiredVerifications
+from senaite.core.permissions import FieldViewAnalysisResult
+from senaite.core.permissions import FieldViewAnalysisResultCaptureDate
+from senaite.core.permissions import FieldViewAnalysisResultsRange
+from senaite.core.permissions import FieldViewAnalysisUncertainty
+from six import string_types
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
-    'AnalysisService'
+    "AnalysisService"
 )
 
 # Attachments which are added manually in the UI, or automatically when
 # results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
-    'Attachment',
+    "Attachment",
     multiValued=1,
-    allowed_types=('Attachment',),
-    relationship='AnalysisAttachment'
+    allowed_types=("Attachment",),
+    relationship="AnalysisAttachment",
+    read_permission=FieldViewAnalysisAttachment,
+    write_permission=FieldEditAnalysisAttachment,
 )
 
 # The final result of the analysis is stored here.  The field contains a
 # String value, but the result itself is required to be numeric.  If
 # a non-numeric result is needed, ResultOptions can be used.
 Result = StringField(
-    'Result',
-    read_permission=ViewResults,
+    "Result",
+    read_permission=FieldViewAnalysisResult,
     write_permission=FieldEditAnalysisResult,
 )
 
@@ -84,7 +105,9 @@ Result = StringField(
 # populate catalog values, however the workflow review_history can be
 # used to get all dates of result capture
 ResultCaptureDate = DateTimeField(
-    'ResultCaptureDate'
+    "ResultCaptureDate",
+    read_permission=FieldViewAnalysisResultCaptureDate,
+    write_permission=FieldEditAnalysisResultCaptureDate,
 )
 
 # Returns the retracted analysis this analysis is a retest of
@@ -97,42 +120,46 @@ RetestOf = UIDReferenceField(
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
 DetectionLimitOperand = StringField(
-    'DetectionLimitOperand',
-    read_permission=View,
-    write_permission=FieldEditAnalysisResult,
+    "DetectionLimitOperand",
+    read_permission=FieldViewAnalysisDetectionLimitOperand,
+    write_permission=FieldEditAnalysisDetectionLimitOperand,
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
 Analyst = StringField(
-    'Analyst'
+    "Analyst",
+    read_permission=FieldViewAnalysisAnalyst,
+    write_permission=FieldEditAnalysisAnalyst,
 )
 
 # The actual uncertainty for this analysis' result, populated from the ranges
 # specified in the analysis service when the result is submitted.
 Uncertainty = StringField(
-    'Uncertainty',
-    read_permission=View,
-    write_permission="Field: Edit Result",
+    "Uncertainty",
     precision=10,
+    read_permission=FieldViewAnalysisUncertainty,
+    write_permission=FieldEditAnalysisUncertainty,
 )
 
 # transitioned to a 'verified' state. This value is set automatically
 # when the analysis is created, based on the value set for the property
 # NumberOfRequiredVerifications from the Analysis Service
 NumberOfRequiredVerifications = IntegerField(
-    'NumberOfRequiredVerifications',
-    default=1
+    "NumberOfRequiredVerifications",
+    default=1,
+    read_permission=FieldViewAnalysisNumberOfRequiredVerifications,
+    write_permission=FieldEditAnalysisNumberOfRequiredVerifications,
 )
 
 # Routine Analyses and Reference Analysis have a versioned link to
 # the calculation at creation time.
 Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    read_permission=View,
-    write_permission=FieldEditAnalysisResult,
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
+    "Calculation",
+    allowed_types=("Calculation",),
+    relationship="AnalysisCalculation",
+    referenceClass=HoldingReference,
+    read_permission=FieldViewAnalysisCalculation,
+    write_permission=FieldEditAnalysisCalculation,
 )
 
 # InterimFields are defined in Calculations, Services, and Analyses.
@@ -141,10 +168,10 @@ Calculation = HistoryAwareReferenceField(
 # When instrument results are imported, the values in analysis are overridden
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
-    'InterimFields',
-    read_permission=View,
-    write_permission=FieldEditAnalysisResult,
-    schemata='Method',
+    "InterimFields",
+    schemata="Method",
+    read_permission=FieldViewAnalysisInterimFields,
+    write_permission=FieldEditAnalysisInterimFields,
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
         description=_(
@@ -156,7 +183,9 @@ InterimFields = InterimFieldsField(
 # Results Range that applies to this analysis
 ResultsRange = ResultRangeField(
     "ResultsRange",
-    required=0
+    required=0,
+    read_permission=FieldViewAnalysisResultsRange,
+    write_permission=FieldEditAnalysisResultsRange,
 )
 
 schema = schema.copy() + Schema((
