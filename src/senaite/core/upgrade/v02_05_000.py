@@ -320,7 +320,7 @@ def update_workflow_mappings_analyses(tool):
     """Update the WF mappings for Analyses
     """
     logger.info("Updating role mappings for Analyses ...")
-    wf_id = "senaite_analyses_workflow"
+    wf_id = "senaite_analysis_workflow"
     query = {"portal_type": "Analysis"}
     brains = api.search(query, ANALYSIS_CATALOG)
     _update_workflow_mappings_for(wf_id, brains)
