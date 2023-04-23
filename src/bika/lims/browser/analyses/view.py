@@ -355,12 +355,13 @@ class AnalysesView(ListingView):
 
         analysis_obj = self.get_object(analysis_brain)
         if analysis_obj.getPointOfCapture() == 'field':
-            # This analysis must be captured on field, during sampling.
-            if not self.has_permission(EditFieldResults, analysis_obj):
+            # EditFieldResults permission is mapped on the sample!
+            if not self.has_permission(EditFieldResults, self.context):
                 # Current user cannot edit field analyses.
                 return False
 
-        elif not self.has_permission(EditResults, analysis_obj):
+        # EditResults permission is mapped on the sample!
+        elif not self.has_permission(EditResults, self.context):
             # The Point of Capture is 'lab' and the current user cannot edit
             # lab analyses.
             return False
@@ -927,7 +928,8 @@ class AnalysesView(ListingView):
 
         item["Result"] = ""
 
-        if not self.has_permission(ViewResults, analysis_brain):
+        # NOTE: Permission `ViewResults` is mapped on the sample!
+        if not self.has_permission(ViewResults, self.context):
             # If user has no permissions, don"t display the result but an icon
             img = get_image("to_follow.png", width="16px", height="16px")
             item["before"]["Result"] = img
