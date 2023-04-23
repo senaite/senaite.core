@@ -398,18 +398,6 @@
       <role name="Manager"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="senaite.core: Transition: Assign Analysis" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Verifier"/>
-    </permission>
-    <permission name="senaite.core: Transition: Unassign Analysis" acquire="False">
-      <role name="Analyst"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Verifier"/>
-    </permission>
 
     <!-- Transition permissions (Analysis Request) -->
     <permission name="senaite.core: Transition: Cancel Analysis Request" acquire="False">
