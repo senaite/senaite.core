@@ -62,6 +62,7 @@
 
     <!-- Field results should stay editable, even if the analysis is in registered state -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
@@ -72,16 +73,19 @@
 
     <!-- FIELD PERMISSIONS (initialized) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
