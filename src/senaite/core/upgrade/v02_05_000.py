@@ -307,6 +307,15 @@ def import_rolemap(tool):
     logger.info("Import Rolemappings [DONE]")
 
 
+def import_workflow(tool):
+    """Import workflow step from profiles
+    """
+    logger.info("Import Workflow ...")
+    portal = tool.aq_inner.aq_parent
+    _run_import_step(portal, "workflow", profile=profile)
+    logger.info("Import Workflow [DONE]")
+
+
 def update_workflow_mappings_analyses(tool):
     """Update the WF mappings for Analyses
     """
