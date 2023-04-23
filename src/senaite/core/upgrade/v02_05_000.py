@@ -216,8 +216,10 @@ def reindex_client_security(tool):
         _recursive_reindex_object_security(obj)
 
         if num and num % 1000 == 0:
-            # reduce memory size of the transaction
-            transaction.savepoint()
+            # Make full transactions to store reindexed objects immediately
+            logger.info("Commit transaction after %s objects." % num + 1)
+            transaction.commit()
+            logger.info("Commit Done")
 
         # Flush the object from memory
         obj._p_deactivate()
@@ -232,6 +234,7 @@ def _recursive_reindex_object_security(obj):
         for child_obj in obj.objectValues():
             _recursive_reindex_object_security(child_obj)
     obj.reindexObject(idxs=["allowedRolesAndUsers"])
+    obj._p_deactivate()
 
 
 def add_content_actions(tool):
