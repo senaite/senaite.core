@@ -215,11 +215,9 @@ def reindex_client_security(tool):
                     % (num+1, total, obj.getName()))
         _recursive_reindex_object_security(obj)
 
-        if num and num % 1000 == 0:
-            # Make full transactions to store reindexed objects immediately
-            logger.info("Commit transaction after %s objects." % num + 1)
-            transaction.commit()
-            logger.info("Commit Done")
+        logger.info("Commiting client %s/%s" % (num+1, total))
+        transaction.commit()
+        logger.info("Commit done")
 
         # Flush the object from memory
         obj._p_deactivate()
