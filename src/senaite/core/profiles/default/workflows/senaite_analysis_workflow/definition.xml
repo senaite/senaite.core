@@ -8,243 +8,210 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>senaite.core: Transition: Assign Analysis</permission>
-  <permission>senaite.core: Transition: Unassign Analysis</permission>
-  <permission>senaite.core: Transition: Retest</permission>
-  <permission>senaite.core: Transition: Retract</permission>
-  <permission>senaite.core: Transition: Verify</permission>
-  <permission>senaite.core: View Results</permission>
-  <permission>Reject</permission>
-  <permission>Modify portal content</permission>
-
-  <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses,
-             then we can rely solely on the Workflow Field permission.
-
-  At the moment we need to grant the Sampler the edit field permission for field
-  analyses, but this should not be allowed for lab analyses.
-
-  Hence, the view needs to check *first* if the object is a field or lab
-  analysis and *afterwards* if the "senaite.core: Field: Edit Analysis Result" permission is granted.
-  -->
-  <permission>senaite.core: Edit Field Results</permission>
-  <permission>senaite.core: Edit Results</permission>
+  <!-- *** MANAGED PERMISSIONS  *** -->
 
   <!-- Field-specific permissions
        Are meant to be used for "read_permission" and "write_permission" in fields.
        If not defined there, "read_permission" defaults to "View" and
-       "write_permission" defaults to "Modify portal content" -->
-  <permission>senaite.core: Field: Edit Analysis Result</permission>
-  <permission>senaite.core: Field: Edit Analysis Remarks</permission>
-  <permission>senaite.core: Field: Edit Analysis Hidden</permission>
-  <permission>senaite.core: Field: Edit Analysis Conditions</permission>
+       "write_permission" defaults to "Modify portal content"
+
+        N.B. Permissions are *only* checked in process_form and *not* if we set
+             the field directly via the generated mutator
+  -->
+
+  <!-- field edit permissions -->
+  <permission>senaite.core: Field: Edit Analysis Analyst></permission>
+  <permission>senaite.core: Field: Edit Analysis Attachment></permission>
+  <permission>senaite.core: Field: Edit Analysis Conditions></permission>
+  <permission>senaite.core: Field: Edit Analysis Detection Limit Operand></permission>
+  <permission>senaite.core: Field: Edit Analysis Hidden></permission>
+  <permission>senaite.core: Field: Edit Analysis Interim Fields></permission>
+  <permission>senaite.core: Field: Edit Analysis Number of required Verifications></permission>
+  <permission>senaite.core: Field: Edit Analysis Remarks></permission>
+  <permission>senaite.core: Field: Edit Analysis Result></permission>
+  <permission>senaite.core: Field: Edit Analysis Result Capture Date></permission>
+  <permission>senaite.core: Field: Edit Analysis Uncertainty></permission>
+  <permission>senaite.core: Field: Edit Analysis Calculation></permission>
+  <permission>senaite.core: Field: Edit Analysis Results Range></permission>
+  <!-- field view permissions -->
+  <permission>senaite.core: Field: View Analysis Analyst></permission>
+  <permission>senaite.core: Field: View Analysis Attachment></permission>
+  <permission>senaite.core: Field: View Analysis Conditions></permission>
+  <permission>senaite.core: Field: View Analysis Detection Limit Operand></permission>
+  <permission>senaite.core: Field: View Analysis Hidden></permission>
+  <permission>senaite.core: Field: View Analysis Interim Fields></permission>
+  <permission>senaite.core: Field: View Analysis Number of required Verifications></permission>
+  <permission>senaite.core: Field: View Analysis Remarks></permission>
+  <permission>senaite.core: Field: View Analysis Result></permission>
+  <permission>senaite.core: Field: View Analysis Result Capture Date></permission>
+  <permission>senaite.core: Field: View Analysis Uncertainty></permission>
+  <permission>senaite.core: Field: View Analysis Calculation></permission>
+  <permission>senaite.core: Field: View Analysis Results Range></permission>
+
+  <!-- Transitions (governs guards) -->
+  <permission>senaite.core: Transition: Assign Analysis</permission>
+  <permission>senaite.core: Transition: Reject</permission>
+  <permission>senaite.core: Transition: Retest</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: Transition: Verify</permission>
 
 
   <!-- *** STATES *** -->
 
 
-  <!-- State: registered (inital state)
+  <!-- State: REGISTERED (inital state)
   The sample did not yet arrive at the Lab, so tha Analyses are registered.
   No transitions are allowed in that state.
   -->
   <state state_id="registered" title="Registered" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="cancel" />
     <exit-transition transition_id="initialize" />
     <exit-transition transition_id="submit"/>
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-    N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <!-- Field results should stay editable, even if the analysis is in registered state -->
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-
-    <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (initialized) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: unassigned
+  <!-- State: UNASSIGNED
   Analysis is not assigned to a Worksheet.
   Same exit-transitions and Permissions as "assigned" state, cause by default,
   the system allows users to submit results directly from the Analysis Request
   manage results view, without the need of assigning them to a Worksheet -->
   <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="assign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="cancel" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-    N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
-      to Worksheets by default, these roles are here because of the option
-      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
-      this -->
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-    </permission-map>
-
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (unsassigned) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: assigned
+  <!-- State: ASSIGNED
   Analysis is assigned to a Worksheet. -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="unassign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
-      to Worksheets by default, these roles are here because of the option
-      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
-      this -->
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-    </permission-map>
-
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (assigned) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
@@ -258,310 +225,308 @@
   Analyses can only be cancelled before results being submitted -->
   <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
     <exit-transition transition_id="unassign" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <permission-map name="Review portal content" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
+    <!-- TRANSITION PERMISSIONS (assigned) -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
     <!-- Analysis cannot be rejected once cancelled -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Reject" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
     <!-- FIELD PERMISSIONS (cancelled) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
+
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: to_be_verified
+  <!-- State: TO_BE_VERIFIED
   Results have been submitted and awaiting for review -->
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="multi_verify" />
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retest" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
 
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-      <permission-role>Verifier</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Transition: Retest" acquired="True" />
-
-    <permission-map name="senaite.core: Transition: Retract" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Transition: Verify" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Verifier</permission-role>
-    </permission-map>
-
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (to_be_verified) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: retracted
+  <!-- State: RETRACTED
   The analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="unassign" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>Verifier</permission-role>
-    </permission-map>
-
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
     <!-- Analysis cannot be rejected once retracted -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Reject" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <!-- FIELD PERMISSIONS (retracted) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
+
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: rejected
+  <!-- State: REJECTED
   The analysis has been rejected and cannot be used anymore -->
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="unassign" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <!-- Rejected analysis cannot be rejected again -->
+    <permission-map name="senaite.core: Transition: Reject" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <!-- Rejected analysis cannot be retracted -->
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Verify" acquired="True"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
 
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <permission-map name="Review portal content" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <permission-map name="senaite.core: Transition: Retract" acquired="False">
-    </permission-map>
-
-    <!-- Analysis cannot be rejected again -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (rejected) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
 
   </state>
 
-  <!-- State: verified
+  <!-- State: VERIFIED
        The analysis has been verified and cannot be edited anymore -->
   <state state_id="verified" title="Verified" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="publish" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <!-- Published analysis cannot be rejected -->
+    <permission-map name="senaite.core: Transition: Reject" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <!-- Published analysis cannot be retracted -->
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <!-- Published analysis cannot be verified -->
+    <permission-map name="senaite.core: Transition: Verify" acquired="False"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
 
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <!-- Analysis cannot be rejected once verified -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (verified) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
   </state>
 
-  <!-- State: published
+  <!-- State: PUBLISHED
   The analysis has been published. Analyses cannot be published individually,
   rather analyses transitions to this state automatically when the whole
   Analysis Request they belong to is published -->
   <state state_id="published" title="Published" i18n:attributes="title">
 
-    <!-- TRANSITIONS -->
+    <!-- ALLOWED TRANSITIONS -->
     <exit-transition transition_id="" />
-    <!-- /TRANSITIONS -->
+    <!-- /ALLOWED TRANSITIONS -->
 
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <!-- TRANSITION PERMISSIONS -->
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <!-- Published analyses cannot be rejected -->
+    <permission-map name="senaite.core: Transition: Reject" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retest" acquired="True"/>
+    <!-- Published analyses cannot be retracted -->
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <!-- Published analyses cannot be verified -->
+    <permission-map name="senaite.core: Transition: Verify" acquired="False"/>
+    <!-- /TRANSITION PERMISSIONS -->
 
-    <permission-map name="senaite.core: Edit Field Results" acquired="False">
-    </permission-map>
+    <!-- FIELD PERMISSIONS -->
+    <permissions-map name="senaite.core: Field: Edit Analysis Analyst" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Attachment" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Detection Limit Operand" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Interim Fields" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Number of required Verifications" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Result Capture Date" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Uncertainty" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Calculation" acquired="False"/>
+    <permissions-map name="senaite.core: Field: Edit Analysis Results Range" acquired="False"/>
 
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <!-- Analyses cannot be rejected once published -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (published) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
-    </permission-map>
+    <permissions-map name="senaite.core: Field: View Analysis Analyst" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Attachment" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Conditions" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Detection Limit Operand" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Hidden" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Interim Fields" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Number of required Verifications" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Remarks" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Result Capture Date" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Uncertainty" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Calculation" acquired="True"/>
+    <permissions-map name="senaite.core: Field: View Analysis Results Range" acquired="True"/>
     <!-- /FIELD PERMISSIONS -->
   </state>
 
@@ -689,7 +654,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
-      <guard-permission>Reject</guard-permission>
+      <guard-permission>senaite.core: Transition: Reject</guard-permission>
       <guard-expression>python:here.guard_handler("reject")</guard-expression>
     </guard>
   </transition>
