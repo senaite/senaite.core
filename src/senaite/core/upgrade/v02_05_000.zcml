@@ -14,25 +14,33 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Add content actions"
       description="Add content actions for client sharing page"
-      source="2508"
-      destination="2509"
+      source="2509"
+      destination="2510"
       handler=".v02_05_000.add_content_actions"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Reindex client object security"
       description="Reindex object security for all clients including their contents"
-      source="2507"
-      destination="2508"
+      source="2508"
+      destination="2509"
       handler=".v02_05_000.reindex_client_security"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Create groups for clients"
       description="Create a group for each client"
+      source="2507"
+      destination="2508"
+      handler=".v02_05_000.create_client_groups"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import registry settings"
+      description="Import client settings to SENAITE registry"
       source="2506"
       destination="2507"
-      handler=".v02_05_000.create_client_groups"
+      handler=".v02_05_000.import_registry"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
