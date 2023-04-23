@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2303 Fix managed permission of analysis workflow for lab roles
 - #2301 Use client groups for local role sharing
 - #2298 Move all permissions into senaite.core
 - #2299 Fix KeyError: 'prefs_main_template' after installation
