@@ -26,13 +26,14 @@ from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
-from senaite.core.setuphandlers import _run_import_step
 from senaite.core.registry import get_registry_record
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
@@ -304,3 +305,34 @@ def import_rolemap(tool):
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "rolemap", profile=profile)
     logger.info("Import Rolemappings [DONE]")
+
+
+def update_workflow_mappings_analyses(tool):
+    """Update the WF mappings for Analyses
+    """
+    logger.info("Updating role mappings for Analyses ...")
+    wf_id = "senaite_analyses_workflow"
+    query = {"portal_type": "Analysis"}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    _update_workflow_mappings_for(wf_id, brains)
+    logger.info("Updating role mappings for Analyses [DONE]")
+
+
+def _update_workflow_mappings_for(wf_id, brains):
+    """Helper to update role mappings for the given brains
+    """
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        if num and num % 1000 == 0:
+            logger.info("Comitting {0}/{1}".format(num, total))
+            transaction.commit()
+            logger.info("Comitted {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])
+        # free memory
+        obj._p_deactivate()
