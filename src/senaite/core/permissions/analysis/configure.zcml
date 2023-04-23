@@ -37,6 +37,7 @@
 
 
   <!-- Transition permissions -->
+  <permission id="senaite.core.permissions.TransitionReject" title="senaite.core: Transition: Reject"/>
   <permission id="senaite.core.permissions.TransitionRetest" title="senaite.core: Transition: Retest"/>
   <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
   <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>

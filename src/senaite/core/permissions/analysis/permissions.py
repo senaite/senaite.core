@@ -6,6 +6,7 @@
 AddAnalysis = "senaite.core: Add Analysis"
 
 # Transition permissions
+TransitionReject = "senaite.core: Transition: Reject"
 TransitionRetest = "senaite.core: Transition: Retest"
 TransitionRetract = "senaite.core: Transition: Retract"
 TransitionVerify = "senaite.core: Transition: Verify"

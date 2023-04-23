@@ -270,6 +270,10 @@
     </permission>
 
     <!-- Analysis Transition Permissions -->
+    <permission name="senaite.core: Transition: Reject" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="senaite.core: Transition: Retest" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
