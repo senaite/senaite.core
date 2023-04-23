@@ -131,6 +131,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
 
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False">
