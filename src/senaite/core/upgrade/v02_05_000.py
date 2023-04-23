@@ -30,13 +30,14 @@ from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.permissions import ManageBika
+from senaite.core.registry import get_registry_record
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
-from senaite.core.permissions import ManageBika
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -174,6 +175,14 @@ def update_report_catalog(tool):
     logger.info("Update report catalog [DONE]")
 
 
+def import_registry(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
 def create_client_groups(tool):
     """Create for all Clients an explicit Group
     """
@@ -187,6 +196,12 @@ def create_client_groups(tool):
 
         # recreate the group
         obj.remove_group()
+
+        # skip group creation
+        if not get_registry_record("auto_create_client_group", True):
+            logger.info("Auto group creation is disabled in registry. "
+                        "Skipping group creation ...")
+            continue
 
         group = obj.create_group()
         # add all linked client contacts to the group
@@ -213,6 +228,12 @@ def reindex_client_security(tool):
         obj = api.get_object(client)
         logger.info("Processing client %s/%s: %s"
                     % (num+1, total, obj.getName()))
+
+        if not obj.get_group():
+            logger.info("No client group exists for client %s. "
+                        "Skipping reindexing ..." % obj.getName())
+            continue
+
         _recursive_reindex_object_security(obj)
 
         logger.info("Commiting client %s/%s" % (num+1, total))
