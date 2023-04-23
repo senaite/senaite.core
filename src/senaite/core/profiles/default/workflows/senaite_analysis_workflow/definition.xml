@@ -514,6 +514,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
       <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
