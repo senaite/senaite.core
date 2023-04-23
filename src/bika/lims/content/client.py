@@ -236,8 +236,9 @@ class Client(Organisation):
             return False
         portal_groups = api.get_tool("portal_groups")
         # Use the client ID for the group ID
-        group_id = self.getClientID()
-        portal_groups.removeGroup(group_id)
+        portal_groups.removeGroup(self.group_id)
+        # also remove the group attribute
+        delattr(self, self.GROUP_KEY)
         return True
 
     @security.private
