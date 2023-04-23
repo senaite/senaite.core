@@ -756,7 +756,7 @@ Exactly these roles can submit:
 And these roles can view results:
 
     >>> get_roles_for_permission("senaite.core: View Results", analysis)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Publisher', 'RegulatoryInspector', 'Sampler', 'Verifier']
 
 Current user can submit because has the `LabManager` role:
 

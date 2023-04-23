@@ -32,14 +32,14 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-		>>> def new_sample(services):
-		...     values = {
-		...         "Client": client.UID(),
-		...         "Contact": contact.UID(),
-		...         "DateSampled": date_now,
-		...         "SampleType": sampletype.UID()}
-		...     service_uids = map(api.get_uid, services)
-		...     return create_analysisrequest(client, request, values, service_uids)
+    >>> def new_sample(services):
+    ...     values = {
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     return create_analysisrequest(client, request, values, service_uids)
 
     >>> def get_analysis(sample, id):
     ...     ans = sample.getAnalyses(getId=id, full_objects=True)
@@ -206,7 +206,7 @@ This function is the opposite of `get_permissions_for_role` and returns
 the roles for a given permission:
 
     >>> get_roles_for_permission(FieldEditAnalysisResult, cu)
-    ('Manager', 'Sampler')
+    ('LabManager', 'Manager', 'Sampler')
 
 
 Get the roles of a user
