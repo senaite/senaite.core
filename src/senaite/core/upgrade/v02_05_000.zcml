@@ -6,8 +6,8 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Import Rolemap"
       description="Import Rolemap for Analysis Permissions"
-      source="2509"
-      destination="2510"
+      source="2510"
+      destination="2511"
       handler=".v02_05_000.import_rolemap"
       profile="senaite.core:default"/>
 
