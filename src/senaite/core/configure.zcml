@@ -26,6 +26,7 @@
   <include package=".permissions" />
   <include package=".registry" />
   <include package=".schema" />
+  <include package=".subscribers" />
   <include package=".upgrade" />
   <include package=".utilities" />
   <include package=".z3cform" />

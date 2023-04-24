@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Client *created* event handler -->
+  <subscriber
+      for="bika.lims.interfaces.IClient
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler=".client.on_client_created"
+      />
+
+</configure>

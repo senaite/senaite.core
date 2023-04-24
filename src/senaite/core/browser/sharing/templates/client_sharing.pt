@@ -1,0 +1,206 @@
+<!-- Override from plone.app.workflow.browser.sharing
+
+     - Bootstrap styles
+     - Help Text changed
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+  <head></head>
+  <body>
+    <metal:main fill-slot="main"
+                tal:define="context_state context/@@plone_context_state;
+                           portal_state context/@@plone_portal_state;
+                           portal portal_state/portal;
+                           portal_url portal_state/portal_url;
+                           checkPermission nocall:context/portal_membership/checkPermission;
+                           can_view_groups python:checkPermission('Plone Site Setup: Users and Groups', portal)">
+
+      <div class="portalMessage info" tal:condition="context_state/is_default_page">
+        <strong i18n:translate="">
+          Info
+        </strong>
+        <span tal:omit-tag="" i18n:translate="help_sharing_page_default_page">
+          You are adjusting the sharing privileges for a default view in a container.
+          To adjust them for the entire container,
+          <a i18n:name="go_here"
+             i18n:translate="help_sharing_go_here"
+             tal:define="folder context_state/folder"
+             tal:attributes="href string:${folder/absolute_url}/sharing">go here</a>.
+        </span>
+      </div>
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="heading_currently_assigned_shares">
+        Manage access for <span tal:replace="context/Title" i18n:name="folder">title</span>
+      </h1>
+
+      <div class="documentDescription"
+           i18n:translate="description_sharing_control">
+        Grant access for users or groups
+        <div class="font-italic" tal:condition="view/is_client">
+          Access should be granted only to the client group below.
+          <br/>
+          Client contacts which are linked to a user account will be
+          automatically added to this group and have therefore the same roles
+          granted immediately.
+          <br/>
+          Other granted access to users or groups will only affect new created contents.
+        </div>
+      </div>
+
+      <div tal:replace="structure provider:plone.abovecontentbody" tal:condition="not:ajax_load" />
+
+      <div id="content-core">
+
+        <form method="post"
+              class="form"
+              tal:attributes="action string:${context/absolute_url}/@@sharing">
+
+          <input type="hidden" name="form.submitted:boolean" value="True" />
+
+          <div class="form-row">
+            <div class="col">
+              <div class="field input-group input-group-sm my-2">
+                <input type="text"
+                       id="sharing-user-group-search"
+                       size="30"
+                       name="search_term"
+                       title="Search for user or group"
+                       placeholder="Search for user or group"
+                       i18n:attributes="title; placeholder"
+                       class="searchField"
+                       value="${request/search_term|nothing}"
+                />
+                <span class="input-group-append">
+                  <input type="submit"
+                         id="sharing-search-button"
+                         name="form.button.Search"
+                         value="Search"
+                         class="searchButton allowMultiSubmit btn btn-primary"
+                         i18n:attributes="value label_search"
+                  />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row" id="user-group-sharing-container">
+            <div class="col mb-2">
+              <table metal:define-macro="user-group-sharing" id="user-group-sharing"
+                     class="table-sm table-striped table-bordered"
+                     summary="Current sharing permissions"
+                     tal:define="available_roles view/roles;
+                                         num_columns python:len(available_roles) + 1;
+                                         role_settings view/role_settings"
+                     i18n:attributes="summary summary_assigned_roles;">
+
+                <thead metal:define-macro="user-group-sharing-head" id="user-group-sharing-head">
+                  <tr tal:condition="python:len(role_settings) > 0">
+                    <th i18n:translate="label_name">Name</th>
+                    <th class="nosort"
+                        tal:repeat="role available_roles"
+                        i18n:translate=""
+                        tal:content="role/title"  />
+                  </tr>
+                </thead>
+
+                <tbody metal:define-macro="user-group-sharing-settings" id="user-group-sharing-settings">
+                  <tal:entries repeat="entry role_settings">
+                    <tr tal:define="is_group python:entry['type'] == 'group';
+                                    disabled entry/disabled | python:False;
+                                    oddrow repeat/entry/odd;
+                                    sticky python:entry['id'] in view.STICKY"
+                        tal:attributes="class python:oddrow and 'odd' or 'even'">
+                      <td tal:attributes="title entry/id">
+                        <img tal:condition="is_group" tal:replace="structure portal/group.png" />
+                        <img tal:condition="not:is_group" tal:replace="structure portal/user.png" />
+
+                        <a tal:omit-tag="python:not is_group or not can_view_groups or entry.get('id') == 'AuthenticatedUsers'"
+                           tal:attributes="href string:${portal_url}/@@usergroup-groupmembership?groupname=${entry/id}">
+                          <tal:sticky condition="sticky">
+                            <span tal:replace="entry/title" />
+                          </tal:sticky>
+                          <tal:nonsticky condition="not:sticky">
+                            <span tal:replace="entry/title" />
+                            <tal:title condition="entry/login|nothing">
+                              (<span tal:replace="entry/login" />)
+                            </tal:title>
+                          </tal:nonsticky>
+                        </a>
+
+                        <input
+                          tal:condition="not:disabled"
+                          type="hidden"
+                          name="entries.id:records"
+                          tal:attributes="value entry/id"
+                        />
+                        <input
+                          tal:condition="not:disabled"
+                          type="hidden"
+                          name="entries.type:records"
+                          tal:attributes="value entry/type"
+                        />
+                      </td>
+                      <td class="listingCheckbox"
+                          tal:repeat="role available_roles">
+                        <tal:block define="entry_role python:entry['roles'][role['id']]">
+                          <img tal:condition="python:entry_role == 'global'" tal:replace="structure portal/site_icon.png" />
+                          <img tal:condition="python:entry_role == 'acquired'" tal:replace="structure portal/confirm_icon.png" />
+                          <tal:block condition="python:entry_role in (True, False)">
+                            <input class="noborder"
+                                   type="checkbox"
+                                   value="True"
+                                   tal:attributes="name string:entries.role_${role/id}:records;
+                                          checked python:entry_role and 'checked' or None;
+                                          disabled python:disabled or None"
+                            />
+                          </tal:block>
+                        </tal:block>
+                      </td>
+                    </tr>
+                  </tal:entries>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="field" id="field-inherit"
+               tal:condition="view/can_edit_inherit">
+            <input class="noborder"
+                   type="checkbox"
+                   name="inherit:boolean"
+                   value="1"
+                   checked="checked"
+                   id="inherit"
+                   tal:attributes="checked python:view.inherited() and 'checked' or None"
+            />
+            <label for="inherit" i18n:translate="label_inherit_local_roles">
+              Inherit permissions from higher levels
+            </label>
+            <div class="formHelp" i18n:translate="help_inherit_local_roles">
+              By default, permissions from the container of this item are inherited.
+              If you disable this, only the explicitly defined sharing permissions will
+              be valid.
+              In the overview, the symbol
+              <img i18n:name="image_confirm_icon"
+                   tal:replace="structure portal/confirm_icon.png" />
+              indicates an inherited value. Similarly, the symbol
+              <img i18n:name="image_link_icon"
+                   tal:replace="structure portal/site_icon.png" />
+              indicates a global role, which is managed by the site administrator.
+            </div>
+          </div>
+
+          <input id="sharing-save-button" class="context allowMultiSubmit btn btn-sm btn-primary" type="submit" name="form.button.Save" value="Save" i18n:attributes="value label_save" />
+          <input class="standalone btn btn-sm btn-secondary" type="submit" name="form.button.Cancel" value="Cancel" i18n:attributes="value label_cancel"/>
+
+          <input tal:replace="structure context/@@authenticator/authenticator" />
+
+        </form>
+      </div>
+    </metal:main>
+  </body>
+</html>

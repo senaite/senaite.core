@@ -22,7 +22,6 @@ import six
 from bika.lims import api
 from bika.lims import APIError
 from bika.lims import logger
-from bika.lims.utils import get_client
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from plone.memoize.request import cache
 from senaite.core.behaviors import IClientShareableBehavior
@@ -113,43 +112,6 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         """
         mtool = api.get_tool("portal_membership")
         return mtool.listMemberIds()
-
-
-@implementer(IDynamicLocalRoles)
-class ClientAwareLocalRoles(object):
-    """Adapter for the assignment of dynamic local roles to users that are
-    linked to a ClientContact for objects that belong to same client
-    """
-
-    def __init__(self, context):
-        self.context = context
-
-    def hasContact(self, client, principal_id):
-        """Returns whether the client passed in has a contact linked to a user
-        with the given principal_id
-        """
-        query = {
-            "portal_type": "Contact",
-            "getUsername": principal_id,
-            "getParentUID": api.get_uid(client),
-        }
-        brains = api.search(query, catalog="portal_catalog")
-        return len(brains) == 1
-
-    def getRoles(self, principal_id):
-        """Returns ["Owner"] local role if the user is linked to a Client
-        Contact that belongs to the same client as the current context
-        """
-        # Get the client of current context, if any
-        client = get_client(self.context)
-        if not client:
-            return []
-
-        # Check if the user belongs to same client as context
-        if not self.hasContact(client, principal_id):
-            return []
-
-        return ["Owner"]
 
 
 @implementer(IDynamicLocalRoles)

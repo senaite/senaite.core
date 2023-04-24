@@ -38,14 +38,6 @@
   <!-- Dynamic calculation of local roles for a given context and principal -->
   <adapter factory=".localroles.DynamicLocalRoleAdapter" />
 
-  <!-- Dynamic assignment of local roles for objects that belong to the same
-  Client as the contact the current user is linked to -->
-  <adapter
-      for="*"
-      provides="senaite.core.interfaces.IDynamicLocalRoles"
-      factory=".localroles.ClientAwareLocalRoles"
-      name="senaite.core.adapter.localroles.clientaware" />
-
   <!-- Adapter for the dynamic assignment of local and client-specific roles
   for contents shared across clients -->
   <adapter
