@@ -34,6 +34,7 @@
   <include package=".quickinstaller"/>
   <include package=".samples"/>
   <include package=".setup"/>
+  <include package=".sharing"/>
   <include package=".usergroup"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
