@@ -29,7 +29,7 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
-from bika.lims.permissions import AddAnalysis
+from senaite.core.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.utils.analysis import create_analytes
 from Products.Archetypes.public import Field

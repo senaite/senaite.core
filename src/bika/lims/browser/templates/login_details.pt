@@ -112,9 +112,6 @@
                      value="Unlink User"
                      i18n:attributes="value"
                      tal:attributes="tabindex tabindex/next;" />
-              <div class="form-text text-muted" i18n:translate="">
-                Unlinking a user from a contact will reindex all objects and might take very long.
-              </div>
             </div>
             <p tal:condition="inactive" class="form-text text-warning">
               <img src="++resource++bika.lims.images/exclamation2.png" title="Disabled Contact"/>

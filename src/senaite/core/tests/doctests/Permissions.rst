@@ -500,7 +500,7 @@ Link the user to a client contact to grant access to this client::
 
 Linking a user adds this user to the `Clients` group::
 
-    >>> clients_group = ploneapi.group.get("Clients")
+    >>> clients_group = client.get_group()
     >>> user.getId() in clients_group.getAllGroupMemberIds()
     True
 
@@ -511,8 +511,8 @@ This gives the user the global `Client` role::
 
 It also grants local `Owner` role on the client object::
 
-    >>> sorted(user.getRolesInContext(client))
-    ['Authenticated', 'Member', 'Owner']
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
+    ['Authenticated', 'Client', 'Member', 'Owner']
 
 ~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
@@ -552,7 +552,7 @@ Unlink the user to revoke all access to the client::
 
 The user has no local owner role anymore on the client::
 
-    >>> sorted(user.getRolesInContext(client))
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
     ['Authenticated', 'Member']
 
 The user can not access the client anymore::

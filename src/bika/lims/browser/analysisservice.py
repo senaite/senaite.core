@@ -31,7 +31,7 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_field_values
-from bika.lims.permissions import ViewLogTab
+from senaite.core.permissions import ViewLogTab
 from bika.lims.utils import get_image
 from magnitude import mg
 from plone.memoize import view

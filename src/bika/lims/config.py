@@ -26,7 +26,7 @@ from zope.i18n.locales import locales
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
 from bika.lims.utils import t
-from bika.lims.permissions import *
+from senaite.core.permissions import *
 
 
 PROJECTNAME = "bika.lims"

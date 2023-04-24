@@ -41,8 +41,8 @@ from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.permissions import ViewResults
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import ViewResults
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits

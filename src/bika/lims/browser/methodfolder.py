@@ -23,7 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import AddMethod
+from senaite.core.permissions import AddMethod
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for

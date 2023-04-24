@@ -22,7 +22,7 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.permissions import AddInstrumentLocation
+from senaite.core.permissions import AddInstrumentLocation
 from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 
