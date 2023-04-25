@@ -297,8 +297,12 @@ def _remove_action(type_info, action_id):
     return _remove_action(type_info, action_id)
 
 
+@upgradestep(product, version)
 def import_workflow(tool):
     """Import workflow step from profiles
+
+    NOTE: we use the upgradestep decorator, because workflows are modified by
+          other add-ons quite often.
     """
     logger.info("Import Workflow ...")
     portal = tool.aq_inner.aq_parent
