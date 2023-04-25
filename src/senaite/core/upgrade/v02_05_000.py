@@ -331,9 +331,9 @@ def _update_workflow_mappings_for(wf_id, brains):
         if num and num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
         if num and num % 1000 == 0:
-            logger.info("Comitting {0}/{1}".format(num, total))
+            logger.info("Committing {0}/{1}".format(num, total))
             transaction.commit()
-            logger.info("Comitted {0}/{1}".format(num, total))
+            logger.info("Committed {0}/{1}".format(num, total))
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
