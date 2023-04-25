@@ -4,6 +4,22 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Update Analyses Role Mappings"
+      description="Update Managed Permissions of Analysis Workflow and Reindex Object Security"
+      source="2511"
+      destination="2512"
+      handler=".v02_05_000.update_workflow_mappings_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import Workflow"
+      description="Update Managed Permissions of Analysis Workflow"
+      source="2510"
+      destination="2511"
+      handler=".v02_05_000.import_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Add content actions"
       description="Add content actions for client sharing page"
       source="2509"
