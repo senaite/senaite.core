@@ -64,6 +64,7 @@
       this.flush_settings = {};
       this.records_snapshot = {};
       this.applied_templates = {};
+      this.deselected_uids = {};
       $(".blurrable").removeClass("blurrable");
       this.bind_eventhandler();
       this.init_file_fields();
@@ -366,20 +367,23 @@
       /*
        * Set default field value
        */
-      var field, me, values_json;
+      var field, manually_deselected, me, ref, values_json;
       me = this;
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));
       if ((values.if_empty != null) && values.if_empty === true) {
         if (field.val()) {
           return;
-        }
-        if (this.is_reference_field(field) && this.get_reference_field_value(field)) {
+        } else if (this.is_reference_field(field) && this.get_reference_field_value(field)) {
           return;
         }
       }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if ((values.uid != null) && (values.title != null)) {
+        manually_deselected = this.deselected_uids[field_name] || [];
+        if (ref = values.uid, indexOf.call(manually_deselected, ref) >= 0) {
+          return;
+        }
         return me.set_reference_field(field, values.uid);
       } else if (values.value != null) {
         if (typeof values.value === "boolean") {
@@ -387,10 +391,6 @@
         } else {
           return field.val(values.value);
         }
-      } else if (typeIsArray(values)) {
-        return $.each(values, function(index, item) {
-          return me.apply_dependent_value(arnum, field_name, item);
-        });
       }
     };
 
@@ -664,12 +664,19 @@
       /*
        * Generic event handler for when a reference field value changed
        */
-      var $el, arnum, el, field_name, me;
+      var $el, arnum, deselected, el, field_name, me, value;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
+      if (event.type === "deselect") {
+        value = event.detail.value;
+        deselected = this.deselected_uids[field_name] || [];
+        if (value && indexOf.call(deselected, value) < 0) {
+          this.deselected_uids[field_name] = deselected.concat(value);
+        }
+      }
       if (field_name === "Template" || field_name === "Profiles") {
         return;
       }

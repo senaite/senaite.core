@@ -24,6 +24,10 @@ class window.AnalysisRequestAdd
     # brain for already applied templates
     @applied_templates = {}
 
+    # manually deselected references
+    # => keep track to avoid setting these fields with the default values
+    @deselected_uids = {}
+
     # Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable")
 
@@ -372,26 +376,26 @@ class window.AnalysisRequestAdd
       if field.val()
         return
       # handle reference fields
-      if @is_reference_field(field) and @get_reference_field_value(field)
+      else if @is_reference_field(field) and @get_reference_field_value(field)
+        # reference field has a value
         return
 
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     if values.uid? and values.title?
-      # This is a reference field
+      manually_deselected = @deselected_uids[field_name] or []
+      # don't set if value was manually deslected
+      if values.uid in manually_deselected
+        return
+      # reference field value
       me.set_reference_field field, values.uid
 
     else if values.value?
-      # This is a normal input field
+      # default value
       if typeof values.value == "boolean"
         field.prop "checked", values.value
       else
         field.val values.value
-
-    else if typeIsArray values
-      # This is a multi field (e.g. CCContact)
-      $.each values, (index, item) ->
-        me.apply_dependent_value arnum, field_name, item
 
 
   apply_dependent_filter_queries: (record, arnum) ->
@@ -653,6 +657,13 @@ class window.AnalysisRequestAdd
     $el = $(el)
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+
+    # remember deselected UIDs
+    if event.type is "deselect"
+      value = event.detail.value
+      deselected = @deselected_uids[field_name] or []
+      if value and value not in deselected
+        @deselected_uids[field_name] = deselected.concat value
 
     if field_name in ["Template", "Profiles"]
       # These fields have it's own event handler
