@@ -369,9 +369,10 @@ class window.AnalysisRequestAdd
 
     if values.if_empty? and values.if_empty is true
       # Set the value if the field is empty only
-      # XXX Can it be a reference field here?
-      #     If yes, we need to fetch the value from the containing textarea!
       if field.val()
+        return
+      # handle reference fields
+      if @is_reference_field(field) and @get_reference_field_value(field)
         return
 
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
@@ -413,6 +414,18 @@ class window.AnalysisRequestAdd
       console.debug "flushing: id=#{id}"
       field = $("##{id}-#{arnum}")
       me.flush_reference_field field
+
+
+  is_reference_field: (field) ->
+    ###
+     * Checks if the given field is a reference field
+    ###
+    field = $(field)
+    if field.hasClass("senaite-uidreference-widget-input")
+      return yes
+    if field.hasClass("ArchetypesReferenceWidget")
+      return yes
+    return no
 
 
   flush_reference_field: (field) ->

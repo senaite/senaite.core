@@ -374,6 +374,9 @@
         if (field.val()) {
           return;
         }
+        if (this.is_reference_field(field) && this.get_reference_field_value(field)) {
+          return;
+        }
       }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if ((values.uid != null) && (values.title != null)) {
@@ -419,6 +422,21 @@
         field = $("#" + id + "-" + arnum);
         return me.flush_reference_field(field);
       });
+    };
+
+    AnalysisRequestAdd.prototype.is_reference_field = function(field) {
+
+      /*
+       * Checks if the given field is a reference field
+       */
+      field = $(field);
+      if (field.hasClass("senaite-uidreference-widget-input")) {
+        return true;
+      }
+      if (field.hasClass("ArchetypesReferenceWidget")) {
+        return true;
+      }
+      return false;
     };
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
