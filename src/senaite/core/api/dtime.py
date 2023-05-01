@@ -171,13 +171,12 @@ def to_dt(dt):
 
 
 def ansi_to_dt(dt):
-    """The YYYYMMDD format is defined by ANSI X3.30. Therfore, 2 December 1,
+    """The YYYYMMDD format is defined by ANSI X3.30. Therefore, 2 December 1,
     1989 would be represented as 19891201. When times are transmitted, they
     shall be represented as HHMMSS, and shall be linked to dates as specified
     by ANSI X3.43.3 Date and time together shall be specified as up to a
     14-character string: YYYYMMDD[HHMMSS]
-
-    :param DateTime/datetime/str:
+    :param str:
     :return:
     """
     if not is_str(dt):
