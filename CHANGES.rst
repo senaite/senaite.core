@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2304 Fix dynamic sample specification not applied for new samples
 - #2303 Fix managed permission of analysis workflow for lab roles
 - #2301 Use client groups for local role sharing
 - #2300 Re-add searchable text provider adapters for sample catalog listing_searchable_text index
