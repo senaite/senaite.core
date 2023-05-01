@@ -493,3 +493,65 @@ standard ISO format, while TranslationService fails:
 
     >>> dtime.to_localized_time(dt, long_format=True)
     '1889-12-14 00:00'
+
+
+Support for ANSI X3.30 and ANSI X3.43.3
+.......................................
+
+The YYYYMMDD format is defined by ANSI X3.30. Therefore 2 December 1, 1989
+would be represented as 19891201. When times are transmitted (ASTM), they
+shall be represented as HHMMSS, and shall be linked to dates as specified by
+ANSI X3.43.3 Date and time together shall be specified as up to a 14-character
+string (YYYYMMDD[HHMMSS]
+
+    >>> dt = "19891201"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1989, 12, 1, 0, 0)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1989/12/01 00:00:00 GMT+0')
+
+    >>> dt = "19891201131405"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1989, 12, 1, 13, 14, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1989/12/01 13:14:05 GMT+0')
+
+    >>> dt = "17891201131405"
+    >>> dtime.ansi_to_dt(dt)
+     datetime.datetime(1789, 12, 1, 13, 14, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1789/12/01 13:14:05 GMT+0')
+
+    >>> dt = "17891201132505"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1789, 12, 1, 13, 25, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1789/12/01 13:25:05 GMT+0')
+
+    >>> # No ANSI format
+    >>> dt = "230501"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: No ANSI format date
+
+    >>> # Month 13
+    >>> dt = "17891301132505"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: unconverted data remains: 5
+
+    >>> # Month 2, day 30
+    >>> dt = "20030230123408"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: day is out of range for month
+
+    >>> dtime.to_DT(dt) is None
+    True

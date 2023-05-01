@@ -129,7 +129,13 @@ def to_DT(dt):
     elif is_str(dt):
         try:
             return DateTime(dt)
-        except (DateError, TimeError, SyntaxError, IndexError):
+        except (DateError, TimeError):
+            try:
+                dt = ansi_to_dt(dt)
+                return to_DT(dt)
+            except ValueError:
+                return None
+        except (SyntaxError, IndexError):
             return None
     elif is_dt(dt):
         return DateTime(dt.isoformat())
@@ -162,6 +168,27 @@ def to_dt(dt):
         return datetime(dt.year, dt.month, dt.day)
     else:
         return None
+
+
+def ansi_to_dt(dt):
+    """The YYYYMMDD format is defined by ANSI X3.30. Therfore, 2 December 1,
+    1989 would be represented as 19891201. When times are transmitted, they
+    shall be represented as HHMMSS, and shall be linked to dates as specified
+    by ANSI X3.43.3 Date and time together shall be specified as up to a
+    14-character string: YYYYMMDD[HHMMSS]
+
+    :param DateTime/datetime/str:
+    :return:
+    """
+    if not is_str(dt):
+        raise TypeError("Type is not supported")
+    if len(dt) == 8:
+        date_format = "%Y%m%d"
+    elif len(dt) == 14:
+        date_format = "%Y%m%d%H%M%S"
+    else:
+        raise ValueError("No ANSI format date")
+    return datetime.strptime(dt, date_format)
 
 
 def get_timezone(dt, default="Etc/GMT"):
