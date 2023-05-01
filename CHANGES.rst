@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2295 Integrate new UID reference widget
+- #2305 Add support for dates in ANSI X3.30 and ANSI X3.43.3 formats
+- #2304 Fix dynamic sample specification not applied for new samples
 - #2303 Fix managed permission of analysis workflow for lab roles
 - #2301 Use client groups for local role sharing
 - #2300 Re-add searchable text provider adapters for sample catalog listing_searchable_text index
