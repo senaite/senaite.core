@@ -84,12 +84,19 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Remove the Analyses from values. We will add them manually
     values.update({"Analyses": []})
 
+    # Remove the specificaton to set it *after* the analyses have been added
+    specification = values.pop("Specification", None)
+
     # Create the Analysis Request and submit the form
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
     ar.processForm(REQUEST=request, values=values)
 
     # Set the analyses manually
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
+
+    # Explicitly set the specification to the sample
+    if specification:
+        ar.setSpecification(specification)
 
     # Handle hidden analyses from template and profiles
     # https://github.com/senaite/senaite.core/issues/1437
