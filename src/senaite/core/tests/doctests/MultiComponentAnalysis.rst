@@ -480,16 +480,22 @@ of the original multi-component analysis, with analytes properly assigned:
 
     >>> retest = sample.getRetest()
     >>> retests = retest.getAnalyses(full_objects=True)
+
+All analyses and analytes belong to the retest:
+
+    >>> all([an.getRequest() == retest for an in retests])
+    True
+
     >>> multi = filter(lambda an: an.isMultiComponent(), retests)[0]
     >>> multi.getRequest() == retest
     True
 
 The analytes from the retest are all assigned to the new multi-component:
 
-    >>> multi_analytes = sorted(multi.getAnalytes())
-    >>> analytes = sorted(filter(lambda an: an.isAnalyte(), retests))
-    >>> multi_analytes == analytes
+    >>> multi_analytes = multi.getAnalytes()
+    >>> all([an.getMultiComponentAnalysis() == multi for an in multi_analytes])
     True
 
+    >>> analytes = filter(lambda an: an.isAnalyte(), retests)
     >>> all([an.getMultiComponentAnalysis() == multi for an in analytes])
     True
