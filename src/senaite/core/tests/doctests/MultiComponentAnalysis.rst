@@ -450,3 +450,46 @@ The Result Capture Date is not set in any case:
 Restore the default result for a Multi-component analysis:
 
     >>> metals.setDefaultResult(None)
+
+
+Invalidation of samples with multi-component analyses
+.....................................................
+
+Create the sample, receive and submit:
+
+    >>> sample = new_sample(client, contact, sample_type, [metals])
+    >>> success = do_action(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> multi = filter(lambda an: an.isMultiComponent(), analyses)[0]
+    >>> analytes = multi.getAnalytes()
+    >>> results = [an.setResult(12) for an in analytes]
+    >>> submitted = [do_action(an, "submit") for an in analytes]
+
+Verifying the multi-component analysis leads the sample to verified status too:
+
+    >>> success = do_action(multi, "verify")
+    >>> api.get_review_status(sample)
+    'verified'
+
+Invalidate the sample. The retest sample created automatically contains a copy
+of the original multi-component analysis, with analytes properly assigned:
+
+    >>> success = do_action(sample, "invalidate")
+    >>> api.get_review_status(sample)
+    'invalid'
+
+    >>> retest = sample.getRetest()
+    >>> retests = retest.getAnalyses(full_objects=True)
+    >>> multi = filter(lambda an: an.isMultiComponent(), retests)[0]
+    >>> multi.getRequest() == retest
+    True
+
+The analytes from the retest are all assigned to the new multi-component:
+
+    >>> multi_analytes = sorted(multi.getAnalytes())
+    >>> analytes = sorted(filter(lambda an: an.isAnalyte(), retests))
+    >>> multi_analytes == analytes
+    True
+
+    >>> all([an.getMultiComponentAnalysis() == multi for an in analytes])
+    True
