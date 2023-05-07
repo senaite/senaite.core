@@ -674,6 +674,11 @@ class window.AnalysisRequestAdd
     # Flush depending fields
     me.flush_fields_for field_name, arnum
 
+    # trigger custom event <field_name>:after_change
+    event_data = { bubbles: true, detail: { value: el.value } }
+    after_change = new CustomEvent("#{ field_name }:after_change", event_data)
+    el.dispatchEvent(after_change)
+
     # trigger form:changed event
     $(me).trigger "form:changed"
 
