@@ -63,14 +63,9 @@ window.bika.lims.controllers =  {
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],
 
-    // Analysis Request Templates
-    ".portaltype-artemplate.template-base_edit":
-        ['ARTemplateEditView'],
-
     // Analysis Requests
     ".portaltype-analysisrequest":
-        ['AnalysisRequestView',
-     ],
+        ['AnalysisRequestView'],
      // Analysis request, but not in ARAdd view
      ".portaltype-analysisrequest:not(.template-ar_add)":
         ['RejectionKickOff',],
