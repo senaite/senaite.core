@@ -1587,9 +1587,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         no_future = getattr(widget, "datepicker_nofuture", False)
         if self.is_true(no_future):
             return datetime.now()
-        two_months = getattr(widget, "datepicker_2months", False)
-        if self.is_true(two_months):
-            return datetime.now() + relativedelta(months=2)
         return default
 
     def check_confirmation(self):
