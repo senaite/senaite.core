@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from dateutil import relativedelta
 
 import six
 
@@ -1557,6 +1558,40 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return prices
 
+    def is_true(self, val):
+        """Returns whether val evaluates to True
+        """
+        val = str(val).strip().lower()
+        return val in ["y", "yes", "1", "true", "on"]
+
+    def is_date_field(self, field):
+        """Returns whether the field is for storing a date or datetime
+        """
+        return field.type in ["date", "datetime", "datetime_ng"]
+
+    def get_min_dt(self, field, default=None):
+        """Returns the minimum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_past = getattr(widget, "datepicker_nopast", False)
+        if self.is_true(no_past):
+            return datetime.now()
+        return default
+
+    def get_max_dt(self, field, default=None):
+        """Returns the maximum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_future = getattr(widget, "datepicker_nofuture", False)
+        if self.is_true(no_future):
+            return datetime.now()
+        two_months = getattr(widget, "datepicker_2months", False)
+        if self.is_true(two_months):
+            return datetime.now() + relativedelta(months=2)
+        return default
+
     def check_confirmation(self):
         """Returns a dict when user confirmation is required for the creation of
         samples. Returns None otherwise
@@ -1671,6 +1706,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                             "max_num_samples": max_samples_record,
                         })
                 fielderrors["NumSamples"] = self.context.translate(msg)
+
+            # Validate non-past and non-future dates
+            for field in filter(self.is_date_field, fields):
+                field_name = field.getName()
+                dt_value = api.to_date(record.get(field_name))
+                if not dt_value:
+                    # required fields are handled later
+                    continue
+
+                max_dt = self.get_max_dt(field)
+                if max_dt and dt_value > DateTime(max_dt):
+                    fielderrors[field_name] = _(
+                        "{}: in the future or earlier than expected"
+                    ).format(field_name)
+                    continue
+
+                min_dt = self.get_min_dt(field)
+                if min_dt and dt_value < DateTime(min_dt):
+                    fielderrors[field_name] = _(
+                        "{}: in the past or older than expected"
+                    ).format(field_name)
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
