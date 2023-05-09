@@ -1582,6 +1582,21 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
         return adapter.check_confirmation(records)
 
+    def is_no_future_date_field(self, field, default=False):
+        """Returns whether the field is a field for storing non-future dates
+        or date times
+        """
+        if field.type not in ["date", "datetime"]:
+            return default
+
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_future = getattr(widget, "datepicker_nofuture", False)
+
+        # resolve as a bool
+        no_future = str(no_future).strip().lower()
+        return no_future in ["y", "yes", "1", "true", "on"]
+
     def ajax_submit(self):
         """Submit & create the ARs
         """
@@ -1657,6 +1672,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if parent_uid != record.get("Client"):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
+
+            # Validate non-future dates
+            no_future = filter(self.is_no_future_date_field, fields)
+            for dt_field in no_future:
+                field_name = dt_field.getName()
+                dt_value = api.to_date(record.get(field_name))
+                if dt_value > DateTime():
+                    fielderrors[field_name] = _(
+                        "{}: future date for is not permitted"
+                    ).format(field_name)
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
