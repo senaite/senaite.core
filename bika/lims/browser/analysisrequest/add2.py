@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from dateutil import relativedelta
 
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -1597,6 +1598,38 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         no_future = str(no_future).strip().lower()
         return no_future in ["y", "yes", "1", "true", "on"]
 
+    def is_true(self, val):
+        val = str(val).strip().lower()
+        return val in ["y", "yes", "1", "true", "on"]
+
+    def is_date_field(self, field):
+        """Returns whether the field is for storing a date or datetime
+        """
+        return field.type in ["date", "datetime"]
+
+    def get_min_dt(self, field, default=None):
+        """Returns the minimum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_past = getattr(widget, "datepicker_nopast", False)
+        if self.is_true(no_past):
+            return datetime.now()
+        return default
+
+    def get_max_dt(self, field, default=None):
+        """Returns the maximum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_future = getattr(widget, "datepicker_nofuture", False)
+        if self.is_true(no_future):
+            return datetime.now()
+        two_months = getattr(widget, "datepicker_2months", False)
+        if self.is_true(two_months):
+            return datetime.now() + relativedelta(months=2)
+        return default
+
     def ajax_submit(self):
         """Submit & create the ARs
         """
@@ -1673,14 +1706,24 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 
-            # Validate non-future dates
-            no_future = filter(self.is_no_future_date_field, fields)
-            for dt_field in no_future:
-                field_name = dt_field.getName()
+            # Validate non-past and non-future dates
+            for field in filter(self.is_date_field, fields):
+                field_name = field.getName()
                 dt_value = api.to_date(record.get(field_name))
-                if dt_value > DateTime():
+                if not dt_value:
+                    # required fields are handled later
+                    continue
+
+                max_dt = self.get_max_dt(field)
+                if max_dt and dt_value > DateTime(max_dt):
                     fielderrors[field_name] = _(
-                        "{}: future date for is not permitted"
+                        "{}: in the future or earlier than expected"
+                    ).format(field_name)
+
+                min_dt = self.get_min_dt(field)
+                if min_dt and dt_value < DateTime(min_dt):
+                    fielderrors[field_name] = _(
+                        "{}: in the past or older than expected"
                     ).format(field_name)
 
             # Missing required fields
