@@ -1599,13 +1599,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return no_future in ["y", "yes", "1", "true", "on"]
 
     def is_true(self, val):
+        """Returns whether val evaluates to True
+        """
         val = str(val).strip().lower()
         return val in ["y", "yes", "1", "true", "on"]
 
     def is_date_field(self, field):
         """Returns whether the field is for storing a date or datetime
         """
-        return field.type in ["date", "datetime"]
+        return field.type in ["date", "datetime", "datetime_ng"]
 
     def get_min_dt(self, field, default=None):
         """Returns the minimum datetime supported for the given field
@@ -1719,6 +1721,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     fielderrors[field_name] = _(
                         "{}: in the future or earlier than expected"
                     ).format(field_name)
+                    continue
 
                 min_dt = self.get_min_dt(field)
                 if min_dt and dt_value < DateTime(min_dt):
