@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2307 Validate non-future and non-past dates on add sample
 - #2305 Add support for dates in ANSI X3.30 and ANSI X3.43.3 formats
 - #2304 Fix dynamic sample specification not applied for new samples
 - #2303 Fix managed permission of analysis workflow for lab roles
