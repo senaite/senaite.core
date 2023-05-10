@@ -1704,26 +1704,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 fielderrors["NumSamples"] = self.context.translate(msg)
 
             # Validate non-past and non-future dates
+            tmp_sample = self.get_ar()
             for field in filter(self.is_date_field, fields):
                 field_name = field.getName()
-                dt_value = api.to_date(record.get(field_name))
-                if not dt_value:
+                field_value = record.get(field_name)
+                if not field_value:
                     # required fields are handled later
                     continue
 
-                max_dt = self.get_max_dt(field)
-                if max_dt and dt_value > DateTime(max_dt):
-                    fielderrors[field_name] = _(
-                        "{}: in the future or earlier than expected"
-                    ).format(field_name)
-                    continue
-
-                min_dt = self.get_min_dt(field)
-                if min_dt and dt_value < DateTime(min_dt):
-                    fielderrors[field_name] = _(
-                        "{}: in the past or older than expected"
-                    ).format(field_name)
-
+                # validate the field against a temp sample obj
+                msg = field.validate(field_value, tmp_sample)
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
