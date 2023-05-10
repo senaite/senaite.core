@@ -1710,6 +1710,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # clean empty
                 if fieldvalue in ['', None]:
                     continue
+
                 valid_record[fieldname] = fieldvalue
 
             # Validate field values
@@ -1720,7 +1721,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if not field_value:
                     continue
 
-                error = field.validate(field_value, tmp_sample)
+                # process the value as the widget would usually do
+                process_value = field.widget.process_form
+                value, msgs = process_value(tmp_sample, field, valid_record)
+                if not value:
+                    continue
+
+                # validate the value
+                error = field.validate(value, tmp_sample)
                 if error:
                     field_name = "{}-{}".format(field_name, num)
                     fielderrors[field_name] = error
