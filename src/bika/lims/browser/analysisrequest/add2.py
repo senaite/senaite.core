@@ -1557,37 +1557,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return prices
 
-    def is_true(self, val):
-        """Returns whether val evaluates to True
-        """
-        val = str(val).strip().lower()
-        return val in ["y", "yes", "1", "true", "on"]
-
-    def is_date_field(self, field):
-        """Returns whether the field is for storing a date or datetime
-        """
-        return field.type in ["date", "datetime", "datetime_ng"]
-
-    def get_min_dt(self, field, default=None):
-        """Returns the minimum datetime supported for the given field
-        """
-        # find-out from the widget
-        widget = getattr(field, "widget", None)
-        no_past = getattr(widget, "datepicker_nopast", False)
-        if self.is_true(no_past):
-            return datetime.now()
-        return default
-
-    def get_max_dt(self, field, default=None):
-        """Returns the maximum datetime supported for the given field
-        """
-        # find-out from the widget
-        widget = getattr(field, "widget", None)
-        no_future = getattr(widget, "datepicker_nofuture", False)
-        if self.is_true(no_future):
-            return datetime.now()
-        return default
-
     def check_confirmation(self):
         """Returns a dict when user confirmation is required for the creation of
         samples. Returns None otherwise
@@ -1703,17 +1672,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                         })
                 fielderrors["NumSamples"] = self.context.translate(msg)
 
-            # Validate non-past and non-future dates
-            tmp_sample = self.get_ar()
-            for field in filter(self.is_date_field, fields):
-                field_name = field.getName()
-                field_value = record.get(field_name)
-                if not field_value:
-                    # required fields are handled later
-                    continue
-
-                # validate the field against a temp sample obj
-                msg = field.validate(field_value, tmp_sample)
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
@@ -1753,6 +1711,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 if fieldvalue in ['', None]:
                     continue
                 valid_record[fieldname] = fieldvalue
+
+            # Validate field values
+            tmp_sample = self.get_ar()
+            for field in fields:
+                field_name = field.getName()
+                field_value = valid_record.get(field_name)
+                if not field_value:
+                    continue
+
+                error = field.validate(field_value, tmp_sample)
+                if error:
+                    field_name = "{}-{}".format(field_name, num)
+                    fielderrors[field_name] = error
 
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)
