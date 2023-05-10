@@ -177,7 +177,7 @@ def ansi_to_dt(dt):
     by ANSI X3.43.3 Date and time together shall be specified as up to a
     14-character string: YYYYMMDD[HHMMSS]
     :param str:
-    :return:
+    :return: datetime object
     """
     if not is_str(dt):
         raise TypeError("Type is not supported")
@@ -188,6 +188,19 @@ def ansi_to_dt(dt):
     else:
         raise ValueError("No ANSI format date")
     return datetime.strptime(dt, date_format)
+
+
+def to_ansi(dt, with_time=True):
+    """Returns the date in ANSI X3.30/X4.43.3) format
+    :param dt: DateTime/datetime/date
+    :param with_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :returns: str that represents the datetime in ANSI format
+    """
+    dt = to_dt(dt)
+    ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
+    if not with_time:
+        return ansi
+    return "{}{:02d}{:02d}{:02d}".format(ansi, dt.hour, dt.minute, dt.second)
 
 
 def get_timezone(dt, default="Etc/GMT"):

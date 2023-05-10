@@ -81,7 +81,7 @@ class DateTimeField(BaseField):
         # self.min always returns an offset-naive datetime, but the value
         # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        if dtime.to_timestamp(value) >= dtime.to_timestamp(self.min):
+        if dtime.to_ansi(value) >= dtime.to_ansi(self.min):
             return None
 
         error = _(
@@ -106,7 +106,7 @@ class DateTimeField(BaseField):
         # self.max always returns an offset-naive datetime, but the value
         # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        if dtime.to_timestamp(value) <= dtime.to_timestamp(self.max):
+        if dtime.to_ansi(value) <= dtime.to_ansi(self.max):
             return None
 
         error = _(
