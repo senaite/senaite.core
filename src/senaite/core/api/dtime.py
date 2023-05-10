@@ -190,15 +190,18 @@ def ansi_to_dt(dt):
     return datetime.strptime(dt, date_format)
 
 
-def to_ansi(dt, with_time=True):
+def to_ansi(dt, show_time=True):
     """Returns the date in ANSI X3.30/X4.43.3) format
     :param dt: DateTime/datetime/date
-    :param with_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :param show_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
     :returns: str that represents the datetime in ANSI format
     """
     dt = to_dt(dt)
+    if dt is None:
+        return None
+
     ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
-    if not with_time:
+    if not show_time:
         return ansi
     return "{}{:02d}{:02d}{:02d}".format(ansi, dt.hour, dt.minute, dt.second)
 
