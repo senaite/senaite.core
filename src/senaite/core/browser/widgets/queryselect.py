@@ -65,8 +65,10 @@ class QuerySelectWidget(StringWidget):
         """
         value = form.get(field.getName(), "")
 
-        if api.is_string(value):
+        if value and api.is_string(value):
             value = value.split("\r\n")
+        else:
+            value = []
 
         return value, {}
 
