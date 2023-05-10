@@ -53,9 +53,11 @@ class DateTimeField(BaseField):
     security = ClassSecurityInfo()
 
     def validate(self, value, instance, errors=None, **kwargs):
-        if errors is None:
-            errors = {}
-
+        """Validate passed-in value using all field validators plus the
+        validators for minimum and maximum date values
+        Return None if all validations pass; otherwise, return the message of
+        of the validation failure translated to current language
+        """
         # Rely on the super-class first
         error = super(DateTimeField, self).validate(
             value, instance, errors=errors, **kwargs)
