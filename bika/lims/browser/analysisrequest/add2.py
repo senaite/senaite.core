@@ -1708,27 +1708,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 
-            # Validate non-past and non-future dates
-            for field in filter(self.is_date_field, fields):
-                field_name = field.getName()
-                dt_value = api.to_date(record.get(field_name))
-                if not dt_value:
-                    # required fields are handled later
-                    continue
-
-                max_dt = self.get_max_dt(field)
-                if max_dt and dt_value > DateTime(max_dt):
-                    fielderrors[field_name] = _(
-                        "{}: in the future or earlier than expected"
-                    ).format(field_name)
-                    continue
-
-                min_dt = self.get_min_dt(field)
-                if min_dt and dt_value < DateTime(min_dt):
-                    fielderrors[field_name] = _(
-                        "{}: in the past or older than expected"
-                    ).format(field_name)
-
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
 
@@ -1738,13 +1717,24 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 fielderrors[fieldname] = msg
 
-            # Process valid record
+            # Process and validate field values
             valid_record = dict()
-            for fieldname, fieldvalue in record.iteritems():
-                # clean empty
-                if fieldvalue in ['', None]:
+            tmp_sample = self.get_ar()
+            for field in fields:
+                field_name = field.getName()
+                field_value = record.get(field_name)
+                if field_value in ['', None]:
                     continue
-                valid_record[fieldname] = fieldvalue
+
+                # store as the valid record
+                valid_record[field_name] = field_value
+
+                # validate the value
+                error = field.validate(field_value, tmp_sample)
+                if error:
+                    field_name = "{}-{}".format(field_name, n)
+                    fielderrors[field_name] = error
+                    logger.error("{}: {}".format(field_name, error))
 
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
