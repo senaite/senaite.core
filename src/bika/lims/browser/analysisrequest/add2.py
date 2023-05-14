@@ -21,7 +21,6 @@
 from collections import OrderedDict
 from datetime import datetime
 
-import six
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
