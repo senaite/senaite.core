@@ -23,7 +23,17 @@ from App.class_init import InitializeClass
 from Products.Archetypes.public import DateTimeField as BaseField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.Registry import registerPropertyType
+from senaite.core.api import dtime
 from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
+from zope.i18n import translate
+from zope.i18nmessageid import Message
+
+from bika.lims import _
+from bika.lims import api
+
+WIDGET_NOPAST = "datepicker_nopast"
+WIDGET_NOFUTURE = "datepicker_nofuture"
+WIDGET_SHOWTIME = "show_time"
 
 
 class DateTimeField(BaseField):
@@ -41,6 +51,125 @@ class DateTimeField(BaseField):
         "with_date": 1,  # set to False if you want time only objects
         })
     security = ClassSecurityInfo()
+
+    def validate(self, value, instance, errors=None, **kwargs):
+        """Validate passed-in value using all field validators plus the
+        validators for minimum and maximum date values
+        Return None if all validations pass; otherwise, return the message of
+        of the validation failure translated to current language
+        """
+        # Rely on the super-class first
+        error = super(DateTimeField, self).validate(
+            value, instance, errors=errors, **kwargs)
+        if error:
+            return error
+
+        # Validate value is after min date
+        error = self.validate_min_date(value, instance, errors=errors)
+        if error:
+            return error
+
+        # Validate value is before max date
+        error = self.validate_max_date(value, instance, errors=errors)
+        if error:
+            return error
+
+    def validate_min_date(self, value, instance, errors=None):
+        """Validates the passed-in value against the field's minimum date
+        """
+        if errors is None:
+            errors = {}
+
+        # self.min always returns an offset-naive datetime, but the value
+        # is offset-aware. We need to add the TZ, otherwise we get a:
+        #   TypeError: can't compare offset-naive and offset-aware datetimes
+        if dtime.to_ansi(value) >= dtime.to_ansi(self.min):
+            return None
+
+        error = _(
+            u"error_datetime_before_min",
+            default=u"${name} is before ${min_date}, please correct.",
+            mapping={
+                "name": self.get_label(instance),
+                "min_date": self.localize(self.min, instance)
+            }
+        )
+
+        field_name = self.getName()
+        errors[field_name] = translate(error, context=api.get_request())
+        return errors[field_name]
+
+    def validate_max_date(self, value, instance, errors=None):
+        """Validates the passed-in value against the field's maximum date
+        """
+        if errors is None:
+            errors = {}
+
+        # self.max always returns an offset-naive datetime, but the value
+        # is offset-aware. We need to add the TZ, otherwise we get a:
+        #   TypeError: can't compare offset-naive and offset-aware datetimes
+        if dtime.to_ansi(value) <= dtime.to_ansi(self.max):
+            return None
+
+        error = _(
+            u"error_datetime_after_max",
+            default=u"${name} is after ${max_date}, please correct.",
+            mapping={
+                "name": self.get_label(instance),
+                "max_date": self.localize(self.max, instance)
+            }
+        )
+
+        field_name = self.getName()
+        errors[field_name] = translate(error, context=api.get_request())
+        return errors[field_name]
+
+    def is_true(self, val):
+        """Returns whether val evaluates to True
+        """
+        val = str(val).strip().lower()
+        return val in ["y", "yes", "1", "true", "on"]
+
+    def get_label(self, instance):
+        """Returns the translated label of this field for the given instance
+        """
+        request = api.get_request()
+        label = self.widget.Label(instance)
+        if isinstance(label, Message):
+            return translate(label, context=request)
+        return label
+
+    def localize(self, dt, instance):
+        """Returns the dt to localized time
+        """
+        request = api.get_request()
+        return dtime.to_localized_time(dt, long_format=self.show_time,
+                                       context=instance, request=request)
+
+    @property
+    def min(self):
+        """Returns the minimum datetime supported by this field
+        """
+        no_past = getattr(self.widget, WIDGET_NOPAST, False)
+        if self.is_true(no_past):
+            return dtime.datetime.now()
+        return dtime.datetime.min
+
+    @property
+    def max(self):
+        """Returns the maximum datetime supported for this field
+        """
+        no_future = getattr(self.widget, WIDGET_NOFUTURE, False)
+        if self.is_true(no_future):
+            return dtime.datetime.now()
+        return dtime.datetime.max
+
+    @property
+    def show_time(self):
+        """Returns whether the time is displayed by the widget
+        """
+        show_time = getattr(self.widget, WIDGET_SHOWTIME, False)
+        return self.is_true(show_time)
 
 
 InitializeClass(DateTimeField)

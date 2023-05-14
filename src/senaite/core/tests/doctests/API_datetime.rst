@@ -555,3 +555,67 @@ string (YYYYMMDD[HHMMSS]
 
     >>> dtime.to_DT(dt) is None
     True
+
+We can also the other way round conversion. Simply giving a date in ant valid
+string format:
+
+    >>> dt = "1989-12-01"
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201000000'
+
+    >>> dt = "19891201"
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201000000'
+
+Or using datetime or DateTime as the input parameter:
+
+    >>> dt = "19891201131405"
+    >>> dt = dtime.ansi_to_dt(dt)
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201131405'
+
+    >>> DT = dtime.to_DT(dt)
+    >>> dtime.to_ansi(DT, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(DT, show_time=True)
+    '19891201131405'
+
+We even suport dates that are long before epoch:
+
+    >>> min_date = dtime.datetime.min
+    >>> min_date
+    datetime.datetime(1, 1, 1, 0, 0)
+
+    >>> dtime.to_ansi(min_date)
+    '00010101000000'
+
+Or long after epoch:
+
+    >>> max_date = dtime.datetime.max
+    >>> max_date
+    datetime.datetime(9999, 12, 31, 23, 59, 59, 999999)
+
+    >>> dtime.to_ansi(max_date)
+    '99991231235959'
+
+Still, invalid dates return None:
+
+    >>> # Month 13
+    >>> dt = "17891301132505"
+    >>> dtime.to_ansi(dt) is None
+    True
+
+    >>> # Month 2, day 30
+    >>> dt = "20030230123408"
+    >>> dtime.to_ansi(dt) is None
+    True
