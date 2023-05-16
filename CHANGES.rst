@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2311 Properly process and validate field values from sample header on submit
 - #2307 Rely on fields when validating submitted values on sample creation
 - #2305 Add support for dates in ANSI X3.30 and ANSI X3.43.3 formats
 - #2304 Fix dynamic sample specification not applied for new samples
