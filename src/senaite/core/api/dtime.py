@@ -455,5 +455,4 @@ def get_relative_delta(from_dtime, to_dtime=None):
     #   TypeError: can't compare offset-naive and offset-aware datetimes
     from_dtime_utc = from_dtime.replace(tzinfo=pytz.UTC)
     to_dtime_utc = to_dtime.replace(tzinfo=pytz.UTC)
-    delta = relativedelta(to_dtime_utc, from_dtime_utc)
-    return delta
+    return relativedelta(to_dtime_utc, from_dtime_utc)
