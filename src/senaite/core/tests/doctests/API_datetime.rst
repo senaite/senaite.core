@@ -626,23 +626,36 @@ Relative delta between two dates
 
 We can extract the relative delta between two dates:
 
-    >>> from_dtime = dtime.ansi_to_dt("19891201131405")
-    >>> to_dtime = dtime.ansi_to_dt("20230515114400")
+    >>> from_dtime = dtime.ansi_to_dt("20230515104405")
+    >>> to_dtime = dtime.ansi_to_dt("20230515114405")
     >>> dtime.get_relative_delta(from_dtime, to_dtime)
-    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+    relativedelta(hours=+1)
 
 We can even compare two dates from two different timezones:
 
     >>> from_dtime_cet = dtime.to_zone(from_dtime, "CET")
     >>> to_dtime_utc = dtime.to_zone(to_dtime, "UTC")
     >>> dtime.get_relative_delta(from_dtime_cet, to_dtime_utc)
-    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
-
-Or between offset-naive and offset-aware datetimes:
+    relativedelta(hours=+3)
 
     >>> from_dtime_cet = dtime.to_zone(from_dtime, "CET")
-    >>> dtime.get_relative_delta(from_dtime_cet, to_dtime)
-    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+    >>> to_dtime_pcf = dtime.to_zone(to_dtime, "Pacific/Fiji")
+    >>> dtime.get_relative_delta(from_dtime_cet, to_dtime_pcf)
+    relativedelta(hours=-9)
+
+If we compare a naive timezone, system uses the timezone of the other date:
+
+    >>> from_dtime_cet = dtime.to_zone(from_dtime, "CET")
+    >>> to_dtime_naive = to_dtime.replace(tzinfo=None)
+    >>> dtime.get_relative_delta(from_dtime_cet, to_dtime_naive)
+    relativedelta(hours=+3)
+
+It also works when both are timezone naive:
+
+    >>> from_dtime_naive = from_dtime.replace(tzinfo=None)
+    >>> to_dtime_naive = to_dtime.replace(tzinfo=None)
+    >>> dtime.get_relative_delta(from_dtime_naive, to_dtime_naive)
+    relativedelta(hours=+1)
 
 If we don't specify `to_dtime`, system simply uses current datetime:
 

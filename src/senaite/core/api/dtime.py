@@ -451,8 +451,27 @@ def get_relative_delta(from_dtime, to_dtime=None):
     if not all([from_dtime, to_dtime]):
         return None
 
-    # Make both dates tz-aware to prevent
-    #   TypeError: can't compare offset-naive and offset-aware datetimes
-    from_dtime_utc = from_dtime.replace(tzinfo=pytz.UTC)
-    to_dtime_utc = to_dtime.replace(tzinfo=pytz.UTC)
-    return relativedelta(to_dtime_utc, from_dtime_utc)
+    naives = [is_timezone_naive(dt) for dt in [from_dtime, to_dtime]]
+    if all(naives):
+        # Both naive, no need to do anything special
+        return relativedelta(to_dtime, from_dtime)
+
+    elif is_timezone_naive(from_dtime):
+        # From date is naive, assume same TZ as the to date
+        try:
+            tz = get_timezone(from_dtime)
+            from_dtime = from_dtime.replace(tzinfo=pytz.timezone(tz))
+        except pytz.UnknownTimeZoneError:
+            # Fallback to UTC
+            from_dtime.replace(tzinfo=pytz.UTC)
+
+    elif is_timezone_naive(to_dtime):
+        # To date is naive, assume same TZ as the from date
+        try:
+            tz = get_timezone(to_dtime)
+            to_dtime = to_dtime.replace(tzinfo=pytz.timezone(tz))
+        except pytz.UnknownTimeZoneError:
+            # Fallback to UTC
+            to_dtime.replace(tzinfo=pytz.UTC)
+
+    return relativedelta(to_dtime, from_dtime)
