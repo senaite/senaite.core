@@ -659,3 +659,29 @@ We can even compare min and max dates:
     >>> to_dtime = dtime.datetime.max
     >>> dtime.get_relative_delta(dtime.datetime.min, dtime.datetime.max)
     relativedelta(years=+9998, months=+11, days=+30, hours=+23, minutes=+59, seconds=+59, microseconds=+999999)
+
+We can even call the function with types that are not datetime, but can be
+converted to datetime:
+
+    >>> dtime.get_relative_delta("19891201131405", "20230515114400")
+    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+
+But returns None if non-valid dates are used:
+
+    >>> dtime.get_relative_delta("17891301132505") is None
+    True
+
+Even if the from date is correct, but not the to date:
+
+    >>> dtime.get_relative_delta("19891201131405", "20230535114400") is None
+    True
+
+We can also compare two datetimes, being the "from" earlier than "to":
+
+    >>> dtime.get_relative_delta("20230515114400", "19891201131405")
+    relativedelta(years=-33, months=-5, days=-13, hours=-22, minutes=-29, seconds=-55)
+
+Or compare two dates that are exactly the same:
+
+    >>> dtime.get_relative_delta("20230515114400", "20230515114400")
+    relativedelta()
