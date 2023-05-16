@@ -451,6 +451,12 @@ def get_relative_delta(from_dtime, to_dtime=None):
     if not all([from_dtime, to_dtime]):
         return None
 
+    def get_tzinfo(dt, default=pytz.UTC):
+        try:
+            return pytz.timezone(get_timezone(dt))
+        except pytz.UnknownTimeZoneError:
+            return default
+
     naives = [is_timezone_naive(dt) for dt in [from_dtime, to_dtime]]
     if all(naives):
         # Both naive, no need to do anything special
@@ -458,20 +464,12 @@ def get_relative_delta(from_dtime, to_dtime=None):
 
     elif is_timezone_naive(from_dtime):
         # From date is naive, assume same TZ as the to date
-        try:
-            tz = get_timezone(from_dtime)
-            from_dtime = from_dtime.replace(tzinfo=pytz.timezone(tz))
-        except pytz.UnknownTimeZoneError:
-            # Fallback to UTC
-            from_dtime.replace(tzinfo=pytz.UTC)
+        tzinfo = get_tzinfo(to_dtime)
+        from_dtime = from_dtime.replace(tzinfo=tzinfo)
 
     elif is_timezone_naive(to_dtime):
         # To date is naive, assume same TZ as the from date
-        try:
-            tz = get_timezone(to_dtime)
-            to_dtime = to_dtime.replace(tzinfo=pytz.timezone(tz))
-        except pytz.UnknownTimeZoneError:
-            # Fallback to UTC
-            to_dtime.replace(tzinfo=pytz.UTC)
+        tzinfo = get_tzinfo(from_dtime)
+        to_dtime = to_dtime.replace(tzinfo=tzinfo)
 
     return relativedelta(to_dtime, from_dtime)
