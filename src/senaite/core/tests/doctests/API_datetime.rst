@@ -619,3 +619,43 @@ Still, invalid dates return None:
     >>> dt = "20030230123408"
     >>> dtime.to_ansi(dt) is None
     True
+
+
+Relative delta between two dates
+................................
+
+We can extract the relative delta between two dates:
+
+    >>> from_dtime = dtime.ansi_to_dt("19891201131405")
+    >>> to_dtime = dtime.ansi_to_dt("20230515114400")
+    >>> dtime.get_relative_delta(from_dtime, to_dtime)
+    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+
+We can even compare two dates from two different timezones:
+
+    >>> from_dtime_cet = dtime.to_zone(from_dtime, "CET")
+    >>> to_dtime_utc = dtime.to_zone(to_dtime, "UTC")
+    >>> dtime.get_relative_delta(from_dtime_cet, to_dtime_utc)
+    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+
+Or between offset-naive and offset-aware datetimes:
+
+    >>> from_dtime_cet = dtime.to_zone(from_dtime, "CET")
+    >>> dtime.get_relative_delta(from_dtime_cet, to_dtime)
+    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+
+If we don't specify `to_dtime`, system simply uses current datetime:
+
+    >>> rel_now = dtime.get_relative_delta(from_dtime, datetime.now())
+    >>> rel_wo = dtime.get_relative_delta(from_dtime)
+    >>> rel_now = (rel_now.years, rel_now.months, rel_now.days, rel_now.hours)
+    >>> rel_wo = (rel_wo.years, rel_wo.months, rel_wo.days, rel_wo.hours)
+    >>> rel_now == rel_wo
+    True
+
+We can even compare min and max dates:
+
+    >>> from_dtime = dtime.datetime.min
+    >>> to_dtime = dtime.datetime.max
+    >>> dtime.get_relative_delta(dtime.datetime.min, dtime.datetime.max)
+    relativedelta(years=+9998, months=+11, days=+30, hours=+23, minutes=+59, seconds=+59, microseconds=+999999)

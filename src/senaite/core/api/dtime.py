@@ -22,6 +22,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from string import Template
 
 import six
@@ -436,3 +437,23 @@ def to_localized_time(dt, long_format=None, time_only=None,
                 formatstring = "[INTERNAL ERROR]"
         time_str = date_to_string(dt, formatstring, default=default)
     return time_str
+
+
+def get_relative_delta(from_dtime, to_dtime=None):
+    """Returns the relative delta between two datetimes. If to_dtime is None,
+    compares current datetime with from_dtime
+    """
+    if not to_dtime:
+        to_dtime = datetime.now()
+
+    from_dtime = to_dt(from_dtime)
+    to_dtime = to_dt(to_dtime)
+    if not all([from_dtime, to_dtime]):
+        return None
+
+    # Make both dates tz-aware to prevent
+    #   TypeError: can't compare offset-naive and offset-aware datetimes
+    from_dtime_utc = from_dtime.replace(tzinfo=pytz.UTC)
+    to_dtime_utc = to_dtime.replace(tzinfo=pytz.UTC)
+    delta = relativedelta(to_dtime_utc, from_dtime_utc)
+    return delta
