@@ -84,6 +84,10 @@ class DateTimeField(DTF):
         if error:
             return error
 
+        # Return immediately if we have no value and the field is not required
+        if not value and not self.required:
+            return
+
         # Validate value is after min date
         error = self.validate_min_date(value, instance, errors=errors)
         if error:
