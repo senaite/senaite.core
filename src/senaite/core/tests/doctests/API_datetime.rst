@@ -747,15 +747,19 @@ converted to datetime:
     >>> dtime.get_relative_delta("19891201131405", "20230515114400")
     relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
 
-But returns None if non-valid dates are used:
+But raises a `ValueError` if non-valid dates are used:
 
-    >>> dtime.get_relative_delta("17891301132505") is None
-    True
+    >>> dtime.get_relative_delta("17891301132505")
+    Traceback (most recent call last):
+    ...
+    ValueError: No valid date or dates
 
 Even if the from date is correct, but not the to date:
 
-    >>> dtime.get_relative_delta("19891201131405", "20230535114400") is None
-    True
+    >>> dtime.get_relative_delta("19891201131405", "20230535114400")
+    Traceback (most recent call last):
+    ...
+    ValueError: No valid date or dates
 
 We can also compare two datetimes, being the "from" earlier than "to":
 

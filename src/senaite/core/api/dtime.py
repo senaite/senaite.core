@@ -480,7 +480,7 @@ def get_relative_delta(dt1, dt2=None):
     dt1 = to_dt(dt1)
     dt2 = to_dt(dt2)
     if not all([dt1, dt2]):
-        return None
+        raise ValueError("No valid date or dates")
 
     naives = [is_timezone_naive(dt) for dt in [dt1, dt2]]
     if all(naives):
