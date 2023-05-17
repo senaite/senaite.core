@@ -208,7 +208,7 @@ def to_ansi(dt, show_time=True):
 
 
 def get_timezone(dt, default="Etc/GMT"):
-    """Get a valid pytz timezone of the datetime object
+    """Get a valid pytz timezone name of the datetime object
 
     :param dt: date object
     :returns: timezone as string, e.g. Etc/GMT or CET
@@ -236,6 +236,29 @@ def get_timezone(dt, default="Etc/GMT"):
         tz = default
 
     return tz
+
+
+def get_tzinfo(dt_tz, default=pytz.UTC):
+    """Returns the valid pytz tinfo from the date or timezone name
+
+    Returns the default timezone info if date does not have a valid timezone
+    set or is TZ-naive
+
+    :param dt: timezone name or date object to extract the tzinfo
+    :type dt: str/date/datetime/DateTime
+    :param: default: timezone name or pytz tzinfo object
+    :returns: pytz tzinfo object, e.g. `<UTC>, <StaticTzInfo 'Etc/GMT+2'>
+    :rtype: UTC/BaseTzInfo/StaticTzInfo/DstTzInfo
+    """
+    if is_str(default):
+        default = pytz.timezone(default)
+    try:
+        if is_str(dt_tz):
+            return pytz.timezone(dt_tz)
+        tz = get_timezone(dt_tz, default=default.zone)
+        return pytz.timezone(tz)
+    except pytz.UnknownTimeZoneError:
+        return default
 
 
 def is_valid_timezone(timezone):
@@ -445,9 +468,9 @@ def get_relative_delta(dt1, dt2=None):
     If `dt2` is None, the current datetime is used.
 
     :param dt1: the first date/time to compare
-    :type dt1: str/date/datetime/DateTime
+    :type dt1: string/date/datetime/DateTime
     :param dt2: the second date/time to compare
-    :type dt2: str/date/datetime/DateTime
+    :type dt2: string/date/datetime/DateTime
     :returns: interval of time (e.g. `relativedelta(hours=+3)`)
     :rtype: dateutil.relativedelta
     """
@@ -458,12 +481,6 @@ def get_relative_delta(dt1, dt2=None):
     dt2 = to_dt(dt2)
     if not all([dt1, dt2]):
         return None
-
-    def get_tzinfo(dt, default=pytz.UTC):
-        try:
-            return pytz.timezone(get_timezone(dt))
-        except pytz.UnknownTimeZoneError:
-            return default
 
     naives = [is_timezone_naive(dt) for dt in [dt1, dt2]]
     if all(naives):

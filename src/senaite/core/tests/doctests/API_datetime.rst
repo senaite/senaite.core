@@ -248,6 +248,74 @@ Get the timezone from `datetime.date` objects:
     'Etc/GMT'
 
 
+Get the timezone info
+.....................
+
+Get the timezone info from TZ name:
+
+    >>> dtime.get_tzinfo("Etc/GMT")
+    <StaticTzInfo 'Etc/GMT'>
+
+    >>> dtime.get_tzinfo("Pacific/Fiji")
+    <DstTzInfo 'Pacific/Fiji' LMT+11:56:00 STD>
+
+    >>> dtime.get_tzinfo("UTC")
+    <UTC>
+
+Get the timezone info from `DateTime` objects:
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25"))
+    <StaticTzInfo 'Etc/GMT'>
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25 12:00 GMT+2"))
+    <StaticTzInfo 'Etc/GMT-2'>
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25 12:00 GMT-2"))
+    <StaticTzInfo 'Etc/GMT+2'>
+
+Get the timezone info from `datetime.datetime` objects:
+
+    >>> DATE = "2021-12-24 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.get_tzinfo(dt)
+    <UTC>
+
+    >>> dtime.get_tzinfo(dtime.to_zone(dt, "Europe/Berlin"))
+    <DstTzInfo 'CET' CET+1:00:00 STD>
+
+Get the timezone info from `datetime.date` objects:
+
+    >>> dtime.get_tzinfo(dt.date)
+    <UTC>
+
+Getting the timezone info from a naive date returns default timezone info:
+
+    >>> dt_naive = dt.replace(tzinfo=None)
+    >>> dtime.get_tzinfo(dt_naive)
+    <UTC>
+
+    >>> dtime.get_tzinfo(dt_naive, default="Pacific/Fiji")
+    <DstTzInfo 'Pacific/Fiji' LMT+11:56:00 STD>
+
+We can use a timezone info as the default parameter as well:
+
+    >>> dtime.get_tzinfo(dt_naive, default=dtime.pytz.UTC)
+    <UTC>
+
+Default can also be a timezone name:
+
+    >>> dtime.get_tzinfo(dt_naive, default="America/Port_of_Spain")
+    <DstTzInfo 'America/Port_of_Spain' LMT-1 day, 19:36:00 STD>
+
+And an error is rised if default is not a valid timezone, even if the date
+passed-in is valid:
+
+    >>> dtime.get_tzinfo(dt_naive, default="Atlantida")
+    Traceback (most recent call last):
+    ...
+    UnknownTimeZoneError: 'Atlantida'
+
+
 Check if timezone is valid
 ..........................
 
