@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from dateutil import relativedelta
 
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -1582,6 +1583,55 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
         return adapter.check_confirmation(records)
 
+    def is_no_future_date_field(self, field, default=False):
+        """Returns whether the field is a field for storing non-future dates
+        or date times
+        """
+        if field.type not in ["date", "datetime"]:
+            return default
+
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_future = getattr(widget, "datepicker_nofuture", False)
+
+        # resolve as a bool
+        no_future = str(no_future).strip().lower()
+        return no_future in ["y", "yes", "1", "true", "on"]
+
+    def is_true(self, val):
+        """Returns whether val evaluates to True
+        """
+        val = str(val).strip().lower()
+        return val in ["y", "yes", "1", "true", "on"]
+
+    def is_date_field(self, field):
+        """Returns whether the field is for storing a date or datetime
+        """
+        return field.type in ["date", "datetime", "datetime_ng"]
+
+    def get_min_dt(self, field, default=None):
+        """Returns the minimum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_past = getattr(widget, "datepicker_nopast", False)
+        if self.is_true(no_past):
+            return datetime.now()
+        return default
+
+    def get_max_dt(self, field, default=None):
+        """Returns the maximum datetime supported for the given field
+        """
+        # find-out from the widget
+        widget = getattr(field, "widget", None)
+        no_future = getattr(widget, "datepicker_nofuture", False)
+        if self.is_true(no_future):
+            return datetime.now()
+        two_months = getattr(widget, "datepicker_2months", False)
+        if self.is_true(two_months):
+            return datetime.now() + relativedelta(months=2)
+        return default
+
     def ajax_submit(self):
         """Submit & create the ARs
         """
@@ -1667,13 +1717,24 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 fielderrors[fieldname] = msg
 
-            # Process valid record
+            # Process and validate field values
             valid_record = dict()
-            for fieldname, fieldvalue in record.iteritems():
-                # clean empty
-                if fieldvalue in ['', None]:
+            tmp_sample = self.get_ar()
+            for field in fields:
+                field_name = field.getName()
+                field_value = record.get(field_name)
+                if field_value in ['', None]:
                     continue
-                valid_record[fieldname] = fieldvalue
+
+                # store as the valid record
+                valid_record[field_name] = field_value
+
+                # validate the value
+                error = field.validate(field_value, tmp_sample)
+                if error:
+                    field_name = "{}-{}".format(field_name, n)
+                    fielderrors[field_name] = error
+                    logger.error("{}: {}".format(field_name, error))
 
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
