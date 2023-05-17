@@ -439,16 +439,24 @@ def to_localized_time(dt, long_format=None, time_only=None,
     return time_str
 
 
-def get_relative_delta(from_dtime, to_dtime=None):
-    """Returns the relative delta between two datetimes. If to_dtime is None,
-    compares current datetime with from_dtime
-    """
-    if not to_dtime:
-        to_dtime = datetime.now()
+def get_relative_delta(dt1, dt2=None):
+    """Calculates the relative delta between two dates or datetimes
 
-    from_dtime = to_dt(from_dtime)
-    to_dtime = to_dt(to_dtime)
-    if not all([from_dtime, to_dtime]):
+    If `dt2` is None, the current datetime is used.
+
+    :param dt1: the first date/time to compare
+    :type dt1: str/date/datetime/DateTime
+    :param dt2: the second date/time to compare
+    :type dt2: str/date/datetime/DateTime
+    :returns: interval of time (e.g. `relativedelta(hours=+3)`)
+    :rtype: dateutil.relativedelta
+    """
+    if not dt2:
+        dt2 = datetime.now()
+
+    dt1 = to_dt(dt1)
+    dt2 = to_dt(dt2)
+    if not all([dt1, dt2]):
         return None
 
     def get_tzinfo(dt, default=pytz.UTC):
@@ -457,19 +465,19 @@ def get_relative_delta(from_dtime, to_dtime=None):
         except pytz.UnknownTimeZoneError:
             return default
 
-    naives = [is_timezone_naive(dt) for dt in [from_dtime, to_dtime]]
+    naives = [is_timezone_naive(dt) for dt in [dt1, dt2]]
     if all(naives):
         # Both naive, no need to do anything special
-        return relativedelta(to_dtime, from_dtime)
+        return relativedelta(dt2, dt1)
 
-    elif is_timezone_naive(from_dtime):
+    elif is_timezone_naive(dt1):
         # From date is naive, assume same TZ as the to date
-        tzinfo = get_tzinfo(to_dtime)
-        from_dtime = from_dtime.replace(tzinfo=tzinfo)
+        tzinfo = get_tzinfo(dt2)
+        dt1 = dt1.replace(tzinfo=tzinfo)
 
-    elif is_timezone_naive(to_dtime):
+    elif is_timezone_naive(dt2):
         # To date is naive, assume same TZ as the from date
-        tzinfo = get_tzinfo(from_dtime)
-        to_dtime = to_dtime.replace(tzinfo=tzinfo)
+        tzinfo = get_tzinfo(dt1)
+        dt2 = dt2.replace(tzinfo=tzinfo)
 
-    return relativedelta(to_dtime, from_dtime)
+    return relativedelta(dt2, dt1)
