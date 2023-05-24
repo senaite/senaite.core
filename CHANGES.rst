@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2313 Log error when calculation fails
 - #2310 Added `get_relative_delta` and `get_tzinfo` in datetime API
 - #2311 Properly process and validate field values from sample header on submit
 - #2307 Rely on fields when validating submitted values on sample creation
