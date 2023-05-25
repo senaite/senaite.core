@@ -160,7 +160,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-disabled": getattr(self, "disabled", False),
             "data-readonly": getattr(self, "readonly", False),
             "data-hide_input_after_select": getattr(
-                self, "hide_user_input_after_select", True),
+                self, "hide_input_after_select", True),
+            "data-clear_results_after_select": getattr(
+                self, "clear_results_after_select", False),
         }
 
         for key, value in attributes.items():

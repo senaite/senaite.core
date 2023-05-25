@@ -56,6 +56,7 @@ class QuerySelectWidget(StringWidget):
         "padding": 3,
         "display_template": None,
         "hide_input_after_select": False,
+        "clear_results_after_select": False,
         "results_table_width": "500px",
     })
 
@@ -106,7 +107,9 @@ class QuerySelectWidget(StringWidget):
             "data-disabled": getattr(self, "disabled", False),
             "data-readonly": getattr(self, "readonly", False),
             "data-hide_input_after_select": getattr(
-                self, "hide_user_input_after_select", True),
+                self, "hide_input_after_select", True),
+            "data-clear_results_after_select": getattr(
+                self, "clear_results_after_select", False),
         }
 
         for key, value in attributes.items():

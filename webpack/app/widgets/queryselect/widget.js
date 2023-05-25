@@ -55,6 +55,7 @@ class QuerySelectWidgetController extends React.Component {
       "display_template",  // template to use for the selected values
       "multi_valued",  // if true, more than one value can be set
       "hide_input_after_select",  // only for single valued fields to hide the input after selection
+      "clear_results_after_select",  // clear results after value select
       "disabled",  // if true, the field is rendered as not editable
       "readonly",  // if true, the field is rendered as not editable
       "padding",  // number of pages to show in navigation before and after the current
@@ -411,7 +412,7 @@ class QuerySelectWidgetController extends React.Component {
       // manually trigger a select event when the state is set
       this.trigger_custom_event("select", {value: value});
     });
-    if (values.length > 0 && !this.state.multi_valued) {
+    if (values.length > 0 && !this.state.multi_valued || this.state.clear_results_after_select) {
       this.clear_results();
     }
     return values;
