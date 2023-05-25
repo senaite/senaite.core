@@ -594,7 +594,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 converter = "s" if str_result else "f"
                 formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
 
-
         # convert any remaining placeholders, e.g. from interims etc.
         # NOTE: we assume remaining values are all floatable!
         formula = formula.replace("[", "%(").replace("]", ")f")
@@ -607,16 +606,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'context': self},
                            {'mapping': mapping})
             result = eval(formula, calc._getGlobals())
-        except TypeError:
-            self.setResult("NA")
-            return True
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError:
-            self.setResult("NA")
-            return True
-        except ImportError:
+        except (KeyError, TypeError, ImportError) as e:
+            msg = "Cannot eval formula ({}): {}".format(e.message, formula)
+            logger.error(msg)
             self.setResult("NA")
             return True
 
