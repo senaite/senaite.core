@@ -68,8 +68,13 @@ class QuerySelectWidget(StringWidget):
 
         if value and api.is_string(value):
             value = value.split("\r\n")
+        elif isinstance(value, list):
+            value = value
         else:
             value = []
+
+        # filter out empties
+        value = list(filter(None, value))
 
         return value, {}
 
