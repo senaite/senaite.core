@@ -53,7 +53,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
-from zope.i18n import translate
 from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
 from zope.interface import implements
