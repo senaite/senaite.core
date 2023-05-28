@@ -283,7 +283,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         NOTE: This custom setter also applies dynamic specifications
 
         :param spec: The result range to set
-        :param update_dynamic_spec: If True, any dynamic specifications will be updated
+        :param update_dynamic_spec: If True, dynamic specifications are update
         """
         adapter = IDynamicResultsRange(self, None)
         if adapter and update_dynamic_spec:
