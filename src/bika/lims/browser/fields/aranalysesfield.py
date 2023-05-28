@@ -28,7 +28,6 @@ from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
-from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
@@ -296,12 +295,6 @@ class ARAnalysesField(ObjectField):
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
-
-            # Update dynamic analysis specifications
-            adapter = IDynamicResultsRange(analysis, None)
-            if adapter:
-                # update the result range with the dynamic values
-                analysis_rr.update(adapter())
             analysis.setResultsRange(analysis_rr)
 
             # Set default (pre)conditions

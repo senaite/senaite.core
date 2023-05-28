@@ -32,6 +32,7 @@ from bika.lims.content.attachment import Attachment
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -274,6 +275,19 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :rtype: dict
         """
         return self.getField("ResultsRange").get(self)
+
+    @security.private
+    def setResultsRange(self, spec, update_dynamic_ranges=True):
+        """Set the results frange for this routine analysis
+
+        This custom setter applies as well the dynamic range if set
+        """
+        adapter = IDynamicResultsRange(self, None)
+        if adapter and update_dynamic_ranges:
+            # update the result range with the dynamic values
+            spec.update(adapter())
+        field = self.getField("ResultsRange")
+        field.set(self, spec)
 
     @security.public
     def getSiblings(self, with_retests=False):
