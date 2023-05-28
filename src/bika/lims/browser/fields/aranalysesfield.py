@@ -29,13 +29,13 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
+from senaite.core.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.permissions import AddAnalysis
 from zope.interface import implements
 
 DETACHED_STATES = ["cancelled", "retracted", "rejected"]
