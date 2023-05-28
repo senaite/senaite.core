@@ -28,14 +28,15 @@ from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import ISubmitted
-from senaite.core.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.permissions import AddAnalysis
 from zope.interface import implements
 
 DETACHED_STATES = ["cancelled", "retracted", "rejected"]
@@ -295,6 +296,12 @@ class ARAnalysesField(ObjectField):
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
+
+            # Update dynamic analysis specifications
+            adapter = IDynamicResultsRange(analysis, None)
+            if adapter:
+                # update the result range with the dynamic values
+                analysis_rr.update(adapter())
             analysis.setResultsRange(analysis_rr)
 
             # Set default (pre)conditions
