@@ -45,7 +45,9 @@ class DynamicResultsRange(object):
     def __init__(self, analysis):
         self.analysis = analysis
         self.analysisrequest = analysis.getRequest()
-        self.specification = self.analysisrequest.getSpecification()
+        self.specification = None
+        if self.analysisrequest:
+            self.specification = self.analysisrequest.getSpecification()
         self.dynamicspec = None
         if self.specification:
             self.dynamicspec = self.specification.getDynamicAnalysisSpec()
