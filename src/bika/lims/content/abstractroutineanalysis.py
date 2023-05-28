@@ -277,13 +277,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return self.getField("ResultsRange").get(self)
 
     @security.private
-    def setResultsRange(self, spec, update_dynamic_ranges=True):
-        """Set the results frange for this routine analysis
+    def setResultsRange(self, spec, update_dynamic_spec=True):
+        """Set the results range for this routine analysis
 
-        This custom setter applies as well the dynamic range if set
+        NOTE: This custom setter also applies dynamic specifications
+
+        :param spec: The result range to set
+        :param update_dynamic_spec: If True, any dynamic specifications will be updated
         """
         adapter = IDynamicResultsRange(self, None)
-        if adapter and update_dynamic_ranges:
+        if adapter and update_dynamic_spec:
             # update the result range with the dynamic values
             spec.update(adapter())
         field = self.getField("ResultsRange")
