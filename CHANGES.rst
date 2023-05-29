@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2295 Integrate new UID reference widget
+- #2315 Apply dynamic analyses specs for new added analyses
 - #2314 Display error for required fields without value in current language
 - #2313 Log error when calculation fails
 - #2310 Added `get_relative_delta` and `get_tzinfo` in datetime API
