@@ -26,6 +26,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.api.security import get_roles
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
+from bika.lims.interfaces.field import IUIDReferenceField
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize import view as viewcache
 from plone.protect import PostOnly
@@ -113,8 +114,8 @@ class SampleHeaderViewlet(ViewletBase):
     def get_configuration(self):
         """Return header configuration
 
-        This method retrieves the customized field and column configuration from
-        the management view directly.
+        This method retrieves the customized field and column configuration
+        from the management view directly.
 
         :returns: Field and columns configuration dictionary
         """
@@ -151,16 +152,13 @@ class SampleHeaderViewlet(ViewletBase):
 
         fieldvalue = form[fieldname]
 
-        # Handle (multiValued) reference fields
-        # https://github.com/bikalims/bika.lims/issues/2270
-        uid_fieldname = "{}_uid".format(fieldname)
-        if uid_fieldname in form:
-            # get the value from the corresponding `uid_<fieldname>` key
-            value = form[uid_fieldname]
+        # Handle  reference fields
+        if IUIDReferenceField.providedBy(field):
+            value = fieldvalue
 
             # extract the assigned UIDs for multi-reference fields
             if field.multiValued:
-                value = filter(None, value.split(","))
+                value = filter(None, fieldvalue.split("\r\n"))
 
             # allow to flush single reference fields
             if not field.multiValued and not fieldvalue:

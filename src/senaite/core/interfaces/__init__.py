@@ -19,9 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.datamanager import IDataManager
-from zope.interface import Interface
 from senaite.core.interfaces.catalog import *
+from senaite.core.interfaces.datamanager import IDataManager
+from senaite.core.interfaces.widget import *
+from zope.interface import Interface
 
 
 class ISenaiteCore(Interface):

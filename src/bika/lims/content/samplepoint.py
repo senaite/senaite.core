@@ -40,8 +40,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets.referencewidget import \
-    ReferenceWidget as BikaReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -92,7 +91,7 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         allowed_types=('SampleType',),
         relationship='SamplePointSampleType',
-        widget=BikaReferenceWidget(
+        widget=ReferenceWidget(
             label=_("Sample Types"),
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "

@@ -32,11 +32,30 @@ form.loginform,
 form.senaite-form,
 form[name='analysisrequest_add_form'],
 form[action*='-controlpanel'],
-form[name='header_form'],
+form[name='sampleheader_form'],
 form[name='listing_form'],
 form[name='edit_form'] {
     input, select {
-        width: auto!important;
+        width: auto;
+    }
+    input:not(
+        [type='button'],
+        [type='submit'],
+        [type='checkbox'],
+        [type='radio'],
+        [type='number'],
+        [name*='__ac']
+    ), select {
+        width: 250px!important;
+        max-width: 250px;
+    }
+    input[type=date] {
+        width: 160px!important;
+        max-width: 160px;
+    }
+    input[type=time] {
+        width: 90px!important;
+        max-width: 90px;
     }
     select {
         @extend .form-control;

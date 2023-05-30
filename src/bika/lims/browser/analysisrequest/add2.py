@@ -18,11 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
 from collections import OrderedDict
 from datetime import datetime
-
-import six
 
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
@@ -31,11 +28,13 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
+from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -63,18 +62,6 @@ SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples"]
 
 
-def returns_json(func):
-    """Decorator for functions which return JSON
-    """
-    def decorator(*args, **kwargs):
-        instance = args[0]
-        request = getattr(instance, 'request', None)
-        request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
-        return json.dumps(result)
-    return decorator
-
-
 def cache_key(method, self, obj):
     if obj is None:
         raise DontCache
@@ -99,7 +86,6 @@ class AnalysisRequestAddView(BrowserView):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
         self.setup = api.get_setup()
-        self.request.set("disable_plone.rightcolumn", 1)
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -130,7 +116,7 @@ class AnalysisRequestAddView(BrowserView):
         logger.debug("get_object_by_uid::UID={}".format(uid))
         obj = api.get_object_by_uid(uid, None)
         if obj is None:
-            logger.warn("!! No object found for UID #{} !!")
+            logger.warn("!! No object found for UID '%s' !!" % uid)
         return obj
 
     @viewcache.memoize
@@ -145,7 +131,7 @@ class AnalysisRequestAddView(BrowserView):
         """
         setup = api.get_setup()
         currency = setup.getCurrency()
-        currencies = locales.getLocale('en').numbers.currencies
+        currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
 
     def get_ar_count(self):
@@ -738,6 +724,26 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         raise TypeError("{} is neiter an instance of DateTime nor datetime"
                         .format(repr(dt)))
 
+    @viewcache.memoize
+    def is_uid_reference_field(self, fieldname):
+        """Checks if the field is a UID reference field
+        """
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        if field is None:
+            return False
+        return IUIDReferenceField.providedBy(field)
+
+    @viewcache.memoize
+    def is_multi_reference_field(self, fieldname):
+        """Checks if the field is a multi UID reference field
+        """
+        if not self.is_uid_reference_field(fieldname):
+            return False
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        return getattr(field, "multiValued", False)
+
     def get_records(self):
         """Returns a list of AR records
 
@@ -761,6 +767,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for key in keys:
                 new_key = key.replace(s1, "")
                 value = form.get(key)
+                if self.is_uid_reference_field(new_key):
+                    # handle new UID reference fields that store references in
+                    # a textarea (one UID per line)
+                    uids = value.split("\r\n")
+                    # remove empties
+                    uids = list(filter(None, uids))
+                    if self.is_multi_reference_field(new_key):
+                        value = uids
+                    else:
+                        value = uids[0] if len(uids) > 0 else ""
                 record[new_key] = value
             records.append(record)
         return records
@@ -769,17 +785,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns a list of parsed UIDs from a single form field identified by
         the given key.
 
-        A form field ending with `_uid` can contain an empty value, a
-        single UID or multiple UIDs separated by a comma.
+        A form field of an UID reference can contain an empty value, a single
+        UID or multiple UIDs separated by a \r\n.
 
         This method parses the UID value and returns a list of non-empty UIDs.
         """
-        value = record.get(key, None)
-        if value is None:
+        if not self.is_uid_reference_field(key):
             return []
-        if isinstance(value, six.string_types):
-            value = value.split(",")
-        return filter(lambda uid: uid, value)
+        value = record.get(key, None)
+        if not value:
+            return []
+        if api.is_string(value):
+            value = value.split("\r\n")
+        return list(filter(None, value))
 
     @cache(cache_key)
     def get_base_info(self, obj):
@@ -791,6 +809,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info = {
             "id": api.get_id(obj),
             "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
             "title": api.get_title(obj),
             "field_values": {},
             "filter_queries": {},
@@ -829,9 +848,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "getParentUID": [uid]
             },
             "CCContact": {
-                "getParentUID": [uid]
-            },
-            "InvoiceContact": {
                 "getParentUID": [uid]
             },
             "SamplePoint": {
@@ -1156,7 +1172,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Client": [
                 "Contact",
                 "CCContact",
-                "InvoiceContact",
                 "SamplePoint",
                 "Template",
                 "Profiles",
@@ -1184,7 +1199,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "ContainerType",
                 "DateSampled",
                 "EnvironmentalConditions",
-                "InvoiceContact",
                 "Preservation",
                 "Profiles",
                 "SampleCondition",
@@ -1253,14 +1267,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         metadata = {}
         extra_fields = {}
         for key, value in record.items():
-            if not key.endswith("_uid"):
-                continue
-
-            # This is a reference field (ends with _uid), so we add the
-            # metadata key, even if there is no way to handle objects this
-            # field refers to
-            metadata_key = key.replace("_uid", "")
-            metadata_key = "{}_metadata".format(metadata_key.lower())
+            metadata_key = "{}_metadata".format(key.lower())
             metadata[metadata_key] = {}
 
             if not value:
@@ -1426,7 +1433,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
-        field_name = key.replace("_uid", "").lower()
+        field_name = key.lower()
         obj_key = api.get_cache_key(obj)
         return "-".join([field_name, obj_key] + kw.keys())
 
@@ -1438,7 +1445,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         :return: dict that represents the object
         """
         # Check if there is a function to handle objects for this field
-        field_name = key.replace("_uid", "")
+        field_name = key
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
@@ -1508,8 +1515,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             arservice_vat_amount = 0.00
             services_from_priced_profile = []
 
-            profile_uids = record.get("Profiles_uid", "").split(",")
-            profile_uids = filter(lambda x: x, profile_uids)
+            profile_uids = record.get("Profiles", [])
             profiles = map(self.get_object_by_uid, profile_uids)
             services = map(self.get_object_by_uid, record.get("Analyses", []))
 
@@ -1633,15 +1639,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Validate required fields
         for num, record in enumerate(records):
 
-            # Process UID fields first and set their values to the linked field
-            uid_fields = filter(lambda f: f.endswith("_uid"), record)
-            for field in uid_fields:
-                name = field.replace("_uid", "")
-                value = record.get(field)
-                if "," in value:
-                    value = value.split(",")
-                record[name] = value
-
             # Extract file uploads (fields ending with _file)
             # These files will be added later as attachments
             file_fields = filter(lambda f: f.endswith("_file"), record)
@@ -1656,7 +1653,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # it therefore from the list of required fields to let empty
             # columns pass the required check below.
             if record.get("Client", False):
-                required_fields.pop('Client', None)
+                required_fields.pop("Client", None)
 
             # Check if analyses are required for sample registration
             if not self.analyses_required():
