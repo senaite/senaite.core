@@ -22,6 +22,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from string import Template
 
 import six
@@ -177,7 +178,7 @@ def ansi_to_dt(dt):
     by ANSI X3.43.3 Date and time together shall be specified as up to a
     14-character string: YYYYMMDD[HHMMSS]
     :param str:
-    :return:
+    :return: datetime object
     """
     if not is_str(dt):
         raise TypeError("Type is not supported")
@@ -190,8 +191,24 @@ def ansi_to_dt(dt):
     return datetime.strptime(dt, date_format)
 
 
+def to_ansi(dt, show_time=True):
+    """Returns the date in ANSI X3.30/X4.43.3) format
+    :param dt: DateTime/datetime/date
+    :param show_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :returns: str that represents the datetime in ANSI format
+    """
+    dt = to_dt(dt)
+    if dt is None:
+        return None
+
+    ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
+    if not show_time:
+        return ansi
+    return "{}{:02d}{:02d}{:02d}".format(ansi, dt.hour, dt.minute, dt.second)
+
+
 def get_timezone(dt, default="Etc/GMT"):
-    """Get a valid pytz timezone of the datetime object
+    """Get a valid pytz timezone name of the datetime object
 
     :param dt: date object
     :returns: timezone as string, e.g. Etc/GMT or CET
@@ -219,6 +236,29 @@ def get_timezone(dt, default="Etc/GMT"):
         tz = default
 
     return tz
+
+
+def get_tzinfo(dt_tz, default=pytz.UTC):
+    """Returns the valid pytz tinfo from the date or timezone name
+
+    Returns the default timezone info if date does not have a valid timezone
+    set or is TZ-naive
+
+    :param dt: timezone name or date object to extract the tzinfo
+    :type dt: str/date/datetime/DateTime
+    :param: default: timezone name or pytz tzinfo object
+    :returns: pytz tzinfo object, e.g. `<UTC>, <StaticTzInfo 'Etc/GMT+2'>
+    :rtype: UTC/BaseTzInfo/StaticTzInfo/DstTzInfo
+    """
+    if is_str(default):
+        default = pytz.timezone(default)
+    try:
+        if is_str(dt_tz):
+            return pytz.timezone(dt_tz)
+        tz = get_timezone(dt_tz, default=default.zone)
+        return pytz.timezone(tz)
+    except pytz.UnknownTimeZoneError:
+        return default
 
 
 def is_valid_timezone(timezone):
@@ -420,3 +460,41 @@ def to_localized_time(dt, long_format=None, time_only=None,
                 formatstring = "[INTERNAL ERROR]"
         time_str = date_to_string(dt, formatstring, default=default)
     return time_str
+
+
+def get_relative_delta(dt1, dt2=None):
+    """Calculates the relative delta between two dates or datetimes
+
+    If `dt2` is None, the current datetime is used.
+
+    :param dt1: the first date/time to compare
+    :type dt1: string/date/datetime/DateTime
+    :param dt2: the second date/time to compare
+    :type dt2: string/date/datetime/DateTime
+    :returns: interval of time (e.g. `relativedelta(hours=+3)`)
+    :rtype: dateutil.relativedelta
+    """
+    if not dt2:
+        dt2 = datetime.now()
+
+    dt1 = to_dt(dt1)
+    dt2 = to_dt(dt2)
+    if not all([dt1, dt2]):
+        raise ValueError("No valid date or dates")
+
+    naives = [is_timezone_naive(dt) for dt in [dt1, dt2]]
+    if all(naives):
+        # Both naive, no need to do anything special
+        return relativedelta(dt2, dt1)
+
+    elif is_timezone_naive(dt1):
+        # From date is naive, assume same TZ as the to date
+        tzinfo = get_tzinfo(dt2)
+        dt1 = dt1.replace(tzinfo=tzinfo)
+
+    elif is_timezone_naive(dt2):
+        # To date is naive, assume same TZ as the from date
+        tzinfo = get_tzinfo(dt1)
+        dt2 = dt2.replace(tzinfo=tzinfo)
+
+    return relativedelta(dt2, dt1)

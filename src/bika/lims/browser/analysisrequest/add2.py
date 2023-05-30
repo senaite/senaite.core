@@ -44,6 +44,7 @@ from plone.memoize import view as viewcache
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
 from plone.protect.interfaces import IDisableCSRFProtection
+from Products.Archetypes.interfaces import IField
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -52,6 +53,7 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
+from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -1558,6 +1560,30 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return prices
 
+    def get_field(self, field_name):
+        """Returns the field from the temporary sample with the given name
+        """
+        if IField.providedBy(field_name):
+            return field_name
+
+        for field in self.get_ar_fields():
+            if field.getName() == field_name:
+                return field
+        return None
+
+    def get_field_label(self, field):
+        """Returns the translated label of the given field
+        """
+        field = self.get_field(field)
+        if not field:
+            return ""
+
+        instance = self.get_ar()
+        label = field.widget.Label(instance)
+        if isinstance(label, Message):
+            return self.context.translate(label)
+        return label
+
     def check_confirmation(self):
         """Returns a dict when user confirmation is required for the creation of
         samples. Returns None otherwise
@@ -1702,16 +1728,33 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, num)
-                msg = _("Field '{}' is required").format(safe_unicode(field))
-                fielderrors[fieldname] = msg
+                label = self.get_field_label(field)
+                msg = self.context.translate(_("Field '{}' is required"))
+                fielderrors[fieldname] = msg.format(label)
 
-            # Process valid record
+            # Process and validate field values
             valid_record = dict()
-            for fieldname, fieldvalue in six.iteritems(record):
-                # clean empty
-                if fieldvalue in ['', None]:
+            tmp_sample = self.get_ar()
+            for field in fields:
+                field_name = field.getName()
+                field_value = record.get(field_name)
+                if field_value in ['', None]:
                     continue
-                valid_record[fieldname] = fieldvalue
+
+                # process the value as the widget would usually do
+                process_value = field.widget.process_form
+                value, msgs = process_value(tmp_sample, field, record)
+                if not value:
+                    continue
+
+                # store the processed value as the valid record
+                valid_record[field_name] = value
+
+                # validate the value
+                error = field.validate(value, tmp_sample)
+                if error:
+                    field_name = "{}-{}".format(field_name, num)
+                    fielderrors[field_name] = error
 
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)

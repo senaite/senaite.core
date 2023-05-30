@@ -73,10 +73,17 @@ class SampleHeaderViewlet(ViewletBase):
         form = request.form
 
         for name, field in self.fields.items():
+            # get the raw value from the form. This shouldn't be necessary,
+            # but there are still some widgets out there with a name that
+            # follows the format <fieldname>_uid. Otherwise, we could simply
+            # pass the form object to the widget's process_form function.
             value = self.get_field_value(field, form)
-
             if value is _fieldname_not_in_form:
                 continue
+
+            # process the value as the widget would usually do
+            process_value = field.widget.process_form
+            value, msgs = process_value(self.context, field, {name: value})
 
             # Keep track of field-values
             field_values.update({name: value})

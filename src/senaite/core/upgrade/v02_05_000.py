@@ -252,9 +252,28 @@ def _recursive_reindex_object_security(obj):
     """Recursively reindex object security for the given object
     """
     if hasattr(aq_base(obj), "objectValues"):
-        for child_obj in obj.objectValues():
+        children = obj.objectValues()
+        for num, child_obj in enumerate(children):
+            if num and num % 100 == 0:
+                path = api.get_path(obj)
+                logger.info("{}: committing children {} ...".format(path, num))
+                transaction.commit()
             _recursive_reindex_object_security(child_obj)
-    obj.reindexObject(idxs=["allowedRolesAndUsers"])
+
+    # We don't do obj.reindexObject(idxs=["allowedRolesAndUsers"]) because
+    # the function reindex the whole object (metadata included) if the catalog
+    # does not contain the index 'allowedRolesAndUsers'. This makes the system
+    # to consume a lot of RAM when thousands of objects need to be processed.
+    # Also, the function does other stuff like refreshing Etag and so on, that
+    # are things that we are not interested at all, actually. We just want the
+    # index allowedRolesAndUsers to be updated, nothing else
+    idx = "allowedRolesAndUsers"
+    for cat in api.get_catalogs_for(obj):
+        if idx not in cat.indexes():
+            continue
+        path = api.get_path(obj)
+        cat.catalog_object(obj, path, idxs=[idx], update_metadata=0)
+
     obj._p_deactivate()
 
 
