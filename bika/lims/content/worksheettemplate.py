@@ -209,10 +209,7 @@ class WorksheetTemplate(BaseContent):
     def getMethodUID(self):
         """Return method UID
         """
-        method = self.getRestrictToMethod()
-        if method:
-            return method.UID()
-        return ""
+        return self.getRawRestrictToMethod()
 
     def _getMethodsVoc(self):
         """Return the registered methods as DisplayList

@@ -1166,26 +1166,35 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def isRetest(self):
         """Returns whether this analysis is a retest or not
         """
-        return self.getRetestOf() and True or False
+        if self.getRawRetestOf():
+            return True
+        return False
 
     def getRetestOfUID(self):
         """Returns the UID of the retracted analysis this is a retest of
         """
-        retest_of = self.getRetestOf()
-        if retest_of:
-            return api.get_uid(retest_of)
+        return self.getRawRetestOf()
+
+    def getRawRetest(self):
+        """Returns the UID of the retest that comes from this analysis, if any
+        """
+        relationship = "{}RetestOf".format(self.portal_type)
+        uids = get_backreferences(self, relationship)
+        if not uids:
+            return None
+        if len(uids) > 1:
+            logger.warn("Analysis {} with multiple retests".format(self.id))
+        return uids[0]
 
     def getRetest(self):
         """Returns the retest that comes from this analysis, if any
         """
-        relationship = "{}RetestOf".format(self.portal_type)
-        back_refs = get_backreferences(self, relationship)
-        if not back_refs:
-            return None
-        if len(back_refs) > 1:
-            logger.warn("Analysis {} with multiple retests".format(self.id))
-        retest_uid = back_refs[0]
-        retest = api.get_object_by_uid(retest_uid, default=None)
-        if retest is None:
-            logger.error("Retest with UID {} not found".format(retest_uid))
-        return retest
+        retest_uid = self.getRawRetest()
+        return api.get_object(retest_uid, default=None)
+
+    def isRetested(self):
+        """Returns whether this analysis has been retested or not
+        """
+        if self.getRawRetest():
+            return True
+        return False

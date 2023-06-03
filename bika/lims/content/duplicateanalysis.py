@@ -119,7 +119,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                     # Exclude retracted analyses
                     continue
 
-                elif analysis.getRetest():
+                elif analysis.isRetested():
                     # Exclude analyses with a retest
                     continue
 

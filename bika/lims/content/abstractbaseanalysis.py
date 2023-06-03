@@ -1016,9 +1016,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getCategoryUID(self):
         """Used to populate catalog values
         """
-        category = self.getCategory()
-        if category:
-            return category.UID()
+        return self.getRawCategory()
 
     @security.public
     def getMaxTimeAllowed(self):
