@@ -21,14 +21,10 @@
 from Products.CMFPlone.utils import safe_unicode
 
 
-def ObjectModifiedEventHandler(batch, event):
-    """Actions to be done when a batch is created:
-    - Title as the Batch ID if title is not defined
-    - Move the Batch inside the Client if defined
+def move_to_client(batch):
+    """Moves the batch to the client assigned in the Client field if it does
+    not belong to that client yet. Does nothing otherwise
     """
-    if not batch.title:
-        batch.setTitle(safe_unicode(batch.id).encode('utf-8'))
-
     # If client is assigned, move the Batch the client's folder
     # Note here we directly get the Client from the Schema, cause getClient
     # getter is overriden in Batch content type to always look to aq_parent in
@@ -39,5 +35,26 @@ def ObjectModifiedEventHandler(batch, event):
     # Check if the Batch is being created inside the Client
     if client and (client.UID() != batch.aq_parent.UID()):
         # move batch inside the client
-        cp = batch.aq_parent.manage_cutObjects(batch.id)
-        client.manage_pasteObjects(cp)
+        if batch.id in batch.aq_parent.objectIds():
+            cp = batch.aq_parent.manage_cutObjects(batch.id)
+            client.manage_pasteObjects(cp)
+
+
+def ObjectInitializedEventHandler(batch, event):
+    """Actions to be done when a batch is created:
+    - Title as the Batch ID if title is not defined
+    - Move the Batch inside the Client if defined
+    """
+    if not batch.title:
+        batch.setTitle(safe_unicode(batch.id).encode('utf-8'))
+
+    # Try to move the batch to it's client folder
+    move_to_client(batch)
+
+
+def ObjectModifiedEventHandler(batch, event):
+    """Moves the batch object inside the folder that represents the client this
+    batch has been assigned to via "Client" field
+    """
+    # Try to move the batch to it's client folder
+    move_to_client(batch)
