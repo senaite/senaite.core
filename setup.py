@@ -111,8 +111,6 @@ setup(
     ],
     extras_require={
         'test': [
-            'Products.PloneTestCase',
-            'Products.SecureMailHost',
             'plone.app.testing',
             'unittest2',
         ]
