@@ -1,4 +1,4 @@
-name: build and test senaite.core 1.3.x
+name: build and test senaite.core
 on:
   - push
   - pull_request
