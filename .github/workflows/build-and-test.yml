@@ -1,0 +1,31 @@
+name: build and test senaite.core
+on:
+  - push
+  - pull_request
+env:
+  PLONE_VERSION: "4.3.20"
+jobs:
+  build-and-test:
+    runs-on: 'ubuntu-20.04'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '2.7.18'
+          cache: 'pip'
+      - name: cache eggs
+        uses: actions/cache@v3
+        with:
+          key: eggs-cache-${{ hashFiles('buildout.cfg', 'requirements.txt') }}
+          path: |
+            eggs/
+      - name: install
+        run: |
+          pip install virtualenv
+          virtualenv -p `which python` .
+          bin/pip install -r requirements.txt
+          bin/buildout -N -t 3 annotate
+          bin/buildout -N -t 3
+      - name: test
+        run: |
+          bin/test -s bika.lims.tests
