@@ -28,4 +28,4 @@ jobs:
           bin/buildout -N -t 3
       - name: test
         run: |
-          bin/test -s senaite.core.tests
+          bin/test -s bika.lims.tests
