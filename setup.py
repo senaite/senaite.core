@@ -92,6 +92,8 @@ setup(
         'Pillow<7.0.0',
         # https://pypi.org/project/more-itertools/
         'more-itertools<6.0.0',
+        # Chameleon > 4.0.0 does not support Python 2.7 anymore
+        'Chameleon<4.0.0',
         # cssselect2 0.3.0 does not support Python 2.x anymore
         'cssselect2<0.3.0',
         # beautifulsoup4 4.9.0 requires 'soupsieve<2.0'
