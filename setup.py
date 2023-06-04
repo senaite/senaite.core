@@ -104,6 +104,8 @@ setup(
         "openpyxl==2.6.4",
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
+        # z3c.jbot >= 2.0 does not support Python 2.7 anymore
+        "z3c.jbot<2.0",
     ],
     extras_require={
         'test': [
