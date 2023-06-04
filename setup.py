@@ -105,8 +105,10 @@ setup(
     ],
     extras_require={
         'test': [
-            'unittest2',
+            'Products.PloneTestCase',
+            'Products.SecureMailHost',
             'plone.app.testing',
+            'unittest2',
         ]
     },
     entry_points="""
