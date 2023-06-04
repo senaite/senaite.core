@@ -106,6 +106,8 @@ setup(
         "Werkzeug<2.0.0",
         # z3c.jbot >= 2.0 does not support Python 2.7 anymore
         "z3c.jbot<2.0",
+        # z3c.pt >= 4.0 does not support Python 2.7 anymore
+        "z3c.pt<4.0",
     ],
     extras_require={
         'test': [
