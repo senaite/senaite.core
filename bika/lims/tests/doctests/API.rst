@@ -71,8 +71,72 @@ Here we create a new `Client` in the `plone/clients` folder::
     >>> client
     <Client at /plone/clients/client-1>
 
-     >>> client.Title()
-     'Test Client'
+    >>> client.Title()
+    'Test Client'
+
+Created objects are properly indexed::
+
+    >>> services = self.portal.bika_setup.bika_analysisservices
+    >>> service = api.create(services, "AnalysisService",
+    ...                      title="Dummy service", Keyword="DUM")
+    >>> uid = api.get_uid(service)
+    >>> catalog = api.get_tool("bika_setup_catalog")
+    >>> brains = catalog(portal_type="AnalysisService", UID=uid)
+    >>> brains[0].getKeyword
+    'DUM'
+
+
+Editing Content
+...............
+
+This function helps to edit a given content.
+
+Here we update the `Client` we created earlier, an AT::
+
+    >>> api.edit(client, AccountNumber="12343567890", BankName="BTC Bank")
+    >>> client.getAccountNumber()
+    '12343567890'
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+The field need to be writeable::
+
+    >>> field = client.getField("BankName")
+    >>> field.readonly = True
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Field 'BankName' is readonly
+
+    >>> client.getBankName()
+    'BTC Bank'
+
+    >>> field.readonly = False
+    >>> api.edit(client, BankName="Lydian Lion Coins Bank")
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+And user need to have enough permissions to change the value as well::
+
+    >>> field.write_permission = "Delete objects"
+    >>> api.edit(client, BankName="Electrum Coins")
+    Traceback (most recent call last):
+    [...]
+    Unauthorized: Field 'BankName' is not writeable
+
+    >>> client.getBankName()
+    'Lydian Lion Coins Bank'
+
+Unless we manually force to bypass the permissions check::
+
+    >>> api.edit(client, check_permissions=False, BankName="Electrum Coins")
+    >>> client.getBankName()
+    'Electrum Coins'
+
+Restore permission::
+
+    >>> field.write_permission = "Modify Portal Content"
 
 
 Getting a Tool
@@ -338,7 +402,7 @@ The portal object actually has no UID. This funciton defines it therefore to be 
 
     >>> uid_client = api.get_uid(client)
     >>> uid_client_brain = api.get_uid(brain)
-    >>> uid_client is uid_client_brain
+    >>> uid_client == uid_client_brain
     True
 
 If a UID is passed to the function, it will return the value unchanged:
