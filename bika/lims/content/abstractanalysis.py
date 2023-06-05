@@ -719,9 +719,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: list of Methods
         """
         uids = self.getRawAllowedMethods()
-        brains = api.search({"UID": uids}, catalog="uid_catalog")
-        methods = [api.get_object(brain, default=None) for brain in brains]
-        return filter(None, methods)
+        objs = [api.get_object_by_uid(uid, default=None) for uid in uids]
+        return filter(None, objs)
 
     @security.public
     def getRawAllowedMethods(self):
