@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2326 Improve performance of legacy AT `UIDReferenceField`'s setter (#2218 port)
 - #2325 Purge ComputedField fields from AnalysisRequest related with Profiles (#2213 port)
 - #2324 Migrate AnalysisRequest's ReferenceField to UIDReferenceField (#2209 port)
 - #2323 Remove default_method from AnalysisRequest's Contact field (#2208 port)
