@@ -9,8 +9,8 @@
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
 
-.. image:: https://img.shields.io/travis/com/senaite/senaite.core/1.3.x.svg?style=flat-square
-    :target: https://travis-ci.com/senaite/senaite.core
+.. image:: https://img.shields.io/github/actions/workflow/status/senaite/senaite.core/build-and-test.yml?branch=1.3.x
+    :target: https://github.com/senaite/senaite.core/actions/workflows/build-and-test.yml?query=branch:1.3.x
 
 .. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/1.3.x.svg?style=flat-square
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/?branch=1.3.x

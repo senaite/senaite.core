@@ -719,9 +719,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: list of Methods
         """
         uids = self.getRawAllowedMethods()
-        brains = api.search({"UID": uids}, catalog="uid_catalog")
-        methods = [api.get_object(brain, default=None) for brain in brains]
-        return filter(None, methods)
+        objs = [api.get_object_by_uid(uid, default=None) for uid in uids]
+        return filter(None, objs)
 
     @security.public
     def getRawAllowedMethods(self):
@@ -1190,7 +1189,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the retest that comes from this analysis, if any
         """
         retest_uid = self.getRawRetest()
-        return api.get_object(retest_uid, default=None)
+        return api.get_object_by_uid(retest_uid, default=None)
 
     def isRetested(self):
         """Returns whether this analysis has been retested or not
