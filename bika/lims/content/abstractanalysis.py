@@ -66,7 +66,8 @@ AnalysisService = UIDReferenceField(
 Attachment = UIDReferenceField(
     'Attachment',
     multiValued=1,
-    allowed_types=('Attachment',)
+    allowed_types=('Attachment',),
+    relationship='AnalysisAttachment'
 )
 
 # The final result of the analysis is stored here.  The field contains a
@@ -88,7 +89,8 @@ ResultCaptureDate = DateTimeField(
 
 # Returns the retracted analysis this analysis is a retest of
 RetestOf = UIDReferenceField(
-    'RetestOf'
+    'RetestOf',
+    relationship="AnalysisRetestOf",
 )
 
 # If the result is outside of the detection limits of the method or instrument,
@@ -1177,7 +1179,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getRawRetest(self):
         """Returns the UID of the retest that comes from this analysis, if any
         """
-        relationship = "{}RetestOf".format(self.portal_type)
+        relationship = self.getField("RetestOf").relationship
         uids = get_backreferences(self, relationship)
         if not uids:
             return None
