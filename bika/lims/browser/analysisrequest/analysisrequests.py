@@ -204,7 +204,6 @@ class AnalysisRequestsView(BikaListingView):
             ("getProfilesTitle", {
                 "title": _("Profile"),
                 "sortable": True,
-                "index": "getProfilesTitle",
                 "toggle": False}),
             ("getAnalysesNum", {
                 "title": _("Number of Analyses"),
