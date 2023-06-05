@@ -111,7 +111,6 @@ from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import FileField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
@@ -1086,15 +1085,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'ProfilesUID',
-        expression="[p.UID() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
-    ComputedField(
         'Invoiced',
         expression='here.getInvoice() and True or False',
         default=False,
@@ -1173,24 +1163,6 @@ schema = BikaSchema.copy() + Schema((
         'StorageLocationUID',
         expression="here.getStorageLocation().UID() " \
                    "if here.getStorageLocation() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesURL',
-        expression="[p.absolute_url_path() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesTitle',
-        expression="[p.Title() for p in here.getProfiles()] " \
-                   "if here.getProfiles() else []",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ProfilesTitleStr',
-        expression="', '.join([p.Title() for p in here.getProfiles()]) " \
-                   "if here.getProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1450,8 +1422,27 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             return self.aq_parent.getClient()
         return None
 
+    def getProfilesURL(self):
+        """Returns a list of all profile URLs
+        """
+        return [profile.absolute_url_path() for profile in self.getProfiles()]
+
+    def getProfilesUID(self):
+        """Returns a list of all profile UIDs
+        """
+        return self.getRawProfiles()
+
     def getProfilesTitle(self):
+        """Returns a list of all profile titles
+        """
         return [profile.Title() for profile in self.getProfiles()]
+
+    def getProfilesTitleStr(self):
+        """Returns a comma-separated string withg the titles of the profiles
+        assigned to this Sample. Used to populate a metadata field
+        """
+        profiles = [profile.Title() for profile in self.getProfiles()]
+        return ", ".join(profiles)
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)
