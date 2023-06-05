@@ -1189,7 +1189,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the retest that comes from this analysis, if any
         """
         retest_uid = self.getRawRetest()
-        return api.get_object(retest_uid, default=None)
+        return api.get_object_by_uid(retest_uid, default=None)
 
     def isRetested(self):
         """Returns whether this analysis has been retested or not
