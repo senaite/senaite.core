@@ -391,29 +391,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # TODO Remove Profile field (in singular)
-    UIDReferenceField(
-        'Profile',
-        allowed_types=('AnalysisProfile',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestAnalysisProfile',
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Analysis Profile"),
-            description=_("Analysis profiles apply a certain set of analyses"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='bika_setup_catalog',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=False,
-        ),
-    ),
-
     UIDReferenceField(
         'Profiles',
         multiValued=1,
