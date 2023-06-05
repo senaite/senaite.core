@@ -315,9 +315,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
     def getSampleTypeUID(self):
         """Used to populate catalog values.
         """
-        sample_type = self.getSampleType()
-        if sample_type:
-            return api.get_uid(sample_type)
+        sample = self.getRequest()
+        if not sample:
+            return None
+        return sample.getRawSampleType()
 
     @security.public
     def getResultsRange(self):
