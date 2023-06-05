@@ -181,21 +181,6 @@ class Client(Organisation):
             if contact.getUsername() == username:
                 return contact.UID()
 
-    security.declarePublic("getContactUIDForUser")
-
-    def getContactUIDForUser(self):
-        """Get the UID of the user associated with the authenticated user
-        """
-        membership_tool = api.get_tool("portal_membership")
-        member = membership_tool.getAuthenticatedMember()
-        username = member.getUserName()
-        r = self.portal_catalog(
-            portal_type="Contact",
-            getUsername=username
-        )
-        if len(r) == 1:
-            return r[0].UID
-
     def getContacts(self, only_active=True):
         """Return an array containing the contacts from this Client
         """

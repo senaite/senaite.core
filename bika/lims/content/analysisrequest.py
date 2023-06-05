@@ -141,7 +141,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         'Contact',
         required=1,
-        default_method='getContactUIDForUser',
         allowed_types=('Contact',),
         mode="rw",
         read_permission=View,
@@ -1819,20 +1818,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             if contact:
                 contacts.append(contact)
         return contacts
-
-    security.declarePublic('getContactUIDForUser')
-
-    def getContactUIDForUser(self):
-        """get the UID of the contact associated with the authenticated user
-        """
-        mt = getToolByName(self, 'portal_membership')
-        user = mt.getAuthenticatedMember()
-        user_id = user.getUserName()
-        pc = getToolByName(self, 'portal_catalog')
-        r = pc(portal_type='Contact',
-               getUsername=user_id)
-        if len(r) == 1:
-            return r[0].UID
 
     security.declarePublic('current_date')
 
