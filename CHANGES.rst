@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2324 Migrate AnalysisRequest's ReferenceField to UIDReferenceField (#2209 port)
 - #2323 Remove default_method from AnalysisRequest's Contact field (#2208 port)
 - #2322 Cleanup getUID functions to prevent unnecessary searches (#2163 port)
 - #2321 Improve the creation process of AT content types (#2150 port)

@@ -174,3 +174,75 @@ def is_orphan(uid):
     """
     obj = api.get_object_by_uid(uid, None)
     return obj is None
+
+
+def migrate_analysisrequest_referencefields(tool):
+    """Migrates the ReferenceField from AnalysisRequest to UIDReferenceField
+    """
+    logger.info("Migrate ReferenceFields to UIDReferenceField ...")
+    field_names = [
+        "Attachment",
+        "Batch",
+        "CCContact",
+        "Client",
+        "DefaultContainerType",
+        "DetachedFrom",
+        "Invalidated",
+        "Invoice",
+        "PrimaryAnalysisRequest",
+        "Profile",
+        "Profiles",
+        "PublicationSpecification",
+        "Specification",
+        "SubGroup",
+        "Template",
+    ]
+
+    cat = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, sample in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            # reduce memory size of the transaction
+            transaction.savepoint()
+
+        # Migrate the reference fields for current sample
+        sample = api.get_object(sample)
+        migrate_reference_fields(sample, field_names)
+
+        # Flush the object from memory
+        sample._p_deactivate()
+
+    logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
+
+
+def migrate_reference_fields(obj, field_names):
+    """Migrates the reference fields with the names specified from the obj
+    """
+    ref_tool = api.get_tool(REFERENCE_CATALOG)
+    for field_name in field_names:
+
+        # Get the relationship id from field
+        field = obj.getField(field_name)
+        ref_id = getattr(field, "relationship", False)
+        if not ref_id:
+            logger.error("No relationship for field {}".format(field_name))
+
+        # Extract the referenced objects
+        references = obj.getRefs(relationship=ref_id)
+        if not references:
+            # Processed already or no referenced objects
+            continue
+
+        # Re-assign the object directly to the field
+        if field.multiValued:
+            value = [api.get_uid(val) for val in references]
+        else:
+            value = api.get_uid(references[0])
+        field.set(obj, value)
+
+        # Remove this relationship from reference catalog
+        ref_tool.deleteReferences(obj, relationship=ref_id)

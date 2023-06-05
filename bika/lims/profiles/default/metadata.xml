@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>1.3.6</version>
+  <version>13601</version>
   <dependencies>
     <dependency>profile-jarn.jsi18n:default</dependency>
     <dependency>profile-Products.ATExtensions:default</dependency>

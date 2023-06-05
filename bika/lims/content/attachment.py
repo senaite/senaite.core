@@ -143,10 +143,9 @@ class Attachment(BaseFolder, ClientAwareMixin):
 
         :returns: sorted list of ARs, where the latest AR comes first
         """
-        rc = api.get_tool("reference_catalog")
-        refs = rc.getBackReferences(self, "AnalysisRequestAttachment")
+        uids = get_backreferences(self, "AnalysisRequestAttachment")
         # fetch the objects by UID and handle nonexisting UIDs gracefully
-        ars = map(lambda ref: api.get_object_by_uid(ref.sourceUID, None), refs)
+        ars = map(lambda uid: api.get_object_by_uid(uid, None), uids)
         # filter out None values (nonexisting UIDs)
         ars = filter(None, ars)
         # sort by physical path, so that attachments coming from an AR with a
@@ -161,9 +160,9 @@ class Attachment(BaseFolder, ClientAwareMixin):
         :returns: sorted list of ANs, where the latest AN comes first
         """
         # Fetch the linked Analyses UIDs
-        refs = get_backreferences(self, "AnalysisAttachment")
+        uids = get_backreferences(self, "AnalysisAttachment")
         # fetch the objects by UID and handle nonexisting UIDs gracefully
-        ans = map(lambda uid: api.get_object_by_uid(uid, None), refs)
+        ans = map(lambda uid: api.get_object_by_uid(uid, None), uids)
         # filter out None values (nonexisting UIDs)
         ans = filter(None, ans)
         # sort by physical path, so that attachments coming from an AR with a

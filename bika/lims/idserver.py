@@ -179,8 +179,7 @@ def get_secondary_count(context, default=0):
 
     if not primary:
         return default
-
-    return len(primary.getSecondaryAnalysisRequests())
+    return len(primary.getRawSecondaryAnalysisRequests())
 
 
 def is_ar(context):

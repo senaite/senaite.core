@@ -153,18 +153,27 @@ class UIDReferenceField(StringField):
         :return: object or list of objects for multiValued fields.
         :rtype: BaseContent | list[BaseContent]
         """
-        value = StringField.get(self, context, **kwargs)
-        if not value:
-            return [] if self.multiValued else None
+        uids = StringField.get(self, context, **kwargs)
+        if not isinstance(uids, list):
+            uids = [uids]
+
+        # Do a direct search for all brains at once
+        uc = api.get_tool("uid_catalog")
+        references = uc(UID=uids)
+
+        # Keep the original order of items
+        references = sorted(references, key=lambda it: uids.index(it.UID))
+
+        # Return objects by default
+        full_objects = kwargs.pop("full_objects", True)
+        if full_objects:
+            references = [api.get_object(ref) for ref in references]
+
         if self.multiValued:
-            # Only return objects which actually exist; this is necessary here
-            # because there are no HoldingReferences. This opens the
-            # possibility that deletions leave hanging references.
-            ret = filter(
-                lambda x: x, [self.get_object(context, uid) for uid in value])
-        else:
-            ret = self.get_object(context, value)
-        return ret
+            return references
+        elif references:
+            return references[0]
+        return None
 
     @security.public
     def getRaw(self, context, aslist=False, **kwargs):
