@@ -707,7 +707,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         uid = api.get_uid(method)
-        return uid in self.getAllowedMethodUIDs()
+        return uid in self.getRawAllowedMethods()
 
     @security.public
     def getAllowedMethods(self):
@@ -718,17 +718,28 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the methods allowed for this analysis
         :rtype: list of Methods
         """
+        uids = self.getRawAllowedMethods()
+        objs = [api.get_object_by_uid(uid, default=None) for uid in uids]
+        return filter(None, objs)
+
+    @security.public
+    def getRawAllowedMethods(self):
+        """Returns the UIDs of the allowed methods for this analysis
+        """
         service = self.getAnalysisService()
         if not service:
             return []
 
         methods = []
         if self.getManualEntryOfResults():
-            methods = service.getMethods()
+            methods = service.getRawMethods()[:]
+
         if self.getInstrumentEntryOfResults():
             for instrument in service.getInstruments():
-                methods.extend(instrument.getMethods())
+                instrument_methods = instrument.getRawMethods()[:]
+                methods.extend(instrument_methods)
 
+        methods = filter(api.is_uid, methods)
         return list(set(methods))
 
     @security.public
@@ -738,7 +749,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the UIDs of the methods allowed for this analysis
         :rtype: list of strings
         """
-        return [m.UID() for m in self.getAllowedMethods()]
+        return self.getRawAllowedMethods()
 
     @security.public
     def getAllowedInstruments(self):
