@@ -227,7 +227,6 @@ schema = BikaSchema.copy() + Schema((
         'Client',
         required=1,
         allowed_types=('Client',),
-        relationship='AnalysisRequestClient',
         mode="rw",
         read_permission=View,
         write_permission=FieldEditClient,

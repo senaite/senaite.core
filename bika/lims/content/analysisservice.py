@@ -363,6 +363,7 @@ Calculation = UIDReferenceField(
     "Calculation",
     schemata="Method",
     required=0,
+    relationship="AnalysisServiceCalculation",
     vocabulary="_getAvailableCalculationsDisplayList",
     allowed_types=("Calculation",),
     accessor="getCalculationUID",

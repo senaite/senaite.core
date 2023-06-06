@@ -18,6 +18,8 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import Field, StringField
 from bika.lims import logger
@@ -38,9 +40,8 @@ class ReferenceException(Exception):
 
 class UIDReferenceField(StringField):
     """A field that stores References as UID values.  This acts as a drop-in
-    replacement for Archetypes' ReferenceField.  A relationship is required
-    but if one is not provided, it will be composed from a concatenation
-    of `portal_type` + `fieldname`.
+    replacement for Archetypes' ReferenceField. If no relationship is provided,
+    the field won't keep backreferences in referenced objects
     """
     _properties = Field._properties.copy()
     _properties.update({
@@ -53,6 +54,16 @@ class UIDReferenceField(StringField):
     implements(IUIDReferenceField)
 
     security = ClassSecurityInfo()
+
+    @property
+    def keep_backreferences(self):
+        """Returns whether this field must keep back references. Returns False
+        if the value for property relationship is None or empty
+        """
+        relationship = getattr(self, "relationship", None)
+        if relationship and isinstance(relationship, six.string_types):
+            return True
+        return False
 
     def get_relationship_key(self, context):
         """Return the configured relationship key or generate a new one
@@ -230,7 +241,8 @@ class UIDReferenceField(StringField):
         uids = filter(api.is_uid, uids)
 
         # Back-reference current object to referenced objects
-        self._set_backreferences(context, uids, **kwargs)
+        if self.keep_backreferences:
+            self._set_backreferences(context, uids, **kwargs)
 
         # Store the referenced objects as uids
         if not self.multiValued:
