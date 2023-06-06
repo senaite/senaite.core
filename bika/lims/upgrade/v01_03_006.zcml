@@ -3,9 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- Purge remaining back-references from AnalysisRequest type -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Purge remaining back-references from AnalysisRequest type"
+      description="Purge remaining back-references from AnalysisRequest types"
+      source="13604"
+      destination="13605"
+      handler=".v01_03_006.purge_backreferences_analysisrequest"
+      profile="bika.lims:default"/>
+
   <!-- Migrate references from catalog -->
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      title="SENAITE CORE 1.3.6: Migrate references from catalog"
       description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
       source="13603"
       destination="13604"

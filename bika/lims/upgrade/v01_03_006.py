@@ -227,6 +227,10 @@ def get_relationship_key(obj, field):
     # (<portal_type><field_name>, old_relationship_name)
     relationships = dict([
         ("AutoImportLogInstrument", "InstrumentImportLogs"),
+        ("AnalysisRequestProfiles", "AnalysisRequestAnalysisProfiles"),
+        ("AnalysisRequestSpecification", "AnalysisRequestAnalysisSpec"),
+        ("AnalysisRequestPublicationSpecification", "AnalysisRequestPublicationSpec"),
+        ("AnalysisRequestTemplate", "AnalysisRequestARTemplate"),
         ("ContactCCContact", "ContactContact"),
         ("DepartmentManager", "DepartmentLabContact"),
         ("InstrumentCalibrationWorker", "LabContactInstrumentCalibration"),
@@ -442,3 +446,27 @@ def migrate_and_purge_references(tool):
         obj._p_deactivate()
 
     logger.info("Migrate and purge references [DONE]")
+
+
+def purge_backreferences_analysisrequest(tool):
+    """Purges back-references that are no longer required from AnalysisRequest
+    """
+    logger.info("Purge stale back-references from samples ...")
+    uc = api.get_tool("uid_catalog")
+    brains = uc(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, obj in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        if num and num % 1000 == 0:
+            transaction.commit()
+
+        # Purge back-references to current object
+        obj = api.get_object(obj)
+        purge_backreferences_to(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Purge stale back-references from samples [DONE]")
