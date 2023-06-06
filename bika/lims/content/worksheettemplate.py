@@ -18,24 +18,21 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES
@@ -75,14 +72,12 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Service",
         schemata="Analyses",
         required=0,
         multiValued=1,
         allowed_types=("AnalysisService",),
-        relationship="WorksheetTemplateAnalysisService",
-        referenceClass=HoldingReference,
         widget=ServicesWidget(
             label=_("Analysis Service"),
             description=_(
@@ -91,15 +86,11 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "RestrictToMethod",
         schemata="Description",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary="_getMethodsVoc",
         allowed_types=("Method",),
-        relationship="WorksheetTemplateMethod",
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             format="select",
             label=_("Method"),
@@ -112,17 +103,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "Instrument",
         schemata="Description",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary="getInstruments",
         allowed_types=("Instrument",),
-        relationship="WorksheetTemplateInstrument",
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Instrument"),
             description=_(
                 "Select the preferred instrument"

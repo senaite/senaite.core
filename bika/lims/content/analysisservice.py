@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -221,7 +222,6 @@ Preservation = UIDReferenceField(
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
-        checkbox_bound=0,
         label=_("Default Preservation"),
         description=_(
             "Select a default preservation for this analysis service. If the "
@@ -243,7 +243,6 @@ Container = UIDReferenceField(
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
-        checkbox_bound=0,
         label=_("Default Container"),
         description=_(
             "Select the default container to be used for this analysis "
@@ -657,8 +656,10 @@ class AnalysisService(AbstractBaseAnalysis):
         bika.lims.workflow.AfterTransitionEventHandler
         """
         # Remove the service from profiles to which is assigned
-        profiles = self.getBackReferences('AnalysisProfileAnalysisService')
-        for profile in profiles:
+        uc = api.get_tool("uid_catalog")
+        uids = get_backreferences(self, "AnalysisProfileAnalysisService")
+        for brain in uc(UID=uids):
+            profile = api.get_object(brain)
             profile.remove_service(self)
 
         # Remove the service from templates to which is assigned

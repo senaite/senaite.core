@@ -3,6 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- Migrate references from catalog -->
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.4.0: Migrate references from catalog"
+      description="Migrate references associated to a UIDReferenceField that was once a ReferenceField"
+      source="13603"
+      destination="13604"
+      handler=".v01_03_006.migrate_and_purge_references"
+      profile="bika.lims:default"/>
+
   <!-- Purge back-references that are no longer required -->
   <genericsetup:upgradeStep
       title="SENAITE CORE 1.3.6: Purge back-references that are no longer required"
@@ -10,7 +19,7 @@
       source="13602"
       destination="13603"
       handler=".v01_03_006.purge_backreferences"
-      profile="senaite.core:default"/>
+      profile="bika.lims:default"/>
 
   <!-- Rename RetestOf relationship -->
   <genericsetup:upgradeStep
@@ -19,7 +28,7 @@
       source="13601"
       destination="13602"
       handler=".v01_03_006.rename_retestof_relationship"
-      profile="senaite.core:default"/>
+      profile="bika.lims:default"/>
 
   <!-- Migrate ReferenceField from AnalysisRequest to UIDReferenceField -->
   <genericsetup:upgradeStep
@@ -28,7 +37,7 @@
       source="1.3.6"
       destination="13601"
       handler=".v01_03_006.migrate_analysisrequest_referencefields"
-      profile="senaite.core:default"/>
+      profile="bika.lims:default"/>
 
   <genericsetup:upgradeStep
       title="Upgrade to SENAITE.CORE 1.3.6"

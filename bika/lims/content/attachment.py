@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
@@ -52,11 +53,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "AttachmentType",
         required=0,
         allowed_types=("AttachmentType",),
-        relationship="AttachmentAttachmentType",
         widget=ReferenceWidget(
             label=_("Attachment Type"),
         ),

@@ -42,6 +42,7 @@ from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 # bika.lims imports
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import ComboBoxWidget
 from bika.lims.browser.widgets import RemarksWidget
@@ -64,10 +65,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentCertificationInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -146,13 +146,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Preparator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificatePreparator',
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Prepared by"),
             description=_("The person at the supplier who prepared the certificate"),
             size=30,
@@ -166,13 +164,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Validator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificateValidator',
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Approved by"),
             description=_("The person at the supplier who approved the certificate"),
             size=30,

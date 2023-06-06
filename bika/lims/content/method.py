@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -112,7 +113,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible={"edit": "visible", "view": "visible"},
             format="select",
-            checkbox_bound=0,
             label=_("Calculation"),
             description=_(
                 "If required, select a calculation for the The analysis "
@@ -168,12 +168,14 @@ class Method(BaseFolder):
     def getInstruments(self):
         """Instruments capable to perform this method
         """
-        return self.getBackReferences("InstrumentMethods")
+        uc = api.get_tool("uid_catalog")
+        uids = self.getRawInstruments()
+        return [api.get_object(brain) for brain in uc(UID=uids)]
 
     def getRawInstruments(self):
         """List of Instrument UIDs capable to perform this method
         """
-        return map(api.get_uid, self.getInstruments())
+        return get_backreferences(self, "InstrumentMethods")
 
     def setInstruments(self, value):
         """Set the method on the selected instruments

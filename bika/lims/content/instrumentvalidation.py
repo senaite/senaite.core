@@ -33,6 +33,8 @@ from zope.interface import implements
 
 # Schema and Fields
 from Products.Archetypes.atapi import Schema
+
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import DateTimeField
@@ -112,13 +114,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Worker',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentValidation',
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Performed by"),
             description=_("The person at the supplier who performed the task"),
             size=30,

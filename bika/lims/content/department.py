@@ -20,13 +20,12 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import BaseContent
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
@@ -34,11 +33,10 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDepartment
 
-Manager = ReferenceField(
+Manager = UIDReferenceField(
     'Manager',
     required=1,
     allowed_types=('LabContact',),
-    referenceClass=HoldingReference,
     relationship="DepartmentLabContact",
     widget=ReferenceWidget(
         label=_("Manager"),

@@ -71,9 +71,9 @@ def get_backreferences(obj, relationship):
     refs = get_backuidreferences(obj, relationship)
 
     # TODO remove after all ReferenceField get ported to UIDReferenceField
-    # At this moment, there are still some content types that are using the
-    # ReferenceField, so we need to fallback to traditional getBackReferences
-    # for these cases.
+    # At this moment, there are some content types (from other add-ons maybe)
+    # that are still using the ReferenceField, so we need to fallback to
+    # traditional getBackReferences for these cases.
     if not refs:
         refs = obj.getBackReferences(relationship)
 
@@ -419,6 +419,10 @@ def get_counted_number(context, config, variables, **kw):
 
     # get the counter type, which is either "backreference" or "contained"
     counter_type = config.get("counter_type")
+    if counter_type == "backreference":
+        logger.warn("Counter type 'backreference' is obsolete! "
+                    "Please use 'contained' instead. Alternatively, use "
+                    "'generated' instead of 'counter' as the sequence type")
 
     # the counter reference is either the "relationship" for
     # "backreference" or the meta type for contained objects

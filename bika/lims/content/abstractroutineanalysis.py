@@ -35,6 +35,7 @@ from zope.interface import noLongerProvides
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
@@ -531,7 +532,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             return
         # After getting the analysis' method we have to get all Reflex Rules
         # related to that method.
-        all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+        all_rrs = get_backreferences(a_method, "ReflexRuleMethod")
         if not all_rrs:
             return
         # Once we have all the Reflex Rules with the same method as the

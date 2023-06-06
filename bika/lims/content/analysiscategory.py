@@ -34,6 +34,7 @@ from zope.interface import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
@@ -53,12 +54,10 @@ Comments = TextField(
         label=_("Comments")),
 )
 
-Department = ReferenceField(
+Department = UIDReferenceField(
     "Department",
     required=1,
     allowed_types=("Department",),
-    relationship="AnalysisCategoryDepartment",
-    referenceClass=HoldingReference,
     widget=ReferenceWidget(
         label=_("Department"),
         description=_("The laboratory department"),

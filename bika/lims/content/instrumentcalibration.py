@@ -45,6 +45,7 @@ from Products.Archetypes.atapi import TextAreaWidget
 
 # bika.lims imports
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.widgets import DateTimeWidget
@@ -54,10 +55,9 @@ from bika.lims.interfaces import IInstrumentCalibration
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentCalibrationInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -131,13 +131,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Worker',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCalibration',
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Performed by"),
             description=_("The person at the supplier who performed the task"),
             size=30,
