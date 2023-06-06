@@ -22,6 +22,8 @@ import six
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import Field, StringField
+
+from bika.lims import APIError
 from bika.lims import logger
 from bika.lims import api
 from bika.lims.interfaces.field import IUIDReferenceField
@@ -109,21 +111,16 @@ class UIDReferenceField(StringField):
         return True
 
     @security.public
-    def get_uid(self, context, value, default=""):
-        """Takes a brain or object (or UID), and returns a UID.
-
-        :param context: context is the object who's schema contains this field.
-        :type context: BaseContent
-        :param value: Brain, object, or UID.
+    def get_uid(self, value):
+        """Takes a brain or object (or UID), and returns a UID
+        :param value: Brain, object, or UID
         :type value: Any
-        :return: resolved UID.
-        :rtype: string
+        :return: resolved UID
         """
-        if api.is_object(value):
-            value = api.get_uid(value)
-        elif not api.is_uid(value):
-            value = default
-        return value
+        try:
+            return api.get_uid(value)
+        except APIError:
+            return None
 
     @security.public
     def get(self, context, **kwargs):
@@ -159,28 +156,21 @@ class UIDReferenceField(StringField):
         return None
 
     @security.public
-    def getRaw(self, context, aslist=False, **kwargs):
+    def getRaw(self, context, **kwargs):
         """Grab the stored value, and return it directly as UIDs.
-
         :param context: context is the object who's schema contains this field.
         :type context: BaseContent
-        :param aslist: Forces a single-valued field to return a list type.
-        :type aslist: bool
         :param kwargs: kwargs are passed directly to the underlying get.
         :type kwargs: dict
         :return: UID or list of UIDs for multiValued fields.
         :rtype: string | list[string]
         """
-        value = StringField.get(self, context, **kwargs)
-        if not value:
-            return [] if self.multiValued else None
+        uids = StringField.get(self, context, **kwargs)
+        if not isinstance(uids, list):
+            uids = [uids]
         if self.multiValued:
-            ret = value
-        else:
-            ret = self.get_uid(context, value)
-            if aslist:
-                ret = [ret]
-        return ret
+            return filter(None, uids)
+        return uids[0]
 
     def _set_backreferences(self, context, items, **kwargs):
         """Set the back references on the linked items
@@ -237,8 +227,8 @@ class UIDReferenceField(StringField):
             value = [value]
 
         # Extract uids and remove empties
-        uids = [self.get_uid(context, item) for item in value]
-        uids = filter(api.is_uid, uids)
+        uids = [self.get_uid(item) for item in value]
+        uids = filter(None, uids)
 
         # Back-reference current object to referenced objects
         if self.keep_backreferences:

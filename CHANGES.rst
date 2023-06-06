@@ -4,6 +4,7 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
+- #2331 Little improvement of getRaw function from legacy uidreference field (#2241 port)
 - #2330 Purge remaining back-references from AnalysisRequest type (#2236 port)
 - #2329 Fix read endpoint from internal api does not return uid for uidreference (#2235 port)
 - #2328 Migrate ReferenceField fields from setup types to UIDReferenceField (#2221 port)
