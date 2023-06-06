@@ -27,6 +27,8 @@ from Acquisition import aq_parent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IClient
@@ -43,16 +45,17 @@ ACTIVE_STATES = ["active"]
 
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.ReferenceField('CCContact',
-                         schemata='Publication preference',
-                         vocabulary='getContacts',
-                         multiValued=1,
-                         allowed_types=('Contact',),
-                         relationship='ContactContact',
-                         widget=atapi.ReferenceWidget(
-                             checkbox_bound=0,
-                             label=_("Contacts to CC"),
-                         )),
+    UIDReferenceField(
+        "CCContact",
+        schemata="Publication preference",
+        vocabulary="getContacts",
+        multiValued=1,
+        allowed_types=("Contact",),
+        widget=ReferenceWidget(
+            # No need of a query, values are populated from a vocabulary
+            label=_("Contacts to CC"),
+            showOn=True,
+        )),
 ))
 
 

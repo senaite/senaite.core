@@ -202,7 +202,7 @@ class ReferenceResultsWidget(TypesWidget):
         # Process settings from the reference definition first
         ref_def = form.get("ReferenceDefinition")
         ref_def_uid = ref_def and ref_def[0]
-        if ref_def_uid:
+        if api.is_uid(ref_def_uid):
             ref_def_obj = api.get_object_by_uid(ref_def_uid)
             ref_results = ref_def_obj.getReferenceResults()
             # store reference results by UID to avoid duplicates

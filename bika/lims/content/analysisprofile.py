@@ -44,6 +44,7 @@ from zope.interface import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -60,7 +61,7 @@ schema = BikaSchema.copy() + Schema((
                           "not be the same as any Calculation Interim field ID."),
         ),
     ),
-    ReferenceField('Service',
+    UIDReferenceField('Service',
         schemata = 'Analyses',
         required = 1,
         multiValued = 1,

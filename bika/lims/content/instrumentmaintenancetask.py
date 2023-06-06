@@ -26,6 +26,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -34,9 +35,8 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField('Instrument',
+    UIDReferenceField('Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentMaintenanceTaskInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -52,7 +52,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Type',
         vocabulary = "getMaintenanceTypes",
         widget = ReferenceWidget(
-            checkbox_bound = 0,
             label = _("Maintenance type",
                       "Type"),
         ),

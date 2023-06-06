@@ -43,6 +43,7 @@ from zope.component import getAdapter
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
@@ -51,13 +52,10 @@ from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import ISupplyOrder
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField(
+    UIDReferenceField(
       'Contact',
       required=1,
-      vocabulary_display_path_bound=sys.maxsize,
       allowed_types=('Contact',),
-      referenceClass=HoldingReference,
-      relationship='SupplyOrderContact',
       widget=BikaReferenceWidget(
         render_own_label=True,
         showOn=True,
@@ -75,11 +73,9 @@ schema = BikaSchema.copy() + Schema((
                     label=_("Order Number"),
                     ),
                 ),
-    ReferenceField('Invoice',
-                   vocabulary_display_path_bound=sys.maxsize,
+    UIDReferenceField('Invoice',
                    allowed_types=('Invoice',),
                    referenceClass=HoldingReference,
-                   relationship='OrderInvoice',
                    ),
     DateTimeField(
       'OrderDate',

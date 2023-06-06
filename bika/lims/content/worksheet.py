@@ -19,37 +19,49 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
-import sys
-
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
+from Products.Archetypes.public import StringField
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.public import (BaseFolder, DisplayList,
-                                        ReferenceField, Schema,
-                                        SelectionWidget, StringField,
-                                        registerType)
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
-from bika.lims import api, logger
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.config import PROJECTNAME
+from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
-                                  IReferenceAnalysis, IReferenceSample,
-                                  IRoutineAnalysis, IWorksheet)
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
-from bika.lims.utils import changeWorkflowState, tmpID, to_int
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import tmpID
+from bika.lims.utils import to_int
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.workflow import doActionFor, skip, isTransitionAllowed, \
-    ActionHandlerPool, push_reindex_to_actions_pool
-from zope.interface import implements
+from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import push_reindex_to_actions_pool
+from bika.lims.workflow import skip
 
 ALL_ANALYSES_TYPES = "all"
 ALLOWED_ANALYSES_TYPES = ["a", "b", "c", "d"]
@@ -83,14 +95,11 @@ schema = BikaSchema.copy() + Schema((
         searchable=True,
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Method',
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        relationship='WorksheetMethod',
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
@@ -99,13 +108,11 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         required=0,
         allowed_types=('Instrument',),
         vocabulary='_getInstrumentsVoc',
-        relationship='WorksheetInstrument',
-        referenceClass=HoldingReference,
     ),
 
     RemarksField(

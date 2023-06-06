@@ -43,6 +43,7 @@ from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
@@ -476,12 +477,11 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select this to activate the dashboard as a default front page.")
         ),
     ),
-    ReferenceField(
+    UIDReferenceField(
         'LandingPage',
         schemata="Appearance",
         multiValued=0,
         allowed_types=('Document', ),
-        relationship='SetupLandingPage',
         widget=ReferenceBrowserWidget(
             label=_("Landing Page"),
             description=_("The selected landing page is displayed for non-authenticated users "

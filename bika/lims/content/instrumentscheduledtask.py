@@ -28,6 +28,7 @@ from Products.Archetypes.public import (BaseFolder, ComputedField,
                                         TextAreaWidget, TextField)
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ScheduleInputWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -36,10 +37,9 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         "Instrument",
         allowed_types=("Instrument",),
-        relationship="InstrumentScheduledTaskInstrument",
         widget=StringWidget(
             visible=False,
         )

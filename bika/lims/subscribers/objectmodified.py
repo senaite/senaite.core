@@ -28,24 +28,13 @@ from bika.lims.catalog import SETUP_CATALOG
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
     """
-    if not hasattr(obj, 'portal_type'):
+    try:
+        portal_type = api.get_portal_type(obj)
+    except api.APIError:
+        # BBB: Might be an `at_references` folder
         return
 
-    if obj.portal_type == 'Calculation':
-        pr = getToolByName(obj, 'portal_repository')
-        uc = getToolByName(obj, 'uid_catalog')
-        obj = uc(UID=obj.UID())[0].getObject()
-        version_id = obj.version_id if hasattr(obj, 'version_id') else 0
-
-        backrefs = obj.getBackReferences('MethodCalculation')
-        for i, target in enumerate(backrefs):
-            target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" % (version_id + 1,))
-            reference_versions = getattr(target, 'reference_versions', {})
-            reference_versions[obj.UID()] = version_id + 1
-            target.reference_versions = reference_versions
-
-    elif obj.portal_type == 'Contact':
+    if portal_type == 'Contact':
         # Verify that the Contact details are the same as the Plone user.
         contact_username = obj.Schema()['Username'].get(obj)
         if contact_username:
@@ -59,7 +48,7 @@ def ObjectModifiedEventHandler(obj, event):
                               'fullname': contact_fullname}
                 member.setMemberProperties(properties)
 
-    elif obj.portal_type == 'AnalysisCategory':
+    elif portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
 
@@ -67,12 +56,12 @@ def ObjectModifiedEventHandler(obj, event):
         query = dict(getCategoryUID=obj.UID())
         brains = api.search(query, SETUP_CATALOG)
         for brain in brains:
-            obj = api.get_object(brain)
-            obj.reindexObject(idxs=['getCategoryTitle'])
+            ob = api.get_object(brain)
+            ob.reindexObject()
 
         # Analyses
         query = dict(getCategoryUID=obj.UID())
         brains = api.search(query, CATALOG_ANALYSIS_LISTING)
         for brain in brains:
-            obj = api.get_object(brain)
-            obj.reindexObject(idxs=['getCategoryTitle'])
+            ob = api.get_object(brain)
+            ob.reindexObject()

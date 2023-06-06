@@ -432,7 +432,6 @@ Category = UIDReferenceField(
     allowed_types=('AnalysisCategory',),
     vocabulary='getAnalysisCategories',
     widget=ReferenceWidget(
-        checkbox_bound=0,
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
         showOn=True,

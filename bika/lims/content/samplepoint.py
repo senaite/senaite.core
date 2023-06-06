@@ -26,7 +26,6 @@ from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import FileWidget
-from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
@@ -38,6 +37,7 @@ from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets.referencewidget import \
@@ -85,7 +85,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SampleTypes',
         required=0,
         multiValued=1,

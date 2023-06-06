@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
@@ -72,11 +73,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Client',
         required=0,
         allowed_types=('Client',),
-        relationship='BatchClient',
         widget=ReferenceWidget(
             label=_("Client"),
             size=30,

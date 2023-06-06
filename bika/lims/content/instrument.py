@@ -73,11 +73,10 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentType',
         vocabulary='getInstrumentTypes',
         allowed_types=('InstrumentType',),
-        relationship='InstrumentInstrumentType',
         required=1,
         widget=ReferenceWidget(
             label=_("Instrument type"),
@@ -91,10 +90,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Manufacturer',
         allowed_types=('Manufacturer',),
-        relationship='InstrumentManufacturer',
         required=1,
         widget=ReferenceWidget(
             label=_("Manufacturer"),
@@ -108,10 +106,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Supplier',
         allowed_types=('Supplier',),
-        relationship='InstrumentSupplier',
         required=1,
         widget=ReferenceWidget(
             label=_("Supplier"),
@@ -154,7 +151,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Methods',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
@@ -282,11 +279,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentLocation',
         schemata='Additional info.',
         allowed_types=('InstrumentLocation', ),
-        relationship='InstrumentInstrumentLocation',
         required=0,
         widget=ReferenceWidget(
             label=_("Instrument Location"),

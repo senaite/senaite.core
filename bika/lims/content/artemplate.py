@@ -39,6 +39,7 @@ from zope.interface import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ReferenceWidget
@@ -50,12 +51,9 @@ from bika.lims.interfaces import IARTemplate
 from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField(
+    UIDReferenceField(
         "SamplePoint",
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SamplePoint",),
-        relationship="ARTemplateSamplePoint",
-        referenceClass=HoldingReference,
         accessor="getSamplePoint",
         edit_accessor="getSamplePoint",
         mutator="setSamplePoint",
@@ -78,12 +76,9 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ReferenceField(
+    UIDReferenceField(
         "SampleType",
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("SampleType",),
-        relationship="ARTemplateSampleType",
-        referenceClass=HoldingReference,
         accessor="getSampleType",
         edit_accessor="getSampleType",
         mutator="setSampleType",
@@ -238,13 +233,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "AnalysisProfile",
         schemata="Analyses",
         required=0,
         multiValued=0,
         allowed_types=("AnalysisProfile",),
-        relationship="ARTemplateAnalysisProfile",
         widget=ReferenceWidget(
             label=_("Analysis Profile"),
             description=_("Add analyses from the selected profile "

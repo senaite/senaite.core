@@ -20,32 +20,43 @@
 
 
 import json
-import sys
-from operator import itemgetter
-
 import plone.protect
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
+from magnitude import mg
+from operator import itemgetter
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
-from magnitude import mg
-from zope.interface import implements
+
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ContainerType',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('ContainerType',),
-        vocabulary = 'getContainerTypes',
-        relationship = 'ContainerContainerType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    UIDReferenceField(
+        "ContainerType",
+        required=0,
+        allowed_types=("ContainerType",),
+        widget=ReferenceWidget(
             label=_("Container Type"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
     StringField('Capacity',
@@ -67,19 +78,23 @@ schema = BikaSchema.copy() + Schema((
                 "for sample partitions stored in this container."),
         ),
     ),
-    ReferenceField('Preservation',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Preservation',),
-        vocabulary = 'getPreservations',
-        relationship = 'ContainerPreservation',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
+    UIDReferenceField(
+        "Preservation",
+        required=0,
+        allowed_types=("Preservation",),
+        widget=ReferenceWidget(
             checkbox_bound = 0,
-            label=_("Preservation"),
-            description = _(
+            description=_(
                 "If this container is pre-preserved, then the preservation "
-                "method could be selected here."),
+                "method could be selected here."
+            ),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
     BooleanField('SecuritySealIntact',
@@ -91,6 +106,7 @@ schema = BikaSchema.copy() + Schema((
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
+
 
 class Container(BaseContent):
     implements(IDeactivable)
@@ -123,26 +139,6 @@ class Container(BaseContent):
             pass
         return str(default)
 
-    def getContainerTypes(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='ContainerType')]
-        o = self.getContainerType()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    def getPreservations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Preservation',
-                                   apiis_active = True)]
-        o = self.getPreservation()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
 
 registerType(Container, PROJECTNAME)
 

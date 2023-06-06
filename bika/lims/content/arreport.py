@@ -33,7 +33,6 @@ from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
-from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordField
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
@@ -42,7 +41,6 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "AnalysisRequest",
         allowed_types=("AnalysisRequest",),
-        referenceClass=HoldingReference,
         required=1,
     ),
     UIDReferenceField(

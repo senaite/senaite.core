@@ -37,6 +37,7 @@ from zope.interface import implements
 from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
@@ -88,13 +89,12 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "DefaultCategories",
         schemata="Preferences",
         required=0,
         multiValued=1,
         allowed_types=("AnalysisCategory",),
-        relationship="ClientDefaultCategories",
         widget=ReferenceWidget(
             label=_("Default categories"),
             description=_(
@@ -109,14 +109,13 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         "RestrictedCategories",
         schemata="Preferences",
         required=0,
         multiValued=1,
         validators=("restrictedcategoriesvalidator",),
         allowed_types=("AnalysisCategory",),
-        relationship="ClientRestrictedCategories",
         widget=ReferenceWidget(
             label=_("Restrict categories"),
             description=_("Show only selected categories in client views"),
