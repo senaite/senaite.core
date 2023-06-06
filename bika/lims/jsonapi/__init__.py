@@ -107,7 +107,7 @@ def load_field_values(instance, include_fields):
             if field_type == "blob" or field_type == 'file':
                 continue
             # I put the UID of all references here in *_uid.
-            if field_type == 'reference':
+            if field_type in ['reference', 'uidreference']:
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
                     val = [to_utf8(v.Title()) for v in val]
