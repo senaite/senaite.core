@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2332 Fix unauthorized error when accessing immediate results entry view with a client contact user
 - #2295 Integrate new UID reference widget
 - #2315 Apply dynamic analyses specs for new added analyses
 - #2314 Display error for required fields without value in current language

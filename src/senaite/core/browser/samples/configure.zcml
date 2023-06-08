@@ -19,12 +19,22 @@
       permission="senaite.core.permissions.TransitionDispatchSample"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
-  <!-- Multi results view -->
+  <!-- Multi results view
+
+       NOTE:
+
+       We use the permission `zope2.View` to allow client contacts with local
+       (shared) roles to access the view from the global samples listing.
+
+       Otherwise we would need to add a check in the samples listing view to
+       redirect the client contact into the right client context for each access,
+       which would probably have a negative impact on the performance.
+  -->
   <browser:page
       for="*"
       name="multi_results"
       class=".multi_results.MultiResultsView"
-      permission="senaite.core.permissions.TransitionMultiResults"
+      permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
   <!-- Manage Sample Fields -->

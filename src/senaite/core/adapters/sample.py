@@ -45,7 +45,7 @@ class WorkflowActionMultiResultsAdapter(RequestContextAware):
     def __call__(self, action, uids):
         """Redirects the user to the multi results form
         """
-        portal_url = api.get_url(api.get_portal())
-        url = "{}/samples/multi_results?uids={}".format(
-            portal_url, ",".join(uids))
+        context_url = api.get_url(self.context)
+        url = "{}/multi_results?uids={}".format(
+            context_url, ",".join(uids))
         return self.redirect(redirect_url=url)
