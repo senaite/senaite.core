@@ -40,7 +40,6 @@ class MultiResultsView(BrowserView):
         super(MultiResultsView, self).__init__(context, request)
         self.context = context
         self.request = request
-        self.portal = api.get_portal()
 
     def __call__(self):
         return self.template()

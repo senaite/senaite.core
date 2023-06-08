@@ -28,6 +28,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
@@ -48,6 +49,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.p3compat import cmp
+from senaite.core.permissions import TransitionMultiResults
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -1860,7 +1862,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Automatic label printing
         setup = api.get_setup()
         auto_print = self.is_automatic_label_printing_enabled()
-        immediate_results_entry = setup.getImmediateResultsEntry()
+        # Check if immediate results entry is enabled in setup and the current
+        # user has enough privileges to do so
+        multi_results = setup.getImmediateResultsEntry() and check_permission(
+            TransitionMultiResults, self.context)
         redirect_to = self.context.absolute_url()
 
         # UIDs of the new created samples
@@ -1882,7 +1887,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         elif auto_print and sample_uids:
             redirect_to = "{}/sticker?autoprint=1&items={}".format(
                 self.context.absolute_url(), sample_uids)
-        elif immediate_results_entry and sample_uids:
+        elif multi_results and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),
                 sample_uids)
