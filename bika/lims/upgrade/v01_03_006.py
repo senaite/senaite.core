@@ -211,8 +211,11 @@ def migrate_analysisrequest_referencefields(tool):
             transaction.commit()
 
         try:
-            obj = api.get_object(brain)
+            obj = api.get_object(brain, default=None)
         except AttributeError:
+            obj = None
+
+        if not obj:
             uncatalog_brain(brain)
             continue
 
@@ -329,8 +332,11 @@ def rename_retestof_relationship(tool):
 
         # Purge back-references to current object
         try:
-            obj = api.get_object(brain)
+            obj = api.get_object(brain, default=None)
         except AttributeError:
+            obj = None
+
+        if not obj:
             uncatalog_brain(brain)
             continue
 
@@ -390,8 +396,11 @@ def purge_backreferences(tool):
 
         # Purge back-references to current object
         try:
-            obj = api.get_object(brain)
+            obj = api.get_object(brain, default=None)
         except AttributeError:
+            obj = None
+
+        if not obj:
             uncatalog_brain(brain)
             continue
 
@@ -481,8 +490,11 @@ def purge_backreferences_analysisrequest(tool):
 
         # Purge back-references to current object
         try:
-            obj = api.get_object(brain)
+            obj = api.get_object(brain, default=None)
         except AttributeError:
+            obj = None
+
+        if not obj:
             uncatalog_brain(brain)
             continue
 
