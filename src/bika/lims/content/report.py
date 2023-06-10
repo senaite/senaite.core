@@ -61,6 +61,7 @@ schema['id'].required = False
 schema['title'].required = False
 
 
+# XXX Remove after 2513
 class Report(BaseFolder, ClientAwareMixin):
     security = ClassSecurityInfo()
     displayContentsTab = False

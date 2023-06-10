@@ -324,6 +324,7 @@
     <type type_id="RejectAnalysis">
       <bound-workflow workflow_id="senaite_rejectanalysis_workflow"/>
     </type>
+    <!-- # XXX Remove after 2513 -->
     <type type_id="ReportFolder">
       <bound-workflow workflow_id="senaite_reports_workflow"/>
     </type>

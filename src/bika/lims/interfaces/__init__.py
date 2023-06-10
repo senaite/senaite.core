@@ -193,7 +193,7 @@ class IRejectAnalysis(Interface):
     Rejections, etc.
     """
 
-
+# XXX Remove after 2513
 class IReportFolder(Interface):
     """Report folder
     """
@@ -748,6 +748,7 @@ class IPricelistFolder(Interface):
     """
 
 
+# XXX Remove after 2513
 class IProductivityReport(Interface):
     """Reports are enumerated manually in reports/*.pt - but addional reports
     can be added to this list by extension packages using this adapter.
@@ -764,7 +765,7 @@ class IProductivityReport(Interface):
     }
     """
 
-
+# XXX Remove after 2513
 class IAdministrationReport(Interface):
     """Reports are enumerated manually in reports/*.pt - but addional reports
     can be added to this list by extension packages using this adapter.

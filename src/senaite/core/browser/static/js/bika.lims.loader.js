@@ -101,10 +101,6 @@ window.bika.lims.controllers =  {
     ".template-labcontacts.portaltype-department":
         ['DepartmentLabContactsView'],
 
-    // Reports folder (not AR Reports)
-    ".portaltype-reportfolder":
-        ['ReportFolderView'],
-
     // If RemarksWidget is in use on this page,
     // load RemarksWIdgetview
     ".ArchetypesRemarksWidget": ["RemarksWidgetView"],

@@ -70,7 +70,9 @@
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>
     <element value="RejectAnalysis"/>
+    <!-- # XXX Remove after 2513 -->
     <element value="Report"/>
+    <!-- # XXX Remove after 2513 -->
     <element value="ReportFolder"/>
     <element value="SamplePoint"/>
     <element value="StorageLocation"/>

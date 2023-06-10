@@ -29,6 +29,7 @@ from zope.interface import implements
 
 schema = ATFolderSchema.copy()
 
+# XXX Remove after 2513
 class ReportFolder(ATFolder):
     implements(IReportFolder, IHideActionsMenu)
     security = ClassSecurityInfo()

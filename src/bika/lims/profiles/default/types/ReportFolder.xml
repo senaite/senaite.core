@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- # XXX Remove after 2513 -->
 <object name="ReportFolder"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"

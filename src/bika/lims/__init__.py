@@ -104,7 +104,9 @@ def initialize(context):
     from bika.lims.content.referencesample import ReferenceSample
     from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder
     from bika.lims.content.rejectanalysis import RejectAnalysis
+    # XXX Remove after 2513
     from bika.lims.content.report import Report
+    # XXX Remove after 2513
     from bika.lims.content.reportfolder import ReportFolder
     from bika.lims.content.samplecondition import SampleCondition
     from bika.lims.content.samplematrix import SampleMatrix
