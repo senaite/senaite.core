@@ -193,11 +193,6 @@ class IRejectAnalysis(Interface):
     Rejections, etc.
     """
 
-# XXX Remove after 2513
-class IReportFolder(Interface):
-    """Report folder
-    """
-
 
 class ISampleCondition(Interface):
     """Sample Condition
@@ -246,11 +241,6 @@ class IReferenceSample(Interface):
 
 class IReferenceSamplesFolder(Interface):
     """Reference Samples Folder
-    """
-
-# XXX Remove after 2513
-class IReportsFolder(Interface):
-    """Reports Folder
     """
 
 
@@ -745,41 +735,6 @@ class IPricelist(Interface):
 
 class IPricelistFolder(Interface):
     """Folder view marker for PricelistFolder instance
-    """
-
-
-# XXX Remove after 2513
-class IProductivityReport(Interface):
-    """Reports are enumerated manually in reports/*.pt - but addional reports
-    can be added to this list by extension packages using this adapter.
-
-    The adapter must return a dictionary:
-
-    {
-     title: text (i18n translated),
-     description: text (i18n translated),
-     query_form: html <fieldset> of controls used to enter report
-                 parameters (excluding <form> tags and <submit> button)
-     module: The name of the module containing a class named "Report"
-             an instance of this class will be used to create the report
-    }
-    """
-
-# XXX Remove after 2513
-class IAdministrationReport(Interface):
-    """Reports are enumerated manually in reports/*.pt - but addional reports
-    can be added to this list by extension packages using this adapter.
-
-    The adapter must return a dictionary:
-
-    {
-     title: text (i18n translated),
-     description: text (i18n translated),
-     query_form: html <fieldset> of controls used to enter report
-                 parameters (excluding <form> tags and <submit> button)
-     module: The name of the module containing a class named "Report"
-             an instance of this class will be used to create the report
-    }
     """
 
 
