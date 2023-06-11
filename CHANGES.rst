@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2334 Remove legacy reports
 - #2332 Fix unauthorized error when accessing immediate results entry view with a client contact user
 - #2295 Integrate new UID reference widget
 - #2315 Apply dynamic analyses specs for new added analyses
