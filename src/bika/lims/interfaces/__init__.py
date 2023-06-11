@@ -248,7 +248,7 @@ class IReferenceSamplesFolder(Interface):
     """Reference Samples Folder
     """
 
-
+# XXX Remove after 2513
 class IReportsFolder(Interface):
     """Reports Folder
     """

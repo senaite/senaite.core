@@ -184,7 +184,6 @@ CATALOG_MAPPINGS = (
     ("ReferenceDefinition", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("ReferenceSample", [SENAITE_CATALOG, PORTAL_CATALOG]),
     ("RejectAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
-    ("Report", [REPORT_CATALOG, PORTAL_CATALOG]),
     ("SampleCondition", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SampleMatrix", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SamplePoint", [SETUP_CATALOG, PORTAL_CATALOG]),
