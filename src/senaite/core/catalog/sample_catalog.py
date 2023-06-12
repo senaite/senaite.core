@@ -34,7 +34,6 @@ INDEXES = BASE_INDEXES + [
     ("getBatchUID", "", "FieldIndex"),
     ("getClientSampleID", "", "FieldIndex"),
     ("getClientTitle", "", "FieldIndex"),
-    ("getClientUID", "", "FieldIndex"),
     ("getDatePublished", "", "DateIndex"),
     ("getDateReceived", "", "DateIndex"),
     ("getDateSampled", "", "DateIndex"),

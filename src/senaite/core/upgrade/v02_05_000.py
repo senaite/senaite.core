@@ -398,6 +398,7 @@ def purge_catalogs(tool):
         ],
         SAMPLE_CATALOG: [
             "getClientID",
+            "getClientUID",
         ],
         CLIENT_CATALOG: [
             "getClientID",
@@ -426,13 +427,13 @@ def purge_catalogs(tool):
         for index in idxs_to_remove:
             if index not in obj.indexes():
                 continue
-            logger.info("{}: removing index {}".format(obj, index))
+            logger.info("{}: removing index {}".format(obj.id, index))
             del_index(obj, index)
 
         for column in cols_to_remove:
             if column not in obj.schema():
                 continue
-            logger.info("{}: removing column {}".format(obj, column))
+            logger.info("{}: removing column {}".format(obj.id, column))
             del_column(obj, column)
 
     logger.info("Purging catalogs [DONE]")
