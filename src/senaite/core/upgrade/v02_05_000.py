@@ -25,6 +25,8 @@ from senaite.core import logger
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import get_catalog
+from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
@@ -391,6 +393,9 @@ def purge_catalogs(tool):
     indexes_to_remove = {
         "base_catalog": [
             "CreationDate",
+        ],
+        SAMPLE_CATALOG: [
+            "getClientID",
         ]
     }
     columns_to_remove = {
@@ -399,9 +404,8 @@ def purge_catalogs(tool):
 
     portal = api.get_portal()
     for obj in portal.objectValues():
-        catalog = obj.id
-        idxs_to_remove = indexes_to_remove.get(catalog, [])
-        cols_to_remove = columns_to_remove.get(catalog, [])
+        idxs_to_remove = indexes_to_remove.get(obj.id, [])
+        cols_to_remove = columns_to_remove.get(obj.id, [])
         if isinstance(obj, BaseCatalog):
             idxs = indexes_to_remove.get("base_catalog", [])
             cols = columns_to_remove.get("base_catalog", [])
@@ -409,11 +413,15 @@ def purge_catalogs(tool):
             cols_to_remove.extend(cols)
 
         for index in idxs_to_remove:
-            logger.info("{}: removing index {}".format(catalog, index))
-            del_index(catalog, index)
+            if index not in obj.indexes():
+                continue
+            logger.info("{}: removing index {}".format(obj, index))
+            del_index(obj, index)
 
         for column in cols_to_remove:
-            logger.info("{}: removing column {}".format(catalog, column))
-            del_column(catalog, column)
+            if column not in obj.schema():
+                continue
+            logger.info("{}: removing column {}".format(obj, column))
+            del_column(obj, column)
 
     logger.info("Purging catalogs [DONE]")

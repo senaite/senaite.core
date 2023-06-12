@@ -32,7 +32,6 @@ INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("assigned_state", "", "FieldIndex"),
     ("getBatchUID", "", "FieldIndex"),
-    ("getClientID", "", "FieldIndex"),
     ("getClientSampleID", "", "FieldIndex"),
     ("getClientTitle", "", "FieldIndex"),
     ("getClientUID", "", "FieldIndex"),

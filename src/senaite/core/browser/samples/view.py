@@ -143,7 +143,6 @@ class SamplesView(ListingView):
                 "toggle": True}),
             ("ClientID", {
                 "title": _("Client ID"),
-                "index": "getClientID",
                 "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
