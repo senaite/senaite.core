@@ -25,8 +25,6 @@ from senaite.core import logger
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
-from senaite.core.api.catalog import get_catalog
-from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
