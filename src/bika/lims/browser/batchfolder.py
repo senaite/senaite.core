@@ -75,8 +75,7 @@ class BatchFolderContentsView(ListingView):
                 "title": _("Client"),
                 "index": "getClientTitle", }),
             ("ClientID", {
-                "title": _("Client ID"),
-                "index": "getClientID", }),
+                "title": _("Client ID"), }),
             ("ClientBatchID", {
                 "title": _("Client Batch ID"),
                 "index": "getClientBatchID", }),

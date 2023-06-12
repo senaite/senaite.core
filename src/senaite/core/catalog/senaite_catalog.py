@@ -37,7 +37,6 @@ INDEXES = BASE_INDEXES + [
     ("Description", "", "ZCTextIndex"),
     ("getBlank", "", "BooleanIndex"),
     ("getClientBatchID", "", "FieldIndex"),
-    ("getClientID", "", "FieldIndex"),
     ("getClientTitle", "", "FieldIndex"),
     ("getClientUID", "", "FieldIndex"),
     ("getDateReceived", "", "DateIndex"),

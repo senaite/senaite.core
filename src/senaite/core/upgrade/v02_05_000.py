@@ -38,11 +38,13 @@ from senaite.core.permissions import ManageBika
 from senaite.core.registry import get_registry_record
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import PORTAL_CATALOG
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
+from senaite.core.catalog import SENAITE_CATALOG
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -395,6 +397,15 @@ def purge_catalogs(tool):
             "CreationDate",
         ],
         SAMPLE_CATALOG: [
+            "getClientID",
+        ],
+        CLIENT_CATALOG: [
+            "getClientID",
+        ],
+        SENAITE_CATALOG: [
+            "getClientID"
+        ],
+        PORTAL_CATALOG: [
             "getClientID",
         ]
     }

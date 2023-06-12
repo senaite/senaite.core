@@ -136,7 +136,6 @@ COLUMNS = (
     # catalog, column name
     (PORTAL_CATALOG, "analysisRequestTemplates"),
     (PORTAL_CATALOG, "review_state"),
-    (PORTAL_CATALOG, "getClientID"),
     (PORTAL_CATALOG, "Analyst"),
 )
 
