@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Remove stale indexes and columns"
+      description="Remove stale indexes and columns"
+      source="2513"
+      destination="2514"
+      handler=".v02_05_000.purge_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Remove legacy reports"
       description="Remove legacy reports"
       source="2512"

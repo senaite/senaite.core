@@ -30,6 +30,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
 from senaite.core.registry import get_registry_record
@@ -380,3 +381,39 @@ def remove_legacy_reports(tool):
     portal.portal_types.manage_delObjects(["Report", "ReportFolder"])
 
     logger.info("Removing legacy reports [DONE]")
+
+
+def purge_catalogs(tool):
+    """Purges stale indexes and metadata from catalogs
+    """
+    logger.info("Purging catalogs ...")
+
+    indexes_to_remove = {
+        "base_catalog": [
+            "CreationDate",
+        ]
+    }
+    columns_to_remove = {
+
+    }
+
+    portal = api.get_portal()
+    for obj in portal.objectValues():
+        catalog = obj.id
+        idxs_to_remove = indexes_to_remove.get(catalog, [])
+        cols_to_remove = columns_to_remove.get(catalog, [])
+        if isinstance(obj, BaseCatalog):
+            idxs = indexes_to_remove.get("base_catalog", [])
+            cols = columns_to_remove.get("base_catalog", [])
+            idxs_to_remove.extend(idxs)
+            cols_to_remove.extend(cols)
+
+        for index in idxs_to_remove:
+            logger.info("{}: removing index {}".format(catalog, index))
+            del_index(catalog, index)
+
+        for column in cols_to_remove:
+            logger.info("{}: removing column {}".format(catalog, column))
+            del_column(catalog, column)
+
+    logger.info("Purging catalogs [DONE]")
