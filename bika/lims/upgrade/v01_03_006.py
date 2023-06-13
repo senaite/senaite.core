@@ -203,19 +203,27 @@ def migrate_analysisrequest_referencefields(tool):
     cat = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     brains = cat(portal_type="AnalysisRequest")
     total = len(brains)
-    for num, sample in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed samples: {}/{}".format(num, total))
 
         if num and num % 1000 == 0:
             transaction.commit()
 
+        try:
+            obj = api.get_object(brain, default=None)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
         # Migrate the reference fields for current sample
-        sample = api.get_object(sample)
-        migrate_reference_fields(sample, field_names)
+        migrate_reference_fields(obj, field_names)
 
         # Flush the object from memory
-        sample._p_deactivate()
+        obj._p_deactivate()
 
     logger.info("Migrate ReferenceFields to UIDReferenceField [DONE]")
 
@@ -322,8 +330,17 @@ def rename_retestof_relationship(tool):
         if num and num % 1000 == 0:
             transaction.commit()
 
+        # Purge back-references to current object
+        try:
+            obj = api.get_object(brain, default=None)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
         # find out if the current analysis is a retest
-        obj = api.get_object(brain)
         field = obj.getField("RetestOf")
         retest_of = field.get(obj)
         if retest_of:
@@ -370,15 +387,24 @@ def purge_backreferences(tool):
     uc = api.get_tool("uid_catalog")
     brains = uc(portal_type=portal_types)
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
         if num and num % 1000 == 0:
             transaction.commit()
 
+        # Purge back-references to current object
+        try:
+            obj = api.get_object(brain, default=None)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
         # Purge back-references to given object
-        obj = api.get_object(obj)
         purge_backreferences_to(obj)
 
         # Flush the object from memory
@@ -455,7 +481,7 @@ def purge_backreferences_analysisrequest(tool):
     uc = api.get_tool("uid_catalog")
     brains = uc(portal_type="AnalysisRequest")
     total = len(brains)
-    for num, obj in enumerate(brains):
+    for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {}/{}".format(num, total))
 
@@ -463,10 +489,36 @@ def purge_backreferences_analysisrequest(tool):
             transaction.commit()
 
         # Purge back-references to current object
-        obj = api.get_object(obj)
+        try:
+            obj = api.get_object(brain, default=None)
+        except AttributeError:
+            obj = None
+
+        if not obj:
+            uncatalog_brain(brain)
+            continue
+
+        # Purge back-references to current object
         purge_backreferences_to(obj)
 
         # Flush the object from memory
         obj._p_deactivate()
 
     logger.info("Purge stale back-references from samples [DONE]")
+
+
+def uncatalog_brain(brain):
+    """Uncatalog a stale catalog entry
+    """
+    if not api.is_brain(brain):
+        return False
+
+    catalog = brain.aq_parent
+    uid = brain.UID
+    path = brain.getPath()
+    logger.warn(80*"*")
+    logger.warn("Removing stale catalog entry for catalog %s: %s -> %s"
+                % (catalog.getId(), uid, path))
+    logger.warn(80*"*")
+    catalog.uncatalog_object(path)
+    return True
