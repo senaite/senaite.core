@@ -56,6 +56,8 @@ from zope.i18n.locales import locales
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
 from bika.lims.api import to_date as api_to_date
+from six.moves.urllib import parse
+
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -349,6 +351,16 @@ def isnumber(s):
     return api.is_floatable(s)
 
 
+def is_valid_url(value):
+    """Return true if the value is a well-formed url
+    """
+    try:
+        result = parse.urlparse(value)
+        return all([result.scheme, result.netloc, result.path])
+    except:  # noqa a convenient way to check if the url is ok
+        return False
+
+
 def senaite_url_fetcher(url):
     """Uses plone.subrequest to fetch an internal image resource.
 
@@ -381,6 +393,11 @@ def senaite_url_fetcher(url):
     """
 
     logger.info("Fetching URL '{}' for WeasyPrint".format(url))
+
+    if not is_valid_url(url):
+        # not a valid URL (e.g. 'data:image/bmp;base64,Qk1GG....')
+        logger.info("Not a valid URL, fallback to the default URL fetcher ...")
+        return default_url_fetcher(url)
 
     # get the pyhsical path from the URL
     request = api.get_request()
