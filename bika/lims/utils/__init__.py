@@ -57,7 +57,6 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
 from bika.lims.api import to_date as api_to_date
 
-
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
 
