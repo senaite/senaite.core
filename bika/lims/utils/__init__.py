@@ -385,7 +385,12 @@ def senaite_url_fetcher(url):
     # get the pyhsical path from the URL
     request = api.get_request()
     host = request.get_header("HOST")
-    path = "/".join(request.physicalPathFromURL(url))
+    try:
+        path = "/".join(request.physicalPathFromURL(url))
+    except ValueError:
+        # not a valid URL (e.g. 'data:image/bmp;base64,Qk1GG....')
+        logger.info("Not a valid URL, fallback to the default URL fetcher ...")
+        return default_url_fetcher(url)
 
     # fetch the object by sub-request
     portal = api.get_portal()
