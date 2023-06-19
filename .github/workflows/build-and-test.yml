@@ -7,20 +7,14 @@ env:
 jobs:
   build-and-test:
     runs-on: 'ubuntu-20.04'
+    container:
+      image: python:2.7.18-buster
     steps:
       - uses: actions/checkout@v3
-      # Taken from https://github.com/xenserver-next/python-libs/blob/master/.github/workflows/main.yml
-      - name: Setup Python 2.7.18
-        # uses: actions/setup-python@v4 due to https://github.com/actions/setup-python/issues/672:
-        # https://github.com/MatteoH2O1999/setup-python
-        # This action tries to build from source all Python versions that actions/setup-python
-        # does not support. It also allows to cache built versions so that after the first run,
-        # installation time is really low. Hope it works also with 20.04, else it needs more changes:
-        uses: MatteoH2O1999/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
-          python-version: 2.7.18
-          allow-build: info
-          cache-build: true
+          python-version: '2.7.18'
+          cache: 'pip'
       - name: cache eggs
         uses: actions/cache@v3
         with:
