@@ -19,27 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 import six
-
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from bika.lims.browser.fields import UIDReferenceField
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes.public import BooleanField
-from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.public import StringField
-from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import registerType
-from Products.CMFCore import permissions
-from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
-from Products.CMFCore.utils import _checkPermission
-from zope.interface import implements
-
 from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
@@ -47,6 +32,20 @@ from bika.lims.content.attachment import Attachment
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IDeactivable
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore import permissions
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.utils import _checkPermission
+from Products.CMFPlone.RegistrationTool import get_member_by_login_name
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from zope.interface import implements
 
 schema = Organisation.schema.copy() + Schema((
     StringField(
