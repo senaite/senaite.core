@@ -214,10 +214,19 @@ class Client(Organisation):
 
         :param group_id: The group ID to validate
         """
+        # Check for string
+        if not api.is_string(group_id):
+            return False
+
+        # Check for empty string
+        if not len(group_id) > 0:
+            return False
+
         portal = api.get_portal()
         # Check if the ID is already used by a user login
         if get_member_by_login_name(portal, group_id, False):
             return False
+
         return True
 
     @security.public
