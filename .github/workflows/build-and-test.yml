@@ -21,7 +21,6 @@ jobs:
           python-version: 2.7.18
           allow-build: info
           cache-build: true
-          cache: pip
       - name: cache eggs
         uses: actions/cache@v3
         with:
