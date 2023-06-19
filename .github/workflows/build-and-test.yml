@@ -21,13 +21,14 @@ jobs:
         run: |
           pip install virtualenv
           virtualenv -p `which python` .
+          bin/pip install --upgrade pip
           bin/pip install -r requirements.txt
           bin/buildout -N -t 3 annotate
           bin/buildout -N -t 3
       - name: lint
         run: |
           bin/pip install flake8
-          bin/flake8 --config ci_flake8.cfg src/{bika,senaite}/
+          bin/flake8 --config ci_flake8.cfg src/senaite/
       - name: test
         run: |
           bin/test -s senaite.core.tests
