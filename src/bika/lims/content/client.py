@@ -184,8 +184,41 @@ class Client(Organisation):
         """Client group ID
         """
         if not hasattr(self, self.GROUP_KEY):
-            setattr(self, self.GROUP_KEY, self.getClientID() or self.getId())
+            setattr(self, self.GROUP_KEY, self._get_group_id())
         return getattr(self, self.GROUP_KEY)
+
+    def _get_group_id(self):
+        """Get a valid group ID
+        """
+        # Try first the client ID
+        client_id = self.getClientID()
+        if self.is_valid_group_id(client_id):
+            return client_id
+
+        # Use the context ID
+        context_id = self.getId()
+        if self.is_valid_group_id(context_id):
+            return context_id
+
+        # Use the ID + prefix
+        prefix_id = "group_%s" % client_id or context_id
+        count = 0
+        while not self.is_valid_group_id(prefix_id):
+            count += 1
+            prefix_id = "group_%s_%s" % (count, client_id or context_id)
+
+        return prefix_id
+
+    def is_valid_group_id(self, group_id):
+        """Check if the group ID is valid
+
+        :param group_id: The group ID to validate
+        """
+        portal = api.get_portal()
+        # Check if the ID is already used by a user login
+        if get_member_by_login_name(portal, group_id, False):
+            return False
+        return True
 
     @security.public
     def get_group(self):
