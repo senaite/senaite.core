@@ -124,7 +124,7 @@ class UIDReferenceWidget(QuerySelectWidget):
         # just to be sure (paranoid)
         return [uid for uid in value if api.is_uid(uid)]
 
-    def get_render_data(self, uid):
+    def get_render_data(self, context, field, uid):
         """Provides the needed data to render the display template from the UID
 
         :returns: Dictionary with data needed to render the display template
@@ -137,7 +137,8 @@ class UIDReferenceWidget(QuerySelectWidget):
         try:
             obj = api.get_object(uid)
         except api.APIError:
-            logger.error("No object found for UID {}".format(uid))
+            logger.error("No object found for field '{}' with UID '{}'".format(
+                field.getName(), uid))
             return None
 
         data = {
