@@ -242,7 +242,7 @@ class QuerySelectWidget(StringWidget):
         :returns: Dictionary with data needed to render the display template
         """
         if not reference:
-            return None
+            return {}
 
         return {
             "uid": "",

@@ -139,7 +139,7 @@ class UIDReferenceWidget(QuerySelectWidget):
         except api.APIError:
             logger.error("No object found for field '{}' with UID '{}'".format(
                 field.getName(), uid))
-            return None
+            return {}
 
         data = {
             "uid": api.get_uid(obj),
