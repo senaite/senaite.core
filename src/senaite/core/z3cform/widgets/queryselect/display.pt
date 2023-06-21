@@ -4,8 +4,10 @@
 
   <ul class="list-unstyled d-table-row">
     <li tal:repeat="value view/get_value" class="d-inline-block">
-      <div class="p-1 mb-1 mr-1 bg-light border rounded">
-        <span tal:replace="structure python:view.render_reference(value)"/>
+      <div tal:define="rendered python:view.render_reference(value)"
+           tal:condition="python:rendered"
+           class="p-1 mb-1 mr-1 bg-light border rounded">
+        <span tal:replace="structure rendered"/>
       </div>
     </li>
   </ul>

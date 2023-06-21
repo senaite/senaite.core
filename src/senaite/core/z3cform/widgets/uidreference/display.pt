@@ -5,8 +5,10 @@
   <ul class="list-unstyled d-table-row">
     <!-- list all referenced UIDs -->
     <li tal:repeat="uid view/get_value" class="d-inline-block">
-      <div class="p-1 mb-1 mr-1 bg-light border rounded">
-        <span tal:replace="structure python:view.render_reference(uid)"/>
+      <div tal:define="rendered python:view.render_reference(uid)"
+           tal:condition="python:rendered"
+           class="p-1 mb-1 mr-1 bg-light border rounded">
+        <span tal:replace="structure rendered"/>
       </div>
     </li>
   </ul>
