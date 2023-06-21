@@ -32,7 +32,9 @@ class SelectedValues extends React.Component {
     let template = this.props.display_template;
     if (!template) return value;
     let context = this.props.records[value];
+    // return the raw value if there is no replacement data
     if (!context) return value;
+    if (typeof context === 'object' && Object.keys(context).length === 0) return value;
     return this.interpolate(template, context);
   }
 
