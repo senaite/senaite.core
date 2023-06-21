@@ -13,11 +13,16 @@
                        refs python:widget.get_value(context, field, value)">
         <ul class="list-unstyled d-table-row">
           <li tal:repeat="ref refs" class="d-inline-block">
-            <div tal:define="rendered python:widget.render_reference(context, field, ref)"
-                 tal:condition="python:rendered"
-                 class="p-1 mb-1 mr-1 bg-light border rounded">
-              <span tal:replace="structure rendered"/>
-            </div>
+            <tal:ref tal:define="rendered python:widget.render_reference(context, field, ref)">
+              <div tal:condition="python:rendered"
+                  class="p-1 mb-1 mr-1 bg-light border rounded">
+                <span tal:replace="structure rendered"/>
+              </div>
+              <div tal:condition="python:not rendered" class="text-danger">
+                <span tal:attributes="title string:broken reference ${ref}"
+                      tal:content="ref"></span>
+              </div>
+            </tal:ref>
           </li>
         </ul>
       </div>

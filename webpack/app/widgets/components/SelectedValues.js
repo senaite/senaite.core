@@ -33,8 +33,9 @@ class SelectedValues extends React.Component {
     if (!template) return value;
     let context = this.props.records[value];
     // return the raw value if there is no replacement data
-    if (!context) return value;
-    if (typeof context === 'object' && Object.keys(context).length === 0) return value;
+    let broken_ref = `<span title='broken reference ${value}' class='text-danger'>${value}</span>`;
+    if (!context) return broken_ref;
+    if (typeof context === 'object' && Object.keys(context).length === 0) return broken_ref;
     return this.interpolate(template, context);
   }
 
