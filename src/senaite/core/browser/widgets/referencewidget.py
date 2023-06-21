@@ -274,7 +274,12 @@ class ReferenceWidget(QuerySelectWidget):
         regex = r"\{(.*?)\}"
         names = re.findall(regex, template)
 
-        obj = api.get_object(uid)
+        try:
+            obj = api.get_object(uid)
+        except api.APIError:
+            logger.error("No object found for UID {}".format(uid))
+            return None
+
         data = {
             "uid": api.get_uid(obj),
             "url": api.get_url(obj),
