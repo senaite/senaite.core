@@ -143,7 +143,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-name": self.name,
             "data-values": values,
             "data-records": dict(zip(values, map(
-                lambda ref: self.get_render_data(ref), values))),
+                lambda ref: self.get_render_data(
+                    context, field, ref), values))),
             "data-value_key": getattr(self, "value_key", "title"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "title"),
