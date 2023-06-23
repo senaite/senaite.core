@@ -435,7 +435,8 @@
               <tr style="display:none" tal:attributes="fieldName fieldName">
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum);
-                                  val python:view.fieldvalues.get(newFieldName)"
+                                  val python:view.fieldvalues.get(newFieldName);
+                                  val python:'' if not val else val;"
                       tal:attributes="arnum python:arnum; fieldName python:newFieldName">
                     <input type="hidden"
                            tal:attributes="value val/UID|val|nothing;
