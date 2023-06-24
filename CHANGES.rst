@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2343 Allow to define the sorting criteria for Result Options
+- #2334 Remove legacy reports
 - #2341 Handle nonexisting UIDs gracefully in referencewidget
 - #2340 Fix UID copy method in AT->DX content migrator
 - #2332 Fix unauthorized error when accessing immediate results entry view with a client contact user

@@ -70,8 +70,6 @@
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>
     <element value="RejectAnalysis"/>
-    <element value="Report"/>
-    <element value="ReportFolder"/>
     <element value="SamplePoint"/>
     <element value="StorageLocation"/>
     <element value="SampleType"/>
