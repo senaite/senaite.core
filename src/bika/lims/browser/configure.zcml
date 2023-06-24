@@ -34,7 +34,6 @@
   <include package=".department"/>
   <include package=".fields"/>
   <include package=".publish"/>
-  <include package=".reports"/>
   <include package=".resultsimport"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>

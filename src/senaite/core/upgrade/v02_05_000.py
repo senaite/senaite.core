@@ -358,3 +358,25 @@ def _update_workflow_mappings_for(wf_id, brains):
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
         # free memory
         obj._p_deactivate()
+
+
+def remove_legacy_reports(tool):
+    """Removes legacy Report folder and contents
+    """
+    logger.info("Removing legacy reports ...")
+
+    # remove the reports folder, along with its contents
+    portal = tool.aq_inner.aq_parent
+    portal._delObject("reports")
+
+    # remove reports from portal actions (top-right)
+    portal_tabs = portal.portal_actions.portal_tabs
+    portal_tabs.manage_delObjects("reports")
+
+    # remove reports_workflow
+    portal.portal_workflow.manage_delObjects(["senaite_reports_workflow"])
+
+    # remove the portal type
+    portal.portal_types.manage_delObjects(["Report", "ReportFolder"])
+
+    logger.info("Removing legacy reports [DONE]")
