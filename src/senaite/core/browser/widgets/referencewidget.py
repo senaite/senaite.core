@@ -266,7 +266,7 @@ class ReferenceWidget(QuerySelectWidget):
             value = [value]
         return map(api.get_uid, value)
 
-    def get_render_data(self, uid, template):
+    def get_render_data(self, context, field, uid, template):
         """Provides the needed data to render the display template from the UID
 
         :returns: Dictionary with data needed to render the display template
@@ -274,7 +274,13 @@ class ReferenceWidget(QuerySelectWidget):
         regex = r"\{(.*?)\}"
         names = re.findall(regex, template)
 
-        obj = api.get_object(uid)
+        try:
+            obj = api.get_object(uid)
+        except api.APIError:
+            logger.error("No object found for field '{}' with UID '{}'".format(
+                field.getName(), uid))
+            return {}
+
         data = {
             "uid": api.get_uid(obj),
             "url": api.get_url(obj),
@@ -296,10 +302,13 @@ class ReferenceWidget(QuerySelectWidget):
         display_template = self.get_display_template(context, field, uid)
         template = string.Template(display_template)
         try:
-            data = self.get_render_data(uid, display_template)
+            data = self.get_render_data(context, field, uid, display_template)
         except ValueError as e:
             # Current user might not have privileges to view this object
             logger.error(e.message)
+            return ""
+
+        if not data:
             return ""
 
         return template.safe_substitute(data)
