@@ -24,6 +24,7 @@ from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.component import getMultiAdapter
 
@@ -71,6 +72,33 @@ class SetupView(BrowserView):
         """Returns the icon URL for the given catalog brain
         """
         return self.bootstrap.get_icon_for(brain, **kw)
+
+    @memoize_contextless
+    def get_allowed_content_types(self, obj):
+        """Get the allowed content types
+        """
+        portal_types = api.get_tool("portal_types")
+        fti = portal_types.getTypeInfo(api.get_portal_type(obj))
+        allowed_types = fti.allowed_content_types
+        if len(allowed_types) != 1:
+            return None
+        return allowed_types[0]
+
+    def get_count(self, obj):
+        """Retrieve the count of contained items
+        """
+        contained_types = self.get_allowed_content_types(obj)
+
+        # fallback
+        if contained_types is None:
+            return len(obj.objectIds())
+
+        query = {
+            "portal_type": contained_types,
+            "is_active": True,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        return len(brains)
 
     def setupitems(self):
         """Lookup available setup items

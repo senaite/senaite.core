@@ -70,7 +70,7 @@
                 </span>
               </div>
               <div class="small text-right"
-                   tal:define="count python:len(item.objectIds())"
+                   tal:define="count python:view.get_count(item)"
                    tal:condition="python:count>0">
                 <span class="text-secondary">
                   <span tal:content="count"></span>
