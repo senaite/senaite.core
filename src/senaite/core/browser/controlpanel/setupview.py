@@ -83,6 +83,6 @@ class SetupView(BrowserView):
         def cmp_by_translated_title(obj1, obj2):
             title1 = t(api.get_title(obj1))
             title2 = t(api.get_title(obj2))
-            cmp(title1, title2)
+            return cmp(title1, title2)
 
         return sorted(items, cmp=cmp_by_translated_title)
