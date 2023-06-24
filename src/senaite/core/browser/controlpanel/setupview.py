@@ -75,26 +75,14 @@ class SetupView(BrowserView):
     def setupitems(self):
         """Lookup available setup items
 
-        :returns: catalog brains
+        :returns: objects
         """
-        query = {
-            "path": {
-                "query": [
-                    api.get_path(self.setup),
-                    api.get_path(self.senaite_setup),
-                ],
-                "depth": 1,
-            },
-        }
-        items = api.search(query, "portal_catalog")
-        # filter out items
-        items = filter(lambda item: not item.exclude_from_nav, items)
+        items = self.setup.objectValues() + self.senaite_setup.objectValues()
 
         # sort by (translated) title
-        def cmp_by_translated_title(brain1, brain2):
-            title1 = t(api.get_title(brain1))
-            title2 = t(api.get_title(brain2))
-            # XXX: Python 3 compatibility
-            return cmp(title1, title2)
+        def cmp_by_translated_title(obj1, obj2):
+            title1 = t(api.get_title(obj1))
+            title2 = t(api.get_title(obj2))
+            cmp(title1, title2)
 
         return sorted(items, cmp=cmp_by_translated_title)
