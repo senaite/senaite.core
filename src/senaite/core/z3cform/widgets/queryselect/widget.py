@@ -143,7 +143,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-name": self.name,
             "data-values": values,
             "data-records": dict(zip(values, map(
-                lambda ref: self.get_render_data(ref), values))),
+                lambda ref: self.get_render_data(
+                    context, field, ref), values))),
             "data-value_key": getattr(self, "value_key", "title"),
             "data-value_query_index": getattr(
                 self, "value_query_index", "title"),
@@ -289,11 +290,14 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             value = [value]
         return value
 
-    def get_render_data(self, reference):
+    def get_render_data(self, context, field, reference):
         """Provides the needed data to render the display template
 
         :returns: Dictionary with data needed to render the display template
         """
+        if not reference:
+            return {}
+
         return {
             "uid": "",
             "url": "",
@@ -306,13 +310,17 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """Returns a rendered HTML element for the reference
         """
         context = self.get_context()
-        display_template = self.get_display_template(context, self.field)
+        field = self.field
+        display_template = self.get_display_template(context, field)
         template = string.Template(display_template)
         try:
-            data = self.get_render_data(reference)
+            data = self.get_render_data(context, field, reference)
         except ValueError as e:
             # Current user might not have privileges to view this object
             logger.error(e.message)
+            return ""
+
+        if not data:
             return ""
 
         return template.safe_substitute(data)
