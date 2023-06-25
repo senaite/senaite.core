@@ -64,15 +64,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-  <!-- AR Partition Magic View -->
-  <browser:page
-      for="*"
-      name="partition_magic"
-      class=".partition_magic.PartitionMagicView"
-      permission="senaite.core.permissions.AddAnalysisRequest"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
   <!-- Searches for sample types (TemplatePartitions) -->
   <browser:page
       for="*"
