@@ -61,7 +61,7 @@ from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
-                      "NumSamples"]
+                      "NumSamples", "_ARAttachment"]
 
 
 def cache_key(method, self, obj):
