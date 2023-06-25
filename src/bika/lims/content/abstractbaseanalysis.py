@@ -619,6 +619,35 @@ ResultOptionsType = StringField(
     )
 )
 
+RESULT_OPTIONS_SORTING = (
+    ("", _("Keep order above")),
+    ("ResultValue-asc", _("By 'Result Value' ascending")),
+    ("ResultValue-desc", _("By 'Result Value' descending")),
+    ("ResultText-asc", _("By 'Display Value' ascending")),
+    ("ResultText-desc", _("By 'Display Value' descending")),
+)
+
+ResultOptionsSorting = StringField(
+    "ResultOptionsSorting",
+    schemata="Result Options",
+    default="ResultText-asc",
+    vocabulary=DisplayList(RESULT_OPTIONS_SORTING),
+    widget=SelectionWidget(
+        label=_(
+            u"label_analysis_results_options_sorting",
+            default=u"Sorting criteria"
+        ),
+        description=_(
+            u"description_analysis_results_options_sorting",
+            default=u"Criteria to use when result options are displayed for "
+                    u"selection in results entry listings. Note this only "
+                    u"applies to the options displayed in the selection list. "
+                    u"It does not have any effect to the order in which "
+                    u"results are displayed after being submitted"
+        ),
+    )
+)
+
 # Allow/disallow the capture of text as the result of the analysis
 StringResult = BooleanField(
     "StringResult",
@@ -753,6 +782,7 @@ schema = BikaSchema.copy() + Schema((
     AllowManualUncertainty,
     ResultOptions,
     ResultOptionsType,
+    ResultOptionsSorting,
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,

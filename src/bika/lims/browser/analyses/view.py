@@ -967,10 +967,8 @@ class AnalysesView(ListingView):
                 item["Result"] = "{} {}".format(operand, result).strip()
 
             # Prepare result options
-            choices = obj.getResultOptions()
+            choices = self.get_result_options(obj)
             if choices:
-                # N.B.we copy here the list to avoid persistent changes
-                choices = copy(choices)
                 choices_type = obj.getResultOptionsType()
                 if choices_type == "select":
                     # By default set empty as the default selected choice
@@ -993,6 +991,18 @@ class AnalysesView(ListingView):
         formatted_result = obj.getFormattedResult(
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
+
+    def get_result_options(self, analysis):
+        """Returns the result options of the analysis to be rendered or empty
+        """
+        options = copy(analysis.getResultOptions())
+        sort_by = analysis.getResultOptionsSorting()
+        if not sort_by:
+            return options
+
+        sort_by, sort_order = sort_by.split("-")
+        reverse = sort_order == "desc"
+        return sorted(options, key=itemgetter(sort_by), reverse=reverse)
 
     def is_multi_interim(self, interim):
         """Returns whether the interim stores a list of values instead of a
