@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2344 Fix error on sample copy when fields are hidden
 - #2334 Remove legacy reports
 - #2341 Handle nonexisting UIDs gracefully in referencewidget
 - #2340 Fix UID copy method in AT->DX content migrator
