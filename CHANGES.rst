@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2346 Fix unauthorized error when accessing dispatch/partition sample view with shared client role
 - #2343 Allow to define the sorting criteria for Result Options
 - #2345 Retrieve setup items by object
 - #2344 Fix error on sample copy when fields are hidden
