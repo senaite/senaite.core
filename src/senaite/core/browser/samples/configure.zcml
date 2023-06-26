@@ -11,24 +11,43 @@
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 
-  <!-- Dispatch samples -->
+  <!-- Partition Magic View
+
+       NOTE:
+
+       We use the permission `zope2.View` to allow client shared roles to access
+       the view from the global samples listing, which is above the client context
+       where the roles are applied!
+  -->
+  <browser:page
+      for="*"
+      name="partition_magic"
+      class=".partition_magic.PartitionMagicView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
+  <!-- Dispatch Samples View
+
+       NOTE:
+
+       We use the permission `zope2.View` to allow client shared roles to access
+       the view from the global samples listing, which is above the client context
+       where the roles are applied!
+  -->
   <browser:page
       for="*"
       name="dispatch_samples"
       class=".dispatch_samples.DispatchSamplesView"
-      permission="senaite.core.permissions.TransitionDispatchSample"
+      permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
-  <!-- Multi results view
+  <!-- Multi Results View
 
        NOTE:
 
-       We use the permission `zope2.View` to allow client contacts with local
-       (shared) roles to access the view from the global samples listing.
-
-       Otherwise we would need to add a check in the samples listing view to
-       redirect the client contact into the right client context for each access,
-       which would probably have a negative impact on the performance.
+       We use the permission `zope2.View` to allow client shared roles to access
+       the view from the global samples listing, which is above the client context
+       where the roles are applied!
   -->
   <browser:page
       for="*"
@@ -43,7 +62,6 @@
       name="manage-sample-fields"
       class=".manage_sample_fields.ManageSampleFieldsView"
       permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
+      layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>
