@@ -36,7 +36,7 @@ import traceback
 def handle_errors(f):
     """ simple JSON error handler
     """
-    from plone.jsonapi.core.helpers import error
+    from plone.jsonapi.core.browser.helpers import error
 
     def decorator(*args, **kwargs):
         try:
