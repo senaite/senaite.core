@@ -281,6 +281,8 @@ Analytes = RecordsField(
     subfields=(
         "title",
         "keyword",
+        "selectdl",
+        "manualdl",
         "selected",
     ),
     required_subfields=(
@@ -295,6 +297,14 @@ Analytes = RecordsField(
         "keyword": _(
             u"label_analysisservice_analytes_keyword",
             default=u"Keyword"
+        ),
+        "selectdl": _(
+            u"label_analysisservice_analytes_dlselector",
+            default=u"DL Selector"
+        ),
+        "manualdl": _(
+            u"label_analysisservice_analytes_manualdl",
+            default=u"Manual DL"
         ),
         "selected": _(
             u"label_analysisservice_analytes_selected",
@@ -313,11 +323,15 @@ Analytes = RecordsField(
     subfield_types={
         "title": "string",
         "keyword": "string",
+        "selectdl": "boolean",
+        "manualdl": "boolean",
         "selected": "boolean",
     },
     subfield_sizes={
         "title": 20,
         "keyword": 20,
+        "selectdl": 20,
+        "manualdl": 20,
         "selected": 20,
     },
     subfield_validators={

@@ -26,6 +26,7 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import is_true
 
 
 def create_analysis(context, source, **kwargs):
@@ -453,12 +454,16 @@ def create_analytes(analysis):
 
         analyte_id = generate_analysis_id(container, keyword)
         retest_of = retests_of.get(keyword, None)
+        select_dl = analyte_record.get("selectdl")
+        manual_dl = analyte_record.get("manualdl")
         values = {
             "id": analyte_id,
             "title": analyte_record.get("title"),
             "Keyword": keyword,
             "MultiComponentAnalysis": analysis,
             "RetestOf": retest_of,
+            "DetectionLimitSelector": is_true(select_dl),
+            "AllowManualDetectionLimit": is_true(manual_dl),
         }
         analyte = create_analysis(container, service, **values)
         analytes.append(analyte)

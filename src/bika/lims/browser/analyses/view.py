@@ -1356,10 +1356,16 @@ class AnalysesView(ListingView):
         if not obj.getDetectionLimitSelector():
             return None
 
+        # Display the column for the selector
+        self.columns["DetectionLimitOperand"]["toggle"] = True
+
+        # If multicomponent only render the selector for analytes
+        if obj.isMultiComponent():
+            return
+
         # Show Detection Limit Operand Selector
         item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
         item["allow_edit"].append("DetectionLimitOperand")
-        self.columns["DetectionLimitOperand"]["toggle"] = True
 
         # Prepare selection list for LDL/UDL
         choices = [
