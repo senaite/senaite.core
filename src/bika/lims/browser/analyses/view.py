@@ -1147,6 +1147,12 @@ class AnalysesView(ListingView):
         if not self.is_analysis_edition_allowed(analysis_brain):
             return
 
+        obj = self.get_object(analysis_brain)
+        if obj.isMultiComponent():
+            # Leave units empty
+            item["Unit"] = ""
+            return
+
         # Edition allowed
         voc = self.get_unit_vocabulary(analysis_brain)
         if voc:
