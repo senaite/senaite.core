@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2350 Display batch labels in listing
 - #2347 Remove unused inline validation view
 - #2346 Fix unauthorized error when accessing dispatch/partition sample view with shared client role
 - #2343 Allow to define the sorting criteria for Result Options
