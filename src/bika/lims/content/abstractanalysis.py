@@ -605,7 +605,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'math': math,
                             'context': self},
                            {'mapping': mapping})
-            result = eval(formula, calc._getGlobals())
+            result = format_numeric_result(self,eval(formula, calc._getGlobals()))
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
