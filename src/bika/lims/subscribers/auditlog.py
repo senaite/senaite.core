@@ -46,7 +46,10 @@ def reindex_object(obj):
     if auditlog_catalog is None:
         logger.warn("Auditlog catalog not found. Skipping reindex.")
         return
-    auditlog_catalog.reindexObject(obj)
+
+    setup = api.get_senaite_setup()
+    if setup.getEnableGlobalAuditlog():
+        auditlog_catalog.reindexObject(obj)
 
 
 def unindex_object(obj):

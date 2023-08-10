@@ -1281,38 +1281,7 @@ This function creates a good cache key for a generic object or brain::
     >>> key1
     'Client-client-1-...'
 
-This can be also done for a catalog result brain::
-
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
-    >>> key2 = api.get_cache_key(brains[0])
-    >>> key2
-    'Client-client-1-...'
-
-The two keys should be equal::
-
-    >>> key1 == key2
-    True
-
-The key should change when the object get modified::
-
-    >>> client.setClientID("TESTCLIENT")
-    >>> client.processForm()
-    >>> key3 = api.get_cache_key(client)
-    >>> key3 != key1
-    True
-
-~~ important:: Workflow changes do not change the modification date!
-A custom event subscriber will update it therefore.
-
-A workflow transition should also change the cache key::
-
-    >>> _ = api.do_transition_for(client, transition="deactivate")
-    >>> api.is_active(client)
-    False
-    >>> key4 = api.get_cache_key(client)
-    >>> key4 != key3
-    True
+NOTE: Function will be deleted in senaite.core 3.0.0
 
 
 SENAITE Cache Key decorator
@@ -1341,14 +1310,17 @@ Calling the (expensive) method of the class does the calculation just once::
 
 The decorator can also handle brains::
 
+    >>> from senaite.core.catalog import CLIENT_CATALOG
     >>> instance = SENAITEClass()
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brain = portal_catalog(portal_type="Client")[0]
+    >>> cat = api.get_tool(CLIENT_CATALOG)
+    >>> brain = cat(portal_type="Client")[0]
     >>> instance.get_very_expensive_calculation(brain)
     very expensive calculation
     'calculation result'
     >>> instance.get_very_expensive_calculation(brain)
     'calculation result'
+
+NOTE: Function will be deleted in senaite.core 3.0.0
 
 
 ID Normalizer
