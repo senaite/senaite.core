@@ -323,6 +323,7 @@ interface SchemaSettings {
     valid_styles?: string | Record<string, string>;
     verify_html?: boolean;
     whitespace_elements?: string;
+    padd_empty_block_inline_children?: boolean;
 }
 interface Attribute {
     required?: boolean;
@@ -351,6 +352,7 @@ interface ElementRule {
     paddEmpty?: boolean;
     removeEmpty?: boolean;
     removeEmptyAttrs?: boolean;
+    paddInEmptyBlock?: boolean;
 }
 interface SchemaElement extends ElementRule {
     outputName?: string;
@@ -1395,6 +1397,7 @@ interface BaseEditorSettings {
     content_css_cors?: boolean;
     content_security_policy?: string;
     content_style?: string;
+    deprecation_warnings?: boolean;
     font_css?: string | string[];
     content_langs?: ContentLanguage[];
     contextmenu?: string | false;
@@ -1431,6 +1434,7 @@ interface BaseEditorSettings {
     forced_root_block?: boolean | string;
     forced_root_block_attrs?: Record<string, string>;
     formats?: Formats;
+    format_empty_lines?: boolean;
     gecko_spellcheck?: boolean;
     height?: number | string;
     hidden_input?: boolean;
@@ -1956,7 +1960,7 @@ interface EditorSelection {
         unbind: () => void;
     };
     getScrollContainer: () => HTMLElement;
-    scrollIntoView: (elm: Element, alignToTop?: boolean) => void;
+    scrollIntoView: (elm?: HTMLElement, alignToTop?: boolean) => void;
     placeCaretAt: (clientX: number, clientY: number) => void;
     getBoundingClientRect: () => ClientRect | DOMRect;
     destroy: () => void;
@@ -2250,11 +2254,17 @@ interface URIConstructor {
         data: string;
     };
 }
+interface SafeUriOptions {
+    readonly allow_html_data_urls?: boolean;
+    readonly allow_script_urls?: boolean;
+    readonly allow_svg_data_urls?: boolean;
+}
 declare class URI {
     static parseDataUri(uri: string): {
         type: string;
         data: string;
     };
+    static isDomSafe(uri: string, context?: string, options?: SafeUriOptions): boolean;
     static getDocumentBaseUrl(loc: {
         protocol: string;
         host?: string;
@@ -2865,6 +2875,7 @@ interface VK {
     DELETE: number;
     DOWN: number;
     ENTER: number;
+    ESC: number;
     LEFT: number;
     RIGHT: number;
     SPACEBAR: number;

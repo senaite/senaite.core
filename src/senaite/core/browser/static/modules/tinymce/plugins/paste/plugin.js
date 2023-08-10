@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -40,11 +40,29 @@
       return { clipboard: clipboard };
     };
 
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
     var isSimpleType = function (type) {
       return function (value) {
         return typeof value === type;
       };
     };
+    var isArray = isType('array');
     var isNullable = function (a) {
       return a === null || a === undefined;
     };
@@ -156,6 +174,7 @@
     };
 
     var nativeSlice = Array.prototype.slice;
+    var nativePush = Array.prototype.push;
     var exists = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
@@ -195,6 +214,19 @@
         acc = f(acc, x, i);
       });
       return acc;
+    };
+    var flatten = function (xs) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; ++i) {
+        if (!isArray(xs[i])) {
+          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+        }
+        nativePush.apply(r, xs[i]);
+      }
+      return r;
+    };
+    var bind = function (xs, f) {
+      return flatten(map(xs, f));
     };
     var from = isFunction(Array.from) ? Array.from : function (x) {
       return nativeSlice.call(x);
@@ -889,7 +921,7 @@
       return true;
     };
     var isAbsoluteUrl = function (url) {
-      return /^https?:\/\/[\w\?\-\/+=.&%@~#]+$/i.test(url);
+      return /^https?:\/\/[\w\-\/+=.,!;:&%@^~(){}?#]+$/i.test(url);
     };
     var isImageUrl = function (editor, url) {
       return isAbsoluteUrl(url) && exists(getAllowedImageFileTypes(editor), function (type) {
@@ -1100,8 +1132,8 @@
       };
     };
     var getImagesFromDataTransfer = function (editor, dataTransfer) {
-      var items = dataTransfer.items ? map(from(dataTransfer.items), function (item) {
-        return item.getAsFile();
+      var items = dataTransfer.items ? bind(from(dataTransfer.items), function (item) {
+        return item.kind === 'file' ? [item.getAsFile()] : [];
       }) : [];
       var files = dataTransfer.files ? from(dataTransfer.files) : [];
       return filter$1(items.length > 0 ? items : files, isImage(editor));

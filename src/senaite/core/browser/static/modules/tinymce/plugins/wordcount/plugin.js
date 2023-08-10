@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -29,7 +29,7 @@
     };
 
     var zeroWidth = '\uFEFF';
-    var removeZwsp = function (s) {
+    var removeZwsp$1 = function (s) {
       return s.replace(/\uFEFF/g, '');
     };
 
@@ -258,7 +258,7 @@
       var treeWalker = new global$1(node, node);
       while (node = treeWalker.next()) {
         if (node.nodeType === 3) {
-          txt += removeZwsp(node.data);
+          txt += removeZwsp$1(node.data);
         } else if (isNewline(node) && txt.length) {
           textBlocks.push(txt);
           txt = '';
@@ -270,11 +270,14 @@
       return textBlocks;
     };
 
+    var removeZwsp = function (text) {
+      return text.replace(/\u200B/g, '');
+    };
     var strLen = function (str) {
       return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length;
     };
     var countWords = function (node, schema) {
-      var text = getText(node, schema).join('\n');
+      var text = removeZwsp(getText(node, schema).join('\n'));
       return getWords(text.split(''), identity).length;
     };
     var countCharacters = function (node, schema) {
