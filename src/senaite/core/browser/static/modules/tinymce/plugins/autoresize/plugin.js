@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -80,7 +80,15 @@
       var value = parseInt(dom.getStyle(elm, name, computed), 10);
       return isNaN(value) ? 0 : value;
     };
-    var resize = function (editor, oldSize) {
+    var shouldScrollIntoView = function (trigger) {
+      if ((trigger === null || trigger === void 0 ? void 0 : trigger.type.toLowerCase()) === 'setcontent') {
+        var setContentEvent = trigger;
+        return setContentEvent.selection === true || setContentEvent.paste === true;
+      } else {
+        return false;
+      }
+    };
+    var resize = function (editor, oldSize, trigger) {
       var dom = editor.dom;
       var doc = editor.getDoc();
       if (!doc) {
@@ -121,11 +129,11 @@
           var win = editor.getWin();
           win.scrollTo(win.pageXOffset, win.pageYOffset);
         }
-        if (editor.hasFocus()) {
-          editor.selection.scrollIntoView(editor.selection.getNode());
+        if (editor.hasFocus() && shouldScrollIntoView(trigger)) {
+          editor.selection.scrollIntoView();
         }
         if (global$1.webkit && deltaSize < 0) {
-          resize(editor, oldSize);
+          resize(editor, oldSize, trigger);
         }
       }
     };
@@ -140,8 +148,8 @@
           'min-height': 0
         });
       });
-      editor.on('NodeChange SetContent keyup FullscreenStateChanged ResizeContent', function () {
-        resize(editor, oldSize);
+      editor.on('NodeChange SetContent keyup FullscreenStateChanged ResizeContent', function (e) {
+        resize(editor, oldSize, e);
       });
       if (shouldAutoResizeOnInit(editor)) {
         editor.on('init', function () {

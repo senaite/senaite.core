@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2358 Add confirmation when unlinking reference
 - #2357 Skip object reindexing when global auditlog is disabled
 - #2354 Render all legacy resources at the end of the page
 - #2350 Display batch labels in listing

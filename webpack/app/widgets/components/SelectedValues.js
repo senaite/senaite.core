@@ -11,8 +11,30 @@ class SelectedValues extends React.Component {
     this.on_deselect = this.on_deselect.bind(this);
   }
 
+  componentDidMount() {
+    this.init_confirmation();
+  }
+
+  componentDidUpdate() {
+    this.init_confirmation();
+  }
+
   get_selected_values() {
     return this.props.values || [];
+  }
+
+  init_confirmation() {
+    $("[data-toggle=confirmation]").confirmation({
+      rootSelector: "[data-toggle=confirmation]",
+      btnOkLabel: _t("Yes"),
+      btnOkClass: "btn btn-outline-primary",
+      btnOkIconClass: "fas fa-check-circle mr-1",
+      btnCancelLabel: _t("No"),
+      btnCancelClass: "btn btn-outline-secondary",
+      btnCancelIconClass: "fas fa-circle mr-1",
+      container: "body",
+      singleton: true
+    });
   }
 
   /*
@@ -52,6 +74,8 @@ class SelectedValues extends React.Component {
             <span className={"state-" + review_state}
                   dangerouslySetInnerHTML={{__html: this.render_display_template(value)}}></span>
             <button value={value}
+                    data-toggle="confirmation"
+                    data-title={_t("Unlink reference?")}
                     className="btn btn-sm btn-link-danger"
                     onClick={this.on_deselect}>
               <i className="fas fa-times-circle"></i>
