@@ -22,14 +22,6 @@ import itertools
 from string import Template
 
 import six
-from Products.Archetypes.config import UID_CATALOG
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from senaite.core.workflow import ANALYSIS_WORKFLOW
-from senaite.core.workflow import SAMPLE_WORKFLOW
-from zope.interface import alsoProvides
-from zope.lifecycleevent import modified
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -53,6 +45,15 @@ from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import SAMPLE_WORKFLOW
+from zope import event
+from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
