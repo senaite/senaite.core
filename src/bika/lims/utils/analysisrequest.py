@@ -90,7 +90,7 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request and submit the form
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
-    ar.processForm(REQUEST=request, values=values)
+    ar._processForm(REQUEST=request, values=values)
 
     # Set the analyses manually
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
@@ -146,6 +146,10 @@ def create_analysisrequest(client, request, values, analyses=None,
             if rejection_reasons:
                 do_rejection(ar)
 
+            renameAfterCreation(ar)
+            ar.unmarkCreationFlag()
+            event.notify(ObjectInitializedEvent(ar))
+
             # In "received" state already
             return ar
 
@@ -157,6 +161,10 @@ def create_analysisrequest(client, request, values, analyses=None,
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
         do_rejection(ar)
+
+    renameAfterCreation(ar)
+    ar.unmarkCreationFlag()
+    event.notify(ObjectInitializedEvent(ar))
 
     return ar
 
