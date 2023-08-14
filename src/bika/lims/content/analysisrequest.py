@@ -1326,19 +1326,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     displayContentsTab = False
     schema = schema
 
-    _at_rename_after_creation = True
-
-    def _renameAfterCreation(self, check_auto_id=False):
-        """Rename hook called by processForm
-        """
-        # https://github.com/senaite/senaite.core/issues/1327
-        primary = self.getPrimaryAnalysisRequest()
-        if primary:
-            logger.info("Secondary sample detected: Skipping ID generation")
-            return False
-        from bika.lims.idserver import renameAfterCreation
-        renameAfterCreation(self)
-
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
