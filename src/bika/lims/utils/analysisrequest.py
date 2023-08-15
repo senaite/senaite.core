@@ -135,13 +135,13 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
-    # If rejection reasons have been set, reject the sample automatically
-    if rejection_reasons:
-        do_rejection(ar)
-
     renameAfterCreation(ar)
     ar.unmarkCreationFlag()
     event.notify(ObjectInitializedEvent(ar))
+
+    # If rejection reasons have been set, reject the sample automatically
+    if rejection_reasons:
+        do_rejection(ar)
 
     return ar
 
