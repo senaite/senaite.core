@@ -147,6 +147,8 @@ def get_snapshot_version(obj, snapshot):
     :returns: Index where the object is lcated
     """
     snapshots = get_snapshots(obj)
+    if snapshot not in snapshots:
+        return -1
     return snapshots.index(snapshot)
 
 
