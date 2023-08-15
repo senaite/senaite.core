@@ -53,7 +53,6 @@ from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
 from zope.interface import alsoProvides
-from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
