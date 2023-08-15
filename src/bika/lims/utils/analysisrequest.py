@@ -89,7 +89,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     specification = values.pop("Specification", None)
 
     # Create the Analysis Request and submit the form
-    ar = _createObjectByType('AnalysisRequest', client, tmpID())
+    ar = _createObjectByType("AnalysisRequest", client, tmpID())
     ar._processForm(REQUEST=request, values=values)
 
     # Set the analyses manually
@@ -114,9 +114,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Mark the secondary with the `IAnalysisRequestSecondary` interface
         alsoProvides(ar, IAnalysisRequestSecondary)
 
-        # Rename the secondary according to the ID server setup
-        renameAfterCreation(ar)
-
         # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
@@ -125,8 +122,8 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
         if primary.getDateReceived():
-            primary_id = primary.getId()
-            comment = "Auto-received. Secondary Sample of {}".format(primary_id)
+            pid = primary.getId()
+            comment = "Auto-received. Secondary Sample of {}".format(pid)
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_received",
                                 action="receive", comments=comment)
 
@@ -136,27 +133,10 @@ def create_analysisrequest(client, request, values, analyses=None,
             # Initialize analyses
             do_action_to_analyses(ar, "initialize")
 
-            # Notify the ar has ben modified
-            modified(ar)
-
-            # Reindex the AR
-            ar.reindexObject()
-
-            # If rejection reasons have been set, reject automatically
-            if rejection_reasons:
-                do_rejection(ar)
-
-            renameAfterCreation(ar)
-            ar.unmarkCreationFlag()
-            event.notify(ObjectInitializedEvent(ar))
-
-            # In "received" state already
-            return ar
-
-    # Try first with no sampling transition, cause it is the most common config
-    success, message = doActionFor(ar, "no_sampling_workflow")
-    if not success:
-        doActionFor(ar, "to_be_sampled")
+    if not IReceived.providedBy(ar):
+        success, message = doActionFor(ar, "no_sampling_workflow")
+        if not success:
+            doActionFor(ar, "to_be_sampled")
 
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
