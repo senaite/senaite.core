@@ -127,6 +127,9 @@ def create_analysisrequest(client, request, values, analyses=None,
     if partition:
         # Always set partition to received state
         receive_sample(ar)
+        # set the received date according to the parent
+        root = ar.getParentAnalysisRequest()
+        ar.setDateReceived(root.getDateReceived())
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
@@ -446,20 +449,12 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Populate the root's ResultsRanges to partitions
     results_ranges = ar.getResultsRange() or []
+
     partition = create_analysisrequest(client,
                                        request=request,
                                        values=record,
                                        analyses=services,
                                        results_ranges=results_ranges)
-
-    # Reindex Parent Analysis Request
-    ar.reindexObject(idxs=["isRootAncestor"])
-
-    # Manually set the Date Received to match with its parent. This is
-    # necessary because crar calls to processForm, so DateReceived is not
-    # set because the partition has not been received yet
-    partition.setDateReceived(ar.getDateReceived())
-    partition.reindexObject(idxs="getDateReceived")
 
     return partition
 
