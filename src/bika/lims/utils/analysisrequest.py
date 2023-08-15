@@ -122,10 +122,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
         if primary.getDateReceived():
-            # We skip here the permission check because the sample is in
-            # "registered" state, where the permission to receive is granted to
-            # no one.
-            receive_sample(ar, check_permission=False)
+            receive_sample(ar)
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
@@ -150,9 +147,13 @@ def create_analysisrequest(client, request, values, analyses=None,
     return ar
 
 
-def receive_sample(sample, check_permission=True):
+def receive_sample(sample, check_permission=False):
     """Receive the sample without transition
     """
+
+    # NOTE: In `sample_registered` state we do not grant any roles the
+    #       permission to receive a sample! Not sure if this can be ignored
+    #       when the LIMS is configured to auto-receive samples?
     if check_permission and not can_receive(sample):
         return False
 
