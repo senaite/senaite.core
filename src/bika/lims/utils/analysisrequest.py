@@ -122,7 +122,10 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
         if primary.getDateReceived():
-            receive_sample(ar)
+            # We skip here the permission check because the sample is in
+            # "registered" state, where the permission to receive is granted to
+            # no one.
+            receive_sample(ar, check_permission=False)
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
@@ -147,10 +150,10 @@ def create_analysisrequest(client, request, values, analyses=None,
     return ar
 
 
-def receive_sample(sample):
+def receive_sample(sample, check_permission=True):
     """Receive the sample without transition
     """
-    if not can_receive(sample):
+    if check_permission and not can_receive(sample):
         return False
 
     changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_received",
