@@ -44,7 +44,6 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
@@ -164,7 +163,13 @@ def receive_sample(sample, check_permission=False):
     alsoProvides(sample, IReceived)
 
     # Initialize analyses
-    do_action_to_analyses(sample, "initialize")
+    # NOTE: We use here `objectValues` instead of `getAnalyses`,
+    #       because the Analyses are not yet indexed!
+    for obj in sample.objectValues():
+        if obj.portal_type != "Analysis":
+            continue
+        changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
+                            action="initialize")
 
     return True
 
