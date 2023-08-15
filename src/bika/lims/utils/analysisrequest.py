@@ -89,6 +89,9 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request and submit the form
     ar = _createObjectByType("AnalysisRequest", client, tmpID())
+    # NOTE: We call here `_processForm` (with underscore) to manually unmark
+    #       the creation flag and trigger the `ObjectInitializedEvent`, which
+    #       is used for snapshot creation.
     ar._processForm(REQUEST=request, values=values)
 
     # Set the analyses manually
