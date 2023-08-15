@@ -456,6 +456,9 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
                                        analyses=services,
                                        results_ranges=results_ranges)
 
+    # Reindex Parent Analysis Request
+    ar.reindexObject(idxs=["isRootAncestor"])
+
     return partition
 
 
