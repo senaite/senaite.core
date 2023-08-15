@@ -457,16 +457,8 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     partition.reindexObject(idxs="getDateReceived")
 
     # Always set partition to received state
-    changeWorkflowState(partition, SAMPLE_WORKFLOW, "sample_received")
-    alsoProvides(partition, IReceived)
+    receive_sample(partition)
 
-    # And initialize the analyses the partition contains. This is required
-    # here because the transition "initialize" of analyses rely on a guard,
-    # so the initialization can only be performed when the sample has been
-    # received (DateReceived is set)
-    for analysis in partition.getAnalyses(full_objects=True):
-        doActionFor(analysis, "initialize")
-        analysis.reindexObject()
     return partition
 
 
