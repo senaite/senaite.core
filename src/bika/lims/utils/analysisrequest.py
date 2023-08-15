@@ -49,6 +49,7 @@ from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
@@ -121,21 +122,19 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
         if primary.getDateReceived():
-            pid = primary.getId()
-            comment = "Auto-received. Secondary Sample of {}".format(pid)
-            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_received",
-                                action="receive", comments=comment)
-
-            # Mark the secondary as received
-            alsoProvides(ar, IReceived)
-
-            # Initialize analyses
-            do_action_to_analyses(ar, "initialize")
+            receive_sample(ar)
 
     if not IReceived.providedBy(ar):
-        success, message = doActionFor(ar, "no_sampling_workflow")
-        if not success:
-            doActionFor(ar, "to_be_sampled")
+        setup = api.get_setup()
+        # Sampling is required
+        if ar.getSamplingRequired():
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
+                                action="to_be_sampled")
+        elif not ar.getSamplingRequired() and setup.getAutoreceiveSamples():
+            receive_sample(ar)
+        else:
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
+                                action="no_sampling_workflow")
 
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
@@ -146,6 +145,24 @@ def create_analysisrequest(client, request, values, analyses=None,
     event.notify(ObjectInitializedEvent(ar))
 
     return ar
+
+
+def receive_sample(sample):
+    """Receive the sample without transition
+    """
+    if not can_receive(sample):
+        return False
+
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_received",
+                        action="receive")
+
+    # Mark the secondary as received
+    alsoProvides(sample, IReceived)
+
+    # Initialize analyses
+    do_action_to_analyses(sample, "initialize")
+
+    return True
 
 
 def apply_hidden_services(sample):
