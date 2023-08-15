@@ -123,6 +123,11 @@ def create_analysisrequest(client, request, values, analyses=None,
         if primary.getDateReceived():
             receive_sample(ar)
 
+    partition = ar.isPartition()
+    if partition:
+        # Always set partition to received state
+        receive_sample(ar)
+
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
         # Sampling is required
@@ -455,9 +460,6 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     # set because the partition has not been received yet
     partition.setDateReceived(ar.getDateReceived())
     partition.reindexObject(idxs="getDateReceived")
-
-    # Always set partition to received state
-    receive_sample(partition)
 
     return partition
 
