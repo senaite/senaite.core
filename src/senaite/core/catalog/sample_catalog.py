@@ -58,7 +58,6 @@ COLUMNS = BASE_COLUMNS + [
     "assigned_state",
     "getAnalysesNum",
     "getBatchID",
-    "getBatchUID",
     "getBatchURL",
     "getClientID",
     "getClientOrderNumber",

@@ -413,6 +413,7 @@ def purge_catalogs(tool):
     }
     columns_to_remove = {
         SAMPLE_CATALOG: [
+            "getBatchUID",
             "getDistrict",
             "getProvince",
         ],
