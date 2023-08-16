@@ -1525,17 +1525,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         else:
             return self.Schema()['Batch'].get(self)
 
-    @security.public
     def getBatchUID(self):
-        batch = self.getBatch()
-        if batch:
-            return batch.UID()
-
-    @security.public
-    def setBatch(self, value=None):
-        original_value = self.Schema().getField('Batch').get(self)
-        if original_value != value:
-            self.Schema().getField('Batch').set(self, value)
+        return self.getRawBatch()
 
     def getDefaultMemberDiscount(self):
         """Compute default member discount if it applies
