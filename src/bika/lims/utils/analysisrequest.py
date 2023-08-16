@@ -28,7 +28,6 @@ from bika.lims import logger
 from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.mail import send_email
-from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestRetest
@@ -48,6 +47,7 @@ from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -148,6 +148,8 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     renameAfterCreation(ar)
     ar.unmarkCreationFlag()
+    # explicit reindexing after creation flag is unset
+    ar.reindexObject()
     event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically
