@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -1763,7 +1763,7 @@
       } else {
         applyList(editor, listName, detail);
         var bookmark = createBookmark(editor.selection.getRng());
-        var allLists = parentIsList ? __spreadArray([parentList], lists) : lists;
+        var allLists = parentIsList ? __spreadArray([parentList], lists, true) : lists;
         global$2.each(allLists, function (elm) {
           updateList$1(editor, elm, listName, detail);
         });

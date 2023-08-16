@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -24,7 +24,7 @@
     var global = tinymce.util.Tools.resolve('tinymce.Env');
 
     var link = function () {
-      return /(?:[A-Za-z][A-Za-z\d.+-]{0,14}:\/\/(?:[-.~*+=!&;:'%@?^${}(),\w]+@)?|www\.|[-;:&=+$,.\w]+@)[A-Za-z\d-]+(?:\.[A-Za-z\d-]+)*(?::\d+)?(?:\/(?:[-+~=.,%()\/\w]*[-+~=%()\/\w])?)?(?:\?(?:[-.~*+=!&;:'%@?^${}(),\/\w]+))?(?:#(?:[-.~*+=!&;:'%@?^${}(),\/\w]+))?/g;
+      return /(?:[A-Za-z][A-Za-z\d.+-]{0,14}:\/\/(?:[-.~*+=!&;:'%@?^${}(),\w]+@)?|www\.|[-;:&=+$,.\w]+@)[A-Za-z\d-]+(?:\.[A-Za-z\d-]+)*(?::\d+)?(?:\/(?:[-.~*+=!;:'%@$(),\/\w]*[-~*+=%@$()\/\w])?)?(?:\?(?:[-.~*+=!&;:'%@?^${}(),\/\w]+))?(?:#(?:[-.~*+=!&;:'%@?^${}(),\/\w]+))?/g;
     };
 
     var defaultLinkPattern = new RegExp('^' + link().source + '$', 'i');
@@ -38,23 +38,29 @@
       return editor.getParam('link_default_protocol', 'http', 'string');
     };
 
-    var rangeEqualsDelimiterOrSpace = function (rangeString, delimiter) {
-      return rangeString === delimiter || rangeString === ' ' || rangeString.charCodeAt(0) === 160;
+    var rangeEqualsBracketOrSpace = function (rangeString) {
+      return /^[(\[{ \u00a0]$/.test(rangeString);
     };
-    var handleEclipse = function (editor) {
-      parseCurrentLine(editor, -1, '(');
+    var isTextNode = function (node) {
+      return node.nodeType === 3;
+    };
+    var isElement = function (node) {
+      return node.nodeType === 1;
+    };
+    var handleBracket = function (editor) {
+      return parseCurrentLine(editor, -1);
     };
     var handleSpacebar = function (editor) {
-      parseCurrentLine(editor, 0, '');
+      return parseCurrentLine(editor, 0);
     };
     var handleEnter = function (editor) {
-      parseCurrentLine(editor, -1, '');
+      return parseCurrentLine(editor, -1);
     };
     var scopeIndex = function (container, index) {
       if (index < 0) {
         index = 0;
       }
-      if (container.nodeType === 3) {
+      if (isTextNode(container)) {
         var len = container.data.length;
         if (index > len) {
           index = len;
@@ -63,14 +69,14 @@
       return index;
     };
     var setStart = function (rng, container, offset) {
-      if (container.nodeType !== 1 || container.hasChildNodes()) {
+      if (!isElement(container) || container.hasChildNodes()) {
         rng.setStart(container, scopeIndex(container, offset));
       } else {
         rng.setStartBefore(container);
       }
     };
     var setEnd = function (rng, container, offset) {
-      if (container.nodeType !== 1 || container.hasChildNodes()) {
+      if (!isElement(container) || container.hasChildNodes()) {
         rng.setEnd(container, scopeIndex(container, offset));
       } else {
         rng.setEndAfter(container);
@@ -82,11 +88,11 @@
     var isPunctuation = function (char) {
       return /[?!,.;:]/.test(char);
     };
-    var parseCurrentLine = function (editor, endOffset, delimiter) {
+    var parseCurrentLine = function (editor, endOffset) {
       var end, endContainer, bookmark, text, prev, len, rngText;
       var autoLinkPattern = getAutoLinkPattern(editor);
       var defaultLinkTarget = getDefaultLinkTarget(editor);
-      if (editor.selection.getNode().tagName === 'A') {
+      if (editor.dom.getParent(editor.selection.getNode(), 'a[href]') !== null) {
         return;
       }
       var rng = editor.selection.getRng().cloneRange();
@@ -108,11 +114,11 @@
         endContainer = prev;
       } else {
         endContainer = rng.endContainer;
-        if (endContainer.nodeType !== 3 && endContainer.firstChild) {
-          while (endContainer.nodeType !== 3 && endContainer.firstChild) {
+        if (!isTextNode(endContainer) && endContainer.firstChild) {
+          while (!isTextNode(endContainer) && endContainer.firstChild) {
             endContainer = endContainer.firstChild;
           }
-          if (endContainer.nodeType === 3) {
+          if (isTextNode(endContainer)) {
             setStart(rng, endContainer, 0);
             setEnd(rng, endContainer, endContainer.nodeValue.length);
           }
@@ -129,8 +135,8 @@
         setEnd(rng, endContainer, end >= 1 ? end - 1 : 0);
         end -= 1;
         rngText = rng.toString();
-      } while (rngText !== ' ' && rngText !== '' && rngText.charCodeAt(0) !== 160 && end - 2 >= 0 && rngText !== delimiter);
-      if (rangeEqualsDelimiterOrSpace(rng.toString(), delimiter)) {
+      } while (!rangeEqualsBracketOrSpace(rngText) && end - 2 >= 0);
+      if (rangeEqualsBracketOrSpace(rng.toString())) {
         setStart(rng, endContainer, end);
         setEnd(rng, endContainer, start);
         end += 1;
@@ -185,8 +191,8 @@
         return;
       }
       editor.on('keypress', function (e) {
-        if (e.keyCode === 41) {
-          return handleEclipse(editor);
+        if (e.keyCode === 41 || e.keyCode === 93 || e.keyCode === 125) {
+          return handleBracket(editor);
         }
       });
       editor.on('keyup', function (e) {

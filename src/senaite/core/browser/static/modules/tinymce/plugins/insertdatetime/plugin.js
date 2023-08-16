@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -96,11 +96,11 @@
     };
 
     var register$1 = function (editor) {
-      editor.addCommand('mceInsertDate', function () {
-        insertDateTime(editor, getDateFormat(editor));
+      editor.addCommand('mceInsertDate', function (_ui, value) {
+        insertDateTime(editor, value !== null && value !== void 0 ? value : getDateFormat(editor));
       });
-      editor.addCommand('mceInsertTime', function () {
-        insertDateTime(editor, getTimeFormat(editor));
+      editor.addCommand('mceInsertTime', function (_ui, value) {
+        insertDateTime(editor, value !== null && value !== void 0 ? value : getTimeFormat(editor));
       });
     };
 
@@ -123,6 +123,9 @@
     var register = function (editor) {
       var formats = getFormats(editor);
       var defaultFormat = Cell(getDefaultDateTime(editor));
+      var insertDateTime = function (format) {
+        return editor.execCommand('mceInsertDate', false, format);
+      };
       editor.ui.registry.addSplitButton('insertdatetime', {
         icon: 'insert-time',
         tooltip: 'Insert date/time',
@@ -139,17 +142,17 @@
           }));
         },
         onAction: function (_api) {
-          insertDateTime(editor, defaultFormat.get());
+          insertDateTime(defaultFormat.get());
         },
         onItemAction: function (_api, value) {
           defaultFormat.set(value);
-          insertDateTime(editor, value);
+          insertDateTime(value);
         }
       });
       var makeMenuItemHandler = function (format) {
         return function () {
           defaultFormat.set(format);
-          insertDateTime(editor, format);
+          insertDateTime(format);
         };
       };
       editor.ui.registry.addNestedMenuItem('insertdatetime', {

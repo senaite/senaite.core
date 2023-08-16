@@ -44,14 +44,10 @@
       <!-- <link tal:replace="structure provider:plone.htmlhead.links" /> -->
       <!-- <metal:styleslot define-slot="style_slot" /> -->
 
-      <!-- SENAITE legacy resouces -->
-      <metal:resources define-slot="senaite_legacy_resources" />
-      <!-- SENAITE legacy JS -->
-      <metal:resources define-slot="senaite_legacy_js" />
-      <!-- SENAITE legacy CSS -->
-      <metal:resources define-slot="senaite_legacy_css" />
+      <!-- NOTE: All Legacy JS/CSS are rendered at the bottom of the page! -->
 
-      <meta name="generator" content="Plone - http://plone.com" />
+      <meta name="generator" content="SENAITE - https://www.senaite.com" />
+
       <meta name="viewport"
             tal:define="viewportvalues bootstrapview/get_viewport_values"
             tal:attributes="content viewportvalues"
@@ -185,6 +181,20 @@
         </div>
 
       </div>
+
+      <!-- NOTE:
+           We define all legacy resource slots at the bottom to ensure these are
+           loaded *after* the JS/CSS from the resources viewlet (rendered in the
+           IHtmlHead viewlet manager) and the HTML is completely loaded.
+      -->
+
+      <!-- SENAITE legacy resouces -->
+      <metal:resources define-slot="senaite_legacy_resources" />
+      <!-- SENAITE legacy JS -->
+      <metal:resources define-slot="senaite_legacy_js" />
+      <!-- SENAITE legacy CSS -->
+      <metal:resources define-slot="senaite_legacy_css" />
+
     </body>
   </html>
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -173,7 +173,9 @@
 
     var punctuation = punctuation$1;
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.Env');
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
@@ -395,7 +397,7 @@
       return all(selector, scope);
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
+    var global = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
 
     var isSimpleBoundary = function (dom, node) {
       return dom.isBlock(node) || has(dom.schema.getShortEndedElements(), node.nodeName);
@@ -459,7 +461,7 @@
         return;
       }
       var rootBlock = dom.getParent(rootNode, dom.isBlock);
-      var walker = new global$1(node, rootBlock);
+      var walker = new global(node, rootBlock);
       var walkerFn = forwards ? walker.next.bind(walker) : walker.prev.bind(walker);
       walk(dom, walkerFn, node, {
         boundary: always,
@@ -478,7 +480,7 @@
       if (skipStart === void 0) {
         skipStart = true;
       }
-      var walker = new global$1(startNode, rootNode);
+      var walker = new global(startNode, rootNode);
       var sections = [];
       var current = nuSection();
       collectTextToBoundary(dom, current, startNode, rootNode, false);
@@ -674,7 +676,7 @@
     };
     var findSpansByIndex = function (editor, index) {
       var spans = [];
-      var nodes = global$2.toArray(editor.getBody().getElementsByTagName('span'));
+      var nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
       if (nodes.length) {
         for (var i = 0; i < nodes.length; i++) {
           var nodeIndex = getElmIndex(nodes[i]);
@@ -728,12 +730,17 @@
       return wholeWord ? '(?:^|\\s|' + punctuation() + ')' + wordRegex + ('(?=$|\\s|' + punctuation() + ')') : wordRegex;
     };
     var find = function (editor, currentSearchState, text, matchCase, wholeWord, inSelection) {
+      var selection = editor.selection;
       var escapedText = escapeSearchText(text, wholeWord);
+      var isForwardSelection = selection.isForward();
       var pattern = {
         regex: new RegExp(escapedText, matchCase ? 'g' : 'gi'),
         matchIndex: 1
       };
       var count = markAllMatches(editor, currentSearchState, pattern, inSelection);
+      if (global$2.browser.isSafari()) {
+        selection.setRng(selection.getRng(), isForwardSelection);
+      }
       if (count) {
         var newIndex = moveSelection(editor, currentSearchState, true);
         currentSearchState.set({
@@ -765,7 +772,7 @@
       var currentMatchIndex, nextIndex = currentIndex;
       forward = forward !== false;
       var node = editor.getBody();
-      var nodes = global$2.grep(global$2.toArray(node.getElementsByTagName('span')), isMatchSpan);
+      var nodes = global$1.grep(global$1.toArray(node.getElementsByTagName('span')), isMatchSpan);
       for (var i = 0; i < nodes.length; i++) {
         var nodeIndex = getElmIndex(nodes[i]);
         var matchIndex = currentMatchIndex = parseInt(nodeIndex, 10);
@@ -806,7 +813,7 @@
     var done = function (editor, currentSearchState, keepEditorSelection) {
       var startContainer, endContainer;
       var searchState = currentSearchState.get();
-      var nodes = global$2.toArray(editor.getBody().getElementsByTagName('span'));
+      var nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
       for (var i = 0; i < nodes.length; i++) {
         var nodeIndex = getElmIndex(nodes[i]);
         if (nodeIndex !== null && nodeIndex.length) {
@@ -903,12 +910,10 @@
       return __assign(__assign({}, subject), { on: on });
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.Env');
-
     var open = function (editor, currentSearchState) {
       var dialogApi = value();
       editor.undoManager.add();
-      var selectedText = global$2.trim(editor.selection.getContent({ format: 'text' }));
+      var selectedText = global$1.trim(editor.selection.getContent({ format: 'text' }));
       var updateButtonStates = function (api) {
         var updateNext = hasNext(editor, currentSearchState) ? api.enable : api.disable;
         updateNext('next');
@@ -940,7 +945,7 @@
         });
       };
       var focusButtonIfRequired = function (api, name) {
-        if (global.browser.isSafari() && global.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
+        if (global$2.browser.isSafari() && global$2.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
           api.focus(name);
         }
       };

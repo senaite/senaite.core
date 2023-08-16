@@ -4,6 +4,15 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2358 Add confirmation when unlinking reference
+- #2357 Skip object reindexing when global auditlog is disabled
+- #2354 Render all legacy resources at the end of the page
+- #2350 Display batch labels in listing
+- #2347 Remove unused inline validation view
+- #2346 Fix unauthorized error when accessing dispatch/partition sample view with shared client role
+- #2343 Allow to define the sorting criteria for Result Options
+- #2345 Retrieve setup items by object
+- #2344 Fix error on sample copy when fields are hidden
 - #2334 Remove legacy reports
 - #2341 Handle nonexisting UIDs gracefully in referencewidget
 - #2340 Fix UID copy method in AT->DX content migrator
