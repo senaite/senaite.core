@@ -39,9 +39,9 @@ INDEXES = BASE_INDEXES + [
     ("getDateSampled", "", "DateIndex"),
     ("getDateVerified", "", "DateIndex"),
     ("getDueDate", "", "DateIndex"),
+    # TODO Remove printing workflow functionality
     ("getPrinted", "", "FieldIndex"),
     ("getPrioritySortkey", "", "FieldIndex"),
-    ("getReceivedBy", "", "FieldIndex"),
     ("getSampler", "", "FieldIndex"),
     ("getSamplingDate", "", "DateIndex"),
     ("isRootAncestor", "", "BooleanIndex"),

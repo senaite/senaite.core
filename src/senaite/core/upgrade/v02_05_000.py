@@ -399,6 +399,7 @@ def purge_catalogs(tool):
             "getClientUID",
             "getDistrict",
             "getProvince",
+            "getReceivedBy",
         ],
         CLIENT_CATALOG: [
             "getClientID",
