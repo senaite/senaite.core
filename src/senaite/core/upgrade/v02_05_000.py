@@ -398,6 +398,7 @@ def purge_catalogs(tool):
             "getClientID",
             "getClientUID",
             "getDistrict",
+            "getProvince",
         ],
         CLIENT_CATALOG: [
             "getClientID",
@@ -412,6 +413,7 @@ def purge_catalogs(tool):
     columns_to_remove = {
         SAMPLE_CATALOG: [
             "getDistrict",
+            "getProvince",
         ],
     }
 

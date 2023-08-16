@@ -146,12 +146,6 @@ class SamplesView(ListingView):
                 "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
-            ("Province", {
-                "title": _("Province"),
-                "sortable": True,
-                "index": "getProvince",
-                "attr": "getProvince",
-                "toggle": False}),
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
