@@ -419,26 +419,33 @@ def purge_catalogs(tool):
         ],
     }
 
-    portal = api.get_portal()
-    for obj in portal.objectValues():
-        idxs_to_remove = indexes_to_remove.get(obj.id, [])
-        cols_to_remove = columns_to_remove.get(obj.id, [])
-        if isinstance(obj, BaseCatalog):
+    # catalog ids to update
+    catalog_ids = indexes_to_remove.keys() + columns_to_remove.keys()
+    catalog_ids = list(set(catalog_ids))
+
+    for cat_id in catalog_ids:
+        cat = api.get_tool(cat_id, default=None)
+        if not cat:
+            continue
+
+        idxs_to_remove = indexes_to_remove.get(cat_id, [])
+        cols_to_remove = columns_to_remove.get(cat_id, [])
+        if isinstance(cat, BaseCatalog):
             idxs = indexes_to_remove.get("base_catalog", [])
             cols = columns_to_remove.get("base_catalog", [])
             idxs_to_remove.extend(idxs)
             cols_to_remove.extend(cols)
 
         for index in idxs_to_remove:
-            if index not in obj.indexes():
+            if index not in cat.indexes():
                 continue
-            logger.info("{}: removing index {}".format(obj.id, index))
-            del_index(obj, index)
+            logger.info("{}: removing index {}".format(cat_id, index))
+            del_index(cat, index)
 
         for column in cols_to_remove:
-            if column not in obj.schema():
+            if column not in cat.schema():
                 continue
-            logger.info("{}: removing column {}".format(obj.id, column))
-            del_column(obj, column)
+            logger.info("{}: removing column {}".format(cat_id, column))
+            del_column(cat, column)
 
     logger.info("Purging catalogs [DONE]")
