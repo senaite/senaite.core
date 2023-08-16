@@ -397,6 +397,7 @@ def purge_catalogs(tool):
         SAMPLE_CATALOG: [
             "getClientID",
             "getClientUID",
+            "getDistrict",
         ],
         CLIENT_CATALOG: [
             "getClientID",
@@ -409,7 +410,9 @@ def purge_catalogs(tool):
         ]
     }
     columns_to_remove = {
-
+        SAMPLE_CATALOG: [
+            "getDistrict",
+        ],
     }
 
     portal = api.get_portal()

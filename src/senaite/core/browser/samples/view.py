@@ -152,12 +152,6 @@ class SamplesView(ListingView):
                 "index": "getProvince",
                 "attr": "getProvince",
                 "toggle": False}),
-            ("District", {
-                "title": _("District"),
-                "sortable": True,
-                "index": "getDistrict",
-                "attr": "getDistrict",
-                "toggle": False}),
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
