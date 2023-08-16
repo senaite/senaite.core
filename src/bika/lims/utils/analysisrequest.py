@@ -89,6 +89,8 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request and submit the form
     ar = _createObjectByType("AnalysisRequest", client, tmpID())
+    # mark the sample as temporary to avoid indexing
+    api.mark_temporary(ar)
     # NOTE: We call here `_processForm` (with underscore) to manually unmark
     #       the creation flag and trigger the `ObjectInitializedEvent`, which
     #       is used for snapshot creation.
@@ -147,9 +149,13 @@ def create_analysisrequest(client, request, values, analyses=None,
                                 action="no_sampling_workflow")
 
     renameAfterCreation(ar)
+    # AT only
     ar.unmarkCreationFlag()
-    # explicit reindexing after creation flag is unset
+    # unmark the sample as temporary
+    api.unmark_temporary(ar)
+    # explicit reindexing after sample finalization
     ar.reindexObject()
+    # notify object initialization (also creates a snapshot)
     event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically

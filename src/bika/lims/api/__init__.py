@@ -25,9 +25,8 @@ from datetime import datetime
 from datetime import timedelta
 from itertools import groupby
 
-import six
-
 import Missing
+import six
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from Acquisition import aq_inner
@@ -63,13 +62,16 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import ITemporaryObject
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.event import notify
+from zope.interface import alsoProvides
 from zope.interface import directlyProvides
+from zope.interface import noLongerProvides
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -1739,6 +1741,9 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
+    if ITemporaryObject.providedBy(obj):
+        return True
+
     obj_id = getattr(aq_base(obj), "id", None)
     if obj_id is None or UID_RX.match(obj_id):
         return True
@@ -1752,9 +1757,6 @@ def is_temporary(obj):
         return True
 
     if is_at_content(obj):
-        # Checks if the `creationFlag` is set
-        if obj.checkCreationFlag():
-            return True
 
         # Checks to see if we are created inside the portal_factory. We don't
         # rely here on AT's isFactoryContained because the function is patched
@@ -1762,6 +1764,20 @@ def is_temporary(obj):
         return meta_type == "TempFolder"
 
     return False
+
+
+def mark_temporary(brain_or_object):
+    """Mark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    alsoProvides(obj, ITemporaryObject)
+
+
+def unmark_temporary(brain_or_object):
+    """Unmark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    noLongerProvides(obj, ITemporaryObject)
 
 
 def is_string(thing):
