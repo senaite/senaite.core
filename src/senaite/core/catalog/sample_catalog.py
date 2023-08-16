@@ -34,6 +34,8 @@ INDEXES = BASE_INDEXES + [
     ("getBatchUID", "", "FieldIndex"),
     ("getClientSampleID", "", "FieldIndex"),
     ("getClientTitle", "", "FieldIndex"),
+    # used by client-aware reference widget
+    ("getClientUID", "", "FieldIndex"),
     ("getDatePublished", "", "DateIndex"),
     ("getDateReceived", "", "DateIndex"),
     ("getDateSampled", "", "DateIndex"),

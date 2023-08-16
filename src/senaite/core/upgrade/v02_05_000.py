@@ -396,7 +396,6 @@ def purge_catalogs(tool):
         ],
         SAMPLE_CATALOG: [
             "getClientID",
-            "getClientUID",
             "getDistrict",
             "getProvince",
             "getReceivedBy",
