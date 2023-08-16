@@ -400,6 +400,7 @@ def purge_catalogs(tool):
             "getDistrict",
             "getProvince",
             "getReceivedBy",
+            "getSampler",
         ],
         CLIENT_CATALOG: [
             "getClientID",
