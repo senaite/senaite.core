@@ -62,10 +62,10 @@ def get_registry_record(name, default=None):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
-        proxy = registry.forInterface(interface)
         try:
+            proxy = registry.forInterface(interface)
             return getattr(proxy, name)
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
     return default
 
