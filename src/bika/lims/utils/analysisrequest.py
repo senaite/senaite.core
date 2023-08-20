@@ -129,11 +129,10 @@ def create_analysisrequest(client, request, values, analyses=None,
         if date_received:
             receive_sample(ar, date_received=date_received)
 
-    partition = ar.isPartition()
-    if partition:
+    parent_sample = ar.getParentAnalysisRequest()
+    if parent_sample:
         # Always set partition to received
-        root = ar.getParentAnalysisRequest()
-        date_received = root.getDateReceived()
+        date_received = parent_sample.getDateReceived()
         receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
@@ -142,7 +141,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         if ar.getSamplingRequired():
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
                                 action="to_be_sampled")
-        elif not ar.getSamplingRequired() and setup.getAutoreceiveSamples():
+        elif setup.getAutoreceiveSamples():
             receive_sample(ar)
         else:
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
