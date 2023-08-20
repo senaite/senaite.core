@@ -122,20 +122,19 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
-        ar.setDateReceived(primary.getDateReceived())
 
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
-        if primary.getDateReceived():
-            receive_sample(ar)
+        date_received = primary.getDateReceived()
+        if date_received:
+            receive_sample(ar, date_received=date_received)
 
     partition = ar.isPartition()
     if partition:
-        # Always set partition to received state
-        receive_sample(ar)
-        # set the received date according to the parent
+        # Always set partition to received
         root = ar.getParentAnalysisRequest()
-        ar.setDateReceived(root.getDateReceived())
+        date_received = root.getDateReceived()
+        receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
@@ -178,7 +177,7 @@ def reindex(obj, recursive=False):
             reindex(child)
 
 
-def receive_sample(sample, check_permission=False):
+def receive_sample(sample, check_permission=False, date_received=None):
     """Receive the sample without transition
     """
 
@@ -194,7 +193,9 @@ def receive_sample(sample, check_permission=False):
     # Mark the secondary as received
     alsoProvides(sample, IReceived)
     # Manually set the received date
-    sample.setDateReceived(DateTime())
+    if not date_received:
+        date_received = DateTime()
+    sample.setDateReceived(date_received)
 
     # Initialize analyses
     # NOTE: We use here `objectValues` instead of `getAnalyses`,
