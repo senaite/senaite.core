@@ -43,6 +43,7 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
+from DateTime import DateTime
 from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
@@ -154,7 +155,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     # unmark the sample as temporary
     api.unmark_temporary(ar)
     # explicit reindexing after sample finalization
-    ar.reindexObject()
+    reindex(ar)
     # notify object initialization (also creates a snapshot)
     event.notify(ObjectInitializedEvent(ar))
 
@@ -163,6 +164,18 @@ def create_analysisrequest(client, request, values, analyses=None,
         do_rejection(ar)
 
     return ar
+
+
+def reindex(obj, recursive=False):
+    """Reindex the object
+
+    :param obj: The object to reindex
+    :param recursive: If true, all child objects are reindexed recursively
+    """
+    obj.reindexObject()
+    if recursive:
+        for child in obj.objectValues():
+            reindex(child)
 
 
 def receive_sample(sample, check_permission=False):
@@ -180,6 +193,8 @@ def receive_sample(sample, check_permission=False):
 
     # Mark the secondary as received
     alsoProvides(sample, IReceived)
+    # Manually set the received date
+    sample.setDateReceived(DateTime())
 
     # Initialize analyses
     # NOTE: We use here `objectValues` instead of `getAnalyses`,
@@ -342,7 +357,7 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # Copy the analyses from the source
-    intermediate_states = ['retracted',]
+    intermediate_states = ['retracted', ]
     for an in ar.getAnalyses(full_objects=True):
         # skip retests
         if an.isRetest():
