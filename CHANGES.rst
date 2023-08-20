@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2359 Improve sample create performance
+- #2361 Fix KeyError if registry key not found
 - #2358 Add confirmation when unlinking reference
 - #2357 Skip object reindexing when global auditlog is disabled
 - #2354 Render all legacy resources at the end of the page
