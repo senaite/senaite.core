@@ -66,8 +66,14 @@ def get_registry_record(name, default=None):
         try:
             proxy = registry.forInterface(interface)
             return getattr(proxy, name)
-        except (AttributeError, KeyError) as exc:
-            logger.error(exc)
+        except (AttributeError, KeyError):
+            pass
+
+    interfaces = map(lambda i: i.__identifier__, get_registry_interfaces())
+    logger.error("No registry record found for '{}' in interfaces '{}'. "
+                 "Returning default value: '{}'. Upgrade step not run?"
+                 .format(name, interfaces, default))
+
     return default
 
 
