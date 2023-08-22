@@ -4,7 +4,6 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
-- #2355 Analysis results derived from calculations are not formatted
 - #2354 Render all legacy resources at the end of the page
 - #2350 Display batch labels in listing
 - #2347 Remove unused inline validation view
