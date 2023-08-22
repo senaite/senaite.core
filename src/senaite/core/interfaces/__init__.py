@@ -91,6 +91,16 @@ class IItem(Interface):
     """
 
 
+class ITemporaryObject(Interface):
+    """Marker interface for temporary objects
+
+    This is similar to the `creationFlag`, but skips indexing for any object
+    that implements this interface.
+
+    Also see: `senaite.core.patches.catalog.catlog_object`
+    """
+
+
 class ISetup(Interface):
     """Marker interface for setup folder
     """

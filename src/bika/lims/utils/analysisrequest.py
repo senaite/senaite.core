@@ -22,21 +22,12 @@ import itertools
 from string import Template
 
 import six
-from Products.Archetypes.config import UID_CATALOG
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from senaite.core.workflow import ANALYSIS_WORKFLOW
-from senaite.core.workflow import SAMPLE_WORKFLOW
-from zope.interface import alsoProvides
-from zope.lifecycleevent import modified
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.mail import send_email
-from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestRetest
@@ -52,7 +43,17 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from DateTime import DateTime
+from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.permissions.sample import can_receive
+from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import SAMPLE_WORKFLOW
+from zope import event
+from zope.interface import alsoProvides
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -88,8 +89,13 @@ def create_analysisrequest(client, request, values, analyses=None,
     specification = values.pop("Specification", None)
 
     # Create the Analysis Request and submit the form
-    ar = _createObjectByType('AnalysisRequest', client, tmpID())
-    ar.processForm(REQUEST=request, values=values)
+    ar = _createObjectByType("AnalysisRequest", client, tmpID())
+    # mark the sample as temporary to avoid indexing
+    api.mark_temporary(ar)
+    # NOTE: We call here `_processForm` (with underscore) to manually unmark
+    #       the creation flag and trigger the `ObjectInitializedEvent`, which
+    #       is used for snapshot creation.
+    ar._processForm(REQUEST=request, values=values)
 
     # Set the analyses manually
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
@@ -113,51 +119,93 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Mark the secondary with the `IAnalysisRequestSecondary` interface
         alsoProvides(ar, IAnalysisRequestSecondary)
 
-        # Rename the secondary according to the ID server setup
-        renameAfterCreation(ar)
-
         # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
-        ar.setDateReceived(primary.getDateReceived())
 
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
-        if primary.getDateReceived():
-            primary_id = primary.getId()
-            comment = "Auto-received. Secondary Sample of {}".format(primary_id)
-            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_received",
-                                action="receive", comments=comment)
+        date_received = primary.getDateReceived()
+        if date_received:
+            receive_sample(ar, date_received=date_received)
 
-            # Mark the secondary as received
-            alsoProvides(ar, IReceived)
+    parent_sample = ar.getParentAnalysisRequest()
+    if parent_sample:
+        # Always set partition to received
+        date_received = parent_sample.getDateReceived()
+        receive_sample(ar, date_received=date_received)
 
-            # Initialize analyses
-            do_action_to_analyses(ar, "initialize")
+    if not IReceived.providedBy(ar):
+        setup = api.get_setup()
+        # Sampling is required
+        if ar.getSamplingRequired():
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
+                                action="to_be_sampled")
+        elif setup.getAutoreceiveSamples():
+            receive_sample(ar)
+        else:
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
+                                action="no_sampling_workflow")
 
-            # Notify the ar has ben modified
-            modified(ar)
-
-            # Reindex the AR
-            ar.reindexObject()
-
-            # If rejection reasons have been set, reject automatically
-            if rejection_reasons:
-                do_rejection(ar)
-
-            # In "received" state already
-            return ar
-
-    # Try first with no sampling transition, cause it is the most common config
-    success, message = doActionFor(ar, "no_sampling_workflow")
-    if not success:
-        doActionFor(ar, "to_be_sampled")
+    renameAfterCreation(ar)
+    # AT only
+    ar.unmarkCreationFlag()
+    # unmark the sample as temporary
+    api.unmark_temporary(ar)
+    # explicit reindexing after sample finalization
+    reindex(ar)
+    # notify object initialization (also creates a snapshot)
+    event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
         do_rejection(ar)
 
     return ar
+
+
+def reindex(obj, recursive=False):
+    """Reindex the object
+
+    :param obj: The object to reindex
+    :param recursive: If true, all child objects are reindexed recursively
+    """
+    obj.reindexObject()
+    if recursive:
+        for child in obj.objectValues():
+            reindex(child)
+
+
+def receive_sample(sample, check_permission=False, date_received=None):
+    """Receive the sample without transition
+    """
+
+    # NOTE: In `sample_registered` state we do not grant any roles the
+    #       permission to receive a sample! Not sure if this can be ignored
+    #       when the LIMS is configured to auto-receive samples?
+    if check_permission and not can_receive(sample):
+        return False
+
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_received",
+                        action="receive")
+
+    # Mark the secondary as received
+    alsoProvides(sample, IReceived)
+    # Manually set the received date
+    if not date_received:
+        date_received = DateTime()
+    sample.setDateReceived(date_received)
+
+    # Initialize analyses
+    # NOTE: We use here `objectValues` instead of `getAnalyses`,
+    #       because the Analyses are not yet indexed!
+    for obj in sample.objectValues():
+        if obj.portal_type != "Analysis":
+            continue
+        changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
+                            action="initialize")
+
+    return True
 
 
 def apply_hidden_services(sample):
@@ -309,7 +357,7 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # Copy the analyses from the source
-    intermediate_states = ['retracted',]
+    intermediate_states = ['retracted', ]
     for an in ar.getAnalyses(full_objects=True):
         # skip retests
         if an.isRetest():
@@ -427,6 +475,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Populate the root's ResultsRanges to partitions
     results_ranges = ar.getResultsRange() or []
+
     partition = create_analysisrequest(client,
                                        request=request,
                                        values=record,
@@ -436,23 +485,6 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     # Reindex Parent Analysis Request
     ar.reindexObject(idxs=["isRootAncestor"])
 
-    # Manually set the Date Received to match with its parent. This is
-    # necessary because crar calls to processForm, so DateReceived is not
-    # set because the partition has not been received yet
-    partition.setDateReceived(ar.getDateReceived())
-    partition.reindexObject(idxs="getDateReceived")
-
-    # Always set partition to received state
-    changeWorkflowState(partition, SAMPLE_WORKFLOW, "sample_received")
-    alsoProvides(partition, IReceived)
-
-    # And initialize the analyses the partition contains. This is required
-    # here because the transition "initialize" of analyses rely on a guard,
-    # so the initialization can only be performed when the sample has been
-    # received (DateReceived is set)
-    for analysis in partition.getAnalyses(full_objects=True):
-        doActionFor(analysis, "initialize")
-        analysis.reindexObject()
     return partition
 
 
