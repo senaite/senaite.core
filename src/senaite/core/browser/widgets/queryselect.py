@@ -55,7 +55,6 @@ class QuerySelectWidget(StringWidget):
         "value_query_index": "title",
         "padding": 3,
         "display_template": None,
-        "hide_input_after_select": False,
         "clear_results_after_select": False,
         "results_table_width": "500px",
     })
@@ -112,8 +111,6 @@ class QuerySelectWidget(StringWidget):
             "data-multi_valued": getattr(self, "multi_valued", True),
             "data-disabled": getattr(self, "disabled", False),
             "data-readonly": getattr(self, "readonly", False),
-            "data-hide_input_after_select": getattr(
-                self, "hide_input_after_select", True),
             "data-clear_results_after_select": getattr(
                 self, "clear_results_after_select", False),
         }

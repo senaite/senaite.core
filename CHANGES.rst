@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2363 Auto-hide non-multivalued reference widget input on value selection
 - #2359 Improve sample create performance
 - #2361 Fix KeyError if registry key not found
 - #2358 Add confirmation when unlinking reference

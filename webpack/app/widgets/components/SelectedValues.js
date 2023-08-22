@@ -76,7 +76,7 @@ class SelectedValues extends React.Component {
             <button value={value}
                     data-toggle="confirmation"
                     data-title={_t("Unlink reference?")}
-                    className="btn btn-sm btn-link-danger"
+                    className="btn btn-sm p-0 ml-2"
                     onClick={this.on_deselect}>
               <i className="fas fa-times-circle"></i>
             </button>

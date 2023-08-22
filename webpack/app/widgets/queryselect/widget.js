@@ -54,7 +54,6 @@ class QuerySelectWidgetController extends React.Component {
       "columns",  // columns to be displayed in the results popup
       "display_template",  // template to use for the selected values
       "multi_valued",  // if true, more than one value can be set
-      "hide_input_after_select",  // only for single valued fields to hide the input after selection
       "clear_results_after_select",  // clear results after value select
       "disabled",  // if true, the field is rendered as not editable
       "readonly",  // if true, the field is rendered as not editable
@@ -236,7 +235,13 @@ class QuerySelectWidgetController extends React.Component {
    * @returns {Boolean} true/false if the search field is rendered
    */
   show_search_field() {
-    if (!this.state.multi_valued && this.state.values.length > 0 && this.state.hide_input_after_select) {
+    if (this.state.disabled) {
+      return false;
+    }
+    if (this.state.readonly) {
+      return false;
+    }
+    if (!this.state.multi_valued && this.state.values.length > 0) {
       return false;
     }
     return true;

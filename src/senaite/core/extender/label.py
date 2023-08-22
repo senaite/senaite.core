@@ -45,7 +45,6 @@ class LabelSchemaExtender(object):
                 search_wildcard=True,
                 multi_valued=True,
                 allow_user_value=True,
-                hide_input_after_select=False,
                 i18n_domain="senaite.core",
                 query={
                     "portal_type": "Label",

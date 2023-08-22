@@ -77,7 +77,6 @@ class ILabelSchema(model.Schema):
         search_wildcard=True,
         multi_valued=True,
         allow_user_value=True,
-        hide_input_after_select=False,
         query={
             "portal_type": "Label",
             "is_active": True,
