@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2356 Fix Analysis results derived from calculations are not formatted 
 - #2361 Fix KeyError if registry key not found
 - #2358 Add confirmation when unlinking reference
 - #2357 Skip object reindexing when global auditlog is disabled
