@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -124,6 +124,7 @@
       };
     };
 
+    var internalEditorStyle = /^\.(?:ephox|tiny-pageembed|mce)(?:[.-]+\w+)+$/;
     var removeCacheSuffix = function (url) {
       var cacheSuffix = global$1.cacheSuffix;
       if (isString(url)) {
@@ -295,7 +296,7 @@
           return null;
         };
         global.each(getSelectors(editor, editor.getDoc(), compileFilter(getFileFilter(editor))), function (selector) {
-          if (selector.indexOf('.mce-') === -1) {
+          if (!internalEditorStyle.test(selector)) {
             if (!selectorFilter || selectorFilter(selector)) {
               var selectorGroups = getGroupsBySelector(groups, selector);
               if (selectorGroups.length > 0) {
