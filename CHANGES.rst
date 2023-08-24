@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2364 Support for fieldname-prefixed values on sample header submit
 - #2363 Auto-hide non-multivalued reference widget input on value selection
 - #2359 Improve sample create performance
 - #2361 Fix KeyError if registry key not found
