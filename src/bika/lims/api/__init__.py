@@ -1790,6 +1790,19 @@ def is_string(thing):
     return isinstance(thing, six.string_types)
 
 
+def parse_json(thing, default=""):
+    """Parse from JSON
+
+    :param thing: thing to parse
+    :param default: value to return if cannot parse
+    :returns: the object representing the JSON or default
+    """
+    try:
+        return json.loads(thing)
+    except (TypeError, ValueError):
+        return default
+
+
 def to_list(value):
     """Converts the value to a list
 
@@ -1797,12 +1810,7 @@ def to_list(value):
     :returns: a list that represents or contains the value
     """
     if is_string(value):
-        try:
-            val = json.loads(value)
-            if isinstance(val, (list, tuple, set)):
-                value = val
-        except (ValueError, TypeError):
-            pass
+        value = parse_json(value, value)
     if not isinstance(value, (list, tuple, set)):
         value = [value]
     return list(value)

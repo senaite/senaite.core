@@ -2099,6 +2099,26 @@ It works for Dexterity types as well::
     '50 ml'
 
 
+Parse to JSON
+.............
+
+    >>> api.parse_json('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> obj = api.parse_json('{"a": 1, "b": 2, "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, 2, 3]
+
+    >>> obj = api.parse_json('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, [u'one', u'two', 3], 3]
+
+    >>> api.parse_json("ko")
+    ''
+
+    >>> api.parse_json("ko", default="ok")
+    'ok'
+
 Convert to list
 ...............
 
