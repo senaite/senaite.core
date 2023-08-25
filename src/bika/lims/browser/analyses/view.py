@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -1011,18 +1012,11 @@ class AnalysesView(ListingView):
         result_type = interim.get("result_type", "")
         return result_type.startswith("multi")
 
+    @deprecated("Use api.to_list instead")
     def to_list(self, value):
         """Converts the value to a list
         """
-        try:
-            val = json.loads(value)
-            if isinstance(val, (list, tuple, set)):
-                value = val
-        except (ValueError, TypeError):
-            pass
-        if not isinstance(value, (list, tuple, set)):
-            value = [value]
-        return value
+        return api.to_list(value)
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -1090,7 +1084,7 @@ class AnalysesView(ListingView):
             choices = interim_field.get("choices")
             if choices:
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Get the {value:text} dict
                 choices = choices.split("|")
@@ -1120,7 +1114,7 @@ class AnalysesView(ListingView):
 
             elif self.is_multi_interim(interim_field):
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Set the text as the formatted value
                 text = "<br/>".join(filter(None, interim_value))

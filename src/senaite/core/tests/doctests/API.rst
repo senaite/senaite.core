@@ -2097,3 +2097,28 @@ It works for Dexterity types as well::
 
     >>> sample_container_copy.getCapacity()
     '50 ml'
+
+
+Convert to list
+...............
+
+    >>> api.to_list(None)
+    [None]
+
+    >>> api.to_list(["a", "b", "c"])
+    ['a', 'b', 'c']
+
+    >>> api.to_list('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> api.to_list("a, b, c")
+    ['a, b, c']
+
+    >>> api.to_list([{"a": 1}, {"b": 2}, {"c": 3}])
+    [{'a': 1}, {'b': 2}, {'c': 3}]
+
+    >>> api.to_list('[{"a": 1}, {"b": 2}, {"c": 3}]')
+    [{u'a': 1}, {u'b': 2}, {u'c': 3}]
+
+    >>> api.to_list({"a": 1})
+    [{'a': 1}]
