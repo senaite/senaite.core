@@ -1810,7 +1810,9 @@ def to_list(value):
     :returns: a list that represents or contains the value
     """
     if is_string(value):
-        value = parse_json(value, value)
+        val = parse_json(value)
+        if isinstance(val, (list, tuple, set)):
+            value = val
     if not isinstance(value, (list, tuple, set)):
         value = [value]
     return list(value)

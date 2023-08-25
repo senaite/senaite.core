@@ -2142,3 +2142,6 @@ Convert to list
 
     >>> api.to_list({"a": 1})
     [{'a': 1}]
+
+    >>> api.to_list('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    ['{"a": 1, "b": ["one", "two", 3], "c": 3}']
