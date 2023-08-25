@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import json
 import re
 from collections import OrderedDict
 from datetime import datetime
@@ -1787,3 +1788,31 @@ def is_string(thing):
     :returns: True if the object is a string
     """
     return isinstance(thing, six.string_types)
+
+
+def parse_json(thing, default=""):
+    """Parse from JSON
+
+    :param thing: thing to parse
+    :param default: value to return if cannot parse
+    :returns: the object representing the JSON or default
+    """
+    try:
+        return json.loads(thing)
+    except (TypeError, ValueError):
+        return default
+
+
+def to_list(value):
+    """Converts the value to a list
+
+    :param value: the value to be represented as a list
+    :returns: a list that represents or contains the value
+    """
+    if is_string(value):
+        val = parse_json(value)
+        if isinstance(val, (list, tuple, set)):
+            value = val
+    if not isinstance(value, (list, tuple, set)):
+        value = [value]
+    return list(value)
