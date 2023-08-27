@@ -30,6 +30,8 @@ from senaite.core.catalog.autoimportlog_catalog import \
 from senaite.core.catalog.autoimportlog_catalog import AutoImportLogCatalog
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.client_catalog import ClientCatalog
+from senaite.core.catalog.contact_catalog import CATALOG_ID as CONTACT_CATALOG
+from senaite.core.catalog.contact_catalog import ContactCatalog
 from senaite.core.catalog.label_catalog import CATALOG_ID as LABEL_CATALOG
 from senaite.core.catalog.label_catalog import LabelCatalog
 from senaite.core.catalog.report_catalog import CATALOG_ID as REPORT_CATALOG
