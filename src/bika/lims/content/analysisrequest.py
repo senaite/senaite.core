@@ -1441,7 +1441,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Sample Add form, but cannot be changed afterwards. The Sample is
         created directly inside the selected client folder on submit
         """
-        parent = api.get_parent(self)
+        parent = self.aq_parent
         if IClient.providedBy(parent):
             return parent
         elif IBatch.providedBy(parent):
