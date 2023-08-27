@@ -63,7 +63,6 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
-from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.interfaces import ITemporaryObject
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
@@ -1328,7 +1327,8 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     if not user:
         return None
 
-    query = {'portal_type': contact_types, 'getUsername': user.id}
+    from senaite.core.catalog import CONTACT_CATALOG
+    query = {"portal_type": contact_types, "getUsername": user.id}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
