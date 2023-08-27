@@ -1441,18 +1441,14 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Sample Add form, but cannot be changed afterwards. The Sample is
         created directly inside the selected client folder on submit
         """
-        # return the field value
+        parent = api.get_parent(self)
+        if IClient.providedBy(parent):
+            return parent
+        elif IBatch.providedBy(parent):
+            return parent.getClient()
+        # Fallback to UID reference field value
         field = self.getField("Client")
-        client = field.get(self)
-        # BBB: client field was not set properly in previous versions!
-        if not client:
-            logger.warning("Client not set for %s" % self.getId())
-            parent = api.get_parent(self)
-            if IClient.providedBy(parent):
-                client = parent
-            elif IBatch.providedBy(parent):
-                client = parent.getClient()
-        return client
+        return field.get(self)
 
     @deprecated("Will be removed in SENAITE 3.0")
     def getProfilesURL(self):
