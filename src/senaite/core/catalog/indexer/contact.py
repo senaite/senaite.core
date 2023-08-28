@@ -63,6 +63,13 @@ def listing_searchable_text(instance):
         instance.getUsername(),
     ]
 
+    department = instance.getDepartment()  # part of person base class
+    if isinstance(department, list):  # override in labcontact
+        department_titles = map(api.get_title, department)
+        tokens.extend(department_titles)
+    elif api.is_string(department):
+        tokens.append(department)
+
     # remove duplicates and filter out emtpies
     tokens = filter(None, set(tokens))
 
