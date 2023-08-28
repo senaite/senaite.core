@@ -195,6 +195,8 @@ PORTAL_CATALOG_INDEXES = (
     "path",
     "portal_type",
     "review_state",
+    "is_default_page",
+    "is_folderish",
 )
 
 PORTAL_CATALOG_COLUMNS = (
