@@ -429,6 +429,11 @@ class ILabContact(Interface):
     """
 
 
+class ISupplierContact(Interface):
+    """Marker interface for a supplier contact
+    """
+
+
 class IManufacturer(Interface):
     """Marker interface for Manufacturer
     """
