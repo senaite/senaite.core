@@ -55,7 +55,6 @@ def contact_searchable_text(instance):
         instance.getBusinessPhone(),
         instance.getCity(),
         instance.getCountry(),
-        instance.getDepartment(),
         instance.getEmailAddress(),
         instance.getFullname(),
         instance.getHomePhone(),
