@@ -13,7 +13,7 @@ CATALOG_TITLE = "Senaite Contact Catalog"
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("Title", "", "ZCTextIndex"),  # needed for reference fields
-    ("contact_searchable_text", "", "ZCTextIndex"),
+    ("listing_searchable_text", "", "ZCTextIndex"),
     ("getFullname", "", "FieldIndex"),
     ("getParentUID", "", "FieldIndex"),
     ("getUsername", "", "FieldIndex"),

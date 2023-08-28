@@ -47,7 +47,7 @@ def getParentUID(instance):
 @indexer(IContact, IContactCatalog)
 @indexer(ILabContact, IContactCatalog)
 @indexer(ISupplierContact, IContactCatalog)
-def contact_searchable_text(instance):
+def listing_searchable_text(instance):
     """Extract search tokens for ZC text index
     """
 
