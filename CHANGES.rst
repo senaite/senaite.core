@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2367 Contact catalog
 - #2366 Add fallback to sample client field value
 - #2365 New function for interim fields formatting
 - #2364 Support for fieldname-prefixed values on sample header submit
