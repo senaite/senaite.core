@@ -14,9 +14,10 @@ INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("Title", "", "ZCTextIndex"),  # needed for reference fields
     ("contact_searchable_text", "", "ZCTextIndex"),
-    ("sortable_title", "", "FieldIndex"),
     ("getFullname", "", "FieldIndex"),
+    ("getParentUID", "", "FieldIndex"),
     ("getUsername", "", "FieldIndex"),
+    ("sortable_title", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
