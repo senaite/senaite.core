@@ -30,6 +30,8 @@ from Products.GenericSetup.utils import _resolveDottedName
 from senaite.core import logger
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import del_column
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import get_indexes
 from senaite.core.api.catalog import reindex_index
@@ -68,8 +70,6 @@ except ImportError:
 
     class INonInstallable(Interface):
         pass
-
-PORTAL_CATALOG = "portal_catalog"
 
 
 @implementer(INonInstallable)
@@ -122,82 +122,85 @@ CATALOGS = (
 
 INDEXES = (
     # catalog, id, indexed attribute, type
-    (PORTAL_CATALOG, "Analyst", "", "FieldIndex"),
-    (PORTAL_CATALOG, "analysisRequestTemplates", "", "FieldIndex"),
-    (PORTAL_CATALOG, "getFullname", "", "FieldIndex"),
-    (PORTAL_CATALOG, "getName", "", "FieldIndex"),
-    (PORTAL_CATALOG, "getParentUID", "", "FieldIndex"),
-    (PORTAL_CATALOG, "getUsername", "", "FieldIndex"),
-    (PORTAL_CATALOG, "is_active", "", "BooleanIndex"),
-    (PORTAL_CATALOG, "path", "getPhysicalPath", "ExtendedPathIndex"),
-    (PORTAL_CATALOG, "review_state", "", "FieldIndex"),
-    (PORTAL_CATALOG, "sample_uid", "", "KeywordIndex"),
-    (PORTAL_CATALOG, "title", "", "FieldIndex"),
 )
 
 COLUMNS = (
     # catalog, column name
-    (PORTAL_CATALOG, "analysisRequestTemplates"),
-    (PORTAL_CATALOG, "review_state"),
-    (PORTAL_CATALOG, "getClientID"),
-    (PORTAL_CATALOG, "Analyst"),
 )
 
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
-    ("ARReport", [REPORT_CATALOG, PORTAL_CATALOG]),
-    ("ARTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("ARReport", [REPORT_CATALOG]),
+    ("ARTemplate", [SETUP_CATALOG]),
     ("Analysis", [ANALYSIS_CATALOG]),
-    ("AnalysisCategory", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("AnalysisProfile", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AnalysisCategory", [SETUP_CATALOG]),
+    ("AnalysisProfile", [SETUP_CATALOG]),
     ("AnalysisRequest", [SAMPLE_CATALOG]),
-    ("AnalysisService", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("AnalysisSpec", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Attachment", [SENAITE_CATALOG, PORTAL_CATALOG]),
-    ("AttachmentType", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG, PORTAL_CATALOG]),
-    ("Batch", [SENAITE_CATALOG, PORTAL_CATALOG]),
-    ("BatchLabel", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Calculation", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("AnalysisService", [SETUP_CATALOG]),
+    ("AnalysisSpec", [SETUP_CATALOG]),
+    ("Attachment", [SENAITE_CATALOG]),
+    ("AttachmentType", [SETUP_CATALOG]),
+    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG]),
+    ("Batch", [SENAITE_CATALOG]),
+    ("BatchLabel", [SETUP_CATALOG]),
+    ("Calculation", [SETUP_CATALOG]),
     ("Client", [CLIENT_CATALOG]),
     ("Contact", [CONTACT_CATALOG]),
-    ("Container", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("ContainerType", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Department", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("DuplicateAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
-    ("Instrument", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentCalibration", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentCertification", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentMaintenanceTask", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentScheduledTask", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentType", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("InstrumentValidation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
+    ("Container", [SETUP_CATALOG]),
+    ("ContainerType", [SETUP_CATALOG]),
+    ("Department", [SETUP_CATALOG]),
+    ("DuplicateAnalysis", [ANALYSIS_CATALOG]),
+    ("Instrument", [SETUP_CATALOG]),
+    ("InstrumentCalibration", [SETUP_CATALOG]),
+    ("InstrumentCertification", [SETUP_CATALOG]),
+    ("InstrumentLocation", [SETUP_CATALOG]),
+    ("InstrumentMaintenanceTask", [SETUP_CATALOG]),
+    ("InstrumentScheduledTask", [SETUP_CATALOG]),
+    ("InstrumentType", [SETUP_CATALOG]),
+    ("InstrumentValidation", [SETUP_CATALOG]),
+    ("Invoice", [SENAITE_CATALOG]),
     ("LabContact", [CONTACT_CATALOG]),
-    ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("LabProduct", [SETUP_CATALOG]),
     ("Label", [SETUP_CATALOG]),
-    ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Manufacturer", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Method", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Multifile", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Preservation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Pricelist", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("ReferenceAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
-    ("ReferenceDefinition", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("ReferenceSample", [SENAITE_CATALOG, PORTAL_CATALOG]),
-    ("RejectAnalysis", [ANALYSIS_CATALOG, PORTAL_CATALOG]),
-    ("SampleCondition", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SampleMatrix", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SamplePoint", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SampleType", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SamplingDeviation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("StorageLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SubGroup", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("Supplier", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Laboratory", [SETUP_CATALOG]),
+    ("Manufacturer", [SETUP_CATALOG]),
+    ("Method", [SETUP_CATALOG]),
+    ("Multifile", [SETUP_CATALOG]),
+    ("Preservation", [SETUP_CATALOG]),
+    ("Pricelist", [SETUP_CATALOG]),
+    ("ReferenceAnalysis", [ANALYSIS_CATALOG]),
+    ("ReferenceDefinition", [SETUP_CATALOG]),
+    ("ReferenceSample", [SENAITE_CATALOG]),
+    ("RejectAnalysis", [ANALYSIS_CATALOG]),
+    ("SampleCondition", [SETUP_CATALOG]),
+    ("SampleMatrix", [SETUP_CATALOG]),
+    ("SamplePoint", [SETUP_CATALOG]),
+    ("SampleType", [SETUP_CATALOG]),
+    ("SamplingDeviation", [SETUP_CATALOG]),
+    ("StorageLocation", [SETUP_CATALOG]),
+    ("SubGroup", [SETUP_CATALOG]),
+    ("Supplier", [SETUP_CATALOG]),
     ("SupplierContact", [CONTACT_CATALOG]),
-    ("Worksheet", [WORKSHEET_CATALOG, PORTAL_CATALOG]),
-    ("WorksheetTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("Worksheet", [WORKSHEET_CATALOG]),
+    ("WorksheetTemplate", [SETUP_CATALOG]),
+)
+
+PORTAL_CATALOG_INDEXES = (
+    "UID",
+    "allowedRolesAndUsers",
+    "created",
+    "exclude_from_nav",
+    "getId",
+    "getObjPositionInParent",
+    "path",
+    "portal_type",
+    "review_state",
+)
+
+PORTAL_CATALOG_COLUMNS = (
+    "UID",
+    "Title",
+    "Description",
 )
 
 
@@ -230,6 +233,7 @@ def install(context):
     setup_groups(portal)
     remove_default_content(portal)
     # setup catalogs
+    setup_portal_catalog(portal)
     setup_core_catalogs(portal)
     setup_other_catalogs(portal)
     setup_catalog_mappings(portal)
@@ -337,6 +341,29 @@ def add_dexterity_items(container, items):
         else:
             obj.setTitle(title)
         obj.reindexObject()
+
+
+def setup_portal_catalog(portal):
+    """Remove all unneeded indexes
+    """
+    logger.info("*** Setup portal catalog ***")
+
+    catalog = api.get_tool("portal_catalog")
+    indexes = get_indexes(catalog)
+    for index in indexes:
+        if index not in PORTAL_CATALOG_INDEXES:
+            logger.info("*** Removing index '%s' from catalog '%s'"
+                        % (index, catalog.id))
+            # remove index
+            del_index(catalog, index)
+
+    columns = get_columns(catalog)
+    for column in columns:
+        if column not in PORTAL_CATALOG_COLUMNS:
+            logger.info("*** Removing column '%s' from catalog '%s'"
+                        % (column, catalog.id))
+            # remove column
+            del_column(catalog, column)
 
 
 def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
