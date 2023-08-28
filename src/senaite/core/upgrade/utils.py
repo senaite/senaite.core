@@ -375,13 +375,11 @@ def uncatalog_brain(brain):
     """
     if not api.is_brain(brain):
         return False
-
     catalog = brain.aq_parent
-    uid = brain.UID
-    path = brain.getPath()
+    path = api.get_path(brain)
     logger.warn(80*"*")
-    logger.warn("Removing stale catalog entry for catalog %s: %s -> %s"
-                % (catalog.getId(), uid, path))
+    logger.warn("Removing stale catalog brain from catalog %s on path %s"
+                % (catalog.getId(), path))
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True
