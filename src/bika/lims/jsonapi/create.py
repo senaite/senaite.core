@@ -18,21 +18,21 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl import getSecurityManager
+import transaction
 from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
-from senaite.core.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
+from senaite.core.permissions import AccessJSONAPI
 from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
-import transaction
 
 class Create(object):
     interface.implements(IRouteProvider)
@@ -46,7 +46,6 @@ class Create(object):
         return (
             ("/create", "create", self.create, dict(methods=['GET', 'POST'])),
         )
-
 
     def create(self, context, request):
         """/@@API/create: Create new object.
@@ -66,7 +65,7 @@ class Create(object):
         taken from the request and sent to the field's mutator.
 
         Reference fields may have their target value(s) specified with a
-        delimited string query syntax, containing the portal_catalog search:
+        delimited string query syntax, containing the catalog search:
 
             <FieldName>=index1:value1|index2:value2
 
