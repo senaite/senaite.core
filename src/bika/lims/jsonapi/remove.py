@@ -57,7 +57,7 @@ class Remove(object):
         >>> portal_url = portal.absolute_url()
         >>> from plone.app.testing import SITE_OWNER_NAME
         >>> from plone.app.testing import SITE_OWNER_PASSWORD
-        >>> blah = portal.portal_catalog(Type = "Contact")[-1]
+        >>> blah = portal.uid_catalog(Type = "Contact")[-1]
         >>> uid = blah.UID
 
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
