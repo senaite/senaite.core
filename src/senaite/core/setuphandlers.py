@@ -185,36 +185,31 @@ CATALOG_MAPPINGS = (
     ("WorksheetTemplate", [SETUP_CATALOG]),
 )
 
-PORTAL_CATALOG_INDEXES = (
-    "Description",
-    "Title",
-    "UID",
-    "allowedRolesAndUsers",
-    "created",
-    "exclude_from_nav",
-    "getId",
-    "getObjPositionInParent",
-    "is_default_page",
-    "is_folderish",
-    "path",
-    "portal_type",
-    "review_state",
+REMOVE_PORTAL_CATALOG_INDEXES = (
+    "Analyst",
+    "SearchableText",
+    "Subject",
+    "commentators",
+    "getName",
+    "getParentUID",
+    "getRawRelatedItems",
+    "getUsername",
+    "in_reply_to",
+    "sync_uid",
+    "total_comments",
 )
 
-PORTAL_CATALOG_COLUMNS = (
-    "Description",
-    "Title",
-    "UID",
-    "exclude_from_nav",
-    "getIcon",
-    "getId",
-    "getObjSize",
-    "getRemoteUrl",
-    "id",
-    "is_folderish",
-    "meta_type",
-    "portal_type",
-    "review_state",
+REMOVE_PORTAL_CATALOG_COLUMNS = (
+    "Analyst",
+    "analysisRequestTemplates",
+    "author_name",
+    "cmf_uid",
+    "commentators",
+    "getClientID",
+    "in_response_to",
+    "last_comment_date",
+    "sync_uid",
+    "total_comments",
 )
 
 
@@ -365,7 +360,7 @@ def setup_portal_catalog(portal):
     catalog = api.get_tool("portal_catalog")
     indexes = get_indexes(catalog)
     for index in indexes:
-        if index not in PORTAL_CATALOG_INDEXES:
+        if index in REMOVE_PORTAL_CATALOG_INDEXES:
             logger.info("*** Removing index '%s' from catalog '%s'"
                         % (index, catalog.id))
             # remove index
@@ -373,7 +368,7 @@ def setup_portal_catalog(portal):
 
     columns = get_columns(catalog)
     for column in columns:
-        if column not in PORTAL_CATALOG_COLUMNS:
+        if column in REMOVE_PORTAL_CATALOG_COLUMNS:
             logger.info("*** Removing column '%s' from catalog '%s'"
                         % (column, catalog.id))
             # remove column
