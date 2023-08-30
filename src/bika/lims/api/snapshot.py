@@ -185,8 +185,8 @@ def get_object_data(obj):
     :returns: Dictionary of extracted schema data
     """
 
-    model = SuperModel(obj)
     try:
+        model = SuperModel(obj)
         data = model.to_dict()
     except Exception as exc:
         logger.error("Failed to get schema data for {}: {}"

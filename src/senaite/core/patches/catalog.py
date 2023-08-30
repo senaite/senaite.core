@@ -117,4 +117,4 @@ def portal_catalog_unindex(self, obj):
     path = api.get_path(obj)
     logger.info("Unindexing object on path '%s' in portal_catalog" % path)
     pc = api.get_tool("portal_catalog")
-    pc._unindex_object(obj)
+    pc._unindexObject(obj)

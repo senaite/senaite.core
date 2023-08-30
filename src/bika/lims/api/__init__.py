@@ -1102,7 +1102,7 @@ def get_catalogs_for(brain_or_object, default=UID_CATALOG):
     archetype_tool = get_tool("archetype_tool", default=None)
     if archetype_tool is None:
         # return the default catalog
-        return [get_tool(default, default=UID_CATALOG)]
+        return [get_tool(default, default=PORTAL_CATALOG)]
 
     catalogs = []
 
@@ -1114,7 +1114,7 @@ def get_catalogs_for(brain_or_object, default=UID_CATALOG):
         catalogs = archetype_tool.getCatalogsByType(brain_or_object)
 
     if not catalogs:
-        return [get_tool(default)]
+        return [get_tool(default, default=PORTAL_CATALOG)]
     return catalogs
 
 
