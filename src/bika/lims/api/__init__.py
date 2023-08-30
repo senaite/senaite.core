@@ -1090,9 +1090,13 @@ def is_active(brain_or_object):
     return True
 
 
-def get_catalogs_for(brain_or_object, default=UID_CATALOG):
+def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     """Get all registered catalogs for the given portal_type, catalog brain or
     content object
+
+    NOTE: We pass in the `portal_catalog` as default in subsequent calls to
+          work around the missing `uid_catalog` during snapshot creation when
+          installing a fresh site!
 
     :param brain_or_object: The portal_type, a catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
