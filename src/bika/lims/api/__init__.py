@@ -80,7 +80,7 @@ from zope.security.interfaces import Unauthorized
 
 """SENAITE LIMS Framework API
 
-Please see bika.lims/docs/API.rst for documentation.
+Please see tests/doctests/API.rst for documentation.
 
 Architecural Notes:
 
@@ -96,7 +96,7 @@ achieve the same::
 
     >>> foos = map(get_foo, list_of_brain_objects)
 
-Please add for all of your functions a descriptive test in docs/API.rst.
+Please add for all functions a descriptive test in tests/doctests/API.rst.
 
 Thanks.
 """
@@ -104,6 +104,9 @@ Thanks.
 _marker = object()
 
 UID_RX = re.compile("[a-z0-9]{32}$")
+
+UID_CATALOG = "uid_catalog"
+PORTAL_CATALOG = "portal_catalog"
 
 
 class APIError(Exception):
@@ -313,7 +316,7 @@ def edit(obj, check_permissions=True, **kwargs):
 def get_tool(name, context=None, default=_marker):
     """Get a portal tool by name
 
-    :param name: The name of the tool, e.g. `portal_catalog`
+    :param name: The name of the tool, e.g. `senaite_setup_catalog`
     :type name: string
     :param context: A portal object
     :type context: ATContentType/DexterityContentType/CatalogBrain
@@ -724,7 +727,7 @@ def get_brain_by_uid(uid, default=None):
         return default
 
     # we try to find the object with the UID catalog
-    uc = get_tool("uid_catalog")
+    uc = get_tool(UID_CATALOG)
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -797,12 +800,8 @@ def get_parent_path(brain_or_object):
     return get_path(get_object(brain_or_object).aq_parent)
 
 
-def get_parent(brain_or_object, catalog_search=False):
+def get_parent(brain_or_object, **kw):
     """Locate the parent object of the content/catalog brain
-
-    The `catalog_search` switch uses the `portal_catalog` to do a search return
-    a brain instead of the full parent object. However, if the search returned
-    no results, it falls back to return the full parent object.
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -815,28 +814,9 @@ def get_parent(brain_or_object, catalog_search=False):
     if is_portal(brain_or_object):
         return get_portal()
 
-    # Do a catalog search and return the brain
-    if catalog_search:
-        parent_path = get_parent_path(brain_or_object)
-
-        # parent is the portal object
-        if parent_path == get_path(get_portal()):
-            return get_portal()
-
-        # get the catalog tool
-        pc = get_portal_catalog()
-
-        # query for the parent path
-        results = pc(path={
-            "query": parent_path,
-            "depth": 0})
-
-        # No results fallback: return the parent object
-        if not results:
-            return get_object(brain_or_object).aq_parent
-
-        # return the brain
-        return results[0]
+    # BBB: removed `catalog_search` keyword
+    if kw:
+        logger.warn("API function `get_parent` no longer support keywords.")
 
     return get_object(brain_or_object).aq_parent
 
@@ -871,7 +851,7 @@ def search(query, catalog=_marker):
         for portal_type in portal_types:
             # Just get the first registered/default catalog
             catalogs.append(get_catalogs_for(
-                portal_type, default="portal_catalog")[0])
+                portal_type, default=UID_CATALOG)[0])
     else:
         # User defined catalogs
         if isinstance(catalog, (list, tuple)):
@@ -880,7 +860,7 @@ def search(query, catalog=_marker):
             catalogs.append(get_tool(catalog))
 
     # Cleanup: Avoid duplicate catalogs
-    catalogs = list(set(catalogs)) or [get_portal_catalog()]
+    catalogs = list(set(catalogs)) or [get_uid_catalog()]
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
@@ -915,12 +895,20 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
+def get_uid_catalog():
+    """Get the UID catalog tool
+
+    :returns: UID Catalog Tool
+    """
+    return get_tool(UID_CATALOG)
+
+
 def get_portal_catalog():
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog")
+    return get_tool(PORTAL_CATALOG)
 
 
 def get_review_history(brain_or_object, rev=True):
@@ -1102,7 +1090,7 @@ def is_active(brain_or_object):
     return True
 
 
-def get_catalogs_for(brain_or_object, default="portal_catalog"):
+def get_catalogs_for(brain_or_object, default=UID_CATALOG):
     """Get all registered catalogs for the given portal_type, catalog brain or
     content object
 
@@ -1114,7 +1102,7 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
     archetype_tool = get_tool("archetype_tool", default=None)
     if archetype_tool is None:
         # return the default catalog
-        return [get_tool(default, default="portal_catalog")]
+        return [get_tool(default, default=UID_CATALOG)]
 
     catalogs = []
 
