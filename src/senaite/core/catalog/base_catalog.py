@@ -135,7 +135,8 @@ class BaseCatalog(CatalogTool):
         """
         mapped_catalog_types = self.mapped_catalog_types
         mapped_at_types = self.get_mapped_at_types()
-        return mapped_catalog_types + mapped_at_types
+        all_types = set(mapped_catalog_types + mapped_at_types)
+        return list(all_types)
 
     def log_progress(self):
         """Log reindex progress

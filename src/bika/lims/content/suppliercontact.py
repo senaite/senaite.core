@@ -22,8 +22,9 @@ from AccessControl import ClassSecurityInfo
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IDeactivable
-from zope.interface import implements
+from bika.lims.interfaces import ISupplierContact
 from Products.Archetypes.public import registerType
+from zope.interface import implements
 
 schema = Person.schema.copy()
 
@@ -42,11 +43,9 @@ schema["title"].widget.visible = False
 class SupplierContact(Person):
     """Supplier Contact content
     """
-    implements(IDeactivable)
+    implements(ISupplierContact, IDeactivable)
 
     _at_rename_after_creation = True
-    displayContentsTab = False
-    isPrincipiaFolderish = 0
     schema = schema
     security = ClassSecurityInfo()
 

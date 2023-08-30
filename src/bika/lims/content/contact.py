@@ -27,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
 from bika.lims.browser.fields import UIDReferenceField
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IClient
@@ -38,9 +37,10 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.p3compat import cmp
 from zope.interface import implements
-
 
 schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
@@ -80,9 +80,9 @@ class Contact(Person):
         """
 
         # Check if the User is linked already
-        pc = api.portal.get_tool("portal_catalog")
-        contacts = pc(portal_type=cls.portal_type,
-                      getUsername=username)
+        cat = api.portal.get_tool(CONTACT_CATALOG)
+        contacts = cat(portal_type=cls.portal_type,
+                       getUsername=username)
 
         # No Contact assigned to this username
         if len(contacts) == 0:

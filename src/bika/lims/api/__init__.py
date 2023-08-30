@@ -1327,8 +1327,9 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     if not user:
         return None
 
-    query = {'portal_type': contact_types, 'getUsername': user.id}
-    brains = search(query, catalog='portal_catalog')
+    from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+    query = {"portal_type": contact_types, "getUsername": user.id}
+    brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
 

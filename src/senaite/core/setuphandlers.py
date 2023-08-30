@@ -37,6 +37,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
@@ -45,8 +46,9 @@ from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
-from senaite.core.catalog import LabelCatalog
 from senaite.core.catalog import ClientCatalog
+from senaite.core.catalog import ContactCatalog
+from senaite.core.catalog import LabelCatalog
 from senaite.core.catalog import ReportCatalog
 from senaite.core.catalog import SampleCatalog
 from senaite.core.catalog import SenaiteCatalog
@@ -109,6 +111,7 @@ CATALOGS = (
     AuditlogCatalog,
     AutoImportLogCatalog,
     ClientCatalog,
+    ContactCatalog,
     LabelCatalog,
     ReportCatalog,
     SampleCatalog,
@@ -157,7 +160,7 @@ CATALOG_MAPPINGS = (
     ("BatchLabel", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Calculation", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Client", [CLIENT_CATALOG]),
-    ("Contact", [PORTAL_CATALOG]),
+    ("Contact", [CONTACT_CATALOG]),
     ("Container", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("ContainerType", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Department", [SETUP_CATALOG, PORTAL_CATALOG]),
@@ -171,7 +174,7 @@ CATALOG_MAPPINGS = (
     ("InstrumentType", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("InstrumentValidation", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Invoice", [SENAITE_CATALOG, PORTAL_CATALOG]),
-    ("LabContact", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("LabContact", [CONTACT_CATALOG]),
     ("LabProduct", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Label", [SETUP_CATALOG]),
     ("Laboratory", [SETUP_CATALOG, PORTAL_CATALOG]),
@@ -192,7 +195,7 @@ CATALOG_MAPPINGS = (
     ("StorageLocation", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("SubGroup", [SETUP_CATALOG, PORTAL_CATALOG]),
     ("Supplier", [SETUP_CATALOG, PORTAL_CATALOG]),
-    ("SupplierContact", [SETUP_CATALOG, PORTAL_CATALOG]),
+    ("SupplierContact", [CONTACT_CATALOG]),
     ("Worksheet", [WORKSHEET_CATALOG, PORTAL_CATALOG]),
     ("WorksheetTemplate", [SETUP_CATALOG, PORTAL_CATALOG]),
 )
