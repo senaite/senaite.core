@@ -781,13 +781,13 @@ raising an `Unauthorized` error::
     >>> api.safe_getattr(brain, "NONEXISTING", "")
     ''
 
-Getting the Portal Catalog
-..........................
+Getting the UID Catalog
+.......................
 
 This tool is needed so often, that this function just returns it::
 
-    >>> api.get_portal_catalog()
-    <CatalogTool at /plone/portal_catalog>
+    >>> api.get_uid_catalog()
+    <UIDCatalog at /plone/uid_catalog>
 
 
 Getting the Review History of an Object
