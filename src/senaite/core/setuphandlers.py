@@ -186,23 +186,35 @@ CATALOG_MAPPINGS = (
 )
 
 PORTAL_CATALOG_INDEXES = (
+    "Description",
+    "Title",
     "UID",
     "allowedRolesAndUsers",
     "created",
     "exclude_from_nav",
     "getId",
     "getObjPositionInParent",
+    "is_default_page",
+    "is_folderish",
     "path",
     "portal_type",
     "review_state",
-    "is_default_page",
-    "is_folderish",
 )
 
 PORTAL_CATALOG_COLUMNS = (
-    "UID",
-    "Title",
     "Description",
+    "Title",
+    "UID",
+    "exclude_from_nav",
+    "getIcon",
+    "getId",
+    "getObjSize",
+    "getRemoteUrl",
+    "id",
+    "is_folderish",
+    "meta_type",
+    "portal_type",
+    "review_state",
 )
 
 
