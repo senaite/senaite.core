@@ -106,7 +106,7 @@ The following settings can be done in `directives.widget`:
 - `catalog`
 
 The search catalog to use.
-Default value is `portal_catalog`
+Default value is `uid_catalog`
 
 - `query`
 
