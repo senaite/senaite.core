@@ -50,7 +50,7 @@ Example::
       directives.widget(
           "route",
           UIDReferenceWidgetFactory,
-          catalog="portal_catalog",
+          catalog="senaite_catalog_setup",
           query={
               "portal_type": "ObjectRoute",
               "is_active": True,

@@ -114,9 +114,6 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
             if client_uid:
                 # Apply the search criteria for this client
-                # Contact is the only object bound to a Client that is stored
-                # in portal_catalog. And in this catalog, getClientUID does not
-                # exist, rather getParentUID
                 if "Contact" in self.get_portal_types(query):
                     query["getParentUID"] = [client_uid]
                 else:
