@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2369 Allow to set a custom comment for when a result is out of range
 - #2367 Contact catalog
 - #2366 Add fallback to sample client field value
 - #2365 New function for interim fields formatting
