@@ -81,13 +81,20 @@ schema = Schema((
         widget=AnalysisSpecificationWidget(
             label=_("Specifications"),
             description=_(
-                "'Min' and 'Max' values indicate a valid results range. Any "
-                "result outside this results range will raise an alert. 'Min "
-                "warn' and 'Max warn' values indicate a shoulder range. Any "
-                "result outside the results range but within the shoulder "
-                "range will raise a less severe alert. If the result is out of "
-                "range, the value set for '< Min' or '< Max' will be displayed "
-                "in lists and results reports instead of the real result.")
+                u"description_analysisspec_resultsrange",
+                default=u"'Min' and 'Max' values indicate a valid results "
+                        u"range. Any result outside this results range will "
+                        u"raise an alert.<br/>"
+                        u"'Min warn' and 'Max warn' values indicate a "
+                        u"shoulder range. Any result outside the results "
+                        u"range but within the shoulder range will raise a "
+                        u"less severe alert.<br/>"
+                        u"If the result is out of range, the value set for "
+                        u"'&lt; Min' or '&gt; Max' will be displayed in lists "
+                        u"and results reports instead of the real result. In "
+                        u"such case, the value set for 'Out of range comment' "
+                        u"will be displayed in results report as well"
+            )
         ),
     ),
 ))

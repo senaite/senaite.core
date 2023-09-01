@@ -38,7 +38,10 @@ SUB_FIELDS = (
     ("warn_max", _('Max warn')),
     ("hidemin", _('< Min')),
     ("hidemax", _('> Max')),
-    ("rangecomment", _('Range Comment')),
+    ("rangecomment", _(
+        u"label_specs_rangecomment",
+        default=u"Out of range comment"
+    )),
 )
 
 
