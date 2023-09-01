@@ -5,10 +5,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-03-27 13:56+0000\n"
+"POT-Creation-Date: 2023-09-01 14:26+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Jiří Podhorecký, 2022\n"
-"Language-Team: Czech (https://www.transifex.com/senaite/teams/87045/cs/)\n"
+"Language-Team: Czech (https://app.transifex.com/senaite/teams/87045/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -127,6 +127,10 @@ msgstr "Zapnuto"
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
 msgstr "Relativní adresa URL pro logo panelu nástrojů SENAITE"
+
+#: senaite/core/browser/sharing/templates/client_sharing.pt:67
+msgid "Search for user or group"
+msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
@@ -414,6 +418,11 @@ msgstr "description_portlets_block_unblock"
 msgid "description_production_mode"
 msgstr "description_production_mode"
 
+#. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:43
+msgid "description_sharing_control"
+msgstr ""
+
 #. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
 #: senaite/core/browser/login/templates/login.pt:20
@@ -460,6 +469,11 @@ msgstr "heading_cookie_manual_override"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:22
 msgid "heading_create_group"
 msgstr "heading_create_group"
+
+#. Default: "Manage access for ${folder}"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:37
+msgid "heading_currently_assigned_shares"
+msgstr ""
 
 #. Default: "Group: ${groupname}"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:58
@@ -525,6 +539,21 @@ msgstr "help_format_wysiwyg"
 msgid "help_groupname"
 msgstr "help_groupname"
 
+#. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
+#: senaite/core/browser/sharing/templates/client_sharing.pt:191
+msgid "help_inherit_local_roles"
+msgstr ""
+
+#. Default: "go here"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:28
+msgid "help_sharing_go_here"
+msgstr ""
+
+#. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
+#: senaite/core/browser/sharing/templates/client_sharing.pt:28
+msgid "help_sharing_page_default_page"
+msgstr ""
+
 #. Default: "HTML"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "html"
@@ -575,6 +604,7 @@ msgid "label_add_users_to_group"
 msgstr "label_add_users_to_group"
 
 #. Default: "Cancel"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:198
 #: senaite/core/skins/senaite_templates/edit_macros.pt:258
 msgid "label_cancel"
 msgstr "label_cancel"
@@ -690,6 +720,11 @@ msgstr "label_groups"
 msgid "label_hide_item"
 msgstr "label_hide_item"
 
+#. Default: "Inherit permissions from higher levels"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:180
+msgid "label_inherit_local_roles"
+msgstr ""
+
 #. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
@@ -703,6 +738,7 @@ msgid "label_manage_portlets_default_view_container_go_here"
 msgstr "label_manage_portlets_default_view_container_go_here"
 
 #. Default: "Name"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:102
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:28
 msgid "label_name"
 msgstr "label_name"
@@ -779,9 +815,9 @@ msgid "label_rule_event_trigger"
 msgstr "label_rule_event_trigger"
 
 #. Default: "Search"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:78
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:204
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:120
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:124
 msgid "label_search"
 msgstr "label_search"
 
@@ -891,6 +927,11 @@ msgstr "return_to_view"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:43
 msgid "structured_text"
 msgstr "structured_text"
+
+#. Default: "Current sharing permissions"
+#: senaite/core/browser/sharing/templates/client_sharing.pt:92
+msgid "summary_assigned_roles"
+msgstr ""
 
 #. Default: "Select roles for each group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:139
