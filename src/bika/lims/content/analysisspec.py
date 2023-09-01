@@ -89,10 +89,10 @@ schema = Schema((
                         u"Any result outside the results range but within the "
                         u"shoulder range will raise a less severe alert. "
                         u"If the result is out of range, the value set for "
-                        u"'< Min' or '< Max' will be displayed in lists and "
-                        u"results reports instead of the real result. In such "
-                        u"case, the value set for 'Out of range comment' will "
-                        u"be displayed in results report as well."
+                        u"'&lt; Min' or '&gt; Max' will be displayed in lists "
+                        u"and results reports instead of the real result. In "
+                        u"such case, the value set for 'Out of range comment' "
+                        u"will be displayed in results report as well."
             )
         ),
     ),
