@@ -345,6 +345,14 @@ class AnalysisSpecificationWidget(TypesWidget):
             max_operator = self._get_spec_value(
                 form, uid, "max_operator", check_floatable=False)
 
+            min_comment = self._get_spec_value(
+                form, uid, "hidemin", check_floatable=False)
+            max_comment = self._get_spec_value(
+                form, uid, "hidemax", check_floatable=False)
+            range_comment = self._get_spec_value(
+                form, uid, "rangecomment", check_floatable=False
+            )
+
             service = api.get_object_by_uid(uid)
             subfield_values = {
                 "keyword": service.getKeyword(),
@@ -355,10 +363,9 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "max": s_max,
                 "warn_min": self._get_spec_value(form, uid, "warn_min"),
                 "warn_max": self._get_spec_value(form, uid, "warn_max"),
-                "hidemin": self._get_spec_value(form, uid, "hidemin"),
-                "hidemax": self._get_spec_value(form, uid, "hidemax"),
-                "rangecomment": self._get_spec_value(form, uid, "rangecomment",
-                                                     check_floatable=False)
+                "hidemin": min_comment,
+                "hidemax": max_comment,
+                "rangecomment": range_comment,
             }
 
             # Include values from other subfields that might be added
