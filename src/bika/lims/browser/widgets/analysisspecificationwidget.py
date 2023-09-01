@@ -119,7 +119,7 @@ class AnalysisSpecificationView(BikaListingView):
             ("hidemin", {
                 "title": _(
                     u"label_column_specs_hidemin",
-                    default=u"> Min comment"
+                    default=u"Below min comment"
                 ),
                 "sortable": False,
                 "type": "string",
@@ -128,7 +128,7 @@ class AnalysisSpecificationView(BikaListingView):
             ("hidemax", {
                 "title": _(
                     u"label_column_specs_hidemax",
-                    default=u"> Max comment"
+                    default=u"Above max comment"
                 ),
                 "sortable": False,
                 "type": "string",
