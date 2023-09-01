@@ -88,35 +88,61 @@ class AnalysisSpecificationView(BikaListingView):
                 "sortable": False}),
             ("warn_min", {
                 "title": _("Min warn"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("min_operator", {
                 "title": _("Min operator"),
                 "type": "choices",
-                "sortable": False}),
+                "sortable": False,
+            }),
             ("min", {
                 "title": _("Min"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("max_operator", {
                 "title": _("Max operator"),
                 "type": "choices",
-                "sortable": False}),
+                "sortable": False,
+            }),
             ("max", {
                 "title": _("Max"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("warn_max", {
                 "title": _("Max warn"),
-                "sortable": False}),
-            ("hidemin", {
-                "title": _("< Min"),
-                "sortable": False}),
-            ("hidemax", {
-                "title": _("> Max"),
-                "sortable": False}),
-            ("rangecomment", {
-                "title": _("Range comment"),
                 "sortable": False,
-                "type": "remarks",
-                "toggle": False}),
+                "type": "numeric",
+            }),
+            ("hidemin", {
+                "title": _(
+                    u"label_column_specs_hidemin",
+                    default=u"> Min comment"
+                ),
+                "sortable": False,
+                "type": "string",
+                "size": "20",
+            }),
+            ("hidemax", {
+                "title": _(
+                    u"label_column_specs_hidemax",
+                    default=u"> Max comment"
+                ),
+                "sortable": False,
+                "type": "string",
+                "size": "20",
+            }),
+            ("rangecomment", {
+                "title": _(
+                    u"label_column_specs_rangecomment",
+                    default=u"Out of range comment"
+                ),
+                "sortable": False,
+                "type": "string",
+                "size": "30",
+            }),
         ))
 
         self.review_states = [
