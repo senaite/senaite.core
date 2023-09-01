@@ -88,16 +88,11 @@ schema = Schema((
                         u"indicate a shoulder range. "
                         u"Any result outside the results range but within the "
                         u"shoulder range will raise a less severe alert. "
-                        u"The values of 'Below min comment' and 'Above max "
-                        u"comment' are displayed in results reports when the "
-                        u"result is out of 'Min' or out of 'Max', "
-                        u"respectively. "
-                        u"The value of `Out of range comment' is displayed "
-                        u"when the result value is out of range, regardless "
-                        u"of 'min' or 'max'. On the other hand, if no values "
-                        u"are set for none of these three comment fields, "
-                        u"system displays the min or max value, prefixed with "
-                        u"the selected operator"
+                        u"If the result is out of range, the value set for "
+                        u"'< Min' or '< Max' will be displayed in lists and "
+                        u"results reports instead of the real result. In such "
+                        u"case, the value set for 'Out of range comment' will "
+                        u"be displayed in results report as well."
             )
         ),
     ),
