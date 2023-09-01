@@ -35,10 +35,12 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
 from senaite.core.registry import get_registry_record
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_portal_catalog
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
@@ -122,6 +124,24 @@ def setup_labels(tool):
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
+
+
+def drop_portal_catalog(tool):
+    """Drop all indexing to portal_catalog
+    """
+    logger.info("Drop Portal Catalog ...")
+    portal = api.get_portal()
+
+    # setup core catalog mappings
+    setup_catalog_mappings(portal)
+
+    # cleanup portal_catalog indexes
+    setup_portal_catalog(portal)
+
+    for portal_type, catalogs in CATALOG_MAPPINGS:
+        uncatalog_type(portal_type, catalog=PORTAL_CATALOG)
+
+    logger.info("Drop Portal Catalog [DONE]")
 
 
 def setup_client_catalog(tool):

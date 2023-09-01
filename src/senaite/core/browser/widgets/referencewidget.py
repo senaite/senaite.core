@@ -48,7 +48,7 @@ class ReferenceWidget(QuerySelectWidget):
 
         # BBB: OLD PROPERTIES
         "url": "referencewidget_search",
-        "catalog_name": "portal_catalog",
+        "catalog_name": "uid_catalog",
         # base_query can be a dict or a callable returning a dict
         "base_query": {},
         # columns to display in the search dropdown

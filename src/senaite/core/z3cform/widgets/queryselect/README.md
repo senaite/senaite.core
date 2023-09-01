@@ -57,7 +57,7 @@ widget directive as *additional arguments*:
            Note: A class method name can be defined to compute the query on access.
 
 - `catalog`: The catalog to use for the query.
-             Default: `portal_catalog`
+             Default: `uid_catalog`
 
 
 - `search_index`: The search index to use for the catalog query.

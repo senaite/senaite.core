@@ -638,15 +638,6 @@ Brains are also supported::
     >>> api.get_parent(brain)
     <ClientFolder at /plone/clients>
 
-The function can also use a catalog query on the `portal_catalog` and return a
-brain, if the passed parameter `catalog_search` was set to true. ::
-
-    >>> api.get_parent(client, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
-    >>> api.get_parent(brain, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
 However, this function goes only up to the portal object::
 
     >>> api.get_parent(portal)
@@ -692,7 +683,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     [...]
     APIError: Multi Catalog Queries are not supported!
 
-Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
+Catalog queries w/o any `portal_type`, default to the `uid_catalog`::
 
     >>> analysiscategories = bika_setup.bika_analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
@@ -704,7 +695,7 @@ Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
     1
     >>> res = results[0]
     >>> res.aq_parent
-    <CatalogTool at /plone/portal_catalog>
+    <UIDCatalog at /plone/uid_catalog>
 
 Would we add the `portal_type`, the search function would ask the
 `archetype_tool` for the right catalog, and it would return a result::
@@ -790,13 +781,13 @@ raising an `Unauthorized` error::
     >>> api.safe_getattr(brain, "NONEXISTING", "")
     ''
 
-Getting the Portal Catalog
-..........................
+Getting the UID Catalog
+.......................
 
 This tool is needed so often, that this function just returns it::
 
-    >>> api.get_portal_catalog()
-    <CatalogTool at /plone/portal_catalog>
+    >>> api.get_uid_catalog()
+    <UIDCatalog at /plone/uid_catalog>
 
 
 Getting the Review History of an Object

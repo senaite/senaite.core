@@ -19,10 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IMultiCatalogBehavior
 from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.ZCatalog import ZCatalog
+from senaite.core import logger
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from zope.component import queryMultiAdapter
+
+PORTAL_CATALOG = "portal_catalog"
+CATALOG_MAP = dict(CATALOG_MAPPINGS)
 
 
 def is_auditlog_enabled():
@@ -58,3 +64,57 @@ def catalog_object(self, object, uid=None, idxs=None,
 
     ZCatalog.catalog_object(self, w, uid, idxs,
                             update_metadata, pghandler=pghandler)
+
+
+def in_portal_catalog(obj):
+    """Check if the given object should be indexed in portal catalog
+    """
+    # catalog objects appeared here?
+    if not api.is_object(obj):
+        return False
+
+    # already handled in our catalog multiplex processor
+    if IMultiCatalogBehavior.providedBy(obj):
+        return False
+
+    # check our static mapping from setuphandlers
+    portal_type = api.get_portal_type(obj)
+    catalogs = CATALOG_MAP.get(portal_type)
+    if isinstance(catalogs, list) and PORTAL_CATALOG not in catalogs:
+        return False
+
+    # check archetype tool if we have an AT content type
+    if api.is_at_type(obj):
+        att = api.get_tool("archetype_tool", default=None)
+        if att and PORTAL_CATALOG not in att.catalog_map.get(portal_type):
+            return False
+
+    # all other contents (folders etc.) can be indexed in portal_catalog
+    return True
+
+
+def portal_catalog_index(self, obj, attributes=None):
+    if not in_portal_catalog(obj):
+        return
+    path = api.get_path(obj)
+    logger.info("Indexing object on path '%s' in portal_catalog" % path)
+    pc = api.get_tool("portal_catalog")
+    pc._indexObject(obj)
+
+
+def portal_catalog_reindex(self, obj, attributes=None, update_metadata=1):
+    if not in_portal_catalog(obj):
+        return
+    path = api.get_path(obj)
+    logger.info("Reindexing object on path '%s' in portal_catalog" % path)
+    pc = api.get_tool("portal_catalog")
+    pc._reindexObject(obj, idxs=attributes, update_metadata=update_metadata)
+
+
+def portal_catalog_unindex(self, obj):
+    if not in_portal_catalog(obj):
+        return
+    path = api.get_path(obj)
+    logger.info("Unindexing object on path '%s' in portal_catalog" % path)
+    pc = api.get_tool("portal_catalog")
+    pc._unindexObject(obj)
