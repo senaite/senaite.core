@@ -118,7 +118,7 @@ class AnalysisSpecificationView(BikaListingView):
             }),
             ("hidemin", {
                 "title": _(
-                    u"label_column_specs_hidemin",
+                    u"label_specs_hidemin",
                     default=u"Below min comment"
                 ),
                 "sortable": False,
@@ -127,7 +127,7 @@ class AnalysisSpecificationView(BikaListingView):
             }),
             ("hidemax", {
                 "title": _(
-                    u"label_column_specs_hidemax",
+                    u"label_specs_hidemax",
                     default=u"Above max comment"
                 ),
                 "sortable": False,
@@ -136,7 +136,7 @@ class AnalysisSpecificationView(BikaListingView):
             }),
             ("rangecomment", {
                 "title": _(
-                    u"label_column_specs_rangecomment",
+                    u"label_specs_rangecomment",
                     default=u"Out of range comment"
                 ),
                 "sortable": False,
