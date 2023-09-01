@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2370 Override default DX add form to obtain renamed IDs correctly
 - #2368 Drop usage of portal_catalog tool
 - #2369 Allow to set a custom comment for when a result is out of range
 - #2367 Contact catalog
