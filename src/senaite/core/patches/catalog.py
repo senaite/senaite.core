@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IMultiCatalogBehavior
+from senaite.core.interfaces import IMultiCatalogBehavior
 from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.ZCatalog import ZCatalog
 from senaite.core import logger
