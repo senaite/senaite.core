@@ -2,6 +2,7 @@
 
 from zope.interface import implementer
 from zope.container.interfaces import INameChooser
+from senaite.core.idserver import generateUniqueId
 
 
 @implementer(INameChooser)
@@ -20,4 +21,4 @@ class IDChooser(object):
     def chooseName(self, name, object):
         """Choose a valid ID for the given object
         """
-        import pdb; pdb.set_trace()
+        return generateUniqueId(object, container=self.context)

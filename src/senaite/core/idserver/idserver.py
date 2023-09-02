@@ -208,6 +208,8 @@ def get_variables(context, **kw):
     # allow portal_type override
     portal_type = get_type_id(context, **kw)
 
+    parent = kw.get("container") or api.get_parent(context)
+
     # The variables map hold the values that might get into the constructed id
     variables = {
         "context": context,
@@ -215,7 +217,7 @@ def get_variables(context, **kw):
         "portal_type": portal_type,
         "year": get_current_year(),
         "yymmdd": get_yymmdd(),
-        "parent": api.get_parent(context),
+        "parent": parent,
         "seq": 0,
         "alpha": Alphanumber(0),
     }
@@ -284,7 +286,7 @@ def get_variables(context, **kw):
 
     elif IARReport.providedBy(context):
         variables.update({
-            "clientId": context.aq_parent.getClientID(),
+            "clientId": parent.getClientID(),
         })
 
     # Look for a variables adapter
