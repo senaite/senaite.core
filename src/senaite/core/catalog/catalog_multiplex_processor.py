@@ -21,9 +21,9 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IMultiCatalogBehavior
 from Products.CMFCore.interfaces import IPortalCatalogQueueProcessor
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.interfaces import IMultiCatalogBehavior
 from zope.interface import implementer
 
 REQUIRED_CATALOGS = [

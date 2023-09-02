@@ -19,10 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 from zope.interface import Interface
+from zope import deprecation
 
 # BBB: Only kept for backwards compatibility
 from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
+from senaite.core.interfaces import IMultiCatalogBehavior
+from senaite.core.interfaces import IAutoGenerateID
+
+deprecation.deprecated("IMultiCatalogBehavior", "Moved to senaite.core.interfaces")
+deprecation.deprecated("IAutoGenerateID", "Moved to senaite.core.interfaces")
 
 
 class ISenaiteSiteRoot(Interface):

@@ -23,12 +23,9 @@ import re
 from datetime import datetime
 
 import six
-
 import transaction
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.alphanumber import Alphanumber
-from bika.lims.alphanumber import to_alpha
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IAnalysisRequest
@@ -36,11 +33,13 @@ from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IARReport
-from bika.lims.interfaces import IIdServer
-from bika.lims.interfaces import IIdServerTypeID
-from bika.lims.interfaces import IIdServerVariables
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
+from senaite.core.idserver.alphanumber import Alphanumber
+from senaite.core.idserver.alphanumber import to_alpha
+from senaite.core.interfaces import IIdServer
+from senaite.core.interfaces import IIdServerTypeID
+from senaite.core.interfaces import IIdServerVariables
 from senaite.core.interfaces import INumberGenerator
 from zope.component import getAdapters
 from zope.component import getUtility
