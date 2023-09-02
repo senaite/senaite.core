@@ -75,6 +75,10 @@ def in_portal_catalog(obj):
 
     # already handled in our catalog multiplex processor
     if IMultiCatalogBehavior.providedBy(obj):
+        # BBB: Fallback for unset catalogs mapping, e.g. for DataBoxes
+        catalogs = getattr(obj, "_catalogs", [])
+        if len(catalogs) == 0:
+            return True
         return False
 
     # check our static mapping from setuphandlers
