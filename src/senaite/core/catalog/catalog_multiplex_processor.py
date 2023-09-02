@@ -66,6 +66,19 @@ class CatalogMultiplexProcessor(object):
         return True
 
     def index(self, obj, attributes=None):
+        if not self.supports_multi_catalogs(obj):
+            return
+
+        catalogs = self.get_catalogs_for(obj)
+        url = api.get_path(obj)
+
+        for catalog in catalogs:
+            logger.info(
+                "CatalogMultiplexProcessor::indexObject:catalog={} url={}"
+                .format(catalog.id, url))
+            catalog._indexObject(obj)
+
+    def reindex(self, obj, attributes=None, update_metadata=1):
         if attributes is None:
             attributes = []
 
@@ -77,20 +90,12 @@ class CatalogMultiplexProcessor(object):
 
         for catalog in catalogs:
             logger.info(
-                "CatalogMultiplexProcessor::indexObject:catalog={} url={}"
+                "CatalogMultiplexProcessor::reindexObject:catalog={} url={}"
                 .format(catalog.id, url))
-            # We want the intersection of the catalogs idxs
-            # and the incoming list.
-            indexes = set(catalog.indexes()).intersection(attributes)
-            # Skip reindexing if no indexes match
-            if attributes and not indexes:
-                continue
-            # recatalog the object
-            catalog.catalog_object(obj, url, idxs=list(indexes))
-
-    def reindex(self, obj, attributes=None, update_metadata=1):
-        # XXX: Do we need the additional `update_metadata` parameter?
-        self.index(obj, attributes)
+            # Intersection of the catalogs indexes and the incoming attributes
+            indexes = list(set(catalog.indexes()).intersection(attributes))
+            catalog._reindexObject(
+                obj, idxs=indexes, update_metadata=update_metadata)
 
     def unindex(self, obj):
         wrapped_obj = obj
@@ -110,7 +115,7 @@ class CatalogMultiplexProcessor(object):
                 logger.info(
                     "CatalogMultiplexProcessor::unindex:catalog={} url={}"
                     .format(catalog.id, url))
-                catalog.uncatalog_object(url)
+                catalog._unindexObject(wrapped_obj)
 
     def begin(self):
         pass
