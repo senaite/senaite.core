@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="zope" >
+
+  <!-- DX ID Chooser -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="plone.dexterity.interfaces.IDexterityContainer"
+      factory=".idchooser.IDChooser"
+      />
+
+  <!-- AT ID Chooser -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="Products.Archetypes.interfaces.base.IBaseFolder"
+      factory=".idchooser.IDChooser"
+      />
+
+</configure>

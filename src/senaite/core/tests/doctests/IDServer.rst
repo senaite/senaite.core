@@ -42,7 +42,7 @@ Needed Imports:
 
     >>> from bika.lims import alphanumber as alpha
     >>> from bika.lims import api
-    >>> from bika.lims import idserver
+    >>> from senaite.core import idserver
     >>> from senaite.core.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for

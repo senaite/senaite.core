@@ -5,6 +5,19 @@
 
   <include package="plone.behavior" file="meta.zcml"/>
 
+  <plone:behavior
+      title="Auto-Generate ID Beahvior for Dexterity Contents"
+      description="Generates an ID with the IDServer"
+      provides="senaite.core.interfaces.IAutoGenerateID"
+      />
+
+  <!-- Multicatalog Behavior for Dexterity based contents -->
+  <plone:behavior
+      title="Multi Catalog Behavior for Dexterity Contents"
+      description="Catalog Dexterity contents in multiple catalogs"
+      provides="senaite.core.interfaces.IMultiCatalogBehavior"
+      />
+
   <!-- See https://pypi.org/project/plone.behavior/#zcml-examples -->
 
   <!--

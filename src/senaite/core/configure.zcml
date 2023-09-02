@@ -21,6 +21,7 @@
   <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".extender" />
+  <include package=".idserver" />
   <include package=".migration" />
   <include package=".patches" />
   <include package=".permissions" />

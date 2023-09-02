@@ -16,20 +16,20 @@ class DefaultAddForm(BaseAddForm):
     """Patched Add Form to handle renameAfterCreation of DX objects
     """
 
-    def add(self, object):
-        """Patched add method to use our own addContentToContainer
-        """
-        fti = getUtility(IDexterityFTI, name=self.portal_type)
-        new_object = addContentToContainer(self.container, object)
+    #def add(self, object):
+    #    """Patched add method to use our own addContentToContainer
+    #    """
+    #    fti = getUtility(IDexterityFTI, name=self.portal_type)
+    #    new_object = addContentToContainer(self.container, object)
 
-        if fti.immediate_view:
-            self.immediate_view = "/".join(
-                [self.container.absolute_url(), new_object.id, fti.immediate_view]
-            )
-        else:
-            self.immediate_view = "/".join(
-                [self.container.absolute_url(), new_object.id]
-            )
+    #    if fti.immediate_view:
+    #        self.immediate_view = "/".join(
+    #            [self.container.absolute_url(), new_object.id, fti.immediate_view]
+    #        )
+    #    else:
+    #        self.immediate_view = "/".join(
+    #            [self.container.absolute_url(), new_object.id]
+    #        )
 
 
 class DefaultAddView(BaseAddView):
