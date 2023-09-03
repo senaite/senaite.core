@@ -1944,7 +1944,9 @@ the the definitive id is set:
     >>> api.is_temporary(tmp_obj)
     True
 
+    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = folder._getOb(tmp_obj.getId())
+    >>> tmp_obj.id = tmp_obj_id
     >>> api.is_temporary(tmp_obj)
     False
 
@@ -1952,7 +1954,6 @@ But even if we don't use a non-UID id as the temporary id on creation. System
 will still consider the object as temporary until is assigned to its parent
 folder:
 
-    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = factory(tmp_obj_id)
     >>> tmp_obj._setPortalTypeName(fti.getId())
     >>> api.is_temporary(tmp_obj)
@@ -2059,14 +2060,12 @@ It works for Dexterity types as well::
 
     >>> sample_containers = self.portal.bika_setup.sample_containers
     >>> sample_container = api.create(sample_containers, "SampleContainer",
-    ...                               title="Sample container 4",
+    ...                               title="Source Sample Container",
     ...                               description="Sample container to test",
     ...                               capacity="100 ml")
-    >>> sample_container
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-4>
 
     >>> sample_container.Title()
-    'Sample container 4'
+    'Source Sample Container'
 
     >>> sample_container.Description()
     'Sample container to test'
@@ -2075,13 +2074,11 @@ It works for Dexterity types as well::
     '100 ml'
 
     >>> sample_container_copy = api.copy_object(sample_container,
-    ...                                         title="Sample container 5",
+    ...                                         title="Target Sample Container",
     ...                                         capacity="50 ml")
-    >>> sample_container_copy
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-5>
 
     >>> sample_container_copy.Title()
-    'Sample container 5'
+    'Target Sample Container'
 
     >>> sample_container_copy.Description()
     'Sample container to test'
