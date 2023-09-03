@@ -51,6 +51,7 @@
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
+    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
   </property>
 
   <!-- Action aliases -->
