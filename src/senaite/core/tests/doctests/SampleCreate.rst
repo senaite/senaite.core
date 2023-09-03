@@ -158,10 +158,10 @@ Measure sample create performance of samples:
     >>> prof = Profile()
     >>> rval = prof.runcall(create_test_samples)
     >>> prof.dump_stats("/tmp/create_samples.prof")
+
     >>> end = time()
 
     >>> total = "%.2f" % (end - start)
-    >>> total
 
 Check if all samples were created:
 
