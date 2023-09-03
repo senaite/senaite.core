@@ -28,10 +28,12 @@ from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
 from senaite.core.interfaces import IMultiCatalogBehavior as _IMultiCatalogBehavior
 from senaite.core.interfaces import IAutoGenerateID as _IAutoGenerateID
+from senaite.core.interfaces import IIdServerTypeID as _IIdServerTypeID
 from senaite.core.interfaces import IIdServerVariables as _IIdServerVariables
 
 deprecation.deprecated("IMultiCatalogBehavior", "Moved to senaite.core.interfaces")
 deprecation.deprecated("IAutoGenerateID", "Moved to senaite.core.interfaces")
+deprecation.deprecated("IIdServerTypeID", "Moved to senaite.core.interfaces")
 deprecation.deprecated("IIdServerVariables", "Moved to senaite.core.interfaces")
 
 
@@ -41,6 +43,11 @@ class IMultiCatalogBehavior(_IMultiCatalogBehavior):
 
 
 class IAutoGenerateID(_IAutoGenerateID):
+    """BBB: Need to be updated in each profile
+    """
+
+
+class IIdServerTypeID(_IIdServerTypeID):
     """BBB: Need to be updated in each profile
     """
 
