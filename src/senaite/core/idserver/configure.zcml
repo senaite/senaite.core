@@ -6,14 +6,14 @@
   <!-- DX ID Chooser -->
   <adapter
       provides="zope.container.interfaces.INameChooser"
-      for="plone.dexterity.interfaces.IDexterityContainer"
+      for="plone.dexterity.interfaces.IDexterityContent"
       factory=".idchooser.IDChooser"
       />
 
   <!-- AT ID Chooser (currently unused) -->
   <adapter
       provides="zope.container.interfaces.INameChooser"
-      for="Products.Archetypes.interfaces.base.IBaseFolder"
+      for="Products.Archetypes.interfaces.base.IBaseObject"
       factory=".idchooser.IDChooser"
       />
 
