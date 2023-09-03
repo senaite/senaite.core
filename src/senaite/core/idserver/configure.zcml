@@ -10,7 +10,7 @@
       factory=".idchooser.IDChooser"
       />
 
-  <!-- AT ID Chooser -->
+  <!-- AT ID Chooser (currently unused) -->
   <adapter
       provides="zope.container.interfaces.INameChooser"
       for="Products.Archetypes.interfaces.base.IBaseFolder"
