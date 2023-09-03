@@ -529,9 +529,6 @@ def renameAfterCreation(obj):
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
 
-    # unindex the object
-    obj.unindexObject()
-
     # The id returned should be normalized already
     new_id = None
 
