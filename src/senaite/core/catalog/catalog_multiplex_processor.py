@@ -63,6 +63,8 @@ class CatalogMultiplexProcessor(object):
         """
         if IMultiCatalogBehavior(obj, None) is None:
             return False
+        if api.is_temporary(obj):
+            return False
         return True
 
     def index(self, obj, attributes=None):

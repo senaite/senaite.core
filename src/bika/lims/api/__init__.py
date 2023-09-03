@@ -1740,12 +1740,11 @@ def is_temporary(obj):
     if parent_id is None or UID_RX.match(parent_id):
         return True
 
-    if is_at_content(obj):
-
-        # Checks to see if we are created inside the portal_factory. We don't
-        # rely here on AT's isFactoryContained because the function is patched
-        meta_type = getattr(aq_base(parent), "meta_type", "")
-        return meta_type == "TempFolder"
+    # Checks to see if we are created inside the portal_factory.
+    # This might also happen for DX types in senaite.databox!
+    meta_type = getattr(aq_base(parent), "meta_type", "")
+    if meta_type == "TempFolder":
+        return True
 
     return False
 
