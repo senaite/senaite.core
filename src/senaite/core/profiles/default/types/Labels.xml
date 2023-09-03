@@ -50,9 +50,8 @@
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
+    <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
-    <!-- Needed behavior to indexe in uid_catalog -->
-    <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
   <!-- Action aliases -->

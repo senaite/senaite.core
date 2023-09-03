@@ -76,6 +76,45 @@ class IAjaxEditForm(Interface):
         """
 
 
+class IMultiCatalogBehavior(Interface):
+    """Support multiple catalogs for Dexterity contents
+    """
+
+
+class IAutoGenerateID(Interface):
+    """Auto-generate ID with ID server
+    """
+
+
+class IIdServer(Interface):
+    """Marker Interface for ID server
+    """
+
+    def generate_id(self, portal_type, batch_size=None):
+        """Generate a new id for 'portal_type'
+        """
+
+
+class IIdServerVariables(Interface):
+    """Marker interfaces for variables generator for ID Server
+    """
+
+    def get_variables(self, **kw):
+        """Returns a dict with variables
+        """
+
+
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
+        """
+
+
 class INumberGenerator(Interface):
     """A utility to generates unique numbers by key
     """

@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IMultiCatalogBehavior
+from senaite.core.interfaces import IMultiCatalogBehavior
 from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.ZCatalog import ZCatalog
 from senaite.core import logger
@@ -90,7 +90,8 @@ def in_portal_catalog(obj):
     # check archetype tool if we have an AT content type
     if api.is_at_type(obj):
         att = api.get_tool("archetype_tool", default=None)
-        if att and PORTAL_CATALOG not in att.catalog_map.get(portal_type):
+        catalogs = att.catalog_map.get(portal_type) if att else None
+        if isinstance(catalogs, list) and PORTAL_CATALOG not in catalogs:
             return False
 
     # all other contents (folders etc.) can be indexed in portal_catalog

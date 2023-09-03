@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="zope" >
+
+  <!-- NOTE: we register the adapter for each type individually to make sure we
+             are more specific than the default adapter registration! -->
+
+  <!-- ID Chooser: Dexterity container -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="plone.dexterity.interfaces.IDexterityContainer"
+      factory=".idchooser.IDChooser"
+      />
+
+  <!-- ID Chooser: Dexterity item -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="plone.dexterity.interfaces.IDexterityItem"
+      factory=".idchooser.IDChooser"
+      />
+
+  <!-- ID Chooser: AT base folder (currently unused) -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="Products.Archetypes.interfaces.base.IBaseFolder"
+      factory=".idchooser.IDChooser"
+      />
+
+  <!-- ID Chooser: AT base content (currently unused) -->
+  <adapter
+      provides="zope.container.interfaces.INameChooser"
+      for="Products.Archetypes.interfaces.base.IBaseContent"
+      factory=".idchooser.IDChooser"
+      />
+
+</configure>

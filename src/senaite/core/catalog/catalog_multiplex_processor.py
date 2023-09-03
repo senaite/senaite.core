@@ -21,9 +21,9 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IMultiCatalogBehavior
 from Products.CMFCore.interfaces import IPortalCatalogQueueProcessor
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.interfaces import IMultiCatalogBehavior
 from zope.interface import implementer
 
 REQUIRED_CATALOGS = [
@@ -62,6 +62,8 @@ class CatalogMultiplexProcessor(object):
         """Check if the Multi Catalog Behavior is enabled
         """
         if IMultiCatalogBehavior(obj, None) is None:
+            return False
+        if api.is_temporary(obj):
             return False
         return True
 

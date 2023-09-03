@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix type information for DX types"
+      description="Reimport typeinfo profile"
+      source="2515"
+      destination="2516"
+      handler=".v02_05_000.import_typeinfo"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Drop Portal Catalog"
       description="Drop all indexing in portal_catalog"
       source="2514"
