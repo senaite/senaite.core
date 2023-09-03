@@ -429,3 +429,10 @@ def remove_legacy_reports(tool):
     portal.portal_types.manage_delObjects(["Report", "ReportFolder"])
 
     logger.info("Removing legacy reports [DONE]")
+
+
+@upgradestep(product, version)
+def import_typeinfo(tool):
+    """Import type info profile
+    """
+    tool.runImportStepFromProfile(profile, "typeinfo")
