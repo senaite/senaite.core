@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from zope.interface import implementer
-from zope.container.interfaces import INameChooser
 from senaite.core.idserver import generateUniqueId
+from senaite.core.interfaces import IAutoGenerateID
+from zope.container.contained import NameChooser
+from zope.container.interfaces import INameChooser
+from zope.interface import implementer
+from plone.app.content.namechooser import NormalizingNameChooser
 
 
 @implementer(INameChooser)
@@ -21,4 +24,7 @@ class IDChooser(object):
     def chooseName(self, name, object):
         """Choose a valid ID for the given object
         """
+        if not IAutoGenerateID.providedBy(object):
+            default_chooser = NormalizingNameChooser(self.context)
+            return default_chooser.chooseName(name, object)
         return generateUniqueId(object, container=self.context)
