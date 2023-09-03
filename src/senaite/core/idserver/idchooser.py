@@ -2,7 +2,6 @@
 
 from senaite.core.idserver import generateUniqueId
 from senaite.core.interfaces import IAutoGenerateID
-from zope.container.contained import NameChooser
 from zope.container.interfaces import INameChooser
 from zope.interface import implementer
 from plone.app.content.namechooser import NormalizingNameChooser
