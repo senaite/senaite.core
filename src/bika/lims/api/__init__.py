@@ -44,6 +44,8 @@ from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
+from plone.dexterity.utils import addContentToContainer
+from plone.dexterity.utils import createContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -68,12 +70,10 @@ from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import IFactory
 from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
-from zope.lifecycleevent import ObjectCreatedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
@@ -157,8 +157,9 @@ def create(container, portal_type, *args, **kwargs):
     """
     from bika.lims.utils import tmpID
 
-    id = kwargs.pop("id", tmpID())
-    title = kwargs.pop("title", "New {}".format(portal_type))
+    tmp_id = tmpID()
+    id = kwargs.pop("id", "")
+    title = kwargs.pop("title", "")
 
     # get the fti
     types_tool = get_tool("portal_types")
@@ -166,7 +167,7 @@ def create(container, portal_type, *args, **kwargs):
 
     if fti.product:
         # create the AT object
-        obj = _createObjectByType(portal_type, container, id)
+        obj = _createObjectByType(portal_type, container, id or tmp_id)
         # update the object with values
         edit(obj, check_permissions=False, title=title, **kwargs)
         # auto-id if required
@@ -177,21 +178,10 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        # newstyle factory
-        factory = getUtility(IFactory, fti.factory)
-        obj = factory(id, *args, **kwargs)
-        if hasattr(obj, '_setPortalTypeName'):
-            obj._setPortalTypeName(fti.getId())
-        # set the title
-        obj.title = safe_unicode(title)
-        # notify that the object was created
-        notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
-        # ContainerModifiedEvent
-        container._setObject(id, obj)
-        # we get the object here with the current object id, as it might be
-        # renamed already by an event handler
-        obj = container._getOb(obj.getId())
+        content = createContent(portal_type, **kwargs)
+        content.id = id
+        content.title = title
+        obj = addContentToContainer(container, content)
 
     return obj
 
