@@ -22,6 +22,7 @@ import itertools
 from string import Template
 
 import six
+import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -48,6 +49,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.idserver import generateUniqueId
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
@@ -88,8 +90,13 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Remove the specificaton to set it *after* the analyses have been added
     specification = values.pop("Specification", None)
 
+    # create temporary sample for ID generation
+    tmp = create_temporary_sample()
+    tmp.Schema().updateAll(tmp, **values)
+    new_id = generateUniqueId(tmp, container=client)
+
     # Create the Analysis Request and submit the form
-    ar = _createObjectByType("AnalysisRequest", client, tmpID())
+    ar = _createObjectByType("AnalysisRequest", client, new_id)
     # mark the sample as temporary to avoid indexing
     api.mark_temporary(ar)
     # NOTE: We call here `_processForm` (with underscore) to manually unmark
@@ -147,7 +154,7 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
-    renameAfterCreation(ar)
+    # renameAfterCreation(ar)
     # AT only
     ar.unmarkCreationFlag()
     # unmark the sample as temporary
@@ -162,6 +169,20 @@ def create_analysisrequest(client, request, values, analyses=None,
         do_rejection(ar)
 
     return ar
+
+
+def create_temporary_sample(portal_type="AnalysisRequest"):
+    """Create a temporary sample
+    """
+    portal_factory = api.get_tool("portal_factory")
+    temp_folder = portal_factory._getTempFolder("senaite.core.tmp")
+    if portal_type in temp_folder:
+        return temp_folder[portal_type]
+    # reduce conflict errors
+    portal_factory._p_jar.sync()
+    _createObjectByType(portal_type, temp_folder, portal_type)
+    transaction.commit()
+    return temp_folder[portal_type]
 
 
 def reindex(obj, recursive=False):
