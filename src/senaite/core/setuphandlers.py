@@ -188,7 +188,6 @@ CATALOG_MAPPINGS = (
 REMOVE_PORTAL_CATALOG_INDEXES = (
     "Analyst",
     "SearchableText",
-    "Subject",
     "commentators",
     "getName",
     "getParentUID",
