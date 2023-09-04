@@ -193,8 +193,34 @@ def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     query = {"portal_type": portal_type}
     query.update(kw)
     brains = api.search(query, catalog=catalog)
-    for brain in brains:
-        uncatalog_brain(brain)
+
+    # NOTE: Catalog results are of type `ZTUtils.Lazy.LazyMap` and it might
+    #       fail during iteration with the following traceback:
+    #
+    # Traceback (innermost last):
+    #   Module ZPublisher.WSGIPublisher, line 176, in transaction_pubevents
+    #   Module ZPublisher.WSGIPublisher, line 385, in publish_module
+    #   Module ZPublisher.WSGIPublisher, line 288, in publish
+    #   Module ZPublisher.mapply, line 85, in mapply
+    #   Module ZPublisher.WSGIPublisher, line 63, in call_object
+    #   Module Products.GenericSetup.tool, line 1135, in manage_doUpgrades
+    #   Module Products.GenericSetup.upgrade, line 185, in doStep
+    #   Module senaite.core.upgrade.v02_05_000, line 142, in drop_portal_catalog
+    #   Module senaite.core.upgrade.v02_05_000, line 196, in uncatalog_type
+    #   Module ZTUtils.Lazy, line 201, in __getitem__
+    #   Module Products.ZCatalog.Catalog, line 131, in __getitem__
+    # KeyError: -693164432
+    #
+    # Therefore, we convert the results first to a `list` to catch the error
+    # inside the loop!
+    for brain in list(brains):
+        try:
+            uncatalog_brain(brain)
+        except KeyError:
+            logger.error(
+                "!!! Failed to uncatalog '%s' in catalog '%s' !!! "
+                "Consider removing it manually." % (brain.getId, catalog))
+            continue
 
 
 def setup_catalogs(tool):
