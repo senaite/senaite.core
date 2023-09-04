@@ -44,7 +44,7 @@ class CatalogVocabulary(object):
     """
     implements(IDisplayListVocabulary)
 
-    catalog = 'portal_catalog'
+    catalog = 'uid_catalog'
     contentFilter = {}
     key = 'UID'
     value = 'Title'

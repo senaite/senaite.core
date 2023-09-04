@@ -4,12 +4,12 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$6 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var __assign = function () {
       __assign = Object.assign || function __assign(t) {
@@ -282,9 +282,11 @@
       fromPoint: fromPoint
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.XHR');
 
@@ -332,7 +334,7 @@
       return Math.max(parseInt(val1, 10), parseInt(val2, 10));
     };
     var getImageSize = function (url) {
-      return new global$3(function (callback) {
+      return new global$4(function (callback) {
         var img = document.createElement('img');
         var done = function (dimensions) {
           img.onload = img.onerror = null;
@@ -348,10 +350,10 @@
             width: width,
             height: height
           };
-          done(global$3.resolve(dimensions));
+          done(global$4.resolve(dimensions));
         };
         img.onerror = function () {
-          done(global$3.reject('Failed to get image dimensions for: ' + url));
+          done(global$4.reject('Failed to get image dimensions for: ' + url));
         };
         var style = img.style;
         style.visibility = 'hidden';
@@ -441,7 +443,7 @@
       imgElm.onerror = selectImage;
     };
     var blobToDataUri = function (blob) {
-      return new global$3(function (resolve, reject) {
+      return new global$4(function (resolve, reject) {
         var reader = new FileReader();
         reader.onload = function () {
           resolve(reader.result);
@@ -455,8 +457,11 @@
     var isPlaceholderImage = function (imgElm) {
       return imgElm.nodeName === 'IMG' && (imgElm.hasAttribute('data-mce-object') || imgElm.hasAttribute('data-mce-placeholder'));
     };
+    var isSafeImageUrl = function (editor, src) {
+      return global$3.isDomSafe(src, 'img', editor.settings);
+    };
 
-    var DOM = global$4.DOM;
+    var DOM = global$5.DOM;
     var getHspace = function (image) {
       if (image.style.marginLeft && image.style.marginRight && image.style.marginLeft === image.style.marginRight) {
         return removePixelSuffix(image.style.marginLeft);
@@ -782,6 +787,10 @@
         waitLoadImage(editor, data, image);
       }
     };
+    var sanitizeImageData = function (editor, data) {
+      var src = data.src;
+      return __assign(__assign({}, data), { src: isSafeImageUrl(editor, src) ? src : '' });
+    };
     var insertOrUpdateImage = function (editor, partialData) {
       var image = getSelectedImage(editor);
       if (image) {
@@ -789,8 +798,9 @@
           return normalizeCss$1(editor, css);
         }, image);
         var data = __assign(__assign({}, selectedImageData), partialData);
+        var sanitizedData = sanitizeImageData(editor, data);
         if (data.src) {
-          writeImageDataToSelection(editor, data);
+          writeImageDataToSelection(editor, sanitizedData);
         } else {
           deleteImage(editor, image);
         }
@@ -1002,7 +1012,7 @@
       var urlListSanitizer = ListUtils.sanitizer(function (item) {
         return editor.convertURL(item.value || item.url, 'src');
       });
-      var futureImageList = new global$3(function (completer) {
+      var futureImageList = new global$4(function (completer) {
         createImageList(editor, function (imageList) {
           completer(urlListSanitizer(imageList).map(function (items) {
             return flatten([
@@ -1504,12 +1514,19 @@
     };
     var imageSize = function (editor) {
       return function (url) {
-        return getImageSize(editor.documentBaseURI.toAbsolute(url)).then(function (dimensions) {
-          return {
-            width: String(dimensions.width),
-            height: String(dimensions.height)
-          };
-        });
+        if (!isSafeImageUrl(editor, url)) {
+          return global$4.resolve({
+            width: '',
+            height: ''
+          });
+        } else {
+          return getImageSize(editor.documentBaseURI.toAbsolute(url)).then(function (dimensions) {
+            return {
+              width: String(dimensions.width),
+              height: String(dimensions.height)
+            };
+          });
+        }
       };
     };
     var createBlobCache = function (editor) {
@@ -1552,9 +1569,9 @@
       return function (blobInfo) {
         return global$1(editor).upload([blobInfo], false).then(function (results) {
           if (results.length === 0) {
-            return global$3.reject('Failed to upload image');
+            return global$4.reject('Failed to upload image');
           } else if (results[0].status === false) {
-            return global$3.reject(results[0].error.message);
+            return global$4.reject(results[0].error.message);
           } else {
             return results[0];
           }
@@ -1620,6 +1637,7 @@
         tooltip: 'Insert/edit image',
         onAction: Dialog(editor).open,
         onSetup: function (buttonApi) {
+          buttonApi.setActive(isNonNullable(getSelectedImage(editor)));
           return editor.selection.selectorChangedWithUnbind('img:not([data-mce-object],[data-mce-placeholder]),figure.image', buttonApi.setActive).unbind;
         }
       });
@@ -1636,7 +1654,7 @@
     };
 
     function Plugin () {
-      global$5.add('image', function (editor) {
+      global$6.add('image', function (editor) {
         setup(editor);
         register(editor);
         register$1(editor);

@@ -13,33 +13,6 @@
       provides="bika.lims.interfaces.IDynamicResultsRange"
       />
 
-    <adapter
-      for="zope.interface.Interface
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-    />
-
-    <!-- ClientAwareReferenceWidgetVocabulary
-    Injects getClientUID or getParentUID as additional search criteria for
-    client-bound reference fields -->
-    <adapter
-      for="bika.lims.interfaces.IBatch
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-    <adapter
-      for="bika.lims.interfaces.IClient
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-    <adapter
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-
-
     <!--
     FIELDS/WIDGETS VISIBILITY
     ·························

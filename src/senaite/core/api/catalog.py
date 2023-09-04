@@ -21,14 +21,15 @@
 import re
 
 import six
+from six.moves.urllib.parse import unquote_plus
 
 from bika.lims.api import APIError
+from bika.lims.api import get_request
 from bika.lims.api import get_tool
 from bika.lims.api import safe_unicode
 from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
 from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.ZCatalog.interfaces import IZCatalog
-from Products.ZCTextIndex.Lexicon import StopWordAndSingleCharRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
 
@@ -149,8 +150,7 @@ def add_zc_text_index(catalog, index, lex_id="Lexicon", indexed_attrs=None):
         # create the lexicon first
         splitter = Splitter()
         casenormalizer = CaseNormalizer()
-        stopwordremover = StopWordAndSingleCharRemover()
-        pipeline = [splitter, casenormalizer, stopwordremover]
+        pipeline = [splitter, casenormalizer]
         lexicon = PLexicon(lex_id, "Lexicon", *pipeline)
         catalog._setObject(lex_id, lexicon)
 
@@ -176,7 +176,7 @@ def reindex_index(catalog, index):
     if index not in indexes:
         return False
 
-    catalog.manage_reindexIndex(index)
+    catalog.manage_reindexIndex(index, REQUEST=get_request())
     return True
 
 
@@ -228,6 +228,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     :returns: sarchable text string
     """
     OPERATORS = ["AND", "OR"]
+    WILDCARDS = ["*", "?"]
 
     if op not in OPERATORS:
         op = "AND"
@@ -236,6 +237,9 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     def is_op(token):
         return token.upper() in OPERATORS
+
+    def is_wc(char):
+        return char in WILDCARDS
 
     def append_op_after(index, token, tokens):
         # do not append an operator after the last token
@@ -249,10 +253,21 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
         return True
 
     # convert to unicode
-    term = safe_unicode(qs)
+    term = unquote_plus(safe_unicode(qs))
 
-    # splits the string on all non alphanumeric characters
-    tokens = re.split(r"[^\w]", term, flags=re.U | re.I)
+    # Wildcards at the beginning are not allowed and therefore removed!
+    first_char = term[0] if len(term) > 0 else ""
+    if is_wc(first_char):
+        term = term.replace(first_char, "", 1)
+
+    # splits the string on all characters that do not match the regex
+    regex = r"[^\w\-\_\.\<\>\+\{\}\:\/\?\$]"
+
+    # allow only words when searching just a single character
+    if len(term) == 1:
+        regex = r"[^\w]"
+
+    tokens = re.split(regex, term, flags=re.U | re.I)
 
     # filter out all empty tokens
     tokens = filter(None, tokens)
@@ -269,13 +284,16 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     for num, token in enumerate(tokens):
 
+        # retain wildcards at the end of a token
+        last_token_char = token[-1] if len(token) > 0 else ""
+
         # append operators without changes and continue
         if is_op(token):
             parts.append(token.upper())
             continue
 
         # append wildcard to token
-        if wildcard and not is_op(token):
+        if wildcard and not is_op(token) and not is_wc(last_token_char):
             token = token + "*"
 
         # append the token

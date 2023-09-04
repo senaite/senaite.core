@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -23,9 +23,9 @@
       };
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var typeOf = function (x) {
       var t = typeof x;
@@ -160,6 +160,221 @@
       from: from
     };
 
+    var exports$1 = {}, module = { exports: exports$1 };
+    (function (define, exports, module, require) {
+      (function (global, factory) {
+        typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.EphoxContactWrapper = factory());
+      }(this, function () {
+        var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+        var promise = { exports: {} };
+        (function (module) {
+          (function (root) {
+            var setTimeoutFunc = setTimeout;
+            function noop() {
+            }
+            function bind(fn, thisArg) {
+              return function () {
+                fn.apply(thisArg, arguments);
+              };
+            }
+            function Promise(fn) {
+              if (typeof this !== 'object')
+                throw new TypeError('Promises must be constructed via new');
+              if (typeof fn !== 'function')
+                throw new TypeError('not a function');
+              this._state = 0;
+              this._handled = false;
+              this._value = undefined;
+              this._deferreds = [];
+              doResolve(fn, this);
+            }
+            function handle(self, deferred) {
+              while (self._state === 3) {
+                self = self._value;
+              }
+              if (self._state === 0) {
+                self._deferreds.push(deferred);
+                return;
+              }
+              self._handled = true;
+              Promise._immediateFn(function () {
+                var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+                if (cb === null) {
+                  (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+                  return;
+                }
+                var ret;
+                try {
+                  ret = cb(self._value);
+                } catch (e) {
+                  reject(deferred.promise, e);
+                  return;
+                }
+                resolve(deferred.promise, ret);
+              });
+            }
+            function resolve(self, newValue) {
+              try {
+                if (newValue === self)
+                  throw new TypeError('A promise cannot be resolved with itself.');
+                if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+                  var then = newValue.then;
+                  if (newValue instanceof Promise) {
+                    self._state = 3;
+                    self._value = newValue;
+                    finale(self);
+                    return;
+                  } else if (typeof then === 'function') {
+                    doResolve(bind(then, newValue), self);
+                    return;
+                  }
+                }
+                self._state = 1;
+                self._value = newValue;
+                finale(self);
+              } catch (e) {
+                reject(self, e);
+              }
+            }
+            function reject(self, newValue) {
+              self._state = 2;
+              self._value = newValue;
+              finale(self);
+            }
+            function finale(self) {
+              if (self._state === 2 && self._deferreds.length === 0) {
+                Promise._immediateFn(function () {
+                  if (!self._handled) {
+                    Promise._unhandledRejectionFn(self._value);
+                  }
+                });
+              }
+              for (var i = 0, len = self._deferreds.length; i < len; i++) {
+                handle(self, self._deferreds[i]);
+              }
+              self._deferreds = null;
+            }
+            function Handler(onFulfilled, onRejected, promise) {
+              this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+              this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+              this.promise = promise;
+            }
+            function doResolve(fn, self) {
+              var done = false;
+              try {
+                fn(function (value) {
+                  if (done)
+                    return;
+                  done = true;
+                  resolve(self, value);
+                }, function (reason) {
+                  if (done)
+                    return;
+                  done = true;
+                  reject(self, reason);
+                });
+              } catch (ex) {
+                if (done)
+                  return;
+                done = true;
+                reject(self, ex);
+              }
+            }
+            Promise.prototype['catch'] = function (onRejected) {
+              return this.then(null, onRejected);
+            };
+            Promise.prototype.then = function (onFulfilled, onRejected) {
+              var prom = new this.constructor(noop);
+              handle(this, new Handler(onFulfilled, onRejected, prom));
+              return prom;
+            };
+            Promise.all = function (arr) {
+              var args = Array.prototype.slice.call(arr);
+              return new Promise(function (resolve, reject) {
+                if (args.length === 0)
+                  return resolve([]);
+                var remaining = args.length;
+                function res(i, val) {
+                  try {
+                    if (val && (typeof val === 'object' || typeof val === 'function')) {
+                      var then = val.then;
+                      if (typeof then === 'function') {
+                        then.call(val, function (val) {
+                          res(i, val);
+                        }, reject);
+                        return;
+                      }
+                    }
+                    args[i] = val;
+                    if (--remaining === 0) {
+                      resolve(args);
+                    }
+                  } catch (ex) {
+                    reject(ex);
+                  }
+                }
+                for (var i = 0; i < args.length; i++) {
+                  res(i, args[i]);
+                }
+              });
+            };
+            Promise.resolve = function (value) {
+              if (value && typeof value === 'object' && value.constructor === Promise) {
+                return value;
+              }
+              return new Promise(function (resolve) {
+                resolve(value);
+              });
+            };
+            Promise.reject = function (value) {
+              return new Promise(function (resolve, reject) {
+                reject(value);
+              });
+            };
+            Promise.race = function (values) {
+              return new Promise(function (resolve, reject) {
+                for (var i = 0, len = values.length; i < len; i++) {
+                  values[i].then(resolve, reject);
+                }
+              });
+            };
+            Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
+              setImmediate(fn);
+            } : function (fn) {
+              setTimeoutFunc(fn, 0);
+            };
+            Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+              if (typeof console !== 'undefined' && console) {
+                console.warn('Possible Unhandled Promise Rejection:', err);
+              }
+            };
+            Promise._setImmediateFn = function _setImmediateFn(fn) {
+              Promise._immediateFn = fn;
+            };
+            Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+              Promise._unhandledRejectionFn = fn;
+            };
+            if (module.exports) {
+              module.exports = Promise;
+            } else if (!root.Promise) {
+              root.Promise = Promise;
+            }
+          }(commonjsGlobal));
+        }(promise));
+        var promisePolyfill = promise.exports;
+        var Global = function () {
+          if (typeof window !== 'undefined') {
+            return window;
+          } else {
+            return Function('return this;')();
+          }
+        }();
+        var promisePolyfill_1 = { boltExport: Global.Promise || promisePolyfill };
+        return promisePolyfill_1;
+      }));
+    }(undefined, exports$1, module));
+    var Promise$1 = module.exports.boltExport;
+
     var create$1 = function (width, height) {
       return resize(document.createElement('canvas'), width, height);
     };
@@ -184,187 +399,6 @@
     var getHeight = function (image) {
       return image.naturalHeight || image.height;
     };
-
-    var promise = function () {
-      var Promise = function (fn) {
-        if (typeof this !== 'object') {
-          throw new TypeError('Promises must be constructed via new');
-        }
-        if (typeof fn !== 'function') {
-          throw new TypeError('not a function');
-        }
-        this._state = null;
-        this._value = null;
-        this._deferreds = [];
-        doResolve(fn, bind(resolve, this), bind(reject, this));
-      };
-      var anyWindow = window;
-      var asap = Promise.immediateFn || typeof anyWindow.setImmediate === 'function' && anyWindow.setImmediate || function (fn) {
-        return setTimeout(fn, 1);
-      };
-      var bind = function (fn, thisArg) {
-        return function () {
-          var args = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-          }
-          return fn.apply(thisArg, args);
-        };
-      };
-      var isArray = Array.isArray || function (value) {
-        return Object.prototype.toString.call(value) === '[object Array]';
-      };
-      function handle(deferred) {
-        var me = this;
-        if (this._state === null) {
-          this._deferreds.push(deferred);
-          return;
-        }
-        asap(function () {
-          var cb = me._state ? deferred.onFulfilled : deferred.onRejected;
-          if (cb === null) {
-            (me._state ? deferred.resolve : deferred.reject)(me._value);
-            return;
-          }
-          var ret;
-          try {
-            ret = cb(me._value);
-          } catch (e) {
-            deferred.reject(e);
-            return;
-          }
-          deferred.resolve(ret);
-        });
-      }
-      function resolve(newValue) {
-        try {
-          if (newValue === this) {
-            throw new TypeError('A promise cannot be resolved with itself.');
-          }
-          if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-            var then = newValue.then;
-            if (typeof then === 'function') {
-              doResolve(bind(then, newValue), bind(resolve, this), bind(reject, this));
-              return;
-            }
-          }
-          this._state = true;
-          this._value = newValue;
-          finale.call(this);
-        } catch (e) {
-          reject.call(this, e);
-        }
-      }
-      function reject(newValue) {
-        this._state = false;
-        this._value = newValue;
-        finale.call(this);
-      }
-      function finale() {
-        for (var _i = 0, _a = this._deferreds; _i < _a.length; _i++) {
-          var deferred = _a[_i];
-          handle.call(this, deferred);
-        }
-        this._deferreds = [];
-      }
-      function Handler(onFulfilled, onRejected, resolve, reject) {
-        this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-        this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-        this.resolve = resolve;
-        this.reject = reject;
-      }
-      var doResolve = function (fn, onFulfilled, onRejected) {
-        var done = false;
-        try {
-          fn(function (value) {
-            if (done) {
-              return;
-            }
-            done = true;
-            onFulfilled(value);
-          }, function (reason) {
-            if (done) {
-              return;
-            }
-            done = true;
-            onRejected(reason);
-          });
-        } catch (ex) {
-          if (done) {
-            return;
-          }
-          done = true;
-          onRejected(ex);
-        }
-      };
-      Promise.prototype.catch = function (onRejected) {
-        return this.then(null, onRejected);
-      };
-      Promise.prototype.then = function (onFulfilled, onRejected) {
-        var me = this;
-        return new Promise(function (resolve, reject) {
-          handle.call(me, new Handler(onFulfilled, onRejected, resolve, reject));
-        });
-      };
-      Promise.all = function () {
-        var values = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          values[_i] = arguments[_i];
-        }
-        var args = Array.prototype.slice.call(values.length === 1 && isArray(values[0]) ? values[0] : values);
-        return new Promise(function (resolve, reject) {
-          if (args.length === 0) {
-            return resolve([]);
-          }
-          var remaining = args.length;
-          var res = function (i, val) {
-            try {
-              if (val && (typeof val === 'object' || typeof val === 'function')) {
-                var then = val.then;
-                if (typeof then === 'function') {
-                  then.call(val, function (val) {
-                    res(i, val);
-                  }, reject);
-                  return;
-                }
-              }
-              args[i] = val;
-              if (--remaining === 0) {
-                resolve(args);
-              }
-            } catch (ex) {
-              reject(ex);
-            }
-          };
-          for (var i = 0; i < args.length; i++) {
-            res(i, args[i]);
-          }
-        });
-      };
-      Promise.resolve = function (value) {
-        if (value && typeof value === 'object' && value.constructor === Promise) {
-          return value;
-        }
-        return new Promise(function (resolve) {
-          resolve(value);
-        });
-      };
-      Promise.reject = function (reason) {
-        return new Promise(function (resolve, reject) {
-          reject(reason);
-        });
-      };
-      Promise.race = function (values) {
-        return new Promise(function (resolve, reject) {
-          for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
-            var value = values_1[_i];
-            value.then(resolve, reject);
-          }
-        });
-      };
-      return Promise;
-    };
-    var Promise$1 = window.Promise ? window.Promise : promise();
 
     var imageToBlob$2 = function (image) {
       var src = image.src;
@@ -1004,11 +1038,11 @@
       });
     };
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var global = tinymce.util.Tools.resolve('tinymce.util.URI');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var getToolbarItems = function (editor) {
       return editor.getParam('imagetools_toolbar', 'rotateleft rotateright flipv fliph editimage imageoptions');
@@ -1134,13 +1168,13 @@
     };
     var isLocalImage = function (editor, img) {
       var url = img.src;
-      return url.indexOf('data:') === 0 || url.indexOf('blob:') === 0 || new global(url).host === editor.documentBaseURI.host;
+      return url.indexOf('data:') === 0 || url.indexOf('blob:') === 0 || new global$1(url).host === editor.documentBaseURI.host;
     };
     var isCorsImage = function (editor, img) {
-      return global$3.inArray(getCorsHosts(editor), new global(img.src).host) !== -1;
+      return global$4.inArray(getCorsHosts(editor), new global$1(img.src).host) !== -1;
     };
     var isCorsWithCredentialsImage = function (editor, img) {
-      return global$3.inArray(getCredentialsHosts(editor), new global(img.src).host) !== -1;
+      return global$4.inArray(getCredentialsHosts(editor), new global$1(img.src).host) !== -1;
     };
     var defaultFetchImage = function (editor, img) {
       if (isCorsImage(editor, img)) {
@@ -1164,18 +1198,18 @@
     var findBlob = function (editor, img) {
       var blobInfo = editor.editorUpload.blobCache.getByUri(img.src);
       if (blobInfo) {
-        return global$1.resolve(blobInfo.blob());
+        return global$2.resolve(blobInfo.blob());
       }
       return imageToBlob(editor, img);
     };
     var startTimedUpload = function (editor, imageUploadTimerState) {
-      var imageUploadTimer = global$2.setEditorTimeout(editor, function () {
+      var imageUploadTimer = global$3.setEditorTimeout(editor, function () {
         editor.editorUpload.uploadImagesAuto();
       }, getUploadTimeout(editor));
       imageUploadTimerState.set(imageUploadTimer);
     };
     var cancelTimedUpload = function (imageUploadTimerState) {
-      global$2.clearTimeout(imageUploadTimerState.get());
+      global$3.clearTimeout(imageUploadTimerState.get());
     };
     var updateSelectedImage = function (editor, origBlob, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
       return ir.toBlob().then(function (blob) {
@@ -1366,7 +1400,7 @@
     };
 
     var register$2 = function (editor, imageUploadTimerState) {
-      global$3.each({
+      global$4.each({
         mceImageRotateLeft: rotate(editor, imageUploadTimerState, -90),
         mceImageRotateRight: rotate(editor, imageUploadTimerState, 90),
         mceImageFlipVertical: flip(editor, imageUploadTimerState, 'v'),
@@ -1482,7 +1516,7 @@
     };
 
     function Plugin () {
-      global$4.add('imagetools', function (editor) {
+      global$5.add('imagetools', function (editor) {
         var imageUploadTimerState = Cell(0);
         var lastSelectedImageState = Cell(null);
         register$2(editor, imageUploadTimerState);

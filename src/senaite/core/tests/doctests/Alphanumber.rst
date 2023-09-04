@@ -15,8 +15,8 @@ Needed Imports:
 
     >>> import re
     >>> from bika.lims import api
-    >>> from bika.lims.alphanumber import to_decimal
-    >>> from bika.lims.alphanumber import Alphanumber
+    >>> from senaite.core.idserver.alphanumber import to_decimal
+    >>> from senaite.core.idserver.alphanumber import Alphanumber
 
 Create and test basic alphanumeric functions:
 

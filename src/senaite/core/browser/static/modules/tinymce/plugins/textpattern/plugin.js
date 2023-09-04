@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -649,7 +649,7 @@
         patternsState.set(createPatternSet(normalized.values));
       };
       var getPatterns = function () {
-        return __spreadArray(__spreadArray([], map(patternsState.get().inlinePatterns, denormalizePattern)), map(patternsState.get().blockPatterns, denormalizePattern));
+        return __spreadArray(__spreadArray([], map(patternsState.get().inlinePatterns, denormalizePattern), true), map(patternsState.get().blockPatterns, denormalizePattern), true);
       };
       return {
         setPatterns: setPatterns,

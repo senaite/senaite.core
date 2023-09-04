@@ -4,6 +4,56 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2372 Generate unique ID for DX types on object creation
+- #2370 Override default DX add form to obtain renamed IDs correctly
+- #2368 Drop usage of portal_catalog tool
+- #2369 Allow to set a custom comment for when a result is out of range
+- #2367 Contact catalog
+- #2366 Add fallback to sample client field value
+- #2365 New function for interim fields formatting
+- #2364 Support for fieldname-prefixed values on sample header submit
+- #2363 Auto-hide non-multivalued reference widget input on value selection
+- #2359 Improve sample create performance
+- #2361 Fix KeyError if registry key not found
+- #2358 Add confirmation when unlinking reference
+- #2357 Skip object reindexing when global auditlog is disabled
+- #2354 Render all legacy resources at the end of the page
+- #2350 Display batch labels in listing
+- #2347 Remove unused inline validation view
+- #2346 Fix unauthorized error when accessing dispatch/partition sample view with shared client role
+- #2343 Allow to define the sorting criteria for Result Options
+- #2345 Retrieve setup items by object
+- #2344 Fix error on sample copy when fields are hidden
+- #2334 Remove legacy reports
+- #2341 Handle nonexisting UIDs gracefully in referencewidget
+- #2340 Fix UID copy method in AT->DX content migrator
+- #2332 Fix unauthorized error when accessing immediate results entry view with a client contact user
+- #2295 Integrate new UID reference widget
+- #2315 Apply dynamic analyses specs for new added analyses
+- #2314 Display error for required fields without value in current language
+- #2313 Log error when calculation fails
+- #2310 Added `get_relative_delta` and `get_tzinfo` in datetime API
+- #2311 Properly process and validate field values from sample header on submit
+- #2307 Rely on fields when validating submitted values on sample creation
+- #2305 Add support for dates in ANSI X3.30 and ANSI X3.43.3 formats
+- #2304 Fix dynamic sample specification not applied for new samples
+- #2303 Fix managed permission of analysis workflow for lab roles
+- #2301 Use client groups for local role sharing
+- #2300 Re-add searchable text provider adapters for sample catalog listing_searchable_text index
+- #2298 Move all permissions into senaite.core
+- #2299 Fix KeyError: 'prefs_main_template' after installation
+- #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
+- #2297 Fix wrong characters on sample invalidation emails
+- #2288 Fix client dropdown on batch add
+- #2282 Fix sample reports retrieval
+- #2285 Fix string results with html characters not displayed after submit
+- #2284 Fix the email sent on sample rejection is not text/html
+- #2280 Remove custom date rendering in sample header
+- #2279 Allow all custom transitions in sample report listing
+- #2278 Client catalog
+- #2276 Senaite labels
+- #2275 Fix wrong result when both "Result options" and "String" are enabled
+- #2273 Improve performance for sample listing index
 - #2272 Allow to configure the position of additional value columns
 
 

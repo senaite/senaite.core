@@ -26,7 +26,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema

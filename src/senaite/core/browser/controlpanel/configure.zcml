@@ -5,6 +5,14 @@
 
   <include package="bika.lims" file="permissions.zcml" />
 
+  <!-- Labels -->
+  <browser:page
+      for="senaite.core.content.labels.ILabels"
+      name="view"
+      class=".labels.LabelsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
   <!-- Sample Containers -->
   <browser:page
       for="senaite.core.content.samplecontainers.ISampleContainers"

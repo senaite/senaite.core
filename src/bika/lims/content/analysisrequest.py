@@ -23,10 +23,6 @@ import functools
 import re
 from decimal import Decimal
 
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from Products.Archetypes.config import UID_CATALOG
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.Widget import IntegerWidget
 from six.moves.urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
@@ -41,10 +37,11 @@ from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
@@ -59,42 +56,41 @@ from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import ISubmitted
-from bika.lims.permissions import FieldEditBatch
-from bika.lims.permissions import FieldEditClient
-from bika.lims.permissions import FieldEditClientOrderNumber
-from bika.lims.permissions import FieldEditClientReference
-from bika.lims.permissions import FieldEditClientSampleID
-from bika.lims.permissions import FieldEditComposite
-from bika.lims.permissions import FieldEditContact
-from bika.lims.permissions import FieldEditContainer
-from bika.lims.permissions import FieldEditDatePreserved
-from bika.lims.permissions import FieldEditDateReceived
-from bika.lims.permissions import FieldEditDateSampled
-from bika.lims.permissions import FieldEditEnvironmentalConditions
-from bika.lims.permissions import FieldEditInternalUse
-from bika.lims.permissions import FieldEditInvoiceExclude
-from bika.lims.permissions import FieldEditMemberDiscount
-from bika.lims.permissions import FieldEditPreservation
-from bika.lims.permissions import FieldEditPreserver
-from bika.lims.permissions import FieldEditPriority
-from bika.lims.permissions import FieldEditProfiles
-from bika.lims.permissions import FieldEditPublicationSpecifications
-from bika.lims.permissions import FieldEditRejectionReasons
-from bika.lims.permissions import FieldEditRemarks
-from bika.lims.permissions import FieldEditResultsInterpretation
-from bika.lims.permissions import FieldEditSampleCondition
-from bika.lims.permissions import FieldEditSamplePoint
-from bika.lims.permissions import FieldEditSampler
-from bika.lims.permissions import FieldEditSampleType
-from bika.lims.permissions import FieldEditSamplingDate
-from bika.lims.permissions import FieldEditSamplingDeviation
-from bika.lims.permissions import FieldEditScheduledSampler
-from bika.lims.permissions import FieldEditSpecification
-from bika.lims.permissions import FieldEditStorageLocation
-from bika.lims.permissions import FieldEditTemplate
-from bika.lims.permissions import ManageInvoices
+from senaite.core.permissions import FieldEditBatch
+from senaite.core.permissions import FieldEditClient
+from senaite.core.permissions import FieldEditClientOrderNumber
+from senaite.core.permissions import FieldEditClientReference
+from senaite.core.permissions import FieldEditClientSampleID
+from senaite.core.permissions import FieldEditComposite
+from senaite.core.permissions import FieldEditContact
+from senaite.core.permissions import FieldEditContainer
+from senaite.core.permissions import FieldEditDatePreserved
+from senaite.core.permissions import FieldEditDateReceived
+from senaite.core.permissions import FieldEditDateSampled
+from senaite.core.permissions import FieldEditEnvironmentalConditions
+from senaite.core.permissions import FieldEditInternalUse
+from senaite.core.permissions import FieldEditInvoiceExclude
+from senaite.core.permissions import FieldEditMemberDiscount
+from senaite.core.permissions import FieldEditPreservation
+from senaite.core.permissions import FieldEditPreserver
+from senaite.core.permissions import FieldEditPriority
+from senaite.core.permissions import FieldEditProfiles
+from senaite.core.permissions import FieldEditPublicationSpecifications
+from senaite.core.permissions import FieldEditRejectionReasons
+from senaite.core.permissions import FieldEditRemarks
+from senaite.core.permissions import FieldEditResultsInterpretation
+from senaite.core.permissions import FieldEditSampleCondition
+from senaite.core.permissions import FieldEditSamplePoint
+from senaite.core.permissions import FieldEditSampler
+from senaite.core.permissions import FieldEditSampleType
+from senaite.core.permissions import FieldEditSamplingDate
+from senaite.core.permissions import FieldEditSamplingDeviation
+from senaite.core.permissions import FieldEditScheduledSampler
+from senaite.core.permissions import FieldEditSpecification
+from senaite.core.permissions import FieldEditStorageLocation
+from senaite.core.permissions import FieldEditTemplate
+from senaite.core.permissions import ManageInvoices
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
 from bika.lims.utils import user_email
@@ -114,7 +110,10 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
+from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.public import Schema
+from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
@@ -124,6 +123,8 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
@@ -157,7 +158,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name="portal_catalog",
+            catalog_name=CONTACT_CATALOG,
             base_query={"is_active": True,
                         "sort_limit": 50,
                         "sort_on": "sortable_title",
@@ -166,12 +167,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -191,7 +192,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name="portal_catalog",
+            catalog_name=CONTACT_CATALOG,
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "getParentUID": "",
@@ -199,12 +200,12 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'Fullname', 'width': '50',
+                {'columnName': 'getFullname', 'width': '50',
                  'label': _('Name')},
-                {'columnName': 'EmailAddress', 'width': '50',
+                {'columnName': 'getEmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
-            ui_item='Fullname',
+            ui_item='getFullname',
         ),
     ),
 
@@ -241,11 +242,21 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            catalog_name="portal_catalog",
+            catalog_name=CLIENT_CATALOG,
+            search_index="client_searchable_text",
             base_query={"is_active": True,
                         "sort_limit": 30,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
+            colModel=[
+                {"columnName": "getName", "width": "70", "label": _(
+                    "Client Name"), "align": "left"},
+                {"columnName": "getClientID", "width": "30", "label": _(
+                    "Client ID"), "align": "left"},
+                # UID is required in colModel
+                {"columnName": "UID", "hidden": True},
+            ],
+            ui_item="getName",
             showOn=True,
         ),
     ),
@@ -349,7 +360,7 @@ schema = BikaSchema.copy() + Schema((
                  'label': _('Title'), 'align': 'left'},
                 {'columnName': 'Description', 'width': '70',
                  'label': _('Description'), 'align': 'left'},
-                {'columnName': 'SortKey', 'hidden': True},
+                {'columnName': 'getSortKey', 'hidden': True},
                 {'columnName': 'UID', 'hidden': True},
             ],
             base_query={'is_active': True},
@@ -640,7 +651,7 @@ schema = BikaSchema.copy() + Schema((
                         "sort_order": "ascending"},
             search_fields=('listing_searchable_text',),
             colModel=[
-                {'columnName': 'contextual_title',
+                {'columnName': 'Title',
                  'width': '30',
                  'label': _('Title'),
                  'align': 'left'},
@@ -651,7 +662,7 @@ schema = BikaSchema.copy() + Schema((
                 # UID is required in colModel
                 {'columnName': 'UID', 'hidden': True},
             ],
-            ui_item="contextual_title",
+            ui_item="Title",
             showOn=True,
         ),
     ),
@@ -1316,19 +1327,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     displayContentsTab = False
     schema = schema
 
-    _at_rename_after_creation = True
-
-    def _renameAfterCreation(self, check_auto_id=False):
-        """Rename hook called by processForm
-        """
-        # https://github.com/senaite/senaite.core/issues/1327
-        primary = self.getPrimaryAnalysisRequest()
-        if primary:
-            logger.info("Secondary sample detected: Skipping ID generation")
-            return False
-        from bika.lims.idserver import renameAfterCreation
-        renameAfterCreation(self)
-
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
@@ -1394,11 +1392,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             if not ISubmitted.providedBy(analysis):
                 service_uid = analysis.getRawAnalysisService()
                 result_range = field.get(self, search_by=service_uid)
-                # check if we have an dynamic results range adapter
-                adapter = IDynamicResultsRange(analysis, None)
-                if adapter:
-                    # update the result range with the dynamic values
-                    result_range.update(adapter())
                 analysis.setResultsRange(result_range)
                 analysis.reindexObject()
 
@@ -1449,11 +1442,14 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Sample Add form, but cannot be changed afterwards. The Sample is
         created directly inside the selected client folder on submit
         """
-        if IClient.providedBy(self.aq_parent):
-            return self.aq_parent
-        if IBatch.providedBy(self.aq_parent):
-            return self.aq_parent.getClient()
-        return None
+        parent = self.aq_parent
+        if IClient.providedBy(parent):
+            return parent
+        elif IBatch.providedBy(parent):
+            return parent.getClient()
+        # Fallback to UID reference field value
+        field = self.getField("Client")
+        return field.get(self)
 
     @deprecated("Will be removed in SENAITE 3.0")
     def getProfilesURL(self):
@@ -1635,27 +1631,44 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 return True
         return False
 
+    def getRawReports(self):
+        """Returns UIDs of reports with a reference to this sample
+
+        see: ARReport.ContainedAnalysisRequests field
+
+        :returns: List of report UIDs
+        """
+        return get_backreferences(self, "ARReportAnalysisRequest")
+
+    def getReports(self):
+        """Returns a list of report objects
+
+        :returns: List of report objects
+        """
+        return list(map(api.get_object, self.getRawReports()))
+
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
             0 -> Never printed.
             1 -> Printed after last publish
             2 -> Printed but republished afterwards.
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        if review_state not in ['published']:
+        if not self.getDatePublished():
             return "0"
-        report_list = sorted(self.objectValues('ARReport'),
-                             key=lambda report: report.getDatePublished())
-        if not report_list:
+
+        report_uids = self.getRawReports()
+        if not report_uids:
             return "0"
-        last_report = report_list[-1]
+
+        last_report = api.get_object(report_uids[-1])
         if last_report.getDatePrinted():
             return "1"
-        else:
-            for report in report_list:
-                if report.getDatePrinted():
-                    return "2"
+
+        for report_uid in report_uids[:-1]:
+            report = api.get_object(report_uid)
+            if report.getDatePrinted():
+                return "2"
+
         return "0"
 
     @security.protected(View)

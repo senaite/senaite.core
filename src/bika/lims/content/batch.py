@@ -25,7 +25,7 @@ from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -45,6 +45,7 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
 
@@ -77,6 +78,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Client"),
             size=30,
             visible=True,
+            catalog_name=CLIENT_CATALOG,
             base_query={'review_state': 'active'},
             showOn=True,
             colModel=[

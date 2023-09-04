@@ -24,16 +24,16 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
-from bika.lims.permissions import FieldEditAnalysisHidden
-from bika.lims.permissions import FieldEditAnalysisRemarks
-from bika.lims.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
 from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import BooleanField
@@ -619,6 +619,35 @@ ResultOptionsType = StringField(
     )
 )
 
+RESULT_OPTIONS_SORTING = (
+    ("", _("Keep order above")),
+    ("ResultValue-asc", _("By 'Result Value' ascending")),
+    ("ResultValue-desc", _("By 'Result Value' descending")),
+    ("ResultText-asc", _("By 'Display Value' ascending")),
+    ("ResultText-desc", _("By 'Display Value' descending")),
+)
+
+ResultOptionsSorting = StringField(
+    "ResultOptionsSorting",
+    schemata="Result Options",
+    default="ResultText-asc",
+    vocabulary=DisplayList(RESULT_OPTIONS_SORTING),
+    widget=SelectionWidget(
+        label=_(
+            u"label_analysis_results_options_sorting",
+            default=u"Sorting criteria"
+        ),
+        description=_(
+            u"description_analysis_results_options_sorting",
+            default=u"Criteria to use when result options are displayed for "
+                    u"selection in results entry listings. Note this only "
+                    u"applies to the options displayed in the selection list. "
+                    u"It does not have any effect to the order in which "
+                    u"results are displayed after being submitted"
+        ),
+    )
+)
+
 # Allow/disallow the capture of text as the result of the analysis
 StringResult = BooleanField(
     "StringResult",
@@ -753,6 +782,7 @@ schema = BikaSchema.copy() + Schema((
     AllowManualUncertainty,
     ResultOptions,
     ResultOptionsType,
+    ResultOptionsSorting,
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,

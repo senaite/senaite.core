@@ -112,19 +112,6 @@
 
   <!-- Portal Tabs (Located in the upper right button) -->
   <object name="portal_tabs" meta_type="CMF Action Category" purge="True">
-    <!-- Reports -->
-    <object name="reports" meta_type="CMF Action" i18n:domain="senaite.core">
-      <property name="title" i18n:translate="">Reports</property>
-      <property name="description" i18n:translate=""/>
-      <property name="url_expr">string:$portal_url/reports</property>
-      <property name="link_target"/>
-      <property name="icon_expr"/>
-      <property name="available_expr"/>
-      <property name="permissions">
-        <element value="senaite.core: Manage Analysis Requests"/>
-      </property>
-      <property name="visible">True</property>
-    </object>
     <!-- Import -->
     <object name="import" meta_type="CMF Action" i18n:domain="senaite.core">
       <property name="title" i18n:translate="">Import</property>

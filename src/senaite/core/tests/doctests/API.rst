@@ -199,7 +199,7 @@ Getting an Object
 Getting the object from a catalog brain is a common task.
 
 This function provides an unified interface to portal objects **and** brains.
-Furthermore it is idempotent, so it can be called multiple times in a row::
+Furthermore it is idempotent, so it can be called multiple times in a row.
 
 We will demonstrate the usage on the client object we created above::
 
@@ -211,8 +211,7 @@ We will demonstrate the usage on the client object we created above::
 
 Now we show it with catalog results::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog(portal_type="Client")
+    >>> brains = api.search({"portal_type": "Client"})
     >>> brains
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
@@ -320,7 +319,13 @@ This function checks if an object is a `Dexterity` content type::
     >>> api.is_dexterity_content(portal)
     False
 
-We currently have no `Dexterity` contents, so testing this comes later...
+It is also possible to check by portal type::
+
+    >>> api.is_dx_type("InterpretationTemplate")
+    True
+
+    >>> api.is_dx_type("Client")
+    False
 
 
 Checking if an Object is an AT Content
@@ -335,6 +340,15 @@ This function checks if an object is an `Archetypes` content type::
     False
 
     >>> api.is_at_content(object())
+    False
+
+
+It is also possible to check by portal type::
+
+    >>> api.is_at_type("Client")
+    True
+
+    >>> api.is_at_type("InterpretationTemplate")
     False
 
 
@@ -353,6 +367,34 @@ Catalog brains are also supported::
 
     >>> api.get_schema(brain)
     <Products.Archetypes.Schema.Schema object at 0x...>
+
+
+
+Getting the behaviors of a type
+...............................
+
+Dexterity contents might extend schema fields over a behavior.
+This function shows the current active behaviors:
+
+    >>> api.get_behaviors("SampleContainer")
+    (...)
+
+It is possible to enable behaviors dynamically:
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
+
+    >>> api.enable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    True
+
+And remove it again:
+
+    >>> api.disable_behavior("SampleContainer", "plone.basic")
+
+    >>> "plone.basic" in api.get_behaviors("SampleContainer")
+    False
 
 
 Getting the Fields of a Content
@@ -596,15 +638,6 @@ Brains are also supported::
     >>> api.get_parent(brain)
     <ClientFolder at /plone/clients>
 
-The function can also use a catalog query on the `portal_catalog` and return a
-brain, if the passed parameter `catalog_search` was set to true. ::
-
-    >>> api.get_parent(client, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
-    >>> api.get_parent(brain, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
 However, this function goes only up to the portal object::
 
     >>> api.get_parent(portal)
@@ -628,12 +661,6 @@ This function unifies all SENAITE LIMS catalog to a single search interface::
     >>> results
     [<Products.ZCatalog.Catalog.mybrains object at 0x...>]
 
-Multiple content types are also supported::
-
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder'], 'sort_on': 'getId'})
-    >>> map(api.get_id, results)
-    ['client-1', 'clients']
-
 Now we create some objects which are located in the `senaite_catalog_setup`::
 
     >>> instruments = bika_setup.bika_instruments
@@ -656,7 +683,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     [...]
     APIError: Multi Catalog Queries are not supported!
 
-Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
+Catalog queries w/o any `portal_type`, default to the `uid_catalog`::
 
     >>> analysiscategories = bika_setup.bika_analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
@@ -668,7 +695,7 @@ Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
     1
     >>> res = results[0]
     >>> res.aq_parent
-    <CatalogTool at /plone/portal_catalog>
+    <UIDCatalog at /plone/uid_catalog>
 
 Would we add the `portal_type`, the search function would ask the
 `archetype_tool` for the right catalog, and it would return a result::
@@ -754,13 +781,13 @@ raising an `Unauthorized` error::
     >>> api.safe_getattr(brain, "NONEXISTING", "")
     ''
 
-Getting the Portal Catalog
-..........................
+Getting the UID Catalog
+.......................
 
 This tool is needed so often, that this function just returns it::
 
-    >>> api.get_portal_catalog()
-    <CatalogTool at /plone/portal_catalog>
+    >>> api.get_uid_catalog()
+    <UIDCatalog at /plone/uid_catalog>
 
 
 Getting the Review History of an Object
@@ -915,8 +942,7 @@ This function returns the review state of a given object::
 
 It should also work for catalog brains::
 
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> results = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
+    >>> results = api.search({"portal_type": "Client", "UID": api.get_uid(client)})
     >>> len(results)
     1
     >>> api.get_review_status(results[0]) == review_state
@@ -1246,38 +1272,7 @@ This function creates a good cache key for a generic object or brain::
     >>> key1
     'Client-client-1-...'
 
-This can be also done for a catalog result brain::
-
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog({"portal_type": "Client", "UID": api.get_uid(client)})
-    >>> key2 = api.get_cache_key(brains[0])
-    >>> key2
-    'Client-client-1-...'
-
-The two keys should be equal::
-
-    >>> key1 == key2
-    True
-
-The key should change when the object get modified::
-
-    >>> client.setClientID("TESTCLIENT")
-    >>> client.processForm()
-    >>> key3 = api.get_cache_key(client)
-    >>> key3 != key1
-    True
-
-~~ important:: Workflow changes do not change the modification date!
-A custom event subscriber will update it therefore.
-
-A workflow transition should also change the cache key::
-
-    >>> _ = api.do_transition_for(client, transition="deactivate")
-    >>> api.is_active(client)
-    False
-    >>> key4 = api.get_cache_key(client)
-    >>> key4 != key3
-    True
+NOTE: Function will be deleted in senaite.core 3.0.0
 
 
 SENAITE Cache Key decorator
@@ -1306,14 +1301,17 @@ Calling the (expensive) method of the class does the calculation just once::
 
 The decorator can also handle brains::
 
+    >>> from senaite.core.catalog import CLIENT_CATALOG
     >>> instance = SENAITEClass()
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brain = portal_catalog(portal_type="Client")[0]
+    >>> cat = api.get_tool(CLIENT_CATALOG)
+    >>> brain = cat(portal_type="Client")[0]
     >>> instance.get_very_expensive_calculation(brain)
     very expensive calculation
     'calculation result'
     >>> instance.get_very_expensive_calculation(brain)
     'calculation result'
+
+NOTE: Function will be deleted in senaite.core 3.0.0
 
 
 ID Normalizer
@@ -1880,6 +1878,30 @@ Unsupported types return either the default value or fail:
     >>> api.to_utf8(object(), default="")
     ''
 
+Check if an object is a string
+..............................
+
+This function checks if the given object is a string type.
+
+    >>> api.is_string("Hello World")
+    True
+
+    >>> api.is_string(u"Hello World")
+    True
+
+    >>> api.is_string(r"Hello World")
+    True
+
+    >>> api.is_string("")
+    True
+
+    >>> api.is_string(None)
+    False
+
+    >>> api.is_string(object)
+    False
+
+
 Check if an object is temporary
 ...............................
 
@@ -1922,7 +1944,9 @@ the the definitive id is set:
     >>> api.is_temporary(tmp_obj)
     True
 
+    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = folder._getOb(tmp_obj.getId())
+    >>> tmp_obj.id = tmp_obj_id
     >>> api.is_temporary(tmp_obj)
     False
 
@@ -1930,7 +1954,6 @@ But even if we don't use a non-UID id as the temporary id on creation. System
 will still consider the object as temporary until is assigned to its parent
 folder:
 
-    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = factory(tmp_obj_id)
     >>> tmp_obj._setPortalTypeName(fti.getId())
     >>> api.is_temporary(tmp_obj)
@@ -2037,14 +2060,12 @@ It works for Dexterity types as well::
 
     >>> sample_containers = self.portal.bika_setup.sample_containers
     >>> sample_container = api.create(sample_containers, "SampleContainer",
-    ...                               title="Sample container 4",
+    ...                               title="Source Sample Container",
     ...                               description="Sample container to test",
     ...                               capacity="100 ml")
-    >>> sample_container
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-4>
 
     >>> sample_container.Title()
-    'Sample container 4'
+    'Source Sample Container'
 
     >>> sample_container.Description()
     'Sample container to test'
@@ -2053,16 +2074,68 @@ It works for Dexterity types as well::
     '100 ml'
 
     >>> sample_container_copy = api.copy_object(sample_container,
-    ...                                         title="Sample container 5",
+    ...                                         title="Target Sample Container",
     ...                                         capacity="50 ml")
-    >>> sample_container_copy
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-5>
 
     >>> sample_container_copy.Title()
-    'Sample container 5'
+    'Target Sample Container'
 
     >>> sample_container_copy.Description()
     'Sample container to test'
 
     >>> sample_container_copy.getCapacity()
     '50 ml'
+
+
+Parse to JSON
+.............
+
+    >>> api.parse_json('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> obj = api.parse_json('{"a": 1, "b": 2, "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, 2, 3]
+
+    >>> obj = api.parse_json('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, [u'one', u'two', 3], 3]
+
+    >>> api.parse_json("ko")
+    ''
+
+    >>> api.parse_json("ko", default="ok")
+    'ok'
+
+Convert to list
+...............
+
+    >>> api.to_list(None)
+    [None]
+
+    >>> api.to_list(["a", "b", "c"])
+    ['a', 'b', 'c']
+
+    >>> api.to_list('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> api.to_list("a, b, c")
+    ['a, b, c']
+
+    >>> api.to_list([{"a": 1}, {"b": 2}, {"c": 3}])
+    [{'a': 1}, {'b': 2}, {'c': 3}]
+
+    >>> api.to_list('[{"a": 1}, {"b": 2}, {"c": 3}]')
+    [{u'a': 1}, {u'b': 2}, {u'c': 3}]
+
+    >>> api.to_list({"a": 1})
+    [{'a': 1}]
+
+    >>> api.to_list('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    ['{"a": 1, "b": ["one", "two", 3], "c": 3}']
+
+    >>> api.to_list(["[1, 2, 3]", "b", "c"])
+    ['[1, 2, 3]', 'b', 'c']
+
+    >>> api.to_list('["[1, 2, 3]", "b", "c"]')
+    [u'[1, 2, 3]', u'b', u'c']

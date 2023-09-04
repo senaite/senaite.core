@@ -9,12 +9,13 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
-  <includeDependencies package="." />
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <!-- https://community.plone.org/t/includedependencies-package-what-does-it-do-plone-6/14780 -->
+  <!-- <includeDependencies package="." /> -->
 
   <!-- Include permissions -->
-  <include file="permissions.zcml" />
-
-  <five:registerPackage package="." initialize=".initialize" />
+  <include package="senaite.core.permissions" />
 
   <include package=".adapters" />
   <include package=".browser" />
@@ -31,20 +32,6 @@
   <include file="profiles.zcml" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
-
-  <!-- Plone behavior for Dexterity based contents -->
-  <plone:behavior
-      title="Auto-Generate ID Beahvior for Dexterity Contents"
-      description="Generates an ID with the IDServer"
-      provides="bika.lims.interfaces.IAutoGenerateID"
-      />
-
-  <!-- Multicatalog Behavior for Dexterity based contents -->
-  <plone:behavior
-      title="Multi Catalog Behavior for Dexterity Contents"
-      description="Catalog Dexterity contents in multiple catalogs"
-      provides="bika.lims.interfaces.IMultiCatalogBehavior"
-      />
 
   <!-- XXX: to be removed
        Put javascript errors in Plone log -->

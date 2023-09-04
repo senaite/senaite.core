@@ -25,7 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainers
-from bika.lims.permissions import AddContainer
+from senaite.core.permissions import AddContainer
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder

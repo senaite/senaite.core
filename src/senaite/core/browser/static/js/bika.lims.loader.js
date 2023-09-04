@@ -63,14 +63,9 @@ window.bika.lims.controllers =  {
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],
 
-    // Analysis Request Templates
-    ".portaltype-artemplate.template-base_edit":
-        ['ARTemplateEditView'],
-
     // Analysis Requests
     ".portaltype-analysisrequest":
-        ['AnalysisRequestView',
-     ],
+        ['AnalysisRequestView'],
      // Analysis request, but not in ARAdd view
      ".portaltype-analysisrequest:not(.template-ar_add)":
         ['RejectionKickOff',],
@@ -105,10 +100,6 @@ window.bika.lims.controllers =  {
 
     ".template-labcontacts.portaltype-department":
         ['DepartmentLabContactsView'],
-
-    // Reports folder (not AR Reports)
-    ".portaltype-reportfolder":
-        ['ReportFolderView'],
 
     // If RemarksWidget is in use on this page,
     // load RemarksWIdgetview

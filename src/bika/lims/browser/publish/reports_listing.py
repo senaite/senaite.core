@@ -23,15 +23,16 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
+from senaite.app.listing import ListingView
 from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.permissions.sample import can_publish
 from ZODB.POSException import POSKeyError
 
 
-class ReportsListingView(BikaListingView):
+class ReportsListingView(ListingView):
     """Listing view of all generated reports
     """
 
@@ -62,43 +63,6 @@ class ReportsListingView(BikaListingView):
         self.show_select_column = True
         self.show_workflow_action_buttons = True
         self.pagesize = 30
-
-        help_email_text = _(
-            "Open email form to send the selected reports to the recipients. "
-            "This will also publish the contained samples of the reports "
-            "after the email was successfully sent.")
-
-        self.send_email_transition = {
-            "id": "send_email",
-            "title": _("Email"),
-            "url": "email",
-            "css_class": "btn btn-outline-secondary",
-            "help": help_email_text,
-        }
-
-        help_publish_text = _(
-            "Manually publish all contained samples of the selected reports.")
-
-        self.publish_samples_transition = {
-            "id": "publish_samples",
-            "title": _("Publish"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=publish_samples",
-            "css_class": "btn-outline-success",
-            "help": help_publish_text,
-        }
-
-        help_download_reports_text = _(
-            "Download selected reports")
-
-        self.download_reports_transition = {
-            "id": "download_reports",
-            "title": _("Download"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=download_reports",
-            "css_class": "btn-outline-secondary",
-            "help": help_download_reports_text,
-        }
 
         self.columns = collections.OrderedDict((
             ("Info", {
@@ -131,13 +95,77 @@ class ReportsListingView(BikaListingView):
                 "title": "All",
                 "contentFilter": {},
                 "columns": self.columns.keys(),
-                "custom_transitions": [
-                    self.send_email_transition,
-                    self.publish_samples_transition,
-                    self.download_reports_transition,
-                ]
+                "custom_transitions": [],
             },
         ]
+
+    def before_render(self):
+        """Before render hook
+        """
+        super(ReportsListingView, self).before_render()
+        self.init_custom_transitions()
+
+    def init_custom_transitions(self):
+        """Add custom transitions
+        """
+        custom_transitions = [
+            self.custom_transition_download,
+        ]
+        if can_publish(self.context):
+            custom_transitions.append(self.custom_transition_email)
+            custom_transitions.append(self.custom_transition_publish)
+        # hook in custom transitions
+        for state in self.review_states:
+            state["custom_transitions"].extend(custom_transitions)
+
+    @property
+    def custom_transition_email(self):
+        """Custom transition to send reports via email
+        """
+        help_email_text = _(
+            "Open email form to send the selected reports to the recipients. "
+            "This will also publish the contained samples of the reports "
+            "after the email was successfully sent.")
+
+        return {
+            "id": "send_email",
+            "title": _("Email"),
+            "url": "email",
+            "css_class": "btn btn-outline-secondary",
+            "help": help_email_text,
+        }
+
+    @property
+    def custom_transition_download(self):
+        """Custom transition to download reports
+        """
+        help_download_reports_text = _(
+            "Download selected reports")
+
+        return {
+            "id": "download_reports",
+            "title": _("Download"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=download_reports",
+            "css_class": "btn-outline-secondary",
+            "help": help_download_reports_text,
+        }
+
+    @property
+    def custom_transition_publish(self):
+        """Custom transition to publish reports w/o sending email
+        """
+        help_publish_text = _(
+            "Manually publish all contained samples of the selected reports.")
+
+        return {
+            "id": "publish_samples",
+            "title": _("Publish"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=publish_samples",
+            "css_class": "btn-outline-success",
+            "help": help_publish_text,
+        }
 
     def get_filesize(self, pdf):
         """Compute the filesize of the PDF

@@ -21,14 +21,12 @@
 import types
 
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IClient
@@ -39,11 +37,10 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.p3compat import cmp
 from zope.interface import implements
-
-ACTIVE_STATES = ["active"]
-
 
 schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
@@ -83,9 +80,9 @@ class Contact(Person):
         """
 
         # Check if the User is linked already
-        pc = api.portal.get_tool("portal_catalog")
-        contacts = pc(portal_type=cls.portal_type,
-                      getUsername=username)
+        cat = api.portal.get_tool(CONTACT_CATALOG)
+        contacts = cat(portal_type=cls.portal_type,
+                       getUsername=username)
 
         # No Contact assigned to this username
         if len(contacts) == 0:
@@ -247,9 +244,8 @@ class Contact(Person):
         # N.B. Local owner role and client group applies only to client
         #      contacts, but not lab contacts.
         if IClient.providedBy(self.aq_parent):
-            # Add user to "Clients" group
-            self._addUserToGroup(username, group="Clients")
-            self._recursive_reindex_object(self.aq_parent)
+            # add user to clients group
+            self.aq_parent.add_user_to_group(username)
 
         return True
 
@@ -284,37 +280,10 @@ class Contact(Person):
         # N.B. Local owner role and client group applies only to client
         #      contacts, but not lab contacts.
         if IClient.providedBy(self.aq_parent):
-            # Remove user from "Clients" group
-            self._delUserFromGroup(username, group="Clients")
-            self._recursive_reindex_object(self.aq_parent)
+            # remove user from clients group
+            self.aq_parent.del_user_from_group(username)
 
         return True
-
-    @security.private
-    def _addUserToGroup(self, username, group="Clients"):
-        """Add user to the goup
-        """
-        portal_groups = api.portal.get_tool("portal_groups")
-        group = portal_groups.getGroupById(group)
-        group.addMember(username)
-
-    @security.private
-    def _delUserFromGroup(self, username, group="Clients"):
-        """Remove user from the group
-        """
-        portal_groups = api.portal.get_tool("portal_groups")
-        group = portal_groups.getGroupById(group)
-        group.removeMember(username)
-
-    def _recursive_reindex_object(self, obj):
-        """Reindex object after user linking
-        """
-        if hasattr(aq_base(obj), "objectValues"):
-            for child_obj in obj.objectValues():
-                self._recursive_reindex_object(child_obj)
-
-        logger.debug("Reindexing object {}".format(repr(obj)))
-        obj.reindexObject(idxs=["allowedRolesAndUsers"])
 
 
 atapi.registerType(Contact, PROJECTNAME)

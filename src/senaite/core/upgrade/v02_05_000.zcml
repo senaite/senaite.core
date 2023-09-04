@@ -4,6 +4,134 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix type information for DX types"
+      description="Reimport typeinfo profile"
+      source="2515"
+      destination="2516"
+      handler=".v02_05_000.import_typeinfo"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Drop Portal Catalog"
+      description="Drop all indexing in portal_catalog"
+      source="2514"
+      destination="2515"
+      handler=".v02_05_000.drop_portal_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Contact Catalog"
+      description="Create contact catalog and clean up contact related indexes and metadata from portal catalog"
+      source="2513"
+      destination="2514"
+      handler=".v02_05_000.setup_contact_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Remove legacy reports"
+      description="Remove legacy reports"
+      source="2512"
+      destination="2513"
+      handler=".v02_05_000.remove_legacy_reports"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Update Analyses Role Mappings"
+      description="Update Managed Permissions of Analysis Workflow and Reindex Object Security"
+      source="2511"
+      destination="2512"
+      handler=".v02_05_000.update_workflow_mappings_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import Workflow"
+      description="Update Managed Permissions of Analysis Workflow"
+      source="2510"
+      destination="2511"
+      handler=".v02_05_000.import_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add content actions"
+      description="Add content actions for client sharing page"
+      source="2509"
+      destination="2510"
+      handler=".v02_05_000.add_content_actions"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Reindex client object security"
+      description="Reindex object security for all clients including their contents"
+      source="2508"
+      destination="2509"
+      handler=".v02_05_000.reindex_client_security"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Create groups for clients"
+      description="Create a group for each client"
+      source="2507"
+      destination="2508"
+      handler=".v02_05_000.create_client_groups"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import registry settings"
+      description="Import client settings to SENAITE registry"
+      source="2506"
+      destination="2507"
+      handler=".v02_05_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Additional index/metadata for client catalog"
+      description="Add searchable Title index and Description metadata for relation fields"
+      source="2505"
+      destination="2506"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix report catalog indexes"
+      description="Fix indexes in report catalog and add metadata"
+      source="2504"
+      destination="2505"
+      handler=".v02_05_000.update_report_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add index to report catalog"
+      description="Add missing index `sample_uid` to report catalog"
+      source="2503"
+      destination="2504"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Client Catalog"
+      description="Create client catalog and clean up client related indexes and metadata from portal catalog"
+      source="2502"
+      destination="2503"
+      handler=".v02_05_000.setup_client_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE CORE 2.5.0: Setup Labels"
+      description="Setup Labels"
+      source="2501"
+      destination="2502"
+      handler="senaite.core.upgrade.v02_05_000.setup_labels"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Recreate listing_searchable_text ZCText index and Lexicon in Sample Catalog"
+      description="Rebuild listing_searchable_text and Lexicon for better performance"
+      source="2500"
+      destination="2501"
+      handler=".v02_05_000.rebuild_sample_zctext_index_and_lexicon"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="Upgrade to SENAITE.CORE 2.5.0"
       source="2423"
       destination="2500"

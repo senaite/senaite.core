@@ -144,9 +144,11 @@ def get_snapshot_version(obj, snapshot):
 
     :param obj: Content object
     :param snapshot: Snapshot dictionary
-    :returns: Index where the object is lcated
+    :returns: Index where the object is located
     """
     snapshots = get_snapshots(obj)
+    if snapshot not in snapshots:
+        return -1
     return snapshots.index(snapshot)
 
 
@@ -183,8 +185,8 @@ def get_object_data(obj):
     :returns: Dictionary of extracted schema data
     """
 
-    model = SuperModel(obj)
     try:
+        model = SuperModel(obj)
         data = model.to_dict()
     except Exception as exc:
         logger.error("Failed to get schema data for {}: {}"

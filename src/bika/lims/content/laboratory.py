@@ -38,7 +38,7 @@ from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import ManageBika
 from bika.lims.config import PROJECTNAME

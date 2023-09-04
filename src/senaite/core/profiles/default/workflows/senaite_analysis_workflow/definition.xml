@@ -62,6 +62,7 @@
 
     <!-- Field results should stay editable, even if the analysis is in registered state -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
@@ -72,16 +73,19 @@
 
     <!-- FIELD PERMISSIONS (initialized) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
@@ -126,7 +130,10 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False">
@@ -204,7 +211,10 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False">
@@ -270,9 +280,14 @@
     </permission-map>
 
     <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <permission-map name="Review portal content" acquired="False">
@@ -327,7 +342,9 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
 
@@ -337,6 +354,7 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
 
     <permission-map name="senaite.core: Transition: Verify" acquired="False">
@@ -392,6 +410,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
@@ -435,9 +454,14 @@
     </permission-map>
 
     <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <permission-map name="Review portal content" acquired="False">
@@ -491,7 +515,10 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <!-- Analysis cannot be rejected once verified -->
@@ -542,7 +569,10 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+      <permission-role>Publisher</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
 
     <!-- Analyses cannot be rejected once published -->

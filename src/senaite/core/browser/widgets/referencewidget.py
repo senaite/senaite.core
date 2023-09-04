@@ -18,37 +18,40 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
 import json
-import six
+import string
 
-from AccessControl import ClassSecurityInfo
+import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IReferenceWidgetVocabulary
-from bika.lims.utils import to_unicode as _u
-from plone import protect
 from Products.Archetypes.Registry import registerWidget
-from Products.Archetypes.Widget import StringWidget
-from senaite.app.supermodel.model import SuperModel
-from zope.component import getAdapters
+from senaite.core.browser.widgets.queryselect import QuerySelectWidget
+
+DEFAULT_SEARCH_CATALOG = "uid_catalog"
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
+IGNORE_COLUMNS = ["UID"]
 
 
-class ReferenceWidget(StringWidget):
-    _properties = StringWidget._properties.copy()
+class ReferenceWidget(QuerySelectWidget):
+    """UID Reference Widget
+    """
+    # CSS class that is picked up by the ReactJS component
+    klass = u"senaite-uidreference-widget-input"
+
+    _properties = QuerySelectWidget._properties.copy()
     _properties.update({
-        "macro": "senaite_widgets/referencewidget",
-        "helper_js": ("senaite_widgets/referencewidget.js",),
-        "helper_css": ("senaite_widgets/referencewidget.css",),
 
+        "value_key": "uid",
+        "value_query_index": "UID",
+
+        # BBB: OLD PROPERTIES
         "url": "referencewidget_search",
-        "catalog_name": "portal_catalog",
-
+        "catalog_name": "uid_catalog",
         # base_query can be a dict or a callable returning a dict
         "base_query": {},
-
-        # This will be faster if the columnNames are catalog indexes
+        # columns to display in the search dropdown
         "colModel": [
             {"columnName": "Title", "width": "30", "label": _(
                 "Title"), "align": "left"},
@@ -57,8 +60,6 @@ class ReferenceWidget(StringWidget):
             # UID is required in colModel
             {"columnName": "UID", "hidden": True},
         ],
-
-        # Default field to put back into input elements
         "ui_item": "Title",
         "search_fields": ("Title",),
         "discard_empty": [],
@@ -73,200 +74,244 @@ class ReferenceWidget(StringWidget):
         "force_all": False,
         "portal_types": {},
     })
-    security = ClassSecurityInfo()
-
-    security.declarePublic('process_form')
 
     def process_form(self, instance, field, form, empty_marker=None,
-                     emptyReturnsMarker=False):
-        """Return a UID so that ReferenceField understands.
+                     emptyReturnsMarker=False, validating=True):
+        """Convert the stored UIDs from the text field for the UID reference field
         """
-        fieldName = field.getName()
-        if fieldName + "_uid" in form:
-            uid = form.get(fieldName + "_uid", "")
-            if field.multiValued and\
-                    (isinstance(uid, str) or isinstance(uid, unicode)):
-                uid = uid.split(",")
-        elif fieldName in form:
-            uid = form.get(fieldName, "")
-            if field.multiValued and\
-                    (isinstance(uid, str) or isinstance(uid, unicode)):
-                uid = uid.split(",")
+        value = form.get(field.getName(), "")
+
+        if api.is_string(value):
+            uids = value.split("\r\n")
+        elif isinstance(value, (list, tuple, set)):
+            uids = filter(api.is_uid, value)
+        elif api.is_object(value):
+            uids = [api.get_uid(value)]
         else:
-            uid = None
-        return uid, {}
+            uids = []
 
-    def get_search_url(self, context):
-        """Prepare an absolute search url for the combobox
+        # handle custom setters that expect only a UID, e.g. setSpecification
+        multi_valued = getattr(field, "multiValued", self.multi_valued)
+        if not multi_valued:
+            uids = uids[0] if len(uids) > 0 else ""
+
+        return uids, {}
+
+    def get_multi_valued(self, context, field, default=None):
+        """Lookup if the field is single or multi valued
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: True if the field is multi valued, otherwise False
         """
-        # ensure we have an absolute url for the current context
-        url = api.get_url(context)
-        # normalize portal factory urls
-        url = url.split("portal_factory")[0]
-        # ensure the search path does not contain already the url
-        search_path = self.url.split(url)[-1]
-        # return the absolute search url
-        return "/".join([url, search_path])
+        multi_valued = getattr(field, "multiValued", None)
+        if multi_valued is None:
+            return default
+        return multi_valued
 
-    def get_combogrid_options(self, context, fieldName):
-        colModel = self.colModel
-        if "UID" not in [x["columnName"] for x in colModel]:
-            colModel.append({"columnName": "UID", "hidden": True})
+    def get_display_template(self, context, field, default=None):
+        """Lookup the display template
 
-        options = {
-            "url": self.get_search_url(context),
-            "colModel": colModel,
-            "showOn": self.showOn,
-            "width": self.popup_width,
-            "sord": self.sord,
-            "sidx": self.sidx,
-            "force_all": self.force_all,
-            "search_fields": self.search_fields,
-            "discard_empty": self.discard_empty,
-            "minLength": self.minLength,
-            "resetButton": self.resetButton,
-            "searchIcon": self.searchIcon,
-            "delay": self.delay,
-        }
-        return json.dumps(options)
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Template that is interpolated by the JS widget with the
+                  mapped values found in records
+        """
+        # check if the new `display_template` property is set
+        prop = getattr(self, "display_template", None)
+        if prop is not None:
+            return prop
 
-    def get_base_query(self, context, fieldName):
-        base_query = self.base_query
-        if callable(base_query):
-            try:
-                base_query = base_query(context, self, fieldName)
-            except TypeError:
-                base_query = base_query()
-        if base_query and isinstance(base_query, six.string_types):
-            base_query = json.loads(base_query)
+        # BBB: ui_item
+        ui_item = getattr(self, "ui_item", None),
+        if ui_item is not None:
+            return "<a href='${url}' _target='blank'>${%s}</a>" % ui_item
 
-        # portal_type: use field allowed types
-        field = context.Schema().getField(fieldName)
+        return default
+
+    def get_catalog(self, context, field, default=None):
+        """Lookup the catalog to query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Catalog name to query
+        """
+        # check if the new `catalog` property is set
+        prop = getattr(self, "catalog", None)
+        if prop is not None:
+            return prop
+
+        # BBB: catalog_name
+        catalog_name = getattr(self, "catalog_name", None),
+
+        if catalog_name is None:
+            return DEFAULT_SEARCH_CATALOG
+        return catalog_name
+
+    def get_query(self, context, field, default=None):
+        """Lookup the catalog query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Base catalog query
+        """
+        prop = getattr(self, "query", None)
+        if prop:
+            return prop
+
+        base_query = self.get_base_query(context, field)
+
+        # extend portal_type filter
         allowed_types = getattr(field, "allowed_types", None)
         allowed_types_method = getattr(field, "allowed_types_method", None)
         if allowed_types_method:
             meth = getattr(context, allowed_types_method)
             allowed_types = meth(field)
-        # If field has no allowed_types defined, use widget"s portal_type prop
-        base_query["portal_type"] = allowed_types \
-            if allowed_types \
-            else self.portal_types
 
-        return json.dumps(base_query)
+        if api.is_string(allowed_types):
+            allowed_types = [allowed_types]
 
-    def initial_uid_field_value(self, value):
-        if type(value) in (list, tuple):
-            ret = ",".join([v.UID() for v in value])
-        elif isinstance(value, six.string_types):
-            ret = value
-        else:
-            ret = value.UID() if value else value
-        return ret
+        base_query["portal_type"] = list(allowed_types)
+
+        return base_query
+
+    def get_base_query(self, context, field):
+        """BBB: Get the base query from the widget
+
+        NOTE: Base query can be a callable
+        """
+        base_query = getattr(self, "base_query", {})
+        if callable(base_query):
+            try:
+                base_query = base_query(context, self, field.getName())
+            except TypeError:
+                base_query = base_query()
+        if api.is_string(base_query):
+            base_query = json.loads(base_query)
+
+        return base_query
+
+    def get_columns(self, context, field, default=None):
+        """Lookup the columns to show in the results popup
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: List column records to display
+        """
+        prop = getattr(self, "columns", [])
+        if len(prop) > 0:
+            return prop
+
+        # BBB: colModel
+        col_model = getattr(self, "colModel", [])
+
+        if not col_model:
+            return default
+
+        columns = []
+        for col in col_model:
+            name = col.get("columnName")
+            # skip ignored columns
+            if name in IGNORE_COLUMNS:
+                continue
+            columns.append({
+                "name": name,
+                "width": col.get("width", "50%"),
+                "align": col.get("align", "left"),
+                "label": col.get("label", ""),
+            })
+        return columns
+
+    def get_search_index(self, context, field, default=None):
+        """Lookup the search index for fulltext searches
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: ZCText compatible search index
+        """
+        prop = getattr(self, "search_index", None)
+        if prop is not None:
+            return prop
+
+        # BBB: search_fields
+        search_fields = getattr(self, "search_fields", [])
+        if not isinstance(search_fields, (tuple, list)):
+            search_fields = filter(None, [search_fields])
+        if len(search_fields) > 0:
+            return search_fields[0]
+
+        return default
+
+    def get_value(self, context, field, value=None):
+        """Extract the value from the request or get it from the field
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param value: The current set value
+        :returns: List of UIDs
+        """
+        # the value might come from the request, e.g. on object creation
+        if isinstance(value, six.string_types):
+            value = filter(None, value.split("\r\n"))
+        # we handle always lists in the templates
+        if value is None:
+            return []
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        return map(api.get_uid, value)
+
+    def get_render_data(self, context, field, uid, template):
+        """Provides the needed data to render the display template from the UID
+
+        :returns: Dictionary with data needed to render the display template
+        """
+        regex = r"\{(.*?)\}"
+        names = re.findall(regex, template)
+
+        try:
+            obj = api.get_object(uid)
+        except api.APIError:
+            logger.error("No object found for field '{}' with UID '{}'".format(
+                field.getName(), uid))
+            return {}
+
+        data = {
+            "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
+            "Title": api.get_title(obj),
+            "Description": api.get_description(obj),
+        }
+        for name in names:
+            if name not in data:
+                value = getattr(obj, name, None)
+                if callable(value):
+                    value = value()
+                data[name] = value
+
+        return data
+
+    def render_reference(self, context, field, uid):
+        """Returns a rendered HTML element for the reference
+        """
+        display_template = self.get_display_template(context, field, uid)
+        template = string.Template(display_template)
+        try:
+            data = self.get_render_data(context, field, uid, display_template)
+        except ValueError as e:
+            # Current user might not have privileges to view this object
+            logger.error(e.message)
+            return ""
+
+        if not data:
+            return ""
+
+        return template.safe_substitute(data)
 
 
 registerWidget(ReferenceWidget, title="Reference Widget")
-
-
-class ajaxReferenceWidgetSearch(BrowserView):
-    """ Source for jquery combo dropdown box
-    """
-
-    @property
-    def num_page(self):
-        """Returns the number of page to render
-        """
-        return api.to_int(self.request.get("page", None), default=1)
-
-    @property
-    def num_rows_page(self):
-        """Returns the number of rows per page to render
-        """
-        return api.to_int(self.request.get("rows", None), default=10)
-
-    def get_field_names(self):
-        """Return the field names to get values for
-        """
-        col_model = self.request.get("colModel", None)
-        if not col_model:
-            return ["UID",]
-
-        names = []
-        col_model = json.loads(_u(col_model))
-        if isinstance(col_model, (list, tuple)):
-            names = map(lambda c: c.get("columnName", "").strip(), col_model)
-
-        # UID is used by reference widget to know the object that the user
-        # selected from the popup list
-        if "UID" not in names:
-            names.append("UID")
-
-        return filter(None, names)
-
-    def get_data_record(self, brain, field_names):
-        """Returns a dict with the column values for the given brain
-        """
-        record = {}
-        model = None
-
-        for field_name in field_names:
-            # First try to get the value directly from the brain
-            value = getattr(brain, field_name, None)
-
-            # No metadata for this column name
-            if value is None:
-                logger.warn("Not a metadata field: {}".format(field_name))
-                model = model or SuperModel(brain)
-                value = model.get(field_name, None)
-                if callable(value):
-                    value = value()
-
-            # '&nbsp;' instead of '' because empty div fields don't render
-            # correctly in combo results table
-            record[field_name] = value or "&nbsp;"
-
-        return record
-
-    def search(self):
-        """Returns the list of brains that match with the request criteria
-        """
-        brains = []
-        # TODO Legacy
-        for name, adapter in getAdapters((self.context, self.request),
-                                         IReferenceWidgetVocabulary):
-            brains.extend(adapter())
-        return brains
-
-    def to_data_rows(self, brains):
-        """Returns a list of dictionaries representing the values of each brain
-        """
-        fields = self.get_field_names()
-        return map(lambda brain: self.get_data_record(brain, fields), brains)
-
-    def to_json_payload(self, data_rows):
-        """Returns the json payload
-        """
-        num_rows = len(data_rows)
-        num_page = self.num_page
-        num_rows_page = self.num_rows_page
-
-        pages = num_rows / num_rows_page
-        pages += divmod(num_rows, num_rows_page)[1] and 1 or 0
-        start = (num_page - 1) * num_rows_page
-        end = num_page * num_rows_page
-        payload = {"page": num_page,
-                   "total": pages,
-                   "records": num_rows,
-                   "rows": data_rows[start:end]}
-        return json.dumps(payload)
-
-    def __call__(self):
-        protect.CheckAuthenticator(self.request)
-
-        # Do the search
-        brains = self.search()
-
-        # Generate the data rows to display
-        data_rows = self.to_data_rows(brains)
-
-        # Return the payload
-        return self.to_json_payload(data_rows)

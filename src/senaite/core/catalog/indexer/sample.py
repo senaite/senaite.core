@@ -20,10 +20,11 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog.utils import get_searchable_text_tokens
 from senaite.core.interfaces import ISampleCatalog
+from zope.component import getAdapters
 
 
 @indexer(IAnalysisRequest)
@@ -91,20 +92,44 @@ def is_received(instance):
 
 @indexer(IAnalysisRequest, ISampleCatalog)
 def listing_searchable_text(instance):
-    """Retrieves all the values of metadata columns in the catalog for
-    wildcard searches
-    :return: all metadata values joined in a string
+    """Retrieves most commonly searched values for samples
+
+    :returns: string with search terms
     """
     entries = set()
-    catalog = SAMPLE_CATALOG
 
-    # add searchable text tokens for the root sample
-    tokens = get_searchable_text_tokens(instance, catalog)
-    entries.update(tokens)
+    for obj in [instance] + instance.getDescendants():
+        entries.add(obj.getId())
+        entries.add(obj.getClientOrderNumber())
+        entries.add(obj.getClientReference())
+        entries.add(obj.getClientSampleID())
 
-    # add searchable text tokens for descendant samples
-    for descendant in instance.getDescendants():
-        tokens = get_searchable_text_tokens(descendant, catalog)
-        entries.update(tokens)
+        # we use this approach to bypass the computed fields
+        client = obj.getClient()
+        entries.add(client.getName())
+        entries.add(client.getClientID())
 
-    return u" ".join(list(entries))
+        sampletype = obj.getSampleType()
+        entries.add(sampletype.Title() if sampletype else '')
+
+        samplepoint = obj.getSamplePoint()
+        entries.add(samplepoint.Title() if samplepoint else '')
+
+        batch = obj.getBatch()
+        entries.add(batch.getId() if batch else '')
+
+    # Allow to extend search tokens via adapters
+    for name, adapter in getAdapters((instance, api.get_tool(SAMPLE_CATALOG)),
+                                     IListingSearchableTextProvider):
+        value = adapter()
+        if isinstance(value, (list, tuple)):
+            values = map(api.to_searchable_text_metadata, value)
+            entries.update(values)
+        else:
+            value = api.to_searchable_text_metadata(value)
+            entries.add(value)
+
+    # Remove empties
+    entries = filter(None, entries)
+
+    return u" ".join(map(api.safe_unicode, entries))

@@ -19,15 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import json
 import re
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 from itertools import groupby
 
-import six
-
 import Missing
+import six
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from Acquisition import aq_inner
@@ -43,6 +43,9 @@ from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.schema import SchemaInvalidatedEvent
+from plone.dexterity.utils import addContentToContainer
+from plone.dexterity.utils import createContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -62,21 +65,22 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import ITemporaryObject
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import IFactory
 from zope.event import notify
+from zope.interface import alsoProvides
 from zope.interface import directlyProvides
-from zope.lifecycleevent import ObjectCreatedEvent
+from zope.interface import noLongerProvides
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
 
 """SENAITE LIMS Framework API
 
-Please see bika.lims/docs/API.rst for documentation.
+Please see tests/doctests/API.rst for documentation.
 
 Architecural Notes:
 
@@ -92,7 +96,7 @@ achieve the same::
 
     >>> foos = map(get_foo, list_of_brain_objects)
 
-Please add for all of your functions a descriptive test in docs/API.rst.
+Please add for all functions a descriptive test in tests/doctests/API.rst.
 
 Thanks.
 """
@@ -100,6 +104,9 @@ Thanks.
 _marker = object()
 
 UID_RX = re.compile("[a-z0-9]{32}$")
+
+UID_CATALOG = "uid_catalog"
+PORTAL_CATALOG = "portal_catalog"
 
 
 class APIError(Exception):
@@ -150,8 +157,9 @@ def create(container, portal_type, *args, **kwargs):
     """
     from bika.lims.utils import tmpID
 
-    id = kwargs.pop("id", tmpID())
-    title = kwargs.pop("title", "New {}".format(portal_type))
+    tmp_id = tmpID()
+    id = kwargs.pop("id", "")
+    title = kwargs.pop("title", "")
 
     # get the fti
     types_tool = get_tool("portal_types")
@@ -159,7 +167,7 @@ def create(container, portal_type, *args, **kwargs):
 
     if fti.product:
         # create the AT object
-        obj = _createObjectByType(portal_type, container, id)
+        obj = _createObjectByType(portal_type, container, id or tmp_id)
         # update the object with values
         edit(obj, check_permissions=False, title=title, **kwargs)
         # auto-id if required
@@ -170,21 +178,10 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        # newstyle factory
-        factory = getUtility(IFactory, fti.factory)
-        obj = factory(id, *args, **kwargs)
-        if hasattr(obj, '_setPortalTypeName'):
-            obj._setPortalTypeName(fti.getId())
-        # set the title
-        obj.title = safe_unicode(title)
-        # notify that the object was created
-        notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
-        # ContainerModifiedEvent
-        container._setObject(id, obj)
-        # we get the object here with the current object id, as it might be
-        # renamed already by an event handler
-        obj = container._getOb(obj.getId())
+        content = createContent(portal_type, **kwargs)
+        content.id = id
+        content.title = title
+        obj = addContentToContainer(container, content)
 
     return obj
 
@@ -309,7 +306,7 @@ def edit(obj, check_permissions=True, **kwargs):
 def get_tool(name, context=None, default=_marker):
     """Get a portal tool by name
 
-    :param name: The name of the tool, e.g. `portal_catalog`
+    :param name: The name of the tool, e.g. `senaite_setup_catalog`
     :type name: string
     :param context: A portal object
     :type context: ATContentType/DexterityContentType/CatalogBrain
@@ -445,6 +442,28 @@ def is_at_content(brain_or_object):
     return isinstance(brain_or_object, BaseObject)
 
 
+def is_dx_type(portal_type):
+    """Checks if the portal type is DX based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is DX based
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        return False
+    return True
+
+
+def is_at_type(portal_type):
+    """Checks if the portal type is AT based
+
+    :param portal_type: The portal type name to check
+    :returns: True if the portal type is AT based
+    """
+    return not is_dx_type(portal_type)
+
+
 def is_folderish(brain_or_object):
     """Checks if the passed in object is folderish
 
@@ -490,6 +509,50 @@ def get_schema(brain_or_object):
     if is_at_content(obj):
         return obj.Schema()
     fail("{} has no Schema.".format(brain_or_object))
+
+
+def get_behaviors(portal_type):
+    """List all behaviors
+
+    :param portal_type: DX portal type name
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    return fti.behaviors
+
+
+def enable_behavior(portal_type, behavior_id):
+    """Enable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to enable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+
+    if behavior_id not in fti.behaviors:
+        fti.behaviors += (behavior_id, )
+        # invalidate schema cache
+        notify(SchemaInvalidatedEvent(portal_type))
+
+
+def disable_behavior(portal_type, behavior_id):
+    """Disable behavior
+
+    :param portal_type: DX portal type name
+    :param behavior_id: The behavior to disable
+    """
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    if fti.product:
+        raise TypeError("Expected DX type, got AT type instead.")
+    fti.behaviors = tuple(filter(lambda b: b != behavior_id, fti.behaviors))
+    # invalidate schema cache
+    notify(SchemaInvalidatedEvent(portal_type))
 
 
 def get_fields(brain_or_object):
@@ -654,7 +717,7 @@ def get_brain_by_uid(uid, default=None):
         return default
 
     # we try to find the object with the UID catalog
-    uc = get_tool("uid_catalog")
+    uc = get_tool(UID_CATALOG)
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -727,12 +790,8 @@ def get_parent_path(brain_or_object):
     return get_path(get_object(brain_or_object).aq_parent)
 
 
-def get_parent(brain_or_object, catalog_search=False):
+def get_parent(brain_or_object, **kw):
     """Locate the parent object of the content/catalog brain
-
-    The `catalog_search` switch uses the `portal_catalog` to do a search return
-    a brain instead of the full parent object. However, if the search returned
-    no results, it falls back to return the full parent object.
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -745,28 +804,9 @@ def get_parent(brain_or_object, catalog_search=False):
     if is_portal(brain_or_object):
         return get_portal()
 
-    # Do a catalog search and return the brain
-    if catalog_search:
-        parent_path = get_parent_path(brain_or_object)
-
-        # parent is the portal object
-        if parent_path == get_path(get_portal()):
-            return get_portal()
-
-        # get the catalog tool
-        pc = get_portal_catalog()
-
-        # query for the parent path
-        results = pc(path={
-            "query": parent_path,
-            "depth": 0})
-
-        # No results fallback: return the parent object
-        if not results:
-            return get_object(brain_or_object).aq_parent
-
-        # return the brain
-        return results[0]
+    # BBB: removed `catalog_search` keyword
+    if kw:
+        logger.warn("API function `get_parent` no longer support keywords.")
 
     return get_object(brain_or_object).aq_parent
 
@@ -801,7 +841,7 @@ def search(query, catalog=_marker):
         for portal_type in portal_types:
             # Just get the first registered/default catalog
             catalogs.append(get_catalogs_for(
-                portal_type, default="portal_catalog")[0])
+                portal_type, default=UID_CATALOG)[0])
     else:
         # User defined catalogs
         if isinstance(catalog, (list, tuple)):
@@ -810,7 +850,7 @@ def search(query, catalog=_marker):
             catalogs.append(get_tool(catalog))
 
     # Cleanup: Avoid duplicate catalogs
-    catalogs = list(set(catalogs)) or [get_portal_catalog()]
+    catalogs = list(set(catalogs)) or [get_uid_catalog()]
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
@@ -845,12 +885,20 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
+def get_uid_catalog():
+    """Get the UID catalog tool
+
+    :returns: UID Catalog Tool
+    """
+    return get_tool(UID_CATALOG)
+
+
 def get_portal_catalog():
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog")
+    return get_tool(PORTAL_CATALOG)
 
 
 def get_review_history(brain_or_object, rev=True):
@@ -1032,9 +1080,13 @@ def is_active(brain_or_object):
     return True
 
 
-def get_catalogs_for(brain_or_object, default="portal_catalog"):
+def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     """Get all registered catalogs for the given portal_type, catalog brain or
     content object
+
+    NOTE: We pass in the `portal_catalog` as default in subsequent calls to
+          work around the missing `uid_catalog` during snapshot creation when
+          installing a fresh site!
 
     :param brain_or_object: The portal_type, a catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -1044,7 +1096,7 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
     archetype_tool = get_tool("archetype_tool", default=None)
     if archetype_tool is None:
         # return the default catalog
-        return [get_tool(default, default="portal_catalog")]
+        return [get_tool(default, default=PORTAL_CATALOG)]
 
     catalogs = []
 
@@ -1056,7 +1108,7 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
         catalogs = archetype_tool.getCatalogsByType(brain_or_object)
 
     if not catalogs:
-        return [get_tool(default)]
+        return [get_tool(default, default=PORTAL_CATALOG)]
     return catalogs
 
 
@@ -1257,8 +1309,9 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     if not user:
         return None
 
-    query = {'portal_type': contact_types, 'getUsername': user.id}
-    brains = search(query, catalog='portal_catalog')
+    from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+    query = {"portal_type": contact_types, "getUsername": user.id}
+    brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
 
@@ -1672,20 +1725,76 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
-    if UID_RX.match(obj.id):
+    if ITemporaryObject.providedBy(obj):
+        return True
+
+    obj_id = getattr(aq_base(obj), "id", None)
+    if obj_id is None or UID_RX.match(obj_id):
         return True
 
     parent = aq_parent(aq_inner(obj))
     if not parent:
         return True
 
-    if UID_RX.match(parent.id):
+    parent_id = getattr(aq_base(parent), "id", None)
+    if parent_id is None or UID_RX.match(parent_id):
         return True
 
-    if is_at_content(obj):
-        # Checks to see if we are created inside the portal_factory. We don't
-        # rely here on AT's isFactoryContained because the function is patched
-        meta_type = getattr(aq_base(parent), "meta_type", "")
-        return meta_type == "TempFolder"
+    # Checks to see if we are created inside the portal_factory.
+    # This might also happen for DX types in senaite.databox!
+    meta_type = getattr(aq_base(parent), "meta_type", "")
+    if meta_type == "TempFolder":
+        return True
 
     return False
+
+
+def mark_temporary(brain_or_object):
+    """Mark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    alsoProvides(obj, ITemporaryObject)
+
+
+def unmark_temporary(brain_or_object):
+    """Unmark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    noLongerProvides(obj, ITemporaryObject)
+
+
+def is_string(thing):
+    """Checks if the passed in object is a string type
+
+    :param thing: object to test
+    :returns: True if the object is a string
+    """
+    return isinstance(thing, six.string_types)
+
+
+def parse_json(thing, default=""):
+    """Parse from JSON
+
+    :param thing: thing to parse
+    :param default: value to return if cannot parse
+    :returns: the object representing the JSON or default
+    """
+    try:
+        return json.loads(thing)
+    except (TypeError, ValueError):
+        return default
+
+
+def to_list(value):
+    """Converts the value to a list
+
+    :param value: the value to be represented as a list
+    :returns: a list that represents or contains the value
+    """
+    if is_string(value):
+        val = parse_json(value)
+        if isinstance(val, (list, tuple, set)):
+            value = val
+    if not isinstance(value, (list, tuple, set)):
+        value = [value]
+    return list(value)

@@ -50,7 +50,7 @@ Example::
       directives.widget(
           "route",
           UIDReferenceWidgetFactory,
-          catalog="portal_catalog",
+          catalog="senaite_catalog_setup",
           query={
               "portal_type": "ObjectRoute",
               "is_active": True,
@@ -106,7 +106,7 @@ The following settings can be done in `directives.widget`:
 - `catalog`
 
 The search catalog to use.
-Default value is `portal_catalog`
+Default value is `uid_catalog`
 
 - `query`
 

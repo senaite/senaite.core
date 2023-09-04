@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SETUP_CATALOG
 
 
 class SampleContainersView(ListingView):
@@ -32,6 +33,8 @@ class SampleContainersView(ListingView):
 
     def __init__(self, context, request):
         super(SampleContainersView, self).__init__(context, request)
+
+        self.catalog = SETUP_CATALOG
 
         self.contentFilter = {
             "portal_type": "SampleContainer",

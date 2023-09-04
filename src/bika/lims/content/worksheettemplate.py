@@ -22,7 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES

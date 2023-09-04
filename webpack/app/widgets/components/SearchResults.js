@@ -419,6 +419,7 @@ class SearchResults extends React.Component {
       <div className={this.props.className}
            style={this.get_style()}>
         <div style={{position: "absolute", top: 0, right: 0}}>
+          {this.props.loading && <span className="spinner-border text-info spinner-border-sm" role="status" aria-hidden="true"></span>}
           {this.build_close_button()}
         </div>
         <table className="table table-sm table-hover small queryselectwidget-results-table">

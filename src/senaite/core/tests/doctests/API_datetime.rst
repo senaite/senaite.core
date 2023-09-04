@@ -13,6 +13,7 @@ Test Setup
 
 Imports:
 
+    >>> from bika.lims.api import get_tool
     >>> from senaite.core.api import dtime
 
 Define some variables:
@@ -247,6 +248,74 @@ Get the timezone from `datetime.date` objects:
     'Etc/GMT'
 
 
+Get the timezone info
+.....................
+
+Get the timezone info from TZ name:
+
+    >>> dtime.get_tzinfo("Etc/GMT")
+    <StaticTzInfo 'Etc/GMT'>
+
+    >>> dtime.get_tzinfo("Pacific/Fiji")
+    <DstTzInfo 'Pacific/Fiji' LMT+11:56:00 STD>
+
+    >>> dtime.get_tzinfo("UTC")
+    <UTC>
+
+Get the timezone info from `DateTime` objects:
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25"))
+    <StaticTzInfo 'Etc/GMT'>
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25 12:00 GMT+2"))
+    <StaticTzInfo 'Etc/GMT-2'>
+
+    >>> dtime.get_tzinfo(DateTime("2022-02-25 12:00 GMT-2"))
+    <StaticTzInfo 'Etc/GMT+2'>
+
+Get the timezone info from `datetime.datetime` objects:
+
+    >>> DATE = "2021-12-24 12:00"
+    >>> dt = datetime.strptime(DATE, DATEFORMAT)
+    >>> dtime.get_tzinfo(dt)
+    <UTC>
+
+    >>> dtime.get_tzinfo(dtime.to_zone(dt, "Europe/Berlin"))
+    <DstTzInfo 'CET' CET+1:00:00 STD>
+
+Get the timezone info from `datetime.date` objects:
+
+    >>> dtime.get_tzinfo(dt.date)
+    <UTC>
+
+Getting the timezone info from a naive date returns default timezone info:
+
+    >>> dt_naive = dt.replace(tzinfo=None)
+    >>> dtime.get_tzinfo(dt_naive)
+    <UTC>
+
+    >>> dtime.get_tzinfo(dt_naive, default="Pacific/Fiji")
+    <DstTzInfo 'Pacific/Fiji' LMT+11:56:00 STD>
+
+We can use a timezone info as the default parameter as well:
+
+    >>> dtime.get_tzinfo(dt_naive, default=dtime.pytz.UTC)
+    <UTC>
+
+Default can also be a timezone name:
+
+    >>> dtime.get_tzinfo(dt_naive, default="America/Port_of_Spain")
+    <DstTzInfo 'America/Port_of_Spain' LMT-1 day, 19:36:00 STD>
+
+And an error is rised if default is not a valid timezone, even if the date
+passed-in is valid:
+
+    >>> dtime.get_tzinfo(dt_naive, default="Atlantida")
+    Traceback (most recent call last):
+    ...
+    UnknownTimeZoneError: 'Atlantida'
+
+
 Check if timezone is valid
 ..........................
 
@@ -436,3 +505,275 @@ Check 24h vs 12h format:
     >>> dt = datetime.strptime(DATE, DATEFORMAT)
     >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
     '1755-08-01 11:01 PM'
+
+
+Localization
+............
+
+Values returned by TranslationService and dtime's ulocalized_time are
+consistent:
+
+    >>> ts = get_tool("translation_service")
+    >>> dt = "2022-12-14"
+    >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
+    >>> ts_dt == dt_dt
+    True
+
+    >>> dt = datetime(2022,12,14)
+    >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
+    >>> ts_dt == dt_dt
+    True
+
+    >>> dt = DateTime(2022,12,14)
+    >>> ts_dt = ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    >>> dt_dt = dtime.to_localized_time(dt, long_format=True)
+    >>> ts_dt == dt_dt
+    True
+
+But when a date with a year before 1900 is used, dtime's does fallback to
+standard ISO format, while TranslationService fails:
+
+    >>> dt = "1889-12-14"
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
+
+    >>> dt = datetime(1889,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
+
+    >>> dt = DateTime(1889,12,14)
+    >>> ts.ulocalized_time(dt, long_format=True, domain="senaite.core")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1889 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.to_localized_time(dt, long_format=True)
+    '1889-12-14 00:00'
+
+
+Support for ANSI X3.30 and ANSI X3.43.3
+.......................................
+
+The YYYYMMDD format is defined by ANSI X3.30. Therefore 2 December 1, 1989
+would be represented as 19891201. When times are transmitted (ASTM), they
+shall be represented as HHMMSS, and shall be linked to dates as specified by
+ANSI X3.43.3 Date and time together shall be specified as up to a 14-character
+string (YYYYMMDD[HHMMSS]
+
+    >>> dt = "19891201"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1989, 12, 1, 0, 0)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1989/12/01 00:00:00 GMT+0')
+
+    >>> dt = "19891201131405"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1989, 12, 1, 13, 14, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1989/12/01 13:14:05 GMT+0')
+
+    >>> dt = "17891201131405"
+    >>> dtime.ansi_to_dt(dt)
+     datetime.datetime(1789, 12, 1, 13, 14, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1789/12/01 13:14:05 GMT+0')
+
+    >>> dt = "17891201132505"
+    >>> dtime.ansi_to_dt(dt)
+    datetime.datetime(1789, 12, 1, 13, 25, 5)
+
+    >>> dtime.to_DT(dt)
+    DateTime('1789/12/01 13:25:05 GMT+0')
+
+    >>> # No ANSI format
+    >>> dt = "230501"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: No ANSI format date
+
+    >>> # Month 13
+    >>> dt = "17891301132505"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: unconverted data remains: 5
+
+    >>> # Month 2, day 30
+    >>> dt = "20030230123408"
+    >>> dtime.ansi_to_dt(dt)
+    Traceback (most recent call last):
+    ...
+    ValueError: day is out of range for month
+
+    >>> dtime.to_DT(dt) is None
+    True
+
+We can also the other way round conversion. Simply giving a date in ant valid
+string format:
+
+    >>> dt = "1989-12-01"
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201000000'
+
+    >>> dt = "19891201"
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201000000'
+
+Or using datetime or DateTime as the input parameter:
+
+    >>> dt = "19891201131405"
+    >>> dt = dtime.ansi_to_dt(dt)
+    >>> dtime.to_ansi(dt, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(dt, show_time=True)
+    '19891201131405'
+
+    >>> DT = dtime.to_DT(dt)
+    >>> dtime.to_ansi(DT, show_time=False)
+    '19891201'
+
+    >>> dtime.to_ansi(DT, show_time=True)
+    '19891201131405'
+
+We even suport dates that are long before epoch:
+
+    >>> min_date = dtime.datetime.min
+    >>> min_date
+    datetime.datetime(1, 1, 1, 0, 0)
+
+    >>> dtime.to_ansi(min_date)
+    '00010101000000'
+
+Or long after epoch:
+
+    >>> max_date = dtime.datetime.max
+    >>> max_date
+    datetime.datetime(9999, 12, 31, 23, 59, 59, 999999)
+
+    >>> dtime.to_ansi(max_date)
+    '99991231235959'
+
+Still, invalid dates return None:
+
+    >>> # Month 13
+    >>> dt = "17891301132505"
+    >>> dtime.to_ansi(dt) is None
+    True
+
+    >>> # Month 2, day 30
+    >>> dt = "20030230123408"
+    >>> dtime.to_ansi(dt) is None
+    True
+
+
+Relative delta between two dates
+................................
+
+We can extract the relative delta between two dates:
+
+    >>> dt1 = dtime.ansi_to_dt("20230515104405")
+    >>> dt2 = dtime.ansi_to_dt("20230515114405")
+    >>> dtime.get_relative_delta(dt1, dt2)
+    relativedelta(hours=+1)
+
+We can even compare two dates from two different timezones:
+
+    >>> dt1_cet = dtime.to_zone(dt1, "CET")
+    >>> dt2_utc = dtime.to_zone(dt2, "UTC")
+    >>> dtime.get_relative_delta(dt1_cet, dt2_utc)
+    relativedelta(hours=+3)
+
+    >>> dt1_cet = dtime.to_zone(dt1, "CET")
+    >>> dt2_pcf = dtime.to_zone(dt2, "Pacific/Fiji")
+    >>> dtime.get_relative_delta(dt1_cet, dt2_pcf)
+    relativedelta(hours=-9)
+
+If we compare a naive timezone, system uses the timezone of the other date:
+
+    >>> dt1_cet = dtime.to_zone(dt1, "CET")
+    >>> dt2_naive = dt2.replace(tzinfo=None)
+    >>> dtime.get_relative_delta(dt1_cet, dt2_naive)
+    relativedelta(hours=+3)
+
+It also works when both are timezone naive:
+
+    >>> dt1_naive = dt1.replace(tzinfo=None)
+    >>> dt2_naive = dt2.replace(tzinfo=None)
+    >>> dtime.get_relative_delta(dt1_naive, dt2_naive)
+    relativedelta(hours=+1)
+
+If we don't specify `dt2`, system simply uses current datetime:
+
+    >>> rel_now = dtime.get_relative_delta(dt1, datetime.now())
+    >>> rel_wo = dtime.get_relative_delta(dt1)
+    >>> rel_now = (rel_now.years, rel_now.months, rel_now.days, rel_now.hours)
+    >>> rel_wo = (rel_wo.years, rel_wo.months, rel_wo.days, rel_wo.hours)
+    >>> rel_now == rel_wo
+    True
+
+We can even compare min and max dates:
+
+    >>> dt1 = dtime.datetime.min
+    >>> dt2 = dtime.datetime.max
+    >>> dtime.get_relative_delta(dtime.datetime.min, dtime.datetime.max)
+    relativedelta(years=+9998, months=+11, days=+30, hours=+23, minutes=+59, seconds=+59, microseconds=+999999)
+
+We can even call the function with types that are not datetime, but can be
+converted to datetime:
+
+    >>> dtime.get_relative_delta("19891201131405", "20230515114400")
+    relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
+
+But raises a `ValueError` if non-valid dates are used:
+
+    >>> dtime.get_relative_delta("17891301132505")
+    Traceback (most recent call last):
+    ...
+    ValueError: No valid date or dates
+
+Even if the from date is correct, but not the to date:
+
+    >>> dtime.get_relative_delta("19891201131405", "20230535114400")
+    Traceback (most recent call last):
+    ...
+    ValueError: No valid date or dates
+
+We can also compare two datetimes, being the "from" earlier than "to":
+
+    >>> dtime.get_relative_delta("20230515114400", "19891201131405")
+    relativedelta(years=-33, months=-5, days=-13, hours=-22, minutes=-29, seconds=-55)
+
+Or compare two dates that are exactly the same:
+
+    >>> dtime.get_relative_delta("20230515114400", "20230515114400")
+    relativedelta()
+
+We can compare dates without time as well:
+
+    >>> from_date = dtime.date(2023, 5, 6)
+    >>> to_date = dtime.date(2023, 5, 7)
+    >>> dtime.get_relative_delta(from_date, to_date)
+    relativedelta(days=+1)

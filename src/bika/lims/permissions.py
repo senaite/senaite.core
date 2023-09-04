@@ -40,157 +40,122 @@ bika.lims.PermName or bika.lims.permissions.PermName are
 both valid.
 """
 
-# Add Permissions
-# ===============
-# For "Add" permissions, keep the name of the variable as "Add<portal_type>".
-# When the module gets initialized (bika.lims.__init__), the function initialize
-# will look through these Add permissions attributes when registering types and
-# will automatically associate them with their types.
-AddAnalysis = "senaite.core: Add Analysis"
-AddAnalysisCategory = "senaite.core: Add AnalysisCategory"
-AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
-AddAnalysisRequest = "senaite.core: Add AnalysisRequest"
-AddAnalysisService = "senaite.core: Add AnalysisService"
-AddAnalysisSpec = "senaite.core: Add AnalysisSpec"
-AddARTemplate = "senaite.core: Add ARTemplate"
-AddAttachment = "senaite.core: Add Attachment"
-AddAttachmentType = "senaite.core: Add AttachmentType"
-AddBatch = "senaite.core: Add Batch"
-AddBatchLabel = "senaite.core: Add BatchLabel"
-AddCalculation = "senaite.core: Add Calculation"
-AddClient = "senaite.core: Add Client"
-AddContainer = "senaite.core: Add Container"
-AddContainerType = "senaite.core: Add ContainerType"
-AddDepartment = "senaite.core: Add Department"
-AddIdentifierType = "senaite.core: Add IdentifierType"
-AddInstrument = "senaite.core: Add Instrument"
-AddInstrumentLocation = "senaite.core: Add InstrumentLocation"
-AddInstrumentType = "senaite.core: Add InstrumentType"
-AddInvoice = "senaite.core: Add Invoice"
-AddLabContact = "senaite.core: Add LabContact"
-AddLabProduct = "senaite.core: Add LabProduct"
-AddManufacturer = "senaite.core: Add Manufacturer"
-AddMethod = "senaite.core: Add Method"
-AddMultifile = "senaite.core: Add Multifile"
-AddPreservation = "senaite.core: Add Preservation"
-AddPricelist = "senaite.core: Add Pricelist"
-AddReferenceDefinition = "senaite.core: Add ReferenceDefinition"
-AddSampleCondition = "senaite.core: Add SampleCondition"
-AddSampleMatrix = "senaite.core: Add SampleMatrix"
-AddSamplePoint = "senaite.core: Add SamplePoint"
-AddSampleType = "senaite.core: Add SampleType"
-AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
-AddStorageLocation = "senaite.core: Add StorageLocation"
-AddSubGroup = "senaite.core: Add SubGroup"
-AddSupplier = "senaite.core: Add Supplier"
+# flake8:noqa
 
-# Transition permissions
-# ======================
-TransitionDeactivate = "senaite.core: Transition: Deactivate"
-TransitionActivate = "senaite.core: Transition: Activate"
-TransitionCancel = "senaite.core: Transition: Cancel"
-TransitionReinstate = "senaite.core: Transition: Reinstate"
-TransitionClose = "senaite.core: Transition: Close"
-TransitionReopen = "senaite.core: Transition: Reopen"
+from senaite.core.permissions import *
+from zope import deprecation
 
-# Transition permissions (Analysis and alike)
-TransitionRetest = "senaite.core: Transition: Retest"
-TransitionRetract = "senaite.core: Transition: Retract"
-TransitionVerify = "senaite.core: Transition: Verify"
-TransitionAssignAnalysis = "senaite.core: Transition: Assign Analysis"
-TransitionUnassignAnalysis = "senaite.core: Transition: Unassign Analysis"
-
-# Transition permissions (Analysis Request)
-TransitionCancelAnalysisRequest = "senaite.core: Transition: Cancel Analysis Request"
-TransitionDetachSamplePartition = "senaite.core: Transition: Detach Sample Partition"
-TransitionReinstateAnalysisRequest = "senaite.core: Transition: Reinstate Analysis Request"
-TransitionInvalidate = "senaite.core: Transition Invalidate"
-TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
-TransitionPublishResults = "senaite.core: Transition: Publish Results"
-TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
-TransitionRejectSample = "senaite.core: Transition: Reject Sample"
-TransitionSampleSample = "senaite.core: Transition: Sample Sample"
-TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
-TransitionDispatchSample = "senaite.core: Transition: Dispatch Sample"
-TransitionRestoreSample = "senaite.core: Transition: Restore Sample"
-TransitionCreatePartitions = "senaite.core: Transition: Create Partitions"
-TransitionMultiResults = "senaite.core: Transition: Multi Results"
-
-
-# Type-specific permissions
-# =========================
-# Makes "Add Attachment" section from sample context visible
-SampleAddAttachment = "senaite.core: Sample: Add Attachment"
-# Allows to edit "Type", "Keywords" and "Report Option" from attachments, even
-# for those attachment assigned to an analysis
-SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
-# Displays the "Delete" checkbox
-SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
-
-
-# Field Permissions
-# =================
-# Field permissions (Analysis Request)
-FieldEditBatch = "senaite.core: Field: Edit Batch"
-FieldEditClient = "senaite.core: Field: Edit Client"
-FieldEditClientOrderNumber = "senaite.core: Field: Edit Client Order Number"
-FieldEditClientReference = "senaite.core: Field: Edit Client Reference"
-FieldEditClientSampleID = "senaite.core: Field: Edit Client Sample ID"
-FieldEditComposite = "senaite.core: Field: Edit Composite"
-FieldEditContact = "senaite.core: Field: Edit Contact"
-FieldEditContainer = "senaite.core: Field: Edit Container"
-FieldEditDatePreserved = "senaite.core: Field: Edit Date Preserved"
-FieldEditDateReceived = "senaite.core: Field: Edit Date Received"
-FieldEditDateSampled = "senaite.core: Field: Edit Date Sampled"
-FieldEditEnvironmentalConditions = "senaite.core: Field: Edit Environmental Conditions"
-FieldEditInternalUse = "senaite.core: Field: Edit Internal Use"
-FieldEditInvoiceExclude = "senaite.core: Field: Edit Invoice Exclude"
-FieldEditMemberDiscount = "senaite.core: Field: Edit Member Discount"
-FieldEditPreservation = "senaite.core: Field: Edit Preservation"
-FieldEditPreserver = "senaite.core: Field: Edit Preserver"
-FieldEditPriority = "senaite.core: Field: Edit Priority"
-FieldEditProfiles = "senaite.core: Field: Edit Profiles"
-FieldEditPublicationSpecifications = "senaite.core: Field: Edit Publication Specification"
-FieldEditRejectionReasons = "senaite.core: Field: Edit Rejection Reasons"
-FieldEditRemarks = "senaite.core: Field: Edit Remarks"
-FieldEditResultsInterpretation = "senaite.core: Field: Edit Results Interpretation"
-FieldEditSampleCondition = "senaite.core: Field: Edit Sample Condition"
-FieldEditSamplePoint = "senaite.core: Field: Edit Sample Point"
-FieldEditSampleType = "senaite.core: Field: Edit Sample Type"
-FieldEditSampler = "senaite.core: Field: Edit Sampler"
-FieldEditSamplingDate = "senaite.core: Field: Edit Sampling Date"
-FieldEditSamplingDeviation = "senaite.core: Field: Edit Sampling Deviation"
-FieldEditScheduledSampler = "senaite.core: Field: Edit Scheduled Sampler"
-FieldEditSpecification = "senaite.core: Field: Edit Specification"
-FieldEditStorageLocation = "senaite.core: Field: Edit Storage Location"
-FieldEditTemplate = "senaite.core: Field: Edit Template"
-
-# Field permissions (Analysis and alike)
-FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
-# Allows the edition of the result from an Analysis, as well as the assignment,
-# edition or removal of attachment.
-FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
-FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
-FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
-
-
-# Behavioral permissions
-# ======================
-# TODO Security Review these "behavioral" permissions
-AccessJSONAPI = "senaite.core: Access JSON API"
-EditFieldResults = "senaite.core: Edit Field Results"
-EditResults = "senaite.core: Edit Results"
-ManageBika = "senaite.core: Manage Bika"
-ManageAnalysisRequests = "senaite.core: Manage Analysis Requests"
-ManageInvoices = "senaite.core: Manage Invoices"
-ManageLoginDetails = "senaite.core: Manage Login Details"
-ManageReference = "senaite.core: Manage Reference"
-ViewResults = "senaite.core: View Results"
-
-
-# View/Action permissions
-# =======================
-# TODO Security Review these "view/action" permissions
-ImportInstrumentResults = "senaite.core: Import Instrument Results"
-ViewRetractedAnalyses = "senaite.core: View Retracted Analyses"
-ViewLogTab = "senaite.core: View Log Tab"
+deprecation.deprecated("AccessJSONAPI", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddARTemplate", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysis", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysisCategory", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysisProfile", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysisService", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAnalysisSpec", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAttachment", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddAttachmentType", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddBatch", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddBatchLabel", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddCalculation", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddClient", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddContainer", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddContainerType", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddDepartment", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddIdentifierType", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddInstrument", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddInstrumentLocation", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddInstrumentType", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddInvoice", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddLabContact", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddLabProduct", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddManufacturer", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddMethod", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddMultifile", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddPreservation", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddPricelist", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddReferenceDefinition", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSampleCondition", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSampleMatrix", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSamplePoint", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSampleType", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSamplingDeviation", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddStorageLocation", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSubGroup", "Moved to senaite.core.permissions")
+deprecation.deprecated("AddSupplier", "Moved to senaite.core.permissions")
+deprecation.deprecated("EditFieldResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("EditResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditAnalysisConditions", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditAnalysisHidden", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditAnalysisRemarks", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditAnalysisResult", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditBatch", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClient", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientOrderNumber", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientReference", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditClientSampleID", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditComposite", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditContact", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditContainer", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDatePreserved", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDateReceived", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditDateSampled", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditEnvironmentalConditions", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditInternalUse", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditInvoiceExclude", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditMemberDiscount", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPreservation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPreserver", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPriority", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditProfiles", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditPublicationSpecifications","Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditRejectionReasons", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditRemarks", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditResultsInterpretation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampleCondition", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplePoint", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampleType", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSampler", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplingDate", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSamplingDeviation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditScheduledSampler", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditSpecification", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditStorageLocation", "Moved to senaite.core.permissions")
+deprecation.deprecated("FieldEditTemplate", "Moved to senaite.core.permissions")
+deprecation.deprecated("ImportInstrumentResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("ManageAnalysisRequests", "Moved to senaite.core.permissions")
+deprecation.deprecated("ManageBika", "Moved to senaite.core.permissions")
+deprecation.deprecated("ManageInvoices", "Moved to senaite.core.permissions")
+deprecation.deprecated("ManageLoginDetails", "Moved to senaite.core.permissions")
+deprecation.deprecated("ManageReference", "Moved to senaite.core.permissions")
+deprecation.deprecated("SampleAddAttachment", "Moved to senaite.core.permissions")
+deprecation.deprecated("SampleDeleteAttachment", "Moved to senaite.core.permissions")
+deprecation.deprecated("SampleEditAttachment", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionActivate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionAssignAnalysis", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionCancel", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionCancelAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionClose", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionCreatePartitions", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionDeactivate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionDetachSamplePartition", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionDispatchSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionInvalidate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionMultiResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionPreserveSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionPublishResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReceiveSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReinstate", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReinstateAnalysisRequest", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRejectSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionReopen", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRestoreSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRetest", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionRetract", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionSampleSample", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionScheduleSampling", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionUnassignAnalysis", "Moved to senaite.core.permissions")
+deprecation.deprecated("TransitionVerify", "Moved to senaite.core.permissions")
+deprecation.deprecated("ViewLogTab", "Moved to senaite.core.permissions")
+deprecation.deprecated("ViewResults", "Moved to senaite.core.permissions")
+deprecation.deprecated("ViewRetractedAnalyses", "Moved to senaite.core.permissions")

@@ -26,6 +26,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.api.security import get_roles
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
+from bika.lims.interfaces.field import IUIDReferenceField
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize import view as viewcache
 from plone.protect import PostOnly
@@ -34,8 +35,6 @@ from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
-from senaite.core.api import dtime
-from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
 from senaite.core.interfaces import IDataManager
 from zope import event
 from zope.component import queryAdapter
@@ -75,10 +74,20 @@ class SampleHeaderViewlet(ViewletBase):
         form = request.form
 
         for name, field in self.fields.items():
+            # get the raw value from the form
             value = self.get_field_value(field, form)
-
             if value is _fieldname_not_in_form:
                 continue
+
+            # some legacy widgets need values with <fieldname>_ as prefix
+            prefix = "{}_".format(name)
+            extra = filter(lambda key: key.startswith(prefix), form.keys())
+            form_values = dict((key, form[key]) for key in extra)
+            form_values[name] = value
+
+            # process the value as the widget would usually do
+            process_value = field.widget.process_form
+            value, msgs = process_value(self.context, field, form_values)
 
             # Keep track of field-values
             field_values.update({name: value})
@@ -108,8 +117,8 @@ class SampleHeaderViewlet(ViewletBase):
     def get_configuration(self):
         """Return header configuration
 
-        This method retrieves the customized field and column configuration from
-        the management view directly.
+        This method retrieves the customized field and column configuration
+        from the management view directly.
 
         :returns: Field and columns configuration dictionary
         """
@@ -146,16 +155,13 @@ class SampleHeaderViewlet(ViewletBase):
 
         fieldvalue = form[fieldname]
 
-        # Handle (multiValued) reference fields
-        # https://github.com/bikalims/bika.lims/issues/2270
-        uid_fieldname = "{}_uid".format(fieldname)
-        if uid_fieldname in form:
-            # get the value from the corresponding `uid_<fieldname>` key
-            value = form[uid_fieldname]
+        # Handle  reference fields
+        if IUIDReferenceField.providedBy(field):
+            value = fieldvalue
 
             # extract the assigned UIDs for multi-reference fields
             if field.multiValued:
-                value = filter(None, value.split(","))
+                value = filter(None, fieldvalue.split("\r\n"))
 
             # allow to flush single reference fields
             if not field.multiValued and not fieldvalue:
@@ -202,17 +208,6 @@ class SampleHeaderViewlet(ViewletBase):
             # return immediately if we have an adapter
             if adapter is not None:
                 return adapter(field)
-
-            # TODO: Refactor to adapter
-            # Returns the localized date
-            if self.is_datetime_field(field):
-                value = field.get(self.context)
-                if not value:
-                    return None
-                return dtime.ulocalized_time(value,
-                                             long_format=True,
-                                             context=self.context,
-                                             request=self.request)
 
         return None
 
@@ -303,14 +298,6 @@ class SampleHeaderViewlet(ViewletBase):
         if mode == "view":
             return False
         return field.required
-
-    def is_datetime_field(self, field):
-        """Check if the field is a date field
-        """
-        if self.is_at_field(field):
-            widget = self.get_widget(field)
-            return isinstance(widget, DateTimeWidget)
-        return False
 
     def is_at_field(self, field):
         """Check if the field is an AT field

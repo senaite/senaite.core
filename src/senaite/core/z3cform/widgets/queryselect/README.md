@@ -57,7 +57,7 @@ widget directive as *additional arguments*:
            Note: A class method name can be defined to compute the query on access.
 
 - `catalog`: The catalog to use for the query.
-             Default: `portal_catalog`
+             Default: `uid_catalog`
 
 
 - `search_index`: The search index to use for the catalog query.
@@ -100,10 +100,6 @@ widget directive as *additional arguments*:
              Note: This option affects the length of the batch navigation to
                    avoid horizontal overflow for more than e.g. 50 pages.
 
-- `hide_input_after_select`: Controls if the search input field should be rendered after a value was selected
-                             Default: `False`
-                             Note: Only used if for single valued fields
-
 
 # Full example
 
@@ -128,7 +124,6 @@ This example shows how the widget can be used with most of the described setting
             search_wildcard=True,
             multi_valued=False,
             allow_user_value=True,
-            hide_input_after_select=True,
             columns=[
                 {
                     "name": "patient_id",

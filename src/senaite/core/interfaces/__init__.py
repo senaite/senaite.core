@@ -19,9 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.datamanager import IDataManager
-from zope.interface import Interface
 from senaite.core.interfaces.catalog import *
+from senaite.core.interfaces.datamanager import IDataManager
+from senaite.core.interfaces.widget import *
+from zope.interface import Interface
 
 
 class ISenaiteCore(Interface):
@@ -75,6 +76,45 @@ class IAjaxEditForm(Interface):
         """
 
 
+class IMultiCatalogBehavior(Interface):
+    """Support multiple catalogs for Dexterity contents
+    """
+
+
+class IAutoGenerateID(Interface):
+    """Auto-generate ID with ID server
+    """
+
+
+class IIdServer(Interface):
+    """Marker Interface for ID server
+    """
+
+    def generate_id(self, portal_type, batch_size=None):
+        """Generate a new id for 'portal_type'
+        """
+
+
+class IIdServerVariables(Interface):
+    """Marker interfaces for variables generator for ID Server
+    """
+
+    def get_variables(self, **kw):
+        """Returns a dict with variables
+        """
+
+
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
+        """
+
+
 class INumberGenerator(Interface):
     """A utility to generates unique numbers by key
     """
@@ -87,6 +127,16 @@ class IContainer(Interface):
 
 class IItem(Interface):
     """SENAITE Base Item
+    """
+
+
+class ITemporaryObject(Interface):
+    """Marker interface for temporary objects
+
+    This is similar to the `creationFlag`, but skips indexing for any object
+    that implements this interface.
+
+    Also see: `senaite.core.patches.catalog.catlog_object`
     """
 
 
@@ -137,4 +187,27 @@ class IDynamicLocalRoles(Interface):
 
 class IInterpretationTemplate(Interface):
     """Marker interface for interpretation template objects
+    """
+
+
+class ILabels(Interface):
+    """Marker interface for labels container
+    """
+
+
+class ILabel(Interface):
+    """Marker interface for labels
+    """
+
+
+class ICanHaveLabels(Interface):
+    """Marker interface for labeled capable objects
+    """
+
+
+class IHaveLabels(ICanHaveLabels):
+    """Marker interface for labeled objects
+
+    NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
+          fields for already labeled objects
     """

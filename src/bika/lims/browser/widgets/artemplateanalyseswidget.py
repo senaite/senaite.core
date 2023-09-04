@@ -26,7 +26,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import FieldEditTemplate
+from senaite.core.permissions import FieldEditTemplate
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import t
@@ -301,7 +301,7 @@ class ARTemplateAnalysesWidget(TypesWidget):
         services = set(services + dependencies)
 
         # get the profile
-        profile_uid = form.get("AnalysisProfile_uid")
+        profile_uid = form.get("AnalysisProfile")
         if profile_uid:
             profile = api.get_object_by_uid(profile_uid)
             # update the services with those from the profile

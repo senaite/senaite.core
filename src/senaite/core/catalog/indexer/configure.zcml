@@ -7,6 +7,18 @@
   <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
   <adapter name="sortable_title" factory=".generic.sortable_title"/>
 
+  <!-- Client Indexer -->
+  <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
+
+  <!-- Contact Indexer -->
+  <adapter name="listing_searchable_text" factory=".contact.listing_searchable_text"/>
+  <adapter name="getParentUID" factory=".contact.getParentUID"/>
+  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+
+  <!-- Label Indexer -->
+  <adapter name="labels" factory=".label.labels"/>
+  <adapter name="listing_searchable_text" factory=".label.listing_searchable_text"/>
+
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
   <adapter name="is_received" factory=".sample.is_received"/>
@@ -48,9 +60,6 @@
   <adapter name="price_total" factory=".senaitesetup.price_total"/>
   <adapter name="sampletype_title" factory=".senaitesetup.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".senaitesetup.sampletype_uid"/>
-
-  <!-- Contact Indexer -->
-  <adapter name="sortable_title" factory=".contact.sortable_title"/>
 
   <!-- Organization Indexer -->
   <adapter name="title" factory=".organisation.title"/>

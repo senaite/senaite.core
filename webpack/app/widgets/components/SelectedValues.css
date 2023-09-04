@@ -1,0 +1,5 @@
+/* CSS rules for the selected values
+ */
+div.queryselectwidget-selected-values {}
+div.queryselectwidget-selected-values span.state-inactive a { color: #dc3545; }
+div.queryselectwidget-selected-values li { max-width: 253px; }

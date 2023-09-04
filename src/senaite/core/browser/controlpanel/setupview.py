@@ -24,6 +24,7 @@ from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.component import getMultiAdapter
 
@@ -56,9 +57,15 @@ class SetupView(BrowserView):
 
     @property
     def setup(self):
-        """Returns the Senaite Setup Object
+        """Returns the old Setup Object
         """
         return api.get_setup()
+
+    @property
+    def senaite_setup(self):
+        """Returns the new Setup Object
+        """
+        return api.get_senaite_setup()
 
     @memoize_contextless
     def get_icon_for(self, brain, **kw):
@@ -66,26 +73,44 @@ class SetupView(BrowserView):
         """
         return self.bootstrap.get_icon_for(brain, **kw)
 
+    @memoize_contextless
+    def get_allowed_content_types(self, obj):
+        """Get the allowed content types
+        """
+        portal_types = api.get_tool("portal_types")
+        fti = portal_types.getTypeInfo(api.get_portal_type(obj))
+        allowed_types = fti.allowed_content_types
+        if len(allowed_types) != 1:
+            return None
+        return allowed_types[0]
+
+    def get_count(self, obj):
+        """Retrieve the count of contained items
+        """
+        contained_types = self.get_allowed_content_types(obj)
+
+        # fallback
+        if contained_types is None:
+            return len(obj.objectIds())
+
+        query = {
+            "portal_type": contained_types,
+            "is_active": True,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        return len(brains)
+
     def setupitems(self):
         """Lookup available setup items
 
-        :returns: catalog brains
+        :returns: objects
         """
-        query = {
-            "path": {
-                "query": api.get_path(self.setup),
-                "depth": 1,
-            },
-        }
-        items = api.search(query, "portal_catalog")
-        # filter out items
-        items = filter(lambda item: not item.exclude_from_nav, items)
+        items = self.setup.objectValues() + self.senaite_setup.objectValues()
 
         # sort by (translated) title
-        def cmp_by_translated_title(brain1, brain2):
-            title1 = t(api.get_title(brain1))
-            title2 = t(api.get_title(brain2))
-            # XXX: Python 3 compatibility
+        def cmp_by_translated_title(obj1, obj2):
+            title1 = t(api.get_title(obj1))
+            title2 = t(api.get_title(obj2))
             return cmp(title1, title2)
 
         return sorted(items, cmp=cmp_by_translated_title)

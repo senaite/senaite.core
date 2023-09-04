@@ -47,7 +47,6 @@ if debug_mode:
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
 from bika.lims.config import *
-# from bika.lims.permissions import *
 from bika.lims.validators import *
 from Products.Archetypes import PloneMessageFactory as PMF
 
@@ -105,8 +104,6 @@ def initialize(context):
     from bika.lims.content.referencesample import ReferenceSample
     from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder
     from bika.lims.content.rejectanalysis import RejectAnalysis
-    from bika.lims.content.report import Report
-    from bika.lims.content.reportfolder import ReportFolder
     from bika.lims.content.samplecondition import SampleCondition
     from bika.lims.content.samplematrix import SampleMatrix
     from bika.lims.content.samplepoint import SamplePoint
@@ -150,8 +147,7 @@ def initialize(context):
     from bika.lims.controlpanel.bika_suppliers import Suppliers
     from bika.lims.controlpanel.bika_worksheettemplates import WorksheetTemplates
 
-    from bika.lims import permissions
-    from senaite.core import permissions as core_permissions
+    from senaite.core import permissions
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME), PROJECTNAME)
@@ -162,11 +158,7 @@ def initialize(context):
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PROJECTNAME, atype.portal_type)
         perm_name = "Add{}".format(atype.portal_type)
-        # check first if the permission is set in senaite.core
-        perm = getattr(core_permissions, perm_name, None)
-        if perm is None:
-            # check bika.lims.permissions or use fallback permission
-            perm = getattr(permissions, perm_name, AddPortalContent)
+        perm = getattr(permissions, perm_name, AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
                     permission=perm,

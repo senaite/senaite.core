@@ -18,7 +18,9 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from persistent.mapping import PersistentMapping
+from senaite.core.catalog import SETUP_CATALOG
 
 
 class PricelistLineItem(PersistentMapping):
@@ -44,8 +46,8 @@ def ObjectModifiedEventHandler(instance, event):
         """
         # Remove existing line items
         instance.pricelist_lineitems = []
-        for p in instance.portal_catalog(portal_type=instance.getType(),
-                                         is_active=True):
+        catalog = api.get_tool(SETUP_CATALOG)
+        for p in catalog(portal_type=instance.getType(), is_active=True):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False

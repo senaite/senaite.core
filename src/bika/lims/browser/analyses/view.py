@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -36,14 +37,14 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import FieldEditAnalysisConditions
-from bika.lims.permissions import FieldEditAnalysisHidden
-from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.permissions import TransitionVerify
-from bika.lims.permissions import ViewResults
-from bika.lims.permissions import ViewRetractedAnalyses
+from senaite.core.permissions import EditFieldResults
+from senaite.core.permissions import EditResults
+from senaite.core.permissions import FieldEditAnalysisConditions
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import TransitionVerify
+from senaite.core.permissions import ViewResults
+from senaite.core.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
@@ -967,10 +968,8 @@ class AnalysesView(ListingView):
                 item["Result"] = "{} {}".format(operand, result).strip()
 
             # Prepare result options
-            choices = obj.getResultOptions()
+            choices = self.get_result_options(obj)
             if choices:
-                # N.B.we copy here the list to avoid persistent changes
-                choices = copy(choices)
                 choices_type = obj.getResultOptionsType()
                 if choices_type == "select":
                     # By default set empty as the default selected choice
@@ -994,6 +993,18 @@ class AnalysesView(ListingView):
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
 
+    def get_result_options(self, analysis):
+        """Returns the result options of the analysis to be rendered or empty
+        """
+        options = copy(analysis.getResultOptions())
+        sort_by = analysis.getResultOptionsSorting()
+        if not sort_by:
+            return options
+
+        sort_by, sort_order = sort_by.split("-")
+        reverse = sort_order == "desc"
+        return sorted(options, key=itemgetter(sort_by), reverse=reverse)
+
     def is_multi_interim(self, interim):
         """Returns whether the interim stores a list of values instead of a
         single value
@@ -1001,18 +1012,11 @@ class AnalysesView(ListingView):
         result_type = interim.get("result_type", "")
         return result_type.startswith("multi")
 
+    @deprecated("Use api.to_list instead")
     def to_list(self, value):
         """Converts the value to a list
         """
-        try:
-            val = json.loads(value)
-            if isinstance(val, (list, tuple, set)):
-                value = val
-        except (ValueError, TypeError):
-            pass
-        if not isinstance(value, (list, tuple, set)):
-            value = [value]
-        return value
+        return api.to_list(value)
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -1080,7 +1084,7 @@ class AnalysesView(ListingView):
             choices = interim_field.get("choices")
             if choices:
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Get the {value:text} dict
                 choices = choices.split("|")
@@ -1110,7 +1114,7 @@ class AnalysesView(ListingView):
 
             elif self.is_multi_interim(interim_field):
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Set the text as the formatted value
                 text = "<br/>".join(filter(None, interim_value))
