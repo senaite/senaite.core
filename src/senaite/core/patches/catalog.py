@@ -20,6 +20,7 @@
 
 import transaction
 from bika.lims import api
+from plone.indexer.interfaces import IIndexableObject
 from Products.ZCatalog.Catalog import CatalogError
 from senaite.core import logger
 from senaite.core.catalog import AUDITLOG_CATALOG
@@ -40,8 +41,14 @@ def is_auditlog_enabled():
 def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1,
                    pghandler=None):
 
+    instance = obj
+
+    # get the unwrapped instance object
+    if IIndexableObject.providedBy(obj):
+        instance = obj._getWrappedObject()
+
     # Never catalog temporary objects
-    if api.is_temporary(obj):
+    if api.is_temporary(instance):
         return
 
     # skip indexing auditlog catalog if disabled
