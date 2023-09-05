@@ -99,7 +99,7 @@ class AnalysisCategory(BaseContent):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def workflow_script_deactivate(self):

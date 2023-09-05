@@ -26,7 +26,7 @@ import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.idserver import renameAfterCreation
+from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
 from bika.lims.utils import t

@@ -195,7 +195,7 @@ class Contact(Person):
         return aq_parent(aq_inner(self))
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     @security.private

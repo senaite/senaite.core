@@ -105,7 +105,7 @@ class Attachment(BaseFolder, ClientAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         """Rename with the IDServer
         """
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     @security.public
