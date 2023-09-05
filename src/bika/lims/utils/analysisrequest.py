@@ -22,7 +22,6 @@ import itertools
 from string import Template
 
 import six
-import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -55,7 +54,10 @@ from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
+from zope.container.contained import ObjectAddedEvent
+from zope.container.contained import notifyContainerModified
 from zope.interface import alsoProvides
+from zope.lifecycleevent import ObjectCreatedEvent
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -85,26 +87,24 @@ def create_analysisrequest(client, request, values, analyses=None,
     service_uids = to_services_uids(values=values, services=analyses)
 
     # Remove the Analyses from values. We will add them manually
-    values.update({"Analyses": []})
+    values.pop("Analyses", None)
 
     # Remove the specificaton to set it *after* the analyses have been added
     specification = values.pop("Specification", None)
 
-    # create temporary sample for ID generation
-    tmp = create_temporary_sample()
-    tmp.Schema().updateAll(tmp, **values)
-    new_id = generateUniqueId(tmp, container=client)
+    # Manually create a new sample to avoid events
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("AnalysisRequest")
+    factory = fti._getFactoryMethod(client)
+    tmp_id = factory(tmpID(), **values)
+    ar = client._getOb(tmp_id)
 
-    # Create the Analysis Request and submit the form
-    ar = _createObjectByType("AnalysisRequest", client, new_id)
-    # mark the sample as temporary to avoid indexing
-    api.mark_temporary(ar)
-    # NOTE: We call here `_processForm` (with underscore) to manually unmark
-    #       the creation flag and trigger the `ObjectInitializedEvent`, which
-    #       is used for snapshot creation.
-    ar._processForm(REQUEST=request, values=values)
+    # notify object creation (will set a new UID)
+    event.notify(ObjectCreatedEvent(ar))
+    event.notify(ObjectAddedEvent(ar, client, tmp_id))
+    notifyContainerModified(container)
 
-    # Set the analyses manually
+    # Explicitly set the analyses with the ARAnalysesField
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
 
     # Explicitly set the specification to the sample
@@ -154,14 +154,16 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
-    # renameAfterCreation(ar)
-    # AT only
+    # unmark creation flag and reindex
     ar.unmarkCreationFlag()
-    # unmark the sample as temporary
-    api.unmark_temporary(ar)
-    # explicit reindexing after sample finalization
-    reindex(ar)
-    # notify object initialization (also creates a snapshot)
+
+    # Manually rename the sample
+    new_id = generateUniqueId(ar)
+
+    # rename the object
+    client.manage_renameObject(tmp_id, new_id)
+
+    # notify event handlers
     event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically
@@ -169,20 +171,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         do_rejection(ar)
 
     return ar
-
-
-def create_temporary_sample(portal_type="AnalysisRequest"):
-    """Create a temporary sample
-    """
-    portal_factory = api.get_tool("portal_factory")
-    temp_folder = portal_factory._getTempFolder("senaite.core.tmp")
-    if portal_type in temp_folder:
-        return temp_folder[portal_type]
-    # reduce conflict errors
-    portal_factory._p_jar.sync()
-    _createObjectByType(portal_type, temp_folder, portal_type)
-    transaction.commit()
-    return temp_folder[portal_type]
 
 
 def reindex(obj, recursive=False):
