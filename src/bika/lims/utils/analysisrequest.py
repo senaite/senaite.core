@@ -145,16 +145,16 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
-    # unmark creation flag and reindex
+    # unmark creation flag
     ar.unmarkCreationFlag()
 
-    # Manually rename the sample
+    # generate a new unique ID
     new_id = generateUniqueId(ar)
 
-    # rename the object
+    # manually rename the sample (this will also reindex the sample  analyses)
     client.manage_renameObject(ar.id, new_id)
 
-    # notify event handlers
+    # notify object initialization (snapshot creation)
     event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically
