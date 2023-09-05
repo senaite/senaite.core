@@ -293,7 +293,7 @@ class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
     implements(IARTemplate, IDeactivable)
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     security.declarePublic("AnalysisProfiles")
