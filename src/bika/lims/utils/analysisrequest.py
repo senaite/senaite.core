@@ -89,8 +89,16 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Remove the specificaton to set it *after* the analyses have been added
     specification = values.pop("Specification", None)
 
-    # create a new sample and immediately pass in the values to set
-    ar = _createObjectByType("AnalysisRequest", client, tmpID(), **values)
+    # create a new sample with a temporary ID
+    ar = _createObjectByType("AnalysisRequest", client, tmpID())
+
+    # Set the schema fields using `processForm` to convert the raw form values
+    # by the widget into the right field value!
+    #
+    # NOTE: We call here `_processForm` (with underscore) to manually unmark
+    #       the creation flag and trigger the `ObjectInitializedEvent`, which
+    #       is used for snapshot creation.
+    ar._processForm(REQUEST=request, values=values)
 
     # Explicitly set the analyses with the ARAnalysesField
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
