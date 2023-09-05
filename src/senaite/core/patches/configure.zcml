@@ -64,7 +64,7 @@
 
   <monkey:patch
       description=""
-      class="Products.CMFPlone.CatalogTool.CatalogTool"
+      class="Products.ZCatalog.ZCatalog.ZCatalog"
       original="catalog_object"
       replacement=".catalog.catalog_object"
       />
