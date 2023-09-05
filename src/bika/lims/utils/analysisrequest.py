@@ -54,10 +54,7 @@ from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
-from zope.container.contained import ObjectAddedEvent
-from zope.container.contained import notifyContainerModified
 from zope.interface import alsoProvides
-from zope.lifecycleevent import ObjectCreatedEvent
 
 
 def create_analysisrequest(client, request, values, analyses=None,
