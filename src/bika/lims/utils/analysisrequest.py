@@ -92,17 +92,8 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Remove the specificaton to set it *after* the analyses have been added
     specification = values.pop("Specification", None)
 
-    # Manually create a new sample to avoid events
-    types_tool = api.get_tool("portal_types")
-    fti = types_tool.getTypeInfo("AnalysisRequest")
-    factory = fti._getFactoryMethod(client)
-    tmp_id = factory(tmpID(), **values)
-    ar = client._getOb(tmp_id)
-
-    # notify object creation (will set a new UID)
-    event.notify(ObjectCreatedEvent(ar))
-    event.notify(ObjectAddedEvent(ar, client, tmp_id))
-    notifyContainerModified(container)
+    # create a new sample and immediately pass in the values to set
+    ar = _createObjectByType("AnalysisRequest", client, tmpID(), **values)
 
     # Explicitly set the analyses with the ARAnalysesField
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
@@ -161,7 +152,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     new_id = generateUniqueId(ar)
 
     # rename the object
-    client.manage_renameObject(tmp_id, new_id)
+    client.manage_renameObject(ar.id, new_id)
 
     # notify event handlers
     event.notify(ObjectInitializedEvent(ar))
