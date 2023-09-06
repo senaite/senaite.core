@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2378 Reactivate auditlog catalog mappings
 - #2377 Fix imports for moved idserver module
 - #2372 Generate unique ID for DX types on object creation
 - #2370 Override default DX add form to obtain renamed IDs correctly

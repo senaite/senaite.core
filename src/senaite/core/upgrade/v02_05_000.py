@@ -38,6 +38,7 @@ from senaite.core.registry import get_registry_record
 from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_portal_catalog
@@ -231,6 +232,7 @@ def setup_catalogs(tool):
 
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    setup_auditlog_catalog_mappings(portal)
 
     logger.info("Setup Catalogs [DONE]")
 
