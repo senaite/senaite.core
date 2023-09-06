@@ -8,7 +8,7 @@ from zope.interface import implementer
 
 @implementer(IListingWorkflowTransition)
 class SampleReceiveWorkflowTransition(ListingWorkflowTransition):
-    """Adapter to execute the workflow transitions "receive" for samples
+    """Adapter to execute the workflow transition "receive" for samples
     """
     def __init__(self, view, context, request):
         super(SampleReceiveWorkflowTransition, self).__init__(
