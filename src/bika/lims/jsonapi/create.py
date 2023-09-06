@@ -21,7 +21,7 @@
 import transaction
 from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
-from bika.lims.idserver import renameAfterCreation
+from senaite.core.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.utils import tmpID
 from plone.jsonapi.core import router
