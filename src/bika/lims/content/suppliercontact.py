@@ -50,7 +50,7 @@ class SupplierContact(Person):
     security = ClassSecurityInfo()
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 

@@ -30,7 +30,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
+from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
@@ -153,7 +153,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def Title(self):
