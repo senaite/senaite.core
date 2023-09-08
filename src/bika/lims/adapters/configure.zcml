@@ -38,24 +38,6 @@
       name="RegistryHiddenFieldsVisibility"
     />
 
-    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
-    based on system settings (setup's "Show Prices" option) -->
-    <adapter
-      factory=".widgetvisibility.AccountancyFieldsVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IClient"
-      name="AccountancyFieldsVisibility"
-    />
-
-    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
-    based on system settings (setup's "Show Prices" option) -->
-    <adapter
-      factory=".widgetvisibility.AccountancyFieldsVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="AccountancyFieldsVisibility"
-    />
-
     <!-- Display/Hide Batch field in AR Add form when creation takes place
     inside a Batch context. -->
     <adapter

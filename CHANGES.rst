@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2382 Fix missing fields in client edit mode and listing
 - #2378 Reactivate auditlog catalog mappings
 - #2377 Fix imports for moved idserver module
 - #2372 Generate unique ID for DX types on object creation
