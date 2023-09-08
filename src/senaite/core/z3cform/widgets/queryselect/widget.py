@@ -44,7 +44,6 @@ from zope.schema.interfaces import ISequence
 
 # See IReferenceWidgetDataProvider for provided object data
 DISPLAY_TEMPLATE = "<div>${Title}</div>"
-DEFAULT_SEARCH_CATALOG = "uid_catalog"
 
 
 @adapter(ISequence, IQuerySelectWidget)
@@ -150,7 +149,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
                 self, "value_query_index", "title"),
             "data-api_url": getattr(self, "api_url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
-            "data-catalog": getattr(self, "catalog", DEFAULT_SEARCH_CATALOG),
+            "data-catalog": getattr(self, "catalog", None),
             "data-search_index": getattr(self, "search_index", "Title"),
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
@@ -272,6 +271,25 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """Returns if the field is multi valued or not
         """
         return getattr(self.field, "multi_valued", default)
+
+    def get_catalog(self, context, field, default=None):
+        """Lookup the catalog to query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Catalog name to query
+        """
+        # check if the new `catalog` property is set
+        catalog_name = getattr(self, "catalog", None)
+
+        if catalog_name is None:
+            # try to lookup the catalog for the given object
+            catalogs = api.get_catalogs_for(context)
+            # function always returns at least one catalog object
+            catalog_name = catalogs[0].getId()
+
+        return catalog_name
 
     def get_value(self):
         """Extract the value from the request or get it from the field
