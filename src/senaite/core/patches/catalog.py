@@ -18,14 +18,14 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
 from bika.lims import api
-from senaite.core.interfaces import IMultiCatalogBehavior
 from plone.indexer.interfaces import IIndexableObject
-from Products.ZCatalog.ZCatalog import ZCatalog
+from Products.ZCatalog.Catalog import CatalogError
 from senaite.core import logger
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.interfaces import IMultiCatalogBehavior
 from senaite.core.setuphandlers import CATALOG_MAPPINGS
-from zope.component import queryMultiAdapter
 
 PORTAL_CATALOG = "portal_catalog"
 CATALOG_MAP = dict(CATALOG_MAPPINGS)
@@ -38,11 +38,17 @@ def is_auditlog_enabled():
     return setup.getEnableGlobalAuditlog()
 
 
-def catalog_object(self, object, uid=None, idxs=None,
-                   update_metadata=1, pghandler=None):
+def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1,
+                   pghandler=None):
+
+    instance = obj
+
+    # get the unwrapped instance object
+    if IIndexableObject.providedBy(obj):
+        instance = obj._getWrappedObject()
 
     # Never catalog temporary objects
-    if api.is_temporary(object):
+    if api.is_temporary(instance):
         return
 
     # skip indexing auditlog catalog if disabled
@@ -50,20 +56,30 @@ def catalog_object(self, object, uid=None, idxs=None,
         if not is_auditlog_enabled():
             return
 
-    if idxs is None:
-        idxs = []
-    self._increment_counter()
+    if uid is None:
+        try:
+            uid = obj.getPhysicalPath
+        except AttributeError:
+            raise CatalogError(
+                "A cataloged object must support the 'getPhysicalPath' "
+                "method if no unique id is provided when cataloging")
+        else:
+            uid = '/'.join(uid())
+    elif not isinstance(uid, str):
+        raise CatalogError('The object unique id must be a string.')
 
-    w = object
-    if not IIndexableObject.providedBy(object):
-        # This is the CMF 2.2 compatible approach, which should be used
-        # going forward
-        wrapper = queryMultiAdapter((object, self), IIndexableObject)
-        if wrapper is not None:
-            w = wrapper
+    self._catalog.catalogObject(obj, uid, None, idxs,
+                                update_metadata=update_metadata)
+    # None passed in to catalogObject as third argument indicates
+    # that we shouldn't try to commit subtransactions within any
+    # indexing code.  We throw away the result of the call to
+    # catalogObject (which is a word count), because it's
+    # worthless to us here.
 
-    ZCatalog.catalog_object(self, w, uid, idxs,
-                            update_metadata, pghandler=pghandler)
+    if self.maintain_zodb_cache():
+        transaction.savepoint(optimistic=True)
+        if pghandler:
+            pghandler.info('committing subtransaction')
 
 
 def in_portal_catalog(obj):

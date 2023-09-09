@@ -48,6 +48,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.idserver import generateUniqueId
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
 from senaite.core.workflow import ANALYSIS_WORKFLOW
@@ -83,21 +84,23 @@ def create_analysisrequest(client, request, values, analyses=None,
     service_uids = to_services_uids(values=values, services=analyses)
 
     # Remove the Analyses from values. We will add them manually
-    values.update({"Analyses": []})
+    values.pop("Analyses", None)
 
     # Remove the specificaton to set it *after* the analyses have been added
     specification = values.pop("Specification", None)
 
-    # Create the Analysis Request and submit the form
+    # create a new sample with a temporary ID
     ar = _createObjectByType("AnalysisRequest", client, tmpID())
-    # mark the sample as temporary to avoid indexing
-    api.mark_temporary(ar)
+
+    # Set the schema fields using `processForm` to convert the raw form values
+    # by the widget into the right field value!
+    #
     # NOTE: We call here `_processForm` (with underscore) to manually unmark
     #       the creation flag and trigger the `ObjectInitializedEvent`, which
     #       is used for snapshot creation.
     ar._processForm(REQUEST=request, values=values)
 
-    # Set the analyses manually
+    # Explicitly set the analyses with the ARAnalysesField
     ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
 
     # Explicitly set the specification to the sample
@@ -147,14 +150,16 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
-    renameAfterCreation(ar)
-    # AT only
+    # unmark creation flag
     ar.unmarkCreationFlag()
-    # unmark the sample as temporary
-    api.unmark_temporary(ar)
-    # explicit reindexing after sample finalization
-    reindex(ar)
-    # notify object initialization (also creates a snapshot)
+
+    # generate a new unique ID
+    new_id = generateUniqueId(ar)
+
+    # manually rename the sample (this will also reindex the sample  analyses)
+    client.manage_renameObject(ar.id, new_id)
+
+    # notify object initialization (snapshot creation)
     event.notify(ObjectInitializedEvent(ar))
 
     # If rejection reasons have been set, reject the sample automatically
