@@ -26,6 +26,7 @@ from Acquisition import aq_parent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
+from bika.lims.api import get_path
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
@@ -34,34 +35,40 @@ from bika.lims.interfaces import IContact
 from bika.lims.interfaces import IDeactivable
 from plone import api
 from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import CONTACT_CATALOG
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
         "CCContact",
         schemata="Publication preference",
-        vocabulary="getContacts",
         multiValued=1,
         allowed_types=("Contact",),
         widget=ReferenceWidget(
-            # No need of a query, values are populated from a vocabulary
-            label=_("Contacts to CC"),
-            showOn=True,
+            label=_(
+                "label_contact_cccontact",
+                default="Contacts to CC"),
+            description=_(
+                "description_contact_cccontact",
+                "Contacts in CC for new samples"),
+            catalog=CONTACT_CATALOG,
+            query="get_widget_cccontact_query",
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+            ],
         )),
 ))
 
 
-schema['JobTitle'].schemata = 'default'
-schema['Department'].schemata = 'default'
-# Don't make title required - it will be computed from the Person's Fullname
-schema['title'].required = 0
-schema['title'].widget.visible = False
+schema["JobTitle"].schemata = "default"
+schema["Department"].schemata = "default"
+# Don"t make title required - it will be computed from the Person"s Fullname
+schema["title"].required = 0
+schema["title"].widget.visible = False
 
 
 class Contact(Person):
@@ -70,9 +77,22 @@ class Contact(Person):
     implements(IContact, IDeactivable)
 
     schema = schema
-    displayContentsTab = False
     security = ClassSecurityInfo()
     _at_rename_after_creation = True
+
+    def get_widget_cccontact_query(self, **kw):
+        """Return the query for the CCContact field
+        """
+        path = get_path(self.aq_parent)
+        query = {
+            "path": {"query": path, "depth": 1},
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "getParentUID": "",
+            "sort_order": "ascending",
+        }
+        logger.info("get_widget_contact_query: %r" % query)
+        return query
 
     @classmethod
     def getContactByUsername(cls, username):
@@ -176,17 +196,6 @@ class Contact(Person):
         if user is None:
             return False
         return True
-
-    def getContacts(self, dl=True):
-        pairs = []
-        objects = []
-        for contact in self.aq_parent.objectValues('Contact'):
-            if is_active(contact) and contact.UID() != self.UID():
-                pairs.append((contact.UID(), contact.Title()))
-                if not dl:
-                    objects.append(contact)
-        pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-        return dl and DisplayList(pairs) or objects
 
     def getParentUID(self):
         return self.aq_parent.UID()
