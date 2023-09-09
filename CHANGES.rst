@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2376 Further performance improvements for sample creation
+- #2382 Fix missing fields in client edit mode and listing
+- #2378 Reactivate auditlog catalog mappings
+- #2377 Fix imports for moved idserver module
 - #2372 Generate unique ID for DX types on object creation
 - #2370 Override default DX add form to obtain renamed IDs correctly
 - #2368 Drop usage of portal_catalog tool
