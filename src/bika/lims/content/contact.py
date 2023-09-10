@@ -53,7 +53,7 @@ schema = Person.schema.copy() + atapi.Schema((
                 default="Contacts to CC"),
             description=_(
                 "description_contact_cccontact",
-                "Contacts in CC for new samples"),
+                default="Contacts in CC for new samples"),
             catalog=CONTACT_CATALOG,
             query="get_widget_cccontact_query",
             columns=[
@@ -88,7 +88,6 @@ class Contact(Person):
             "path": {"query": path, "depth": 1},
             "is_active": True,
             "sort_on": "sortable_title",
-            "getParentUID": "",
             "sort_order": "ascending",
         }
         logger.info("get_widget_contact_query: %r" % query)
