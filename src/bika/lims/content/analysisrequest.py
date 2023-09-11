@@ -446,6 +446,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     StringField(
         'Sampler',
         mode="rw",
@@ -503,24 +504,34 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SampleType',
+        "SampleType",
         required=1,
-        allowed_types='SampleType',
+        allowed_types="SampleType",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSampleType,
         widget=ReferenceWidget(
-            label=_("Sample Type"),
+            label=_(
+                "label_sample_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_sample_sampletype",
+                default="Select the sample type of this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Sample Type")},
+                {"name": "getPrefix", "label": _("Prefix")},
+            ],
         ),
     ),
 
