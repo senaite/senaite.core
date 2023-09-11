@@ -154,22 +154,11 @@ class InstrumentValidation(BaseFolder):
     implements(IInstrumentValidation)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def getLabContacts(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        # fallback - all Lab Contacts
-        pairs = []
-        for contact in bsc(portal_type='LabContact',
-                           is_active=True,
-                           sort_on='sortable_title'):
-            pairs.append((contact.UID, contact.Title))
-        return DisplayList(pairs)
 
     def isValidationInProgress(self):
         """Checks if the date is beteween a validation period
