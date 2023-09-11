@@ -130,6 +130,7 @@ from six.moves.urllib.parse import urljoin
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
+from senaite.core.catalog import SETUP_CATALOG
 
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
@@ -336,34 +337,31 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SubGroup',
+        "SubGroup",
         required=False,
-        allowed_types=('SubGroup',),
+        allowed_types=("SubGroup",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
         widget=ReferenceWidget(
-            label=_("Batch Sub-group"),
-            description=_("The assigned batch sub group of this request"),
-            size=20,
+            label=_(
+                "label_sample_subgroup",
+                default="Batch Sub-group"),
+            description=_(
+                "description_sample_subgroup",
+                default="The assigned batch sub group of this request"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            colModel=[
-                {'columnName': 'Title', 'width': '30',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'Description', 'width': '70',
-                 'label': _('Description'), 'align': 'left'},
-                {'columnName': 'getSortKey', 'hidden': True},
-                {'columnName': 'UID', 'hidden': True},
-            ],
-            base_query={'is_active': True},
-            sidx='SortKey',
-            sord='asc',
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            ui_item="getId",
+        )
     ),
 
     UIDReferenceField(
