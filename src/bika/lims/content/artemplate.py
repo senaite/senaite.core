@@ -251,18 +251,24 @@ schema = BikaSchema.copy() + Schema((
         multiValued=0,
         allowed_types=("AnalysisProfile",),
         widget=ReferenceWidget(
-            label=_("Analysis Profile"),
-            description=_("Add analyses from the selected profile "
-                          "to the template"),
+            label=_(
+                "label_artemplate_profile",
+                default="Analysis Profile"),
+            description=_(
+                "description_artemplate_profile",
+                default="Select the analysis profile for this template"),
             visible={
                 "edit": "visible",
                 "view": "visible",
                 "add": "visible",
                 "secondary": "invisible"
             },
-            catalog_name="senaite_catalog_setup",
-            base_query={"is_active": True},
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
