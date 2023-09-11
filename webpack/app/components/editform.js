@@ -26,6 +26,8 @@ class EditForm {
     this.on_blur = this.on_blur.bind(this);
     this.on_click = this.on_click.bind(this);
     this.on_change = this.on_change.bind(this);
+    this.on_select = this.on_select.bind(this);
+    this.on_deselect = this.on_deselect.bind(this);
     this.init_forms();
   }
 
@@ -86,6 +88,9 @@ class EditForm {
     else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
       // bind change event
       field.addEventListener("change", this.on_change);
+      // reference field
+      field.addEventListener("select", this.on_select);
+      field.addEventListener("deselect", this.on_deselect);
     }
     else if (this.is_radio(field) || this.is_checkbox(field)) {
       // bind click event
@@ -845,6 +850,24 @@ class EditForm {
    */
   on_change(event) {
     console.debug("EditForm::on_change");
+    let el = event.currentTarget;
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `select` event
+   */
+  on_select(event) {
+    console.debug("EditForm::on_select");
+    let el = event.currentTarget;
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `deselect` event
+   */
+  on_deselect(event) {
+    console.debug("EditForm::on_deselect");
     let el = event.currentTarget;
     this.modified(el);
   }
