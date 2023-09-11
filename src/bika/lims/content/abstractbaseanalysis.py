@@ -485,7 +485,7 @@ Department = UIDReferenceField(
             default="Department"),
         description=_(
             "description_analysis_department",
-            default="Select the responsible department for this analysis"),
+            default="Select the responsible department"),
         catalog=SETUP_CATALOG,
         query={
             "is_active": True,
