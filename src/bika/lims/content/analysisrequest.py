@@ -872,26 +872,30 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SampleCondition',
-        allowed_types='SampleCondition',
+        "SampleCondition",
+        allowed_types=("SampleCondition",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSampleCondition,
         widget=ReferenceWidget(
-            label=_("Sample condition"),
-            description=_("The condition of the sample"),
-            size=20,
+            label=_(
+                "label_sample_samplecondition",
+                default="Sample Condition"),
+            description=_(
+                "description_sample_samplecondition",
+                default="The condition of the sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     StringField(
