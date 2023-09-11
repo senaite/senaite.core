@@ -23,7 +23,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -35,6 +34,7 @@ from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
 from zope.i18n import translate
 from zope.interface import implements
@@ -42,35 +42,47 @@ from zope.interface import implements
 schema = Schema((
 
     UIDReferenceField(
-        'SampleType',
-        allowed_types=('SampleType',),
+        "SampleType",
+        allowed_types=("SampleType",),
         required=1,
         widget=ReferenceWidget(
-            label=_("Sample Type"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending"
-            ),
-        ),
+            label=_(
+                "label_analysisspec_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_analysisspec_sampletype",
+                default="Select the sample type for this specification"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Sample Type")},
+                {"name": "getPrefix", "label": _("Prefix")},
+            ],
+        )
     ),
 
     UIDReferenceField(
-        'DynamicAnalysisSpec',
-        allowed_types=('DynamicAnalysisSpec',),
+        "DynamicAnalysisSpec",
+        allowed_types=("DynamicAnalysisSpec",),
         required=0,
         widget=ReferenceWidget(
-            label=_("Dynamic Analysis Specification"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending"
-            ),
-        ),
+            label=_(
+                "label_analysisspec_dynamicspec",
+                default="Dynamic Analysis Specification"),
+            description=_(
+                "description_analysisspec_dynamicspec",
+                default="Link dynamic analysis specification"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
 )) + BikaSchema.copy() + Schema((
