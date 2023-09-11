@@ -419,20 +419,22 @@ PointOfCapture = StringField(
 # The category of the analysis service, used for filtering, collapsing and
 # reporting on analyses.
 Category = UIDReferenceField(
-    'Category',
+    "Category",
     schemata="Description",
     required=1,
-    allowed_types=('AnalysisCategory',),
-    vocabulary='getAnalysisCategories',
+    allowed_types=("AnalysisCategory",),
     widget=ReferenceWidget(
-        label=_("Analysis Category"),
-        description=_("The category the analysis service belongs to"),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query={
-            'is_active': True,
-            'sort_on': 'sortable_title',
-            'sort_order': 'ascending',
+        label=_(
+            "label_analysis_category",
+            default="Analysis Category"),
+        description=_(
+            "description_analysis_category",
+            default="The category the analysis service belongs to"),
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         },
     )
 )
@@ -892,19 +894,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         price = price and price or 0
         vat = vat and vat or 0
         return float(price) + (float(price) * float(vat)) / 100
-
-    @security.public
-    def getAnalysisCategories(self):
-        """A vocabulary listing available (and activated) categories.
-        """
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        cats = bsc(portal_type='AnalysisCategory', is_active=True)
-        items = [(o.UID, o.Title) for o in cats]
-        o = self.getCategory()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
 
     @security.public
     def getLowerDetectionLimit(self):
