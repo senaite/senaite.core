@@ -159,7 +159,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "edit",
                 "header_table": "prominent",
             },
-            ui_item="getFullname",
+            ui_item="Title",
             catalog=CONTACT_CATALOG,
             # TODO: Make custom query to handle parent client UID
             query={
@@ -169,7 +169,7 @@ schema = BikaSchema.copy() + Schema((
                 "sort_order": "ascending"
             },
             columns=[
-                {"name": "getFullname", "label": _("Name")},
+                {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
         ),
@@ -194,7 +194,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "edit",
                 "header_table": "prominent",
             },
-            ui_item="getFullname",
+            ui_item="Title",
             catalog=CONTACT_CATALOG,
             # TODO: Make custom query to handle parent client UID
             query={
@@ -204,7 +204,7 @@ schema = BikaSchema.copy() + Schema((
                 "sort_order": "ascending"
             },
             columns=[
-                {"name": "getFullname", "label": _("Name")},
+                {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
         ),
