@@ -132,7 +132,6 @@ schema = BikaSchema.copy() + Schema((
                 default="The person who performed the task"),
             catalog=CONTACT_CATALOG,
             query={
-                "portal_type": "LabContact",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
