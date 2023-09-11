@@ -26,7 +26,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DurationWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -47,6 +46,8 @@ from Products.Archetypes.public import registerType
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 SMALL_DEFAULT_STICKER = "small_default"
@@ -130,12 +131,20 @@ schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
         "SampleMatrix",
-        required=0,
         allowed_types=("SampleMatrix",),
-        vocabulary="SampleMatricesVocabulary",
         widget=ReferenceWidget(
-            label=_("Sample Matrix"),
-            showOn=True,
+            label=_(
+                "label_sampletype_samplematrix",
+                default="Sample Matrix"),
+            description=_(
+                "description_sampletype_samplematrix",
+                default="Select the sample matrix for this sample type"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
@@ -278,10 +287,6 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         """Returns a list of Sample Point titles
         """
         return map(api.get_title, self.getSamplePoints())
-
-    def SampleMatricesVocabulary(self):
-        from bika.lims.content.samplematrix import SampleMatrices
-        return SampleMatrices(self, allow_blank=True)
 
     def ContainerTypesVocabulary(self):
         from bika.lims.content.containertype import ContainerTypes
