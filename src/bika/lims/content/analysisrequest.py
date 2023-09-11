@@ -1061,6 +1061,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     ComputedField(
         'DatePublished',
         mode="r",
@@ -1141,67 +1142,79 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     ComputedField(
         'ReceivedBy',
         expression='here.getReceivedBy()',
         default='',
         widget=ComputedWidget(visible=False,),
     ),
+
     ComputedField(
         'CreatorFullName',
         expression="here._getCreatorFullName()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'CreatorEmail',
         expression="here._getCreatorEmail()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplerEmail',
         expression="here._getSamplerEmail()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'BatchID',
         expression="here.getBatch().getId() if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'BatchURL',
         expression="here.getBatch().absolute_url_path() " \
                    "if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactUsername',
         expression="here.getContact().getUsername() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactFullName',
         expression="here.getContact().getFullname() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactEmail',
         expression="here.getContact().getEmailAddress() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SampleTypeUID',
         expression="here.getSampleType().UID() " \
                    "if here.getSampleType() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplePointUID',
         expression="here.getSamplePoint().UID() " \
@@ -1214,33 +1227,51 @@ schema = BikaSchema.copy() + Schema((
                    "if here.getStorageLocation() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateUID',
         expression="here.getTemplate().UID() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateURL',
         expression="here.getTemplate().absolute_url_path() " \
                    "if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateTitle',
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
 
+    # readonly field
     UIDReferenceField(
-        'ParentAnalysisRequest',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestParentAnalysisRequest',
+        "ParentAnalysisRequest",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestParentAnalysisRequest",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_parent_sample",
+                default="Parent sample"),
+            description=_(
+                "description_sample_parent_sample",
+                default="Reference to parent sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
-        ),
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     # The Primary Sample the current sample was detached from
@@ -1251,22 +1282,50 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_detached_from",
+                default="Detached from sample"),
+            description=_(
+                "description_sample_detached_from",
+                default="Reference to detached sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         )
     ),
 
     # The Analysis Request the current Analysis Request comes from because of
     # an invalidation of the former
     UIDReferenceField(
-        'Invalidated',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestRetracted',
+        "Invalidated",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestRetracted",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_retracted",
+                default="Retest from sample"),
+            description=_(
+                "description_sample_retracted",
+                default="Reference to retracted sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
-        ),
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     # For comments or results interpretation
