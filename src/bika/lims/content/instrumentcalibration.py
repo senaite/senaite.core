@@ -20,37 +20,27 @@
 
 import math
 
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import DisplayList
-from Products.Archetypes.atapi import registerType
-from Products.CMFCore.utils import getToolByName
-
-from zope.interface import implements
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
-
-# Widgets
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
-
-# bika.lims imports
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCalibration
-
+from DateTime import DateTime
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
