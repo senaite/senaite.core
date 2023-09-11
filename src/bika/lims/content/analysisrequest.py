@@ -764,27 +764,32 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # Remove in favor of senaite.storage?
     UIDReferenceField(
-        'StorageLocation',
-        allowed_types='StorageLocation',
+        "StorageLocation",
+        allowed_types=("StorageLocation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditStorageLocation,
         widget=ReferenceWidget(
-            label=_("Storage Location"),
-            description=_("Location where sample is kept"),
-            size=20,
+            label=_(
+                "label_sample_storagelocation",
+                default="Storage Location"),
+            description=_(
+                "description_sample_storagelocation",
+                default="Location where the sample is kept"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     StringField(
