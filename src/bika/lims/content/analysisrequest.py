@@ -506,7 +506,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "SampleType",
         required=1,
-        allowed_types="SampleType",
+        allowed_types=("SampleType",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSampleType,
@@ -538,7 +538,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "Container",
         required=0,
-        allowed_types="SampleContainer",
+        allowed_types=("SampleContainer",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContainer,
@@ -569,7 +569,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "Preservation",
         required=0,
-        allowed_types="Preservation",
+        allowed_types=("Preservation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPreservation,
