@@ -123,7 +123,7 @@ class SelectedValues extends React.Component {
         </ul>
         {/* submitted in form */}
         <textarea
-          className="d-none"
+          className="d-none queryselectwidget-value"
           onChange={this.on_change}
           name={this.props.name}
           value={this.props.values.join("\n")}
