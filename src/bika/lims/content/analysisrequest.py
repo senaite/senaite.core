@@ -140,71 +140,72 @@ FINAL_STATES = ["published", "retracted", "rejected", "cancelled"]
 schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
-        'Contact',
+        "Contact",
         required=1,
-        allowed_types=('Contact',),
+        allowed_types=("Contact",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
         widget=ReferenceWidget(
-            label=_("Contact"),
+            label=_(
+                "label_sample_contact",
+                default="Contact"),
+            description=_(
+                "description_sample_contact",
+                default="Select the primary contact for this sample"),
             render_own_label=True,
-            size=20,
-            description=_("The primary contact of this sample, "
-                          "who will receive notifications and publications "
-                          "via email"),
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CONTACT_CATALOG,
-            base_query={"is_active": True,
-                        "sort_limit": 50,
-                        "sort_on": "sortable_title",
-                        "getParentUID": "",
-                        "sort_order": "ascending"},
-            showOn=True,
-            popup_width='400px',
-            colModel=[
-                {'columnName': 'getFullname', 'width': '50',
-                 'label': _('Name')},
-                {'columnName': 'getEmailAddress', 'width': '50',
-                 'label': _('Email Address')},
+            ui_item="getFullname",
+            catalog=CONTACT_CATALOG,
+            # TODO: Make custom query to handle parent client UID
+            query={
+                "getParentUID": "",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
             ],
-            ui_item='getFullname',
         ),
     ),
 
     UIDReferenceField(
-        'CCContact',
+        "CCContact",
         multiValued=1,
-        allowed_types=('Contact',),
+        allowed_types=("Contact",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
         widget=ReferenceWidget(
-            label=_("CC Contacts"),
-            description=_("The contacts used in CC for email notifications"),
+            label=_(
+                "label_sample_cccontact",
+                default="CC Contact"),
+            description=_(
+                "description_sample_cccontact",
+                default="The contacts used in CC for email notifications"),
             render_own_label=True,
-            size=20,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CONTACT_CATALOG,
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "getParentUID": "",
-                        "sort_order": "ascending"},
-            showOn=True,
-            popup_width='400px',
-            colModel=[
-                {'columnName': 'getFullname', 'width': '50',
-                 'label': _('Name')},
-                {'columnName': 'getEmailAddress', 'width': '50',
-                 'label': _('Email Address')},
+            ui_item="getFullname",
+            catalog=CONTACT_CATALOG,
+            # TODO: Make custom query to handle parent client UID
+            query={
+                "getParentUID": "",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
             ],
-            ui_item='getFullname',
         ),
     ),
 
@@ -233,30 +234,29 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=FieldEditClient,
         widget=ReferenceWidget(
-            label=_("Client"),
-            description=_("The assigned client of this request"),
-            size=20,
+            label=_(
+                "label_sample_client",
+                default="Client"),
+            description=_(
+                "description_sample_client",
+                default="Select the client for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CLIENT_CATALOG,
-            search_index="client_searchable_text",
-            base_query={"is_active": True,
-                        "sort_limit": 30,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            colModel=[
-                {"columnName": "getName", "width": "70", "label": _(
-                    "Client Name"), "align": "left"},
-                {"columnName": "getClientID", "width": "30", "label": _(
-                    "Client ID"), "align": "left"},
-                # UID is required in colModel
-                {"columnName": "UID", "hidden": True},
-            ],
             ui_item="getName",
-            showOn=True,
+            catalog=CLIENT_CATALOG,
+            search_index="client_searchable_text",
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getName", "label": _("Name")},
+                {"name": "getClientID", "label": _("Client ID")},
+            ],
         ),
     ),
 
