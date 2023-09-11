@@ -913,6 +913,7 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
+
     StringField(
         'EnvironmentalConditions',
         mode="rw",
@@ -1018,16 +1019,31 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # readonly field
     UIDReferenceField(
-        'Invoice',
-        allowed_types=('Invoice',),
+        "Invoice",
+        allowed_types=("Invoice",),
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_invoice",
+                default="Invoice"),
+            description=_(
+                "description_sample_invoice",
+                default="Generated invoice for this sample"),
+            render_own_label=True,
+            readonly=True,
             visible={
-                'edit': 'invisible',
-                'view': 'visible',
+                "add": "invisible",
+                "view": "visible",
+            },
+            catalog_name=SENAITE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
             },
         )
     ),
