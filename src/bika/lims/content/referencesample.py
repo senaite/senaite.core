@@ -39,7 +39,6 @@ from Products.Archetypes.Field import DateTimeField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import ComputedWidget
 from Products.Archetypes.Widget import StringWidget
@@ -47,7 +46,6 @@ from Products.Archetypes.Widget import TextAreaWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -86,16 +84,28 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
+
     UIDReferenceField(
         "Manufacturer",
         schemata="Description",
         allowed_types=("Manufacturer",),
         vocabulary="getManufacturers",
         widget=ReferenceWidget(
-            label=_("Manufacturer"),
-            showOn=True,
+            label=_(
+                "label_referencesample_manufacturer",
+                default="Manufacturer"),
+            description=_(
+                "description_referencesample_manufacturer",
+                default="Select the manufacturer for this sample"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
+
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
@@ -181,13 +191,13 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].schemata = 'Description'
 
+
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample, IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -195,17 +205,6 @@ class ReferenceSample(BaseFolder):
     security.declarePublic('current_date')
     def current_date(self):
         return DateTime()
-
-    def getManufacturers(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Manufacturer',
-                                   is_active = True)]
-        o = self.getReferenceDefinition()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
 
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
