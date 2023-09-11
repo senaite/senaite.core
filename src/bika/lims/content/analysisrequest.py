@@ -271,71 +271,68 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=FieldEditClient,
         widget=ReferenceWidget(
-            label=_("Primary Sample"),
-            description=_("Select a sample to create a secondary Sample"),
-            size=20,
+            label=_(
+                "label_sample_primary",
+                default="Primary Sample"),
+            description=_(
+                "description_sample_primary",
+                default="Select a sample to create a secondary Sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
             catalog_name=SAMPLE_CATALOG,
-            search_fields=('listing_searchable_text',),
-            base_query={'is_active': True,
-                        'is_received': True,
-                        'sort_limit': 30,
-                        'sort_on': 'getId',
-                        'sort_order': 'descending'},
-            colModel=[
-                {'columnName': 'getId', 'width': '20',
-                 'label': _('Sample ID'), 'align': 'left'},
-                {'columnName': 'getClientSampleID', 'width': '20',
-                 'label': _('Client SID'), 'align': 'left'},
-                {'columnName': 'getSampleTypeTitle', 'width': '30',
-                 'label': _('Sample Type'), 'align': 'left'},
-                {'columnName': 'getClientTitle', 'width': '30',
-                 'label': _('Client'), 'align': 'left'},
-                {'columnName': 'UID', 'hidden': True},
+            search_index="listing_searchable_text",
+            query={
+                "is_active": True,
+                "is_received": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getId", "label": _("Sample ID")},
+                {"name": "getClientSampleID", "label": _("Client SID")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
+                {"name": "getClientTitle", "label": _("Client")},
             ],
-            ui_item='getId',
+            ui_item="getId",
             showOn=True,
         )
     ),
 
     UIDReferenceField(
-        'Batch',
-        allowed_types=('Batch',),
+        "Batch",
+        allowed_types=("Batch",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
         widget=ReferenceWidget(
-            label=_("Batch"),
-            size=20,
-            description=_("The assigned batch of this request"),
+            label=_(
+                "label_sample_batch",
+                default="Batch"),
+            description=_(
+                "description_sample_batch",
+                default="Assign sample to a batch"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
             catalog_name=SENAITE_CATALOG,
-            search_fields=('listing_searchable_text',),
-            base_query={"is_active": True,
-                        "sort_limit": 50,
-                        "sort_on": "sortable_title",
-                        "sort_order": "descending"},
-            colModel=[
-                {'columnName': 'getId', 'width': '20',
-                 'label': _('Batch ID'), 'align': 'left'},
-                {'columnName': 'Title', 'width': '20',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'getClientBatchID', 'width': '20',
-                 'label': _('CBID'), 'align': 'left'},
-                {'columnName': 'getClientTitle', 'width': '30',
-                 'label': _('Client'), 'align': 'left'},
+            search_index="listing_searchable_text",
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getId", "label": _("Batch ID")},
+                {"name": "Title", "label": _("Title")},
+                {"name": "getClientBatchID", "label": _("CBID")},
+                {"name": "getClientTitle", "label": _("Client")},
             ],
-            force_all=False,
             ui_item="getId",
-            showOn=True,
-        ),
+        )
     ),
 
     UIDReferenceField(
