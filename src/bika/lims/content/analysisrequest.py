@@ -738,26 +738,30 @@ schema = BikaSchema.copy() + Schema((
 
     # Sample field
     UIDReferenceField(
-        'SamplePoint',
-        allowed_types='SamplePoint',
+        "SamplePoint",
+        allowed_types=("SamplePoint",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSamplePoint,
         widget=ReferenceWidget(
-            label=_("Sample Point"),
-            description=_("Location where sample was taken"),
-            size=20,
+            label=_(
+                "label_sample_samplepoint",
+                default="Sample Point"),
+            description=_(
+                "description_sample_samplepoint",
+                default="Location where the sample was taken"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     UIDReferenceField(
