@@ -662,7 +662,7 @@ schema = BikaSchema.copy() + Schema((
         "Specification",
         required=0,
         primary_bound=True,  # field changes propagate to partitions
-        allowed_types="AnalysisSpec",
+        allowed_types=("AnalysisSpec",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSpecification,
@@ -704,29 +704,36 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'PublicationSpecification',
+        "PublicationSpecification",
         required=0,
-        allowed_types='AnalysisSpec',
+        allowed_types=("AnalysisSpec",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPublicationSpecifications,
         widget=ReferenceWidget(
-            label=_("Publication Specification"),
+            label=_(
+                "label_sample_publicationspecification",
+                default="Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing a Sample."
-            ),
-            size=20,
+                "description_sample_publicationspecification",
+                default="Select an analysis specification that should be used "
+                        "in the sample publication report"),
             render_own_label=True,
             visible={
                 "add": "invisible",
-                'secondary': 'disabled',
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Specification Name")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
+            ],
+        )
     ),
 
     # Sample field
