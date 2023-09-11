@@ -536,9 +536,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Container',
+        "Container",
         required=0,
-        allowed_types='SampleContainer',
+        allowed_types="SampleContainer",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContainer,
@@ -567,25 +567,30 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Preservation',
+        "Preservation",
         required=0,
-        allowed_types='Preservation',
+        allowed_types="Preservation",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
-            label=_("Preservation"),
-            size=20,
+            label=_(
+                "label_sample_preservation",
+                default="Preservation"),
+            description=_(
+                "description_sample_preservation",
+                default="Select the needed preservation for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     DateTimeField(
