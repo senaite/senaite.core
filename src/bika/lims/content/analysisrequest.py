@@ -844,27 +844,31 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SamplingDeviation',
-        allowed_types='SamplingDeviation',
+        "SamplingDeviation",
+        allowed_types=("SamplingDeviation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSamplingDeviation,
         widget=ReferenceWidget(
-            label=_("Sampling Deviation"),
-            description=_("Deviation between the sample and how it "
-                          "was sampled"),
-            size=20,
+            label=_(
+                "label_sample_samplingdeviation",
+                default="Sampling Deviation"),
+            description=_(
+                "description_sample_samplingdeviation",
+                default="Deviation between the sample and how it "
+                        "was sampled"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     UIDReferenceField(
