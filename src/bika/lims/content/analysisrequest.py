@@ -610,6 +610,7 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
+
     StringField(
         "Preserver",
         required=0,
@@ -628,6 +629,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     # TODO Sample cleanup - This comes from partition
     DurationField(
         "RetentionPeriod",
@@ -639,6 +641,7 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     RecordsField(
         'RejectionReasons',
         mode="rw",
@@ -656,41 +659,35 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Specification',
+        "Specification",
         required=0,
         primary_bound=True,  # field changes propagate to partitions
-        allowed_types='AnalysisSpec',
+        allowed_types="AnalysisSpec",
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSpecification,
         widget=ReferenceWidget(
-            label=_("Analysis Specification"),
-            description=_("Choose default Sample specification values"),
-            size=20,
+            label=_(
+                "label_sample_specification",
+                default="Analysis Specification"),
+            description=_(
+                "description_sample_specification",
+                default="Select an analysis specification for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            search_fields=('listing_searchable_text',),
-            colModel=[
-                {'columnName': 'Title',
-                 'width': '30',
-                 'label': _('Title'),
-                 'align': 'left'},
-                {'columnName': 'getSampleTypeTitle',
-                 'width': '70',
-                 'label': _('SampleType'),
-                 'align': 'left'},
-                # UID is required in colModel
-                {'columnName': 'UID', 'hidden': True},
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Specification Name")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
             ],
-            ui_item="Title",
-            showOn=True,
-        ),
+        )
     ),
 
     # Field to keep the result ranges from the specification initially set
