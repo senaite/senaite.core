@@ -121,19 +121,26 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Worker',
-        vocabulary='getLabContacts',
-        allowed_types=('LabContact',),
+        "Worker",
+        allowed_types=("LabContact",),
         widget=ReferenceWidget(
-            label=_("Performed by"),
-            description=_("The person at the supplier who performed the task"),
-            size=30,
-            base_query={'is_active': True},
-            showOn=True,
-            colModel=[
-                {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
-                {'columnName': 'Title', 'width': '80', 'label': _('Name')}
+            label=_(
+                "label_instrumentcalibration_worker",
+                default="Performed by"),
+            description=_(
+                "description_instrumentcalibration_worker",
+                default="The person at the supplier who performed the task"),
+            catalog=CONTACT_CATALOG,
+            query={
+                "portal_type": "LabContact",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+                {"name": "getJobTitle", "label": _("Job Title")},
             ],
         ),
     ),
@@ -166,22 +173,11 @@ class InstrumentCalibration(BaseFolder):
     implements(IInstrumentCalibration)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def getLabContacts(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        # fallback - all Lab Contacts
-        pairs = []
-        for contact in bsc(portal_type='LabContact',
-                           is_active=True,
-                           sort_on='sortable_title'):
-            pairs.append((contact.UID, contact.Title))
-        return DisplayList(pairs)
 
     def isCalibrationInProgress(self):
         """Checks if the current date is between a calibration period.
