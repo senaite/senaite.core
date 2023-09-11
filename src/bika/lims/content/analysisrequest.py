@@ -392,27 +392,36 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Profiles',
+        "Profiles",
         multiValued=1,
-        allowed_types=('AnalysisProfile',),
+        allowed_types=("AnalysisProfile",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditProfiles,
         widget=ReferenceWidget(
-            label=_("Analysis Profiles"),
-            description=_("Analysis profiles apply a certain set of analyses"),
-            size=20,
+            label=_(
+                "label_sample_profiles",
+                default="Analysis Profiles"),
+            description=_(
+                "description_sample_profiles",
+                default="Select an analysis profile for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Profile Name")},
+                {"name": "getProfileKey", "label": _("Profile Key")},
+            ],
+        )
     ),
+
     # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
     # one can create an AR (with code) with DateSampled set when sampling_wf at
     # the same time sampling workflow is active. This might cause
