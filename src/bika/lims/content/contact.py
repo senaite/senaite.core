@@ -85,6 +85,7 @@ class Contact(Person):
         """
         path = get_path(self.aq_parent)
         query = {
+            "portal_type": "Contact",
             "path": {"query": path, "depth": 1},
             "is_active": True,
             "sort_on": "sortable_title",
