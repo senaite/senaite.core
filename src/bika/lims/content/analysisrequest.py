@@ -91,6 +91,7 @@ from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.permissions import FieldEditBatch
 from senaite.core.permissions import FieldEditClient
@@ -130,7 +131,6 @@ from six.moves.urllib.parse import urljoin
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-from senaite.core.catalog import SETUP_CATALOG
 
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
@@ -365,28 +365,29 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Template',
-        allowed_types=('ARTemplate',),
+        "Template",
+        allowed_types=("ARTemplate",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
-            label=_("Sample Template"),
+            label=_(
+                "label_sample_template",
+                default="Sample Template"),
             description=_(
-                "The predefined values of the Sample template are set in the "
-                "request"
-            ),
-            size=20,
+                "description_sample_template",
+                default="Select an analysis template for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
