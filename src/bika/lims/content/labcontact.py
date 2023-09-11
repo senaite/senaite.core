@@ -34,7 +34,7 @@ from Products.Archetypes.Field import ImageField
 from Products.Archetypes.Field import ImageWidget
 from Products.Archetypes.public import registerType
 from Products.CMFPlone.utils import safe_unicode
-from senaite.core import logger
+from Products.Archetypes.public import SelectionWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
@@ -71,22 +71,24 @@ schema = Person.schema.copy() + atapi.Schema((
         ),
     ),
 
+    # NOTE: This field is dynamically modified by
+    #       `senaite.core.browser.form.adapters.labcontact.EditForm`
+    #
+    #       Please leave it as a `SelectionWidget` to allow selection only from
+    #       the dependent selected departments field!
     UIDReferenceField(
         "DefaultDepartment",
         allowed_types=("Department",),
-        widget=ReferenceWidget(
+        vocabulary="default_department_vocabulary",
+        accessor="getRawDefaultDepartment",
+        widget=SelectionWidget(
+            format="select",
             label=_(
                 "label_labcontact_default_department",
                 default="Default Department"),
             description=_(
                 "description_labcontact_default_department",
                 default="Assigned default department"),
-            catalog_name=SETUP_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending"
-            },
         ),
     ),
 ))
@@ -133,6 +135,29 @@ class LabContact(Contact):
         :returns: Department object
         """
         return self.getField("DefaultDepartment").get(self)
+
+    @security.public
+    def getRawDefaultDepartment(self):
+        """Returns the UID of the assigned default department
+
+        NOTE: This is the default accessor of the `DefaultDepartment` schema
+        field and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Default Department UID
+        """
+        field = self.getField("DefaultDepartment")
+        return field.getRaw(self)
+
+    def default_department_vocabulary(self):
+        """Returns only selected departments
+        """
+        # Getting the assigned departments
+        deps = self.getDepartments()
+        items = []
+        for d in deps:
+            items.append((api.get_uid(d), api.get_title(d)))
+        return api.to_display_list(items, sort_by="value", allow_empty=True)
 
     def hasUser(self):
         """Check if contact has user
