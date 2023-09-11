@@ -750,6 +750,7 @@ class QuerySelectWidgetController extends React.Component {
             name={this.state.name}
             on_deselect={this.deselect}
             set_values={this.set_values}
+            readonly={this.state.readonly}
           />
           {this.show_search_field() &&
           <SearchField
