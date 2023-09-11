@@ -122,14 +122,14 @@ schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
         "Worker",
-        allowed_types=("LabContact",),
+        allowed_types=("LabContact", "SupplierContact"),
         widget=ReferenceWidget(
             label=_(
                 "label_instrumentcalibration_worker",
                 default="Performed by"),
             description=_(
                 "description_instrumentcalibration_worker",
-                default="The person at the supplier who performed the task"),
+                default="The person who performed the task"),
             catalog=CONTACT_CATALOG,
             query={
                 "portal_type": "LabContact",
