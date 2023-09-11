@@ -3,6 +3,8 @@
 import json
 
 import Missing
+from Acquisition import aq_base
+from Acquisition import aq_inner
 from bika.lims import api
 from senaite.core.interfaces import IReferenceWidgetDataProvider
 from zope.interface import implementer
@@ -34,12 +36,12 @@ class ReferenceWidgetDataProvider(object):
     def lookup(self, brain_or_object, name, default=None):
         """Lookup a named attribute on the brain/object
         """
-        value = getattr(brain_or_object, name, _marker)
+        value = getattr(aq_base(aq_inner(brain_or_object)), name, _marker)
 
         # wake up the object
         if value is _marker:
-            brain_or_object = api.get_object(brain_or_object)
-            value = getattr(brain_or_object, name, _marker)
+            obj = api.get_object(brain_or_object)
+            value = getattr(aq_base(aq_inner(obj)), name, _marker)
 
         if value in MISSING_VALUES:
             return default

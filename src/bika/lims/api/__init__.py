@@ -1062,7 +1062,8 @@ def get_review_status(brain_or_object):
     :returns: Value of the review_status variable
     :rtype: String
     """
-    if is_brain(brain_or_object):
+    if is_brain(brain_or_object) \
+       and base_hasattr(brain_or_object, "review_state"):
         return brain_or_object.review_state
     return get_workflow_status_of(brain_or_object, state_var="review_state")
 
