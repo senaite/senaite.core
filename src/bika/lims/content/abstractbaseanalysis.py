@@ -475,20 +475,27 @@ VAT = FixedPointField(
 # The analysis service's Department.  This is used to filter analyses,
 # and for indicating the responsibile lab manager in reports.
 Department = UIDReferenceField(
-    'Department',
+    "Department",
     schemata="Description",
     required=0,
-    allowed_types=('Department',),
+    allowed_types=("Department",),
     widget=ReferenceWidget(
-        label=_("Department"),
-        description=_("The laboratory department"),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query=dict(
-            is_active=True,
-            sort_on="sortable_title",
-            sort_order="ascending",
-        ),
+        label=_(
+            "label_analysis_department",
+            default="Department"),
+        description=_(
+            "description_analysis_department",
+            default="Select the responsible department for this analysis"),
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending"
+        },
+        columns=[
+            {"name": "Title", "label": _("Department Name")},
+            {"name": "getDepartmentID", "label": _("Department ID")},
+        ],
     )
 )
 
