@@ -88,7 +88,8 @@ schema = Person.schema.copy() + atapi.Schema((
                 default="Default Department"),
             description=_(
                 "description_labcontact_default_department",
-                default="Assigned default department"),
+                default="Select a default department for this contact "
+                        "from one of the selected departments."),
         ),
     ),
 ))
