@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <configure zcml:condition="installed senaite.app.listing">
+
+    <!-- Custom listing adapter for sample transition "receive" -->
+    <adapter
+        for="senaite.app.listing.interfaces.IAjaxListingView
+             bika.lims.interfaces.IAnalysisRequest
+             senaite.core.interfaces.ISenaiteCore"
+        factory=".workflow.SampleReceiveWorkflowTransition"
+        name="receive"
+        />
+
+  </configure>
+
+</configure>
