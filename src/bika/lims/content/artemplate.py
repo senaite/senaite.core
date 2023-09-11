@@ -24,7 +24,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -37,33 +36,41 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
+from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
+
     UIDReferenceField(
         "SamplePoint",
         allowed_types=("SamplePoint",),
-        accessor="getSamplePoint",
-        edit_accessor="getSamplePoint",
-        mutator="setSamplePoint",
         widget=ReferenceWidget(
-            label=_("Sample Point"),
-            description=_("Location where sample is collected"),
+            label=_(
+                "label_artemplate_samplepoint",
+                default="Sample Point"),
+            description=_(
+                "description_artemplate_samplepoint",
+                default="Select the sample point for this template"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
             visible={
                 "edit": "visible", "view": "visible", "add": "visible",
                 "secondary": "invisible",
             },
-            catalog_name="senaite_catalog_setup",
-            base_query={"is_active": True},
-            showOn=True,
         ),
     ),
+
     ComputedField(
         "SamplePointUID",
         expression="context.Schema()['SamplePoint'].get(context) and context.Schema()['SamplePoint'].get(context).UID() or ''",
@@ -71,24 +78,30 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     UIDReferenceField(
         "SampleType",
         allowed_types=("SampleType",),
-        accessor="getSampleType",
-        edit_accessor="getSampleType",
-        mutator="setSampleType",
         widget=ReferenceWidget(
-            label=_("Sample Type"),
-            description=_("Create a new sample of this type"),
+            label=_(
+                "label_artemplate_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_artemplate_sampletype",
+                default="Select the sample type for this template"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
             visible={
                 "edit": "visible", "view": "visible", "add": "visible",
-                "secondary": "invisible"
+                "secondary": "invisible",
             },
-            catalog_name="senaite_catalog_setup",
-            base_query={"is_active": True},
-            showOn=True,
         ),
     ),
+
     BooleanField(
         "Composite",
         default=False,
@@ -97,6 +110,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The sample is a mix of sub samples"),
         ),
     ),
+
     BooleanField(
         "SamplingRequired",
         default_method='getSamplingRequiredDefaultValue',
@@ -105,6 +119,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Enable sampling workflow for the created sample")
         ),
     ),
+
     TextField(
         "Remarks",
         allowable_content_types=("text/plain",),
@@ -112,6 +127,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Remarks"),
         )
     ),
+
     RecordsField(
         "Partitions",
         schemata="Sample Partitions",
@@ -249,6 +265,7 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+
     RecordsField(
         "Analyses",
         schemata="Analyses",
@@ -265,6 +282,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Select analyses to include in this template"),
         )
     ),
+
     # Custom settings for the assigned analysis services
     # https://jira.bikalabs.com/browse/LIMS-1324
     # Fields:
@@ -286,11 +304,11 @@ schema["title"]._validationLayer()
 
 
 class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
+    implements(IARTemplate, IDeactivable)
+
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
-    implements(IARTemplate, IDeactivable)
 
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
@@ -375,5 +393,6 @@ class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
         value for setting SamplingWorkflowEnabled from setup
         """
         return self.bika_setup.getSamplingWorkflowEnabled()
+
 
 registerType(ARTemplate, PROJECTNAME)
