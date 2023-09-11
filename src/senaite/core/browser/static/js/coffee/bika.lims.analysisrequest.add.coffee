@@ -330,14 +330,6 @@ class window.AnalysisRequestAdd
     return base_url.split("/ar_add")[0]
 
 
-  typeIsArray = Array.isArray || (value) ->
-    ###
-     * Returns if the given value is an array
-     * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
-    ###
-    return {}.toString.call( value ) is '[object Array]'
-
-
   apply_field_value: (arnum, record) ->
     ###
      * Applies the value for the given record, by setting values and applying
@@ -365,37 +357,53 @@ class window.AnalysisRequestAdd
 
   apply_dependent_value: (arnum, field_name, values) ->
     ###
-     * Set default field value
+     * Set values on field
     ###
+
+    # always handle values as array internally
+    if not Array.isArray values
+      values = [values]
+
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
-
-    if values.if_empty? and values.if_empty is true
-      # Set the value if the field is empty only
-      if field.val()
-        return
-      # handle reference fields
-      else if @is_reference_field(field) and @get_reference_field_value(field)
-        # reference field has a value
-        return
-
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
-    if values.uid? and values.title?
+    # (multi-) reference fields, e.g. CC Contacts of selected Contact
+    if @is_reference_field field
       manually_deselected = @deselected_uids[field_name] or []
-      # don't set if value was manually deslected
-      if values.uid in manually_deselected
-        return
-      # reference field value
-      me.set_reference_field field, values.uid
+      # filter out values that were manually deselected
+      values = values.filter (value) ->
+        return value.uid not in manually_deselected
 
-    else if values.value?
-      # default value
-      if typeof values.value == "boolean"
-        field.prop "checked", values.value
+      # get a list of uids
+      uids = values.map (value) ->
+        return value.uid
+
+      # update reference field data records
+      values.forEach (value) =>
+        @set_reference_field_records field, value
+
+      if field.data("multi_valued") is 1
+        @set_multi_reference_field field, uids
       else
-        field.val values.value
+        uid = if uids.length > 0 then uids[0] else ""
+        @set_reference_field field, uid
+
+    # other fields, e.g. default CC Emails of Client
+    else
+      values.forEach (value, index) ->
+        # do not override if the `if_empty` flag is set
+        if value.if_empty? and value.if_empty is true
+          if field.val()
+            return
+
+        # set the value
+        if value.value?
+          if typeof value.value == "boolean"
+            field.prop "checked", value.value
+          else
+            field.val value.value
 
 
   apply_dependent_filter_queries: (record, arnum) ->
@@ -475,9 +483,10 @@ class window.AnalysisRequestAdd
     $field.attr("data-records", JSON.stringify(new_records))
 
 
-  set_reference_field: (field, uid) =>
+  set_reference_field: (field, uid) ->
     ###
      * Set the UID of a reference field
+     * NOTE: This method overrides any existing value!
     ###
     return unless field.length > 0
 
@@ -485,6 +494,27 @@ class window.AnalysisRequestAdd
     console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
     textarea = field.find("textarea")
     this.native_set_value(textarea[0], uid)
+
+
+  set_multi_reference_field: (field, uids, append=true) ->
+    ###
+     * Set multiple UIDs of a reference field
+    ###
+    return unless field.length > 0
+
+    uids ?= []
+    fieldname = JSON.parse field.data("name")
+    console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
+    textarea = field.find("textarea")
+
+    if not append
+      this.native_set_value(textarea[0], uids.join("\n"))
+    else
+      existing = textarea.val().split("\n")
+      uids.forEach (uid) ->
+        if uid not in existing
+          existing = existing.concat(uid)
+      this.native_set_value(textarea[0], existing.join("\n"))
 
 
   get_reference_field_value: (field) =>
