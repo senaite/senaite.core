@@ -162,11 +162,11 @@ class ReferenceWidget(QuerySelectWidget):
         :param default: The default property value
         :returns: Base catalog query
         """
-        prop = getattr(self, "query", None)
-        if prop:
-            return prop
-
         base_query = self.get_base_query(context, field)
+
+        query = getattr(self, "query", None)
+        if isinstance(query, dict):
+            base_query.update(query)
 
         # extend portal_type filter
         allowed_types = getattr(field, "allowed_types", None)
