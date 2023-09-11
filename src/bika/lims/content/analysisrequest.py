@@ -227,9 +227,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Client',
+        "Client",
         required=1,
-        allowed_types=('Client',),
+        allowed_types=("Client",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditClient,
