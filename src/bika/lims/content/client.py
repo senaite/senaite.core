@@ -96,6 +96,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
+    # XXX: no where used -> remove?
     UIDReferenceField(
         "DefaultCategories",
         schemata="Preferences",
@@ -103,16 +104,19 @@ schema = Organisation.schema.copy() + Schema((
         multiValued=1,
         allowed_types=("AnalysisCategory",),
         widget=ReferenceWidget(
-            label=_("Default categories"),
+            visible=False,
+            label=_(
+                "label_client_defaultcategories",
+                default="Default categories"),
             description=_(
-                "Always expand the selected categories in client views"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending",
-            ),
+                "description_client_defaultcategories",
+                default="Always expand the selected categories"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
@@ -124,15 +128,18 @@ schema = Organisation.schema.copy() + Schema((
         validators=("restrictedcategoriesvalidator",),
         allowed_types=("AnalysisCategory",),
         widget=ReferenceWidget(
-            label=_("Restrict categories"),
-            description=_("Show only selected categories in client views"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending",
-            ),
+            label=_(
+                "label_client_restrictcategories",
+                default="Restrict categories"),
+            description=_(
+                "description_client_restrictcategories",
+                default="Show only selected categories"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
