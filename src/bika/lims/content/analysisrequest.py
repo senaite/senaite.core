@@ -298,7 +298,6 @@ schema = BikaSchema.copy() + Schema((
                 {"name": "getClientTitle", "label": _("Client")},
             ],
             ui_item="getId",
-            showOn=True,
         )
     ),
 
