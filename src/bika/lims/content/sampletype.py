@@ -171,17 +171,25 @@ schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
         "ContainerType",
-        required=0,
         allowed_types=("ContainerType",),
-        vocabulary="ContainerTypesVocabulary",
         widget=ReferenceWidget(
-            label=_("Default Container Type"),
+            label=_(
+                "label_sampletype_containertype",
+                default="Default Container Type"
+            ),
             description=_(
-                "The default container type. New sample partitions "
-                "are automatically assigned a container of this "
-                "type, unless it has been specified in more details "
-                "per analysis service"),
-            showOn=True,
+                "description_sampletype_containertype",
+                default="The default container type. New sample partitions "
+                        "are automatically assigned a container of this "
+                        "type, unless it has been specified in more details "
+                        "per analysis service"
+            ),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
@@ -287,10 +295,6 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         """Returns a list of Sample Point titles
         """
         return map(api.get_title, self.getSamplePoints())
-
-    def ContainerTypesVocabulary(self):
-        from bika.lims.content.containertype import ContainerTypes
-        return ContainerTypes(self, allow_blank=True)
 
     def getStickerTemplates(self, *args, **kwargs):
         """Get the sticker templates
