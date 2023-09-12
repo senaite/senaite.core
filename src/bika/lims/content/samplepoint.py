@@ -106,10 +106,6 @@ schema = BikaSchema.copy() + Schema((
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
-            columns=[
-                {"name": "Title", "label": _("Sample Type")},
-                {"name": "getPrefix", "label": _("Prefix")},
-            ],
         ),
     ),
 
