@@ -359,7 +359,7 @@ schema = BikaSchema.copy() + Schema((
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
-            ui_item="getId",
+            ui_item="Title",
         )
     ),
 
