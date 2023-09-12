@@ -41,7 +41,7 @@ class ReferenceWidgetDataProvider(object):
         # wake up the object
         if not value or value is _marker:
             obj = api.get_object(brain_or_object)
-            value = getattr(aq_base(aq_inner(obj)), name, default)
+            value = getattr(obj, name, default)
 
         if value in MISSING_VALUES:
             return default
