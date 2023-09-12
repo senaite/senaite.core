@@ -46,12 +46,16 @@ class ReferenceWidgetDataProvider(object):
             value = _marker
 
         # wake up the object
-        if value in MISSING_VALUES:
+        if value is _marker:
             logger.info("No catalog metadata found for '{name}'"
                         "in catalog {catalog}. Waking up the object!".format(
                             name=name, catalog=brain_or_object.aq_parent.id))
             obj = api.get_object(brain_or_object)
             value = getattr(obj, name, default)
+
+        # Fallback to the default value if we do not have a catalog metadata
+        if value in MISSING_VALUES:
+            value = default
 
         if callable(value):
             value = value()
