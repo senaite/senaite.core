@@ -120,6 +120,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
+    # TODO Fix Client restricted categories are not considered in Add sample
     UIDReferenceField(
         "RestrictedCategories",
         schemata="Preferences",
