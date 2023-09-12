@@ -298,7 +298,6 @@ schema = BikaSchema.copy() + Schema((
                 {"name": "getClientTitle", "label": _("Client")},
             ],
             ui_item="getId",
-            showOn=True,
         )
     ),
 
@@ -360,7 +359,7 @@ schema = BikaSchema.copy() + Schema((
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
-            ui_item="getId",
+            ui_item="Title",
         )
     ),
 

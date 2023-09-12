@@ -230,10 +230,8 @@ class Batch(ATFolder, ClientAwareMixin):
         """Return all the Analysis Requests brains linked to the Batch
         kargs are passed directly to the catalog.
         """
-        kwargs['getBatchUID'] = self.UID()
-        catalog = getToolByName(self, SAMPLE_CATALOG)
-        brains = catalog(kwargs)
-        return brains
+        kwargs["getBatchUID"] = self.UID()
+        return api.search(kwargs, SAMPLE_CATALOG)
 
     def getAnalysisRequests(self, **kwargs):
         """Return all the Analysis Requests objects linked to the Batch kargs
