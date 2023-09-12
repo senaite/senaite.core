@@ -21,7 +21,6 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainerType
 from bika.lims.content.bikaschema import BikaSchema
@@ -32,6 +31,7 @@ schema = BikaSchema.copy() + Schema((
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
+
 
 class ContainerType(BaseContent):
     implements(IContainerType, IDeactivable)
