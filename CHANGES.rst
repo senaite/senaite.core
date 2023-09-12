@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2384 Fix reference widget lookups
 - #2379 Add listing adapter for sample workflow "receive" transition
 - #2382 Fix missing fields in client edit mode and listing
 - #2378 Reactivate auditlog catalog mappings

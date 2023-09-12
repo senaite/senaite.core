@@ -64,6 +64,7 @@ class SelectedValues extends React.Component {
   build_selected_items() {
     let items = [];
     let selected_values = this.get_selected_values();
+    let readonly = this.props.readonly;
 
     for (let value of selected_values) {
       let context = this.props.records[value] || {};
@@ -73,13 +74,14 @@ class SelectedValues extends React.Component {
           <div className="d-flex flex-nowrap p-1 mb-1 mr-1 bg-light border rounded field-validation">
             <span className={"state-" + review_state}
                   dangerouslySetInnerHTML={{__html: this.render_display_template(value)}}></span>
+            {!readonly &&
             <button value={value}
                     data-toggle="confirmation"
                     data-title={_t("Unlink reference?")}
                     className="btn btn-sm p-0 ml-2"
                     onClick={this.on_deselect}>
               <i className="fas fa-times-circle"></i>
-            </button>
+            </button>}
           </div>
 
         </li>
@@ -123,7 +125,7 @@ class SelectedValues extends React.Component {
         </ul>
         {/* submitted in form */}
         <textarea
-          className="d-none"
+          className="d-none queryselectwidget-value"
           onChange={this.on_change}
           name={this.props.name}
           value={this.props.values.join("\n")}

@@ -18,9 +18,6 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-"""ReferenceSample represents a reference sample used for quality control testing
-"""
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -28,13 +25,10 @@ from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceSample
-from bika.lims.utils import t
-from bika.lims.utils import to_unicode as _u
 from DateTime import DateTime
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.BaseFolder import BaseFolder
@@ -45,13 +39,13 @@ from Products.Archetypes.Field import DateTimeField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import ComputedWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.Archetypes.Widget import TextAreaWidget
 from Products.CMFCore.utils import getToolByName
-from senaite.core.p3compat import cmp
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -59,10 +53,19 @@ schema = BikaSchema.copy() + Schema((
         "ReferenceDefinition",
         schemata="Description",
         allowed_types=("ReferenceDefinition",),
-        vocabulary="getReferenceDefinitions",
         widget=ReferenceWidget(
-            label=_("Reference Definition"),
-            showOn=True,
+            label=_(
+                "label_referencesample_referencedefinition",
+                default="Reference Definition"),
+            description=_(
+                "description_referencesample_referencedefinition",
+                default="Select the reference definition for this sample"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
     BooleanField('Blank',
@@ -81,16 +84,28 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
+
     UIDReferenceField(
         "Manufacturer",
         schemata="Description",
         allowed_types=("Manufacturer",),
         vocabulary="getManufacturers",
         widget=ReferenceWidget(
-            label=_("Manufacturer"),
-            showOn=True,
+            label=_(
+                "label_referencesample_manufacturer",
+                default="Manufacturer"),
+            description=_(
+                "description_referencesample_manufacturer",
+                default="Select the manufacturer for this sample"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
+
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
@@ -176,13 +191,13 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].schemata = 'Description'
 
+
 class ReferenceSample(BaseFolder):
     implements(IReferenceSample, IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -190,45 +205,6 @@ class ReferenceSample(BaseFolder):
     security.declarePublic('current_date')
     def current_date(self):
         return DateTime()
-
-    def getReferenceDefinitions(self):
-
-        def make_title(o):
-            # the javascript uses these strings to decide if it should
-            # check the blank or hazardous checkboxes when a reference
-            # definition is selected (./js/referencesample.js)
-            if not o:
-                return ''
-            title = _u(o.Title())
-            if o.getBlank():
-                title += " %s" % t(_('(Blank)'))
-            if o.getHazardous():
-                title += " %s" % t(_('(Hazardous)'))
-
-            return title
-
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        defs = [o.getObject() for o in
-                bsc(portal_type = 'ReferenceDefinition',
-                    is_active = True)]
-        items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
-        o = self.getReferenceDefinition()
-        it = make_title(o)
-        if o and (o.UID(), it) not in items:
-            items.append((o.UID(), it))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    def getManufacturers(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Manufacturer',
-                                   is_active = True)]
-        o = self.getReferenceDefinition()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
 
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):

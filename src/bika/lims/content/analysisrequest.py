@@ -23,8 +23,6 @@ import functools
 import re
 from decimal import Decimal
 
-from six.moves.urllib.parse import urljoin
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -41,7 +39,6 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
@@ -57,6 +54,45 @@ from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
+from bika.lims.utils import getUsers
+from bika.lims.utils import tmpID
+from bika.lims.utils import user_email
+from bika.lims.utils import user_fullname
+from bika.lims.workflow import getTransitionDate
+from bika.lims.workflow import getTransitionUsers
+from DateTime import DateTime
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import FileField
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.config import UID_CATALOG
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import RichWidget
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.permissions import FieldEditBatch
 from senaite.core.permissions import FieldEditClient
 from senaite.core.permissions import FieldEditClientOrderNumber
@@ -91,43 +127,7 @@ from senaite.core.permissions import FieldEditSpecification
 from senaite.core.permissions import FieldEditStorageLocation
 from senaite.core.permissions import FieldEditTemplate
 from senaite.core.permissions import ManageInvoices
-from bika.lims.utils import getUsers
-from bika.lims.utils import tmpID
-from bika.lims.utils import user_email
-from bika.lims.utils import user_fullname
-from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import getTransitionUsers
-from DateTime import DateTime
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import FileField
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.config import UID_CATALOG
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.public import Schema
-from Products.Archetypes.Widget import IntegerWidget
-from Products.Archetypes.Widget import RichWidget
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from senaite.core.browser.fields.datetime import DateTimeField
-from senaite.core.browser.fields.records import RecordsField
-from senaite.core.catalog import ANALYSIS_CATALOG
-from senaite.core.catalog import CLIENT_CATALOG
-from senaite.core.catalog import CONTACT_CATALOG
-from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog import SENAITE_CATALOG
-from senaite.core.catalog import WORKSHEET_CATALOG
+from six.moves.urllib.parse import urljoin
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
@@ -141,71 +141,72 @@ FINAL_STATES = ["published", "retracted", "rejected", "cancelled"]
 schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
-        'Contact',
+        "Contact",
         required=1,
-        allowed_types=('Contact',),
+        allowed_types=("Contact",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
         widget=ReferenceWidget(
-            label=_("Contact"),
+            label=_(
+                "label_sample_contact",
+                default="Contact"),
+            description=_(
+                "description_sample_contact",
+                default="Select the primary contact for this sample"),
             render_own_label=True,
-            size=20,
-            description=_("The primary contact of this sample, "
-                          "who will receive notifications and publications "
-                          "via email"),
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CONTACT_CATALOG,
-            base_query={"is_active": True,
-                        "sort_limit": 50,
-                        "sort_on": "sortable_title",
-                        "getParentUID": "",
-                        "sort_order": "ascending"},
-            showOn=True,
-            popup_width='400px',
-            colModel=[
-                {'columnName': 'getFullname', 'width': '50',
-                 'label': _('Name')},
-                {'columnName': 'getEmailAddress', 'width': '50',
-                 'label': _('Email Address')},
+            ui_item="Title",
+            catalog=CONTACT_CATALOG,
+            # TODO: Make custom query to handle parent client UID
+            query={
+                "getParentUID": "",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
             ],
-            ui_item='getFullname',
         ),
     ),
 
     UIDReferenceField(
-        'CCContact',
+        "CCContact",
         multiValued=1,
-        allowed_types=('Contact',),
+        allowed_types=("Contact",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContact,
         widget=ReferenceWidget(
-            label=_("CC Contacts"),
-            description=_("The contacts used in CC for email notifications"),
+            label=_(
+                "label_sample_cccontact",
+                default="CC Contact"),
+            description=_(
+                "description_sample_cccontact",
+                default="The contacts used in CC for email notifications"),
             render_own_label=True,
-            size=20,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CONTACT_CATALOG,
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "getParentUID": "",
-                        "sort_order": "ascending"},
-            showOn=True,
-            popup_width='400px',
-            colModel=[
-                {'columnName': 'getFullname', 'width': '50',
-                 'label': _('Name')},
-                {'columnName': 'getEmailAddress', 'width': '50',
-                 'label': _('Email Address')},
+            ui_item="Title",
+            catalog=CONTACT_CATALOG,
+            # TODO: Make custom query to handle parent client UID
+            query={
+                "getParentUID": "",
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
             ],
-            ui_item='getFullname',
         ),
     ),
 
@@ -227,37 +228,36 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Client',
+        "Client",
         required=1,
-        allowed_types=('Client',),
+        allowed_types=("Client",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditClient,
         widget=ReferenceWidget(
-            label=_("Client"),
-            description=_("The assigned client of this request"),
-            size=20,
+            label=_(
+                "label_sample_client",
+                default="Client"),
+            description=_(
+                "description_sample_client",
+                default="Select the client for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
-            catalog_name=CLIENT_CATALOG,
-            search_index="client_searchable_text",
-            base_query={"is_active": True,
-                        "sort_limit": 30,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            colModel=[
-                {"columnName": "getName", "width": "70", "label": _(
-                    "Client Name"), "align": "left"},
-                {"columnName": "getClientID", "width": "30", "label": _(
-                    "Client ID"), "align": "left"},
-                # UID is required in colModel
-                {"columnName": "UID", "hidden": True},
-            ],
             ui_item="getName",
-            showOn=True,
+            catalog=CLIENT_CATALOG,
+            search_index="client_searchable_text",
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getName", "label": _("Name")},
+                {"name": "getClientID", "label": _("Client ID")},
+            ],
         ),
     ),
 
@@ -272,152 +272,155 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=FieldEditClient,
         widget=ReferenceWidget(
-            label=_("Primary Sample"),
-            description=_("Select a sample to create a secondary Sample"),
-            size=20,
+            label=_(
+                "label_sample_primary",
+                default="Primary Sample"),
+            description=_(
+                "description_sample_primary",
+                default="Select a sample to create a secondary Sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'header_table': 'prominent',
+                "add": "edit",
+                "header_table": "prominent",
             },
             catalog_name=SAMPLE_CATALOG,
-            search_fields=('listing_searchable_text',),
-            base_query={'is_active': True,
-                        'is_received': True,
-                        'sort_limit': 30,
-                        'sort_on': 'getId',
-                        'sort_order': 'descending'},
-            colModel=[
-                {'columnName': 'getId', 'width': '20',
-                 'label': _('Sample ID'), 'align': 'left'},
-                {'columnName': 'getClientSampleID', 'width': '20',
-                 'label': _('Client SID'), 'align': 'left'},
-                {'columnName': 'getSampleTypeTitle', 'width': '30',
-                 'label': _('Sample Type'), 'align': 'left'},
-                {'columnName': 'getClientTitle', 'width': '30',
-                 'label': _('Client'), 'align': 'left'},
-                {'columnName': 'UID', 'hidden': True},
+            search_index="listing_searchable_text",
+            query={
+                "is_active": True,
+                "is_received": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getId", "label": _("Sample ID")},
+                {"name": "getClientSampleID", "label": _("Client SID")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
+                {"name": "getClientTitle", "label": _("Client")},
             ],
-            ui_item='getId',
-            showOn=True,
+            ui_item="getId",
         )
     ),
 
     UIDReferenceField(
-        'Batch',
-        allowed_types=('Batch',),
+        "Batch",
+        allowed_types=("Batch",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
         widget=ReferenceWidget(
-            label=_("Batch"),
-            size=20,
-            description=_("The assigned batch of this request"),
+            label=_(
+                "label_sample_batch",
+                default="Batch"),
+            description=_(
+                "description_sample_batch",
+                default="Assign sample to a batch"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
             catalog_name=SENAITE_CATALOG,
-            search_fields=('listing_searchable_text',),
-            base_query={"is_active": True,
-                        "sort_limit": 50,
-                        "sort_on": "sortable_title",
-                        "sort_order": "descending"},
-            colModel=[
-                {'columnName': 'getId', 'width': '20',
-                 'label': _('Batch ID'), 'align': 'left'},
-                {'columnName': 'Title', 'width': '20',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'getClientBatchID', 'width': '20',
-                 'label': _('CBID'), 'align': 'left'},
-                {'columnName': 'getClientTitle', 'width': '30',
-                 'label': _('Client'), 'align': 'left'},
+            search_index="listing_searchable_text",
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getId", "label": _("Batch ID")},
+                {"name": "Title", "label": _("Title")},
+                {"name": "getClientBatchID", "label": _("CBID")},
+                {"name": "getClientTitle", "label": _("Client")},
             ],
-            force_all=False,
             ui_item="getId",
-            showOn=True,
-        ),
+        )
     ),
 
     UIDReferenceField(
-        'SubGroup',
+        "SubGroup",
         required=False,
-        allowed_types=('SubGroup',),
+        allowed_types=("SubGroup",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditBatch,
         widget=ReferenceWidget(
-            label=_("Batch Sub-group"),
-            description=_("The assigned batch sub group of this request"),
-            size=20,
+            label=_(
+                "label_sample_subgroup",
+                default="Batch Sub-group"),
+            description=_(
+                "description_sample_subgroup",
+                default="The assigned batch sub group of this request"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            colModel=[
-                {'columnName': 'Title', 'width': '30',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'Description', 'width': '70',
-                 'label': _('Description'), 'align': 'left'},
-                {'columnName': 'getSortKey', 'hidden': True},
-                {'columnName': 'UID', 'hidden': True},
-            ],
-            base_query={'is_active': True},
-            sidx='SortKey',
-            sord='asc',
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            ui_item="Title",
+        )
     ),
 
     UIDReferenceField(
-        'Template',
-        allowed_types=('ARTemplate',),
+        "Template",
+        allowed_types=("ARTemplate",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
-            label=_("Sample Template"),
+            label=_(
+                "label_sample_template",
+                default="Sample Template"),
             description=_(
-                "The predefined values of the Sample template are set in the "
-                "request"
-            ),
-            size=20,
+                "description_sample_template",
+                default="Select an analysis template for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
     UIDReferenceField(
-        'Profiles',
+        "Profiles",
         multiValued=1,
-        allowed_types=('AnalysisProfile',),
+        allowed_types=("AnalysisProfile",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditProfiles,
         widget=ReferenceWidget(
-            label=_("Analysis Profiles"),
-            description=_("Analysis profiles apply a certain set of analyses"),
-            size=20,
+            label=_(
+                "label_sample_profiles",
+                default="Analysis Profiles"),
+            description=_(
+                "description_sample_profiles",
+                default="Select an analysis profile for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Profile Name")},
+                {"name": "getProfileKey", "label": _("Profile Key")},
+            ],
+        )
     ),
+
     # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
     # one can create an AR (with code) with DateSampled set when sampling_wf at
     # the same time sampling workflow is active. This might cause
@@ -442,6 +445,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     StringField(
         'Sampler',
         mode="rw",
@@ -499,72 +503,89 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SampleType',
+        "SampleType",
         required=1,
-        allowed_types='SampleType',
+        allowed_types=("SampleType",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSampleType,
         widget=ReferenceWidget(
-            label=_("Sample Type"),
+            label=_(
+                "label_sample_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_sample_sampletype",
+                default="Select the sample type of this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
     UIDReferenceField(
-        'Container',
+        "Container",
         required=0,
-        allowed_types='SampleContainer',
+        allowed_types=("SampleContainer",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditContainer,
         widget=ReferenceWidget(
-            label=_("Container"),
-            size=20,
+            label=_(
+                "label_sample_container",
+                default="Container"),
+            description=_(
+                "description_sample_container",
+                default="Select a container for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={
-                "portal_type": "SampleContainer",
+            catalog_name=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
-                "sort_order": "ascending",
+                "sort_order": "ascending"
             },
-            showOn=True,
-        ),
+            columns=[
+                {"name": "Title", "label": _("Container")},
+                {"name": "getCapacity", "label": _("Capacity")},
+            ],
+        )
     ),
 
     UIDReferenceField(
-        'Preservation',
+        "Preservation",
         required=0,
-        allowed_types='Preservation',
+        allowed_types=("Preservation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
-            label=_("Preservation"),
-            size=20,
+            label=_(
+                "label_sample_preservation",
+                default="Preservation"),
+            description=_(
+                "description_sample_preservation",
+                default="Select the needed preservation for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     DateTimeField(
@@ -584,6 +605,7 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
+
     StringField(
         "Preserver",
         required=0,
@@ -602,6 +624,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     # TODO Sample cleanup - This comes from partition
     DurationField(
         "RetentionPeriod",
@@ -613,6 +636,7 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     RecordsField(
         'RejectionReasons',
         mode="rw",
@@ -630,41 +654,35 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Specification',
+        "Specification",
         required=0,
         primary_bound=True,  # field changes propagate to partitions
-        allowed_types='AnalysisSpec',
+        allowed_types=("AnalysisSpec",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSpecification,
         widget=ReferenceWidget(
-            label=_("Analysis Specification"),
-            description=_("Choose default Sample specification values"),
-            size=20,
+            label=_(
+                "label_sample_specification",
+                default="Analysis Specification"),
+            description=_(
+                "description_sample_specification",
+                default="Select an analysis specification for this sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
+                "add": "edit",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            search_fields=('listing_searchable_text',),
-            colModel=[
-                {'columnName': 'Title',
-                 'width': '30',
-                 'label': _('Title'),
-                 'align': 'left'},
-                {'columnName': 'getSampleTypeTitle',
-                 'width': '70',
-                 'label': _('SampleType'),
-                 'align': 'left'},
-                # UID is required in colModel
-                {'columnName': 'UID', 'hidden': True},
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Specification Name")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
             ],
-            ui_item="Title",
-            showOn=True,
-        ),
+        )
     ),
 
     # Field to keep the result ranges from the specification initially set
@@ -681,76 +699,92 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'PublicationSpecification',
+        "PublicationSpecification",
         required=0,
-        allowed_types='AnalysisSpec',
+        allowed_types=("AnalysisSpec",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPublicationSpecifications,
         widget=ReferenceWidget(
-            label=_("Publication Specification"),
+            label=_(
+                "label_sample_publicationspecification",
+                default="Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing a Sample."
-            ),
-            size=20,
+                "description_sample_publicationspecification",
+                default="Select an analysis specification that should be used "
+                        "in the sample publication report"),
             render_own_label=True,
             visible={
                 "add": "invisible",
-                'secondary': 'disabled',
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Specification Name")},
+                {"name": "getSampleTypeTitle", "label": _("Sample Type")},
+            ],
+        )
     ),
 
     # Sample field
     UIDReferenceField(
-        'SamplePoint',
-        allowed_types='SamplePoint',
+        "SamplePoint",
+        allowed_types=("SamplePoint",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSamplePoint,
         widget=ReferenceWidget(
-            label=_("Sample Point"),
-            description=_("Location where sample was taken"),
-            size=20,
+            label=_(
+                "label_sample_samplepoint",
+                default="Sample Point"),
+            description=_(
+                "description_sample_samplepoint",
+                default="Location where the sample was taken"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
+    # Remove in favor of senaite.storage?
     UIDReferenceField(
-        'StorageLocation',
-        allowed_types='StorageLocation',
+        "StorageLocation",
+        allowed_types=("StorageLocation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditStorageLocation,
         widget=ReferenceWidget(
-            label=_("Storage Location"),
-            description=_("Location where sample is kept"),
-            size=20,
+            label=_(
+                "label_sample_storagelocation",
+                default="Storage Location"),
+            description=_(
+                "description_sample_storagelocation",
+                default="Location where the sample is kept"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     StringField(
@@ -805,50 +839,58 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SamplingDeviation',
-        allowed_types='SamplingDeviation',
+        "SamplingDeviation",
+        allowed_types=("SamplingDeviation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSamplingDeviation,
         widget=ReferenceWidget(
-            label=_("Sampling Deviation"),
-            description=_("Deviation between the sample and how it "
-                          "was sampled"),
-            size=20,
+            label=_(
+                "label_sample_samplingdeviation",
+                default="Sampling Deviation"),
+            description=_(
+                "description_sample_samplingdeviation",
+                default="Deviation between the sample and how it "
+                        "was sampled"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     UIDReferenceField(
-        'SampleCondition',
-        allowed_types='SampleCondition',
+        "SampleCondition",
+        allowed_types=("SampleCondition",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditSampleCondition,
         widget=ReferenceWidget(
-            label=_("Sample condition"),
-            description=_("The condition of the sample"),
-            size=20,
+            label=_(
+                "label_sample_samplecondition",
+                default="Sample Condition"),
+            description=_(
+                "description_sample_samplecondition",
+                default="The condition of the sample"),
             render_own_label=True,
             visible={
-                'add': 'edit',
-                'secondary': 'disabled',
+                "add": "edit",
+                "secondary": "disabled",
             },
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
-        ),
+            catalog_name=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     StringField(
@@ -866,6 +908,7 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
+
     StringField(
         'EnvironmentalConditions',
         mode="rw",
@@ -971,16 +1014,31 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # readonly field
     UIDReferenceField(
-        'Invoice',
-        allowed_types=('Invoice',),
+        "Invoice",
+        allowed_types=("Invoice",),
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_invoice",
+                default="Invoice"),
+            description=_(
+                "description_sample_invoice",
+                default="Generated invoice for this sample"),
+            render_own_label=True,
+            readonly=True,
             visible={
-                'edit': 'invisible',
-                'view': 'visible',
+                "add": "invisible",
+                "view": "visible",
+            },
+            catalog_name=SENAITE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
             },
         )
     ),
@@ -998,6 +1056,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
     ComputedField(
         'DatePublished',
         mode="r",
@@ -1078,67 +1137,79 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     ComputedField(
         'ReceivedBy',
         expression='here.getReceivedBy()',
         default='',
         widget=ComputedWidget(visible=False,),
     ),
+
     ComputedField(
         'CreatorFullName',
         expression="here._getCreatorFullName()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'CreatorEmail',
         expression="here._getCreatorEmail()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplerEmail',
         expression="here._getSamplerEmail()",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'BatchID',
         expression="here.getBatch().getId() if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'BatchURL',
         expression="here.getBatch().absolute_url_path() " \
                    "if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactUsername',
         expression="here.getContact().getUsername() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactFullName',
         expression="here.getContact().getFullname() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'ContactEmail',
         expression="here.getContact().getEmailAddress() " \
                    "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SampleTypeUID',
         expression="here.getSampleType().UID() " \
                    "if here.getSampleType() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'SamplePointUID',
         expression="here.getSamplePoint().UID() " \
@@ -1151,33 +1222,51 @@ schema = BikaSchema.copy() + Schema((
                    "if here.getStorageLocation() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateUID',
         expression="here.getTemplate().UID() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateURL',
         expression="here.getTemplate().absolute_url_path() " \
                    "if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
+
     ComputedField(
         'TemplateTitle',
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
 
+    # readonly field
     UIDReferenceField(
-        'ParentAnalysisRequest',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestParentAnalysisRequest',
+        "ParentAnalysisRequest",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestParentAnalysisRequest",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_parent_sample",
+                default="Parent sample"),
+            description=_(
+                "description_sample_parent_sample",
+                default="Reference to parent sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
-        ),
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     # The Primary Sample the current sample was detached from
@@ -1188,22 +1277,50 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_detached_from",
+                default="Detached from sample"),
+            description=_(
+                "description_sample_detached_from",
+                default="Reference to detached sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         )
     ),
 
     # The Analysis Request the current Analysis Request comes from because of
     # an invalidation of the former
     UIDReferenceField(
-        'Invalidated',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestRetracted',
+        "Invalidated",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestRetracted",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
+            label=_(
+                "label_sample_retracted",
+                default="Retest from sample"),
+            description=_(
+                "description_sample_retracted",
+                default="Reference to retracted sample"),
+            render_own_label=True,
+            readonly=True,
             visible=False,
-        ),
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     # For comments or results interpretation
@@ -1307,8 +1424,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-)
-)
+))
 
 
 # Some schema rearrangement

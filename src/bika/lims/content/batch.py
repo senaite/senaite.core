@@ -25,7 +25,6 @@ from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -45,6 +44,7 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
@@ -71,20 +71,25 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Client',
+        "Client",
         required=0,
-        allowed_types=('Client',),
+        allowed_types=("Client",),
         widget=ReferenceWidget(
-            label=_("Client"),
-            size=30,
-            visible=True,
-            catalog_name=CLIENT_CATALOG,
-            base_query={'review_state': 'active'},
-            showOn=True,
-            colModel=[
-                {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'Title', 'width': '60', 'label': _('Title')},
-                {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')}
+            label=_(
+                "label_batch_client",
+                default="Client"),
+            description=_(
+                "description_batch_client",
+                default="Select the client of this batch"),
+            catalog=CLIENT_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Name")},
+                {"name": "getClientID", "label": _("Client ID")},
             ],
         ),
     ),
@@ -225,10 +230,8 @@ class Batch(ATFolder, ClientAwareMixin):
         """Return all the Analysis Requests brains linked to the Batch
         kargs are passed directly to the catalog.
         """
-        kwargs['getBatchUID'] = self.UID()
-        catalog = getToolByName(self, SAMPLE_CATALOG)
-        brains = catalog(kwargs)
-        return brains
+        kwargs["getBatchUID"] = self.UID()
+        return api.search(kwargs, SAMPLE_CATALOG)
 
     def getAnalysisRequests(self, **kwargs):
         """Return all the Analysis Requests objects linked to the Batch kargs

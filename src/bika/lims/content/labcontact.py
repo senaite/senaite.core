@@ -22,7 +22,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.contact import Contact
@@ -35,6 +34,8 @@ from Products.Archetypes.Field import ImageField
 from Products.Archetypes.Field import ImageWidget
 from Products.Archetypes.public import registerType
 from Products.CMFPlone.utils import safe_unicode
+from Products.Archetypes.public import SelectionWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -52,30 +53,43 @@ schema = Person.schema.copy() + atapi.Schema((
 
     UIDReferenceField(
         "Departments",
-        required=0,
-        allowed_types=("Department",),
-        vocabulary="_departmentsVoc",
         multiValued=1,
-        widget=ReferenceWidget(
-            label=_("Departments"),
-            description=_("The laboratory departments"),
-        ),
-    ),
-
-    UIDReferenceField(
-        "DefaultDepartment",
-        required=0,
         allowed_types=("Department",),
         widget=ReferenceWidget(
-            label=_("Default Department"),
-            description=_("Default Department"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query={
+            label=_(
+                "label_labcontact_departments",
+                default="Departments"),
+            description=_(
+                "description_labcontact_departments",
+                default="Assigned laboratory departments"),
+            catalog=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
+        ),
+    ),
+
+    # NOTE: This field is dynamically modified by
+    #       `senaite.core.browser.form.adapters.labcontact.EditForm`
+    #
+    #       Please leave it as a `SelectionWidget` to allow selection only from
+    #       the dependent selected departments field!
+    UIDReferenceField(
+        "DefaultDepartment",
+        allowed_types=("Department",),
+        vocabulary="default_department_vocabulary",
+        accessor="getRawDefaultDepartment",
+        widget=SelectionWidget(
+            format="select",
+            label=_(
+                "label_labcontact_default_department",
+                default="Default Department"),
+            description=_(
+                "description_labcontact_default_department",
+                default="Select a default department for this contact "
+                        "from one of the selected departments."),
         ),
     ),
 ))
@@ -123,6 +137,29 @@ class LabContact(Contact):
         """
         return self.getField("DefaultDepartment").get(self)
 
+    @security.public
+    def getRawDefaultDepartment(self):
+        """Returns the UID of the assigned default department
+
+        NOTE: This is the default accessor of the `DefaultDepartment` schema
+        field and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Default Department UID
+        """
+        field = self.getField("DefaultDepartment")
+        return field.getRaw(self)
+
+    def default_department_vocabulary(self):
+        """Returns only selected departments
+        """
+        # Getting the assigned departments
+        deps = self.getDepartments()
+        items = []
+        for d in deps:
+            items.append((api.get_uid(d), api.get_title(d)))
+        return api.to_display_list(items, sort_by="value", allow_empty=True)
+
     def hasUser(self):
         """Check if contact has user
         """
@@ -131,30 +168,6 @@ class LabContact(Contact):
             return False
         user = api.get_user(username)
         return user is not None
-
-    def _departmentsVoc(self):
-        """Vocabulary of available departments
-        """
-        query = {
-            "portal_type": "Department",
-            "is_active": True
-        }
-        results = api.search(query, "senaite_catalog_setup")
-        items = map(lambda dept: (api.get_uid(dept), api.get_title(dept)),
-                    results)
-        dept_uids = map(api.get_uid, results)
-        # Currently assigned departments
-        depts = self.getDepartments()
-        # If one department assigned to the Lab Contact is disabled, it will
-        # be shown in the list until the department has been unassigned.
-        for dept in depts:
-            uid = api.get_uid(dept)
-            if uid in dept_uids:
-                continue
-            items.append((uid, api.get_title(dept)))
-
-        return api.to_display_list(items, sort_by="value", allow_empty=False)
-
 
     def addDepartment(self, dep):
         """Adds a department

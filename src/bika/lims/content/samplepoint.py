@@ -21,7 +21,19 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import CoordinateField
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import CoordinateWidget
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.content.sampletype import SampleTypeAwareMixin
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISamplePoint
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -30,23 +42,11 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFPlone.utils import safe_unicode
-from plone.app.blob.field import FileField as BlobFileField
-from zope.interface import implements
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import CoordinateField
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import CoordinateWidget
-from bika.lims.browser.widgets import DurationWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.content.sampletype import SampleTypeAwareMixin
-from bika.lims.interfaces import IDeactivable
-from bika.lims.interfaces import ISamplePoint
+from senaite.core.catalog import SETUP_CATALOG
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField(
@@ -86,21 +86,26 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'SampleTypes',
+        "SampleTypes",
         required=0,
         multiValued=1,
-        allowed_types=('SampleType',),
-        relationship='SamplePointSampleType',
+        allowed_types=("SampleType",),
+        relationship="SamplePointSampleType",
         widget=ReferenceWidget(
-            label=_("Sample Types"),
-            description=_("The list of sample types that can be collected "
-                          "at this sample point.  If no sample types are "
-                          "selected, then all sample types are available."),
-            catalog_name='senaite_catalog_setup',
-            base_query={"is_active": True,
-                        "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
-            showOn=True,
+            label=_(
+                "label_samplepoint_sampletypes",
+                default="Sample Types"),
+            description=_(
+                "description_samplepoint_sampletypes",
+                default="The list of sample types that can be collected "
+                "at this sample point.  If no sample types are "
+                "selected, then all sample types are available."),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 

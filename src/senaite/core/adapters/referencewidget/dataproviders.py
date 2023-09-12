@@ -3,7 +3,11 @@
 import json
 
 import Missing
+from Acquisition import aq_base
+from Acquisition import aq_inner
 from bika.lims import api
+from Products.CMFPlone.utils import base_hasattr
+from senaite.core import logger
 from senaite.core.interfaces import IReferenceWidgetDataProvider
 from zope.interface import implementer
 
@@ -34,15 +38,22 @@ class ReferenceWidgetDataProvider(object):
     def lookup(self, brain_or_object, name, default=None):
         """Lookup a named attribute on the brain/object
         """
-        value = getattr(brain_or_object, name, _marker)
+        if base_hasattr(brain_or_object, name):
+            value = getattr(aq_base(aq_inner(brain_or_object)), name, _marker)
+        else:
+            value = _marker
 
         # wake up the object
         if value is _marker:
-            brain_or_object = api.get_object(brain_or_object)
-            value = getattr(brain_or_object, name, _marker)
+            logger.info("No catalog metadata found for '{name}'"
+                        "in catalog {catalog}. Waking up the object!".format(
+                            name=name, catalog=brain_or_object.aq_parent.id))
+            obj = api.get_object(brain_or_object)
+            value = getattr(obj, name, default)
 
+        # Fallback to the default value if we do not have a catalog metadata
         if value in MISSING_VALUES:
-            return default
+            value = default
 
         if callable(value):
             value = value()

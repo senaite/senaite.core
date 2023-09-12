@@ -18,16 +18,21 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import bikaMessageFactory as _
 from bika.lims import config
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAutoImportLog
 from DateTime import DateTime
 from Products.Archetypes import atapi
+from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import DateTimeField
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import TextField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + atapi.Schema((
@@ -41,6 +46,20 @@ schema = BikaSchema.copy() + atapi.Schema((
     UIDReferenceField(
         "Instrument",
         allowed_types=("Instrument",),
+        widget=ReferenceWidget(
+            label=_(
+                "label_autoimportlog_instrument",
+                default="Instrument"),
+            description=_(
+                "description_autoimportlog_instrument",
+                default="Assign the instrument for this log"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        ),
     ),
 
     StringField(
@@ -51,11 +70,28 @@ schema = BikaSchema.copy() + atapi.Schema((
     TextField(
         "Results",
         default="",
+        widget=TextAreaWidget(
+            label=_(
+                "label_autoimportlog_results",
+                default="Results"),
+            description=_(
+                "description_autoimportlog_results",
+                default="The logged results"),
+        )
     ),
 
     DateTimeField(
         "LogTime",
         default=DateTime(),
+        widget=DateTimeWidget(
+            label=_(
+                "label_autoimportlog_logtime",
+                default="Log Time"),
+            description=_(
+                "description_autoimportlog_logtime",
+                default="The date and time when the log was created"),
+            show_time=True,
+        ),
     ),
 ))
 

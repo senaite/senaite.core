@@ -36,7 +36,6 @@ from zope.component import adapter
 from zope.interface import implementer
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
-DEFAULT_SEARCH_CATALOG = "uid_catalog"
 
 
 @adapter(IUIDReferenceField, interfaces.IWidget)

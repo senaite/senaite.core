@@ -29,7 +29,6 @@ from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.queryselect import QuerySelectWidget
 
-DEFAULT_SEARCH_CATALOG = "uid_catalog"
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
 IGNORE_COLUMNS = ["UID"]
 
@@ -48,7 +47,7 @@ class ReferenceWidget(QuerySelectWidget):
 
         # BBB: OLD PROPERTIES
         "url": "referencewidget_search",
-        "catalog_name": "uid_catalog",
+        "catalog_name": None,
         # base_query can be a dict or a callable returning a dict
         "base_query": {},
         # columns to display in the search dropdown
@@ -145,10 +144,14 @@ class ReferenceWidget(QuerySelectWidget):
             return prop
 
         # BBB: catalog_name
-        catalog_name = getattr(self, "catalog_name", None),
+        catalog_name = getattr(self, "catalog_name", None)
 
         if catalog_name is None:
-            return DEFAULT_SEARCH_CATALOG
+            # try to lookup the catalog for the given object
+            catalogs = api.get_catalogs_for(context)
+            # function always returns at least one catalog object
+            catalog_name = catalogs[0].getId()
+
         return catalog_name
 
     def get_query(self, context, field, default=None):
@@ -159,11 +162,11 @@ class ReferenceWidget(QuerySelectWidget):
         :param default: The default property value
         :returns: Base catalog query
         """
-        prop = getattr(self, "query", None)
-        if prop:
-            return prop
-
         base_query = self.get_base_query(context, field)
+
+        query = getattr(self, "query", None)
+        if isinstance(query, dict):
+            base_query.update(query)
 
         # extend portal_type filter
         allowed_types = getattr(field, "allowed_types", None)
