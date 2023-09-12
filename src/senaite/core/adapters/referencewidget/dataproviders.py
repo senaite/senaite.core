@@ -38,8 +38,6 @@ class ReferenceWidgetDataProvider(object):
     def lookup(self, brain_or_object, name, default=None):
         """Lookup a named attribute on the brain/object
         """
-        value = default
-
         if base_hasattr(brain_or_object, name):
             value = getattr(aq_base(aq_inner(brain_or_object)), name, _marker)
         else:
