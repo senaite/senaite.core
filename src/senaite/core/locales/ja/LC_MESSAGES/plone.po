@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-09-01 14:26+0000\n"
+"POT-Creation-Date: 2023-09-13 05:17+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Japanese (https://app.transifex.com/senaite/teams/87045/ja/)\n"
@@ -403,6 +403,11 @@ msgstr ""
 msgid "description_production_mode"
 msgstr ""
 
+#. Access should be granted only to the client group below. <br /> Client
+#. contacts which are linked to a user account will be automatically added to
+#. this group and have therefore the same roles granted immediately. <br />
+#. Other granted access to users or groups will only affect new created
+#. contents. </div>"
 #. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:43
 msgid "description_sharing_control"
@@ -521,6 +526,11 @@ msgstr ""
 msgid "help_groupname"
 msgstr ""
 
+#. inherited. If you disable this, only the explicitly defined sharing
+#. permissions will be valid. In the overview, the symbol
+#. ${image_confirm_icon} indicates an inherited value. Similarly, the symbol
+#. ${image_link_icon} indicates a global role, which is managed by the site
+#. administrator."
 #. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:191
 msgid "help_inherit_local_roles"
@@ -531,6 +541,7 @@ msgstr ""
 msgid "help_sharing_go_here"
 msgstr ""
 
+#. container. To adjust them for the entire container, ${go_here}."
 #. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_page_default_page"
