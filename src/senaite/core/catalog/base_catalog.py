@@ -60,16 +60,17 @@ INDEXES = [
 
 COLUMNS = [
     # attribute name
+    "Creator",
+    "Description",  # used ind default reference widget columns
+    "Title",  # used in default reference widget columns
+    "UID",
     "allowedRolesAndUsers",
     "created",
-    "Creator",
     "getId",
     "meta_type",
     "portal_type",
     "review_state",
     "state_title",
-    "Title",
-    "UID",
 ]
 
 TYPES = [

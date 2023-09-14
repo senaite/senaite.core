@@ -31,6 +31,9 @@ from Products.CMFPlone.utils import base_hasattr
 DISPLAY_TEMPLATE = "<div>${Title}</div>"
 DEFAULT_SEARCH_CATALOG = "uid_catalog"
 
+# Search index placeholder for dynamic lookup by the search endpoint
+SEARCH_INDEX_MARKER = "__search__"
+
 
 class QuerySelectWidget(StringWidget):
     """Generic select widget to query items from a catalog search
@@ -102,7 +105,8 @@ class QuerySelectWidget(StringWidget):
             "data-api_url": getattr(self, "api_url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
             "data-catalog": getattr(self, "catalog", DEFAULT_SEARCH_CATALOG),
-            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-search_index": getattr(
+                self, "search_index", SEARCH_INDEX_MARKER),
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),
