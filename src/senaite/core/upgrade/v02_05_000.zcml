@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add catalog metadata columns for reference widget"
+      description="Add default metadata columns for all catalogs"
+      source="2517"
+      destination="2518"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Setup auditlog catalog mappings"
       description="Setup auditlog catalog mappings"
       source="2516"
