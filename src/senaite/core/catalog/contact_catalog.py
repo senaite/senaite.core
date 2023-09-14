@@ -22,6 +22,8 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
+    "getFullname",  # used in reference widget columns
+    "getEmailAddress",  # used in reference widget columns
 ]
 
 TYPES = [

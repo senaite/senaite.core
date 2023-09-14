@@ -54,16 +54,18 @@ INDEXES = BASE_INDEXES + [
 COLUMNS = BASE_COLUMNS + [
     # attribute name
     "Description",
+    "Type",
     "description",
     "getCategoryTitle",
     "getCategoryUID",
     "getClientUID",
     "getKeyword",
+    "getPrefix",  # used in reference widget columns
+    "getProfileKey",  # used in reference widget columns
     "id",
     "path",
     "sortable_title",
     "title",
-    "Type",
 ]
 
 TYPES = [
