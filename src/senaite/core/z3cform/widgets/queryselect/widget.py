@@ -45,6 +45,9 @@ from zope.schema.interfaces import ISequence
 # See IReferenceWidgetDataProvider for provided object data
 DISPLAY_TEMPLATE = "<div>${Title}</div>"
 
+# Search index placeholder for dynamic lookup by the search endpoint
+SEARCH_INDEX_MARKER = "__search__"
+
 
 @adapter(ISequence, IQuerySelectWidget)
 class QuerySelectDataConverter(TextLinesConverter):
@@ -150,7 +153,8 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-api_url": getattr(self, "api_url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
             "data-catalog": getattr(self, "catalog", None),
-            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-search_index": getattr(
+                self, "search_index", SEARCH_INDEX_MARKER),
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),

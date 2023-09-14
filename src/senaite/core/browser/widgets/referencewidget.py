@@ -60,7 +60,7 @@ class ReferenceWidget(QuerySelectWidget):
             {"columnName": "UID", "hidden": True},
         ],
         "ui_item": "Title",
-        "search_fields": ("Title",),
+        "search_fields": [],
         "discard_empty": [],
         "popup_width": "550px",
         "showOn": False,

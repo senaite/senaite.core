@@ -259,15 +259,6 @@ class QuerySelectWidgetController extends React.Component {
   make_query(options) {
     options = options || {};
 
-    // allow to search a custom index
-    // NOTE: This should be a ZCTextIndex!
-    let search_index = this.state.search_index || "Title";
-    let search_term = this.state.searchterm;
-
-    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
-      search_term += "*"
-    }
-
     let query = Object.assign({
       limit: this.state.limit,
       complete: this.state.complete,
@@ -276,8 +267,21 @@ class QuerySelectWidgetController extends React.Component {
       field_name: this.state.name,
     }, options, this.state.query);
 
+    // allow to search a custom index
+    // NOTE: This should be a ZCTextIndex!
+    let search_index = this.state.search_index || null;
+    let search_term = this.state.searchterm;
+
+    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
+      search_term += "*"
+    }
+
     // inject the search index
-    query[search_index] = search_term;
+    if (search_index) {
+      query[search_index] = search_term;
+    } else {
+      console.warn(`No search_index defined for search field "${this.state.name}"`);
+    }
 
     // allow to custom search query cascading
     query = Object.assign(query, this.get_search_query());
