@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2386 Add dynamic search index lookup for referencewidget and added default catalog metadata columns
 - #2385 Fix referencefield dependencies in sample add
 - #2384 Fix reference widget lookups
 - #2379 Add listing adapter for sample workflow "receive" transition
