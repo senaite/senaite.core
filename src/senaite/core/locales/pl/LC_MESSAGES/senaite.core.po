@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-09-13 05:17+0000\n"
+"POT-Creation-Date: 2023-09-17 08:57+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
 "Language-Team: Polish (https://app.transifex.com/senaite/teams/87045/pl/)\n"
@@ -6589,6 +6589,7 @@ msgstr ""
 msgid "description_contact_cccontact"
 msgstr ""
 
+#. could be selected here."
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: bika/lims/content/container.py:99
 msgid "description_container_preservation"
@@ -6604,6 +6605,8 @@ msgstr ""
 msgid "description_copyright"
 msgstr ""
 
+#. the 'lab contacts' setup item. Departmental managers are referenced on
+#. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
 #: bika/lims/content/department.py:57
 msgid "description_department_manager"
@@ -6649,6 +6652,7 @@ msgstr ""
 msgid "description_instrumentvalidation_worker"
 msgstr ""
 
+#. selected departments."
 #. Default: "Select a default department for this contact from one of the selected departments."
 #: bika/lims/content/labcontact.py:89
 msgid "description_labcontact_default_department"
@@ -6729,6 +6733,7 @@ msgstr ""
 msgid "description_sample_profiles"
 msgstr ""
 
+#. sample publication report"
 #. Default: "Select an analysis specification that should be used in the sample publication report"
 #: bika/lims/content/analysisrequest.py:712
 msgid "description_sample_publicationspecification"
@@ -6779,11 +6784,15 @@ msgstr ""
 msgid "description_sample_template"
 msgstr ""
 
+#. point.  If no sample types are selected, then all sample types are
+#. available."
 #. Default: "The list of sample types that can be collected at this sample point.  If no sample types are selected, then all sample types are available."
 #: bika/lims/content/samplepoint.py:98
 msgid "description_samplepoint_sampletypes"
 msgstr ""
 
+#. automatically assigned a container of this type, unless it has been
+#. specified in more details per analysis service"
 #. Default: "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 #: bika/lims/content/sampletype.py:180
 msgid "description_sampletype_containertype"
@@ -6831,6 +6840,8 @@ msgstr ""
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr ""
 
+#. Dashboard is not selected as the default front page. If no landing page is
+#. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
 #: bika/lims/content/bikasetup.py:513
 msgid "description_setup_landingpage"
@@ -6841,6 +6852,8 @@ msgstr ""
 msgid "description_worksheettemplate_instrument"
 msgstr ""
 
+#. with the selected method. <br/>In order to apply this change to the
+#. services list, you should save the change first."
 #. Default: "Restrict the available analysis services and instruments to those with the selected method. <br/>In order to apply this change to the services list, you should save the change first."
 #: bika/lims/content/worksheettemplate.py:95
 msgid "description_worksheettemplate_restrict_to_method"
