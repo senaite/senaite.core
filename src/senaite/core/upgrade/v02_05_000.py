@@ -464,3 +464,18 @@ def import_typeinfo(tool):
     """Import type info profile
     """
     tool.runImportStepFromProfile(profile, "typeinfo")
+
+
+def reindex_reference_analyses(tool):
+    """Reindex all reference analyses
+    """
+    logger.info("Reindexing reference analyses ...")
+
+    query = {"portal_type": "ReferenceAnalysis"}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    for brain in brains:
+        obj = api.get_object(brain)
+        obj.reindexObject()
+        obj._p_deactivate()
+
+    logger.info("Reindexing reference analyses [DONE]")
