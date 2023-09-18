@@ -150,7 +150,7 @@ class BaseCatalog(CatalogTool):
                         .format(self.progress_counter, self.id))
 
         if self.progress_counter % 10000 == 0:
-            logger.info("Committing transaction savepoint after {} objects"
+            logger.info("Creating transaction savepoint after {} objects"
                         .format(self.progress_counter))
             transaction.savepoint(optimistic=True)
 
