@@ -31,7 +31,7 @@ from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
 from senaite.core.permissions import FieldEditAnalysisRemarks
 from bika.lims.utils import get_image
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile

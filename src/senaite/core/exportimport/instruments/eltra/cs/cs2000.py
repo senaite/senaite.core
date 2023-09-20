@@ -21,7 +21,7 @@
 """ Eltra CS - 2000
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import EltraCSTSVParser, EltraCSImporter
 import json
 import traceback

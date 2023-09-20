@@ -29,7 +29,7 @@ from bika.lims import logger
 from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
