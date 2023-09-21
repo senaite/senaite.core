@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from zope.i18n import translate as ztranslate
 
 
 def translate(msgid, to_utf8=True, **kwargs):
@@ -43,6 +44,5 @@ def translate(msgid, to_utf8=True, **kwargs):
     }
     params.update(kwargs)
 
-    ts = api.get_tool("translation_service")
-    message = ts.translate(msgid, **params)
+    message = ztranslate(msgid, **params)
     return api.to_utf8(message) if to_utf8 else message
