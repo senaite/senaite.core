@@ -25,7 +25,7 @@ from zope.interface import implements
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 
 class AccreditationView(AnalysisServicesView):

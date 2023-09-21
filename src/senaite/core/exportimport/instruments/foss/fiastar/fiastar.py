@@ -27,7 +27,7 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from senaite.core.p3compat import cmp
 from zope.component import getUtility
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import FOSSFIAStarCSVParser, FOSSFIAStarImporter
 from six import StringIO
 import json

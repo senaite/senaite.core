@@ -26,7 +26,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.config import PRIORITIES
 from bika.lims.utils import get_image
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.vocabularies import CatalogVocabulary
 from DateTime import DateTime
 from plone.memoize import view

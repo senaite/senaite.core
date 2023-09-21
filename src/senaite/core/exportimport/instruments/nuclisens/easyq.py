@@ -33,7 +33,7 @@ from bika.lims import bikaMessageFactory as _
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
 from senaite.core.exportimport.instruments.instrument import format_keyword
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 title = "Nuclisens EasyQ"
 

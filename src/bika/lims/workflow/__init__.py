@@ -33,7 +33,7 @@ from bika.lims.interfaces import IActionHandlerPool, IGuardAdapter
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException

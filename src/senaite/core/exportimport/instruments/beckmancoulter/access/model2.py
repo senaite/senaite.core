@@ -21,7 +21,7 @@
 """ Beckman Coulter Access 2
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import BeckmancoulterAccessCSVParser, BeckmancoulterAccessImporter
 import json
 import traceback

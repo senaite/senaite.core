@@ -21,7 +21,7 @@
 """ FOSS 'Winescan Auto'
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import WinescanImporter, WinescanCSVParser
 import json
 import traceback

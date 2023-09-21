@@ -34,7 +34,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_reference_analysis
 from plone.app.blob.field import FileField as BlobFileField
