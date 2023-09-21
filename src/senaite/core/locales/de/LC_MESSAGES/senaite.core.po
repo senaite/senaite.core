@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-09-17 21:37+0000\n"
+"POT-Creation-Date: 2023-09-20 12:04+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -1330,7 +1330,7 @@ msgstr "Emailversand an {0} ({1}) fehlgeschlagen"
 
 #: bika/lims/browser/workflow/analysisrequest.py:302
 msgid "Could not transition samples to the sampled state"
-msgstr "Proben konnten nicht in den Zustand beprobt überführt werden"
+msgstr "Proben konnten nicht in den Status \"beprobt\" überführt werden"
 
 #: senaite/core/z3cform/widgets/address.py:222
 msgid "Country"
@@ -6778,7 +6778,7 @@ msgstr "Ort, an dem die Probe entnommen wurde"
 #. Default: "Select the sample type of this sample"
 #: bika/lims/content/analysisrequest.py:516
 msgid "description_sample_sampletype"
-msgstr "Wählen Sie die Probeart dieser Probe aus"
+msgstr "Wählen Sie die Probenart dieser Probe aus"
 
 #. Default: "Deviation between the sample and how it was sampled"
 #: bika/lims/content/analysisrequest.py:851
@@ -6788,7 +6788,7 @@ msgstr "Abweichung zwischen der Probe und der Art und Weise, wie sie beprobt wur
 #. Default: "Select an analysis specification for this sample"
 #: bika/lims/content/analysisrequest.py:668
 msgid "description_sample_specification"
-msgstr "Wählen Sie eine Analysespezifikation für diese Probe aus"
+msgstr "Wählen Sie eine Analysenspezifikation für diese Probe aus"
 
 #. Default: "Location where the sample is kept"
 #: bika/lims/content/analysisrequest.py:773
@@ -6803,7 +6803,7 @@ msgstr "Die zugewiesene Batch-Untergruppe dieser Anfrage"
 #. Default: "Select an analysis template for this sample"
 #: bika/lims/content/analysisrequest.py:376
 msgid "description_sample_template"
-msgstr "Wählen Sie eine Analysevorlage für diese Probe aus"
+msgstr "Wählen Sie eine Analysenvorlage für diese Probe aus"
 
 #. point.  If no sample types are selected, then all sample types are
 #. available."
@@ -6930,7 +6930,7 @@ msgstr "Zu den folgenden Gruppen hinzufügen:"
 #. Default: "Analysis Category"
 #: bika/lims/content/abstractbaseanalysis.py:425
 msgid "label_analysis_category"
-msgstr "Analysekategorie"
+msgstr "Analysenkategorie"
 
 #. Default: "Department"
 #: bika/lims/content/abstractbaseanalysis.py:483
@@ -6980,7 +6980,7 @@ msgstr "Primäre Probe"
 #. Default: "Analysis Profile"
 #: bika/lims/content/artemplate.py:254
 msgid "label_artemplate_profile"
-msgstr "Analyseprofil"
+msgstr "Analysenprofil"
 
 #. Default: "Sample Point"
 #: bika/lims/content/artemplate.py:55
@@ -7245,7 +7245,7 @@ msgstr "Probenahmeabweichung"
 #. Default: "Analysis Specification"
 #: bika/lims/content/analysisrequest.py:665
 msgid "label_sample_specification"
-msgstr "Analysespezifikation"
+msgstr "Analysenspezifikation"
 
 #. Default: "Storage Location"
 #: bika/lims/content/analysisrequest.py:770
@@ -7260,12 +7260,12 @@ msgstr "Batch Untergruppe"
 #. Default: "Sample Template"
 #: bika/lims/content/analysisrequest.py:373
 msgid "label_sample_template"
-msgstr "Probevorlage"
+msgstr "Probenvorlage"
 
 #. Default: "Sample Types"
 #: bika/lims/content/samplepoint.py:95
 msgid "label_samplepoint_sampletypes"
-msgstr "Probearten"
+msgstr "Probenarten"
 
 #. Default: "Default Container Type"
 #: bika/lims/content/sampletype.py:176
@@ -7275,7 +7275,7 @@ msgstr "Standard Behältertyp"
 #. Default: "Sample Matrix"
 #: bika/lims/content/sampletype.py:136
 msgid "label_sampletype_samplematrix"
-msgstr "Probematrix"
+msgstr "Probenmatrix"
 
 #. Default: "Save"
 #: senaite/core/browser/viewlets/templates/sampleheader.pt:170

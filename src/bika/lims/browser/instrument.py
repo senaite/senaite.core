@@ -32,7 +32,7 @@ from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile

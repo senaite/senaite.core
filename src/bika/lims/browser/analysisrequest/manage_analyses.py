@@ -29,9 +29,9 @@ from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import t
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.i18n import translate as t
 from zope.i18n.locales import locales
 
 DETACHED_STATES = ["cancelled", "rejected", "retracted"]
