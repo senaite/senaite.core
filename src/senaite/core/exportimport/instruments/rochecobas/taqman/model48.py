@@ -25,7 +25,7 @@ from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 import json
 import traceback
 

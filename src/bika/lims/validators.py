@@ -28,7 +28,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.utils import t as _t
+from senaite.core.i18n import translate as _t
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode

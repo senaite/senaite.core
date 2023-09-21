@@ -21,7 +21,7 @@
 """ Horiba Jobin-Yvon ICP
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from parser import HoribaJobinYvonCSVParser
 from importer import HoribaJobinYvonImporter
 import json

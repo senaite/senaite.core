@@ -28,7 +28,7 @@ from bika.lims.interfaces import IReferenceDefinitions
 from senaite.core.permissions import AddReferenceDefinition
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.ATContentTypes.content import schemata

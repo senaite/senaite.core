@@ -25,7 +25,7 @@ import json
 import traceback
 
 from bika.lims import _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 title = "Tescan - TIMA"
 

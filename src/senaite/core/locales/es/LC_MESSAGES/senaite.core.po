@@ -4,15 +4,15 @@
 # Pau Soliva <psoliva@naralabs.com>, 2019
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
 # ELvira Aylon <elvira@icb.csic.es>, 2021
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2023
 # Mathias Hochkofler, 2023
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2023
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-09-17 21:37+0000\n"
+"POT-Creation-Date: 2023-09-20 12:04+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Mathias Hochkofler, 2023\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -313,7 +313,7 @@ msgstr "Dirección"
 
 #: senaite/core/behaviors/configure.zcml:60
 msgid "Adds the ability to add/remove labels"
-msgstr ""
+msgstr "Etiquetado de contenidos"
 
 #: senaite/core/behaviors/configure.zcml:49
 msgid "Adds the ability to share a content across clients"
@@ -563,7 +563,7 @@ msgstr "Adjuntar a la muestra"
 
 #: senaite/core/extender/label.py:40
 msgid "Attached labels"
-msgstr ""
+msgstr "Etiquetas asignadas a este contenido"
 
 #: bika/lims/content/analysisrequest.py:1004
 #: bika/lims/content/attachment.py:52
@@ -639,7 +639,7 @@ msgstr "Registros de la importación automática de resultados de %s"
 
 #: senaite/core/behaviors/configure.zcml:13
 msgid "Auto-Generate ID Behavior for Dexterity Contents"
-msgstr ""
+msgstr "Generación automática de identificadores para contenidos de tipo Dexterity"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
@@ -671,11 +671,11 @@ msgstr "Verificación automática de muestras"
 
 #: senaite/core/registry/schema.py:47
 msgid "Automatically Create Client Group"
-msgstr ""
+msgstr "Crear grupos de usuario especíifcos de cliente de forma automática"
 
 #: senaite/core/registry/schema.py:48
 msgid "Automatically create a new global client group when a new client is created. If this is disabled, a client group is still created when a client contact is linked to a user account. Therefore, disabling this option makes only sense if you do not plan to link client contacts to user accounts and you want to keep your groups clean."
-msgstr ""
+msgstr "Crea automáticamente grupos de usuario específicos de cliente al crear nuevos clientes. Si la opción está desmarcada, el grupo  de usuarios específico de cliente solo se creará cuando se vincule un contacto de cliente a una cuenta de usuario. "
 
 #: bika/lims/content/artemplate.py:242
 msgid "Automatically redirect the user to the partitions creation view when Sample is received."
@@ -802,19 +802,19 @@ msgstr "Dirección del negocio"
 
 #: bika/lims/content/abstractbaseanalysis.py:633
 msgid "By 'Display Value' ascending"
-msgstr ""
+msgstr "Por valor a mostrar, ascendente"
 
 #: bika/lims/content/abstractbaseanalysis.py:634
 msgid "By 'Display Value' descending"
-msgstr ""
+msgstr "Por valor a mostrar, descendente"
 
 #: bika/lims/content/abstractbaseanalysis.py:631
 msgid "By 'Result Value' ascending"
-msgstr ""
+msgstr "Por valor, ascendente"
 
 #: bika/lims/content/abstractbaseanalysis.py:632
 msgid "By 'Result Value' descending"
-msgstr ""
+msgstr "Por valor, descendente"
 
 #: bika/lims/browser/department/labcontacts.py:39
 msgid "By selecting/unselecting the checboxes, the user will be able to assign \"Lab Contacts\" to the department."
@@ -915,7 +915,7 @@ msgstr "No ha sido posible desactivar el cálculo porque hay servicios de análi
 
 #: bika/lims/browser/workflow/analysisrequest.py:188
 msgid "Cannot send email for ${sample_id}: ${error}"
-msgstr ""
+msgstr "Error al enviar correo electrónico para la muestra ${sample_id}: ${error}"
 
 #: bika/lims/browser/analyses/view.py:1485
 msgid "Cannot verify, last verified by current user"
@@ -1074,7 +1074,7 @@ msgstr "Página de inicio del cliente"
 
 #: senaite/core/behaviors/clientshareable.py:85
 msgid "Client Name"
-msgstr ""
+msgstr "Nombre del cliente"
 
 #: senaite/core/browser/samples/view.py:92
 msgid "Client Order"
@@ -1105,7 +1105,7 @@ msgstr "Identificador de la muestra asignado por el cliente"
 
 #: senaite/core/registry/schema.py:39
 msgid "Client Settings"
-msgstr ""
+msgstr "Clientes"
 
 #: senaite/core/behaviors/configure.zcml:49
 msgid "ClientShareableBehavior"
@@ -1714,7 +1714,7 @@ msgstr "ID del departamento"
 #: bika/lims/content/abstractbaseanalysis.py:496
 #: bika/lims/content/analysiscategory.py:72
 msgid "Department Name"
-msgstr ""
+msgstr "Departamento"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:81
 #: bika/lims/profiles/default/types/Departments.xml
@@ -2115,7 +2115,7 @@ msgstr "Condiciones ambientales"
 
 #: bika/lims/browser/workflow/analysisrequest.py:210
 msgid "Erroneous result publication: ${sample_id}"
-msgstr ""
+msgstr "Publicación de resultados errónea: ${sample_id}"
 
 #: senaite/core/browser/dashboard/dashboard.py:579
 msgid "Evolution of Analyses"
@@ -2351,7 +2351,7 @@ msgstr "Agrupar los servicios de análisis por categorías. Esto es útil cuando
 
 #: bika/lims/content/arreport.py:132
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: senaite/core/browser/samples/view.py:563
 msgid "Hazardous"
@@ -2805,7 +2805,7 @@ msgstr "Cargo"
 
 #: bika/lims/content/abstractbaseanalysis.py:630
 msgid "Keep order above"
-msgstr ""
+msgstr "Mantener el orden indicado arriba"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:35
 msgid "Key"
@@ -2884,17 +2884,17 @@ msgstr "Nombres de etiquetas deben ser unicos"
 
 #: senaite/core/behaviors/configure.zcml:60
 msgid "Label schema extender"
-msgstr ""
+msgstr "Etiquetado de contenido"
 
 #: senaite/core/browser/label/labeled_objects.py:32
 msgid "Labeled Objects"
-msgstr ""
+msgstr "Contenidos etiquetados"
 
 #: senaite/core/browser/controlpanel/labels.py:33
 #: senaite/core/browser/label/labeled_objects.py:47
 #: senaite/core/extender/label.py:39
 msgid "Labels"
-msgstr ""
+msgstr "Etiquetas"
 
 #: bika/lims/content/laboratory.py:206
 #: bika/lims/profiles/default/types/Laboratory.xml
@@ -2974,7 +2974,7 @@ msgstr "Linka un usuario existente"
 
 #: senaite/core/browser/label/labeled_objects.py:33
 msgid "List all objects with labels"
-msgstr ""
+msgstr "Lista con contenidos etiquetados"
 
 #: bika/lims/content/abstractbaseanalysis.py:600
 msgid "List of possible final results. When set, no custom result is allowed on results entry and user has to choose from these values"
@@ -3082,7 +3082,7 @@ msgstr "Hombre"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Manage Access"
-msgstr ""
+msgstr "Control de acceso"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt:14
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
@@ -4036,7 +4036,7 @@ msgstr "Clave identificativa del perfil"
 
 #: bika/lims/content/analysisrequest.py:418
 msgid "Profile Name"
-msgstr ""
+msgstr "Perfil"
 
 #: bika/lims/browser/batchfolder.py:62
 #: bika/lims/browser/worksheet/views/folder.py:96
@@ -5046,7 +5046,7 @@ msgstr "Configure el texto para el cuerpo del correo electrónico que se enviar�
 
 #: senaite/core/registry/schema.py:40
 msgid "Settings for Clients"
-msgstr ""
+msgstr "Propiedades de configuración relacionadas con clientes"
 
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
@@ -5169,7 +5169,7 @@ msgstr "Archivo de Especificación"
 
 #: bika/lims/content/analysisrequest.py:682
 msgid "Specification Name"
-msgstr ""
+msgstr "Especificación"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:18
 msgid "Specification ranges have changed since they were assigned"
@@ -5800,11 +5800,11 @@ msgstr "Escriba para filtrar ..."
 
 #: senaite/core/registry/schema.py:76
 msgid "Types that support labels directly.<br/>NOTE: In cluster setups, other instances need to be restarted manually for the changes to take place!"
-msgstr ""
+msgstr "Tipos de contenido que soportan etiquetado.<br/>Importante: para instalaciones en modo clúster, recuerde que debe reiniciar las otras instancias para que los cambios tengan efecto!."
 
 #: senaite/core/registry/schema.py:75
 msgid "Types with labels"
-msgstr ""
+msgstr "Tipos etiquetables"
 
 #: bika/lims/browser/worksheet/views/printview.py:149
 msgid "Unable to load the template"
@@ -6429,17 +6429,17 @@ msgstr "desactivar"
 #. Default: "Attached labels"
 #: senaite/core/behaviors/label.py:100
 msgid "description_Labels"
-msgstr ""
+msgstr "Etiquetas asignadas a este contenido"
 
 #. Default: "The category the analysis service belongs to"
 #: bika/lims/content/abstractbaseanalysis.py:428
 msgid "description_analysis_category"
-msgstr ""
+msgstr "Categoría a la que pertenece el servicio de análisis"
 
 #. Default: "Select the responsible department"
 #: bika/lims/content/abstractbaseanalysis.py:486
 msgid "description_analysis_department"
-msgstr ""
+msgstr "Departamento responsable"
 
 #. in results entry listings. Note this only applies to the options displayed
 #. in the selection list. It does not have any effect to the order in which
@@ -6471,7 +6471,7 @@ msgstr "Número de muestras a crear con la información proporcionada"
 #. Default: "Link dynamic analysis specification"
 #: bika/lims/content/analysisspec.py:72
 msgid "description_analysisspec_dynamicspec"
-msgstr ""
+msgstr "Vincular especificaciones de análisis dinámicas"
 
 #. outside this results range will raise an alert.<br/>'Min warn' and 'Max
 #. warn' values indicate a shoulder range. Any result outside the results
@@ -6482,28 +6482,29 @@ msgstr ""
 #. results report as well"
 #. Default: "'Min' and 'Max' values indicate a valid results range. Any result outside this results range will raise an alert.<br/>'Min warn' and 'Max warn' values indicate a shoulder range. Any result outside the results range but within the shoulder range will raise a less severe alert.<br/>If the result is out of range, the value set for '&lt; Min' or '&gt; Max' will be displayed in lists and results reports instead of the real result. In such case, the value set for 'Out of range comment' will be displayed in results report as well"
 #: bika/lims/content/analysisspec.py:91
+#, fuzzy
 msgid "description_analysisspec_resultsrange"
-msgstr ""
+msgstr "Los valores 'Mínimo' y 'Máximo' indican un rango de resultados válido. Cualquier resultado fuera de este rango generará una alerta.<br/>Los valores 'Advertencia de valor mínimo' y 'Advertencia de valor máximo' indican el umbral de error. Cualquier resultado fuera del rango pero dentro del umbral de error generará una alerta menor.<br/>Si el resultado está fuera del rango, el valor establecido para '<Min' o '<Max' se mostrará en listas e informes de resultados en lugar del resultado real. En dicho caso también se mostrará el valor establecido para \"Comentario fuera de rango\" en el informe de resultados"
 
 #. Default: "Select the sample type for this specification"
 #: bika/lims/content/analysisspec.py:52
 msgid "description_analysisspec_sampletype"
-msgstr ""
+msgstr "Tipo de muestra a que aplican estos rangos de validez"
 
 #. Default: "Contained samples in the PDF"
 #: bika/lims/content/arreport.py:82
 msgid "description_arreport_contained_samples"
-msgstr ""
+msgstr "Muestras referenciadas en el documento PDF"
 
 #. Default: "The primary sample of the PDF"
 #: bika/lims/content/arreport.py:52
 msgid "description_arreport_sample"
-msgstr ""
+msgstr "La muestra principal del documento PDF"
 
 #. Default: "Select the analysis profile for this template"
 #: bika/lims/content/artemplate.py:257
 msgid "description_artemplate_profile"
-msgstr ""
+msgstr "Perfil de análisis para esta plantilla de solicitud de análisis"
 
 #. Default: "Select the sample point for this template"
 #: bika/lims/content/artemplate.py:58

@@ -25,7 +25,7 @@ from zope.i18n.locales import locales
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from senaite.core.permissions import *
 
 

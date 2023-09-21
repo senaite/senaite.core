@@ -21,7 +21,7 @@
 """ Cobas Integra 400 plus
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import CobasIntegra400plusImporter, CobasIntegra400plusCSVParser
 import json
 import traceback

@@ -29,7 +29,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from senaite.core.permissions import FieldEditTemplate
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget

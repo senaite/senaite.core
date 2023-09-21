@@ -23,6 +23,7 @@ import os
 import re
 import tempfile
 from email import Encoders
+
 from email.MIMEBase import MIMEBase
 from time import time
 
@@ -55,7 +56,6 @@ from weasyprint import HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
 from zope.event import notify
-from zope.i18n import translate
 from zope.i18n.locales import locales
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -82,15 +82,16 @@ def t(i18n_msg):
     """Safely translate and convert to UTF8, any zope i18n msgid returned from
     a bikaMessageFactory _
     """
-    text = to_unicode(i18n_msg)
-    try:
-        request = api.get_request()
-        domain = getattr(i18n_msg, "domain", "senaite.core")
-        text = translate(text, domain=domain, context=request)
-    except UnicodeDecodeError:
-        # TODO: This is only a quick fix
-        logger.warn("{} couldn't be translated".format(text))
-    return to_utf8(text)
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.i18n.translate instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+
+    # prevent circular dependencies
+    from senaite.core.i18n import translate
+    return translate(i18n_msg)
 
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail

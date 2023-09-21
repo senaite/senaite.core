@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView

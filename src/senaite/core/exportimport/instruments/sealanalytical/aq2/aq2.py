@@ -21,7 +21,7 @@
 """ Seal Analytics AQ2
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import SealAnalyticsAQ2CSVParser, SealAnalyticsAQ2Importer
 import json
 import traceback

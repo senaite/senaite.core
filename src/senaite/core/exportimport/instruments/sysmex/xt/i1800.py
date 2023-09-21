@@ -26,7 +26,7 @@ import traceback
 from bika.lims import bikaMessageFactory as _
 from senaite.core.exportimport.instruments.resultsimport import InstrumentTXTResultsFileParser
 from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 title = "Sysmex XT - 1800i"
 
