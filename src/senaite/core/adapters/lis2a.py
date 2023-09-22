@@ -93,6 +93,7 @@ class ASTMImporter(object):
         self.data = data
         self.message = message
         self.request = request
+
         # internals for properties
         self._importlog = None
         self._instrument = None
