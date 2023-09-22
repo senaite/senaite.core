@@ -1,5 +1,7 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           i18n_domain="senaite.core">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="senaite.core">
 
   <!-- package includes -->
   <include package=".referencewidget" />
@@ -48,5 +50,13 @@
       provides="senaite.core.interfaces.IDynamicLocalRoles"
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
+
+  <configure zcml:condition="installed senaite.jsonapi">
+    <!-- Adapter to handle instrument pushes from senaite.astm -->
+    <adapter factory=".lis2a.PushConsumer"
+             name="senaite.core.lis2a.import" />
+    <!-- Adapter to handle instrument imports -->
+    <adapter factory=".lis2a.ASTMImporter" />
+  </configure>
 
 </configure>
