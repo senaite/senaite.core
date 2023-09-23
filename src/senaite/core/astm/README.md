@@ -34,13 +34,16 @@ name is equal to the *sender name* of the header record.
 
 Therefore, you could register a specific adapter, e.g. for the Yumizen H550 as follows:
 
+``` xml
     <configure xmlns="http://namespaces.zope.org/zope">
         <!-- Adapter to handle instrument imports from senaite.astm -->
         <adapter name="H550" factory=".astm_importer.ASTMImporter" />
     </configure>
+```
     
 And implement the `import_data` method like this:
 
+``` python
     from bika.lims import api
     from senaite.core.astm.importer import ASTMImporter as Base
     from senaite.core.interfaces import IASTMImporter
@@ -95,6 +98,7 @@ And implement the `import_data` method like this:
             for result in self.get_results():
                 value = result.get("value")
                 ...
+```
 
 
 ## ASTM Server Configuration
@@ -107,6 +111,7 @@ Therefore, the `senaite.astm` server needs to be started, e.g. like this:
     
 For more information, used the command:
 
+``` sh
     $ senaite-astm-server -h
     
     usage: senaite-astm-server [-h] [-l LISTEN] [-p PORT] [-o OUTPUT] [-u URL] [-c CONSUMER] [-m MESSAGE_FORMAT]
@@ -137,6 +142,7 @@ For more information, used the command:
     -d DELAY, --delay DELAY
                             Time delay in seconds between retries when SENAITE instance is not reachable. Only
                             has effect when argument --url is set (default: 5)
+```
 
-Please note that a proper instrument schema needs to be written to extract the
-required fields for the importer!
+**☝️ NOTE:** A proper instrument schema needs to be written to extract the required
+fields for the importer, see `senaite.astm.instruments` for examples.
