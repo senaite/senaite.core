@@ -50,10 +50,19 @@ class ASTMImporter(object):
         for brain in results:
             obj = api.get_object(brain)
             model = obj.getModel()
+            title = obj.Title()
             serialno = obj.getSerialNo()
-            if model == name and serial is None:
+            # lookup instrument by model and serial
+            if model == name and serialno == serial:
                 instrument = obj
-            elif model == name and serialno == serial:
+            # lookup instrument by title and serial
+            elif title == name and serialno == serial:
+                instrument = obj
+            # lookup instrument by model only
+            elif model == name:
+                instrument = obj
+            # lookup instrument by title only
+            elif title == name:
                 instrument = obj
 
         self._instrument = instrument
