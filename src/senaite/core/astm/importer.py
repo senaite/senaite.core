@@ -42,8 +42,8 @@ class ASTMImporter(object):
             return self._instrument
 
         instrument = None
-        # get the instrument name, serial and version from the data
-        name, serial, version = self.get_sender()
+        name = self.get_instrument_name()
+        serial = self.get_instrument_serial()
         query = {"portal_type": "Instrument"}
         results = api.search(query, SETUP_CATALOG)
 
@@ -102,8 +102,39 @@ class ASTMImporter(object):
             self._importlog.setResults(messages)
         return message
 
+    def get_sample_id(self, default=None):
+        """Get the Sample ID
+        """
+        order = self.get_order()
+        if not order:
+            return default
+        sid = order.get("sample_id")
+        if not sid:
+            return default
+        return sid
+
+    def get_instrument_name(self):
+        """Get the instrument name
+        """
+        sender = self.get_sender()
+        return sender[0]
+
+    def get_instrument_serial(self):
+        """Get the instrument serial number
+        """
+        sender = self.get_sender()
+        return sender[1]
+
+    def get_instrument_version(self):
+        """Get the instrument serial number
+        """
+        sender = self.get_sender()
+        return sender[2]
+
     def get_sender(self):
         """Return the instrument name, serial and version
+
+        :returns: Tuple of instrument name, serial, version
         """
         header = self.get_header()
         if not header:
@@ -113,17 +144,6 @@ class ASTMImporter(object):
         serial = sender.get("serial", "")
         version = sender.get("version", "")
         return name, serial, version
-
-    def get_sample_id(self, default=None):
-        """Return the sender information
-        """
-        order = self.get_order()
-        if not order:
-            return default
-        sid = order.get("sample_id")
-        if not sid:
-            return default
-        return sid
 
     def create_attachment(self, container, contents, filename=None):
         """Create a new attachment with the given contents
