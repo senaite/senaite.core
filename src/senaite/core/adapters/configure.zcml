@@ -51,12 +51,4 @@
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
 
-  <configure zcml:condition="installed senaite.jsonapi">
-    <!-- Adapter to handle instrument pushes from senaite.astm -->
-    <adapter factory=".lis2a.PushConsumer"
-             name="senaite.core.lis2a.import" />
-    <!-- Adapter to handle instrument imports -->
-    <adapter factory=".lis2a.ASTMImporter" />
-  </configure>
-
 </configure>

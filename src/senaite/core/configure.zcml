@@ -15,6 +15,7 @@
 
   <!-- package includes -->
   <include package=".adapters" />
+  <include package=".astm" />
   <include package=".behaviors" />
   <include package=".browser" />
   <include package=".catalog" />
