@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2392 Fix display of orphan method instruments
+- #2388 Fix QC sample IDs are the same accross worksheets
 - #2387 Improve memory usage when rebuilding a catalog
 - #2389 Added i18n.translate function with multiple domains support
 - #2386 Add dynamic search index lookup for referencewidget and added default catalog metadata columns

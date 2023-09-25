@@ -464,3 +464,21 @@ def import_typeinfo(tool):
     """Import type info profile
     """
     tool.runImportStepFromProfile(profile, "typeinfo")
+
+
+def reindex_control_analyses(tool):
+    """Reindex all reference/duplicate analyses
+    """
+    logger.info("Reindexing control analyses ...")
+
+    query = {"portal_type": ["ReferenceAnalysis", "DuplicateAnalysis"]}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        logger.info("Reindexing control analysis %d/%d: `%s`" % (
+            num+1, total, api.get_path(obj)))
+        obj.reindexObject()
+        obj._p_deactivate()
+
+    logger.info("Reindexing control analyses [DONE]")
