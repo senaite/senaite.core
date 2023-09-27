@@ -161,6 +161,8 @@ class ASTMImporter(object):
         attachment_file = StringIO(contents)
         attachment_file.filename = filename
         attachment.setAttachmentFile(attachment_file)
+        # do not render in report
+        attachment.setRenderInReport(False)
         return attachment
 
     def get_header(self):
