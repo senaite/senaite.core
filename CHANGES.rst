@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2393 Allow empty analysis method selection
 - #2392 Fix display of orphan method instruments
 - #2388 Fix QC sample IDs are the same accross worksheets
 - #2387 Improve memory usage when rebuilding a catalog
