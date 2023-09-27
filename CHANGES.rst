@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2394 Ajax support for transitions retract and retest
+- #2393 Allow empty analysis method selection
+- #2392 Fix display of orphan method instruments
 - #2388 Fix QC sample IDs are the same accross worksheets
 - #2387 Improve memory usage when rebuilding a catalog
 - #2389 Added i18n.translate function with multiple domains support
