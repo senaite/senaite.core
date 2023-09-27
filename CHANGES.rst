@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2394 Ajax support for transitions retract and retest
 - #2393 Allow empty analysis method selection
 - #2392 Fix display of orphan method instruments
 - #2388 Fix QC sample IDs are the same accross worksheets
