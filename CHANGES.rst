@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2394 Ajax support for transitions retract and retest
 - #2388 Fix QC sample IDs are the same accross worksheets
 - #2387 Improve memory usage when rebuilding a catalog
 - #2389 Added i18n.translate function with multiple domains support
