@@ -487,16 +487,22 @@ class AnalysesView(ListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        obj = self.get_object(analysis_brain)
-        methods = obj.getAllowedMethods()
-        if not methods:
-            return [{"ResultValue": "", "ResultText": _("None")}]
         vocab = []
+        obj = self.get_object(analysis_brain)
+        default_method = obj.getMethod()
+        methods = obj.getAllowedMethods()
+        empty_option = {"ResultValue": "", "ResultText": _("None")}
         for method in methods:
             vocab.append({
                 "ResultValue": api.get_uid(method),
                 "ResultText": api.get_title(method),
             })
+        # allow empty option if we have no allowed methods
+        if not methods:
+            vocab = [empty_option]
+        # allow empty option if the default method is set to "None"
+        elif default_method is None:
+            vocab.insert(0, empty_option)
         return vocab
 
     def get_unit_vocabulary(self, analysis_brain):
