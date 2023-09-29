@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2395 Fix DateTimeError for non-valid/old timezones
 - #2396 Add after sequential transition event handler
 - #2394 Ajax support for transitions retract and retest
 - #2393 Allow empty analysis method selection
