@@ -33,6 +33,7 @@ from bika.lims.api import APIError
 from bika.lims.api import get_tool
 from DateTime import DateTime
 from DateTime.DateTime import DateError
+from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
 from zope.i18n import translate
@@ -139,7 +140,11 @@ def to_DT(dt):
         except (SyntaxError, IndexError):
             return None
     elif is_dt(dt):
-        return DateTime(dt.isoformat())
+        try:
+            # XXX Why do this instead of DateTime(dt)?
+            return DateTime(dt.isoformat())
+        except DateTimeError:
+            return DateTime(dt)
     elif is_d(dt):
         dt = datetime(dt.year, dt.month, dt.day)
         return DateTime(dt.isoformat())
