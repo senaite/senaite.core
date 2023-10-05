@@ -432,8 +432,14 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
-            label=_("Date Sampled"),
-            description=_("The date when the sample was taken"),
+            label=_(
+                "label_sample_datesampled",
+                default="Date Sampled"
+            ),
+            description=_(
+                "description_sample_datesampled",
+                default="The date when the sample was taken"
+            ),
             size=20,
             show_time=True,
             max="created",
@@ -489,8 +495,14 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission=FieldEditSamplingDate,
         widget=DateTimeWidget(
-            label=_("Expected Sampling Date"),
-            description=_("The date when the sample will be taken"),
+            label=_(
+                "label_sample_samplingdate",
+                default="Expected Sampling Date"
+            ),
+            description=_(
+                "label_sample_samplingdate",
+                default="The date when the sample will be taken"
+            ),
             size=20,
             show_time=True,
             min="created",
