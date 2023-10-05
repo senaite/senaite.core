@@ -436,7 +436,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The date when the sample was taken"),
             size=20,
             show_time=True,
-            datepicker_nofuture=1,
+            max="created",
             visible={
                 'add': 'edit',
                 'secondary': 'disabled',
@@ -493,7 +493,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The date when the sample will be taken"),
             size=20,
             show_time=True,
-            datepicker_nopast=1,
+            min="created",
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -1051,7 +1051,7 @@ schema = BikaSchema.copy() + Schema((
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
-            datepicker_nofuture=1,
+            max="current",
             description=_("The date when the sample was received"),
             render_own_label=True,
         ),

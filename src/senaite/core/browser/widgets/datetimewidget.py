@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims.browser import ulocalized_time as ut
 from DateTime import DateTime
 from DateTime.DateTime import safelocaltime
@@ -33,8 +34,8 @@ class DateTimeWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         "show_time": False,
-        "datepicker_nofuture": False,
-        "datepicker_nopast": False,
+        "min": dtime.datetime.min,
+        "max": dtime.datetime.max,
         "macro": "senaite_widgets/datetimewidget",
         "helper_js": ("senaite_widgets/datetimewidget.js",),
         "helper_css": ("senaite_widgets/datetimewidget.css",),
@@ -92,13 +93,46 @@ class DateTimeWidget(TypesWidget):
         now = DateTime()
         return now.strftime("%Y-%m-%d")
 
-    def attrs(self):
-        attrs = {}
-        if self.datepicker_nofuture:
-            attrs["max"] = self.get_max()
-        if self.datepicker_nopast:
-            attrs["min"] = self.get_min()
-        return attrs
+    def attrs(self, context):
+        min_date = self.get_min_date(context)
+        max_date = self.get_max_date(context)
+        return {
+            "min": dtime.date_to_string(min_date),
+            "max": dtime.date_to_string(max_date),
+        }
+
+    def get_min_date(self, instance):
+        """Returns the minimum datetime supported by this widget and instance
+        """
+        return self.to_date(self.min, instance, dtime.datetime.min)
+
+    def get_max_date(self, instance):
+        """Returns the maximum datetime supported for this widget and instance
+        """
+        return self.to_date(self.max, instance, dtime.datetime.max)
+
+    def to_date(self, thing, instance, default):
+        """Resolves the thing passed in to a DateTime object or None
+        """
+        if not thing:
+            return default
+
+        date = api.to_date(thing)
+        if api.is_date(date):
+            return date
+
+        if api.is_string(thing) and thing in ["current", "now"]:
+            return dtime.datetime.now()
+
+        if callable(thing):
+            value = thing()
+            return self.to_date(value, instance, default)
+
+        if hasattr(instance, thing):
+            value = getattr(instance, thing)
+            return self.to_date(value, instance, default)
+
+        return default
 
 
 registerWidget(

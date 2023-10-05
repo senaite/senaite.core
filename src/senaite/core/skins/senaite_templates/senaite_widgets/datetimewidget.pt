@@ -37,7 +37,7 @@
               type="date"
               class="form-control form-control-sm"
               tal:attributes="
-                    python:widget.attrs();
+                    python:widget.attrs(context);
                     target fieldName;
                     name string:${fieldName}-date;
                     value python:widget.get_date(value) if value else '';"/>
