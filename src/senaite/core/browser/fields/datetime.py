@@ -34,6 +34,8 @@ from bika.lims import api
 WIDGET_NOPAST = "datepicker_nopast"
 WIDGET_NOFUTURE = "datepicker_nofuture"
 WIDGET_SHOWTIME = "show_time"
+WIDGET_MIN_DATE = "min_date"
+WIDGET_MAX_DATE = "max_date"
 
 
 class DateTimeField(BaseField):
@@ -87,15 +89,19 @@ class DateTimeField(BaseField):
         # self.min always returns an offset-naive datetime, but the value
         # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        if dtime.to_ansi(value) >= dtime.to_ansi(self.min):
+        min_date = self.get_min_datetime(instance)
+        if dtime.to_ansi(value) >= dtime.to_ansi(min_date):
             return None
+
+        # Get the minimum date to compare with
+        min_date = self.get_min_date(instance)
 
         error = _(
             u"error_datetime_before_min",
             default=u"${name} is before ${min_date}, please correct.",
             mapping={
                 "name": self.get_label(instance),
-                "min_date": self.localize(self.min, instance)
+                "min_date": self.localize(min_date, instance)
             }
         )
 
@@ -150,14 +156,36 @@ class DateTimeField(BaseField):
         return dtime.to_localized_time(dt, long_format=self.show_time,
                                        context=instance, request=request)
 
-    @property
-    def min(self):
-        """Returns the minimum datetime supported by this field
+    def get_min_datetime(self, instance):
+        """Returns the minimum datetime supported by this field and instance
         """
         no_past = getattr(self.widget, WIDGET_NOPAST, False)
-        if self.is_true(no_past):
+        if not self.is_true(no_past):
+            return dtime.datetime.min
+
+        min_date_raw = getattr(self.widget, WIDGET_MIN_DATE, None)
+        if not min_date_raw:
+            # default to current date time
             return dtime.datetime.now()
-        return dtime.datetime.min
+
+        min_date = api.to_date(min_date_raw)
+        if api.is_date(min_date):
+            return min_date
+
+        elif callable(min_date_raw):
+            min_date = api.to_date(min_date_raw())
+
+        elif hasattr(instance, min_date_raw):
+            min_date_raw = getattr(instance, min_date_raw)
+            if callable(min_date_raw):
+                min_date = min_date_raw()
+            min_date = api.to_date(min_date)
+
+        if not api.is_date(min_date):
+            raise ValueError("Cannot resolve a datetime from '{}'"
+                             .format(repr(min_date_raw)))
+
+        return min_date
 
     @property
     def max(self):
