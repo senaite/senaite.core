@@ -56,6 +56,13 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+  <browser:page
+      for="*"
+      name="multi_results_transposed"
+      class=".multi_results_transposed.MultiResultsTransposedView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
   <!-- Manage Sample Fields -->
   <browser:page
       for="*"
