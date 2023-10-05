@@ -5,21 +5,19 @@ from collections import OrderedDict
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.worksheet.views import AnalysesTransposedView
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import get_link
-from senaite.app.listing import ListingView
-from senaite.app.listing.interfaces import ITransposedListingView
 from senaite.core import logger
+from senaite.core.i18n import translate as t
 from six.moves.urllib.parse import parse_qs
-from zope.interface import implementer
 
 
-@implementer(ITransposedListingView)
-class MultiResultsTransposedView(ListingView):
+class MultiResultsTransposedView(AnalysesTransposedView):
     """Transposed multi results view
     """
     def __init__(self, context, request):
-        super(MultiResultsTransposedView, self).__init__(context, request)
+        AnalysesView.__init__(self, context, request)
 
         self.allow_edit = True
         self.expand_all_categories = False
@@ -27,13 +25,16 @@ class MultiResultsTransposedView(ListingView):
         self.show_column_toggles = False
         self.show_search = False
         self.show_select_column = True
-        self.title = _("Multi Results")
 
+        self.title = _("Multi Results")
+        self.description = _("")
+
+        self.headers = OrderedDict()
         self.services = OrderedDict()
 
         self.columns = OrderedDict((
             ("column_key", {
-                "title": _("Analysis"),
+                "title": "",
                 "sortable": False}),
             ("Result", {
                 "title": _("Result"),
@@ -43,11 +44,20 @@ class MultiResultsTransposedView(ListingView):
                 "sortable": False}),
         ))
 
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            },
+        ]
+
     def make_empty_folderitem(self, **kw):
         """Create a new empty item
         """
-        item = super(
-            MultiResultsTransposedView, self).make_empty_folderitem(**kw)
+        item = AnalysesView.make_empty_folderitem(self, **kw)
         item["transposed_keys"] = []
         item.update(**kw)
         return item
@@ -58,11 +68,17 @@ class MultiResultsTransposedView(ListingView):
         obj = item["obj"]
         service = item["Service"]
         keyword = obj.getKeyword
+        item["Pos"] = pos
 
         # Skip retracted folderitems and display only the retest
         review_state = item["review_state"]
         if review_state in ["retracted"]:
             return item
+
+        # remember the column headers of the first row
+        if "Pos" not in self.headers:
+            self.headers["Pos"] = self.make_empty_folderitem(
+                column_key=t(_("Position")), item_key="Pos")
 
         # remember the services, e.g. Calcium, Magnesium, Total Hardness etc.
         if keyword not in self.services:
@@ -79,6 +95,11 @@ class MultiResultsTransposedView(ListingView):
 
         # append all regular items that belong to this service
         if pos not in self.services[keyword]:
+            header_item = self.make_empty_folderitem()
+            # Add the item with the Pos header
+            header_item["replace"]["Pos"] = self.get_slot_header(item)
+            # Append to header
+            self.headers["Pos"][pos] = header_item
             # Add the item below its position
             self.services[keyword][pos] = item
             # Track the new transposed key for this item
@@ -101,7 +122,7 @@ class MultiResultsTransposedView(ListingView):
             slot = str(num + 1)
             # Add a new column for the sample
             self.columns[slot] = {
-                "title": sample.getId(),
+                "title": "",
                 "type": "transposed",
                 "sortable": False,
             }
@@ -112,8 +133,15 @@ class MultiResultsTransposedView(ListingView):
         slots = [str(i + 1) for i in range(len(samples))]
         self.review_states[0]["columns"] = ["column_key"] + slots
 
-        # the collected services (Iron, Copper, Calcium...)
-        transposed = OrderedDict(reversed(self.services.items()))
+        # transposed rows holder
+        transposed = OrderedDict()
+
+        # HTML slot headers
+        transposed.update(self.headers)
+
+        # collected services (Iron, Copper, Calcium...)
+        services = OrderedDict(reversed(self.services.items()))
+        transposed.update(services)
 
         # listing fixtures
         self.total = len(transposed.keys())
