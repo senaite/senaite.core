@@ -31,6 +31,9 @@ class BaseWidget(Widget):
     def get_form(self):
         """Return the current form of the widget
         """
+        if not self.form:
+            return None
+
         form = self.form
         # form is a fieldset group
         if IDescriptiveGroup.providedBy(form):
@@ -46,6 +49,9 @@ class BaseWidget(Widget):
         NOTE: If we are in the ++add++ form, `self.context` is the container!
               Therefore, we create one here to have access to the methods.
         """
+        if not self.context:
+            return None
+
         schema_iface = self.field.interface
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
