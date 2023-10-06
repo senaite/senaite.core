@@ -21,25 +21,21 @@
 from datetime import datetime
 
 from bika.lims import api
-from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from senaite.core.api import dtime
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDatetimeField
 from senaite.core.z3cform.interfaces import IDatetimeWidget
+from senaite.core.z3cform.widgets.basewidget import BaseWidget
 from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.widget import HTMLInputWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import ISubForm
 from z3c.form.validator import SimpleFieldValidator
 from z3c.form.widget import FieldWidget
-from z3c.form.widget import Widget
 from zope.component import adapter
-from zope.component import getUtility
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.interface import Interface
 
@@ -145,7 +141,7 @@ def to_datetime(value, timezone=None, default=None):
 
 
 @implementer(IDatetimeWidget)
-class DatetimeWidget(HTMLInputWidget, Widget):
+class DatetimeWidget(HTMLInputWidget, BaseWidget):
     """Senaite date and time widget
     """
     klass = u"senaite-datetime-widget"
@@ -170,52 +166,6 @@ class DatetimeWidget(HTMLInputWidget, Widget):
         """
         super(DatetimeWidget, self).update()
         widget.addFieldClass(self)
-
-    def get_form(self):
-        """Return the current form of the widget
-        """
-        form = self.form
-        # form is a fieldset group
-        if IDescriptiveGroup.providedBy(form):
-            form = form.parentForm
-        # form is a subform (e.g. DataGridFieldObjectSubForm)
-        if ISubForm.providedBy(form):
-            form = form.parentForm
-        return form
-
-    def get_context(self):
-        """Get the current context
-
-        NOTE: If we are in the ++add++ form, `self.context` is the container!
-              Therefore, we create one here to have access to the methods.
-        """
-        schema_iface = self.field.interface
-        if schema_iface and schema_iface.providedBy(self.context):
-            return self.context
-
-        # we might be in a subform, so try first to retrieve the object from
-        # the base form itself first
-        form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
-        context = getattr(form, "context", None)
-        if api.is_object(context):
-            if api.get_portal_type(context) == portal_type:
-                return context
-
-        # Hack alert!
-        # we are in ++add++ form and have no context!
-        # Create a temporary object to be able to access class methods
-        if not portal_type:
-            portal_type = api.get_portal_type(self.context)
-        portal_types = api.get_tool("portal_types")
-        fti = portal_types[portal_type]
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("temporary")
-        # mark the context as temporary
-        context._temporary_ = True
-        # hook into acquisition chain
-        context = context.__of__(self.context)
-        return context
 
     def to_localized_time(self, time, long_format=None, time_only=None):
         """Convert time to localized time
