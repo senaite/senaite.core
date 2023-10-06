@@ -104,14 +104,14 @@ class DateTimeWidget(TypesWidget):
     def get_min_date(self, instance):
         """Returns the minimum datetime supported by this widget and instance
         """
-        return self.to_date(self.min, instance, dtime.datetime.min)
+        return self.resolve_date(self.min, instance, dtime.datetime.min)
 
     def get_max_date(self, instance):
         """Returns the maximum datetime supported for this widget and instance
         """
-        return self.to_date(self.max, instance, dtime.datetime.max)
+        return self.resolve_date(self.max, instance, dtime.datetime.max)
 
-    def to_date(self, thing, instance, default):
+    def resolve_date(self, thing, instance, default):
         """Resolves the thing passed in to a DateTime object or None
         """
         if not thing:
@@ -126,11 +126,11 @@ class DateTimeWidget(TypesWidget):
 
         if callable(thing):
             value = thing()
-            return self.to_date(value, instance, default)
+            return self.resolve_date(value, instance, default)
 
         if hasattr(instance, thing):
             value = getattr(instance, thing)
-            return self.to_date(value, instance, default)
+            return self.resolve_date(value, instance, default)
 
         if api.is_string(thing):
             obj = api.get_object(instance, None)
@@ -138,7 +138,7 @@ class DateTimeWidget(TypesWidget):
             field = fields.get(thing)
             if field:
                 value = field.get(instance)
-                return self.to_date(value, instance, default)
+                return self.resolve_date(value, instance, default)
 
         return default
 

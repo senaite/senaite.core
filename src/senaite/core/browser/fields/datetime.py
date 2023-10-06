@@ -31,7 +31,6 @@ from zope.i18nmessageid import Message
 from bika.lims import _
 from bika.lims import api
 
-
 WIDGET_SHOWTIME = "show_time"
 
 
