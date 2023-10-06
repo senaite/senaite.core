@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2399 Support for min/max in DateTimeWidget, and drop _nopast and _nofuture
 - #2397 Fix district is not displayed in old address widget
 - #2395 Fix DateTimeError for non-valid/old timezones
 - #2396 Add after sequential transition event handler
