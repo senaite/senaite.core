@@ -1063,6 +1063,7 @@ schema = BikaSchema.copy() + Schema((
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
+            min="DateSampled",
             max="current",
             description=_("The date when the sample was received"),
             render_own_label=True,

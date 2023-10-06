@@ -132,6 +132,14 @@ class DateTimeWidget(TypesWidget):
             value = getattr(instance, thing)
             return self.to_date(value, instance, default)
 
+        if api.is_string(thing):
+            obj = api.get_object(instance, None)
+            fields = obj and api.get_fields(instance) or {}
+            field = fields.get(thing)
+            if field:
+                value = field.get(instance)
+                return self.to_date(value, instance, default)
+
         return default
 
 
