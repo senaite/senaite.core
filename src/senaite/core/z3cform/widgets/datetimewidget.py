@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
-from collections import OrderedDict
+
 from datetime import datetime
 
 from bika.lims import api
