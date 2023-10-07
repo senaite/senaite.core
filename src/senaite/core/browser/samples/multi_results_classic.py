@@ -31,13 +31,13 @@ from senaite.core import logger
 OFF_VALUES = ["0", "off", "no"]
 
 
-class MultiResultsView(BrowserView):
+class MultiResultsClassicView(BrowserView):
     """Allows to edit results of multiple samples
     """
     template = ViewPageTemplateFile("templates/multi_results.pt")
 
     def __init__(self, context, request):
-        super(MultiResultsView, self).__init__(context, request)
+        super(MultiResultsClassicView, self).__init__(context, request)
         self.context = context
         self.request = request
 
