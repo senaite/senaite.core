@@ -8,6 +8,7 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.worksheet.views import AnalysesTransposedView
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import get_link
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.i18n import translate as t
 from six.moves.urllib.parse import parse_qs
@@ -16,15 +17,20 @@ from six.moves.urllib.parse import parse_qs
 class MultiResultsTransposedView(AnalysesTransposedView):
     """Transposed multi results view
     """
+    template = ViewPageTemplateFile("templates/multi_results.pt")
+
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
-
         self.allow_edit = True
         self.expand_all_categories = False
         self.show_categories = False
         self.show_column_toggles = False
         self.show_search = False
         self.show_select_column = True
+
+        self.transposed = True
+        self.classic_url = "{}/multi_results_classic?uids={}".format(
+            self.context.absolute_url(), self.request.form.get("uids"))
 
         self.title = _("Multi Results")
         self.description = _("")

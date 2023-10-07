@@ -41,6 +41,10 @@ class MultiResultsView(BrowserView):
         self.context = context
         self.request = request
 
+        self.classic = True
+        self.transposed_url = "{}/multi_results?uids={}".format(
+            self.context.absolute_url(), self.request.form.get("uids"))
+
     def __call__(self):
         return self.template()
 
