@@ -65,14 +65,18 @@ class MultiResultsTransposedView(AnalysesTransposedView):
     def transpose_item(self, item, pos):
         """Transpose the folderitem
         """
-        obj = item["obj"]
+        obj = api.get_object(item["obj"])
         service = item["Service"]
-        keyword = obj.getKeyword
+        keyword = obj.getKeyword()
         item["Pos"] = pos
 
-        # Skip retracted folderitems and display only the retest
+        # skip retracted analyses
         review_state = item["review_state"]
         if review_state in ["retracted"]:
+            return item
+
+        # show only retests
+        if obj.getRetest():
             return item
 
         # remember the column headers of the first row
