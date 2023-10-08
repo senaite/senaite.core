@@ -221,8 +221,8 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
         :returns: dictionary of HTML attributes
         """
         return {
-            "min": self.min,
-            "max": self.max,
+            "min": dtime.date_to_string(self.min),
+            "max": dtime.date_to_string(self.max),
         }
 
     @property
@@ -230,7 +230,7 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
         """Returns the minimum date allowed for selection in the widget
         """
         if self._min is None:
-            func = getattr(self.field, "get_min_date", None)
+            func = getattr(self.field, "get_min", None)
             context = self.get_context()
             self._min = func(context) if func else datetime.min
         return self._min
@@ -240,7 +240,7 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
         """Returns the maximum date allowed for selection in the widget
         """
         if self._max is None:
-            func = getattr(self.field, "get_max_date", None)
+            func = getattr(self.field, "get_max", None)
             context = self.get_context()
             self._max = func(context) if func else datetime.max
         return self._max

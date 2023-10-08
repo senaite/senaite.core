@@ -84,10 +84,10 @@ class DateTimeField(BaseField):
         if errors is None:
             errors = {}
 
-        # self.get_min_date always returns an offset-naive datetime, but the
-        # value is offset-aware. We need to add the TZ, otherwise we get a:
+        # self.get_min always returns an offset-naive datetime, but the value
+        # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        min_date = self.get_min_date(instance)
+        min_date = self.get_min(instance)
         if dtime.to_ansi(value) >= dtime.to_ansi(min_date):
             return None
 
@@ -110,10 +110,10 @@ class DateTimeField(BaseField):
         if errors is None:
             errors = {}
 
-        # self.get_max_date always returns an offset-naive datetime, but the
-        # value is offset-aware. We need to add the TZ, otherwise we get a:
+        # self.get_max always returns an offset-naive datetime, but the value
+        # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        max_date = self.get_max_date(instance)
+        max_date = self.get_max(instance)
         if dtime.to_ansi(value) <= dtime.to_ansi(max_date):
             return None
 
@@ -152,13 +152,13 @@ class DateTimeField(BaseField):
         return dtime.to_localized_time(dt, long_format=self.show_time,
                                        context=instance, request=request)
 
-    def get_min_date(self, instance):
+    def get_min(self, instance):
         """Returns the minimum datetime supported by this field and instance
         """
         min_date = self.resolve_date(self.min, instance)
         return min_date or dtime.datetime.min
 
-    def get_max_date(self, instance):
+    def get_max(self, instance):
         """Returns the maximum datetime supported for this field and instance
         """
         max_date = self.resolve_date(self.max, instance)
