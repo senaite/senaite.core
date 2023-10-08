@@ -90,14 +90,29 @@ class DateTimeWidget(TypesWidget):
         :param context: The current context of the field
         :param field: The current field of the widget
         """
-        min_date = getattr(field, "get_min_date", None)
-        min_date = min_date(context) if callable(min_date) else datetime.min
-        max_date = getattr(field, "get_max_date", None)
-        max_date = max_date(context) if callable(max_date) else datetime.max
+        min_date = self.get_min_date(context, field)
+        max_date = self.get_max_date(context, field)
         return {
             "min": dtime.date_to_string(min_date),
             "max": dtime.date_to_string(max_date)
         }
+
+    def get_min_date(self, context, field):
+        """Returns the minimum date allowed for selection in the widget
+        """
+        func = getattr(field, "get_min_date", None)
+        if not func:
+            return datetime.min
+        return func(context)
+
+
+    def get_max_date(self, context, field):
+        """Returns the minimum date allowed for selection in the widget
+        """
+        func = getattr(field, "get_max_date", None)
+        if not func:
+            return datetime.max
+        return func(context)
 
 
 InitializeClass(DateTimeWidget)

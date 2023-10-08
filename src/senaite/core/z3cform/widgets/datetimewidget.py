@@ -150,14 +150,12 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
     default_timezone = None
     # enable/disable time component
     show_time = True
-    # disable past dates in the date picker
-    min = datetime.min
-    # disable future dates in the date picker
-    max = datetime.max
 
     def __init__(self, request, *args, **kw):
         super(DatetimeWidget, self).__init__(request)
         self.request = request
+        self._min = None
+        self._max = None
 
     def update(self):
         """Computes self.value for the widget templates
@@ -222,55 +220,30 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
 
         :returns: dictionary of HTML attributes
         """
-        context = self.get_context()
-        min_date = self.get_min_date(context)
-        max_date = self.get_max_date(context)
         return {
-            "min": dtime.date_to_string(min_date, DATE_FORMAT),
-            "max": dtime.date_to_string(max_date, DATE_FORMAT),
+            "min": self.min,
+            "max": self.max,
         }
 
-    def get_min_date(self, instance):
-        """Returns the minimum datetime supported by this widget and instance
+    @property
+    def min(self):
+        """Returns the minimum date allowed for selection in the widget
         """
-        return self.resolve_date(self.min, instance, datetime.min)
+        if self._min is None:
+            func = getattr(self.field, "get_min_date", None)
+            context = self.get_context()
+            self._min = func(context) if func else datetime.min
+        return self._min
 
-    def get_max_date(self, instance):
-        """Returns the maximum datetime supported for this widget and instance
+    @property
+    def max(self):
+        """Returns the maximum date allowed for selection in the widget
         """
-        return self.resolve_date(self.max, instance, datetime.max)
-
-    def resolve_date(self, thing, instance, default):
-        """Resolves the thing passed in to a DateTime object or None
-        """
-        if not thing:
-            return default
-
-        date = api.to_date(thing)
-        if api.is_date(date):
-            return date
-
-        if api.is_string(thing) and thing in ["current", "now"]:
-            return datetime.now()
-
-        if callable(thing):
-            value = thing()
-            return self.resolve_date(value, instance, default)
-
-        if hasattr(instance, thing):
-            value = getattr(instance, thing)
-            return self.resolve_date(value, instance, default)
-
-        if api.is_string(thing):
-            obj = api.get_object(instance, None)
-            fields = obj and api.get_fields(instance) or {}
-            field = fields.get(thing)
-            if field:
-                value = field.get(instance)
-                return self.resolve_date(value, instance, default)
-
-        return default
-
+        if self._max is None:
+            func = getattr(self.field, "get_max_date", None)
+            context = self.get_context()
+            self._max = func(context) if func else datetime.max
+        return self._max
 
     @property
     def portal(self):

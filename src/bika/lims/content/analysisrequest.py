@@ -492,6 +492,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'SamplingDate',
         mode="rw",
+        min="created",
         read_permission=View,
         write_permission=FieldEditSamplingDate,
         widget=DateTimeWidget(
@@ -505,7 +506,6 @@ schema = BikaSchema.copy() + Schema((
             ),
             size=20,
             show_time=True,
-            min="created",
             render_own_label=True,
             visible={
                 'add': 'edit',

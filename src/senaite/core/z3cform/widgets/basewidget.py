@@ -49,9 +49,6 @@ class BaseWidget(Widget):
         NOTE: If we are in the ++add++ form, `self.context` is the container!
               Therefore, we create one here to have access to the methods.
         """
-        if not self.context:
-            return None
-
         schema_iface = self.field.interface
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
@@ -64,6 +61,9 @@ class BaseWidget(Widget):
         if api.is_object(context):
             if api.get_portal_type(context) == portal_type:
                 return context
+
+        if not self.context:
+            return None
 
         # Hack alert!
         # we are in ++add++ form and have no context!
