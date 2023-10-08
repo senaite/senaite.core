@@ -19,8 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
+from App.class_init import InitializeClass
 from bika.lims.browser import ulocalized_time as ut
+from datetime import datetime
 from DateTime import DateTime
 from DateTime.DateTime import safelocaltime
 from DateTime.interfaces import DateTimeError
@@ -34,8 +35,6 @@ class DateTimeWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         "show_time": False,
-        "min": dtime.datetime.min,
-        "max": dtime.datetime.max,
         "macro": "senaite_widgets/datetimewidget",
         "helper_js": ("senaite_widgets/datetimewidget.js",),
         "helper_css": ("senaite_widgets/datetimewidget.css",),
@@ -85,68 +84,24 @@ class DateTimeWidget(TypesWidget):
         dt = self.to_tz_date(value)
         return dtime.date_to_string(dt, "%H:%M")
 
-    def get_max(self):
-        now = DateTime()
-        return now.strftime("%Y-%m-%d")
+    def attrs(self, context, field):
+        """Return the attributes for the input calendar HTML element
 
-    def get_min(self):
-        now = DateTime()
-        return now.strftime("%Y-%m-%d")
-
-    def attrs(self, context):
-        min_date = self.get_min_date(context)
-        max_date = self.get_max_date(context)
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        """
+        min_date = getattr(field, "get_min_date", None)
+        min_date = min_date(context) if callable(min_date) else datetime.min
+        max_date = getattr(field, "get_max_date", None)
+        max_date = max_date(context) if callable(max_date) else datetime.max
         return {
             "min": dtime.date_to_string(min_date),
-            "max": dtime.date_to_string(max_date),
+            "max": dtime.date_to_string(max_date)
         }
 
-    def get_min_date(self, instance):
-        """Returns the minimum datetime supported by this widget and instance
-        """
-        return self.resolve_date(self.min, instance, dtime.datetime.min)
 
-    def get_max_date(self, instance):
-        """Returns the maximum datetime supported for this widget and instance
-        """
-        return self.resolve_date(self.max, instance, dtime.datetime.max)
+InitializeClass(DateTimeWidget)
 
-    def resolve_date(self, thing, instance, default):
-        """Resolves the thing passed in to a DateTime object or None
-        """
-        if not thing:
-            return default
-
-        date = api.to_date(thing)
-        if api.is_date(date):
-            return date
-
-        if api.is_string(thing) and thing in ["current", "now"]:
-            return dtime.datetime.now()
-
-        if callable(thing):
-            value = thing()
-            return self.resolve_date(value, instance, default)
-
-        if hasattr(instance, thing):
-            value = getattr(instance, thing)
-            return self.resolve_date(value, instance, default)
-
-        if api.is_string(thing):
-            obj = api.get_object(instance, None)
-            fields = obj and api.get_fields(instance) or {}
-            field = fields.get(thing)
-            if field:
-                value = field.get(instance)
-                return self.resolve_date(value, instance, default)
-
-        return default
-
-
-registerWidget(
-    DateTimeWidget,
-    title="DateTimeWidget",
-    description=("Simple text field, with a jquery date widget attached.")
-)
+registerWidget(DateTimeWidget, title="DateTimeWidget", description="")
 
 registerPropertyType("show_time", "boolean")

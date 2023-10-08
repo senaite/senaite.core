@@ -45,6 +45,8 @@ class DateTimeField(BaseField):
     _properties.update({
         "type": "datetime_ng",
         "widget": DateTimeWidget,
+        "min": dtime.datetime.min,
+        "max": dtime.datetime.max,
         "with_time": 1,  # set to False if you want date only objects
         "with_date": 1,  # set to False if you want time only objects
         })
@@ -109,7 +111,7 @@ class DateTimeField(BaseField):
             errors = {}
 
         # self.get_max_date always returns an offset-naive datetime, but the
-        # value # is offset-aware. We need to add the TZ, otherwise we get a:
+        # value is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
         max_date = self.get_max_date(instance)
         if dtime.to_ansi(value) <= dtime.to_ansi(max_date):
@@ -153,12 +155,49 @@ class DateTimeField(BaseField):
     def get_min_date(self, instance):
         """Returns the minimum datetime supported by this field and instance
         """
-        return self.widget.get_min_date(instance)
+        min_date = self.resolve_date(self.min, instance)
+        return min_date or dtime.datetime.min
 
     def get_max_date(self, instance):
         """Returns the maximum datetime supported for this field and instance
         """
-        return self.widget.get_max_date(instance)
+        max_date = self.resolve_date(self.max, instance)
+        return max_date or dtime.datetime.max
+
+    def resolve_date(self, thing, instance):
+        """Resolves the thing passed in to a DateTime object or None
+        """
+        if not thing:
+            return None
+
+        date = api.to_date(thing)
+        if api.is_date(date):
+            return date
+
+        if thing in ["current", "now"]:
+            return dtime.datetime.now()
+
+        # maybe a callable
+        if callable(thing):
+            value = thing()
+            return api.to_date(value)
+
+        # maybe an instance attribute
+        if hasattr(instance, thing):
+            value = getattr(instance, thing)
+            if callable(value):
+                value = value()
+            return api.to_date(value)
+
+        # maybe an instance fieldname
+        if api.is_string(thing):
+            fields = api.get_fields(instance)
+            field = fields.get(thing)
+            if field:
+                value = field.get(instance)
+                return api.to_date(value)
+
+        return None
 
     @property
     def show_time(self):
@@ -180,3 +219,5 @@ registerField(
 
 registerPropertyType("with_time", "boolean", DateTimeField)
 registerPropertyType("with_date", "boolean", DateTimeField)
+registerPropertyType("min", "string", DateTimeField)
+registerPropertyType("max", "string", DateTimeField)

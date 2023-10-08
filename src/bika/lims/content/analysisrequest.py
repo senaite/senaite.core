@@ -429,6 +429,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateSampled',
         mode="rw",
+        max="created",
         read_permission=View,
         write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
@@ -442,7 +443,6 @@ schema = BikaSchema.copy() + Schema((
             ),
             size=20,
             show_time=True,
-            max="created",
             visible={
                 'add': 'edit',
                 'secondary': 'disabled',
@@ -1058,13 +1058,13 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateReceived',
         mode="rw",
+        min="DateSampled",
+        max="current",
         read_permission=View,
         write_permission=FieldEditDateReceived,
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
-            min="DateSampled",
-            max="current",
             description=_("The date when the sample was received"),
             render_own_label=True,
         ),
