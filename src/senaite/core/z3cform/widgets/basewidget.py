@@ -49,7 +49,7 @@ class BaseWidget(Widget):
         NOTE: If we are in the ++add++ form, `self.context` is the container!
               Therefore, we create one here to have access to the methods.
         """
-        schema_iface = self.field.interface
+        schema_iface = self.field.interface if self.field else None
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
 
