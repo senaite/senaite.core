@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import os
+import re
 import time
 from datetime import date
 from datetime import datetime
@@ -126,11 +127,20 @@ def to_DT(dt):
     :param dt: DateTime/datetime/date
     :returns: DateTime object
     """
+    INTERNATIONAL_FMT = re.compile(
+        r"^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.(\d{2,4})\s*"
+    )
     if is_DT(dt):
         return dt
     elif is_str(dt):
+        kwargs = {}
+        if re.match(INTERNATIONAL_FMT, dt):
+            # This will fail silently and you get a wrong date:
+            # dt = DateTime("02.07.2010") # Parses like US date 02/07/2010
+            # https://github.com/zopefoundation/DateTime/blob/master/src/DateTime/DateTime.py#L641-L645
+            kwargs["datefmt"] = "international"
         try:
-            return DateTime(dt)
+            return DateTime(dt, **kwargs)
         except (DateError, TimeError):
             try:
                 dt = ansi_to_dt(dt)
