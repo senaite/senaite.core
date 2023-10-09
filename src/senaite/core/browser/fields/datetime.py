@@ -170,7 +170,7 @@ class DateTimeField(BaseField):
         if not thing:
             return None
 
-        date = api.to_date(thing)
+        date = dtime.to_DT(thing)
         if api.is_date(date):
             return date
 

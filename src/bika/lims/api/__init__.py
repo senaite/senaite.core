@@ -37,7 +37,6 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
-from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
@@ -66,6 +65,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import ITemporaryObject
+from zope import deprecation
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
@@ -1475,19 +1475,14 @@ def to_date(value, default=None):
     :type value: str, DateTime or datetime
     :return: The DateTime representation of the value passed in or default
     """
-    if isinstance(value, DateTime):
-        return value
-    if not value:
-        if default is None:
-            return None
-        return to_date(default)
-    try:
-        if isinstance(value, str) and '.' in value:
-            # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
-            return DateTime(value, datefmt='international')
-        return DateTime(value)
-    except (TypeError, ValueError, DateTimeError):
-        return to_date(default)
+    # prevent circular dependencies
+    from senaite.core.api.dtime import to_DT
+    deprecation.deprecated("bika.lims.api.to_date",
+                           "Use senaite.core.api.dtime.to_DT instead")
+    date = to_DT(value)
+    if not date:
+        return to_DT(default)
+    return date
 
 
 def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
