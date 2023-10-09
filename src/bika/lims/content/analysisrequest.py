@@ -21,6 +21,7 @@
 import base64
 import functools
 import re
+from datetime import datetime
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
@@ -429,7 +430,8 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateSampled',
         mode="rw",
-        max="created",
+        min="getMinDateSampled",
+        max="getMaxDateSampled",
         read_permission=View,
         write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
@@ -2593,6 +2595,22 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if num_steps > max_num_steps:
             return 100
         return (num_steps * 100) / max_num_steps
+
+    def getMinDateSampled(self):
+        """Returns the minimum date for sample collection
+        """
+        if self.getSamplingWorkflowEnabled():
+            # no past, has to be collected after registration
+            return api.get_creation_date(self)
+        return datetime.min
+
+    def getMaxDateSampled(self):
+        """Returns the maximum date for sample collection
+        """
+        if not self.getSamplingWorkflowEnabled():
+            # no future, has to be collected before registration
+            return api.get_creation_date(self)
+        return datetime.max
 
 
 registerType(AnalysisRequest, PROJECTNAME)
