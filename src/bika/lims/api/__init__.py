@@ -1475,10 +1475,16 @@ def to_date(value, default=None):
     :type value: str, DateTime or datetime
     :return: The DateTime representation of the value passed in or default
     """
+
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.api.dtime.to_DT instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+
     # prevent circular dependencies
     from senaite.core.api.dtime import to_DT
-    deprecation.deprecated("bika.lims.api.to_date",
-                           "Use senaite.core.api.dtime.to_DT instead")
     date = to_DT(value)
     if not date:
         return to_DT(default)
