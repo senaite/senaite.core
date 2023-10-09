@@ -170,7 +170,7 @@ class DateTimeField(BaseField):
         if not thing:
             return None
 
-        date = api.to_date(thing)
+        date = dtime.to_DT(thing)
         if api.is_date(date):
             return date
 
@@ -180,14 +180,14 @@ class DateTimeField(BaseField):
         # maybe a callable
         if callable(thing):
             value = thing()
-            return api.to_date(value)
+            return dtime.to_DT(value)
 
         # maybe an instance attribute
         if hasattr(instance, thing):
             value = getattr(instance, thing)
             if callable(value):
                 value = value()
-            return api.to_date(value)
+            return dtime.to_DT(value)
 
         # maybe an instance fieldname
         if api.is_string(thing):
@@ -195,7 +195,7 @@ class DateTimeField(BaseField):
             field = fields.get(thing)
             if field:
                 value = field.get(instance)
-                return api.to_date(value)
+                return dtime.to_DT(value)
 
         return None
 
