@@ -176,13 +176,13 @@ Timezone naive datetimes are converterd to `GMT+0`:
 
 International format is automatically detected and supported:
 
-    >>> dtime.to_DT("02.07.2010 17:50:34")
+    >>> dtime.to_DT("02.07.2010 17:50:34 GMT+2")
     DateTime('2010/07/02 17:50:34 GMT+2')
 
-    >>> dtime.to_DT("13.12.2018 17:50:34")
+    >>> dtime.to_DT("13.12.2018 17:50:34 GMT+1")
     DateTime('2018/12/13 17:50:34 GMT+1')
 
-    >>> dtime.to_DT("12.13.2018 17:50:34")
+    >>> dtime.to_DT("12.13.2018 17:50:34 GMT+1")
     DateTime('2018/12/13 17:50:34 GMT+1')
 
 Timezone aware datetimes are converterd to `GMT+<tzoffset>`
