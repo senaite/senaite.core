@@ -19,13 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 from datetime import datetime
-from datetime import timedelta
 
 from bika.lims import api
 from senaite.core.api import dtime
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDatetimeField
 from senaite.core.z3cform.interfaces import IDatetimeWidget
+from senaite.core.z3cform.widgets.basewidget import BaseWidget
 from z3c.form import interfaces
 from z3c.form.browser import widget
 from z3c.form.browser.widget import HTMLInputWidget
@@ -34,11 +34,10 @@ from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.validator import SimpleFieldValidator
 from z3c.form.widget import FieldWidget
-from z3c.form.widget import Widget
 from zope.component import adapter
 from zope.component import queryMultiAdapter
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
 
 HOUR_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
@@ -142,7 +141,7 @@ def to_datetime(value, timezone=None, default=None):
 
 
 @implementer(IDatetimeWidget)
-class DatetimeWidget(HTMLInputWidget, Widget):
+class DatetimeWidget(HTMLInputWidget, BaseWidget):
     """Senaite date and time widget
     """
     klass = u"senaite-datetime-widget"
@@ -151,14 +150,12 @@ class DatetimeWidget(HTMLInputWidget, Widget):
     default_timezone = None
     # enable/disable time component
     show_time = True
-    # disable past dates in the date picker
-    datepicker_nopast = False
-    # disable future dates in the date picker
-    datepicker_nofuture = False
 
     def __init__(self, request, *args, **kw):
         super(DatetimeWidget, self).__init__(request)
         self.request = request
+        self._min = None
+        self._max = None
 
     def update(self):
         """Computes self.value for the widget templates
@@ -218,27 +215,35 @@ class DatetimeWidget(HTMLInputWidget, Widget):
             return u""
         return dtime.date_to_string(dt, HOUR_FORMAT)
 
-    def date_now(self, offset=0):
-        """Get the current date without time component
-        """
-        ts = datetime.now().strftime(DATE_FORMAT)
-        dt = datetime.strptime(ts, DATE_FORMAT)
-        if offset:
-            dt = dt + timedelta(offset)
-        return dt
-
     def attrs(self):
         """Return the template attributes for the date field
 
         :returns: dictionary of HTML attributes
         """
-        attrs = {}
-        today = self.date_now().strftime(DATE_FORMAT)
-        if self.datepicker_nofuture:
-            attrs["max"] = today
-        if self.datepicker_nopast:
-            attrs["min"] = today
-        return attrs
+        return {
+            "min": dtime.date_to_string(self.min),
+            "max": dtime.date_to_string(self.max),
+        }
+
+    @property
+    def min(self):
+        """Returns the minimum date allowed for selection in the widget
+        """
+        if self._min is None:
+            func = getattr(self.field, "get_min", None)
+            context = self.get_context()
+            self._min = func(context) if func else datetime.min
+        return self._min
+
+    @property
+    def max(self):
+        """Returns the maximum date allowed for selection in the widget
+        """
+        if self._max is None:
+            func = getattr(self.field, "get_max", None)
+            context = self.get_context()
+            self._max = func(context) if func else datetime.max
+        return self._max
 
     @property
     def portal(self):

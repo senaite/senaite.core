@@ -429,14 +429,20 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateSampled',
         mode="rw",
+        max="created",
         read_permission=View,
         write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
-            label=_("Date Sampled"),
-            description=_("The date when the sample was taken"),
+            label=_(
+                "label_sample_datesampled",
+                default="Date Sampled"
+            ),
+            description=_(
+                "description_sample_datesampled",
+                default="The date when the sample was taken"
+            ),
             size=20,
             show_time=True,
-            datepicker_nofuture=1,
             visible={
                 'add': 'edit',
                 'secondary': 'disabled',
@@ -486,14 +492,20 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'SamplingDate',
         mode="rw",
+        min="created",
         read_permission=View,
         write_permission=FieldEditSamplingDate,
         widget=DateTimeWidget(
-            label=_("Expected Sampling Date"),
-            description=_("The date when the sample will be taken"),
+            label=_(
+                "label_sample_samplingdate",
+                default="Expected Sampling Date"
+            ),
+            description=_(
+                "label_sample_samplingdate",
+                default="The date when the sample will be taken"
+            ),
             size=20,
             show_time=True,
-            datepicker_nopast=1,
             render_own_label=True,
             visible={
                 'add': 'edit',
@@ -1046,12 +1058,13 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateReceived',
         mode="rw",
+        min="DateSampled",
+        max="current",
         read_permission=View,
         write_permission=FieldEditDateReceived,
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
-            datepicker_nofuture=1,
             description=_("The date when the sample was received"),
             render_own_label=True,
         ),

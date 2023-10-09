@@ -36,11 +36,12 @@
             <input
               type="date"
               class="form-control form-control-sm"
+              tal:define="widget_attrs python:widget.attrs(context, field);"
               tal:attributes="
-                    python:widget.attrs();
                     target fieldName;
                     name string:${fieldName}-date;
-                    value python:widget.get_date(value) if value else '';"/>
+                    value python:widget.get_date(value) if value else '';
+                    python:widget_attrs;"/>
             <!-- time -->
             <input
               type="time"

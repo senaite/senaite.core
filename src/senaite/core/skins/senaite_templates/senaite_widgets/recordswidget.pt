@@ -201,26 +201,6 @@
                                           tabindex tabindex/next|nothing;"/>
                       </tal:string>
 
-                      <!-- datepicker_nofuture -->
-
-                      <tal:string condition="python: type == 'datepicker_nofuture'">
-                        <input
-                          type="text"
-                          name=""
-                          value=""
-                          size="30"
-                          tabindex="#"
-                          tal:attributes="class string:datepicker_nofuture form-control form-control-sm;
-                                          name string:${fieldName}.${key}:records:ignore_empty;
-                                          title description;
-                                          id string:${fieldName}-${key}-${repeat/idx/index};
-                                          value python:field.getSubfieldValue(values, idx, key);
-                                          size python:field.getSubfieldSize(key);
-                                          maxlength maxlength|nothing;
-                                          readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
-                                          tabindex tabindex/next|nothing;"/>
-                      </tal:string>
-
                       <!-- int -->
 
                       <tal:number condition="python: type == 'int'">
