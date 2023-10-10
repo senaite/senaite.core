@@ -430,7 +430,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateSampled',
         mode="rw",
-        min="getMinDateSampled",
         max="getMaxDateSampled",
         read_permission=View,
         write_permission=FieldEditDateSampled,
@@ -2595,14 +2594,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if num_steps > max_num_steps:
             return 100
         return (num_steps * 100) / max_num_steps
-
-    def getMinDateSampled(self):
-        """Returns the minimum date for sample collection
-        """
-        if self.getSamplingWorkflowEnabled():
-            # no past, has to be collected after registration
-            return api.get_creation_date(self)
-        return datetime.min
 
     def getMaxDateSampled(self):
         """Returns the maximum date for sample collection
