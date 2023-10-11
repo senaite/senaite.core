@@ -31,8 +31,6 @@ from zope.i18nmessageid import Message
 from bika.lims import _
 from bika.lims import api
 
-WIDGET_NOPAST = "datepicker_nopast"
-WIDGET_NOFUTURE = "datepicker_nofuture"
 WIDGET_SHOWTIME = "show_time"
 
 
@@ -47,6 +45,8 @@ class DateTimeField(BaseField):
     _properties.update({
         "type": "datetime_ng",
         "widget": DateTimeWidget,
+        "min": dtime.datetime.min,
+        "max": dtime.datetime.max,
         "with_time": 1,  # set to False if you want date only objects
         "with_date": 1,  # set to False if you want time only objects
         })
@@ -84,10 +84,11 @@ class DateTimeField(BaseField):
         if errors is None:
             errors = {}
 
-        # self.min always returns an offset-naive datetime, but the value
+        # self.get_min always returns an offset-naive datetime, but the value
         # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        if dtime.to_ansi(value) >= dtime.to_ansi(self.min):
+        min_date = self.get_min(instance)
+        if dtime.to_ansi(value) >= dtime.to_ansi(min_date):
             return None
 
         error = _(
@@ -95,7 +96,7 @@ class DateTimeField(BaseField):
             default=u"${name} is before ${min_date}, please correct.",
             mapping={
                 "name": self.get_label(instance),
-                "min_date": self.localize(self.min, instance)
+                "min_date": self.localize(min_date, instance)
             }
         )
 
@@ -109,10 +110,11 @@ class DateTimeField(BaseField):
         if errors is None:
             errors = {}
 
-        # self.max always returns an offset-naive datetime, but the value
+        # self.get_max always returns an offset-naive datetime, but the value
         # is offset-aware. We need to add the TZ, otherwise we get a:
         #   TypeError: can't compare offset-naive and offset-aware datetimes
-        if dtime.to_ansi(value) <= dtime.to_ansi(self.max):
+        max_date = self.get_max(instance)
+        if dtime.to_ansi(value) <= dtime.to_ansi(max_date):
             return None
 
         error = _(
@@ -120,7 +122,7 @@ class DateTimeField(BaseField):
             default=u"${name} is after ${max_date}, please correct.",
             mapping={
                 "name": self.get_label(instance),
-                "max_date": self.localize(self.max, instance)
+                "max_date": self.localize(max_date, instance)
             }
         )
 
@@ -150,23 +152,52 @@ class DateTimeField(BaseField):
         return dtime.to_localized_time(dt, long_format=self.show_time,
                                        context=instance, request=request)
 
-    @property
-    def min(self):
-        """Returns the minimum datetime supported by this field
+    def get_min(self, instance):
+        """Returns the minimum datetime supported by this field and instance
         """
-        no_past = getattr(self.widget, WIDGET_NOPAST, False)
-        if self.is_true(no_past):
-            return dtime.datetime.now()
-        return dtime.datetime.min
+        min_date = self.resolve_date(self.min, instance)
+        return min_date or dtime.datetime.min
 
-    @property
-    def max(self):
-        """Returns the maximum datetime supported for this field
+    def get_max(self, instance):
+        """Returns the maximum datetime supported for this field and instance
         """
-        no_future = getattr(self.widget, WIDGET_NOFUTURE, False)
-        if self.is_true(no_future):
+        max_date = self.resolve_date(self.max, instance)
+        return max_date or dtime.datetime.max
+
+    def resolve_date(self, thing, instance):
+        """Resolves the thing passed in to a DateTime object or None
+        """
+        if not thing:
+            return None
+
+        date = dtime.to_DT(thing)
+        if api.is_date(date):
+            return date
+
+        if thing in ["current", "now"]:
             return dtime.datetime.now()
-        return dtime.datetime.max
+
+        # maybe a callable
+        if callable(thing):
+            value = thing()
+            return dtime.to_DT(value)
+
+        # maybe an instance attribute
+        if hasattr(instance, thing):
+            value = getattr(instance, thing)
+            if callable(value):
+                value = value()
+            return dtime.to_DT(value)
+
+        # maybe an instance fieldname
+        if api.is_string(thing):
+            fields = api.get_fields(instance)
+            field = fields.get(thing)
+            if field:
+                value = field.get(instance)
+                return dtime.to_DT(value)
+
+        return None
 
     @property
     def show_time(self):
@@ -188,3 +219,5 @@ registerField(
 
 registerPropertyType("with_time", "boolean", DateTimeField)
 registerPropertyType("with_date", "boolean", DateTimeField)
+registerPropertyType("min", "string", DateTimeField)
+registerPropertyType("max", "string", DateTimeField)
