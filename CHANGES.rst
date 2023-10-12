@@ -4,6 +4,10 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2402 Fix user cannot enter future date for DateSampled when sampling enabled
+- #2401 Fix OverflowError when calculating datetime.min date for left-hand TZs
+- #2399 Support for min/max in DateTimeWidget, and drop _nopast and _nofuture
+- #2397 Fix district is not displayed in old address widget
 - #2395 Fix DateTimeError for non-valid/old timezones
 - #2396 Add after sequential transition event handler
 - #2394 Ajax support for transitions retract and retest

@@ -63,7 +63,7 @@ If we render the widget we get the HTML:
     >>> print(widget.render().replace('\n', ''))
     <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
       <!-- date -->
-      <input type="date" class="form-control form-control-sm" name="None-date" value="2021-12-24"/>
+      <input type="date" class="form-control form-control-sm" max="9999-12-31" min="1-01-01" name="None-date" value="2021-12-24"/>
       <!-- time -->
       <input type="time" class="form-control form-control-sm" name="None-time" value="00:00"/>
     </div>
@@ -79,7 +79,7 @@ Render without the time component:
     >>> print(widget.render().replace('\n', ''))
     <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
       <!-- date -->
-      <input type="date" class="form-control form-control-sm" name="None-date" value="2021-12-24"/>
+      <input type="date" class="form-control form-control-sm" max="9999-12-31" min="1-01-01" name="None-date" value="2021-12-24"/>
       <!-- time -->
     </div>
     <!-- datetime value (outside to avoid style issues) -->
