@@ -235,6 +235,10 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
             self._min = func(context) if func else datetime.min
         return self._min
 
+    @min.setter
+    def min(self, value):
+        self._min = value
+
     @property
     def max(self):
         """Returns the maximum date allowed for selection in the widget
@@ -244,6 +248,10 @@ class DatetimeWidget(HTMLInputWidget, BaseWidget):
             context = self.get_context()
             self._max = func(context) if func else datetime.max
         return self._max
+
+    @max.setter
+    def max(self, value):
+        self._max = value
 
     @property
     def portal(self):
