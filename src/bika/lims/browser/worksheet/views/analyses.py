@@ -117,6 +117,24 @@ class AnalysesView(BaseView):
                 "title": _("State")}),
         ))
 
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+                "confirm_messages": {
+                    "reject": _(
+                        "This operation can not be undone. Are you sure "
+                        "you want to reject the selected analyses?"
+                    )
+                }
+            },
+        ]
+
+    def update(self):
+        super(AnalysesView, self).update()
         # Inject Remarks column for listing
         if self.is_analysis_remarks_enabled():
             self.columns["Remarks"] = {
@@ -136,24 +154,6 @@ class AnalysesView(BaseView):
             "help": _("Set remarks for selected analyses")
         }
 
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "contentFilter": {},
-                "custom_transitions": [],
-                "columns": self.columns.keys(),
-                "confirm_messages": {
-                    "reject": _(
-                        "This operation can not be undone. Are you sure "
-                        "you want to reject the selected analyses?"
-                    )
-                }
-            },
-        ]
-
-    def update(self):
-        super(AnalysesView, self).update()
         self.reorder_analysis_columns()
 
     def before_render(self):
@@ -184,13 +184,20 @@ class AnalysesView(BaseView):
 
         XXX: Convert maybe better to a real WF transition with a guard
         """
-        # Disable analysis remarks transition when global analysis remarks are disabled
+        # Disable analysis remarks transition if disabled in global setup
         if not self.is_analysis_remarks_enabled():
             return False
-        for analysis in self.context.getAnalyses():
+        for analysis in self.get_analyses():
             if check_permission(FieldEditAnalysisRemarks, analysis):
                 return True
         return False
+
+    def get_analyses(self, full_objects=False):
+        """Return all analyses of the current view
+
+        :returns: List of analyses
+        """
+        return self.context.getAnalyses(full_objects=full_objects)
 
     @view.memoize
     def is_analysis_remarks_enabled(self):

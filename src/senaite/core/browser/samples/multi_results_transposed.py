@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
+from itertools import chain
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -165,6 +166,14 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         view = AnalysesView(sample, self.request)
         view.contentFilter["getAncestorsUIDs"] = [api.get_uid(sample)]
         return view.folderitems()
+
+    def get_analyses(self, full_objects=False):
+        """Returns all sample analyses
+        """
+        analyses = map(lambda s: s.getAnalyses(full_objects=full_objects),
+                       self.get_samples())
+        # return a flat list of analyses
+        return list(chain(*analyses))
 
     def get_samples(self):
         """Extract the samples from the request UIDs
