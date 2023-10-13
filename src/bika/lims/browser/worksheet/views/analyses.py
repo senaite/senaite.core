@@ -67,7 +67,6 @@ class AnalysesView(BaseView):
         self.show_search = False
 
         self.bika_setup = api.get_bika_setup()
-        self.uids_strpositions = self.get_uids_strpositions()
         self.items_rowspans = dict()
 
         self.columns = collections.OrderedDict((
@@ -135,33 +134,36 @@ class AnalysesView(BaseView):
 
     def update(self):
         super(AnalysesView, self).update()
-        # Inject Remarks column for listing
-        if self.is_analysis_remarks_enabled():
-            self.columns["Remarks"] = {
-                "title": "Remarks",
-                "ajax": True,
-                "toggle": False,
-                "sortable": False,
-                "type": "remarks"
-            }
-
-        self.set_analysis_remarks_modal = {
-            "id": "modal_set_analysis_remarks",
-            "title": _("Set remarks"),
-            "url": "{}/set_analysis_remarks_modal".format(
-                api.get_url(self.context)),
-            "css_class": "btn btn-outline-secondary",
-            "help": _("Set remarks for selected analyses")
-        }
-
         self.reorder_analysis_columns()
 
     def before_render(self):
         super(AnalysesView, self).before_render()
+        if self.is_analysis_remarks_enabled():
+            self.enable_remarks()
 
+    def enable_remarks(self):
+        """Enable remarks functionality
+        """
+        # Inject Remarks column for listing
+        self.columns["Remarks"] = {
+            "title": "Remarks",
+            "ajax": True,
+            "toggle": False,
+            "sortable": False,
+            "type": "remarks"
+        }
+
+        # Inject custom transition for remarks
         if self.show_analysis_remarks_transition():
             for state in self.review_states:
-                state["custom_transitions"] = [self.set_analysis_remarks_modal]
+                state["custom_transitions"] = [{
+                    "id": "modal_set_analysis_remarks",
+                    "title": _("Set remarks"),
+                    "url": "{}/set_analysis_remarks_modal".format(
+                        api.get_url(self.context)),
+                    "css_class": "btn btn-outline-secondary",
+                    "help": _("Set remarks for selected analyses")
+                }]
 
     @view.memoize
     def get_default_columns_order(self):
@@ -301,7 +303,9 @@ class AnalysesView(BaseView):
 
         return items
 
-    def get_uids_strpositions(self):
+    @property
+    @view.memoize
+    def uids_strpositions(self):
         """Returns a dict with the positions of each analysis within the
         current worksheet in accordance with the current layout. The key of the
         dict is the uid of the analysis and the value is an string

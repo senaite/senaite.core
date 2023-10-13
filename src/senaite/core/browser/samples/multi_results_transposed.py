@@ -21,7 +21,8 @@ class MultiResultsTransposedView(AnalysesTransposedView):
     template = ViewPageTemplateFile("templates/multi_results.pt")
 
     def __init__(self, context, request):
-        AnalysesView.__init__(self, context, request)
+        super(MultiResultsTransposedView, self).__init__(context, request)
+
         self.allow_edit = True
         self.expand_all_categories = False
         self.show_categories = False
@@ -45,8 +46,6 @@ class MultiResultsTransposedView(AnalysesTransposedView):
                 "sortable": False}),
             ("Result", {
                 "title": _("Result"),
-                "input_width": "6",
-                "input_class": "ajax_calculate numeric",
                 "ajax": True,
                 "sortable": False}),
         ))
