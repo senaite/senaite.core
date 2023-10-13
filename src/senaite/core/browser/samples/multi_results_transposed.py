@@ -167,10 +167,13 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         return view.folderitems()
 
     def get_analyses(self, full_objects=False):
-        """Returns all sample analyses
+        """Returns sample analyses from lab poc
         """
-        analyses = map(lambda s: s.getAnalyses(full_objects=full_objects),
-                       self.get_samples())
+        params = {
+            "full_objects": full_objects,
+            "getPointOfCapture": "lab",
+        }
+        analyses = map(lambda s: s.getAnalyses(**params), self.get_samples())
         # return a flat list of analyses
         return list(chain(*analyses))
 
