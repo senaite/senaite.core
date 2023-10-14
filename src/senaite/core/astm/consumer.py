@@ -14,7 +14,7 @@ from zope.interface import implementer
 @adapter(Interface)
 @implementer(IPushConsumer)
 class PushConsumer(object):
-    """Adapter that handles push requests for name "cermel.lis2a.import"
+    """Adapter that handles push requests for name "enaite.core.lis2a.import"
     """
     def __init__(self, data):
         self.data = data
