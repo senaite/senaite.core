@@ -165,6 +165,11 @@ class ASTMImporter(object):
         attachment.setRenderInReport(False)
         return attachment
 
+    def get_metadata(self):
+        """Metadata provided by the instrument parser module
+        """
+        return self.data.get("metadata", {})
+
     def get_header(self):
         headers = self.get_headers()
         if len(headers) != 1:
