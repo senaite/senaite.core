@@ -211,3 +211,12 @@ class IHaveLabels(ICanHaveLabels):
     NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
           fields for already labeled objects
     """
+
+
+class IASTMImporter(Interface):
+    """Marker interface for ASTM Wrappers
+    """
+
+    def import_data(data):
+        """Import the processed JSON data from the wrapper
+        """
