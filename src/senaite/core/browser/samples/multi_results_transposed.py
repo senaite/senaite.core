@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-from itertools import chain
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -30,6 +29,17 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         self.show_search = False
         self.show_select_column = True
 
+        # NOTE: The contentFilter query is set by `senaite.app.listing` to
+        # update a specific folderitem. In our case, this might be the UID of
+        # one or more Analyses.
+        # It is used to generate the folderitems for all the selected samples.
+        # We are also only interested in lab and field analyses to not show
+        # other PoCs coming from e.g. `senaite.ast`.
+        self.contentFilter = {
+            "portal_type": "Analysis",
+            "getPointOfCapture": ["lab", "field"],
+        }
+
         self.transposed = True
         self.classic_url = "{}/multi_results_classic?uids={}".format(
             self.context.absolute_url(), self.request.form.get("uids"))
@@ -54,7 +64,6 @@ class MultiResultsTransposedView(AnalysesTransposedView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {},
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             },
@@ -117,6 +126,19 @@ class MultiResultsTransposedView(AnalysesTransposedView):
 
         return item
 
+    def get_updated_samples(self):
+        """Returns samples where analyses have been updated
+        """
+        updated_samples = []
+        uids = self.contentFilter.get("UID", [])
+        for uid in uids:
+            analysis = api.get_object(uid)
+            sample = analysis.getRequest()
+            if sample in updated_samples:
+                continue
+            updated_samples.append(sample)
+        return updated_samples
+
     def folderitems(self):
         """Prepare transposed analyses folderitems
 
@@ -128,14 +150,24 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         """
         samples = self.get_samples()
 
+        # This is added for performance reasons to fetch only those folderitems
+        # (analyses) from samples, that were updated (submitted, verified etc.)
+        # The content filter UID query is set by senaite.app.listing
+        updated_samples = self.get_updated_samples()
+
         for num, sample in enumerate(samples):
             slot = str(num + 1)
-            # Add a new column for the sample
+            # Create a new column for the sample at the right position
             self.columns[slot] = {
                 "title": "",
                 "type": "transposed",
                 "sortable": False,
             }
+            # we can skip to fetch folderitems if the contentFilter contains a
+            # UID query for updated Analyses.
+            if updated_samples and sample not in updated_samples:
+                continue
+
             for item in self.get_sample_folderitems(sample):
                 transposed = self.transpose_item(item, slot)
 
@@ -163,27 +195,29 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         """Get the folderitems for the given sample
         """
         view = AnalysesView(sample, self.request)
+        # Inject the updated contentFilter query that might contain the UIDs of
+        # the updated Analyses.
+        view.contentFilter = dict(self.contentFilter)
         view.contentFilter["getAncestorsUIDs"] = [api.get_uid(sample)]
         return view.folderitems()
 
     def get_analyses(self, full_objects=False):
         """Returns sample analyses from lab poc
         """
-        params = {
-            "full_objects": full_objects,
-            "getPointOfCapture": "lab",
-        }
-        analyses = map(lambda s: s.getAnalyses(**params), self.get_samples())
-        # return a flat list of analyses
-        return list(chain(*analyses))
+        analyses = []
+
+        # get analyses of all samples
+        for sample in self.get_samples():
+            for analysis in sample.getAnalyses(**self.contentFilter):
+                if full_objects:
+                    analysis = api.get_object(analysis)
+                analyses.append(analysis)
+
+        return analyses
 
     def get_samples(self):
         """Extract the samples from the request UIDs
-
-        This might be either a samples container or a sample context
         """
-
-        # fetch objects from request
         objs = self.get_objects_from_request()
 
         samples = []
