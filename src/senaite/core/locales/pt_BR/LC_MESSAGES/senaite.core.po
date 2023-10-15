@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:04+0000\n"
+"POT-Creation-Date: 2023-10-15 07:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -1201,6 +1201,10 @@ msgstr ""
 msgid "Confidence Level %"
 msgstr "% Nível de certeza"
 
+# senaite.app.listing: Configuration
+msgid "Configuration"
+msgstr ""
+
 #: senaite/core/registry/schema.py:198
 msgid "Configuration for the sample header information"
 msgstr ""
@@ -1761,6 +1765,10 @@ msgstr ""
 msgid "Detach"
 msgstr "Destacar"
 
+# senaite.app.listing: Disable auto fetch transitions
+msgid "Disable auto fetch transitions"
+msgstr ""
+
 #: bika/lims/config.py:132
 msgid "Disable multi-verification for the same user"
 msgstr "Desabilitar multi-verificação para o mesmo usuário"
@@ -2205,6 +2213,10 @@ msgstr "Fax comercial"
 #: bika/lims/config.py:77
 msgid "Female"
 msgstr "Feminino"
+
+# senaite.app.listing: Fetch transitions
+msgid "Fetch Transitions"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:191
@@ -4252,6 +4264,10 @@ msgstr ""
 msgid "Rejection workflow is not enabled"
 msgstr ""
 
+# senaite.app.listing: Reload
+msgid "Reload"
+msgstr ""
+
 #: senaite/core/browser/viewlets/remarks.py:31
 msgid "Remarks"
 msgstr "Notas"
@@ -4365,6 +4381,10 @@ msgstr "Volume Requerido"
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:198
 msgid "Reset"
 msgstr "Reiniciar"
+
+# senaite.app.listing: Reset columns
+msgid "Reset columns"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154

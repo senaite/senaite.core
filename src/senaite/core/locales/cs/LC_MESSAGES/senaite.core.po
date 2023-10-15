@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:04+0000\n"
+"POT-Creation-Date: 2023-10-15 07:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jiří Podhorecký, 2023\n"
 "Language-Team: Czech (https://app.transifex.com/senaite/teams/87045/cs/)\n"
@@ -1199,6 +1199,10 @@ msgstr "Podmínky pro vyžádání této analýzy při registraci vzorku. Např�
 msgid "Confidence Level %"
 msgstr "Konfidenční interval %"
 
+# senaite.app.listing: Configuration
+msgid "Configuration"
+msgstr ""
+
 #: senaite/core/registry/schema.py:198
 msgid "Configuration for the sample header information"
 msgstr "Konfigurace informací v záhlaví vzorku"
@@ -1759,6 +1763,10 @@ msgstr "Zrušit výběr všech"
 msgid "Detach"
 msgstr "Odpojit"
 
+# senaite.app.listing: Disable auto fetch transitions
+msgid "Disable auto fetch transitions"
+msgstr ""
+
 #: bika/lims/config.py:132
 msgid "Disable multi-verification for the same user"
 msgstr "Zakázat vícenásobné ověření stejného uživatele"
@@ -2203,6 +2211,10 @@ msgstr "Fax (firemní)"
 #: bika/lims/config.py:77
 msgid "Female"
 msgstr "Žena"
+
+# senaite.app.listing: Fetch transitions
+msgid "Fetch Transitions"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:191
@@ -4250,6 +4262,10 @@ msgstr "Důvody odmítnutí"
 msgid "Rejection workflow is not enabled"
 msgstr "Odmítnutí pracovního postupu není povolen"
 
+# senaite.app.listing: Reload
+msgid "Reload"
+msgstr ""
+
 #: senaite/core/browser/viewlets/remarks.py:31
 msgid "Remarks"
 msgstr "Poznámky"
@@ -4363,6 +4379,10 @@ msgstr "Požadovaný objem"
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:198
 msgid "Reset"
 msgstr "Reset"
+
+# senaite.app.listing: Reset columns
+msgid "Reset columns"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154

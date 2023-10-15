@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:04+0000\n"
+"POT-Creation-Date: 2023-10-15 07:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -1205,6 +1205,10 @@ msgstr "要求对样本登记进行此分析的条件。例如，当在样本登
 msgid "Confidence Level %"
 msgstr "混合物等级%"
 
+# senaite.app.listing: Configuration
+msgid "Configuration"
+msgstr ""
+
 #: senaite/core/registry/schema.py:198
 msgid "Configuration for the sample header information"
 msgstr "样品头信息的配置"
@@ -1765,6 +1769,10 @@ msgstr "取消全选"
 msgid "Detach"
 msgstr "分离"
 
+# senaite.app.listing: Disable auto fetch transitions
+msgid "Disable auto fetch transitions"
+msgstr ""
+
 #: bika/lims/config.py:132
 msgid "Disable multi-verification for the same user"
 msgstr "禁用同一用户的多重验证"
@@ -2209,6 +2217,10 @@ msgstr "传真(办公)"
 #: bika/lims/config.py:77
 msgid "Female"
 msgstr "女性"
+
+# senaite.app.listing: Fetch transitions
+msgid "Fetch Transitions"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:191
@@ -4256,6 +4268,10 @@ msgstr "拒收原因"
 msgid "Rejection workflow is not enabled"
 msgstr "拒绝工作流程未启用"
 
+# senaite.app.listing: Reload
+msgid "Reload"
+msgstr ""
+
 #: senaite/core/browser/viewlets/remarks.py:31
 msgid "Remarks"
 msgstr "备注"
@@ -4369,6 +4385,10 @@ msgstr "需求体积"
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:198
 msgid "Reset"
 msgstr "重新设置"
+
+# senaite.app.listing: Reset columns
+msgid "Reset columns"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154

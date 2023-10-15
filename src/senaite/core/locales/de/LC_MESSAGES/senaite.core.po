@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:04+0000\n"
+"POT-Creation-Date: 2023-10-15 07:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -1206,6 +1206,10 @@ msgstr "Bedingungen für diese Analyse, die bei der Probenregistrierung abgefrag
 msgid "Confidence Level %"
 msgstr "Vertrauensniveau %"
 
+# senaite.app.listing: Configuration
+msgid "Configuration"
+msgstr "Konfiguration"
+
 #: senaite/core/registry/schema.py:198
 msgid "Configuration for the sample header information"
 msgstr "Konfiguration für die Informationen, die im Kopfbereich in der Probe angezeigt werden."
@@ -1766,6 +1770,10 @@ msgstr "Nichts auswählen"
 msgid "Detach"
 msgstr "Ausgliedern"
 
+# senaite.app.listing: Disable auto fetch transitions
+msgid "Disable auto fetch transitions"
+msgstr "Transitionen nicht automatisch laden"
+
 #: bika/lims/config.py:132
 msgid "Disable multi-verification for the same user"
 msgstr "Deaktiviere mehrfaches Verifizieren durch den gleichen Benutzer"
@@ -2210,6 +2218,10 @@ msgstr "Fax (geschäftlich)"
 #: bika/lims/config.py:77
 msgid "Female"
 msgstr "Weiblich"
+
+# senaite.app.listing: Fetch transitions
+msgid "Fetch Transitions"
+msgstr "Transitionen laden"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:103
 #: bika/lims/browser/worksheet/templates/results.pt:191
@@ -4259,6 +4271,10 @@ msgstr "Ablehnungsgründe"
 msgid "Rejection workflow is not enabled"
 msgstr "Ablehnungsworkflow ist nicht aktiv"
 
+# senaite.app.listing: Reload
+msgid "Reload"
+msgstr "Neu laden"
+
 #: senaite/core/browser/viewlets/remarks.py:31
 msgid "Remarks"
 msgstr "Bemerkungen"
@@ -4372,6 +4388,10 @@ msgstr "Gefordertes Volumen"
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:198
 msgid "Reset"
 msgstr "Zurücksetzen"
+
+# senaite.app.listing: Reset columns
+msgid "Reset columns"
+msgstr "Spalten zurücksetzen"
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154
@@ -7183,7 +7203,7 @@ msgstr "Behälter"
 #. Default: "Date Sampled"
 #: bika/lims/content/analysisrequest.py:437
 msgid "label_sample_datesampled"
-msgstr "Datum der Probenahme"
+msgstr "Probenahmedatum"
 
 #. Default: "Detached from sample"
 #: bika/lims/content/analysisrequest.py:1294
