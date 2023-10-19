@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2408 Support DX type catalogs lookup
 - #2400 Add Transposed Multi Results Form
 - #2402 Fix user cannot enter future date for DateSampled when sampling enabled
 - #2401 Fix OverflowError when calculating datetime.min date for left-hand TZs
