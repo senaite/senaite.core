@@ -45,6 +45,7 @@ INDEXES = BASE_INDEXES + [
     ("getPrioritySortkey", "", "FieldIndex"),
     ("getSamplingDate", "", "DateIndex"),
     ("isRootAncestor", "", "BooleanIndex"),
+    # XXX Only used in PrimaryAnalysisRequest's reference widget. Is it worth?
     ("is_received", "", "BooleanIndex"),
     # https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html
     ("listing_searchable_text", "", "ZCTextIndex"),
