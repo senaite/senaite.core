@@ -38,6 +38,7 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         self.contentFilter = {
             "portal_type": "Analysis",
             "getPointOfCapture": ["lab", "field"],
+            "sort_on": "sortable_title",
         }
 
         self.transposed = True
@@ -46,28 +47,6 @@ class MultiResultsTransposedView(AnalysesTransposedView):
 
         self.title = _("Multi Results")
         self.description = _("")
-
-        self.headers = OrderedDict()
-        self.services = OrderedDict()
-
-        self.columns = OrderedDict((
-            ("column_key", {
-                "title": "",
-                "sortable": False}),
-            ("Result", {
-                "title": _("Result"),
-                "ajax": True,
-                "sortable": False}),
-        ))
-
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "custom_transitions": [],
-                "columns": self.columns.keys(),
-            },
-        ]
 
     def make_empty_folderitem(self, **kw):
         """Create a new empty item
