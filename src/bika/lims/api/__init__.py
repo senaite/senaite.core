@@ -1120,7 +1120,7 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
         raise APIError("Expected a portal_type string, got <%s>"
                        % type(brain_or_object))
 
-    # at this point the brain_or_object is a portal_type^
+    # at this point the brain_or_object is a portal_type
     portal_type = brain_or_object
 
     # check static portal_type -> catalog mapping first
