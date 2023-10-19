@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import os
+import re
 import time
 from datetime import date
 from datetime import datetime
@@ -33,6 +34,7 @@ from bika.lims.api import APIError
 from bika.lims.api import get_tool
 from DateTime import DateTime
 from DateTime.DateTime import DateError
+from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
 from zope.i18n import translate
@@ -125,11 +127,20 @@ def to_DT(dt):
     :param dt: DateTime/datetime/date
     :returns: DateTime object
     """
+    INTERNATIONAL_FMT = re.compile(
+        r"^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.(\d{2,4})\s*"
+    )
     if is_DT(dt):
         return dt
     elif is_str(dt):
+        kwargs = {}
+        if re.match(INTERNATIONAL_FMT, dt):
+            # This will fail silently and you get a wrong date:
+            # dt = DateTime("02.07.2010") # Parses like US date 02/07/2010
+            # https://github.com/zopefoundation/DateTime/blob/master/src/DateTime/DateTime.py#L641-L645
+            kwargs["datefmt"] = "international"
         try:
-            return DateTime(dt)
+            return DateTime(dt, **kwargs)
         except (DateError, TimeError):
             try:
                 dt = ansi_to_dt(dt)
@@ -139,7 +150,11 @@ def to_DT(dt):
         except (SyntaxError, IndexError):
             return None
     elif is_dt(dt):
-        return DateTime(dt.isoformat())
+        try:
+            # XXX Why do this instead of DateTime(dt)?
+            return DateTime(dt.isoformat())
+        except DateTimeError:
+            return DateTime(dt)
     elif is_d(dt):
         dt = datetime(dt.year, dt.month, dt.day)
         return DateTime(dt.isoformat())

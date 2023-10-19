@@ -21,8 +21,6 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -33,6 +31,8 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 DeapartmentID = StringField(
@@ -52,19 +52,25 @@ Manager = UIDReferenceField(
     allowed_types=("LabContact", ),
     relationship="DepartmentLabContact",
     widget=ReferenceWidget(
-        label=_("Manager"),
+        label=_("label_department_manager",
+                default="Manager"),
         description=_(
-            "Select a manager from the available personnel configured under "
-            "the 'lab contacts' setup item. Departmental managers are "
+            "description_department_manager",
+            default="Select a manager from the available personnel configured "
+            "under the 'lab contacts' setup item. Departmental managers are "
             "referenced on analysis results reports containing analyses by "
             "their department."),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query=dict(
-            is_active=True,
-            sort_on="sortable_title",
-            sort_order="ascending",
-        ),
+        catalog=CONTACT_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending"
+        },
+        columns=[
+            {"name": "getFullname", "label": _("Name")},
+            {"name": "getEmailAddress", "label": _("Email")},
+            {"name": "getJobTitle", "label": _("Job Title")},
+        ],
     ),
 )
 
@@ -81,13 +87,11 @@ schema["description"].schemata = "default"
 class Department(BaseContent):
     implements(IDepartment, IHaveDepartment, IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def getDepartment(self):

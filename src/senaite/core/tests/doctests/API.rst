@@ -638,15 +638,6 @@ Brains are also supported::
     >>> api.get_parent(brain)
     <ClientFolder at /plone/clients>
 
-The function can also use a catalog query on the `portal_catalog` and return a
-brain, if the passed parameter `catalog_search` was set to true. ::
-
-    >>> api.get_parent(client, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
-    >>> api.get_parent(brain, catalog_search=True)
-    <Products.ZCatalog.Catalog.mybrains object at 0x...>
-
 However, this function goes only up to the portal object::
 
     >>> api.get_parent(portal)
@@ -692,7 +683,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     [...]
     APIError: Multi Catalog Queries are not supported!
 
-Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
+Catalog queries w/o any `portal_type`, default to the `uid_catalog`::
 
     >>> analysiscategories = bika_setup.bika_analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
@@ -704,7 +695,7 @@ Catalog queries w/o any `portal_type`, default to the `portal_catalog`::
     1
     >>> res = results[0]
     >>> res.aq_parent
-    <CatalogTool at /plone/portal_catalog>
+    <UIDCatalog at /plone/uid_catalog>
 
 Would we add the `portal_type`, the search function would ask the
 `archetype_tool` for the right catalog, and it would return a result::
@@ -753,17 +744,41 @@ Or provide a correct query::
 Getting the registered Catalogs
 ...............................
 
-SENAITE LIMS uses multiple catalogs registered via the Archetype Tool. This
-function returns a list of registered catalogs for a brain or object::
+SENAITE LIMS uses **multiple catalogs** for different content types.
+This function returns a list of registered catalogs for a brain, object, UID or portal_type.
+
+Get the mapped catalogs for an AT content type:
 
     >>> api.get_catalogs_for(client)
-    [...]
+    [<ClientCatalog at /plone/senaite_catalog_client>]
 
-    >>> api.get_catalogs_for(instrument1)
-    [...]
+Passing in the portal_type should return the same:
 
-    >>> api.get_catalogs_for(analysiscategory1)
-    [...]
+    >>> api.get_catalogs_for(api.get_portal_type(client))
+    [<ClientCatalog at /plone/senaite_catalog_client>]
+
+Even if we pass in the UID, we should get the same results:
+
+    >>> api.get_catalogs_for(api.get_uid(client))
+    [<ClientCatalog at /plone/senaite_catalog_client>]
+
+Dexterity contents that provide IMulitCatalogBehavior should work as well:
+
+    >>> api.get_catalogs_for(senaite_setup)
+    [<CatalogTool at /plone/portal_catalog>]
+
+
+Getting the FTI for a portal type
+.................................
+
+This function provides the dynamic type information for a given portal type:
+
+    >>> api.get_fti("Client")
+    <DynamicViewTypeInformation at /plone/portal_types/Client>
+
+    >>> api.get_fti("Label")
+    <DexterityFTI at /plone/portal_types/Label>
+
 
 
 Getting an Attribute of an Object
@@ -790,13 +805,13 @@ raising an `Unauthorized` error::
     >>> api.safe_getattr(brain, "NONEXISTING", "")
     ''
 
-Getting the Portal Catalog
-..........................
+Getting the UID Catalog
+.......................
 
 This tool is needed so often, that this function just returns it::
 
-    >>> api.get_portal_catalog()
-    <CatalogTool at /plone/portal_catalog>
+    >>> api.get_uid_catalog()
+    <UIDCatalog at /plone/uid_catalog>
 
 
 Getting the Review History of an Object
@@ -1953,7 +1968,9 @@ the the definitive id is set:
     >>> api.is_temporary(tmp_obj)
     True
 
+    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = folder._getOb(tmp_obj.getId())
+    >>> tmp_obj.id = tmp_obj_id
     >>> api.is_temporary(tmp_obj)
     False
 
@@ -1961,7 +1978,6 @@ But even if we don't use a non-UID id as the temporary id on creation. System
 will still consider the object as temporary until is assigned to its parent
 folder:
 
-    >>> tmp_obj_id = "non-uid-temp-id"
     >>> tmp_obj = factory(tmp_obj_id)
     >>> tmp_obj._setPortalTypeName(fti.getId())
     >>> api.is_temporary(tmp_obj)
@@ -2068,14 +2084,12 @@ It works for Dexterity types as well::
 
     >>> sample_containers = self.portal.bika_setup.sample_containers
     >>> sample_container = api.create(sample_containers, "SampleContainer",
-    ...                               title="Sample container 4",
+    ...                               title="Source Sample Container",
     ...                               description="Sample container to test",
     ...                               capacity="100 ml")
-    >>> sample_container
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-4>
 
     >>> sample_container.Title()
-    'Sample container 4'
+    'Source Sample Container'
 
     >>> sample_container.Description()
     'Sample container to test'
@@ -2084,16 +2098,68 @@ It works for Dexterity types as well::
     '100 ml'
 
     >>> sample_container_copy = api.copy_object(sample_container,
-    ...                                         title="Sample container 5",
+    ...                                         title="Target Sample Container",
     ...                                         capacity="50 ml")
-    >>> sample_container_copy
-    <SampleContainer at /plone/bika_setup/sample_containers/samplecontainer-5>
 
     >>> sample_container_copy.Title()
-    'Sample container 5'
+    'Target Sample Container'
 
     >>> sample_container_copy.Description()
     'Sample container to test'
 
     >>> sample_container_copy.getCapacity()
     '50 ml'
+
+
+Parse to JSON
+.............
+
+    >>> api.parse_json('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> obj = api.parse_json('{"a": 1, "b": 2, "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, 2, 3]
+
+    >>> obj = api.parse_json('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    >>> [obj[key] for key in 'abc']
+    [1, [u'one', u'two', 3], 3]
+
+    >>> api.parse_json("ko")
+    ''
+
+    >>> api.parse_json("ko", default="ok")
+    'ok'
+
+Convert to list
+...............
+
+    >>> api.to_list(None)
+    [None]
+
+    >>> api.to_list(["a", "b", "c"])
+    ['a', 'b', 'c']
+
+    >>> api.to_list('["a", "b", "c"]')
+    [u'a', u'b', u'c']
+
+    >>> api.to_list("a, b, c")
+    ['a, b, c']
+
+    >>> api.to_list([{"a": 1}, {"b": 2}, {"c": 3}])
+    [{'a': 1}, {'b': 2}, {'c': 3}]
+
+    >>> api.to_list('[{"a": 1}, {"b": 2}, {"c": 3}]')
+    [{u'a': 1}, {u'b': 2}, {u'c': 3}]
+
+    >>> api.to_list({"a": 1})
+    [{'a': 1}]
+
+    >>> api.to_list('{"a": 1, "b": ["one", "two", 3], "c": 3}')
+    ['{"a": 1, "b": ["one", "two", 3], "c": 3}']
+
+    >>> api.to_list(["[1, 2, 3]", "b", "c"])
+    ['[1, 2, 3]', 'b', 'c']
+
+    >>> api.to_list('["[1, 2, 3]", "b", "c"]')
+    [u'[1, 2, 3]', u'b', u'c']

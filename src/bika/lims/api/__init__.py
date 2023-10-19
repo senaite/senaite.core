@@ -19,15 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import json
 import re
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 from itertools import groupby
 
-import six
-
 import Missing
+import six
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from Acquisition import aq_inner
@@ -37,13 +37,15 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
-from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
+from plone.dexterity.utils import addContentToContainer
+from plone.dexterity.utils import createContent
+from plone.dexterity.utils import resolveDottedName
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -63,21 +65,22 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import ITemporaryObject
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import IFactory
 from zope.event import notify
+from zope.interface import alsoProvides
 from zope.interface import directlyProvides
-from zope.lifecycleevent import ObjectCreatedEvent
+from zope.interface import noLongerProvides
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
 
 """SENAITE LIMS Framework API
 
-Please see bika.lims/docs/API.rst for documentation.
+Please see tests/doctests/API.rst for documentation.
 
 Architecural Notes:
 
@@ -93,7 +96,7 @@ achieve the same::
 
     >>> foos = map(get_foo, list_of_brain_objects)
 
-Please add for all of your functions a descriptive test in docs/API.rst.
+Please add for all functions a descriptive test in tests/doctests/API.rst.
 
 Thanks.
 """
@@ -101,6 +104,9 @@ Thanks.
 _marker = object()
 
 UID_RX = re.compile("[a-z0-9]{32}$")
+
+UID_CATALOG = "uid_catalog"
+PORTAL_CATALOG = "portal_catalog"
 
 
 class APIError(Exception):
@@ -151,8 +157,9 @@ def create(container, portal_type, *args, **kwargs):
     """
     from bika.lims.utils import tmpID
 
-    id = kwargs.pop("id", tmpID())
-    title = kwargs.pop("title", "New {}".format(portal_type))
+    tmp_id = tmpID()
+    id = kwargs.pop("id", "")
+    title = kwargs.pop("title", "")
 
     # get the fti
     types_tool = get_tool("portal_types")
@@ -160,7 +167,7 @@ def create(container, portal_type, *args, **kwargs):
 
     if fti.product:
         # create the AT object
-        obj = _createObjectByType(portal_type, container, id)
+        obj = _createObjectByType(portal_type, container, id or tmp_id)
         # update the object with values
         edit(obj, check_permissions=False, title=title, **kwargs)
         # auto-id if required
@@ -171,21 +178,10 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        # newstyle factory
-        factory = getUtility(IFactory, fti.factory)
-        obj = factory(id, *args, **kwargs)
-        if hasattr(obj, '_setPortalTypeName'):
-            obj._setPortalTypeName(fti.getId())
-        # set the title
-        obj.title = safe_unicode(title)
-        # notify that the object was created
-        notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
-        # ContainerModifiedEvent
-        container._setObject(id, obj)
-        # we get the object here with the current object id, as it might be
-        # renamed already by an event handler
-        obj = container._getOb(obj.getId())
+        content = createContent(portal_type, **kwargs)
+        content.id = id
+        content.title = title
+        obj = addContentToContainer(container, content)
 
     return obj
 
@@ -310,7 +306,7 @@ def edit(obj, check_permissions=True, **kwargs):
 def get_tool(name, context=None, default=_marker):
     """Get a portal tool by name
 
-    :param name: The name of the tool, e.g. `portal_catalog`
+    :param name: The name of the tool, e.g. `senaite_setup_catalog`
     :type name: string
     :param context: A portal object
     :type context: ATContentType/DexterityContentType/CatalogBrain
@@ -377,7 +373,7 @@ def get_object(brain_object_uid, default=_marker):
     :returns: The full object
     """
     if is_uid(brain_object_uid):
-        return get_object_by_uid(brain_object_uid)
+        return get_object_by_uid(brain_object_uid, default=default)
     elif is_supermodel(brain_object_uid):
         return brain_object_uid.instance
     if not is_object(brain_object_uid):
@@ -721,7 +717,7 @@ def get_brain_by_uid(uid, default=None):
         return default
 
     # we try to find the object with the UID catalog
-    uc = get_tool("uid_catalog")
+    uc = get_tool(UID_CATALOG)
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -794,12 +790,8 @@ def get_parent_path(brain_or_object):
     return get_path(get_object(brain_or_object).aq_parent)
 
 
-def get_parent(brain_or_object, catalog_search=False):
+def get_parent(brain_or_object, **kw):
     """Locate the parent object of the content/catalog brain
-
-    The `catalog_search` switch uses the `portal_catalog` to do a search return
-    a brain instead of the full parent object. However, if the search returned
-    no results, it falls back to return the full parent object.
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -812,28 +804,9 @@ def get_parent(brain_or_object, catalog_search=False):
     if is_portal(brain_or_object):
         return get_portal()
 
-    # Do a catalog search and return the brain
-    if catalog_search:
-        parent_path = get_parent_path(brain_or_object)
-
-        # parent is the portal object
-        if parent_path == get_path(get_portal()):
-            return get_portal()
-
-        # get the catalog tool
-        pc = get_portal_catalog()
-
-        # query for the parent path
-        results = pc(path={
-            "query": parent_path,
-            "depth": 0})
-
-        # No results fallback: return the parent object
-        if not results:
-            return get_object(brain_or_object).aq_parent
-
-        # return the brain
-        return results[0]
+    # BBB: removed `catalog_search` keyword
+    if kw:
+        logger.warn("API function `get_parent` no longer support keywords.")
 
     return get_object(brain_or_object).aq_parent
 
@@ -868,7 +841,7 @@ def search(query, catalog=_marker):
         for portal_type in portal_types:
             # Just get the first registered/default catalog
             catalogs.append(get_catalogs_for(
-                portal_type, default="portal_catalog")[0])
+                portal_type, default=UID_CATALOG)[0])
     else:
         # User defined catalogs
         if isinstance(catalog, (list, tuple)):
@@ -877,7 +850,7 @@ def search(query, catalog=_marker):
             catalogs.append(get_tool(catalog))
 
     # Cleanup: Avoid duplicate catalogs
-    catalogs = list(set(catalogs)) or [get_portal_catalog()]
+    catalogs = list(set(catalogs)) or [get_uid_catalog()]
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
@@ -912,12 +885,20 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
+def get_uid_catalog():
+    """Get the UID catalog tool
+
+    :returns: UID Catalog Tool
+    """
+    return get_tool(UID_CATALOG)
+
+
 def get_portal_catalog():
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog")
+    return get_tool(PORTAL_CATALOG)
 
 
 def get_review_history(brain_or_object, rev=True):
@@ -1081,7 +1062,8 @@ def get_review_status(brain_or_object):
     :returns: Value of the review_status variable
     :rtype: String
     """
-    if is_brain(brain_or_object):
+    if is_brain(brain_or_object) \
+       and base_hasattr(brain_or_object, "review_state"):
         return brain_or_object.review_state
     return get_workflow_status_of(brain_or_object, state_var="review_state")
 
@@ -1099,32 +1081,76 @@ def is_active(brain_or_object):
     return True
 
 
-def get_catalogs_for(brain_or_object, default="portal_catalog"):
+def get_fti(portal_type, default=None):
+    """Lookup the Dynamic Filetype Information for the given portal_type
+
+    :param portal_type: The portal type to get the FTI for
+    :returns: FTI or default value
+    """
+    if not is_string(portal_type):
+        return default
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    return fti or default
+
+
+def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     """Get all registered catalogs for the given portal_type, catalog brain or
     content object
+
+    NOTE: We pass in the `portal_catalog` as default in subsequent calls to
+          work around the missing `uid_catalog` during snapshot creation when
+          installing a fresh site!
 
     :param brain_or_object: The portal_type, a catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: List of supported catalogs
     :rtype: list
     """
-    archetype_tool = get_tool("archetype_tool", default=None)
-    if archetype_tool is None:
-        # return the default catalog
-        return [get_tool(default, default="portal_catalog")]
+
+    # only handle catalog lookups by portal_type internally
+    if is_uid(brain_or_object) or is_object(brain_or_object):
+        obj = get_object(brain_or_object)
+        portal_type = get_portal_type(obj)
+        return get_catalogs_for(portal_type)
 
     catalogs = []
 
-    # get the registered catalogs for portal_type
-    if is_object(brain_or_object):
-        catalogs = archetype_tool.getCatalogsByType(
-            get_portal_type(brain_or_object))
-    if isinstance(brain_or_object, six.string_types):
-        catalogs = archetype_tool.getCatalogsByType(brain_or_object)
+    if not is_string(brain_or_object):
+        raise APIError("Expected a portal_type string, got <%s>"
+                       % type(brain_or_object))
 
-    if not catalogs:
-        return [get_tool(default)]
-    return catalogs
+    # at this point the brain_or_object is a portal_type
+    portal_type = brain_or_object
+
+    # check static portal_type -> catalog mapping first
+    from senaite.core.catalog import get_catalogs_by_type
+    catalogs = get_catalogs_by_type(portal_type)
+
+    # no catalogs in static mapping
+    # => Lookup catalogs by FTI
+    if len(catalogs) == 0:
+        fti = get_fti(portal_type)
+        if fti.product:
+            # AT content type
+            # => Looup via archetype_tool
+            archetype_tool = get_tool("archetype_tool")
+            catalogs = archetype_tool.catalog_map.get(portal_type)
+        else:
+            # DX content type
+            # => resolve the `_catalogs` attribute from the class
+            klass = resolveDottedName(fti.klass)
+            # XXX: Refactor multi-catalog behavior to not rely
+            #      on this hidden `_catalogs` attribute!
+            catalogs = getattr(klass, "_catalogs", [])
+
+    # fetch the catalog objects
+    catalogs = filter(None, map(lambda cid: get_tool(cid, None), catalogs))
+
+    if len(catalogs) == 0:
+        return [get_tool(default, default=PORTAL_CATALOG)]
+
+    return list(catalogs)
 
 
 def get_transitions_for(brain_or_object):
@@ -1324,8 +1350,9 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     if not user:
         return None
 
-    query = {'portal_type': contact_types, 'getUsername': user.id}
-    brains = search(query, catalog='portal_catalog')
+    from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+    query = {"portal_type": contact_types, "getUsername": user.id}
+    brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
 
@@ -1488,19 +1515,20 @@ def to_date(value, default=None):
     :type value: str, DateTime or datetime
     :return: The DateTime representation of the value passed in or default
     """
-    if isinstance(value, DateTime):
-        return value
-    if not value:
-        if default is None:
-            return None
-        return to_date(default)
-    try:
-        if isinstance(value, str) and '.' in value:
-            # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
-            return DateTime(value, datefmt='international')
-        return DateTime(value)
-    except (TypeError, ValueError, DateTimeError):
-        return to_date(default)
+
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.api.dtime.to_DT instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+
+    # prevent circular dependencies
+    from senaite.core.api.dtime import to_DT
+    date = to_DT(value)
+    if not date:
+        return to_DT(default)
+    return date
 
 
 def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
@@ -1739,6 +1767,9 @@ def is_temporary(obj):
     :param obj: the object to evaluate
     :returns: True if the object is temporary
     """
+    if ITemporaryObject.providedBy(obj):
+        return True
+
     obj_id = getattr(aq_base(obj), "id", None)
     if obj_id is None or UID_RX.match(obj_id):
         return True
@@ -1751,13 +1782,27 @@ def is_temporary(obj):
     if parent_id is None or UID_RX.match(parent_id):
         return True
 
-    if is_at_content(obj):
-        # Checks to see if we are created inside the portal_factory. We don't
-        # rely here on AT's isFactoryContained because the function is patched
-        meta_type = getattr(aq_base(parent), "meta_type", "")
-        return meta_type == "TempFolder"
+    # Checks to see if we are created inside the portal_factory.
+    # This might also happen for DX types in senaite.databox!
+    meta_type = getattr(aq_base(parent), "meta_type", "")
+    if meta_type == "TempFolder":
+        return True
 
     return False
+
+
+def mark_temporary(brain_or_object):
+    """Mark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    alsoProvides(obj, ITemporaryObject)
+
+
+def unmark_temporary(brain_or_object):
+    """Unmark the object as temporary
+    """
+    obj = get_object(brain_or_object)
+    noLongerProvides(obj, ITemporaryObject)
 
 
 def is_string(thing):
@@ -1767,3 +1812,31 @@ def is_string(thing):
     :returns: True if the object is a string
     """
     return isinstance(thing, six.string_types)
+
+
+def parse_json(thing, default=""):
+    """Parse from JSON
+
+    :param thing: thing to parse
+    :param default: value to return if cannot parse
+    :returns: the object representing the JSON or default
+    """
+    try:
+        return json.loads(thing)
+    except (TypeError, ValueError):
+        return default
+
+
+def to_list(value):
+    """Converts the value to a list
+
+    :param value: the value to be represented as a list
+    :returns: a list that represents or contains the value
+    """
+    if is_string(value):
+        val = parse_json(value)
+        if isinstance(val, (list, tuple, set)):
+            value = val
+    if not isinstance(value, (list, tuple, set)):
+        value = [value]
+    return list(value)

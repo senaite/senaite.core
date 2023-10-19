@@ -67,3 +67,23 @@ msgstr ""
 
 msgid "Deselect all"
 msgstr ""
+
+# senaite.app.listing: Fetch transitions
+msgid "Fetch Transitions"
+msgstr ""
+
+# senaite.app.listing: Reload
+msgid "Reload"
+msgstr ""
+
+# senaite.app.listing: Configuration
+msgid "Configuration"
+msgstr ""
+
+# senaite.app.listing: Reset columns
+msgid "Reset columns"
+msgstr ""
+
+# senaite.app.listing: Disable auto fetch transitions
+msgid "Disable auto fetch transitions"
+msgstr ""

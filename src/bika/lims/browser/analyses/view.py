@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -50,7 +51,6 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
-from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from plone.memoize import view as viewcache
@@ -59,6 +59,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate as t
 from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
@@ -486,16 +487,22 @@ class AnalysesView(ListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        obj = self.get_object(analysis_brain)
-        methods = obj.getAllowedMethods()
-        if not methods:
-            return [{"ResultValue": "", "ResultText": _("None")}]
         vocab = []
+        obj = self.get_object(analysis_brain)
+        default_method = obj.getMethod()
+        methods = obj.getAllowedMethods()
+        empty_option = {"ResultValue": "", "ResultText": _("None")}
         for method in methods:
             vocab.append({
                 "ResultValue": api.get_uid(method),
                 "ResultText": api.get_title(method),
             })
+        # allow empty option if we have no allowed methods
+        if not methods:
+            vocab = [empty_option]
+        # allow empty option if the default method is set to "None"
+        elif default_method is None:
+            vocab.insert(0, empty_option)
         return vocab
 
     def get_unit_vocabulary(self, analysis_brain):
@@ -1011,18 +1018,11 @@ class AnalysesView(ListingView):
         result_type = interim.get("result_type", "")
         return result_type.startswith("multi")
 
+    @deprecated("Use api.to_list instead")
     def to_list(self, value):
         """Converts the value to a list
         """
-        try:
-            val = json.loads(value)
-            if isinstance(val, (list, tuple, set)):
-                value = val
-        except (ValueError, TypeError):
-            pass
-        if not isinstance(value, (list, tuple, set)):
-            value = [value]
-        return value
+        return api.to_list(value)
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -1090,7 +1090,7 @@ class AnalysesView(ListingView):
             choices = interim_field.get("choices")
             if choices:
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Get the {value:text} dict
                 choices = choices.split("|")
@@ -1120,7 +1120,7 @@ class AnalysesView(ListingView):
 
             elif self.is_multi_interim(interim_field):
                 # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                interim_value = api.to_list(interim_value)
 
                 # Set the text as the formatted value
                 text = "<br/>".join(filter(None, interim_value))

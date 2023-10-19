@@ -18,22 +18,25 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFPlone.utils import safe_unicode
+import re
+
+import App
 from bika.lims import logger
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
+from bika.lims.jsonapi import get_include_methods
+from bika.lims.jsonapi import load_brain_metadata
+from bika.lims.jsonapi import load_field_values
+from bika.lims.jsonapi import load_method_values
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from plone.protect.authenticator import AuthenticatorView
-from bika.lims.jsonapi import load_brain_metadata
-from bika.lims.jsonapi import load_field_values
-from bika.lims.jsonapi import get_include_methods
-from bika.lims.jsonapi import load_method_values
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from zope import interface
 from zope.component import getAdapters
-import re
-import App
+
+UID_CATALOG = "uid_catalog"
 
 
 def read(context, request):
@@ -49,7 +52,7 @@ def read(context, request):
         "_authenticator": _authenticator,
     }
     debug_mode = App.config.getConfiguration().debug_mode
-    catalog_name = request.get("catalog_name", "portal_catalog")
+    catalog_name = request.get("catalog_name", UID_CATALOG)
     if not catalog_name:
         raise ValueError("bad or missing catalog_name: " + catalog_name)
     catalog = getToolByName(context, catalog_name)

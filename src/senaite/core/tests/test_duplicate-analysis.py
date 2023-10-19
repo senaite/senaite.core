@@ -28,6 +28,7 @@ from plone.app.testing import setRoles
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from senaite.core.tests.base import DataTestCase
+from senaite.core.catalog import CONTACT_CATALOG
 
 
 class TestAddDuplicateAnalysis(DataTestCase):
@@ -72,8 +73,8 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wsfolder = self.portal.worksheets
         ws = _createObjectByType("Worksheet", wsfolder, tmpID())
         ws.processForm()
-        bsc = getToolByName(self.portal, 'senaite_catalog_setup')
-        lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
+        cat = getToolByName(self.portal, CONTACT_CATALOG)
+        lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]
         lab_contact = [o for o in lab_contacts if o.getUsername() == 'analyst1']
         self.assertEquals(len(lab_contact), 1)
         lab_contact = lab_contact[0]

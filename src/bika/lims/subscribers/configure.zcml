@@ -9,13 +9,6 @@
       handler=".remarks.RemarksAddedEventHandler"
       />
 
-  <!-- ID Server: Object Added -->
-  <subscriber
-      for="bika.lims.interfaces.IAutoGenerateID
-           zope.lifecycleevent.interfaces.IObjectAddedEvent"
-      handler=".objectadded.auto_generate_id"
-      />
-
   <!-- Audit Log: AT Object Created -->
   <subscriber
       for="Products.Archetypes.interfaces.IBaseObject

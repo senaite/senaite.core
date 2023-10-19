@@ -51,8 +51,15 @@
   -->
   <browser:page
       for="*"
+      name="multi_results_classic"
+      class=".multi_results_classic.MultiResultsClassicView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
+  <browser:page
+      for="*"
       name="multi_results"
-      class=".multi_results.MultiResultsView"
+      class=".multi_results_transposed.MultiResultsTransposedView"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 

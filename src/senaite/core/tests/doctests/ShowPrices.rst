@@ -94,8 +94,6 @@ Verify that the price and invoice fields are present when ShowPrices is enabled:
     True
     >>> True if "Total" in browser.contents else "ShowPrices is True, and Total field is missing from AR Add."
     True
-    >>> True if "Invoice Exclude" in browser.contents else "ShowPrices is True, and Invoice Exclude field is missing from AR Add."
-    True
 
 And then that the opposite is true:
 
@@ -109,8 +107,6 @@ And then that the opposite is true:
     >>> True if "VAT" not in browser.contents else "ShowPrices is False, VAT field should not be present in AR Add."
     True
     >>> True if "Total" not in browser.contents else "ShowPrices is False, Total field should not be present in AR Add."
-    True
-    >>> True if "Invoice Exclude" not in browser.contents else "ShowPrices is False, Invoice Exclude field should not be present in AR Add."
     True
 
 Disable MemberDiscountApplies, and verify that it always vanishes from AR add:
@@ -155,16 +151,3 @@ Test show/hide prices when viewing an AR.  First, create an AR:
        browser.open(ar.absolute_url())
        True if 'contentview-invoice' not in browser.contents else "Invoice Tab is visible, but ShowPrices is False."
        True
-
-Client discount fields show/hide
-................................
-
-    >>> enableShowPrices()
-    >>> browser.open(client.absolute_url() + "/edit")
-    >>> True if 'discount' in browser.contents else "Client discount field should be visible, but is not"
-    True
-
-    >>> disableShowPrices()
-    >>> browser.open(client.absolute_url() + "/edit")
-    >>> True if 'discount' not in browser.contents else "Client discount field should not be visible, but here it is"
-    True

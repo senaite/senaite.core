@@ -54,7 +54,6 @@ class QuerySelectWidgetController extends React.Component {
       "columns",  // columns to be displayed in the results popup
       "display_template",  // template to use for the selected values
       "multi_valued",  // if true, more than one value can be set
-      "hide_input_after_select",  // only for single valued fields to hide the input after selection
       "clear_results_after_select",  // clear results after value select
       "disabled",  // if true, the field is rendered as not editable
       "readonly",  // if true, the field is rendered as not editable
@@ -236,7 +235,13 @@ class QuerySelectWidgetController extends React.Component {
    * @returns {Boolean} true/false if the search field is rendered
    */
   show_search_field() {
-    if (!this.state.multi_valued && this.state.values.length > 0 && this.state.hide_input_after_select) {
+    if (this.state.disabled) {
+      return false;
+    }
+    if (this.state.readonly) {
+      return false;
+    }
+    if (!this.state.multi_valued && this.state.values.length > 0) {
       return false;
     }
     return true;
@@ -254,15 +259,6 @@ class QuerySelectWidgetController extends React.Component {
   make_query(options) {
     options = options || {};
 
-    // allow to search a custom index
-    // NOTE: This should be a ZCTextIndex!
-    let search_index = this.state.search_index || "Title";
-    let search_term = this.state.searchterm;
-
-    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
-      search_term += "*"
-    }
-
     let query = Object.assign({
       limit: this.state.limit,
       complete: this.state.complete,
@@ -271,8 +267,21 @@ class QuerySelectWidgetController extends React.Component {
       field_name: this.state.name,
     }, options, this.state.query);
 
+    // allow to search a custom index
+    // NOTE: This should be a ZCTextIndex!
+    let search_index = this.state.search_index || null;
+    let search_term = this.state.searchterm;
+
+    if (search_term && this.state.search_wildcard && !search_term.endsWith("*")) {
+      search_term += "*"
+    }
+
     // inject the search index
-    query[search_index] = search_term;
+    if (search_index) {
+      query[search_index] = search_term;
+    } else {
+      console.warn(`No search_index defined for search field "${this.state.name}"`);
+    }
 
     // allow to custom search query cascading
     query = Object.assign(query, this.get_search_query());
@@ -745,6 +754,7 @@ class QuerySelectWidgetController extends React.Component {
             name={this.state.name}
             on_deselect={this.deselect}
             set_values={this.set_values}
+            readonly={this.state.readonly}
           />
           {this.show_search_field() &&
           <SearchField

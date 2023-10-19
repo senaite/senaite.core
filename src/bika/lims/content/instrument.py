@@ -21,7 +21,6 @@
 from datetime import date
 
 import six
-
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -30,13 +29,12 @@ from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_reference_analysis
 from plone.app.blob.field import FileField as BlobFileField
@@ -63,7 +61,9 @@ from Products.ATContentTypes.content import schemata
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport import instruments
 from senaite.core.p3compat import cmp
 from zope.interface import implements
@@ -71,50 +71,61 @@ from zope.interface import implements
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     UIDReferenceField(
-        'InstrumentType',
-        vocabulary='getInstrumentTypes',
-        allowed_types=('InstrumentType',),
+        "InstrumentType",
+        allowed_types=("InstrumentType",),
         required=1,
         widget=ReferenceWidget(
-            label=_("Instrument type"),
-            showOn=True,
-            catalog_name='senaite_catalog_setup',
-            base_query={
+            label=_(
+                "label_instrument_instrumenttype",
+                default="Instrument type"),
+            description=_(
+                "description_instrument_instrumenttype",
+                default="Select the type of this instrument"),
+            catalog=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
-                "sort_order": "ascending",
+                "sort_order": "ascending"
             },
         ),
     ),
 
     UIDReferenceField(
-        'Manufacturer',
-        allowed_types=('Manufacturer',),
+        "Manufacturer",
+        allowed_types=("Manufacturer",),
         required=1,
         widget=ReferenceWidget(
-            label=_("Manufacturer"),
-            showOn=True,
-            catalog_name='senaite_catalog_setup',
-            base_query={
+            label=_(
+                "label_instrument_manufacturer",
+                default="Manufacturer"),
+            description=_(
+                "description_instrument_manufacturer",
+                default="Select the manufacturer of this instrument"),
+            catalog=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
-                "sort_order": "ascending",
+                "sort_order": "ascending"
             },
         ),
     ),
 
     UIDReferenceField(
-        'Supplier',
-        allowed_types=('Supplier',),
+        "Supplier",
+        allowed_types=("Supplier",),
         required=1,
         widget=ReferenceWidget(
-            label=_("Supplier"),
-            showOn=True,
-            catalog_name='senaite_catalog_setup',
-            base_query={
+            label=_(
+                "label_instrument_supplier",
+                default="Supplier"),
+            description=_(
+                "description_instrument_supplier",
+                default="Select the supplier of this instrument"),
+            catalog=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
-                "sort_order": "ascending",
+                "sort_order": "ascending"
             },
         ),
     ),
@@ -277,21 +288,24 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'InstrumentLocation',
-        schemata='Additional info.',
-        allowed_types=('InstrumentLocation', ),
+        "InstrumentLocation",
+        schemata="Additional info.",
+        allowed_types=("InstrumentLocation", ),
         required=0,
         widget=ReferenceWidget(
-            label=_("Instrument Location"),
-            description=_("The room and location where the instrument is installed"),
-            showOn=True,
-            catalog_name='senaite_catalog_setup',
-            base_query={
+            label=_(
+                "label_instrument_instrumentlocation",
+                default="Location"),
+            description=_(
+                "description_instrument_instrumentlocation",
+                default="Location where the instrument is installed"),
+            catalog=SETUP_CATALOG,
+            query={
                 "is_active": True,
                 "sort_on": "sortable_title",
-                "sort_order": "ascending",
+                "sort_order": "ascending"
             },
-        )
+        ),
     ),
 
     ImageField(
@@ -352,7 +366,7 @@ class Instrument(ATFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def Title(self):

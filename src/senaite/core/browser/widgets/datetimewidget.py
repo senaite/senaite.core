@@ -19,7 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from App.class_init import InitializeClass
 from bika.lims.browser import ulocalized_time as ut
+from datetime import datetime
 from DateTime import DateTime
 from DateTime.DateTime import safelocaltime
 from DateTime.interfaces import DateTimeError
@@ -33,8 +35,6 @@ class DateTimeWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         "show_time": False,
-        "datepicker_nofuture": False,
-        "datepicker_nopast": False,
         "macro": "senaite_widgets/datetimewidget",
         "helper_js": ("senaite_widgets/datetimewidget.js",),
         "helper_css": ("senaite_widgets/datetimewidget.css",),
@@ -84,27 +84,34 @@ class DateTimeWidget(TypesWidget):
         dt = self.to_tz_date(value)
         return dtime.date_to_string(dt, "%H:%M")
 
-    def get_max(self):
-        now = DateTime()
-        return now.strftime("%Y-%m-%d")
+    def attrs(self, context, field):
+        """Return the attributes for the input calendar HTML element
 
-    def get_min(self):
-        now = DateTime()
-        return now.strftime("%Y-%m-%d")
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        """
+        min_date = self.get_min(context, field)
+        max_date = self.get_max(context, field)
+        return {
+            "min": dtime.date_to_string(min_date),
+            "max": dtime.date_to_string(max_date)
+        }
 
-    def attrs(self):
-        attrs = {}
-        if self.datepicker_nofuture:
-            attrs["max"] = self.get_max()
-        if self.datepicker_nopast:
-            attrs["min"] = self.get_min()
-        return attrs
+    def get_min(self, context, field):
+        """Returns the minimum date allowed for selection in the widget
+        """
+        func = getattr(field, "get_min", None)
+        return func(context) if func else datetime.min
+
+    def get_max(self, context, field):
+        """Returns the minimum date allowed for selection in the widget
+        """
+        func = getattr(field, "get_max", None)
+        return func(context) if func else datetime.max
 
 
-registerWidget(
-    DateTimeWidget,
-    title="DateTimeWidget",
-    description=("Simple text field, with a jquery date widget attached.")
-)
+InitializeClass(DateTimeWidget)
+
+registerWidget(DateTimeWidget, title="DateTimeWidget", description="")
 
 registerPropertyType("show_time", "boolean")

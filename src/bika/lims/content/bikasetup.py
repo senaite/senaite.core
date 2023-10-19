@@ -505,16 +505,27 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
         mode="rw",
         multiValued=0,
-        relationship='SetupLandingPage',
+        relationship="SetupLandingPage",
         widget=ReferenceWidget(
-            label=_("Landing Page"),
+            label=_(
+                "label_setup_landingpage",
+                default="Landing Page"),
             description=_(
-                "The landing page is shown for non-authenticated users "
+                "description_setup_landingpage",
+                default="The landing page is shown for non-authenticated users "
                 "if the Dashboard is not selected as the default front page. "
                 "If no landing page is selected, the default frontpage is displayed."),
-            catalog_name="portal_catalog",
-            base_query={"review_State": "published"},
-            showOn=True,
+            catalog=["uid_catalog"],
+            query={
+                "is_active": True,
+                "sort_on": "id",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Title")},
+                {"name": "portal_type", "label": _("Type")},
+            ],
+
         ),
     ),
     BooleanField(

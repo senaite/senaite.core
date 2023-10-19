@@ -6,9 +6,57 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Remove stale indexes and columns"
       description="Remove stale indexes and columns"
+      source="2519"
+      destination="2520"
+      handler=".v02_05_000.purge_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Reindex control analyses"
+      description="Reindex all control analyses to fix stale `getReferenceAnalysesGroupID` index"
+      source="2518"
+      destination="2519"
+      handler=".v02_05_000.reindex_control_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add catalog metadata columns for reference widget"
+      description="Add default metadata columns for all catalogs"
+      source="2517"
+      destination="2518"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup auditlog catalog mappings"
+      description="Setup auditlog catalog mappings"
+      source="2516"
+      destination="2517"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix type information for DX types"
+      description="Reimport typeinfo profile"
+      source="2515"
+      destination="2516"
+      handler=".v02_05_000.import_typeinfo"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Drop Portal Catalog"
+      description="Drop all indexing in portal_catalog"
+      source="2514"
+      destination="2515"
+      handler=".v02_05_000.drop_portal_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Contact Catalog"
+      description="Create contact catalog and clean up contact related indexes and metadata from portal catalog"
       source="2513"
       destination="2514"
-      handler=".v02_05_000.purge_catalogs"
+      handler=".v02_05_000.setup_contact_catalog"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

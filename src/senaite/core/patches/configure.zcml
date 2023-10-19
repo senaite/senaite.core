@@ -3,6 +3,30 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="senaite.core">
 
+  <!-- Patch portal_catalog queue processor indexing -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.index` to avoid duplicate indexing"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="index"
+      replacement=".catalog.portal_catalog_index"
+      />
+
+  <!-- Patch portal_catalog queue processor reindexing -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex` to avoid duplicate indexing"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="reindex"
+      replacement=".catalog.portal_catalog_reindex"
+      />
+
+  <!-- Patch portal_catalog queue processor inindexing -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex` to avoid duplicate indexing"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="unindex"
+      replacement=".catalog.portal_catalog_unindex"
+      />
+
   <!-- https://github.com/senaite/senaite.core/pull/1865
        Please also note the patch of `isFactoryContained` in ´__init__´
   -->

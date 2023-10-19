@@ -21,7 +21,6 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainerType
 from bika.lims.content.bikaschema import BikaSchema
@@ -33,6 +32,7 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
+
 class ContainerType(BaseContent):
     implements(IContainerType, IDeactivable)
     security = ClassSecurityInfo()
@@ -41,7 +41,7 @@ class ContainerType(BaseContent):
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def getContainers(self):
@@ -55,13 +55,3 @@ class ContainerType(BaseContent):
         return _containers
 
 registerType(ContainerType, PROJECTNAME)
-
-def ContainerTypes(self, instance=None, allow_blank=False):
-    instance = instance or self
-    bsc = getToolByName(instance, 'senaite_catalog_setup')
-    items = []
-    for o in bsc(portal_type='ContainerType',
-                 sort_on = 'sortable_title'):
-        items.append((o.UID, o.Title))
-    items = allow_blank and [['','']] + list(items) or list(items)
-    return DisplayList(items)

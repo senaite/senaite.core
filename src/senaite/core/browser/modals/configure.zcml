@@ -24,7 +24,7 @@
 
   <browser:page
       name="set_analysis_remarks_modal"
-      for="bika.lims.interfaces.IWorksheet"
+      for="*"
       class=".remarks.SetAnalysisRemarksModal"
       permission="senaite.core.permissions.FieldEditAnalysisRemarks"
       layer="senaite.core.interfaces.ISenaiteCore"

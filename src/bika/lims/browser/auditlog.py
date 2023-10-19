@@ -29,7 +29,7 @@ from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshot_version
 from bika.lims.api.snapshot import get_snapshots
 from bika.lims.interfaces import IAuditable
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView

@@ -249,18 +249,15 @@ def get_storage(context):
 def _get_catalog_for_uid(uid):
     at = api.get_tool('archetype_tool')
     uc = api.get_tool('uid_catalog')
-    pc = api.get_tool('portal_catalog')
     # get uid_catalog brain for uid
     ub = uc(UID=uid)[0]
     # get portal_type of brain
     pt = ub.portal_type
     # get the registered catalogs for portal_type
     cats = at.getCatalogsByType(pt)
-    # try avoid 'portal_catalog'; XXX multiple catalogs in setuphandlers.py?
-    cats = [cat for cat in cats if cat != pc]
     if cats:
         return cats[0]
-    return pc
+    return uc
 
 
 def get_backreferences(context, relationship=None, as_brains=None):

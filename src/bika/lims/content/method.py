@@ -23,7 +23,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -43,6 +42,7 @@ from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.Widget import RichWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -129,7 +129,6 @@ schema = BikaSchema.copy() + Schema((
                 "If required, select a calculation for the The analysis "
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
-            showOn=True,
             catalog_name="senaite_catalog_setup",
             base_query={
                 "sort_on": "sortable_title",
@@ -175,20 +174,34 @@ class Method(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def getInstruments(self):
         """Instruments capable to perform this method
         """
-        uc = api.get_tool("uid_catalog")
-        uids = self.getRawInstruments()
-        return [api.get_object(brain) for brain in uc(UID=uids)]
+        instruments = map(api.get_object, self.getRawInstruments())
+        return list(instruments)
 
     def getRawInstruments(self):
         """List of Instrument UIDs capable to perform this method
         """
-        return get_backreferences(self, "InstrumentMethods")
+        backrefs = get_backreferences(self, "InstrumentMethods")
+        # XXX: The backrefs might contain UIDs of deactivated instruments,
+        #      which will show up in the UI as just their UID.
+        active_instrument_uids = filter(
+            lambda uid: api.get_review_status(uid) == "active", backrefs)
+        # TODO: Actually, this should to be corrected in a transition event
+        #       for instruments to remove the backreference of each method
+        #       with a reference to the specific instrument.
+        #
+        #       However, this would happen silently and the user would not be
+        #       notified about this "side-effect".
+        #
+        #       Therefore, we leave the linked object in the backrefs, but
+        #       filter it out for now, until we have a better approach how to
+        #       handle this with user notification!
+        return active_instrument_uids
 
     def setInstruments(self, value):
         """Set the method on the selected instruments

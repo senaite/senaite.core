@@ -28,21 +28,27 @@ from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
 from senaite.core.registry import get_registry_record
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
-from senaite.core.setuphandlers import PORTAL_CATALOG
+from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_portal_catalog
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
-from senaite.core.catalog import SENAITE_CATALOG
+
+PORTAL_CATALOG = "portal_catalog"
 
 version = "2.5.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -123,6 +129,24 @@ def setup_labels(tool):
     add_dexterity_items(setup, items)
 
 
+def drop_portal_catalog(tool):
+    """Drop all indexing to portal_catalog
+    """
+    logger.info("Drop Portal Catalog ...")
+    portal = api.get_portal()
+
+    # setup core catalog mappings
+    setup_catalog_mappings(portal)
+
+    # cleanup portal_catalog indexes
+    setup_portal_catalog(portal)
+
+    for portal_type, catalogs in CATALOG_MAPPINGS:
+        uncatalog_type(portal_type, catalog=PORTAL_CATALOG)
+
+    logger.info("Drop Portal Catalog [DONE]")
+
+
 def setup_client_catalog(tool):
     """Setup client catalog
     """
@@ -141,14 +165,65 @@ def setup_client_catalog(tool):
     logger.info("Setup Client Catalog [DONE]")
 
 
+def setup_contact_catalog(tool):
+    """Setup contact catalog
+    """
+    logger.info("Setup Contact Catalog ...")
+    portal = api.get_portal()
+
+    # setup and rebuild client_catalog
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+    contact_catalog = api.get_tool(CONTACT_CATALOG)
+    contact_catalog.clearFindAndRebuild()
+
+    # portal_catalog cleanup
+    uncatalog_type("Contact", catalog=PORTAL_CATALOG)
+    uncatalog_type("LabContact", catalog=PORTAL_CATALOG)
+    uncatalog_type("SupplierContact", catalog=PORTAL_CATALOG)
+
+    # senaite_catalog_setup cleaup
+    uncatalog_type("Contact", catalog=SETUP_CATALOG)
+    uncatalog_type("LabContact", catalog=SETUP_CATALOG)
+    uncatalog_type("SupplierContact", catalog=SETUP_CATALOG)
+
+    logger.info("Setup Contact Catalog [DONE]")
+
+
 def uncatalog_type(portal_type, catalog="portal_catalog", **kw):
     """Uncatalog all entries of the given type from the catalog
     """
     query = {"portal_type": portal_type}
     query.update(kw)
     brains = api.search(query, catalog=catalog)
-    for brain in brains:
-        uncatalog_brain(brain)
+
+    # NOTE: Catalog results are of type `ZTUtils.Lazy.LazyMap` and it might
+    #       fail during iteration with the following traceback:
+    #
+    # Traceback (innermost last):
+    #   Module ZPublisher.WSGIPublisher, line 176, in transaction_pubevents
+    #   Module ZPublisher.WSGIPublisher, line 385, in publish_module
+    #   Module ZPublisher.WSGIPublisher, line 288, in publish
+    #   Module ZPublisher.mapply, line 85, in mapply
+    #   Module ZPublisher.WSGIPublisher, line 63, in call_object
+    #   Module Products.GenericSetup.tool, line 1135, in manage_doUpgrades
+    #   Module Products.GenericSetup.upgrade, line 185, in doStep
+    #   Module senaite.core.upgrade.v02_05_000, line 142, in drop_portal_catalog
+    #   Module senaite.core.upgrade.v02_05_000, line 196, in uncatalog_type
+    #   Module ZTUtils.Lazy, line 201, in __getitem__
+    #   Module Products.ZCatalog.Catalog, line 131, in __getitem__
+    # KeyError: -693164432
+    #
+    # Therefore, we convert the results first to a `list` to catch the error
+    # inside the loop!
+    for brain in list(brains):
+        try:
+            uncatalog_brain(brain)
+        except KeyError:
+            logger.error(
+                "!!! Failed to uncatalog '%s' in catalog '%s' !!! "
+                "Consider removing it manually." % (brain.getId, catalog))
+            continue
 
 
 def setup_catalogs(tool):
@@ -159,6 +234,7 @@ def setup_catalogs(tool):
 
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    setup_auditlog_catalog_mappings(portal)
 
     logger.info("Setup Catalogs [DONE]")
 
@@ -383,6 +459,31 @@ def remove_legacy_reports(tool):
     portal.portal_types.manage_delObjects(["Report", "ReportFolder"])
 
     logger.info("Removing legacy reports [DONE]")
+
+
+@upgradestep(product, version)
+def import_typeinfo(tool):
+    """Import type info profile
+    """
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+
+def reindex_control_analyses(tool):
+    """Reindex all reference/duplicate analyses
+    """
+    logger.info("Reindexing control analyses ...")
+
+    query = {"portal_type": ["ReferenceAnalysis", "DuplicateAnalysis"]}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        logger.info("Reindexing control analysis %d/%d: `%s`" % (
+            num+1, total, api.get_path(obj)))
+        obj.reindexObject()
+        obj._p_deactivate()
+
+    logger.info("Reindexing control analyses [DONE]")
 
 
 def purge_catalogs(tool):

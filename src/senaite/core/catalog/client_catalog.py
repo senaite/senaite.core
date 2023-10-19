@@ -20,9 +20,9 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
-    "Description",
     "getClientID",
     "getName",
+    "getEmailAddress",  # used in reference widget columns
 ]
 
 TYPES = [

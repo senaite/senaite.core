@@ -21,15 +21,17 @@
 import codecs
 
 import six
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.idserver import renameAfterCreation
+from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from Products.CMFCore.utils import getToolByName
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
 
 
@@ -358,12 +360,13 @@ class AnalysisResultsImporter(Logger):
         self._override = override
         self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
-        self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        self.bac = getToolByName(self.context, 'senaite_catalog_analysis')
+
+        self.bsc = getToolByName(self.context, SETUP_CATALOG)
+        self.bac = getToolByName(self.context, ANALYSIS_CATALOG)
         self.ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
-        self.pc = getToolByName(self.context, 'portal_catalog')
-        self.bc = getToolByName(self.context, 'senaite_catalog')
+        self.bc = getToolByName(self.context, SENAITE_CATALOG)
         self.wf = getToolByName(self.context, 'portal_workflow')
+
         if not self._allowed_ar_states:
             self._allowed_ar_states = ['sample_received',
                                        'to_be_verified']

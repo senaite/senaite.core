@@ -20,37 +20,27 @@
 
 import math
 
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import DisplayList
-from Products.Archetypes.atapi import registerType
-from Products.CMFCore.utils import getToolByName
-
-from zope.interface import implements
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
-
-# Widgets
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
-
-# bika.lims imports
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCalibration
-
+from DateTime import DateTime
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -131,19 +121,25 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Worker',
-        vocabulary='getLabContacts',
-        allowed_types=('LabContact',),
+        "Worker",
+        allowed_types=("LabContact", "SupplierContact"),
         widget=ReferenceWidget(
-            label=_("Performed by"),
-            description=_("The person at the supplier who performed the task"),
-            size=30,
-            base_query={'is_active': True},
-            showOn=True,
-            colModel=[
-                {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
-                {'columnName': 'Title', 'width': '80', 'label': _('Name')}
+            label=_(
+                "label_instrumentcalibration_worker",
+                default="Performed by"),
+            description=_(
+                "description_instrumentcalibration_worker",
+                default="The person who performed the task"),
+            catalog=CONTACT_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+                {"name": "getJobTitle", "label": _("Job Title")},
             ],
         ),
     ),
@@ -176,22 +172,11 @@ class InstrumentCalibration(BaseFolder):
     implements(IInstrumentCalibration)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def getLabContacts(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        # fallback - all Lab Contacts
-        pairs = []
-        for contact in bsc(portal_type='LabContact',
-                           is_active=True,
-                           sort_on='sortable_title'):
-            pairs.append((contact.UID, contact.Title))
-        return DisplayList(pairs)
 
     def isCalibrationInProgress(self):
         """Checks if the current date is between a calibration period.

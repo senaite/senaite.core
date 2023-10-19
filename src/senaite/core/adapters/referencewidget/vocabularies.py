@@ -30,6 +30,15 @@ ALLOWED_QUERY_KEYS = [
     "sort_order",
 ]
 
+# Search index placeholder for dynamic lookup by the search endpoint
+SEARCH_INDEX_MARKER = "__search__"
+
+# default search index name
+DEFAULT_SEARCH_INDEXES = [
+    "listing_searchable_text",
+    "Title",
+]
+
 
 class DefaultReferenceWidgetVocabulary(object):
     implements(IReferenceWidgetVocabulary)
@@ -49,15 +58,34 @@ class DefaultReferenceWidgetVocabulary(object):
         """Build the raw request from the query params
         """
         catalog = api.get_tool(self.catalog_name)
+        indexes = catalog.indexes()
+        raw_query = dict(self.request.form.items())
+
         query = {}
-        for key, value in self.request.form.items():
+        for key, value in raw_query.items():
             if key in ALLOWED_QUERY_KEYS:
                 query[key] = value
-            elif key in catalog.indexes():
+            elif key in indexes:
                 query[key] = value
-            # elif key == "sort_limit":
-            #     query[key] = int(value)
+            elif key == SEARCH_INDEX_MARKER:
+                # find a suitable ZCText index for the search
+                can_search = False
+                search_indexes = DEFAULT_SEARCH_INDEXES[:]
+                # check if we have a content specific search index
+                portal_type = raw_query.get("portal_type")
+                if api.is_string(portal_type):
+                    index = "{}_searchable_text".format(portal_type.lower())
+                    search_indexes.insert(0, index)
+                # check if one of the search indexes match
+                for index in search_indexes:
+                    if index in indexes:
+                        query[index] = value
+                        can_search = True
+                        break
+                if not can_search:
+                    logger.warn("No text index found for query '%s'!" % value)
             else:
+                # skip unknown indexes for the query
                 continue
         return query
 
@@ -114,9 +142,6 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
             if client_uid:
                 # Apply the search criteria for this client
-                # Contact is the only object bound to a Client that is stored
-                # in portal_catalog. And in this catalog, getClientUID does not
-                # exist, rather getParentUID
                 if "Contact" in self.get_portal_types(query):
                     query["getParentUID"] = [client_uid]
                 else:

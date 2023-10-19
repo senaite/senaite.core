@@ -190,21 +190,6 @@ class RegistryHiddenFieldsVisibility(SenaiteATWidgetVisibility):
         return "invisible"
 
 
-class AccountancyFieldsVisibility(SenaiteATWidgetVisibility):
-    """Display/Hide fields related with Accountancy (Discount, prices, invoice)
-    """
-    def __init__(self, context):
-        super(AccountancyFieldsVisibility, self).__init__(
-            context=context, sort=3,
-            field_names=["BulkDiscount", "MemberDiscountApplies",
-                         "InvoiceExclude", "MemberDiscount"])
-
-    def isVisible(self, field, mode="view", default="visible"):
-        if not self.context.bika_setup.getShowPrices():
-            return "invisible"
-        return default
-
-
 class DateReceivedFieldVisibility(SenaiteATWidgetVisibility):
     """DateReceived is editable in sample context, only if all related analyses
     are not yet submitted and if not a secondary sample.

@@ -23,7 +23,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -35,6 +34,7 @@ from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
 from zope.i18n import translate
 from zope.interface import implements
@@ -42,35 +42,43 @@ from zope.interface import implements
 schema = Schema((
 
     UIDReferenceField(
-        'SampleType',
-        allowed_types=('SampleType',),
+        "SampleType",
+        allowed_types=("SampleType",),
         required=1,
         widget=ReferenceWidget(
-            label=_("Sample Type"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending"
-            ),
-        ),
+            label=_(
+                "label_analysisspec_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_analysisspec_sampletype",
+                default="Select the sample type for this specification"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
     UIDReferenceField(
-        'DynamicAnalysisSpec',
-        allowed_types=('DynamicAnalysisSpec',),
+        "DynamicAnalysisSpec",
+        allowed_types=("DynamicAnalysisSpec",),
         required=0,
         widget=ReferenceWidget(
-            label=_("Dynamic Analysis Specification"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending"
-            ),
-        ),
+            label=_(
+                "label_analysisspec_dynamicspec",
+                default="Dynamic Analysis Specification"),
+            description=_(
+                "description_analysisspec_dynamicspec",
+                default="Link dynamic analysis specification"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
     ),
 
 )) + BikaSchema.copy() + Schema((
@@ -81,13 +89,20 @@ schema = Schema((
         widget=AnalysisSpecificationWidget(
             label=_("Specifications"),
             description=_(
-                "'Min' and 'Max' values indicate a valid results range. Any "
-                "result outside this results range will raise an alert. 'Min "
-                "warn' and 'Max warn' values indicate a shoulder range. Any "
-                "result outside the results range but within the shoulder "
-                "range will raise a less severe alert. If the result is out of "
-                "range, the value set for '< Min' or '< Max' will be displayed "
-                "in lists and results reports instead of the real result.")
+                u"description_analysisspec_resultsrange",
+                default=u"'Min' and 'Max' values indicate a valid results "
+                        u"range. Any result outside this results range will "
+                        u"raise an alert.<br/>"
+                        u"'Min warn' and 'Max warn' values indicate a "
+                        u"shoulder range. Any result outside the results "
+                        u"range but within the shoulder range will raise a "
+                        u"less severe alert.<br/>"
+                        u"If the result is out of range, the value set for "
+                        u"'&lt; Min' or '&gt; Max' will be displayed in lists "
+                        u"and results reports instead of the real result. In "
+                        u"such case, the value set for 'Out of range comment' "
+                        u"will be displayed in results report as well"
+            )
         ),
     ),
 ))
@@ -108,7 +123,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def Title(self):

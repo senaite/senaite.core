@@ -4,6 +4,40 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2408 Support DX type catalogs lookup
+- #2407 Fix analyses sort order in Transposed Multi Results Form
+- #2406 Fix missing interim fields in Transposed Multi Results Form
+- #2400 Add Transposed Multi Results Form
+- #2402 Fix user cannot enter future date for DateSampled when sampling enabled
+- #2401 Fix OverflowError when calculating datetime.min date for left-hand TZs
+- #2399 Support for min/max in DateTimeWidget, and drop _nopast and _nofuture
+- #2397 Fix district is not displayed in old address widget
+- #2395 Fix DateTimeError for non-valid/old timezones
+- #2396 Add after sequential transition event handler
+- #2394 Ajax support for transitions retract and retest
+- #2393 Allow empty analysis method selection
+- #2392 Fix display of orphan method instruments
+- #2388 Fix QC sample IDs are the same accross worksheets
+- #2387 Improve memory usage when rebuilding a catalog
+- #2389 Added i18n.translate function with multiple domains support
+- #2386 Add dynamic search index lookup for referencewidget and added default catalog metadata columns
+- #2385 Fix referencefield dependencies in sample add
+- #2384 Fix reference widget lookups
+- #2379 Add listing adapter for sample workflow "receive" transition
+- #2382 Fix missing fields in client edit mode and listing
+- #2378 Reactivate auditlog catalog mappings
+- #2377 Fix imports for moved idserver module
+- #2372 Generate unique ID for DX types on object creation
+- #2370 Override default DX add form to obtain renamed IDs correctly
+- #2368 Drop usage of portal_catalog tool
+- #2369 Allow to set a custom comment for when a result is out of range
+- #2367 Contact catalog
+- #2366 Add fallback to sample client field value
+- #2365 New function for interim fields formatting
+- #2364 Support for fieldname-prefixed values on sample header submit
+- #2363 Auto-hide non-multivalued reference widget input on value selection
+- #2359 Improve sample create performance
+- #2361 Fix KeyError if registry key not found
 - #2358 Add confirmation when unlinking reference
 - #2357 Skip object reindexing when global auditlog is disabled
 - #2354 Render all legacy resources at the end of the page

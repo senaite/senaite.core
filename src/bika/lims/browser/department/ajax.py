@@ -18,9 +18,11 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 import json
+
+from bika.lims import api
+from bika.lims.browser import BrowserView
+from senaite.core.catalog import SETUP_CATALOG
 
 
 class LabContactUpdate(BrowserView):
@@ -40,9 +42,9 @@ class LabContactUpdate(BrowserView):
     def __call__(self):
         # Getting the data from the json object
         dataset = json.loads(self.request.form.get('data', ''))
-        pc = getToolByName(self.context, 'portal_catalog')
+        catalog = api.get_tool(SETUP_CATALOG)
         # Getting the lab contact object
-        labcontact_brain = pc(
+        labcontact_brain = catalog(
             portal_type='LabContact', UID=dataset.get('contact_uid', ''))
         # If the lab contact exists, update it
         if labcontact_brain and dataset.get('checkbox_value', False):

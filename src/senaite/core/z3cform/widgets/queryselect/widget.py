@@ -23,20 +23,16 @@ import string
 
 from bika.lims import api
 from bika.lims import logger
-from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.z3cform.interfaces import IQuerySelectWidget
+from senaite.core.z3cform.widgets.basewidget import BaseWidget
 from z3c.form.browser import widget
 from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import ISubForm
 from z3c.form.widget import FieldWidget
-from z3c.form.widget import Widget
 from zope.component import adapter
-from zope.component import getUtility
-from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.schema.interfaces import IField
@@ -44,7 +40,9 @@ from zope.schema.interfaces import ISequence
 
 # See IReferenceWidgetDataProvider for provided object data
 DISPLAY_TEMPLATE = "<div>${Title}</div>"
-DEFAULT_SEARCH_CATALOG = "uid_catalog"
+
+# Search index placeholder for dynamic lookup by the search endpoint
+SEARCH_INDEX_MARKER = "__search__"
 
 
 @adapter(ISequence, IQuerySelectWidget)
@@ -73,7 +71,7 @@ class QuerySelectDataConverter(TextLinesConverter):
 
 
 @implementer_only(IQuerySelectWidget)
-class QuerySelectWidget(widget.HTMLInputWidget, Widget):
+class QuerySelectWidget(widget.HTMLInputWidget, BaseWidget):
     """A widget to select one or more items from catalog search
     """
     klass = u"senaite-queryselect-widget-input"
@@ -81,52 +79,6 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
     def update(self):
         super(QuerySelectWidget, self).update()
         widget.addFieldClass(self)
-
-    def get_form(self):
-        """Return the current form of the widget
-        """
-        form = self.form
-        # form is a fieldset group
-        if IDescriptiveGroup.providedBy(form):
-            form = form.parentForm
-        # form is a subform (e.g. DataGridFieldObjectSubForm)
-        if ISubForm.providedBy(form):
-            form = form.parentForm
-        return form
-
-    def get_context(self):
-        """Get the current context
-
-        NOTE: If we are in the ++add++ form, `self.context` is the container!
-              Therefore, we create one here to have access to the methods.
-        """
-        schema_iface = self.field.interface
-        if schema_iface and schema_iface.providedBy(self.context):
-            return self.context
-
-        # we might be in a subform, so try first to retrieve the object from
-        # the base form itself first
-        form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
-        context = getattr(form, "context", None)
-        if api.is_object(context):
-            if api.get_portal_type(context) == portal_type:
-                return context
-
-        # Hack alert!
-        # we are in ++add++ form and have no context!
-        # Create a temporary object to be able to access class methods
-        if not portal_type:
-            portal_type = api.get_portal_type(self.context)
-        portal_types = api.get_tool("portal_types")
-        fti = portal_types[portal_type]
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("temporary")
-        # mark the context as temporary
-        context._temporary_ = True
-        # hook into acquisition chain
-        context = context.__of__(self.context)
-        return context
 
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
@@ -150,8 +102,9 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
                 self, "value_query_index", "title"),
             "data-api_url": getattr(self, "api_url", "referencewidget_search"),
             "data-query": getattr(self, "query", {}),
-            "data-catalog": getattr(self, "catalog", DEFAULT_SEARCH_CATALOG),
-            "data-search_index": getattr(self, "search_index", "Title"),
+            "data-catalog": getattr(self, "catalog", None),
+            "data-search_index": getattr(
+                self, "search_index", SEARCH_INDEX_MARKER),
             "data-search_wildcard": getattr(self, "search_wildcard", True),
             "data-allow_user_value": getattr(self, "allow_user_value", False),
             "data-columns": getattr(self, "columns", []),
@@ -160,8 +113,6 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             "data-multi_valued": getattr(self, "multi_valued", True),
             "data-disabled": getattr(self, "disabled", False),
             "data-readonly": getattr(self, "readonly", False),
-            "data-hide_input_after_select": getattr(
-                self, "hide_input_after_select", True),
             "data-clear_results_after_select": getattr(
                 self, "clear_results_after_select", False),
         }
@@ -274,6 +225,25 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         """Returns if the field is multi valued or not
         """
         return getattr(self.field, "multi_valued", default)
+
+    def get_catalog(self, context, field, default=None):
+        """Lookup the catalog to query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Catalog name to query
+        """
+        # check if the new `catalog` property is set
+        catalog_name = getattr(self, "catalog", None)
+
+        if catalog_name is None:
+            # try to lookup the catalog for the given object
+            catalogs = api.get_catalogs_for(context)
+            # function always returns at least one catalog object
+            catalog_name = catalogs[0].getId()
+
+        return catalog_name
 
     def get_value(self):
         """Extract the value from the request or get it from the field

@@ -31,7 +31,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IBatchBookView
 from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import FieldEditAnalysisResult
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface import implementer
 

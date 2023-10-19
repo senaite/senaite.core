@@ -27,7 +27,7 @@ from senaite.core.exportimport.instruments.resultsimport import \
 
 from bika.lims import bikaMessageFactory as _
 
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 title = "GeneXpert"
 

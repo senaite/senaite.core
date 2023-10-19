@@ -21,7 +21,7 @@
 """ Thermo Scientific 'Gallery 9861x'
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from . import ThermoGalleryImporter, ThermoGalleryTSVParser
 import json
 import traceback

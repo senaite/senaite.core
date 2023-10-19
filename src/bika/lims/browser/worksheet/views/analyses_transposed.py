@@ -23,7 +23,7 @@ from collections import OrderedDict
 from bika.lims import _
 from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize import view
 from senaite.app.listing.interfaces import ITransposedListingView
 from zope.interface import implements

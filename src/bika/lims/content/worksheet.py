@@ -27,10 +27,10 @@ from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.config import PROJECTNAME
+from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
@@ -49,7 +49,6 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import push_reindex_to_actions_pool
 from bika.lims.workflow import skip
-from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import Schema
@@ -62,6 +61,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.idserver import renameAfterCreation
 from senaite.core.p3compat import cmp
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
@@ -153,7 +153,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def Title(self):
@@ -412,7 +412,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         #      backreference, while it should be the other way round.
         #      `getAnalyst` is affected as well, because in turn, it relies
         #      on `getWorksheet` to get the assigned analyst.
-        ref_analysis.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
+        ref_analysis.reindexObject(idxs=[
+            "getWorksheetUID",
+            "getAnalyst",
+            "getReferenceAnalysesGroupID",  # used in `nextRefAnalysesGroupID`
+        ])
 
         # Reindex
         self.reindexObject(idxs=["getAnalysesUIDs"])
@@ -429,8 +433,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             prefix = reference.id + "-D"
-        bac = getToolByName(reference, 'senaite_catalog_analysis')
-        ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
+        cat = api.get_tool(ANALYSIS_CATALOG)
+        ids = cat.Indexes["getReferenceAnalysesGroupID"].uniqueValues()
         rr = re.compile("^" + prefix + r"[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()

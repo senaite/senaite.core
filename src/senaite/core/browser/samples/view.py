@@ -31,7 +31,7 @@ from senaite.core.permissions import TransitionSampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
 from senaite.core.api import dtime
