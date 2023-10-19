@@ -199,7 +199,15 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         # the updated Analyses.
         view.contentFilter = dict(self.contentFilter)
         view.contentFilter["getAncestorsUIDs"] = [api.get_uid(sample)]
-        return view.folderitems()
+        items = view.folderitems()
+        # Interim columns are required for rendering in senaite.app.listing and
+        # are added in the Analyses View in the `folderitems` methdod.
+        # Therefore, we add the missing columns here!
+        # https://github.com/senaite/senaite.core/issues/2405
+        for col_id, col in view.columns.items():
+            if col_id not in self.columns:
+                self.columns[col_id] = col
+        return items
 
     def get_analyses(self, full_objects=False):
         """Returns sample analyses from lab poc
