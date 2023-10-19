@@ -38,6 +38,7 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         self.contentFilter = {
             "portal_type": "Analysis",
             "getPointOfCapture": ["lab", "field"],
+            "sort_on": "sortable_title",
         }
 
         self.transposed = True
@@ -46,28 +47,6 @@ class MultiResultsTransposedView(AnalysesTransposedView):
 
         self.title = _("Multi Results")
         self.description = _("")
-
-        self.headers = OrderedDict()
-        self.services = OrderedDict()
-
-        self.columns = OrderedDict((
-            ("column_key", {
-                "title": "",
-                "sortable": False}),
-            ("Result", {
-                "title": _("Result"),
-                "ajax": True,
-                "sortable": False}),
-        ))
-
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "custom_transitions": [],
-                "columns": self.columns.keys(),
-            },
-        ]
 
     def make_empty_folderitem(self, **kw):
         """Create a new empty item
@@ -199,7 +178,15 @@ class MultiResultsTransposedView(AnalysesTransposedView):
         # the updated Analyses.
         view.contentFilter = dict(self.contentFilter)
         view.contentFilter["getAncestorsUIDs"] = [api.get_uid(sample)]
-        return view.folderitems()
+        items = view.folderitems()
+        # Interim columns are required for rendering in senaite.app.listing and
+        # are added in the Analyses View in the `folderitems` methdod.
+        # Therefore, we add the missing columns here!
+        # https://github.com/senaite/senaite.core/issues/2405
+        for col_id, col in view.columns.items():
+            if col_id not in self.columns:
+                self.columns[col_id] = col
+        return items
 
     def get_analyses(self, full_objects=False):
         """Returns sample analyses from lab poc

@@ -744,17 +744,41 @@ Or provide a correct query::
 Getting the registered Catalogs
 ...............................
 
-SENAITE LIMS uses multiple catalogs registered via the Archetype Tool. This
-function returns a list of registered catalogs for a brain or object::
+SENAITE LIMS uses **multiple catalogs** for different content types.
+This function returns a list of registered catalogs for a brain, object, UID or portal_type.
+
+Get the mapped catalogs for an AT content type:
 
     >>> api.get_catalogs_for(client)
-    [...]
+    [<ClientCatalog at /plone/senaite_catalog_client>]
 
-    >>> api.get_catalogs_for(instrument1)
-    [...]
+Passing in the portal_type should return the same:
 
-    >>> api.get_catalogs_for(analysiscategory1)
-    [...]
+    >>> api.get_catalogs_for(api.get_portal_type(client))
+    [<ClientCatalog at /plone/senaite_catalog_client>]
+
+Even if we pass in the UID, we should get the same results:
+
+    >>> api.get_catalogs_for(api.get_uid(client))
+    [<ClientCatalog at /plone/senaite_catalog_client>]
+
+Dexterity contents that provide IMulitCatalogBehavior should work as well:
+
+    >>> api.get_catalogs_for(senaite_setup)
+    [<CatalogTool at /plone/portal_catalog>]
+
+
+Getting the FTI for a portal type
+.................................
+
+This function provides the dynamic type information for a given portal type:
+
+    >>> api.get_fti("Client")
+    <DynamicViewTypeInformation at /plone/portal_types/Client>
+
+    >>> api.get_fti("Label")
+    <DexterityFTI at /plone/portal_types/Label>
+
 
 
 Getting an Attribute of an Object
