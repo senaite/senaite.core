@@ -63,7 +63,6 @@ COLUMNS = BASE_COLUMNS + [
     "getClientReference",
     "getClientSampleID",
     "getClientTitle",
-    "getClientUID",
     "getClientURL",
     "getContactEmail",
     "getContactFullName",
