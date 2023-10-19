@@ -768,6 +768,19 @@ Dexterity contents that provide IMulitCatalogBehavior should work as well:
     [<CatalogTool at /plone/portal_catalog>]
 
 
+Getting the FTI for a portal type
+.................................
+
+This function provides the dynamic type information for a given portal type:
+
+    >>> api.get_fti("Client")
+    <DynamicViewTypeInformation at /plone/portal_types/Client>
+
+    >>> api.get_fti("Label")
+    <DexterityFTI at /plone/portal_types/Label>
+
+
+
 Getting an Attribute of an Object
 .................................
 
