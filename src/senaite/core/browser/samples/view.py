@@ -80,7 +80,6 @@ class SamplesView(ListingView):
                 "sortable": True, }),
             ("Progress", {
                 "title": "Progress",
-                "index": "getProgress",
                 "sortable": True,
                 "toggle": True}),
             ("getId", {
@@ -94,7 +93,6 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("Creator", {
                 "title": _("Creator"),
-                "index": "getCreatorFullName",
                 "sortable": True,
                 "toggle": True}),
             ("Created", {
@@ -132,7 +130,6 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("BatchID", {
                 "title": _("Batch ID"),
-                "index": "getBatchID",
                 "sortable": True,
                 "toggle": False}),
             ("Client", {
@@ -150,7 +147,6 @@ class SamplesView(ListingView):
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
-                "index": "getClientReference",
                 "toggle": False}),
             ("getClientSampleID", {
                 "title": _("Client SID"),
@@ -158,7 +154,6 @@ class SamplesView(ListingView):
             ("ClientContact", {
                 "title": _("Contact"),
                 "sortable": True,
-                "index": "getContactFullName",
                 "toggle": False}),
             ("getSampleTypeTitle", {
                 "title": _("Sample Type"),
@@ -166,18 +161,15 @@ class SamplesView(ListingView):
                 "toggle": True}),
             ("getSamplePointTitle", {
                 "title": _("Sample Point"),
-                "sortable": True,
-                "index": "getSamplePointTitle",
+                "sortable": False,
                 "toggle": False}),
             ("getStorageLocation", {
                 "title": _("Storage Location"),
-                "sortable": True,
-                "index": "getStorageLocationTitle",
+                "sortable": False,
                 "toggle": False}),
             ("SamplingDeviation", {
                 "title": _("Sampling Deviation"),
                 "sortable": True,
-                "index": "getSamplingDeviationTitle",
                 "toggle": False}),
             ("getSampler", {
                 "title": _("Sampler"),
@@ -193,17 +185,14 @@ class SamplesView(ListingView):
             ("getAnalysesNum", {
                 "title": _("Number of Analyses"),
                 "sortable": True,
-                "index": "getAnalysesNum",
                 "toggle": False}),
             ("getTemplateTitle", {
                 "title": _("Template"),
                 "sortable": True,
-                "index": "getTemplateTitle",
                 "toggle": False}),
             ("Printed", {
                 "title": _("Printed"),
                 "sortable": False,
-                "index": "getPrinted",
                 "toggle": False}),
             ("state_title", {
                 "title": _("State"),
