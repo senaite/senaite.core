@@ -45,6 +45,7 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.dexterity.utils import addContentToContainer
 from plone.dexterity.utils import createContent
+from plone.dexterity.utils import resolveDottedName
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
@@ -372,7 +373,7 @@ def get_object(brain_object_uid, default=_marker):
     :returns: The full object
     """
     if is_uid(brain_object_uid):
-        return get_object_by_uid(brain_object_uid)
+        return get_object_by_uid(brain_object_uid, default=default)
     elif is_supermodel(brain_object_uid):
         return brain_object_uid.instance
     if not is_object(brain_object_uid):
@@ -1080,6 +1081,19 @@ def is_active(brain_or_object):
     return True
 
 
+def get_fti(portal_type, default=None):
+    """Lookup the Dynamic Filetype Information for the given portal_type
+
+    :param portal_type: The portal type to get the FTI for
+    :returns: FTI or default value
+    """
+    if not is_string(portal_type):
+        return default
+    portal_types = get_tool("portal_types")
+    fti = portal_types.getTypeInfo(portal_type)
+    return fti or default
+
+
 def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     """Get all registered catalogs for the given portal_type, catalog brain or
     content object
@@ -1093,23 +1107,50 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     :returns: List of supported catalogs
     :rtype: list
     """
-    archetype_tool = get_tool("archetype_tool", default=None)
-    if archetype_tool is None:
-        # return the default catalog
-        return [get_tool(default, default=PORTAL_CATALOG)]
+
+    # only handle catalog lookups by portal_type internally
+    if is_uid(brain_or_object) or is_object(brain_or_object):
+        obj = get_object(brain_or_object)
+        portal_type = get_portal_type(obj)
+        return get_catalogs_for(portal_type)
 
     catalogs = []
 
-    # get the registered catalogs for portal_type
-    if is_object(brain_or_object):
-        catalogs = archetype_tool.getCatalogsByType(
-            get_portal_type(brain_or_object))
-    if isinstance(brain_or_object, six.string_types):
-        catalogs = archetype_tool.getCatalogsByType(brain_or_object)
+    if not is_string(brain_or_object):
+        raise APIError("Expected a portal_type string, got <%s>"
+                       % type(brain_or_object))
 
-    if not catalogs:
+    # at this point the brain_or_object is a portal_type^
+    portal_type = brain_or_object
+
+    # check static portal_type -> catalog mapping first
+    from senaite.core.catalog import get_catalogs_by_type
+    catalogs = get_catalogs_by_type(portal_type)
+
+    # no catalogs in static mapping
+    # => Lookup catalogs by FTI
+    if len(catalogs) == 0:
+        fti = get_fti(portal_type)
+        if fti.product:
+            # AT content type
+            # => Looup via archetype_tool
+            archetype_tool = get_tool("archetype_tool")
+            catalogs = archetype_tool.catalog_map.get(portal_type)
+        else:
+            # DX content type
+            # => resolve the `_catalogs` attribute from the class
+            klass = resolveDottedName(fti.klass)
+            # XXX: Refactor multi-catalog behavior to not rely
+            #      on this hidden `_catalogs` attribute!
+            catalogs = getattr(klass, "_catalogs", [])
+
+    # fetch the catalog objects
+    catalogs = filter(None, map(lambda cid: get_tool(cid, None), catalogs))
+
+    if len(catalogs) == 0:
         return [get_tool(default, default=PORTAL_CATALOG)]
-    return catalogs
+
+    return list(catalogs)
 
 
 def get_transitions_for(brain_or_object):
