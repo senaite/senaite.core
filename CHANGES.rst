@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2408 Support DX type catalogs lookup
 - #2407 Fix analyses sort order in Transposed Multi Results Form
 - #2406 Fix missing interim fields in Transposed Multi Results Form
 - #2400 Add Transposed Multi Results Form

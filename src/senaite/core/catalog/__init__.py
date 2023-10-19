@@ -45,3 +45,75 @@ from senaite.core.catalog.setup_catalog import SetupCatalog
 from senaite.core.catalog.worksheet_catalog import \
     CATALOG_ID as WORKSHEET_CATALOG
 from senaite.core.catalog.worksheet_catalog import WorksheetCatalog
+
+CATALOG_MAPPINGS = (
+    # portal_type, catalog_ids
+    ("ARReport", [REPORT_CATALOG]),
+    ("ARTemplate", [SETUP_CATALOG]),
+    ("Analysis", [ANALYSIS_CATALOG]),
+    ("AnalysisCategory", [SETUP_CATALOG]),
+    ("AnalysisProfile", [SETUP_CATALOG]),
+    ("AnalysisRequest", [SAMPLE_CATALOG]),
+    ("AnalysisService", [SETUP_CATALOG]),
+    ("AnalysisSpec", [SETUP_CATALOG]),
+    ("Attachment", [SENAITE_CATALOG]),
+    ("AttachmentType", [SETUP_CATALOG]),
+    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG]),
+    ("Batch", [SENAITE_CATALOG]),
+    ("BatchLabel", [SETUP_CATALOG]),
+    ("Calculation", [SETUP_CATALOG]),
+    ("Client", [CLIENT_CATALOG]),
+    ("Contact", [CONTACT_CATALOG]),
+    ("Container", [SETUP_CATALOG]),
+    ("ContainerType", [SETUP_CATALOG]),
+    ("Department", [SETUP_CATALOG]),
+    ("DuplicateAnalysis", [ANALYSIS_CATALOG]),
+    ("Instrument", [SETUP_CATALOG]),
+    ("InstrumentCalibration", [SETUP_CATALOG]),
+    ("InstrumentCertification", [SETUP_CATALOG]),
+    ("InstrumentLocation", [SETUP_CATALOG]),
+    ("InstrumentMaintenanceTask", [SETUP_CATALOG]),
+    ("InstrumentScheduledTask", [SETUP_CATALOG]),
+    ("InstrumentType", [SETUP_CATALOG]),
+    ("InstrumentValidation", [SETUP_CATALOG]),
+    ("Invoice", [SENAITE_CATALOG]),
+    ("LabContact", [CONTACT_CATALOG]),
+    ("LabProduct", [SETUP_CATALOG]),
+    ("Label", [SETUP_CATALOG]),
+    ("Laboratory", [SETUP_CATALOG]),
+    ("Manufacturer", [SETUP_CATALOG]),
+    ("Method", [SETUP_CATALOG]),
+    ("Multifile", [SETUP_CATALOG]),
+    ("Preservation", [SETUP_CATALOG]),
+    ("Pricelist", [SETUP_CATALOG]),
+    ("ReferenceAnalysis", [ANALYSIS_CATALOG]),
+    ("ReferenceDefinition", [SETUP_CATALOG]),
+    ("ReferenceSample", [SENAITE_CATALOG]),
+    ("RejectAnalysis", [ANALYSIS_CATALOG]),
+    ("SampleCondition", [SETUP_CATALOG]),
+    ("SampleMatrix", [SETUP_CATALOG]),
+    ("SamplePoint", [SETUP_CATALOG]),
+    ("SampleType", [SETUP_CATALOG]),
+    ("SamplingDeviation", [SETUP_CATALOG]),
+    ("StorageLocation", [SETUP_CATALOG]),
+    ("SubGroup", [SETUP_CATALOG]),
+    ("Supplier", [SETUP_CATALOG]),
+    ("SupplierContact", [CONTACT_CATALOG]),
+    ("Worksheet", [WORKSHEET_CATALOG]),
+    ("WorksheetTemplate", [SETUP_CATALOG]),
+)
+
+def get_catalogs_by_type(portal_type):
+    """Return the mapped catalogs by type
+
+    TODO: Provide registry setting for this mapping lookup
+
+    :param portal_type: The portal type to look up
+    """
+    if not isinstance(portal_type, str):
+        raise TypeError("Expected string type, got <%s>" % type(portal_type))
+    mapping = dict(CATALOG_MAPPINGS)
+    catalogs = mapping.get(portal_type)
+    if not catalogs:
+        return []
+    return catalogs

@@ -35,16 +35,8 @@ from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import get_indexes
 from senaite.core.api.catalog import reindex_index
-from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import AUDITLOG_CATALOG
-from senaite.core.catalog import AUTOIMPORTLOG_CATALOG
-from senaite.core.catalog import CLIENT_CATALOG
-from senaite.core.catalog import CONTACT_CATALOG
-from senaite.core.catalog import REPORT_CATALOG
-from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog import SENAITE_CATALOG
-from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.catalog import CATALOG_MAPPINGS
 from senaite.core.catalog import AnalysisCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
@@ -126,63 +118,6 @@ INDEXES = (
 
 COLUMNS = (
     # catalog, column name
-)
-
-CATALOG_MAPPINGS = (
-    # portal_type, catalog_ids
-    ("ARReport", [REPORT_CATALOG]),
-    ("ARTemplate", [SETUP_CATALOG]),
-    ("Analysis", [ANALYSIS_CATALOG]),
-    ("AnalysisCategory", [SETUP_CATALOG]),
-    ("AnalysisProfile", [SETUP_CATALOG]),
-    ("AnalysisRequest", [SAMPLE_CATALOG]),
-    ("AnalysisService", [SETUP_CATALOG]),
-    ("AnalysisSpec", [SETUP_CATALOG]),
-    ("Attachment", [SENAITE_CATALOG]),
-    ("AttachmentType", [SETUP_CATALOG]),
-    ("AutoImportLog", [AUTOIMPORTLOG_CATALOG]),
-    ("Batch", [SENAITE_CATALOG]),
-    ("BatchLabel", [SETUP_CATALOG]),
-    ("Calculation", [SETUP_CATALOG]),
-    ("Client", [CLIENT_CATALOG]),
-    ("Contact", [CONTACT_CATALOG]),
-    ("Container", [SETUP_CATALOG]),
-    ("ContainerType", [SETUP_CATALOG]),
-    ("Department", [SETUP_CATALOG]),
-    ("DuplicateAnalysis", [ANALYSIS_CATALOG]),
-    ("Instrument", [SETUP_CATALOG]),
-    ("InstrumentCalibration", [SETUP_CATALOG]),
-    ("InstrumentCertification", [SETUP_CATALOG]),
-    ("InstrumentLocation", [SETUP_CATALOG]),
-    ("InstrumentMaintenanceTask", [SETUP_CATALOG]),
-    ("InstrumentScheduledTask", [SETUP_CATALOG]),
-    ("InstrumentType", [SETUP_CATALOG]),
-    ("InstrumentValidation", [SETUP_CATALOG]),
-    ("Invoice", [SENAITE_CATALOG]),
-    ("LabContact", [CONTACT_CATALOG]),
-    ("LabProduct", [SETUP_CATALOG]),
-    ("Label", [SETUP_CATALOG]),
-    ("Laboratory", [SETUP_CATALOG]),
-    ("Manufacturer", [SETUP_CATALOG]),
-    ("Method", [SETUP_CATALOG]),
-    ("Multifile", [SETUP_CATALOG]),
-    ("Preservation", [SETUP_CATALOG]),
-    ("Pricelist", [SETUP_CATALOG]),
-    ("ReferenceAnalysis", [ANALYSIS_CATALOG]),
-    ("ReferenceDefinition", [SETUP_CATALOG]),
-    ("ReferenceSample", [SENAITE_CATALOG]),
-    ("RejectAnalysis", [ANALYSIS_CATALOG]),
-    ("SampleCondition", [SETUP_CATALOG]),
-    ("SampleMatrix", [SETUP_CATALOG]),
-    ("SamplePoint", [SETUP_CATALOG]),
-    ("SampleType", [SETUP_CATALOG]),
-    ("SamplingDeviation", [SETUP_CATALOG]),
-    ("StorageLocation", [SETUP_CATALOG]),
-    ("SubGroup", [SETUP_CATALOG]),
-    ("Supplier", [SETUP_CATALOG]),
-    ("SupplierContact", [CONTACT_CATALOG]),
-    ("Worksheet", [WORKSHEET_CATALOG]),
-    ("WorksheetTemplate", [SETUP_CATALOG]),
 )
 
 REMOVE_PORTAL_CATALOG_INDEXES = (
