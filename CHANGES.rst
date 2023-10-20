@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2410 Fix order of choices for interims on data entry is not preserved
 - #2408 Support DX type catalogs lookup
 - #2407 Fix analyses sort order in Transposed Multi Results Form
 - #2406 Fix missing interim fields in Transposed Multi Results Form
