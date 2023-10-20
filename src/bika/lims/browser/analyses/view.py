@@ -1094,7 +1094,8 @@ class AnalysesView(ListingView):
 
                 # Get the {value:text} dict
                 choices = choices.split("|")
-                choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+                choices = map(lambda ch: ch.strip().split(":"), choices)
+                choices = OrderedDict(choices)
 
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
