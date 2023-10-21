@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
 - #2410 Fix order of choices for interims on data entry is not preserved
 - #2408 Support DX type catalogs lookup
 - #2407 Fix analyses sort order in Transposed Multi Results Form
