@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:34+0000\n"
+"POT-Creation-Date: 2023-10-22 12:24+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -206,7 +206,7 @@ msgstr "认证编码"
 msgid "Accreditation page header"
 msgstr "认证页面标题"
 
-#: bika/lims/browser/analyses/view.py:1524
+#: bika/lims/browser/analyses/view.py:1525
 #: bika/lims/browser/analysisrequest/manage_analyses.py:259
 #: bika/lims/browser/referencesample.py:358
 msgid "Accredited"
@@ -548,7 +548,7 @@ msgstr "分派"
 msgid "Assigned"
 msgstr "已分派"
 
-#: bika/lims/browser/analyses/view.py:1513
+#: bika/lims/browser/analyses/view.py:1514
 msgid "Assigned to: ${worksheet_id}"
 msgstr "分派到: ${worksheet_id}"
 
@@ -601,7 +601,7 @@ msgstr "附件添加到\"{}\"分析中"
 msgid "Attachment added to the current sample"
 msgstr "附件添加到当前样品"
 
-#: bika/lims/browser/analyses/view.py:1271
+#: bika/lims/browser/analyses/view.py:1272
 #: bika/lims/browser/analysisrequest/manage_analyses.py:262
 #: bika/lims/browser/referencesample.py:361
 msgid "Attachment required"
@@ -888,11 +888,11 @@ msgstr "校准"
 msgid "Calibrator"
 msgstr "校准物质"
 
-#: bika/lims/browser/analyses/view.py:1461
+#: bika/lims/browser/analyses/view.py:1462
 msgid "Can verify, but submitted by current user"
 msgstr "可以验证，但需要通过当前用户提交"
 
-#: bika/lims/browser/analyses/view.py:1485
+#: bika/lims/browser/analyses/view.py:1486
 msgid "Can verify, but was already verified by current user"
 msgstr "可以验证，但已经被当前用户验证"
 
@@ -920,15 +920,15 @@ msgstr "不能停用计算公式，因它現正被以下服务使用中: ${calc_
 msgid "Cannot send email for ${sample_id}: ${error}"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1491
+#: bika/lims/browser/analyses/view.py:1492
 msgid "Cannot verify, last verified by current user"
 msgstr "无法验证，当前用户已最后验证"
 
-#: bika/lims/browser/analyses/view.py:1467
+#: bika/lims/browser/analyses/view.py:1468
 msgid "Cannot verify, submitted by current user"
 msgstr "无法验证，当前用户已提交过"
 
-#: bika/lims/browser/analyses/view.py:1476
+#: bika/lims/browser/analyses/view.py:1477
 msgid "Cannot verify, was verified by current user"
 msgstr "无法验证，已被当前用户验证"
 
@@ -3348,7 +3348,7 @@ msgstr "更多"
 msgid "Multi Catalog Behavior for Dexterity Contents"
 msgstr "灵活内容的多目录行为"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:47
+#: senaite/core/browser/samples/multi_results_transposed.py:48
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Multi Results"
 msgstr "多种结果"
@@ -3357,7 +3357,7 @@ msgstr "多种结果"
 msgid "Multi Verification type"
 msgstr "多次复核类型"
 
-#: bika/lims/browser/analyses/view.py:1433
+#: bika/lims/browser/analyses/view.py:1434
 msgid "Multi-verification required"
 msgstr "需要多次复核"
 
@@ -3840,7 +3840,7 @@ msgstr "捕获点"
 msgid "Portal Types"
 msgstr "门户类型"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:100
+#: senaite/core/browser/samples/multi_results_transposed.py:79
 msgid "Position"
 msgstr "位置"
 
@@ -4399,7 +4399,9 @@ msgstr "主管"
 msgid "Restore"
 msgstr "恢复"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:58
+#: bika/lims/browser/analyses/view.py:132
+#: bika/lims/browser/referencesample.py:168
+#: bika/lims/browser/worksheet/views/analyses.py:86
 msgid "Result"
 msgstr "结果"
 
@@ -4419,15 +4421,15 @@ msgstr "结果值必须唯一"
 msgid "Result files folders"
 msgstr "结果文件夹"
 
-#: bika/lims/browser/analyses/view.py:1374
+#: bika/lims/browser/analyses/view.py:1375
 msgid "Result in shoulder range"
 msgstr "误差范围允许内的结果"
 
-#: bika/lims/browser/analyses/view.py:1371
+#: bika/lims/browser/analyses/view.py:1372
 msgid "Result out of range"
 msgstr "结果超标"
 
-#: bika/lims/browser/analyses/view.py:1393
+#: bika/lims/browser/analyses/view.py:1394
 msgid "Result range is different from Specification: {}"
 msgstr "结果范围与检验标准不同：{}"
 
@@ -5282,7 +5284,7 @@ msgstr "提交"
 msgid "Submit a valid Open XML (.XLSX) file containing setup records to continue."
 msgstr "提交包含安装记录的有效Open XML（.XLSX）文件以继续."
 
-#: bika/lims/browser/analyses/view.py:1418
+#: bika/lims/browser/analyses/view.py:1419
 msgid "Submitted and verified by the same user: {}"
 msgstr "由同一用户提交并复核：{}"
 
@@ -7480,7 +7482,7 @@ msgstr "直到"
 msgid "updated every 2 hours"
 msgstr "每2小时更新一次"
 
-#: bika/lims/browser/analyses/view.py:1435
+#: bika/lims/browser/analyses/view.py:1436
 msgid "verification(s) pending"
 msgstr "待复核"
 
