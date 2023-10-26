@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2411 Multiselection with duplicates support for interim fields
 - #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
 - #2410 Fix order of choices for interims on data entry is not preserved
 - #2408 Support DX type catalogs lookup
