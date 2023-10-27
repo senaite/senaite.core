@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.interfaces import IListingSearchableTextProvider
 from Products.CMFPlone.CatalogTool import \
     sortable_title as plone_sortable_title
