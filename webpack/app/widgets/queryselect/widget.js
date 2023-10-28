@@ -452,11 +452,6 @@ class QuerySelectWidgetController extends React.Component {
       } else {
         this.deselect(value);
       }
-    } else {
-      if (searchvalue && this.state.allow_user_value) {
-        // allow to set the current searchvalue
-        this.select(searchvalue);
-      }
     }
   }
 
@@ -777,6 +772,7 @@ class QuerySelectWidgetController extends React.Component {
             searchterm={this.state.searchterm}
             width={this.state.results_table_width}
             results={this.state.results}
+            allow_user_value={this.state.allow_user_value}
             loading={this.state.loading}
             focused={this.state.focused}
             count={this.state.count}
