@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2414 Fix missing empty selection in result option choices when no default value is set
 - #2413 Fix select custom value for queryselect widget
 - #2412 Layered listing searchable text adapter lookup
 - #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
