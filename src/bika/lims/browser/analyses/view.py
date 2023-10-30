@@ -1089,19 +1089,26 @@ class AnalysesView(ListingView):
             # Does interim's results list needs to be rendered?
             choices = interim_field.get("choices")
             if choices:
-                # Process the value as a list
-                interim_value = api.to_list(interim_value)
 
                 # Get the {value:text} dict
                 choices = choices.split("|")
                 choices = map(lambda ch: ch.strip().split(":"), choices)
                 choices = OrderedDict(choices)
 
+                # check if we have a valid default value
+                if choices.get(interim_value) is not None:
+                    value = interim_value
+                else:
+                    # allow empty selection and flush default value
+                    value = ""
+                    interim_allow_empty = True
+
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
-                # Allow empty selection by adding an empty record to the list
+
+                # Allow empty selection if allowed
                 if interim_allow_empty:
                     empty = {"ResultValue": "", "ResultText": ""}
                     dl = [empty] + list(dl)
@@ -1109,7 +1116,7 @@ class AnalysesView(ListingView):
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
-                texts = [choices.get(v, "") for v in interim_value]
+                texts = [choices.get(v, "") for v in api.to_list(value)]
                 text = "<br/>".join(filter(None, texts))
                 interim_field["formatted_value"] = text
 
@@ -1121,10 +1128,10 @@ class AnalysesView(ListingView):
 
             elif self.is_multi_interim(interim_field):
                 # Process the value as a list
-                interim_value = api.to_list(interim_value)
+                value = api.to_list(interim_value)
 
                 # Set the text as the formatted value
-                text = "<br/>".join(filter(None, interim_value))
+                text = "<br/>".join(filter(None, value))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:
