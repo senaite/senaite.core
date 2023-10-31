@@ -440,7 +440,7 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
             "uid": api.get_uid(o), "hidden": self.is_hidden(o)
         }, services)
 
-        # Do not overwrite default result ranges set throuh sample
+        # Do not overwrite default result ranges set through sample
         # specification field unless the edition of specs at analysis
         # level is explicitely allowed
         specs = []
@@ -449,7 +449,6 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
 
         # Set new analyses to the sample
         sample.setAnalysisServicesSettings(hidden)
-        import pdb;pdb.set_trace()
         sample.setAnalyses(uids, prices=prices, specs=specs, hidden=hidden)
 
         # Just in case new analyses have been added while the Sample was in a
