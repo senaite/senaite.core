@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2411 Multiselection with duplicates support for interim fields
+- #2415 Fix sample specs get overwritten on manage analyses save
 - #2413 Fix select custom value for queryselect widget
 - #2412 Layered listing searchable text adapter lookup
 - #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
