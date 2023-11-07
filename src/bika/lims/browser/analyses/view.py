@@ -1064,7 +1064,7 @@ class AnalysesView(ListingView):
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
         for interim_field in interim_fields:
-            interim_keyword = interim_field.get('keyword', '')
+            interim_keyword = interim_field.get("keyword", "")
             if not interim_keyword:
                 continue
 
