@@ -1024,6 +1024,16 @@ class AnalysesView(ListingView):
         """
         return api.to_list(value)
 
+    def get_interim_choices(self, interim):
+        """Parse the interim choices field
+        """
+        choices = interim.get("choices")
+        if not choices:
+            return None
+        items = choices.split("|")
+        pairs = map(lambda item: item.strip().split(":"), items)
+        return OrderedDict(pairs)
+
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
 
