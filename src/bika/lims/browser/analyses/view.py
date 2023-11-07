@@ -1097,20 +1097,14 @@ class AnalysesView(ListingView):
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
-            choices = interim_field.get("choices")
+            choices = self.get_interim_choices(interim_field)
             if choices:
+                multi = self.is_multi_interim(interim_field)
 
-                # Get the {value:text} dict
-                choices = choices.split("|")
-                choices = map(lambda ch: ch.strip().split(":"), choices)
-                choices = OrderedDict(choices)
-
-                # check if we have a valid default value
-                if choices.get(interim_value) is not None:
-                    value = interim_value
-                else:
+                # Ensure empty option is available if no default value is set
+                if not interim_value and not multi:
                     # allow empty selection and flush default value
-                    value = ""
+                    interim_value = ""
                     interim_allow_empty = True
 
                 # Generate the display list
@@ -1126,22 +1120,8 @@ class AnalysesView(ListingView):
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
-                texts = [choices.get(v, "") for v in api.to_list(value)]
+                texts = [choices.get(v, "") for v in api.to_list(interim_value)]
                 text = "<br/>".join(filter(None, texts))
-                interim_field["formatted_value"] = text
-
-                if not is_editable:
-                    # Display the text instead of the value
-                    interim_field["value"] = text
-
-                item[interim_keyword] = interim_field
-
-            elif self.is_multi_interim(interim_field):
-                # Process the value as a list
-                value = api.to_list(interim_value)
-
-                # Set the text as the formatted value
-                text = "<br/>".join(filter(None, value))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:
