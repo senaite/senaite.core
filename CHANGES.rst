@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2416 Fix Template select empties existing Sample Type-, Point- and Profile values in sample add form
 - #2414 Fix missing empty selection in result option choices when no default value is set
 - #2415 Fix sample specs get overwritten on manage analyses save
 - #2413 Fix select custom value for queryselect widget
