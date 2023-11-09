@@ -28,6 +28,7 @@ from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
 from senaite.core.i18n import translate as t
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
@@ -947,7 +948,7 @@ class AnalysisResultsImporter(Logger):
 
         if "DateTime" in values.keys():
             ts = values.get("DateTime")
-            capturedate = api.to_date(ts)
+            capturedate = dtime.to_DT(ts)
             if capturedate is None:
                 del values["DateTime"]
 
