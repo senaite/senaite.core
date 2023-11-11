@@ -214,6 +214,9 @@
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
+    <!-- This is required to enable permission checking during sample creation
+         if automatic sample reception is enabled:
+         https://github.com/senaite/senaite.core/pull/2419 -->
     <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
