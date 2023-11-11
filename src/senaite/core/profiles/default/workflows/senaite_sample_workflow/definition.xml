@@ -121,7 +121,7 @@
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reject Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
