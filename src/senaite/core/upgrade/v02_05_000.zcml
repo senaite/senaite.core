@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import Workflow"
+      description="Update Managed Permissions of Sample Workflow"
+      source="2519"
+      destination="2520"
+      handler=".v02_05_000.import_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Reindex control analyses"
       description="Reindex all control analyses to fix stale `getReferenceAnalysesGroupID` index"
       source="2518"
