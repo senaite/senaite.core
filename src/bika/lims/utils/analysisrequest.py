@@ -142,7 +142,7 @@ def create_analysisrequest(client, request, values, analyses=None,
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
                                 action="to_be_sampled")
         elif setup.getAutoreceiveSamples():
-            receive_sample(ar)
+            receive_sample(ar, check_permission=True)
         else:
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
