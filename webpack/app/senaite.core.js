@@ -53,9 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("listing:after_transition_event", (event) => {
 
     // skip site reload for multi_results view
-    // TODO: find a better way for this check!
-    if (document.body.classList.contains("template-multi_results")) {
-      return;
+    let multi_results_templates = ["template-multi_results", "template-multi_results_classic"];
+    let body_class_list = document.body.classList;
+    for (let class_name of multi_results_templates) {
+      if (body_class_list.contains(class_name)) {
+        return;
+      }
     }
 
     // get the old workflow state of the view context
