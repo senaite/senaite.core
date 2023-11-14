@@ -4,6 +4,12 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2421 Fix hanging sampletype listing view in setup
+- #2420 Fix page reload in multi results classic view
+- #2419 Check permission when automatic sample reception is enabled
+- #2416 Fix Template select empties existing Sample Type-, Point- and Profile values in sample add form
+- #2414 Fix missing empty selection in result option choices when no default value is set
+- #2415 Fix sample specs get overwritten on manage analyses save
 - #2413 Fix select custom value for queryselect widget
 - #2412 Layered listing searchable text adapter lookup
 - #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
