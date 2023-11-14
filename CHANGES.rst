@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2422 Return list if catalog is not found instead of None
 - #2421 Fix hanging sampletype listing view in setup
 - #2420 Fix page reload in multi results classic view
 - #2419 Check permission when automatic sample reception is enabled
