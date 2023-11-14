@@ -15,6 +15,9 @@ Running this test from the buildout directory:
 Needed Imports:
 
     >>> from bika.lims import api
+    >>> from bika.lims.api.security import get_valid_roles_for
+    >>> from bika.lims.api.security import revoke_permission_for
+    >>> from bika.lims.permissions import TransitionReceiveSample
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
@@ -102,3 +105,32 @@ Manual reception of the sample is required:
     >>> success = do_action_for(sample, "receive")
     >>> api.get_review_status(sample)
     'sample_received'
+
+
+Sample auto-receive enabled, but user without enough privileges
+...............................................................
+
+This test validates that when "Auto-receive samples" setting is enabled, but
+the user does not have enough the permission
+`senaite.core: Transition: Receive` granted, the sample does not transition
+automatically to "received" status but to "sample_due".
+
+Enable the automatic reception of samples:
+
+    >>> setup.setAutoreceiveSamples(True)
+    >>> setup.getAutoreceiveSamples()
+    True
+
+Revoke the permission for all roles and client:
+
+    >>> roles = get_valid_roles_for(client)
+    >>> revoke_permission_for(client, TransitionReceiveSample, roles)
+
+Create a Sample:
+
+    >>> sample = new_sample([Cu, Fe, Au])
+
+The status of the analyses is "sample_due":
+
+    >>> api.get_review_status(sample)
+    'sample_due'
