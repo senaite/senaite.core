@@ -516,6 +516,7 @@ def fix_samples_registered(tool):
             # sample has not been collected yet
             changeWorkflowState(sample, SAMPLE_WORKFLOW, "to_be_sampled",
                                 actor=creator, action="to_be_sampled")
+            sample.reindexObject()
             sample._p_deactivate()
             continue
 
@@ -541,12 +542,17 @@ def fix_samples_registered(tool):
                         continue
                     changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
                                         actor=creator, action="initialize")
+                    obj.reindexObject()
+                    obj._p_deactivate()
+
+                sample.reindexObject()
                 sample._p_deactivate()
                 continue
 
         # sample_due is the default initial status of the sample
         changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_due",
                             actor=creator, action="no_sampling_workflow")
+        sample.reindexObject()
         sample._p_deactivate()
 
     logger.info("Fixing samples in 'registered' status [DONE]")
