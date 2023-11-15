@@ -5,7 +5,7 @@
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Fix samples in registered status"
-      description="Fixes the status of samples in registere status"
+      description="Fixes the status of samples in registered status"
       source="2520"
       destination="2521"
       handler=".v02_05_000.fix_samples_registered"
