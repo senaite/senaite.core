@@ -509,7 +509,9 @@ def fix_samples_registered(tool):
 
         sample = api.get_object(brain)
 
+        # get the user who registered the sample
         creator = sample.Creator()
+
         if sample.getSamplingRequired():
             # sample has not been collected yet
             changeWorkflowState(sample, SAMPLE_WORKFLOW, "to_be_sampled",
@@ -518,8 +520,8 @@ def fix_samples_registered(tool):
             continue
 
         if auto_receive:
-            user = security.get_user(sample.creator())
-            if user.has_permission(TransitionReceiveSample, sample):
+            user = security.get_user(creator)
+            if user and user.has_permission(TransitionReceiveSample, sample):
                 # Change status to sample_received
                 changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_received",
                                     actor=creator, action="receive")
