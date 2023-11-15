@@ -21,10 +21,10 @@
 import transaction
 from Acquisition import aq_base
 from bika.lims import api
+from bika.lims.api import security
 from bika.lims.interfaces import IReceived
 from bika.lims.utils import changeWorkflowState
 from senaite.core import logger
-from senaite.core.api import security
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
