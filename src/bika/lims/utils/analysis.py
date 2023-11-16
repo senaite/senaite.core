@@ -221,8 +221,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     the uncertainty neither the result. The fixed length precision is
     used instead.
 
-    If the result is not floatable or no uncertainty defined, returns
-    an empty string.
+    If the result is not floatable, the uncertainty is not defined or its value
+    is not above 0, an empty string is returned.
 
     The default decimal mark '.' will be replaced by the decimalmark
     specified.
@@ -244,8 +244,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         pass
 
     uncertainty = analysis.getUncertainty()
-
-    if not uncertainty:
+    if api.to_float(uncertainty, default=0) <= 0:
+        # uncertainty is not defined or not above 0
         return ""
 
     # always convert exponential notation to decimal
