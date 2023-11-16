@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-22 12:24+0000\n"
+"POT-Creation-Date: 2023-11-14 14:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swedish (https://app.transifex.com/senaite/teams/87045/sv/)\n"
@@ -195,7 +195,7 @@ msgstr ""
 msgid "Accreditation page header"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1525
+#: bika/lims/browser/analyses/view.py:1522
 #: bika/lims/browser/analysisrequest/manage_analyses.py:259
 #: bika/lims/browser/referencesample.py:358
 msgid "Accredited"
@@ -537,7 +537,7 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1514
+#: bika/lims/browser/analyses/view.py:1511
 msgid "Assigned to: ${worksheet_id}"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "Attachment added to the current sample"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1272
+#: bika/lims/browser/analyses/view.py:1269
 #: bika/lims/browser/analysisrequest/manage_analyses.py:262
 #: bika/lims/browser/referencesample.py:361
 msgid "Attachment required"
@@ -877,11 +877,11 @@ msgstr ""
 msgid "Calibrator"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1462
+#: bika/lims/browser/analyses/view.py:1459
 msgid "Can verify, but submitted by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1486
+#: bika/lims/browser/analyses/view.py:1483
 msgid "Can verify, but was already verified by current user"
 msgstr ""
 
@@ -909,15 +909,15 @@ msgstr ""
 msgid "Cannot send email for ${sample_id}: ${error}"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1492
+#: bika/lims/browser/analyses/view.py:1489
 msgid "Cannot verify, last verified by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1468
+#: bika/lims/browser/analyses/view.py:1465
 msgid "Cannot verify, submitted by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1477
+#: bika/lims/browser/analyses/view.py:1474
 msgid "Cannot verify, was verified by current user"
 msgstr ""
 
@@ -3137,7 +3137,7 @@ msgstr ""
 msgid "Manager Phone"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1047
+#: bika/lims/browser/analyses/view.py:1057
 msgid "Manual"
 msgstr ""
 
@@ -3346,7 +3346,7 @@ msgstr ""
 msgid "Multi Verification type"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1434
+#: bika/lims/browser/analyses/view.py:1431
 msgid "Multi-verification required"
 msgstr ""
 
@@ -4410,15 +4410,15 @@ msgstr ""
 msgid "Result files folders"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1375
+#: bika/lims/browser/analyses/view.py:1372
 msgid "Result in shoulder range"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1372
+#: bika/lims/browser/analyses/view.py:1369
 msgid "Result out of range"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1394
+#: bika/lims/browser/analyses/view.py:1391
 msgid "Result range is different from Specification: {}"
 msgstr ""
 
@@ -4603,8 +4603,8 @@ msgid "Sample Point"
 msgstr ""
 
 #: bika/lims/controlpanel/bika_samplepoints.py:64
-#: bika/lims/controlpanel/bika_sampletypes.py:103
 #: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr ""
 
@@ -5273,7 +5273,7 @@ msgstr ""
 msgid "Submit a valid Open XML (.XLSX) file containing setup records to continue."
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1419
+#: bika/lims/browser/analyses/view.py:1416
 msgid "Submitted and verified by the same user: {}"
 msgstr ""
 
@@ -6774,6 +6774,11 @@ msgstr ""
 msgid "description_sample_sampletype"
 msgstr ""
 
+#. Default: "The date when the sample will be taken"
+#: bika/lims/content/analysisrequest.py:504
+msgid "description_sample_samplingdate"
+msgstr ""
+
 #. Default: "Deviation between the sample and how it was sampled"
 #: bika/lims/content/analysisrequest.py:864
 msgid "description_sample_samplingdeviation"
@@ -6894,7 +6899,7 @@ msgstr ""
 msgid "hours"
 msgstr ""
 
-#: bika/lims/controlpanel/bika_sampletypes.py:147
+#: bika/lims/controlpanel/bika_sampletypes.py:144
 msgid "hours: {} minutes: {} days: {}"
 msgstr ""
 
@@ -7466,7 +7471,7 @@ msgstr ""
 msgid "updated every 2 hours"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1436
+#: bika/lims/browser/analyses/view.py:1433
 msgid "verification(s) pending"
 msgstr ""
 

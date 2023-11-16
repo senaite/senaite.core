@@ -523,17 +523,24 @@ Uncertainties = RecordsField(
     widget=RecordsWidget(
         label=_("Uncertainty"),
         description=_(
-            "Specify the uncertainty value for a given range, e.g. for "
-            "results in a range with minimum of 0 and maximum of 10, "
-            "where the uncertainty value is 0.5 - a result of 6.67 will be "
-            "reported as 6.67 +- 0.5. You can also specify the uncertainty "
-            "value as a percentage of the result value, by adding a '%' to "
-            "the value entered in the 'Uncertainty Value' column, e.g. for "
-            "results in a range with minimum of 10.01 and a maximum of 100, "
-            "where the uncertainty value is 2% - a result of 100 will be "
-            "reported as 100 +- 2. Please ensure successive ranges are "
-            "continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, "
-            "20.01 - 30 .00 etc."),
+            u"description_analysis_uncertainty",
+            default=u"Specify the uncertainty value for a given range, e.g. "
+                    u"for results in a range with minimum of 0 and maximum of "
+                    u"10, where the uncertainty value is 0.5 - a result of "
+                    u"6.67 will be reported as 6.67 ± 0.5.<br/>"
+                    u"You can also specify the uncertainty value as a "
+                    u"percentage of the result value, by adding a '%' to the "
+                    u"value entered in the 'Uncertainty Value' column, e.g. "
+                    u"for results in a range with minimum of 10.01 and a "
+                    u"maximum of 100, where the uncertainty value is 2%, a "
+                    u"result of 100 will be reported as 100 ± 2.<br/>"
+                    u"If you don't want uncertainty to be displayed for a "
+                    u"given range, set 0 (or a value below 0) as the "
+                    u"Uncertainty value.<br/>"
+                    u"Please ensure successive ranges are continuous, e.g. "
+                    u"0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00"
+                    u" etc."
+        ),
     )
 )
 

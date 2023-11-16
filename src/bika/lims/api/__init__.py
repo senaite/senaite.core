@@ -1135,7 +1135,7 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
             # AT content type
             # => Looup via archetype_tool
             archetype_tool = get_tool("archetype_tool")
-            catalogs = archetype_tool.catalog_map.get(portal_type)
+            catalogs = archetype_tool.catalog_map.get(portal_type) or []
         else:
             # DX content type
             # => resolve the `_catalogs` attribute from the class

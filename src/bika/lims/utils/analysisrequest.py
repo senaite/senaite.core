@@ -137,13 +137,18 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
-        # Sampling is required
         if ar.getSamplingRequired():
+            # sample has not been collected yet
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
                                 action="to_be_sampled")
-        elif setup.getAutoreceiveSamples():
+
+        elif setup.getAutoreceiveSamples() and can_receive(ar):
+            # auto-receive the sample, but only if the user (that might be
+            # a client) has enough privileges. Otherwise, sample_due
             receive_sample(ar)
+
         else:
+            # sample_due is the default initial status of the sample
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
                                 action="no_sampling_workflow")
 
