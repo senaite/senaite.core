@@ -502,7 +502,7 @@ schema = BikaSchema.copy() + Schema((
                 default="Expected Sampling Date"
             ),
             description=_(
-                "label_sample_samplingdate",
+                "description_sample_samplingdate",
                 default="The date when the sample will be taken"
             ),
             size=20,

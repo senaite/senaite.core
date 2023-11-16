@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2411 Multiselection with duplicates support for interim fields
+- #2426 Fix ±0 is displayed for results within a range without uncertainty set
+- #2424 Fix sample in "registered" after creation when user cannot receive
+- #2422 Fix Maximum number of Iterations Exceeded when no catalogs set for AT type
 - #2421 Fix hanging sampletype listing view in setup
 - #2420 Fix page reload in multi results classic view
 - #2419 Check permission when automatic sample reception is enabled
