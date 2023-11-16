@@ -383,6 +383,35 @@ Test the range 10-20 with an unertainty value of 5% of the result:
     >>> au.getUncertainty()
     '0.75'
 
+If the uncertainty value is value is not above 0, no formatted uncertainty is
+returned. The use of `0` as an uncertainty value is useful for when the result
+is between the detection limit and the quantification limit. In such case,
+uncertainty mustn't be displayed. Likewise, there might be other scenarios in
+which the user do not want to display uncertainty for a given result range:
+
+    >>> uncertainties = [
+    ...    {"intercept_min":  "0.2", "intercept_max":  "100000", "errorvalue": "5.3%"},
+    ...    {"intercept_min":  "0.08", "intercept_max": "0.19", "errorvalue": "0"},
+    ... ]
+
+    >>> au.setUncertainties(uncertainties)
+    >>> au.setResult(0.3)
+    >>> au.getUncertainty()
+    '0.0159'
+    >>> format_uncertainty(au)
+    '0.02'
+
+    >>> au.setResult(0.05)
+    >>> au.getUncertainty() is None
+    True
+    >>> format_uncertainty(au)
+    ''
+
+    >>> au.setResult(0.10)
+    >>> au.getUncertainty()
+    '0'
+    >>> format_uncertainty(au)
+    ''
 
 Test exponential format
 .......................
