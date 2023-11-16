@@ -1024,6 +1024,16 @@ class AnalysesView(ListingView):
         """
         return api.to_list(value)
 
+    def get_interim_choices(self, interim):
+        """Parse the interim choices field
+        """
+        choices = interim.get("choices")
+        if not choices:
+            return None
+        items = choices.split("|")
+        pairs = map(lambda item: item.strip().split(":"), items)
+        return OrderedDict(pairs)
+
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
 
@@ -1054,7 +1064,7 @@ class AnalysesView(ListingView):
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
         for interim_field in interim_fields:
-            interim_keyword = interim_field.get('keyword', '')
+            interim_keyword = interim_field.get("keyword", "")
             if not interim_keyword:
                 continue
 
@@ -1087,20 +1097,22 @@ class AnalysesView(ListingView):
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
-            choices = interim_field.get("choices")
+            choices = self.get_interim_choices(interim_field)
             if choices:
-                # Process the value as a list
-                interim_value = api.to_list(interim_value)
+                multi = self.is_multi_interim(interim_field)
 
-                # Get the {value:text} dict
-                choices = choices.split("|")
-                choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+                # Ensure empty option is available if no default value is set
+                if not interim_value and not multi:
+                    # allow empty selection and flush default value
+                    interim_value = ""
+                    interim_allow_empty = True
 
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
-                # Allow empty selection by adding an empty record to the list
+
+                # Allow empty selection if allowed
                 if interim_allow_empty:
                     empty = {"ResultValue": "", "ResultText": ""}
                     dl = [empty] + list(dl)
@@ -1108,22 +1120,8 @@ class AnalysesView(ListingView):
                 item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
-                texts = [choices.get(v, "") for v in interim_value]
+                texts = [choices.get(v, "") for v in api.to_list(interim_value)]
                 text = "<br/>".join(filter(None, texts))
-                interim_field["formatted_value"] = text
-
-                if not is_editable:
-                    # Display the text instead of the value
-                    interim_field["value"] = text
-
-                item[interim_keyword] = interim_field
-
-            elif self.is_multi_interim(interim_field):
-                # Process the value as a list
-                interim_value = api.to_list(interim_value)
-
-                # Set the text as the formatted value
-                text = "<br/>".join(filter(None, interim_value))
                 interim_field["formatted_value"] = text
 
                 if not is_editable:

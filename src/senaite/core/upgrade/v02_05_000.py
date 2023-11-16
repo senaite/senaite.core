@@ -21,6 +21,9 @@
 import transaction
 from Acquisition import aq_base
 from bika.lims import api
+from bika.lims.api import security
+from bika.lims.interfaces import IReceived
+from bika.lims.utils import changeWorkflowState
 from senaite.core import logger
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
@@ -36,17 +39,21 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
+from senaite.core.permissions import TransitionReceiveSample
 from senaite.core.registry import get_registry_record
-from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import CATALOG_MAPPINGS
 from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_portal_catalog
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import uncatalog_brain
+from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import SAMPLE_WORKFLOW
+from zope.interface import alsoProvides
 
 PORTAL_CATALOG = "portal_catalog"
 
@@ -484,6 +491,73 @@ def reindex_control_analyses(tool):
         obj._p_deactivate()
 
     logger.info("Reindexing control analyses [DONE]")
+
+
+def fix_samples_registered(tool):
+    """Transitions the samples in "registered" status to a suitable status,
+    either "sample_due", "recieved", or "to_be_sampled"
+    """
+    logger.info("Fixing samples in 'registered' status ...")
+
+    setup = api.get_setup()
+    auto_receive = setup.getAutoreceiveSamples()
+    query = {"review_state": "sample_registered"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Fixing samples in 'registered' status: {}/{}"
+                        .format(num, total))
+
+        sample = api.get_object(brain)
+
+        # get the user who registered the sample
+        creator = sample.Creator()
+
+        if sample.getSamplingRequired():
+            # sample has not been collected yet
+            changeWorkflowState(sample, SAMPLE_WORKFLOW, "to_be_sampled",
+                                actor=creator, action="to_be_sampled")
+            sample.reindexObject()
+            sample._p_deactivate()
+            continue
+
+        if auto_receive:
+            user = security.get_user(creator)
+            if user and user.has_permission(TransitionReceiveSample, sample):
+                # Change status to sample_received
+                changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_received",
+                                    actor=creator, action="receive")
+
+                # Mark the secondary as received
+                alsoProvides(sample, IReceived)
+
+                # Set same received date as created
+                created = api.get_creation_date(sample)
+                sample.setDateReceived(created)
+
+                # Initialize analyses
+                for obj in sample.objectValues():
+                    if obj.portal_type != "Analysis":
+                        continue
+                    if api.get_review_status(obj) != "registered":
+                        continue
+                    changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
+                                        actor=creator, action="initialize")
+                    obj.reindexObject()
+                    obj._p_deactivate()
+
+                sample.reindexObject()
+                sample._p_deactivate()
+                continue
+
+        # sample_due is the default initial status of the sample
+        changeWorkflowState(sample, SAMPLE_WORKFLOW, "sample_due",
+                            actor=creator, action="no_sampling_workflow")
+        sample.reindexObject()
+        sample._p_deactivate()
+
+    logger.info("Fixing samples in 'registered' status [DONE]")
 
 
 def purge_catalogs(tool):

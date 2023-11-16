@@ -550,21 +550,21 @@ class window.AnalysisRequestAdd
 
     # set the sample type
     field = $("#SampleType-#{arnum}")
-    value = @get_reference_field_value(value)
+    value = @get_reference_field_value(field)
     if not value
       uid = template.sample_type_uid
       @set_reference_field field, uid
 
     # set the sample point
     field = $("#SamplePoint-#{arnum}")
-    value = @get_reference_field_value(value)
+    value = @get_reference_field_value(field)
     if not value
       uid = template.sample_point_uid
       @set_reference_field field, uid
 
     # set the analysis profile
     field = $("#Profiles-#{arnum}")
-    value = @get_reference_field_value(value)
+    value = @get_reference_field_value(field)
     if not value
       uid = template.analysis_profile_uid
       @set_reference_field field, uid

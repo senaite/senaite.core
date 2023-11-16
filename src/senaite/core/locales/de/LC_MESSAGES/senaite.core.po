@@ -3,15 +3,15 @@
 # Marc Jedrzejas <marc.jedr@gmail.com>, 2018
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2022
 # Winnie, 2022
-# Stefan Gruber <s.gruber@liscon.de>, 2023
 # Ramon Bartl <rb@ridingbytes.com>, 2023
+# Stefan Gruber <s.gruber@liscon.de>, 2023
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-10-15 07:34+0000\n"
+"POT-Creation-Date: 2023-11-14 14:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
+"Last-Translator: Stefan Gruber <s.gruber@liscon.de>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -207,7 +207,7 @@ msgstr "Akkreditierungszeichen"
 msgid "Accreditation page header"
 msgstr "Akkreditierung Briefkopf"
 
-#: bika/lims/browser/analyses/view.py:1524
+#: bika/lims/browser/analyses/view.py:1522
 #: bika/lims/browser/analysisrequest/manage_analyses.py:259
 #: bika/lims/browser/referencesample.py:358
 msgid "Accredited"
@@ -549,7 +549,7 @@ msgstr "Zuweisen"
 msgid "Assigned"
 msgstr "Zugewiesen"
 
-#: bika/lims/browser/analyses/view.py:1513
+#: bika/lims/browser/analyses/view.py:1511
 msgid "Assigned to: ${worksheet_id}"
 msgstr "Zugewiesen an: ${worksheet_id}"
 
@@ -602,7 +602,7 @@ msgstr "Anhang wurde der Analyse '{}' zugewiesen"
 msgid "Attachment added to the current sample"
 msgstr "Anhang wurde zu dieser Probe hinzugefügt"
 
-#: bika/lims/browser/analyses/view.py:1271
+#: bika/lims/browser/analyses/view.py:1269
 #: bika/lims/browser/analysisrequest/manage_analyses.py:262
 #: bika/lims/browser/referencesample.py:361
 msgid "Attachment required"
@@ -814,11 +814,11 @@ msgstr "Absteigend durch \"Anzeigewert\""
 
 #: bika/lims/content/abstractbaseanalysis.py:631
 msgid "By 'Result Value' ascending"
-msgstr "Aufsteigend durch \"Ergebiswert\""
+msgstr "Aufsteigend durch \"Ergebniswert\""
 
 #: bika/lims/content/abstractbaseanalysis.py:632
 msgid "By 'Result Value' descending"
-msgstr "Absteigend durch \"Ergebiswert\""
+msgstr "Absteigend durch \"Ergebniswert\""
 
 #: bika/lims/browser/department/labcontacts.py:39
 msgid "By selecting/unselecting the checboxes, the user will be able to assign \"Lab Contacts\" to the department."
@@ -889,11 +889,11 @@ msgstr "Kalibrierungen"
 msgid "Calibrator"
 msgstr "Kalibrator"
 
-#: bika/lims/browser/analyses/view.py:1461
+#: bika/lims/browser/analyses/view.py:1459
 msgid "Can verify, but submitted by current user"
 msgstr "kann verifiziert werden, wurde aber vom aktuellen Benutzer eingereicht"
 
-#: bika/lims/browser/analyses/view.py:1485
+#: bika/lims/browser/analyses/view.py:1483
 msgid "Can verify, but was already verified by current user"
 msgstr "Kann erneut verifiziert werden, wurde bereits durch aktuellen Benutzer verifiziert"
 
@@ -921,15 +921,15 @@ msgstr "Berechnung kann nicht verwendet da sie von folgender Leistung verwendet 
 msgid "Cannot send email for ${sample_id}: ${error}"
 msgstr "Für ${sample_id} kann keine E-Mail gesendet werden: ${error}"
 
-#: bika/lims/browser/analyses/view.py:1491
+#: bika/lims/browser/analyses/view.py:1489
 msgid "Cannot verify, last verified by current user"
 msgstr "Kann nicht verifiziert werden, es wurde bereits durch den aktuellen Benutzer verifiziert"
 
-#: bika/lims/browser/analyses/view.py:1467
+#: bika/lims/browser/analyses/view.py:1465
 msgid "Cannot verify, submitted by current user"
 msgstr "Kann nicht verifiziert werden, es wurde bereits durch den aktuellen Benutzer eingereicht"
 
-#: bika/lims/browser/analyses/view.py:1476
+#: bika/lims/browser/analyses/view.py:1474
 msgid "Cannot verify, was verified by current user"
 msgstr "Kann nicht verifiziert werden, es wurde durch den aktuellen Benutzer verifiziert"
 
@@ -3149,7 +3149,7 @@ msgstr "E-Mail des Managers"
 msgid "Manager Phone"
 msgstr "Telefonnummer des Managers"
 
-#: bika/lims/browser/analyses/view.py:1047
+#: bika/lims/browser/analyses/view.py:1057
 msgid "Manual"
 msgstr "Manuell"
 
@@ -3349,7 +3349,7 @@ msgstr "Mehr"
 msgid "Multi Catalog Behavior for Dexterity Contents"
 msgstr "Multi-Katalog-Verhalten für Dexterity Inhalte"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:47
+#: senaite/core/browser/samples/multi_results_transposed.py:48
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Multi Results"
 msgstr "Multi Ergebnisse"
@@ -3358,7 +3358,7 @@ msgstr "Multi Ergebnisse"
 msgid "Multi Verification type"
 msgstr "Mehrfach-Verifikations-Typ"
 
-#: bika/lims/browser/analyses/view.py:1433
+#: bika/lims/browser/analyses/view.py:1431
 msgid "Multi-verification required"
 msgstr "Mehrfache Verifikation erforderlich"
 
@@ -3843,7 +3843,7 @@ msgstr "Zeitpunkt der Aufnahme"
 msgid "Portal Types"
 msgstr "Portaltypen"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:100
+#: senaite/core/browser/samples/multi_results_transposed.py:79
 msgid "Position"
 msgstr "Position"
 
@@ -4402,7 +4402,9 @@ msgstr "Verantwortliche"
 msgid "Restore"
 msgstr "Wiederherstellen"
 
-#: senaite/core/browser/samples/multi_results_transposed.py:58
+#: bika/lims/browser/analyses/view.py:132
+#: bika/lims/browser/referencesample.py:168
+#: bika/lims/browser/worksheet/views/analyses.py:86
 msgid "Result"
 msgstr "Ergebnis"
 
@@ -4422,15 +4424,15 @@ msgstr "Anzeigewert muss eindeutig sein"
 msgid "Result files folders"
 msgstr "Ordner für Ergebnisdateien"
 
-#: bika/lims/browser/analyses/view.py:1374
+#: bika/lims/browser/analyses/view.py:1372
 msgid "Result in shoulder range"
 msgstr "Ergebnis im Randbereich"
 
-#: bika/lims/browser/analyses/view.py:1371
+#: bika/lims/browser/analyses/view.py:1369
 msgid "Result out of range"
 msgstr "Ergebnis außerhalb des Bereichs"
 
-#: bika/lims/browser/analyses/view.py:1393
+#: bika/lims/browser/analyses/view.py:1391
 msgid "Result range is different from Specification: {}"
 msgstr "Ergebniswert weicht von der Spezifikation ab: {}"
 
@@ -4615,8 +4617,8 @@ msgid "Sample Point"
 msgstr "Probenahmestelle"
 
 #: bika/lims/controlpanel/bika_samplepoints.py:64
-#: bika/lims/controlpanel/bika_sampletypes.py:103
 #: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Probenahmestellen"
 
@@ -5285,7 +5287,7 @@ msgstr "Einreichen"
 msgid "Submit a valid Open XML (.XLSX) file containing setup records to continue."
 msgstr "Senden Sie eine gültige Open XML-Datei (.XLSX) mit Setup-Datensätzen, um fortzufahren."
 
-#: bika/lims/browser/analyses/view.py:1418
+#: bika/lims/browser/analyses/view.py:1416
 msgid "Submitted and verified by the same user: {}"
 msgstr "Durch denselben Benutzer eingereicht und verifiziert: {}"
 
@@ -6279,7 +6281,7 @@ msgstr "Willkommen bei SENAITE"
 
 #: bika/lims/content/bikasetup.py:397
 msgid "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
-msgstr "Wenn aktiviert, wird die Probe automatisch verifiziert, sobald alle Ergebnisse verifiziert sind. Andernfalls müssen Benutzer mit ausreichenden Berechtigungen das Beispiel anschließend manuell überprüfen. Standard: aktiviert"
+msgstr "Wenn aktiviert, wird die Probe automatisch verifiziert, sobald alle Ergebnisse verifiziert sind. Andernfalls müssen Benutzer mit ausreichenden Berechtigungen die Probe anschließend manuell verifizieren. Standard: aktiviert"
 
 #: bika/lims/content/analysisprofile.py:102
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
@@ -6798,6 +6800,11 @@ msgstr "Ort, an dem die Probe entnommen wurde"
 msgid "description_sample_sampletype"
 msgstr "Wählen Sie die Probenart dieser Probe aus"
 
+#. Default: "The date when the sample will be taken"
+#: bika/lims/content/analysisrequest.py:504
+msgid "description_sample_samplingdate"
+msgstr ""
+
 #. Default: "Deviation between the sample and how it was sampled"
 #: bika/lims/content/analysisrequest.py:864
 msgid "description_sample_samplingdeviation"
@@ -6927,7 +6934,7 @@ msgstr "${name} liegt vor ${min_date}, bitte korrigieren."
 msgid "hours"
 msgstr "Stunden"
 
-#: bika/lims/controlpanel/bika_sampletypes.py:147
+#: bika/lims/controlpanel/bika_sampletypes.py:144
 msgid "hours: {} minutes: {} days: {}"
 msgstr "Stunden: {} Minuten: {} Tage: {}"
 
@@ -7499,7 +7506,7 @@ msgstr "bis"
 msgid "updated every 2 hours"
 msgstr "Aktualisiert alle 2 Stunden"
 
-#: bika/lims/browser/analyses/view.py:1435
+#: bika/lims/browser/analyses/view.py:1433
 msgid "verification(s) pending"
 msgstr "Verifikation(en) ausstehend"
 

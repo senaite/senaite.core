@@ -577,19 +577,19 @@
       }
       this.applied_templates[arnum] = template_uid;
       field = $("#SampleType-" + arnum);
-      value = this.get_reference_field_value(value);
+      value = this.get_reference_field_value(field);
       if (!value) {
         uid = template.sample_type_uid;
         this.set_reference_field(field, uid);
       }
       field = $("#SamplePoint-" + arnum);
-      value = this.get_reference_field_value(value);
+      value = this.get_reference_field_value(field);
       if (!value) {
         uid = template.sample_point_uid;
         this.set_reference_field(field, uid);
       }
       field = $("#Profiles-" + arnum);
-      value = this.get_reference_field_value(value);
+      value = this.get_reference_field_value(field);
       if (!value) {
         uid = template.analysis_profile_uid;
         this.set_reference_field(field, uid);

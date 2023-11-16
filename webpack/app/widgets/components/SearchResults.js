@@ -75,7 +75,15 @@ class SearchResults extends React.Component {
    * @returns {Boolean} true if there are results, false otherwise
    */
   has_results() {
-    return this.get_results().length > 0;
+    let results = this.get_results();
+    let searchterm = this.props.searchterm;
+    let allow_user_value = this.props.allow_user_value;
+
+    // allow to select the typed in value
+    if (searchterm.length > 0 && allow_user_value) {
+      return true;
+    }
+    return results.length > 0;
   }
 
   /*
@@ -142,6 +150,10 @@ class SearchResults extends React.Component {
   build_rows() {
     let rows = [];
     let results = this.get_results();
+    let searchterm = this.props.searchterm;
+    let allow_user_value = this.props.allow_user_value;
+
+    // Build columns for the search results
     results.forEach((result, index) => {
       let value = this.get_result_value(result);
       let cursor = value ? "pointer" : "not-allowed";
@@ -158,6 +170,24 @@ class SearchResults extends React.Component {
         </tr>
       );
     });
+
+    // Add additional row to select the typed in searchterm
+    if (allow_user_value && searchterm.length > 0) {
+      let index = results.length + 1;
+      rows.push(
+        <tr value={searchterm}
+            index={index}
+            title={searchterm}
+            style={{cursor: "pointer"}}
+            className={this.props.focused == index ? "table-active": ""}
+            onMouseOver={this.on_mouse_over}
+            onClick={this.on_select}>
+          <td className="font-italic text-secondary" colspan={this.props.columns.length}>
+            {_t("Select")}: <span className="text-info">{searchterm}</span>
+          </td>
+        </tr>
+      );
+    }
     return rows
   }
 
