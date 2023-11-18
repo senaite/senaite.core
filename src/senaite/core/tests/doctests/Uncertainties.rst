@@ -249,7 +249,8 @@ Check the precision of the range 10-20 (0.4):
 Check the precision is calculated based on the rounded uncertainty:
 
     >>> uncertainties_2 = [
-    ...    {"intercept_min":  0, "intercept_max":  10, "errorvalue": 0.95404}
+    ...    {'intercept_min': '1.0', 'intercept_max': '100000', 'errorvalue': '9.9%'},
+    ...    {'intercept_min': '0.5', 'intercept_max': '0.9', 'errorvalue': '0'}
     ... ]
     >>> fe.setUncertainties(uncertainties_2)
     >>> fe.setResult("9.6")
@@ -257,7 +258,7 @@ Check the precision is calculated based on the rounded uncertainty:
     '9.6'
 
     >>> fe.getUncertainty()
-    '0.95404'
+    '0.9504'
 
     >>> fe.getPrecision()
     0
