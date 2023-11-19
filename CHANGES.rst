@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
 - #2427 Fix precision is not calculated from the rounded uncertainty
 - #2426 Fix ±0 is displayed for results within a range without uncertainty set
 - #2424 Fix sample in "registered" after creation when user cannot receive
