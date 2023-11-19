@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2427 Fix precision is not calculated from the rounded uncertainty
 - #2426 Fix ±0 is displayed for results within a range without uncertainty set
 - #2424 Fix sample in "registered" after creation when user cannot receive
 - #2422 Fix Maximum number of Iterations Exceeded when no catalogs set for AT type
