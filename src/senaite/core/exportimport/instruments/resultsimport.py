@@ -677,7 +677,9 @@ class AnalysisResultsImporter(Logger):
                 title=filename,
                 AttachmentFile=infile,
                 AttachmentType=attuid,
-                AttachmentKeys='Results, Automatic import')
+                AttachmentKeys='Results, Automatic import',
+                RenderInReport=False,
+            )
             attachment.reindexObject()
         return attachment
 
