@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2433 Fix multi-valued interim fields are not displayed correctly
 - #2432 Fix results import files are always rendered for each analysis in report
 - #2427 Fix precision is not calculated from the rounded uncertainty
 - #2426 Fix ±0 is displayed for results within a range without uncertainty set
