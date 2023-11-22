@@ -19,13 +19,14 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from itertools import chain
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.api import to_utf8
+from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from bika.lims.utils import to_utf8
-from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.permissions.sample import can_publish
@@ -84,9 +85,11 @@ class ReportsListingView(ListingView):
             ("PublishedBy", {
                 "title": _("Published By")},),
             ("Sent", {
-                "title": _("Email sent")},),
-            ("Recipients", {
-                "title": _("Recipients")},),
+                "title": _("Email sent"),
+                "sortable": False},),
+            ("SentTo", {
+                "title": _("Sent to"),
+                "sortable": False},),
         ))
 
         self.review_states = [
@@ -198,6 +201,7 @@ class ReportsListingView(ListingView):
         uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(ar)
         status_title = review_state.capitalize().replace("_", " ")
+        send_log = obj.getSendLog()
 
         # Report Info Popup
         # see: bika.lims.site.coffee for the attached event handler
@@ -233,76 +237,45 @@ class ReportsListingView(ListingView):
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
 
-        item["Sent"] = _("No")
-        if obj.getSendLog():
+        if send_log:
             item["Sent"] = _("Yes")
-
-        # N.B. There is a bug in the current publication machinery, so that
-        # only the primary contact get stored in the Attachment as recipient.
-        #
-        # However, we're interested to show here the full list of recipients,
-        # so we use the recipients of the containing AR instead.
-        recipients = []
-
-        for recipient in self.get_recipients(ar):
-            email = safe_unicode(recipient["EmailAddress"])
-            fullname = safe_unicode(recipient["Fullname"])
-            if email:
-                value = u"<a href='mailto:{}'>{}</a>".format(email, fullname)
-                recipients.append(value)
-            else:
-                message = _("No email address set for this contact")
-                value = u"<span title='{}' class='text text-danger'>" \
-                        u"⚠ {}</span>".format(message, fullname)
-                recipients.append(value)
-
-        item["replace"]["Recipients"] = ", ".join(recipients)
-
-        # No recipient with email set preference found in the AR, so we also
-        # flush the Recipients data from the Attachment
-        if not recipients:
-            item["Recipients"] = ""
+            item["SentTo"] = self.get_recipients(obj)
+            item["replace"]["SentTo"] = self.get_formatted_recipients(obj)
+        else:
+            item["Sent"] = _("No")
+            item["SentTo"] = ""
 
         return item
 
-    def get_recipients(self, ar):
-        """Return the AR recipients in the same format like the AR Report
-        expects in the records field `Recipients`
+    def get_sent_to(self, report):
+        """Get all recpients to whom the report was sent
+
+        :param report: The report object to fetch the recipients from
+        :returns: dictionary of email -> name
         """
-        plone_utils = api.get_tool("plone_utils")
+        out = {}
+        log = report.getSendLog()
+        recipients = chain(*map(lambda l: l.get("email_recipients", []), log))
+        for recipient in recipients:
+            name, address = api.mail.parse_email_address(recipient)
+            out[address] = name
+        return out
 
-        def is_email(email):
-            if not plone_utils.validateSingleEmailAddress(email):
-                return False
-            return True
+    def get_recipients(self, report):
+        """Return a list of all recipient emails
+        """
+        sent_to = self.get_sent_to(report)
+        return ", ".join(sorted(sent_to.keys()))
 
-        def recipient_from_contact(contact):
-            if not contact:
-                return None
-            email = contact.getEmailAddress()
-            return {
-                "UID": api.get_uid(contact),
-                "Username": contact.getUsername(),
-                "Fullname": to_utf8(contact.Title()),
-                "EmailAddress": email,
-            }
-
-        def recipient_from_email(email):
-            if not is_email(email):
-                return None
-            return {
-                "UID": "",
-                "Username": "",
-                "Fullname": email,
-                "EmailAddress": email,
-            }
-
-        # Primary Contacts
-        to = filter(None, [recipient_from_contact(ar.getContact())])
-        # CC Contacts
-        cc = filter(None, map(recipient_from_contact, ar.getCCContact()))
-        # CC Emails
-        cc_emails = ar.getCCEmails(as_list=True)
-        cc_emails = filter(None, map(recipient_from_email, cc_emails))
-
-        return to + cc + cc_emails
+    def get_formatted_recipients(self, report):
+        """Return a formatted list of all recipient names and emails
+        """
+        out = []
+        sent_to = self.get_sent_to(report)
+        for address, name in sent_to.items():
+            if not name:
+                name = address
+            # XXX: get_email_link can not handle unicodes!
+            link = get_email_link(to_utf8(address), value=to_utf8(name))
+            out.append(link)
+        return ", ".join(sorted(out))

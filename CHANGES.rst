@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2411 Multiselection with duplicates support for interim fields
+- #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
 - #2432 Fix results import files are always rendered for each analysis in report
 - #2427 Fix precision is not calculated from the rounded uncertainty
 - #2426 Fix ±0 is displayed for results within a range without uncertainty set
