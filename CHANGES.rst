@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2434 Add string support for interim fields
 - #2411 Multiselection with duplicates support for interim fields
 - #2433 Fix multi-valued interim fields are not displayed correctly
 - #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
