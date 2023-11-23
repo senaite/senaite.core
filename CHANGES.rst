@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2435 Add datetime support for interim fields
 - #2434 Add string support for interim fields
 - #2411 Multiselection with duplicates support for interim fields
 - #2433 Fix multi-valued interim fields are not displayed correctly
