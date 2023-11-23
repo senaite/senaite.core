@@ -109,9 +109,6 @@ class InterimFieldsField(RecordsField):
                 ("multivalue", _("Multiple values")),
             )),
         },
-        "default": {
-            "result_type": "",
-        }
     })
     security = ClassSecurityInfo()
 
