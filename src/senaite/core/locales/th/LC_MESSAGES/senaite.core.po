@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-11-14 14:36+0000\n"
+"POT-Creation-Date: 2023-11-22 16:56+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
 "Language-Team: Thai (https://app.transifex.com/senaite/teams/87045/th/)\n"
@@ -45,7 +45,7 @@ msgstr "${items} ถูกสร้างอย่างสมบูรณ์"
 msgid "${item} was successfully created."
 msgstr "${item} ถูกสร้างอย่างสมบูรณ์"
 
-#: bika/lims/utils/analysisrequest.py:634
+#: bika/lims/utils/analysisrequest.py:639
 msgid "%s has been rejected"
 msgstr "%s ถูกปฏิเสธ"
 
@@ -362,7 +362,7 @@ msgstr "Allow access to worksheets only to assigned analysts"
 msgid "Allow empty"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:573
+#: bika/lims/content/abstractbaseanalysis.py:580
 msgid "Allow manual uncertainty value input"
 msgstr "Allow manual uncertainty value input"
 
@@ -382,7 +382,7 @@ msgstr "Allow self-verification of results"
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
 msgstr "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
 
-#: bika/lims/content/abstractbaseanalysis.py:574
+#: bika/lims/content/abstractbaseanalysis.py:581
 msgid "Allow the analyst to manually replace the default uncertainty value."
 msgstr "Allow the analyst to manually replace the default uncertainty value."
 
@@ -440,7 +440,7 @@ msgstr "Analysis Profiles"
 msgid "Analysis Report"
 msgstr "Analysis Report"
 
-#: bika/lims/browser/publish/reports_listing.py:54
+#: bika/lims/browser/publish/reports_listing.py:55
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Reports"
 msgstr "Analysis Reports"
@@ -710,7 +710,7 @@ msgstr ""
 msgid "Basis"
 msgstr "Basis"
 
-#: bika/lims/browser/publish/reports_listing.py:75
+#: bika/lims/browser/publish/reports_listing.py:76
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/vocabularies/__init__.py:133
 msgid "Batch"
@@ -796,19 +796,19 @@ msgstr "Business Phone"
 msgid "Business address"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:633
+#: bika/lims/content/abstractbaseanalysis.py:640
 msgid "By 'Display Value' ascending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:634
+#: bika/lims/content/abstractbaseanalysis.py:641
 msgid "By 'Display Value' descending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:631
+#: bika/lims/content/abstractbaseanalysis.py:638
 msgid "By 'Result Value' ascending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:632
+#: bika/lims/content/abstractbaseanalysis.py:639
 msgid "By 'Result Value' descending"
 msgstr ""
 
@@ -825,7 +825,7 @@ msgstr "CBID"
 msgid "CC Emails"
 msgstr "CC Emails"
 
-#: bika/lims/content/abstractbaseanalysis.py:551
+#: bika/lims/content/abstractbaseanalysis.py:558
 msgid "Calculate Precision from Uncertainties"
 msgstr "Calculate Precision from Uncertainties"
 
@@ -1175,7 +1175,7 @@ msgstr "Comments"
 msgid "Comments or results interpretation"
 msgstr "Comments or results interpretation"
 
-#: bika/lims/content/abstractbaseanalysis.py:733
+#: bika/lims/content/abstractbaseanalysis.py:740
 #: bika/lims/content/analysisprofile.py:91
 msgid "Commercial ID"
 msgstr "Commercial ID"
@@ -1287,7 +1287,7 @@ msgid "Control QC analyses"
 msgstr "Control QC analyses"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:59
-#: bika/lims/content/abstractbaseanalysis.py:620
+#: bika/lims/content/abstractbaseanalysis.py:627
 #: bika/lims/content/analysisservice.py:224
 msgid "Control type"
 msgstr ""
@@ -1797,7 +1797,7 @@ msgstr "Dispatched"
 msgid "Display Columns"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:591
+#: bika/lims/content/abstractbaseanalysis.py:598
 msgid "Display Value"
 msgstr "Display Value"
 
@@ -1875,15 +1875,15 @@ msgstr "Down from"
 msgid "Down to"
 msgstr "Down to"
 
-#: bika/lims/browser/publish/reports_listing.py:147
+#: bika/lims/browser/publish/reports_listing.py:150
 msgid "Download"
 msgstr ""
 
-#: bika/lims/browser/publish/reports_listing.py:79
+#: bika/lims/browser/publish/reports_listing.py:80
 msgid "Download PDF"
 msgstr "Download PDF"
 
-#: bika/lims/browser/publish/reports_listing.py:142
+#: bika/lims/browser/publish/reports_listing.py:145
 msgid "Download selected reports"
 msgstr ""
 
@@ -1963,7 +1963,7 @@ msgstr ""
 msgid "Elevation"
 msgstr "Elevation"
 
-#: bika/lims/browser/publish/reports_listing.py:132
+#: bika/lims/browser/publish/reports_listing.py:135
 #: bika/lims/browser/templates/login_details.pt:87
 #: bika/lims/content/analysisrequest.py:174
 msgid "Email"
@@ -2003,7 +2003,7 @@ msgstr "Email notification on Sample invalidation"
 msgid "Email notification on Sample rejection"
 msgstr "Email notification on Sample rejection"
 
-#: bika/lims/browser/publish/reports_listing.py:87
+#: bika/lims/browser/publish/reports_listing.py:88
 msgid "Email sent"
 msgstr ""
 
@@ -2051,7 +2051,7 @@ msgstr "Enable the Results Report Printing workflow"
 msgid "Enable the rejection workflow"
 msgstr "Enable the rejection workflow"
 
-#: bika/lims/content/abstractbaseanalysis.py:665
+#: bika/lims/content/abstractbaseanalysis.py:672
 msgid "Enable this option to allow the capture of text as result"
 msgstr "Enable this option to allow the capture of text as result"
 
@@ -2263,7 +2263,7 @@ msgstr ""
 msgid "File upload "
 msgstr "File upload "
 
-#: bika/lims/browser/publish/reports_listing.py:81
+#: bika/lims/browser/publish/reports_listing.py:82
 msgid "Filesize"
 msgstr "Filesize"
 
@@ -2420,7 +2420,7 @@ msgstr "If checked, the instrument will be unavailable until the next valid cali
 msgid "If enabled, a free text field will be displayed close to each analysis in results entry view"
 msgstr "If enabled, a free text field will be displayed close to each analysis in results entry view"
 
-#: bika/lims/content/abstractbaseanalysis.py:698
+#: bika/lims/content/abstractbaseanalysis.py:705
 msgid "If enabled, a user who submitted a result for this analysis will also be able to verify it. This setting take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). The option set here has priority over the option set in Bika Setup"
 msgstr "If enabled, a user who submitted a result for this analysis will also be able to verify it. This setting take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). The option set here has priority over the option set in Bika Setup"
 
@@ -2432,7 +2432,7 @@ msgstr "If enabled, a user who submitted a result will also be able to verify it
 msgid "If enabled, the name of the analysis will be written in italics."
 msgstr "If enabled, the name of the analysis will be written in italics."
 
-#: bika/lims/content/abstractbaseanalysis.py:682
+#: bika/lims/content/abstractbaseanalysis.py:689
 msgid "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Sample"
 msgstr "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Sample"
 
@@ -2811,7 +2811,7 @@ msgstr "Job Title"
 msgid "Job title"
 msgstr "Job title"
 
-#: bika/lims/content/abstractbaseanalysis.py:630
+#: bika/lims/content/abstractbaseanalysis.py:637
 msgid "Keep order above"
 msgstr ""
 
@@ -2984,7 +2984,7 @@ msgstr "Link an existing User"
 msgid "List all objects with labels"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:600
+#: bika/lims/content/abstractbaseanalysis.py:607
 msgid "List of possible final results. When set, no custom result is allowed on results entry and user has to choose from these values"
 msgstr ""
 
@@ -3150,7 +3150,7 @@ msgstr "Manual"
 msgid "Manual entry of results"
 msgstr "Manual entry of results"
 
-#: bika/lims/browser/publish/reports_listing.py:158
+#: bika/lims/browser/publish/reports_listing.py:161
 msgid "Manually publish all contained samples of the selected reports."
 msgstr "Manually publish all contained samples of the selected reports."
 
@@ -3355,16 +3355,16 @@ msgid "Multi-verification required"
 msgstr "Multi-verification required"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:104
-#: bika/lims/content/abstractbaseanalysis.py:611
+#: bika/lims/content/abstractbaseanalysis.py:618
 msgid "Multiple choices"
 msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:103
-#: bika/lims/content/abstractbaseanalysis.py:609
+#: bika/lims/content/abstractbaseanalysis.py:616
 msgid "Multiple selection"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:610
+#: bika/lims/content/abstractbaseanalysis.py:617
 msgid "Multiple selection (with duplicates)"
 msgstr ""
 
@@ -3475,10 +3475,6 @@ msgstr "No changes made."
 #: bika/lims/controlpanel/bika_instruments.py:164
 msgid "No date set"
 msgstr "No date set"
-
-#: bika/lims/browser/publish/reports_listing.py:254
-msgid "No email address set for this contact"
-msgstr "No email address set for this contact"
 
 #: bika/lims/browser/publish/emailview.py:167
 msgid "No email recipients selected"
@@ -3624,7 +3620,7 @@ msgstr "Number of copies"
 msgid "Number of prominent columns"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:716
+#: bika/lims/content/abstractbaseanalysis.py:723
 #: bika/lims/content/bikasetup.py:427
 msgid "Number of required verifications"
 msgstr "Number of required verifications"
@@ -3633,7 +3629,7 @@ msgstr "Number of required verifications"
 msgid "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 msgstr "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 
-#: bika/lims/content/abstractbaseanalysis.py:717
+#: bika/lims/content/abstractbaseanalysis.py:724
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 
@@ -3674,7 +3670,7 @@ msgstr "Open"
 msgid "Open Source Web based Laboratory Information Management System"
 msgstr "Open Source Web based Laboratory Information Management System"
 
-#: bika/lims/browser/publish/reports_listing.py:125
+#: bika/lims/browser/publish/reports_listing.py:128
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
 msgstr "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
 
@@ -3858,7 +3854,7 @@ msgstr ""
 msgid "Precision as number of decimals"
 msgstr "Precision as number of decimals"
 
-#: bika/lims/content/abstractbaseanalysis.py:552
+#: bika/lims/content/abstractbaseanalysis.py:559
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
 msgstr "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
 
@@ -3866,7 +3862,7 @@ msgstr "Precision as the number of significant digits according to the uncertain
 msgid "Predefined reasons of rejection"
 msgstr "Predefined reasons of rejection"
 
-#: bika/lims/content/abstractbaseanalysis.py:599
+#: bika/lims/content/abstractbaseanalysis.py:606
 msgid "Predefined results"
 msgstr ""
 
@@ -3977,7 +3973,7 @@ msgstr "Pricelist for"
 msgid "Pricelists"
 msgstr "Pricelists"
 
-#: bika/lims/browser/publish/reports_listing.py:72
+#: bika/lims/browser/publish/reports_listing.py:73
 #: bika/lims/browser/templates/analysisreport_info.pt:60
 msgid "Primary Sample"
 msgstr "Primary Sample"
@@ -4051,7 +4047,7 @@ msgstr "Progress"
 msgid "Prominent fields"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:745
+#: bika/lims/content/abstractbaseanalysis.py:752
 msgid "Protocol ID"
 msgstr "Protocol ID"
 
@@ -4070,11 +4066,11 @@ msgstr "Publish"
 msgid "Published"
 msgstr "Published"
 
-#: bika/lims/browser/publish/reports_listing.py:85
+#: bika/lims/browser/publish/reports_listing.py:86
 msgid "Published By"
 msgstr "Published By"
 
-#: bika/lims/browser/publish/reports_listing.py:83
+#: bika/lims/browser/publish/reports_listing.py:84
 msgid "Published Date"
 msgstr "Published Date"
 
@@ -4149,7 +4145,6 @@ msgstr "Received"
 msgid "Reception pending"
 msgstr "Reception pending"
 
-#: bika/lims/browser/publish/reports_listing.py:89
 #: bika/lims/browser/publish/templates/email.pt:56
 #: bika/lims/browser/templates/analysisreport_info.pt:143
 msgid "Recipients"
@@ -4398,7 +4393,7 @@ msgstr ""
 msgid "Result"
 msgstr "Result"
 
-#: bika/lims/content/abstractbaseanalysis.py:590
+#: bika/lims/content/abstractbaseanalysis.py:597
 msgid "Result Value"
 msgstr "Result Value"
 
@@ -4490,7 +4485,7 @@ msgstr "Retracted analyses"
 msgid "Retractions"
 msgstr "Retractions"
 
-#: bika/lims/browser/publish/reports_listing.py:77
+#: bika/lims/browser/publish/reports_listing.py:78
 msgid "Review State"
 msgstr "Review State"
 
@@ -4976,11 +4971,11 @@ msgid "Select which sticker to print when automatic sticker printing is enabled"
 msgstr "Select which sticker to print when automatic sticker printing is enabled"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:102
-#: bika/lims/content/abstractbaseanalysis.py:608
+#: bika/lims/content/abstractbaseanalysis.py:615
 msgid "Selection list"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:697
+#: bika/lims/content/abstractbaseanalysis.py:704
 msgid "Self-verification of results"
 msgstr "Self-verification of results"
 
@@ -4999,6 +4994,10 @@ msgstr "Send an email notification to client contact"
 #: bika/lims/browser/templates/analysisreport_info.pt:132
 msgid "Sender"
 msgstr "Sender"
+
+#: bika/lims/browser/publish/reports_listing.py:91
+msgid "Sent to"
+msgstr ""
 
 #: bika/lims/browser/fields/partitionsetupfield.py:114
 #: bika/lims/content/analysisservice.py:132
@@ -5194,10 +5193,6 @@ msgstr "Specifications"
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 msgstr "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 
-#: bika/lims/content/abstractbaseanalysis.py:525
-msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
-msgstr "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
-
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
 #: senaite/core/registry/schema.py:242
 msgid "Standard fields"
@@ -5245,7 +5240,7 @@ msgstr "Storage Location"
 msgid "Storage Locations"
 msgstr "Storage Locations"
 
-#: bika/lims/content/abstractbaseanalysis.py:664
+#: bika/lims/content/abstractbaseanalysis.py:671
 msgid "String result"
 msgstr "String result"
 
@@ -5341,7 +5336,7 @@ msgstr ""
 msgid "System Dashboard"
 msgstr "System Dashboard"
 
-#: bika/lims/content/abstractbaseanalysis.py:944
+#: bika/lims/content/abstractbaseanalysis.py:951
 msgid "System default"
 msgstr "System default"
 
@@ -5581,11 +5576,11 @@ msgstr "The sample is a mix of sub samples"
 msgid "The serial number that uniquely identifies the instrument"
 msgstr "The serial number that uniquely identifies the instrument"
 
-#: bika/lims/content/abstractbaseanalysis.py:746
+#: bika/lims/content/abstractbaseanalysis.py:753
 msgid "The service's analytical protocol ID"
 msgstr "The service's analytical protocol ID"
 
-#: bika/lims/content/abstractbaseanalysis.py:734
+#: bika/lims/content/abstractbaseanalysis.py:741
 msgid "The service's commercial ID for accounting purposes"
 msgstr "The service's commercial ID for accounting purposes"
 
@@ -5785,7 +5780,7 @@ msgstr "Tuesday"
 msgid "Type"
 msgstr "Type"
 
-#: bika/lims/content/abstractbaseanalysis.py:621
+#: bika/lims/content/abstractbaseanalysis.py:628
 msgid "Type of control to be displayed on result entry when predefined results are set"
 msgstr ""
 
@@ -6455,8 +6450,13 @@ msgstr ""
 #. in the selection list. It does not have any effect to the order in which
 #. results are displayed after being submitted"
 #. Default: "Criteria to use when result options are displayed for selection in results entry listings. Note this only applies to the options displayed in the selection list. It does not have any effect to the order in which results are displayed after being submitted"
-#: bika/lims/content/abstractbaseanalysis.py:647
+#: bika/lims/content/abstractbaseanalysis.py:654
 msgid "description_analysis_results_options_sorting"
+msgstr ""
+
+#. Default: "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2%, a result of 100 will be reported as 100 ± 2.<br/>If you don't want uncertainty to be displayed for a given range, set 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00 etc."
+#: bika/lims/content/abstractbaseanalysis.py:525
+msgid "description_analysis_uncertainty"
 msgstr ""
 
 #. mg/l, ppm, dB, mV, etc."
@@ -6932,7 +6932,7 @@ msgid "label_analysis_department"
 msgstr ""
 
 #. Default: "Sorting criteria"
-#: bika/lims/content/abstractbaseanalysis.py:643
+#: bika/lims/content/abstractbaseanalysis.py:650
 msgid "label_analysis_results_options_sorting"
 msgstr ""
 

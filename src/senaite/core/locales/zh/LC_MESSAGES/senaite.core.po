@@ -3,12 +3,13 @@
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # Kevin Xu <139526780@qq.com>, 2021
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2022
+# ZZZ yyy, 2023
 # erikking, 2023
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-11-14 14:36+0000\n"
+"POT-Creation-Date: 2023-11-22 16:56+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: erikking, 2023\n"
 "Language-Team: Chinese (https://app.transifex.com/senaite/teams/87045/zh/)\n"
@@ -47,7 +48,7 @@ msgstr "${items} 创建成功。"
 msgid "${item} was successfully created."
 msgstr "${items} 创建成功。"
 
-#: bika/lims/utils/analysisrequest.py:634
+#: bika/lims/utils/analysisrequest.py:639
 msgid "%s has been rejected"
 msgstr "%s 已拒收"
 
@@ -364,7 +365,7 @@ msgstr "仅允许访问已分派检验项目的工作表"
 msgid "Allow empty"
 msgstr "允许空值"
 
-#: bika/lims/content/abstractbaseanalysis.py:573
+#: bika/lims/content/abstractbaseanalysis.py:580
 msgid "Allow manual uncertainty value input"
 msgstr "允许手动输入不确定度"
 
@@ -384,7 +385,7 @@ msgstr "允许对结果进行自我复核"
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
 msgstr "允许检验人员手动替换结果输入视图中默认的检测限(LDL和UDL)"
 
-#: bika/lims/content/abstractbaseanalysis.py:574
+#: bika/lims/content/abstractbaseanalysis.py:581
 msgid "Allow the analyst to manually replace the default uncertainty value."
 msgstr "允许检验人员手动替换默认的不确定度。"
 
@@ -442,7 +443,7 @@ msgstr "检验项目配置"
 msgid "Analysis Report"
 msgstr "检验报告单"
 
-#: bika/lims/browser/publish/reports_listing.py:54
+#: bika/lims/browser/publish/reports_listing.py:55
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Reports"
 msgstr "检验报告单"
@@ -712,7 +713,7 @@ msgstr "基本配置"
 msgid "Basis"
 msgstr "依据/基本"
 
-#: bika/lims/browser/publish/reports_listing.py:75
+#: bika/lims/browser/publish/reports_listing.py:76
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/vocabularies/__init__.py:133
 msgid "Batch"
@@ -798,19 +799,19 @@ msgstr "办公电话"
 msgid "Business address"
 msgstr "业务地址"
 
-#: bika/lims/content/abstractbaseanalysis.py:633
+#: bika/lims/content/abstractbaseanalysis.py:640
 msgid "By 'Display Value' ascending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:634
+#: bika/lims/content/abstractbaseanalysis.py:641
 msgid "By 'Display Value' descending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:631
+#: bika/lims/content/abstractbaseanalysis.py:638
 msgid "By 'Result Value' ascending"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:632
+#: bika/lims/content/abstractbaseanalysis.py:639
 msgid "By 'Result Value' descending"
 msgstr ""
 
@@ -827,7 +828,7 @@ msgstr ""
 msgid "CC Emails"
 msgstr "抄送多个邮件"
 
-#: bika/lims/content/abstractbaseanalysis.py:551
+#: bika/lims/content/abstractbaseanalysis.py:558
 msgid "Calculate Precision from Uncertainties"
 msgstr "基于不确定性进行精密度计算"
 
@@ -1177,7 +1178,7 @@ msgstr "备注"
 msgid "Comments or results interpretation"
 msgstr "评论或结果解读"
 
-#: bika/lims/content/abstractbaseanalysis.py:733
+#: bika/lims/content/abstractbaseanalysis.py:740
 #: bika/lims/content/analysisprofile.py:91
 msgid "Commercial ID"
 msgstr "商品ID"
@@ -1289,7 +1290,7 @@ msgid "Control QC analyses"
 msgstr "质控检验"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:59
-#: bika/lims/content/abstractbaseanalysis.py:620
+#: bika/lims/content/abstractbaseanalysis.py:627
 #: bika/lims/content/analysisservice.py:224
 msgid "Control type"
 msgstr "参考样本类型"
@@ -1799,7 +1800,7 @@ msgstr "已发送"
 msgid "Display Columns"
 msgstr "显示列"
 
-#: bika/lims/content/abstractbaseanalysis.py:591
+#: bika/lims/content/abstractbaseanalysis.py:598
 msgid "Display Value"
 msgstr "显示值"
 
@@ -1877,15 +1878,15 @@ msgstr "下降从"
 msgid "Down to"
 msgstr "下降至"
 
-#: bika/lims/browser/publish/reports_listing.py:147
+#: bika/lims/browser/publish/reports_listing.py:150
 msgid "Download"
 msgstr "下载"
 
-#: bika/lims/browser/publish/reports_listing.py:79
+#: bika/lims/browser/publish/reports_listing.py:80
 msgid "Download PDF"
 msgstr "下载PDF"
 
-#: bika/lims/browser/publish/reports_listing.py:142
+#: bika/lims/browser/publish/reports_listing.py:145
 msgid "Download selected reports"
 msgstr "下载选定报告"
 
@@ -1965,7 +1966,7 @@ msgstr "编辑多个检验结果"
 msgid "Elevation"
 msgstr "评估"
 
-#: bika/lims/browser/publish/reports_listing.py:132
+#: bika/lims/browser/publish/reports_listing.py:135
 #: bika/lims/browser/templates/login_details.pt:87
 #: bika/lims/content/analysisrequest.py:174
 msgid "Email"
@@ -2005,7 +2006,7 @@ msgstr "样本失效时进行电子邮件通知"
 msgid "Email notification on Sample rejection"
 msgstr "样本拒收时进行电子邮件通知"
 
-#: bika/lims/browser/publish/reports_listing.py:87
+#: bika/lims/browser/publish/reports_listing.py:88
 msgid "Email sent"
 msgstr "发送电子邮件"
 
@@ -2053,7 +2054,7 @@ msgstr "启用结果报告打印工作流程"
 msgid "Enable the rejection workflow"
 msgstr "启用样本拒收工作流程"
 
-#: bika/lims/content/abstractbaseanalysis.py:665
+#: bika/lims/content/abstractbaseanalysis.py:672
 msgid "Enable this option to allow the capture of text as result"
 msgstr "启用此选项以允许捕获文本作为结果"
 
@@ -2121,27 +2122,27 @@ msgstr "环境条件"
 
 #: bika/lims/browser/workflow/analysisrequest.py:210
 msgid "Erroneous result publication: ${sample_id}"
-msgstr ""
+msgstr "错误结果发布来自样本：${sample_id}"
 
 #: senaite/core/browser/dashboard/dashboard.py:579
 msgid "Evolution of Analyses"
-msgstr ""
+msgstr "检验评价"
 
 #: senaite/core/browser/dashboard/dashboard.py:471
 msgid "Evolution of Samples"
-msgstr ""
+msgstr "样本评价"
 
 #: senaite/core/browser/dashboard/dashboard.py:522
 msgid "Evolution of Worksheets"
-msgstr ""
+msgstr "工作表评价"
 
 #: senaite/core/exportimport/import.pt:166
 msgid "Example Cronjob to execute the auto import every 10 minutes"
-msgstr ""
+msgstr "示例计划任务每10分钟执行一次自动导入"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:125
 msgid "Example content"
-msgstr ""
+msgstr "示例内容"
 
 #: senaite/core/browser/samples/view.py:560
 msgid "Exclude from invoice"
@@ -2155,7 +2156,7 @@ msgstr "预期结果"
 
 #: senaite/core/browser/samples/view.py:105
 msgid "Expected Sampling Date"
-msgstr ""
+msgstr "预期采样日期"
 
 #: bika/lims/content/referencesample.py:175
 msgid "Expected Values"
@@ -2163,7 +2164,7 @@ msgstr "预期结果值"
 
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
 msgid "Expire"
-msgstr ""
+msgstr "过期"
 
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
 msgid "Expired"
@@ -2177,11 +2178,11 @@ msgstr "过期日期"
 
 #: bika/lims/content/abstractbaseanalysis.py:170
 msgid "Exponential format precision"
-msgstr ""
+msgstr "指数格式精度"
 
 #: bika/lims/content/bikasetup.py:355
 msgid "Exponential format threshold"
-msgstr ""
+msgstr "指数格式阈值"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -2189,15 +2190,15 @@ msgstr "导出"
 
 #: bika/lims/browser/stickers.py:246
 msgid "Failed to load sticker"
-msgstr ""
+msgstr "标签加载失败"
 
 #: bika/lims/browser/publish/emailview.py:150
 msgid "Failed to send Email(s)"
-msgstr ""
+msgstr "电子邮件发送失败"
 
 #: senaite/core/browser/samples/manage_sample_fields.py:101
 msgid "Failed to update registry records. Please check the server log for details."
-msgstr ""
+msgstr "更新注册表记录失败。请查看服务器日志了解详情"
 
 #: bika/lims/browser/clientfolder.py:91
 #: bika/lims/browser/supplier.py:124
@@ -2225,7 +2226,7 @@ msgstr "场地"
 
 #: bika/lims/browser/analysisrequest/add2.py:1731
 msgid "Field '{}' is required"
-msgstr ""
+msgstr "字段“{}”是必需的"
 
 #: senaite/core/browser/samples/templates/multi_results.pt:125
 #: senaite/core/browser/viewlets/sampleanalyses.py:69
@@ -2234,7 +2235,7 @@ msgstr "场地分析"
 
 #: senaite/core/registry/schema.py:251
 msgid "Field Name"
-msgstr ""
+msgstr "字段名"
 
 #: bika/lims/config.py:56
 msgid "Field Preservation"
@@ -2246,7 +2247,7 @@ msgstr "场地名"
 
 #: senaite/core/registry/schema.py:249
 msgid "Field visibility"
-msgstr ""
+msgstr "字段可见性"
 
 #: bika/lims/browser/client/views/attachments.py:50
 #: bika/lims/browser/instrument.py:807
@@ -2255,23 +2256,23 @@ msgstr "文件"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:194
 msgid "File Deleted"
-msgstr ""
+msgstr "已删除文件"
 
 #: bika/lims/content/analysisservice.py:262
 msgid "File upload"
-msgstr ""
+msgstr "上传文件 "
 
 #: bika/lims/content/multifile.py:48
 msgid "File upload "
-msgstr ""
+msgstr "上传文件 "
 
-#: bika/lims/browser/publish/reports_listing.py:81
+#: bika/lims/browser/publish/reports_listing.py:82
 msgid "Filesize"
 msgstr "文件大小"
 
 #: bika/lims/content/dynamic_analysisspec.py:73
 msgid "First sheet does not contain a valid column definition"
-msgstr ""
+msgstr "第一张工作表不包含有效的列定义"
 
 #: bika/lims/content/person.py:51
 msgid "Firstname"
@@ -2281,19 +2282,19 @@ msgstr "名"
 #: bika/lims/content/analysiscategory.py:83
 #: bika/lims/controlpanel/bika_analysisservices.py:208
 msgid "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
-msgstr ""
+msgstr "浮点值从0.0 - 1000.0表示排序顺序。 重复值按字母顺序排序。"
 
 #: bika/lims/content/instrument.py:241
 msgid "Folder that results will be saved"
-msgstr ""
+msgstr "结果文件夹将被保存"
 
 #: bika/lims/content/instrument.py:246
 msgid "For each interface of this instrument,                       you can define a folder where                       the system should look for the results files while                       automatically importing results. Having a folder                       for each Instrument and inside that folder creating                       different folders for each of its Interfaces                       can be a good approach. You can use Interface codes                       to be sure that folder names are unique."
-msgstr ""
+msgstr "对于此仪器的每个接口，您可以定义一个文件夹，系统应在该文件夹中查找结果文件，同时自动导入结果。 为每个仪器创建一个文件夹，并在该文件夹内为每个接口创建不同的文件夹，这是一个很好的方法。 您可以使用接口代码确保文件夹名称是唯一的。"
 
 #: bika/lims/content/bikasetup.py:879
 msgid "Formatting Configuration"
-msgstr ""
+msgstr "格式化配置"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:183
 #: bika/lims/controlpanel/bika_calculations.py:79
@@ -2302,11 +2303,11 @@ msgstr "公式"
 
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:218
 msgid "Found Dynamic Analysis Specification for '{}' in '{}'"
-msgstr ""
+msgstr "在“ {}”中找到“ {}”的动态检验标准"
 
 #: bika/lims/config.py:98
 msgid "Friday"
-msgstr ""
+msgstr "星期五"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:528
 msgid "From"
@@ -2320,16 +2321,16 @@ msgstr "全名"
 
 #: bika/lims/browser/supplier.py:116
 msgid "FullName"
-msgstr ""
+msgstr "全名"
 
 #: bika/lims/browser/auditlog.py:85
 #: bika/lims/controlpanel/auditlog.py:84
 msgid "Fullname"
-msgstr ""
+msgstr "全名"
 
 #: bika/lims/content/calculation.py:99
 msgid "Function"
-msgstr ""
+msgstr "函数"
 
 #: senaite/core/browser/samples/view.py:557
 msgid "Future dated sample"
@@ -2341,15 +2342,15 @@ msgstr "通用"
 
 #: senaite/core/behaviors/configure.zcml:13
 msgid "Generates an ID with the IDServer"
-msgstr ""
+msgstr "使用ID服务器生成ID"
 
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:11
 msgid "Global Audit Log is disabled"
-msgstr ""
+msgstr "全局审计日志被禁用"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:44
 msgid "Go to your instance"
-msgstr ""
+msgstr "转到实例"
 
 #: bika/lims/content/person.py:43
 msgid "Greeting title eg. Mr, Mrs, Dr"
@@ -2357,11 +2358,11 @@ msgstr "称谓, 如先生,女士, 博士"
 
 #: bika/lims/content/bikasetup.py:313
 msgid "Group analysis services by category in the LIMS tables, helpful when the list is long"
-msgstr ""
+msgstr "当列表很长时，使用LIMS表格中对检验项目进行类别分组很有帮助"
 
 #: bika/lims/content/arreport.py:132
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: senaite/core/browser/samples/view.py:563
 msgid "Hazardous"
@@ -2375,15 +2376,15 @@ msgstr "隐藏"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:63
 msgid "Hidden Field"
-msgstr ""
+msgstr "隐藏字段"
 
 #: bika/lims/config.py:136
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #: bika/lims/config.py:135
 msgid "Highest"
-msgstr ""
+msgstr "最高"
 
 #: bika/lims/browser/fields/durationfield.py:37
 msgid "Hours"
@@ -2391,7 +2392,7 @@ msgstr "小时"
 
 #: bika/lims/content/supplier.py:75
 msgid "IBN"
-msgstr ""
+msgstr "国际银行号码"
 
 #: bika/lims/browser/referencesample.py:140
 #: bika/lims/browser/templates/referencesample_view.pt:39
@@ -2400,95 +2401,95 @@ msgstr "ID"
 
 #: bika/lims/content/bikasetup.py:935
 msgid "ID Server Values"
-msgstr ""
+msgstr "ID服务器值"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:50
 msgid "ID Template"
-msgstr ""
+msgstr "ID 模板"
 
 #: bika/lims/content/samplepoint.py:84
 msgid "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
-msgstr ""
+msgstr "如果在此取样点定期采集样品，请在此输入取样频率，例如每周"
 
 #: bika/lims/content/abstractbaseanalysis.py:236
 msgid "If checked, a selection list will be displayed next to the analysis' result field in results entry views. By using this selector, the analyst will be able to set the value as a Detection Limit (LDL or UDL) instead of a regular result"
-msgstr ""
+msgstr "如果选中，结果条目视图中检验项目的结果字段旁边将显示一个选择列表。通过使用此选择器，检验人员将能够将值设置为检测限（LDL或UDL）而不是常规结果"
 
 #: bika/lims/content/instrument.py:180
 msgid "If checked, the instrument will be unavailable until the next valid calibration was performed. This checkbox will automatically be unchecked."
-msgstr ""
+msgstr "如果勾选，该仪器将不可用，直到下一个有效的校准。此复选框将自动被选中。"
 
 #: bika/lims/content/bikasetup.py:385
 msgid "If enabled, a free text field will be displayed close to each analysis in results entry view"
-msgstr ""
+msgstr "如果启用，将在结果输入视图中的每个检验项目附近显示一个空白文本字段"
 
-#: bika/lims/content/abstractbaseanalysis.py:698
+#: bika/lims/content/abstractbaseanalysis.py:705
 msgid "If enabled, a user who submitted a result for this analysis will also be able to verify it. This setting take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). The option set here has priority over the option set in Bika Setup"
-msgstr ""
+msgstr "如果启用，则提交此检验结果的用户也可以对其进行复核。此设置对分配了角色的用户生效，允许他们复核结果（默认情况下，管理员，实验室管理员和复核者）。此处设置的选项优先于全局设置中设置的选项"
 
 #: bika/lims/content/bikasetup.py:411
 msgid "If enabled, a user who submitted a result will also be able to verify it. This setting only take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers).This setting can be overrided for a given Analysis in Analysis Service edit view. By default, disabled."
-msgstr ""
+msgstr "如果启用，提交结果的用户也将能够复核它。此设置仅对分配了角色的用户生效，这些用户可以复核结果（默认情况下，管理员，实验室管理员和复核者）。对于检验项目编辑视图中的给定项目，此设置可以被覆盖。默认情况下，禁用。"
 
 #: bika/lims/content/abstractbaseanalysis.py:93
 msgid "If enabled, the name of the analysis will be written in italics."
-msgstr ""
+msgstr "如果启用，检验项目的名称将用斜体表示。"
 
-#: bika/lims/content/abstractbaseanalysis.py:682
+#: bika/lims/content/abstractbaseanalysis.py:689
 msgid "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Sample"
-msgstr ""
+msgstr "如果启用，则默认情况下不会在报告中显示此检验项目及其结果。检验配置文件或样品中可以覆盖此设置"
 
 #: bika/lims/content/batch.py:138
 msgid "If no Title value is entered, the Batch ID will be used."
-msgstr ""
+msgstr "如果没有输入标题值，将使用批次ID 。"
 
 #: bika/lims/content/batch.py:134
 msgid "If no value is entered, the Batch ID will be auto-generated."
-msgstr ""
+msgstr "如果未输入任何值，将自动生成批次ID。"
 
 #: bika/lims/content/method.py:128
 msgid "If required, select a calculation for the The analysis services linked to this method. Calculations can be configured under the calculations item in the LIMS set-up"
-msgstr ""
+msgstr "如果需要，请选择与此方法关联的检验服务的计算。可以在LIMS设置中的计算项下配置计算"
 
 #: senaite/core/content/interpretationtemplate.py:55
 msgid "If set, this interpretation template will only be available for selection on samples from these types"
-msgstr ""
+msgstr "如果设置，此解释模板将仅可用于选择这些类型的样本"
 
 #: senaite/core/content/interpretationtemplate.py:43
 msgid "If set, this interpretation template will only be available for selection on samples that have assigned any of these analysis templates"
-msgstr ""
+msgstr "如果设置，此解释模板将仅可用于选择已分配任何这些检验模板的样本"
 
 #: bika/lims/content/abstractbaseanalysis.py:66
 msgid "If text is entered here, it is used instead of the title when the service is listed in column headings. HTML formatting is allowed."
-msgstr ""
+msgstr "如果在此处输入文本，则在列标题中列出服务时将使用该文本而不是标题。允许HTML格式化。"
 
 #: senaite/core/exportimport/import.pt:85
 msgid "If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br /> If no instrument selected, no Calibration Test will be created for orphan IDs."
-msgstr ""
+msgstr "如果系统找不到任何匹配项（分析请求，样本，参考分析或重复），它将使用记录的标识符来查找与参考样品ID的匹配项。如果找到参考样品ID，系统将自动创建校准测试（参考分析）并将其链接到上面选择的仪器。<br />如果未选择仪器，则不会为孤立ID创建校准测试。"
 
 #: bika/lims/content/worksheettemplate.py:141
 msgid "If unchecked, Lab Managers won't be able to assign the same Instrument more than one Analyses while creating a Worksheet."
-msgstr ""
+msgstr "如果未选中，实验室管理员将无法在创建工作表时为同一仪器分配多个检验项目。"
 
 #: bika/lims/content/bikasetup.py:195
 msgid "If unchecked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be checked and readonly."
-msgstr ""
+msgstr "如果未勾中，检验人员和实验室工作人员也将能够管理工作表。如果用户仅限于访问已被分派任务的工作表，则此选项将选中并且只读。"
 
 #: bika/lims/content/bikasetup.py:172
 msgid "If unchecked, analysts will have access to all worksheets."
-msgstr ""
+msgstr "如果未勾选，检验人员将获得的访问所有工作表的权限。"
 
 #: bika/lims/content/bikasetup.py:182
 msgid "If unchecked, users will only be able to submit results for the analyses they are assigned to, and the submission of results for unassigned analyses won't be permitted. This setting does not apply to users with role Lab Manager"
-msgstr ""
+msgstr "如果未勾中，用户将只能为已分派的检验项目提交结果，并且不允许提交未分派检验项目的结果。此设置不适用于具有角色Lab Manager（实验室经理）的用户"
 
 #: bika/lims/content/calculation.py:111
 msgid "If your formula needs a special function from an external Python library, you can import it here. E.g. if you want to use the 'floor' function from the Python 'math' module, you add 'math' to the Module field and 'floor' to the function field. The equivalent in Python would be 'from math import floor'. In your calculation you could use then 'floor([Ca] + [Mg])'. "
-msgstr ""
+msgstr "如果您的公式需要外部Python库中的特殊函数，您可以在此处导入。例如，如果你想使用Python'math'模块中的'floor'函数，你可以在Module字段中添加'math'，在函数字段中添加'floor'。等同于Python中语句“from math import floor”。在你的计算公式中可以使用'floor（[Ca] + [Mg]）'. "
 
 #: senaite/core/content/senaitesetup.py:117
 msgid "Immediate results entry"
-msgstr ""
+msgstr "立即输入结果"
 
 #: senaite/core/exportimport/import.pt:14
 #: senaite/core/profiles/default/actions.xml
@@ -2497,19 +2498,19 @@ msgstr "导入"
 
 #: bika/lims/content/instrument.py:228
 msgid "Import Data Interface"
-msgstr ""
+msgstr "数据导入接口"
 
 #: senaite/core/exportimport/import.pt:94
 msgid "Import Interface"
-msgstr ""
+msgstr "导入接口"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:59
 msgid "Imported File"
-msgstr ""
+msgstr "导入的文件"
 
 #: bika/lims/content/instrument.py:193
 msgid "In-lab calibration procedure"
-msgstr ""
+msgstr "实验室内部校准操作方法"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:76
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:78
@@ -2519,7 +2520,7 @@ msgstr "停用"
 
 #: bika/lims/content/bikasetup.py:222
 msgid "Include and display pricing information"
-msgstr ""
+msgstr "包含并显示价格信息"
 
 #: bika/lims/content/pricelist.py:75
 msgid "Include descriptions"
@@ -2527,53 +2528,53 @@ msgstr "包含描述"
 
 #: bika/lims/validators.py:1189
 msgid "Incorrect IBAN number: %s"
-msgstr ""
+msgstr "不正确IBAN号码：%s"
 
 #: bika/lims/validators.py:1148
 msgid "Incorrect NIB number: %s"
-msgstr ""
+msgstr "不正确NIB号码：%s"
 
 #: bika/lims/content/analysisrequest.py:1390
 msgid "Indicates if the last SampleReport is printed,"
-msgstr ""
+msgstr "提示是否打印了最后的样本报告,"
 
 #: bika/lims/browser/viewlets/templates/detached_partition_viewlet.pt:13
 #: bika/lims/browser/viewlets/templates/partition_ar_viewlet.pt:12
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:13
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Initialize"
-msgstr ""
+msgstr "初始化"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:13
 msgid "Install SENAITE LIMS"
-msgstr ""
+msgstr "安装LIMS"
 
 #: bika/lims/content/instrument.py:333
 msgid "Installation Certificate"
-msgstr ""
+msgstr "安装确认证书"
 
 #: bika/lims/content/instrument.py:334
 msgid "Installation certificate upload"
-msgstr ""
+msgstr "安装确认证书上传"
 
 #: bika/lims/content/instrument.py:324
 msgid "InstallationDate"
-msgstr ""
+msgstr "安装日期"
 
 #: bika/lims/content/method.py:77
 msgid "Instructions"
-msgstr ""
+msgstr "操作指南/说明"
 
 #: bika/lims/content/instrument.py:194
 msgid "Instructions for in-lab regular calibration routines intended for analysts"
-msgstr ""
+msgstr "用于检验人员的实验室常规校准例程指南"
 
 #: bika/lims/content/instrument.py:206
 msgid "Instructions for regular preventive and maintenance routines intended for analysts"
-msgstr ""
+msgstr "针对检验人员的常规预防和维护程序说明"
 
 #: bika/lims/browser/analyses/view.py:161
 #: bika/lims/browser/referencesample.py:164
@@ -2583,15 +2584,15 @@ msgstr "仪器"
 
 #: senaite/core/browser/form/adapters/method.py:74
 msgid "Instrument '{}' is used by service '{}'"
-msgstr ""
+msgstr "仪器{}由检验项目{}使用"
 
 #: bika/lims/browser/instrument.py:192
 msgid "Instrument Calibrations"
-msgstr ""
+msgstr "仪器校准"
 
 #: bika/lims/browser/instrument.py:781
 msgid "Instrument Files"
-msgstr ""
+msgstr "仪器文件"
 
 #: senaite/core/exportimport/import.pt:36
 msgid "Instrument Import"
@@ -2612,7 +2613,7 @@ msgstr "仪器维护"
 
 #: bika/lims/browser/instrument.py:381
 msgid "Instrument Scheduled Tasks"
-msgstr ""
+msgstr "仪器的计划任务"
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
@@ -2625,19 +2626,19 @@ msgstr "仪器类型"
 
 #: bika/lims/browser/instrument.py:289
 msgid "Instrument Validations"
-msgstr ""
+msgstr "仪器验证"
 
 #: bika/lims/content/abstractbaseanalysis.py:311
 msgid "Instrument assignment is allowed"
-msgstr ""
+msgstr "允许进行仪器分派"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:35
 msgid "Instrument disabled until successful calibration:"
-msgstr ""
+msgstr "仪器禁用，直到成功校准："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:54
 msgid "Instrument disposed until new calibration tests being done:"
-msgstr ""
+msgstr "仪器停用直至完成新的校准测试："
 
 #: bika/lims/browser/worksheet/views/export.py:53
 msgid "Instrument exporter not found"
@@ -2645,7 +2646,7 @@ msgstr "仪器导出者没找到"
 
 #: bika/lims/browser/workflow/analysis.py:139
 msgid "Instrument failed reference test"
-msgstr ""
+msgstr "仪器参考测试失败"
 
 #: bika/lims/browser/worksheet/views/export.py:40
 msgid "Instrument has no data interface selected"
@@ -2653,19 +2654,19 @@ msgstr "仪器没有选择数据接口"
 
 #: senaite/core/browser/form/adapters/data_import.py:95
 msgid "Instrument import finished"
-msgstr ""
+msgstr "仪器导入结束"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:92
 msgid "Instrument in calibration progress:"
-msgstr ""
+msgstr "仪器校准进度："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:73
 msgid "Instrument in validation progress:"
-msgstr ""
+msgstr "仪器确认进度："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:16
 msgid "Instrument's calibration certificate expired:"
-msgstr ""
+msgstr "仪器的校准证书已过期："
 
 #: bika/lims/browser/methodfolder.py:67
 #: bika/lims/content/analysisservice.py:78
@@ -2675,47 +2676,47 @@ msgstr "仪器"
 
 #: senaite/core/exportimport/import.pt:156
 msgid "Instruments can be configured with one or multiple import data interfaces."
-msgstr ""
+msgstr "仪器可以用一个或多个数据导入接口来配置。"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:39
 msgid "Instruments disabled until successful calibration:"
-msgstr ""
+msgstr "仪器禁用，直至成功校准："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:58
 msgid "Instruments disposed until new calibration tests being done:"
-msgstr ""
+msgstr "仪器停用直至完成新的校准测试："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:96
 msgid "Instruments in calibration progress:"
-msgstr ""
+msgstr "仪器校准进度："
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:77
 msgid "Instruments in validation progress:"
-msgstr ""
+msgstr "仪器验证进度："
 
 #: bika/lims/content/method.py:103
 msgid "Instruments supporting this method"
-msgstr ""
+msgstr "支持此方法的仪器"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:20
 msgid "Instruments' calibration certificates expired:"
-msgstr ""
+msgstr "仪器的校准证书已过期："
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:55
 msgid "Interface"
-msgstr ""
+msgstr "接口"
 
 #: bika/lims/content/instrument.py:240
 msgid "Interface Code"
-msgstr ""
+msgstr "接口代码"
 
 #: bika/lims/browser/instrument.py:493
 msgid "Internal Calibration Tests"
-msgstr ""
+msgstr "内部校准测试"
 
 #: bika/lims/content/instrumentcertification.py:84
 msgid "Internal Certificate"
-msgstr ""
+msgstr "内部证书"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:135
 #: senaite/core/browser/samples/view.py:566
@@ -2725,7 +2726,7 @@ msgstr "内部使用"
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:36
 #: bika/lims/browser/templates/referencesample_analyses.pt:31
 msgid "Interpolation"
-msgstr ""
+msgstr "插值"
 
 #: senaite/core/profiles/default/types/InterpretationTemplate.xml
 msgid "Interpretation Template"
@@ -2737,7 +2738,7 @@ msgstr "解释模板"
 
 #: bika/lims/content/instrumentcertification.py:110
 msgid "Interval"
-msgstr ""
+msgstr "间隔"
 
 #: senaite/core/browser/dashboard/dashboard.py:603
 #: senaite/core/browser/samples/view.py:358
@@ -2747,15 +2748,15 @@ msgstr "无效"
 
 #: bika/lims/content/dynamic_analysisspec.py:63
 msgid "Invalid specifications file detected. Please upload an Excel spreadsheet with at least the following columns defined: '{}', "
-msgstr ""
+msgstr "检测到无效的检验标准文件。 请上传至少有以下定义列的Excel电子表格：“ {}” "
 
 #: bika/lims/validators.py:1368
 msgid "Invalid value: Please enter a value without spaces."
-msgstr ""
+msgstr "值无效：请输入不带空格的值。"
 
 #: bika/lims/validators.py:514
 msgid "Invalid wildcards found: ${wildcards}"
-msgstr ""
+msgstr "发现无效通配符: ${wildcards}"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Invalidate"
@@ -2769,7 +2770,7 @@ msgstr "票据"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:55
 msgid "Invoice Date"
-msgstr ""
+msgstr "开票日期"
 
 #: bika/lims/content/analysisrequest.py:965
 msgid "Invoice Exclude"
@@ -2777,45 +2778,45 @@ msgstr "从结算中排除"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:44
 msgid "Invoice ID"
-msgstr ""
+msgstr "票据 ID"
 
 #: bika/lims/content/invoice.py:41
 msgid "Invoice PDF"
-msgstr ""
+msgstr "发票PDF"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:35
 msgid "Invoice To"
-msgstr ""
+msgstr "开票给"
 
 #: bika/lims/browser/analysisrequest/invoice.py:187
 msgid "Invoice {} created"
-msgstr ""
+msgstr "已创建发票{}"
 
 #: senaite/core/exportimport/setupdata/__init__.py:2315
 msgid "InvoiceBatch has no End Date"
-msgstr ""
+msgstr "发票批次无结束日期"
 
 #: senaite/core/exportimport/setupdata/__init__.py:2312
 msgid "InvoiceBatch has no Start Date"
-msgstr ""
+msgstr "发票批次无开始日期"
 
 #: senaite/core/exportimport/setupdata/__init__.py:2309
 msgid "InvoiceBatch has no Title"
-msgstr ""
+msgstr "发票批次无标题"
 
 #: bika/lims/content/department.py:72
 #: bika/lims/content/instrumentcalibration.py:142
 #: bika/lims/content/instrumentcertification.py:161
 msgid "Job Title"
-msgstr ""
+msgstr "工作职位"
 
 #: bika/lims/content/person.py:141
 msgid "Job title"
 msgstr "工作职位"
 
-#: bika/lims/content/abstractbaseanalysis.py:630
+#: bika/lims/content/abstractbaseanalysis.py:637
 msgid "Keep order above"
-msgstr ""
+msgstr "保持以上顺序"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:35
 msgid "Key"
@@ -2829,11 +2830,11 @@ msgstr "关键词"
 
 #: senaite/core/browser/form/adapters/analysisservice.py:51
 msgid "Keyword is used in active analyses and can not be changed anymore"
-msgstr ""
+msgstr "关键词用于启用的检验项目，不能再更改"
 
 #: senaite/core/browser/form/adapters/analysisservice.py:180
 msgid "Keyword required"
-msgstr ""
+msgstr "需要关键词"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:67
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:42
@@ -2852,7 +2853,7 @@ msgstr "实验室检验项目"
 
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "实验室联系人"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:63
 #: bika/lims/profiles/default/types/Department.xml
@@ -2882,29 +2883,29 @@ msgstr "实验室网址"
 #: senaite/core/extender/label.py:58
 #: senaite/core/profiles/default/types/Label.xml
 msgid "Label"
-msgstr ""
+msgstr "标签"
 
 #: senaite/core/registry/schema.py:67
 msgid "Label configuration"
-msgstr ""
+msgstr "标签配置"
 
 #: senaite/core/content/label.py:41
 msgid "Label names must be unique"
-msgstr ""
+msgstr "标签名必须唯一"
 
 #: senaite/core/behaviors/configure.zcml:60
 msgid "Label schema extender"
-msgstr ""
+msgstr "标签衍生字段"
 
 #: senaite/core/browser/label/labeled_objects.py:32
 msgid "Labeled Objects"
-msgstr ""
+msgstr "被标签对象"
 
 #: senaite/core/browser/controlpanel/labels.py:33
 #: senaite/core/browser/label/labeled_objects.py:47
 #: senaite/core/extender/label.py:39
 msgid "Labels"
-msgstr ""
+msgstr "标签"
 
 #: bika/lims/content/laboratory.py:206
 #: bika/lims/profiles/default/types/Laboratory.xml
@@ -2917,27 +2918,27 @@ msgstr "实验室认证"
 
 #: bika/lims/content/bikasetup.py:607
 msgid "Laboratory Workdays"
-msgstr ""
+msgstr "实验室工作日"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:74
 msgid "Language"
-msgstr ""
+msgstr "语言"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Large Sticker"
-msgstr ""
+msgstr "大标签"
 
 #: bika/lims/content/bikasetup.py:798
 msgid "Large sticker"
-msgstr ""
+msgstr "大标签"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:42
 msgid "Last Auto-Import Logs"
-msgstr ""
+msgstr "上一次自动导入日志"
 
 #: bika/lims/browser/templates/login_details.pt:97
 msgid "Last Login Time"
-msgstr ""
+msgstr "最后一次登录时间"
 
 #: senaite/core/browser/samples/view.py:414
 msgid "Late"
@@ -2962,33 +2963,33 @@ msgstr "布局"
 
 #: bika/lims/browser/worksheet/views/results.py:68
 msgid "Layout view '{}' not found. Set '{}' as layout view."
-msgstr ""
+msgstr "未找到布局视图{}。将{}设置为布局视图."
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:153
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:120
 msgid "Legend: Results in <em>italic</em> font are pending, results in <strong>bold</strong> font are verified."
-msgstr ""
+msgstr "图例：<em>italic</em>字体的结果正在等待，结果以<strong>bold</strong>字体进行验证。"
 
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:40
 #: bika/lims/browser/templates/referencesample_analyses.pt:35
 msgid "Linear"
-msgstr ""
+msgstr "线性"
 
 #: bika/lims/browser/templates/login_details.pt:203
 msgid "Link User"
-msgstr ""
+msgstr "关联用户"
 
 #: bika/lims/browser/templates/login_details.pt:144
 msgid "Link an existing User"
-msgstr ""
+msgstr "关联现有用户"
 
 #: senaite/core/browser/label/labeled_objects.py:33
 msgid "List all objects with labels"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:600
+#: bika/lims/content/abstractbaseanalysis.py:607
 msgid "List of possible final results. When set, no custom result is allowed on results entry and user has to choose from these values"
-msgstr ""
+msgstr "可能的最终结果列表。设置后，结果条目上不允许有自定义结果，用户必须从这些值中进行选择"
 
 #: senaite/core/exportimport/import.pt:46
 msgid "Load Setup Data"
@@ -3000,37 +3001,37 @@ msgstr "在此载入描述该方法的文档"
 
 #: senaite/core/exportimport/import.pt:115
 msgid "Load from file"
-msgstr ""
+msgstr "从文件加载"
 
 #: bika/lims/content/instrumentcertification.py:195
 msgid "Load the certificate document here"
-msgstr ""
+msgstr "从这里加载证书文件"
 
 #: senaite/core/browser/controlpanel/instrumentlocations.py:59
 msgid "Location"
-msgstr ""
+msgstr "地点"
 
 #: bika/lims/content/storagelocation.py:58
 #: bika/lims/controlpanel/bika_storagelocations.py:88
 msgid "Location Code"
-msgstr ""
+msgstr "地点代码"
 
 #: bika/lims/content/storagelocation.py:64
 msgid "Location Description"
-msgstr ""
+msgstr "地点描述"
 
 #: bika/lims/content/storagelocation.py:52
 #: bika/lims/controlpanel/bika_storagelocations.py:85
 msgid "Location Title"
-msgstr ""
+msgstr "地点名称"
 
 #: bika/lims/content/storagelocation.py:70
 msgid "Location Type"
-msgstr ""
+msgstr "地点类型"
 
 #: bika/lims/content/multifile.py:64
 msgid "Location where the document set is shelved"
-msgstr ""
+msgstr "文件保存位置"
 
 #: bika/lims/browser/templates/analysisservice_info.pt:252
 msgid "Log"
@@ -3054,15 +3055,15 @@ msgstr "批号"
 
 #: bika/lims/config.py:138
 msgid "Low"
-msgstr ""
+msgstr "低"
 
 #: bika/lims/content/abstractbaseanalysis.py:185
 msgid "Lower Detection Limit (LDL)"
-msgstr ""
+msgstr "最小检出限(LDL)"
 
 #: bika/lims/config.py:139
 msgid "Lowest"
-msgstr ""
+msgstr "最低"
 
 #: bika/lims/config.py:82
 msgid "Mailing address"
@@ -3071,20 +3072,20 @@ msgstr "邮寄地址"
 #: bika/lims/browser/instrument.py:88
 #: bika/lims/content/instrumentmaintenancetask.py:82
 msgid "Maintainer"
-msgstr ""
+msgstr "维护人"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
+msgstr "维护"
 
 #. Default: "Type"
 #: bika/lims/content/instrumentmaintenancetask.py:54
 msgid "Maintenance type"
-msgstr ""
+msgstr "维护类型"
 
 #: bika/lims/content/abstractbaseanalysis.py:268
 msgid "Make attachments mandatory for verification"
-msgstr ""
+msgstr "必须复核附件"
 
 #: bika/lims/config.py:76
 msgid "Male"
@@ -3092,7 +3093,7 @@ msgstr "男性"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Manage Access"
-msgstr ""
+msgstr "接入管理"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt:14
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
@@ -3101,15 +3102,15 @@ msgstr "管理检验项目"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:374
 msgid "Manage Form Fields"
-msgstr ""
+msgstr "管理表单字段"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:12
 msgid "Manage Numbergenerator"
-msgstr ""
+msgstr "管理号码生成器"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:21
 msgid "Manage Partitions"
-msgstr ""
+msgstr "管理样本分装"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
@@ -3117,19 +3118,19 @@ msgstr "管理检验結果"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:10
 msgid "Manage Sample Form Fields"
-msgstr ""
+msgstr "管理样本表单字段"
 
 #: bika/lims/browser/templates/login_details.pt:41
 msgid "Manage linked User"
-msgstr ""
+msgstr "管理关联用户"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:38
 msgid "Manage the order and visibility of the fields displayed in analysis request add forms."
-msgstr ""
+msgstr "管理请检项目表单中显示的字段的顺序和可见性。"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:16
 msgid "Manage the order and visibility of the sample fields."
-msgstr ""
+msgstr "管理样本字段的顺序和可见性"
 
 #: bika/lims/controlpanel/bika_departments.py:85
 msgid "Manager"
@@ -3145,20 +3146,20 @@ msgstr "经理电话"
 
 #: bika/lims/browser/analyses/view.py:1057
 msgid "Manual"
-msgstr ""
+msgstr "手动"
 
 #: bika/lims/content/abstractbaseanalysis.py:297
 #: bika/lims/content/method.py:148
 msgid "Manual entry of results"
-msgstr ""
+msgstr "手动输入结果"
 
-#: bika/lims/browser/publish/reports_listing.py:158
+#: bika/lims/browser/publish/reports_listing.py:161
 msgid "Manually publish all contained samples of the selected reports."
-msgstr ""
+msgstr "手动发布已选报告涉及的所有样本。"
 
 #: senaite/core/exportimport/import.pt:186
 msgid "Manually trigger auto import"
-msgstr ""
+msgstr "手动触发自动导入"
 
 #: bika/lims/browser/referencesample.py:405
 #: bika/lims/browser/templates/referencesample_sticker.pt:51
@@ -3173,7 +3174,7 @@ msgstr "制造商"
 
 #: bika/lims/content/analysisrequest.py:1403
 msgid "Mark the sample for internal use only. This means it is only accessible to lab personnel and not to clients."
-msgstr ""
+msgstr "将样本标记为仅供内部使用。这意味着只能由实验室人员访问，而不能由客户访问。"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:94
 #: bika/lims/browser/fields/referenceresultsfield.py:38
@@ -3188,21 +3189,21 @@ msgstr "最大时间"
 #: bika/lims/browser/fields/resultrangefield.py:35
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:105
 msgid "Max operator"
-msgstr ""
+msgstr "最大运算符"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:92
 #: bika/lims/browser/fields/resultrangefield.py:38
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:115
 msgid "Max warn"
-msgstr ""
+msgstr "警报最大值"
 
 #: senaite/core/content/samplecontainer.py:73
 msgid "Maximum possible size or volume of samples"
-msgstr ""
+msgstr "样本的最大可能尺寸或体积"
 
 #: bika/lims/content/container.py:74
 msgid "Maximum possible size or volume of samples."
-msgstr "最大的样品可能的尺寸或体积"
+msgstr "样本的最大可能尺寸或体积。"
 
 #: bika/lims/content/abstractbaseanalysis.py:362
 msgid "Maximum time allowed for completion of the analysis. A late analysis alert is raised when this period elapses"
@@ -3214,15 +3215,15 @@ msgstr "最大周转时间"
 
 #: bika/lims/config.py:137
 msgid "Medium"
-msgstr ""
+msgstr "中等"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:153
 msgid "Meet the community, browse the code and get support on"
-msgstr ""
+msgstr "联系社区获得代码和支持"
 
 #: bika/lims/browser/clientfolder.py:99
 msgid "Member Discount"
-msgstr ""
+msgstr "会员折扣"
 
 #: bika/lims/content/analysisrequest.py:1111
 #: bika/lims/content/bikasetup.py:254
@@ -3235,11 +3236,11 @@ msgstr "会员折扣可用"
 
 #: bika/lims/browser/contact.py:304
 msgid "Member registered and linked to the current Contact."
-msgstr ""
+msgstr "会员已注册并关联到当前联系人。"
 
 #: bika/lims/browser/publish/emailview.py:146
 msgid "Message sent to {}, "
-msgstr ""
+msgstr "消息发送到{}， "
 
 #: bika/lims/browser/analyses/view.py:155
 #: bika/lims/browser/methodfolder.py:58
@@ -3253,7 +3254,7 @@ msgstr "检验方法文档"
 
 #: bika/lims/content/method.py:56
 msgid "Method ID"
-msgstr ""
+msgstr "方法ID"
 
 #: bika/lims/browser/methodfolder.py:48
 #: bika/lims/browser/templates/analysisservice_info.pt:119
@@ -3263,11 +3264,11 @@ msgstr "检验方法"
 
 #: bika/lims/content/person.py:59
 msgid "Middle initial"
-msgstr ""
+msgstr "中间名缩写"
 
 #: bika/lims/content/person.py:67
 msgid "Middle name"
-msgstr ""
+msgstr "中间名"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:90
 #: bika/lims/browser/fields/referenceresultsfield.py:37
@@ -3278,13 +3279,13 @@ msgstr "最小"
 #: bika/lims/browser/fields/resultrangefield.py:33
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:95
 msgid "Min operator"
-msgstr ""
+msgstr "最小运算符"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:88
 #: bika/lims/browser/fields/resultrangefield.py:37
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:90
 msgid "Min warn"
-msgstr ""
+msgstr "警报最小值"
 
 #: senaite/core/browser/dashboard/dashboard.py:358
 msgid "Mine"
@@ -3312,11 +3313,11 @@ msgstr "分钟"
 #: bika/lims/browser/supplier.py:122
 #: bika/lims/controlpanel/bika_labcontacts.py:90
 msgid "Mobile Phone"
-msgstr "手机号"
+msgstr "移动电话"
 
 #: bika/lims/browser/client/views/contacts.py:76
 msgid "MobilePhone"
-msgstr ""
+msgstr "移动电话"
 
 #: bika/lims/content/instrument.py:136
 #: bika/lims/controlpanel/bika_instruments.py:84
@@ -3325,23 +3326,23 @@ msgstr "型号"
 
 #: bika/lims/content/calculation.py:99
 msgid "Module"
-msgstr ""
+msgstr "组件"
 
 #: bika/lims/config.py:94
 msgid "Monday"
-msgstr ""
+msgstr "星期一"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:537
 msgid "Monthly"
-msgstr ""
+msgstr "每月"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:59
 msgid "More"
-msgstr ""
+msgstr "更多"
 
 #: senaite/core/behaviors/configure.zcml:26
 msgid "Multi Catalog Behavior for Dexterity Contents"
-msgstr ""
+msgstr "灵活内容的多目录行为"
 
 #: senaite/core/browser/samples/multi_results_transposed.py:48
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
@@ -3350,41 +3351,41 @@ msgstr "合并结果"
 
 #: bika/lims/content/bikasetup.py:440
 msgid "Multi Verification type"
-msgstr ""
+msgstr "多次复核类型"
 
 #: bika/lims/browser/analyses/view.py:1431
 msgid "Multi-verification required"
-msgstr ""
+msgstr "需要多次复核"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:104
-#: bika/lims/content/abstractbaseanalysis.py:611
+#: bika/lims/content/abstractbaseanalysis.py:618
 msgid "Multiple choices"
-msgstr ""
+msgstr "多个选项"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:103
-#: bika/lims/content/abstractbaseanalysis.py:609
+#: bika/lims/content/abstractbaseanalysis.py:616
 msgid "Multiple selection"
-msgstr ""
+msgstr "多选"
 
-#: bika/lims/content/abstractbaseanalysis.py:610
+#: bika/lims/content/abstractbaseanalysis.py:617
 msgid "Multiple selection (with duplicates)"
-msgstr ""
+msgstr "多选（具有重复项）"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:105
 msgid "Multiple values"
-msgstr ""
+msgstr "多个值"
 
 #: bika/lims/validators.py:460
 msgid "Multiple values control type is not supported for choices"
-msgstr ""
+msgstr "不支持多个值控件类型进行选择"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "My organization"
-msgstr ""
+msgstr "我的组织"
 
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
-msgstr ""
+msgstr "银行编码"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:63
 msgid "Name"
@@ -3392,7 +3393,7 @@ msgstr "名称"
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:23
 msgid "New ranges won't be applied to neither new nor current analyses. Re-assign the Specification if you want to apply latest changes."
-msgstr ""
+msgstr "新范围不会应用在新检验项目或当前检验项目。 如果要应用最新变更，请重新赋予检验标准。"
 
 #: senaite/core/browser/controlpanel/samplecontainers.py:131
 msgid "No"
@@ -3400,35 +3401,35 @@ msgstr "否"
 
 #: senaite/core/exportimport/instruments/eltra/cs/cs2000.py:51
 msgid "No Analysis Services defined"
-msgstr ""
+msgstr "没有定义检验项目"
 
 #: bika/lims/browser/publish/templates/email.pt:70
 msgid "No Email Address"
-msgstr ""
+msgstr "没有电子邮件地址"
 
 #: senaite/core/browser/form/adapters/worksheettemplate.py:49
 msgid "No Instrument"
-msgstr ""
+msgstr "没有仪器"
 
 #: senaite/core/browser/form/adapters/analysisservice.py:43
 msgid "No Method selected for this Service"
-msgstr ""
+msgstr "没有为该检测项目选择方法"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:33
 msgid "No Reference Definitions for Blanks available. <br /> To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first."
-msgstr ""
+msgstr "没有空白样品的参考定义。<br />要在此工作表模板中添加空白样品，请首先为空白样品创建参考定义。"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:38
 msgid "No Reference Definitions for Controls available. <br /> To add a Control in this Worksheet Template, create a Reference Definition for a Control sample first."
-msgstr ""
+msgstr "没有质控样品的参考定义。<br />要在此工作表模板中添加质控样品，请首先为质控样品创建参考定义。"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:43
 msgid "No ReferenceDefinitions for Controls nor Blanks available. <br /> To add a Control or Blank in this Worksheet Template, create a Reference Definition first."
-msgstr ""
+msgstr "没有空白样品或质控样品的参考定义。<br />要在此工作表模板中添加空白样品或质控样品，请首先为空白样品或质控样品创建参考定义。"
 
 #: bika/lims/browser/analysisrequest/add2.py:1795
 msgid "No Samples could be created."
-msgstr ""
+msgstr "无法创建样本。"
 
 #: bika/lims/browser/batch/batchbook.py:175
 msgid "No Subgroup"
@@ -3476,10 +3477,6 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_instruments.py:164
 msgid "No date set"
-msgstr ""
-
-#: bika/lims/browser/publish/reports_listing.py:254
-msgid "No email address set for this contact"
 msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:167
@@ -3626,7 +3623,7 @@ msgstr ""
 msgid "Number of prominent columns"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:716
+#: bika/lims/content/abstractbaseanalysis.py:723
 #: bika/lims/content/bikasetup.py:427
 msgid "Number of required verifications"
 msgstr ""
@@ -3635,7 +3632,7 @@ msgstr ""
 msgid "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:717
+#: bika/lims/content/abstractbaseanalysis.py:724
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr ""
 
@@ -3676,7 +3673,7 @@ msgstr "启用中"
 msgid "Open Source Web based Laboratory Information Management System"
 msgstr ""
 
-#: bika/lims/browser/publish/reports_listing.py:125
+#: bika/lims/browser/publish/reports_listing.py:128
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
 msgstr ""
 
@@ -3860,7 +3857,7 @@ msgstr ""
 msgid "Precision as number of decimals"
 msgstr "小数精度"
 
-#: bika/lims/content/abstractbaseanalysis.py:552
+#: bika/lims/content/abstractbaseanalysis.py:559
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
 msgstr ""
 
@@ -3868,7 +3865,7 @@ msgstr ""
 msgid "Predefined reasons of rejection"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:599
+#: bika/lims/content/abstractbaseanalysis.py:606
 msgid "Predefined results"
 msgstr ""
 
@@ -3979,7 +3976,7 @@ msgstr "价格列表:"
 msgid "Pricelists"
 msgstr ""
 
-#: bika/lims/browser/publish/reports_listing.py:72
+#: bika/lims/browser/publish/reports_listing.py:73
 #: bika/lims/browser/templates/analysisreport_info.pt:60
 msgid "Primary Sample"
 msgstr "主样品"
@@ -4053,7 +4050,7 @@ msgstr "进度"
 msgid "Prominent fields"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:745
+#: bika/lims/content/abstractbaseanalysis.py:752
 msgid "Protocol ID"
 msgstr ""
 
@@ -4072,11 +4069,11 @@ msgstr "发布报告"
 msgid "Published"
 msgstr "已发布"
 
-#: bika/lims/browser/publish/reports_listing.py:85
+#: bika/lims/browser/publish/reports_listing.py:86
 msgid "Published By"
 msgstr ""
 
-#: bika/lims/browser/publish/reports_listing.py:83
+#: bika/lims/browser/publish/reports_listing.py:84
 msgid "Published Date"
 msgstr "发布日期"
 
@@ -4151,7 +4148,6 @@ msgstr "已接收"
 msgid "Reception pending"
 msgstr "待接收"
 
-#: bika/lims/browser/publish/reports_listing.py:89
 #: bika/lims/browser/publish/templates/email.pt:56
 #: bika/lims/browser/templates/analysisreport_info.pt:143
 msgid "Recipients"
@@ -4400,7 +4396,7 @@ msgstr ""
 msgid "Result"
 msgstr "结果"
 
-#: bika/lims/content/abstractbaseanalysis.py:590
+#: bika/lims/content/abstractbaseanalysis.py:597
 msgid "Result Value"
 msgstr "结果值"
 
@@ -4426,19 +4422,19 @@ msgstr "结果超出上下限范围"
 
 #: bika/lims/browser/analyses/view.py:1391
 msgid "Result range is different from Specification: {}"
-msgstr ""
+msgstr "结果范围与检验标准不同：{}"
 
 #: bika/lims/content/bikasetup.py:356
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
-msgstr ""
+msgstr "结果中显示的数值小数点后有效数字位数不少于这个值，同时使用科学计数法，用\"e\"表示指数符号。精确度可以在各个检验项目中进行配置。"
 
 #: bika/lims/content/analysisservice.py:119
 msgid "Result variables"
-msgstr ""
+msgstr "结果变量"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:63
 msgid "Results"
-msgstr ""
+msgstr "结果"
 
 #: bika/lims/content/analysisrequest.py:1355
 msgid "Results Interpretation"
@@ -4446,7 +4442,7 @@ msgstr "结果解析"
 
 #: senaite/core/browser/samples/view.py:547
 msgid "Results have been withdrawn"
-msgstr ""
+msgstr "结果被撤回"
 
 #: senaite/core/browser/viewlets/resultsinterpretation.py:39
 msgid "Results interpretation"
@@ -4492,7 +4488,7 @@ msgstr "已撤回检验项目"
 msgid "Retractions"
 msgstr ""
 
-#: bika/lims/browser/publish/reports_listing.py:77
+#: bika/lims/browser/publish/reports_listing.py:78
 msgid "Review State"
 msgstr "复核状态"
 
@@ -4978,11 +4974,11 @@ msgid "Select which sticker to print when automatic sticker printing is enabled"
 msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:102
-#: bika/lims/content/abstractbaseanalysis.py:608
+#: bika/lims/content/abstractbaseanalysis.py:615
 msgid "Selection list"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:697
+#: bika/lims/content/abstractbaseanalysis.py:704
 msgid "Self-verification of results"
 msgstr ""
 
@@ -5000,6 +4996,10 @@ msgstr ""
 
 #: bika/lims/browser/templates/analysisreport_info.pt:132
 msgid "Sender"
+msgstr ""
+
+#: bika/lims/browser/publish/reports_listing.py:91
+msgid "Sent to"
 msgstr ""
 
 #: bika/lims/browser/fields/partitionsetupfield.py:114
@@ -5196,10 +5196,6 @@ msgstr ""
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:525
-msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
-msgstr ""
-
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
 #: senaite/core/registry/schema.py:242
 msgid "Standard fields"
@@ -5247,7 +5243,7 @@ msgstr "存储位置"
 msgid "Storage Locations"
 msgstr "存储位置"
 
-#: bika/lims/content/abstractbaseanalysis.py:664
+#: bika/lims/content/abstractbaseanalysis.py:671
 msgid "String result"
 msgstr ""
 
@@ -5343,7 +5339,7 @@ msgstr ""
 msgid "System Dashboard"
 msgstr "系统仪表板"
 
-#: bika/lims/content/abstractbaseanalysis.py:944
+#: bika/lims/content/abstractbaseanalysis.py:951
 msgid "System default"
 msgstr ""
 
@@ -5583,11 +5579,11 @@ msgstr ""
 msgid "The serial number that uniquely identifies the instrument"
 msgstr "仪器唯一序列号"
 
-#: bika/lims/content/abstractbaseanalysis.py:746
+#: bika/lims/content/abstractbaseanalysis.py:753
 msgid "The service's analytical protocol ID"
 msgstr ""
 
-#: bika/lims/content/abstractbaseanalysis.py:734
+#: bika/lims/content/abstractbaseanalysis.py:741
 msgid "The service's commercial ID for accounting purposes"
 msgstr ""
 
@@ -5787,7 +5783,7 @@ msgstr ""
 msgid "Type"
 msgstr "类型"
 
-#: bika/lims/content/abstractbaseanalysis.py:621
+#: bika/lims/content/abstractbaseanalysis.py:628
 msgid "Type of control to be displayed on result entry when predefined results are set"
 msgstr ""
 
@@ -6144,36 +6140,36 @@ msgstr "验证失败: 需要标题"
 
 #: bika/lims/validators.py:1496
 msgid "Validation failed: value for Choices subfield is only required for when the control type of choice is 'Select'"
-msgstr ""
+msgstr "验证失败：仅当选项的控制类型为“Select”时，才需要选项子字段的值"
 
 #: bika/lims/validators.py:1478
 msgid "Validation failed: value for Choices subfield is required when the control type of choice is 'Select'"
-msgstr ""
+msgstr "验证失败：当选项的控制类型为“Select”时，需要选项子字段的值"
 
 #: bika/lims/validators.py:1312
 msgid "Validation failed: value must be between 0 and 1000"
-msgstr ""
+msgstr "验证失败：值必须介于0到1000之间"
 
 #: bika/lims/validators.py:1308
 msgid "Validation failed: value must be float"
-msgstr ""
+msgstr "验证失败：值必须为浮点类型"
 
 #: bika/lims/validators.py:1027
 msgid "Validation for '{}' failed"
-msgstr ""
+msgstr "验证 '{}' 失败"
 
 #: bika/lims/content/instrumentvalidation.py:51
 msgid "Validation report date"
-msgstr ""
+msgstr "验证报告日期"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
-msgstr ""
+msgstr "验证"
 
 #: bika/lims/browser/instrument.py:317
 #: bika/lims/content/instrumentvalidation.py:78
 msgid "Validator"
-msgstr ""
+msgstr "验证人员"
 
 #: bika/lims/browser/worksheet/templates/results.pt:206
 #: bika/lims/content/calculation.py:150
@@ -6183,7 +6179,7 @@ msgstr "值"
 
 #: bika/lims/content/abstractanalysis.py:150
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
-msgstr ""
+msgstr "可在此处输入的值将覆盖在计算临时字段指定的默认值。"
 
 #: senaite/core/browser/dashboard/dashboard.py:445
 #: senaite/core/browser/samples/view.py:316
@@ -6215,24 +6211,24 @@ msgstr "查看"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:52
 msgid "View your SENAITE site"
-msgstr ""
+msgstr "浏览LIMS站点"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:477
 msgid "Visibility"
-msgstr ""
+msgstr "可见性"
 
 #: senaite/core/registry/schema.py:250
 msgid "Visible fields"
-msgstr ""
+msgstr "可见字段"
 
 #: bika/lims/browser/viewlets/templates/dynamic_specs_viewlet.pt:24
 #: bika/lims/browser/viewlets/templates/sample_dynamic_specs_viewlet.pt:24
 msgid "Visit the Dynamic Specification for additional information:"
-msgstr ""
+msgstr "请访问动态检验标准以获取更多信息："
 
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:28
 msgid "Visit the Specification's changes history for additional information:"
-msgstr ""
+msgstr "请访问检验标准的更改历史记录以获取更多信息："
 
 #: bika/lims/content/labproduct.py:36
 #: bika/lims/controlpanel/bika_labproducts.py:74
@@ -6241,7 +6237,7 @@ msgstr "体积"
 
 #: bika/lims/browser/viewlets/templates/invalid_ar_viewlet.pt:13
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: bika/lims/content/laboratory.py:132
 msgid "Web address for the accreditation body"
@@ -6249,53 +6245,53 @@ msgstr "认证机构的网址"
 
 #: bika/lims/content/supplier.py:52
 msgid "Website."
-msgstr ""
+msgstr "网站"
 
 #: bika/lims/config.py:96
 msgid "Wednesday"
-msgstr ""
+msgstr "星期三"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:536
 msgid "Weekly"
-msgstr ""
+msgstr "每周"
 
 #: bika/lims/controlpanel/bika_instruments.py:91
 msgid "Weeks To Expire"
-msgstr ""
+msgstr "几周后过期"
 
 #: senaite/core/browser/frontpage/templates/frontpage.pt:16
 msgid "Welcome to"
-msgstr ""
+msgstr "欢迎"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:14
 msgid "Welcome to SENAITE"
-msgstr ""
+msgstr "欢迎来到LIMS"
 
 #: bika/lims/content/bikasetup.py:397
 msgid "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
-msgstr ""
+msgstr "启用后，一旦复核所有结果，就会自动验证样本。 否则，具有足够权限的用户必须手动复核样本。 默认值：启用"
 
 #: bika/lims/content/analysisprofile.py:102
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
-msgstr ""
+msgstr "设置完成后，系统会使用检验配置文件设置价格进行报价，系统的增值税会被检验配置文件的特定增值税覆盖"
 
 #: bika/lims/content/abstractbaseanalysis.py:375
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
-msgstr ""
+msgstr "如果工作表上对同一样本执行的重复检验结果差异超过此百分比，则会发出警报"
 
 #: bika/lims/validators.py:504
 msgid "Wildcards for interims are not allowed: ${wildcards}"
-msgstr ""
+msgstr "不允许使用临时通配符：${wildcards}"
 
 #: senaite/core/browser/setup/templates/email_body_sample_publication.pt:20
 msgid "With best regards"
-msgstr ""
+msgstr "最诚挚的问候"
 
 #: bika/lims/content/instrumentcalibration.py:118
 #: bika/lims/content/instrumentmaintenancetask.py:102
 #: bika/lims/content/instrumentvalidation.py:100
 msgid "Work Performed"
-msgstr ""
+msgstr "工作完成"
 
 #: bika/lims/browser/auditlog.py:93
 #: bika/lims/controlpanel/auditlog.py:99
@@ -6314,7 +6310,7 @@ msgstr "工作表布局"
 
 #: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
+msgstr "工作表模板"
 
 #: bika/lims/controlpanel/bika_worksheettemplates.py:62
 #: bika/lims/profiles/default/types/WorksheetTemplates.xml
@@ -6323,11 +6319,11 @@ msgstr "工作表模板"
 
 #: senaite/core/registry/schema.py:93
 msgid "Worksheet View"
-msgstr ""
+msgstr "工作表视图"
 
 #: senaite/core/registry/schema.py:94
 msgid "Worksheet view configuration"
-msgstr ""
+msgstr "工作表视图配置"
 
 #: senaite/core/browser/dashboard/dashboard.py:529
 msgid "Worksheets"
@@ -6335,11 +6331,11 @@ msgstr "工作表"
 
 #: bika/lims/validators.py:1183
 msgid "Wrong IBAN length by %s: %sshort by %i"
-msgstr ""
+msgstr "错误的IBAN账号长度%s: %s 用短的 %i"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:540
 msgid "Yearly"
-msgstr ""
+msgstr "每年"
 
 #: senaite/core/browser/controlpanel/samplecontainers.py:129
 msgid "Yes"
@@ -6347,27 +6343,27 @@ msgstr "是"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:124
 msgid "You can add another SENAITE site:"
-msgstr ""
+msgstr "您可以添加另一个LIMS站点："
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:109
 msgid "You can change the visibility of a field by selecting or unselecting the checkbox."
-msgstr ""
+msgstr "你可以通过选择或不选择复选框来改变一个字段的可见性。"
 
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:17
 msgid "You can enable the global Audit Log again in the <a href=\"${DYNAMIC_CONTENT}\">Setup</a>"
-msgstr ""
+msgstr "你可以在<a href=\"${DYNAMIC_CONTENT}\">Setup</a>中再次启用全局审计日志。"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:291
 msgid "You can use the browse button to select and upload a new attachment."
-msgstr ""
+msgstr "您可以使用浏览按钮选择并上传新附件。"
 
 #: bika/lims/browser/worksheet/tools.py:42
 msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
-msgstr ""
+msgstr "您没有足够的权限查看工作表${worksheet_title}。"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:78
 msgid "You have multiple SENAITE sites:"
-msgstr ""
+msgstr "您有多个LIMS站点："
 
 #: bika/lims/browser/worksheet/views/export.py:33
 msgid "You must select an instrument"
@@ -6375,15 +6371,15 @@ msgstr "你必须选择一个仪器"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:159
 msgid "You normally don't need to change anything here unless you have specific reasons and know what you are doing."
-msgstr ""
+msgstr "您通常不需要在这里改变任何东西，除非有具体的原因并且知道在做什么。"
 
 #: senaite/core/exportimport/instruments/sysmex/xs/i500.py:77
 msgid "You should introduce a default result key."
-msgstr ""
+msgstr "您应该引入一个默认结果关键词。"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:121
 msgid "Your SENAITE site has not been added yet:"
-msgstr ""
+msgstr "您还未添加LIMS站点："
 
 #: bika/lims/browser/templates/referencesample_view.pt:130
 msgid "activate"
@@ -6391,16 +6387,16 @@ msgstr "激活"
 
 #: bika/lims/content/instrumentcertification.py:254
 msgid "biannually"
-msgstr ""
+msgstr "每两年"
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:48
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:48
 msgid "by"
-msgstr ""
+msgstr "通过"
 
 #: bika/lims/content/instrumentcertification.py:250
 msgid "daily"
-msgstr ""
+msgstr "每天"
 
 #. Default: "${Y}-${m}-${d} ${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6432,7 +6428,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "days"
-msgstr ""
+msgstr "天"
 
 #: bika/lims/browser/templates/referencesample_view.pt:123
 msgid "deactivate"
@@ -6457,8 +6453,13 @@ msgstr ""
 #. in the selection list. It does not have any effect to the order in which
 #. results are displayed after being submitted"
 #. Default: "Criteria to use when result options are displayed for selection in results entry listings. Note this only applies to the options displayed in the selection list. It does not have any effect to the order in which results are displayed after being submitted"
-#: bika/lims/content/abstractbaseanalysis.py:647
+#: bika/lims/content/abstractbaseanalysis.py:654
 msgid "description_analysis_results_options_sorting"
+msgstr ""
+
+#. Default: "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2%, a result of 100 will be reported as 100 ± 2.<br/>If you don't want uncertainty to be displayed for a given range, set 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00 etc."
+#: bika/lims/content/abstractbaseanalysis.py:525
+msgid "description_analysis_uncertainty"
 msgstr ""
 
 #. mg/l, ppm, dB, mV, etc."
@@ -6903,15 +6904,15 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "hours"
-msgstr ""
+msgstr "小时"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:144
 msgid "hours: {} minutes: {} days: {}"
-msgstr ""
+msgstr "小时： {} 分钟： {} 天： {}"
 
 #: bika/lims/browser/publish/templates/email.pt:185
 msgid "in"
-msgstr ""
+msgstr "在"
 
 #. Default: "Labels"
 #: senaite/core/behaviors/label.py:99
@@ -6934,7 +6935,7 @@ msgid "label_analysis_department"
 msgstr ""
 
 #. Default: "Sorting criteria"
-#: bika/lims/content/abstractbaseanalysis.py:643
+#: bika/lims/content/abstractbaseanalysis.py:650
 msgid "label_analysis_results_options_sorting"
 msgstr ""
 
@@ -7341,31 +7342,31 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "minutes"
-msgstr ""
+msgstr "分钟"
 
 #: bika/lims/content/instrumentcertification.py:252
 msgid "monthly"
-msgstr ""
+msgstr "每月"
 
 #: senaite/core/browser/dashboard/dashboard.py:377
 msgid "of"
-msgstr ""
+msgstr "的"
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
-msgstr ""
+msgstr "概览"
 
 #: bika/lims/content/instrumentcertification.py:253
 msgid "quarterly"
-msgstr ""
+msgstr "每季度"
 
 #: bika/lims/content/instrumentscheduledtask.py:137
 msgid "repeating every"
-msgstr ""
+msgstr "每重复"
 
 #: bika/lims/content/instrumentscheduledtask.py:138
 msgid "repeatperiod"
-msgstr ""
+msgstr "重复周期"
 
 #. Default: "This sample has been dispatched by ${actor} on ${date}"
 #: senaite/core/browser/viewlets/templates/sample_dispatched_viewlet.pt:14
@@ -7463,7 +7464,7 @@ msgstr ""
 #. Default: "Verifier"
 #: senaite/core/permissions/localroles.py:54
 msgid "title_verifier_role"
-msgstr ""
+msgstr "复核人角色"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:530
 msgid "to"

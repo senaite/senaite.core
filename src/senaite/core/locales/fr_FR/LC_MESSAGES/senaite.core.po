@@ -1,23 +1,20 @@
 #
-# Translators:
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2022
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2023-11-22 16:56+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
-"Language-Team: Japanese (https://app.transifex.com/senaite/teams/87045/ja/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French (France) (https://app.transifex.com/senaite/teams/87045/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-"Language: ja\n"
+"Language: fr_FR\n"
 
 #: bika/lims/content/bikasetup.py:881
 msgid " <p>The ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client ID</td><td>{clientId}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, clientId, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
@@ -117,7 +114,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:176
 #: bika/lims/browser/worksheet/views/analyses.py:91
 msgid "+-"
-msgstr "±"
+msgstr ""
 
 #: bika/lims/browser/fields/resultrangefield.py:39
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:120
@@ -163,15 +160,15 @@ msgstr ""
 
 #: bika/lims/content/organisation.py:130
 msgid "Account Name"
-msgstr "アカウント名"
+msgstr ""
 
 #: bika/lims/content/organisation.py:138
 msgid "Account Number"
-msgstr "アカウントナンバー"
+msgstr ""
 
 #: bika/lims/content/organisation.py:122
 msgid "Account Type"
-msgstr "アカウントタイプ"
+msgstr ""
 
 #: bika/lims/browser/accreditation.py:41
 #: bika/lims/content/laboratory.py:141
