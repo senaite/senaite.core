@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from plone.dexterity.utils import addContentToContainer
 from xml.dom.minidom import parseString
 
 from bika.lims import api
@@ -477,9 +478,8 @@ def create_or_get(parent, id, uid, portal_type):
             obj._setPortalTypeName(fti.getId())
         # set the old UID to maintain references
         setattr(obj, "_plone.uuid", uid)
-        notify(ObjectCreatedEvent(obj))
-        parent._setObject(tmp_id, obj)
-        obj = parent._getOb(api.get_id(obj))
+        # IMPORTANT: this will generate a new ID by the ID Server config
+        obj = addContentToContainer(parent, obj, checkConstraints=False)
 
     return obj
 
