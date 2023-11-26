@@ -1155,6 +1155,7 @@ class AnalysesView(ListingView):
             values = [formatDecimalMark(value, self.dmk) for value in values]
 
         # return the values as a single string
+        values = filter(None, values)
         return "<br/>".join(values)
 
     def _folder_item_unit(self, analysis_brain, item):
