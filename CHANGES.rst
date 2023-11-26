@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2436 Fix instrument locations not displayed in listing
 - #2433 Fix multi-valued interim fields are not displayed correctly
 - #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
 - #2432 Fix results import files are always rendered for each analysis in report
