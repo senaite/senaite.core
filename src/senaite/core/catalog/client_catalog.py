@@ -14,7 +14,6 @@ INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("Title", "", "ZCTextIndex"),  # needed for reference fields
     ("client_searchable_text", "", "ZCTextIndex"),
-    ("getClientID", "", "FieldIndex"),
     ("getName", "", "FieldIndex"),
     ("sortable_title", "", "FieldIndex"),
 ]

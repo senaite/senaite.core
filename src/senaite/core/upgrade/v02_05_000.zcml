@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Remove stale indexes and columns"
+      description="Remove stale indexes and columns"
+      source="2521"
+      destination="2522"
+      handler=".v02_05_000.purge_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Fix samples in registered status"
       description="Fixes the status of samples in registered status"
       source="2520"

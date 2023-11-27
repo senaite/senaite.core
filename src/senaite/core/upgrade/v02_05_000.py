@@ -34,7 +34,9 @@ from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionReceiveSample
@@ -556,3 +558,70 @@ def fix_samples_registered(tool):
         sample._p_deactivate()
 
     logger.info("Fixing samples in 'registered' status [DONE]")
+
+
+def purge_catalogs(tool):
+    """Purges stale indexes and metadata from catalogs
+    """
+    logger.info("Purging catalogs ...")
+
+    indexes_to_remove = {
+        "base_catalog": [
+            "CreationDate",
+        ],
+        SAMPLE_CATALOG: [
+            "getClientUID",
+            "getDistrict",
+            "getProvince",
+            "getReceivedBy",
+            "getSampler",
+        ],
+        CLIENT_CATALOG: [
+            "getClientID",
+        ],
+        SENAITE_CATALOG: [
+            "getClientID"
+        ],
+        PORTAL_CATALOG: [
+            "getClientID",
+        ]
+    }
+    columns_to_remove = {
+        SAMPLE_CATALOG: [
+            "getBatchUID",
+            "getClientUID",
+            "getDistrict",
+            "getProvince",
+        ],
+    }
+
+    # catalog ids to update
+    catalog_ids = indexes_to_remove.keys() + columns_to_remove.keys()
+    catalog_ids = list(set(catalog_ids))
+
+    for cat_id in catalog_ids:
+        cat = api.get_tool(cat_id, default=None)
+        if not cat:
+            continue
+
+        idxs_to_remove = indexes_to_remove.get(cat_id, [])
+        cols_to_remove = columns_to_remove.get(cat_id, [])
+        if isinstance(cat, BaseCatalog):
+            idxs = indexes_to_remove.get("base_catalog", [])
+            cols = columns_to_remove.get("base_catalog", [])
+            idxs_to_remove.extend(idxs)
+            cols_to_remove.extend(cols)
+
+        for index in idxs_to_remove:
+            if index not in cat.indexes():
+                continue
+            logger.info("{}: removing index {}".format(cat_id, index))
+            del_index(cat, index)
+
+        for column in cols_to_remove:
+            if column not in cat.schema():
+                continue
+            logger.info("{}: removing column {}".format(cat_id, column))
+            del_column(cat, column)
+
+    logger.info("Purging catalogs [DONE]")
