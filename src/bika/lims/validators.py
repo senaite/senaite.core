@@ -821,7 +821,7 @@ class AnalysisSpecificationsValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs["instance"]
-        request = kwargs.get("REQUEST", {})
+        request = kwargs.get("REQUEST") or {}
         fieldname = kwargs["field"].getName()
 
         # This value in request prevents running once per subfield value.

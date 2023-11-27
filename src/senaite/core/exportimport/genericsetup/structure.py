@@ -19,8 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-from xml.dom.minidom import parseString
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IAuditable
@@ -29,6 +27,7 @@ from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
 from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.interfaces import IDexterityItem
+from plone.dexterity.utils import addContentToContainer
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
@@ -39,13 +38,12 @@ from Products.GenericSetup.utils import I18NURI
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from senaite.core.p3compat import cmp
+from xml.dom.minidom import parseString
 from zope.component import adapts
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
-from zope.event import notify
 from zope.interface import alsoProvides
-from zope.lifecycleevent import ObjectCreatedEvent
 
 from .config import SITE_ID
 
@@ -477,9 +475,8 @@ def create_or_get(parent, id, uid, portal_type):
             obj._setPortalTypeName(fti.getId())
         # set the old UID to maintain references
         setattr(obj, "_plone.uuid", uid)
-        notify(ObjectCreatedEvent(obj))
-        parent._setObject(tmp_id, obj)
-        obj = parent._getOb(api.get_id(obj))
+        # IMPORTANT: this will generate a new ID by the ID Server config
+        obj = addContentToContainer(parent, obj, checkConstraints=False)
 
     return obj
 

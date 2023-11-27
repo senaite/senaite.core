@@ -7,6 +7,9 @@ Changelog
 - #2435 Add datetime support for interim fields
 - #2434 Add string support for interim fields
 - #2411 Multiselection with duplicates support for interim fields
+- #2437 Fix DX types imported from tarball do not have valid ids
+- #2431 Fix AttributeError when creating AnalysisSpec with results range via JSONAPI
+- #2436 Fix instrument locations not displayed in listing
 - #2433 Fix multi-valued interim fields are not displayed correctly
 - #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
 - #2432 Fix results import files are always rendered for each analysis in report
