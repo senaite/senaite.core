@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2442 Show partitions initially collapsed in partition preview mode
 - #2437 Fix DX types imported from tarball do not have valid ids
 - #2431 Fix AttributeError when creating AnalysisSpec with results range via JSONAPI
 - #2436 Fix instrument locations not displayed in listing
