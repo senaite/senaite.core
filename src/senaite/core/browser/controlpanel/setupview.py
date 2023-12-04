@@ -82,7 +82,8 @@ class SetupView(BrowserView):
         allowed_types = fti.allowed_content_types
         if len(allowed_types) != 1:
             return None
-        return allowed_types[0]
+        # convert from unicode -> str for api.search catalog lookup
+        return list(map(str, allowed_types))
 
     def get_count(self, obj):
         """Retrieve the count of contained items
@@ -97,7 +98,7 @@ class SetupView(BrowserView):
             "portal_type": contained_types,
             "is_active": True,
         }
-        brains = api.search(query, SETUP_CATALOG)
+        brains = api.search(query)
         return len(brains)
 
     def setupitems(self):
