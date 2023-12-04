@@ -24,7 +24,6 @@ from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.component import getMultiAdapter
 
