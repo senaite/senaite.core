@@ -26,6 +26,13 @@
     }
 }
 
+form[name='edit_form'] div.listing-container {
+    input, select {
+        @extend .form-control;
+        width: 100%!important;
+    }
+}
+
 ul.configlets>li>form,
 form.rowlike,
 form.loginform,
@@ -33,7 +40,7 @@ form.senaite-form,
 form[name='analysisrequest_add_form'],
 form[action*='-controlpanel'],
 form[name='sampleheader_form'],
-form[name='edit_form'] :not(.ajax-contents-table) div > {
+form[name='edit_form'] {
     input, select {
         width: auto;
     }
