@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2439 Fix analysis template view shows hidden subfields for sample partitions
 - #2437 Fix DX types imported from tarball do not have valid ids
 - #2431 Fix AttributeError when creating AnalysisSpec with results range via JSONAPI
 - #2436 Fix instrument locations not displayed in listing

@@ -21,14 +21,21 @@
                         id string:parent-fieldname-$fieldName">
         <tal:block metal:define-slot="inside"
                    tal:repeat="idx python:range(field.getSize(here))"
-                   tal:define="outerJoin field/outerJoin;
-                                      innerJoin field/innerJoin;">
-          <span
-            tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()];"
-            tal:replace="structure python:innerJoin.join(subfieldValues)" />
-          <span
-            tal:replace="structure outerJoin"
-            tal:condition="not: repeat/idx/end" />
+                   tal:define="subfields python:field.getSubfields();
+                               hidden python:getattr(field, 'subfield_hidden', {});
+                               outerJoin field/outerJoin;
+                               innerJoin field/innerJoin;">
+          <ul class="list-inline m-0">
+            <tal:loop tal:repeat="subfield subfields">
+              <li tal:define="value python:field.getViewFor(context, idx, subfield, innerJoin)"
+                  tal:condition="python:hidden.get(subfield, False) is False"
+                  class="list-inline-item mr-0 mb-2">
+                <span class="p-1 bg-light border rounded">
+                  <span tal:content="structure value"/>
+                </span>
+              </li>
+            </tal:loop>
+          </ul>
         </tal:block>
       </span>
     </metal:view_macro>
