@@ -7,6 +7,8 @@ Changelog
 - #2435 Add datetime support for interim fields
 - #2434 Add string support for interim fields
 - #2411 Multiselection with duplicates support for interim fields
+- #2444 Fix reference widget search uses JSON encoded query
+- #2443 Fix missing required marker in edit forms
 - #2441 Fix items count in setupview for lab contacts tile
 - #2440 Fix multi Code_128_1x48mm sticker renders only 1 PDF
 - #2439 Fix analysis template view shows hidden subfields for sample partitions
