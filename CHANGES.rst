@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2443 Fix missing required marker in edit forms
 - #2441 Fix items count in setupview for lab contacts tile
 - #2440 Fix multi Code_128_1x48mm sticker renders only 1 PDF
 - #2439 Fix analysis template view shows hidden subfields for sample partitions
