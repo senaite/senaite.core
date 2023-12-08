@@ -98,9 +98,16 @@ class DefaultReferenceWidgetVocabulary(object):
         # Get the raw query to use
         # Raw query is built from base query baseline, including additional
         # parameters defined in the request and the search query as well
-        query = self.get_raw_query()
-        if not query:
+        raw_query = self.get_raw_query()
+        if not raw_query:
             return []
+
+        # JSON parse all query values
+        # NOTE: The raw query might have JSON encoded values,
+        #       e.g. it could contain {"is_active": "true"}
+        query = {}
+        for key, value in raw_query.items():
+            query[key] = api.parse_json(value, value)
 
         # Do the search
         logger.info("Reference Widget Raw Query for catalog {}: {}"
