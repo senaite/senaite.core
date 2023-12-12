@@ -223,7 +223,7 @@ class FolderView(BikaListingView):
 
         if self.show_only_mine():
             # Remove 'Mine' button and hide 'Analyst' column
-            del self.review_states[1]  # Mine
+            del self.review_states[-1]  # Mine
             self.columns["Analyst"]["toggle"] = False
             self.contentFilter["getAnalyst"] = self.member.id
             for rvw in self.review_states:
