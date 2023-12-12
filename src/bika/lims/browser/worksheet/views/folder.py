@@ -223,11 +223,20 @@ class FolderView(BikaListingView):
 
         if self.show_only_mine():
             # Remove 'Mine' button and hide 'Analyst' column
-            del self.review_states[-1]  # Mine
+            self.remove_review_state("mine")
             self.columns["Analyst"]["toggle"] = False
             self.contentFilter["getAnalyst"] = self.member.id
             for rvw in self.review_states:
                 rvw["contentFilter"]["getAnalyst"] = self.member.id
+
+    def remove_review_state(self, id):
+        """Removes the review status button with the given id
+        """
+        ids = [review_state["id"] for review_state in self.review_states]
+        if id not in ids:
+            return
+        index = ids.index(id)
+        del self.review_states[index]
 
     def is_privileged_user(self):
         """Returns whether the current user is a privileged member
