@@ -3,7 +3,7 @@ Changelog
 
 2.5.0 (unreleased)
 ------------------
-
+- #2445 Rename split_line -> splitLine in InstrumentTXTResultsFileParser for consistency
 - #2444 Fix reference widget search uses JSON encoded query
 - #2443 Fix missing required marker in edit forms
 - #2441 Fix items count in setupview for lab contacts tile
