@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2449 Fix Mine button from worksheets listing does not filter by current user
 - #2448 Fix open filter is not visible to analysts in worksheets listing
 - #2444 Fix reference widget search uses JSON encoded query
 - #2443 Fix missing required marker in edit forms

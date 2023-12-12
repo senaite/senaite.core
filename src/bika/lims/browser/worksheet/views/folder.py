@@ -221,6 +221,10 @@ class FolderView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
+        # Update the "Mine" review status with current user id
+        mine = self.get_review_state("mine")
+        mine["contentFilter"]["getAnalyst"] = self.member.id
+
         if self.show_only_mine():
             # Remove 'Mine' button and hide 'Analyst' column
             self.remove_review_state("mine")
