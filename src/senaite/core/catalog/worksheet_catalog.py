@@ -19,9 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
-from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.interfaces import IWorksheetCatalog
 from zope.interface import implementer
 
