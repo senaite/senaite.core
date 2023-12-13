@@ -43,9 +43,11 @@ schema = BikaSchema.copy() + Schema((
             "max": "analysisspecs_validator",
         },
         widget=ReferenceResultsWidget(
-            label=_("Reference Values"),
+            label=_("label_referencedefinition_referencevalues",
+                    default=u"Reference Values"),
             description=_(
-                "Click on Analysis Categories (against shaded background"
+                "description_referencedefinition_referencevalues",
+                default=u"Click on Analysis Categories "
                 "to see Analysis Services in each category. Enter minimum "
                 "and maximum values to indicate a valid results range. "
                 "Any result outside this range will raise an alert. "
@@ -53,7 +55,8 @@ schema = BikaSchema.copy() + Schema((
                 "considered when evaluating results against minimum and "
                 "maximum values. A result out of range but still in range "
                 "if the % error is taken into consideration, will raise a "
-                "less severe alert."),
+                "less severe alert."
+            ),
         ),
     ),
 
@@ -62,9 +65,11 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         default=False,
         widget=BooleanWidget(
-            label=_("Blank"),
+            label=_("label_referencedefinition_blank",
+                    default=u"Blank"),
             description=_(
-                "Reference sample values are zero or 'blank'"
+                "description_referencedefinition_blank",
+                default=u"Reference sample values are zero or 'blank'"
             ),
         ),
     ),
@@ -74,9 +79,12 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         default=False,
         widget=BooleanWidget(
-            label=_("Hazardous"),
+            label=_("label_referencedefinition_hazardous",
+                    default=u"Hazardous",
             description=_(
-                "Samples of this type should be treated as hazardous"),
+                "description_referencedefinition_hazardous",
+                default=u"Samples of this type should be treated as hazardous"
+            ),
         ),
     ),
 ))
