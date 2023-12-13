@@ -80,7 +80,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("label_referencedefinition_hazardous",
-                    default=u"Hazardous",
+                    default=u"Hazardous"),
             description=_(
                 "description_referencedefinition_hazardous",
                 default=u"Samples of this type should be treated as hazardous"
