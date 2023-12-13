@@ -18,28 +18,33 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Reference Definitions represent standard specifications for
-    reference samples used in quality control
-"""
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceResultsField('ReferenceResults',
-        schemata = 'Reference Values',
-        required = 1,
-        subfield_validators = {
-            'result':'referencevalues_validator',},
-        widget = ReferenceResultsWidget(
+    ReferenceResultsField(
+        "ReferenceResults",
+        schemata="Reference Values",
+        required=1,
+        subfield_validators={
+            "result": "analysisspecs_validator",
+            "min": "analysisspecs_validator",
+            "max": "analysisspecs_validator",
+        },
+        widget=ReferenceResultsWidget(
             label=_("Reference Values"),
-            description =_(
+            description=_(
                 "Click on Analysis Categories (against shaded background"
                 "to see Analysis Services in each category. Enter minimum "
                 "and maximum values to indicate a valid results range. "
@@ -51,38 +56,46 @@ schema = BikaSchema.copy() + Schema((
                 "less severe alert."),
         ),
     ),
-    BooleanField('Blank',
-        schemata = 'Description',
-        default = False,
-        widget = BooleanWidget(
+
+    BooleanField(
+        "Blank",
+        schemata="Description",
+        default=False,
+        widget=BooleanWidget(
             label=_("Blank"),
-            description=_("Reference sample values are zero or 'blank'"),
+            description=_(
+                "Reference sample values are zero or 'blank'"
+            ),
         ),
     ),
-    BooleanField('Hazardous',
-        schemata = 'Description',
-        default = False,
-        widget = BooleanWidget(
+
+    BooleanField(
+        "Hazardous",
+        schemata="Description",
+        default=False,
+        widget=BooleanWidget(
             label=_("Hazardous"),
-            description=_("Samples of this type should be treated as hazardous"),
+            description=_(
+                "Samples of this type should be treated as hazardous"),
         ),
     ),
 ))
 
-schema['title'].schemata = 'Description'
-schema['title'].widget.visible = True
-schema['description'].schemata = 'Description'
-schema['description'].widget.visible = True
+schema["title"].schemata = "Description"
+schema["title"].widget.visible = True
+schema["description"].schemata = "Description"
+schema["description"].widget.visible = True
+
 
 class ReferenceDefinition(BaseContent):
     implements(IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 registerType(ReferenceDefinition, PROJECTNAME)
