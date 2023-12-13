@@ -220,6 +220,12 @@ class ReferenceResultsWidget(TypesWidget):
             s_min = self._get_spec_value(form, uid, "min", result)
             s_max = self._get_spec_value(form, uid, "max", result)
 
+            # shift min/max values according to the result
+            if s_max < result:
+                s_max = result
+            if s_min > result:
+                s_min = result
+
             # If an error percentage was given, calculate the min/max from the
             # error percentage
             if s_err:
