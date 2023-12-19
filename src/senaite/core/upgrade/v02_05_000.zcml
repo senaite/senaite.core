@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix min/max range values"
+      description="Fix possible min > max in range values for reference definitions/samples"
+      source="2522"
+      destination="2523"
+      handler=".v02_05_000.fix_range_values"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Fix searches in worksheets not working"
       description="Reindex the listing_searchable_text index for worksheets"
       source="2521"
