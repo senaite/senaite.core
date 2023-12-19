@@ -331,7 +331,7 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
         lines = [line.strip() for line in lines]
         return lines
 
-    def split_line(self, line):
+    def splitLine(self, line):
         sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
