@@ -170,7 +170,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
-                    'result':'referencevalues_validator',},
+                    'result':'analysisspecs_validator',},
         widget = ReferenceResultsWidget(
             label=_("Expected Values"),
         ),
