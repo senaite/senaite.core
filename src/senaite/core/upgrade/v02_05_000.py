@@ -563,7 +563,6 @@ def fix_searches_worksheets(tool):
     """Reindex listing_searchable_text index from Worksheets
     """
     logger.info("Reindexing listing_searchable_text from Worksheets ...")
-
     request = api.get_request()
     cat = api.get_tool(WORKSHEET_CATALOG)
     brains = cat(portal_type="Worksheet")
@@ -635,3 +634,27 @@ def fix_range_values_for(brains):
         if reindex:
             obj.reindexObject()
         obj._p_deactivate()
+
+
+def purge_orphan_worksheets(tool):
+    """Walks through all records from worksheets catalog and remove orphans
+    """
+    logger.info("Purging orphan Worksheet records from catalog ...")
+    request = api.get_request()
+    cat = api.get_tool(WORKSHEET_CATALOG)
+    paths = cat._catalog.uids.keys()
+    for path in paths:
+        # try to wake-up the object
+        obj = cat.resolve_path(path)
+        if obj is None:
+            obj = cat.resolve_url(path, request)
+
+        if obj is None:
+            # object is missing, remove
+            logger.info("Removing stale record: {}".format(path))
+            cat.uncatalog_object(path)
+            continue
+
+        obj._p_deactivate()
+
+    logger.info("Purging orphan Worksheet records from catalog [DONE]")
