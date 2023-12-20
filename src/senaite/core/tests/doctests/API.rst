@@ -2212,7 +2212,7 @@ Create a copy of an object created earlier:
     >>> uid = api.get_uid(new_client)
     >>> path = api.get_path(new_client)
 
-Trying to delete an object with enough permissions is not possible:
+Trying to delete an object without enough permissions is not possible:
 
     >>> api.delete(new_client)
     Traceback (most recent call last):

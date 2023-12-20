@@ -322,6 +322,7 @@ def uncatalog_object(obj):
 
 def catalog_object(obj):
     """Re-catalog the object
+
     :param obj: object to un-catalog
     :type obj: ATContentType/DexterityContentType
     """
@@ -338,6 +339,11 @@ def catalog_object(obj):
 
 def delete(obj, check_permissions=True, suppress_events=False):
     """Deletes the given object
+
+    :param obj: object to un-catalog
+    :param check_permissions: whether delete permission must be checked
+    :param suppress_events: whether ondelete events have to be fired
+    :type obj: ATContentType/DexterityContentType
     """
     from security import check_permission
     if check_permissions and not check_permission(DeleteObjects, obj):
