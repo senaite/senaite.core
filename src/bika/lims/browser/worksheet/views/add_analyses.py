@@ -166,11 +166,38 @@ class AddAnalysesView(BikaListingView):
         """
         super(AddAnalysesView, self).update()
         wst = self.context.getWorksheetTemplate()
+        new_states = []
         if wst:
-            method = wst.getRawRestrictToMethod()
             # restrict the available analysis services by method
+            method = wst.getRawRestrictToMethod()
             if method:
-                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
+                service_uids = getServiceUidsByMethod(method)
+                new_states.append({
+                    "id": "restrict_to_method",
+                    "title": _("Filter by template method"),
+                    "contentFilter": {
+                        "getServiceUID": service_uids
+                    },
+                    "transitions": [{"id": "assign"}, ],
+                    "columns": self.columns.keys(),
+                })
+
+            wst_service_uids = wst.getRawService()
+            # restrict to the selected template services
+            if wst_service_uids:
+                new_states.append({
+                    "id": "restrict_to_services",
+                    "title": _("Filter by template services"),
+                    "contentFilter": {
+                        "getServiceUID": wst_service_uids,
+                    },
+                    "transitions": [{"id": "assign"}, ],
+                    "columns": self.columns.keys(),
+                })
+
+        for state in sorted(new_states, key=lambda s: s.get("id")):
+            if state not in self.review_states:
+                self.review_states.append(state)
 
     def handle_submit(self):
         """Handle form submission
