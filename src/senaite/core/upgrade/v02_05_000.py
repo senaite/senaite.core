@@ -618,6 +618,20 @@ def fix_range_values_for(brains):
                         new_max=r["max"],
                     ))
                 reindex = True
+
+            # check if error < 0
+            r_err = api.to_float(r.get("error"), 0)
+            if r_err < 0:
+                r_err = abs(r_err)
+                r["error"] = str(r_err)
+                logger.info(
+                    "Fixing negative error % for service '{r_key}: {r_err}"
+                    .format(
+                        r_key=r_key,
+                        r_err=r["error"],
+                    ))
+                reindex = True
+
         if reindex:
             obj.reindexObject()
         obj._p_deactivate()
