@@ -2163,3 +2163,70 @@ Convert to list
 
     >>> api.to_list('["[1, 2, 3]", "b", "c"]')
     [u'[1, 2, 3]', u'b', u'c']
+
+
+Un-catalog an object
+....................
+
+This function un-catalogs an object from **all** catalogs:
+
+    >>> api.uncatalog_object(client)
+    >>> uid = api.get_uid(client)
+    >>> catalogs = api.get_catalogs_for(client)
+    >>> matches = [cat(UID=uid) for cat in catalogs]
+    >>> any(matches)
+    False
+
+Even from `uid_catalog`:
+
+    >>> uc = api.get_tool("uid_catalog")
+    >>> any(uc(UID=uid))
+    False
+
+Catalog an object
+.................
+
+This function (re)catalogs an object in **all** catalogs:
+
+    >>> api.catalog_object(client)
+    >>> uid = api.get_uid(client)
+    >>> catalogs = api.get_catalogs_for(client)
+    >>> matches = [cat(UID=uid) for cat in catalogs]
+    >>> all(matches)
+    True
+
+Even in `uid_catalog`:
+
+    >>> uc = api.get_tool("uid_catalog")
+    >>> len(uc(UID=uid)) == 1
+    True
+
+
+Delete an object
+................
+
+This function deletes an object from the system.
+Create a copy of an object created earlier:
+
+    >>> new_client = api.copy_object(client, title="Client to delete")
+    >>> uid = api.get_uid(new_client)
+    >>> path = api.get_path(new_client)
+
+Trying to delete an object with enough permissions is not possible:
+
+    >>> api.delete(new_client)
+    Traceback (most recent call last):
+    ...
+    Unauthorized: Do not have permissions to remove this object
+
+Unless we explicitly tell the system to bypass security check:
+
+    >>> api.delete(new_client, check_permissions=False)
+    >>> api.get_object_by_uid(uid)
+    Traceback (most recent call last):
+    ...
+    APIError: No object found for UID ...
+
+    >>> obj = api.get_object_by_path(path)
+    >>> api.is_object(obj)
+    False
