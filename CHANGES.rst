@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2453 Fix worksheets are not uncatalogued when deleted
 - #2452 Fix reference definition range validation
 - #2450 Fix search bar from worksheet listing does not work
 - #2449 Fix Mine button from worksheets listing does not filter by current user

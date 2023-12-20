@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Un-catalog orphan worksheets"
+      description="Un-catalog worksheets that were once removed"
+      source="2523"
+      destination="2524"
+      handler=".v02_05_000.purge_orphan_worksheets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Fix min/max range values"
       description="Fix possible min > max in range values for reference definitions/samples"
       source="2522"
