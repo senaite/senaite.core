@@ -168,19 +168,6 @@ class AddAnalysesView(BikaListingView):
         wst = self.context.getWorksheetTemplate()
         new_states = []
         if wst:
-            # restrict the available analysis services by method
-            method = wst.getRawRestrictToMethod()
-            if method:
-                service_uids = getServiceUidsByMethod(method)
-                new_states.append({
-                    "id": "restrict_to_method",
-                    "title": _("Filter by template method"),
-                    "contentFilter": {
-                        "getServiceUID": service_uids
-                    },
-                    "transitions": [{"id": "assign"}, ],
-                    "columns": self.columns.keys(),
-                })
 
             wst_service_uids = wst.getRawService()
             # restrict to the selected template services
@@ -194,6 +181,22 @@ class AddAnalysesView(BikaListingView):
                     "transitions": [{"id": "assign"}, ],
                     "columns": self.columns.keys(),
                 })
+                self.default_review_state = "restrict_to_services"
+
+            # restrict the available analysis services by method
+            method = wst.getRawRestrictToMethod()
+            if method:
+                service_uids = getServiceUidsByMethod(method)
+                new_states.append({
+                    "id": "restrict_to_method",
+                    "title": _("Filter by template method"),
+                    "contentFilter": {
+                        "getServiceUID": service_uids
+                    },
+                    "transitions": [{"id": "assign"}, ],
+                    "columns": self.columns.keys(),
+                })
+                self.default_review_state = "restrict_to_method"
 
         for state in sorted(new_states, key=lambda s: s.get("id")):
             if state not in self.review_states:
