@@ -576,3 +576,62 @@ def fix_searches_worksheets(tool):
         obj._p_deactivate()
 
     logger.info("Reindexing listing_searchable_text from Worksheets [DONE]")
+
+
+def fix_range_values(tool):
+    """Fix possible min > max in reference definition/sample ranges
+    """
+    logger.info("Fix min/max for reference definitions and samples ...")
+    fix_range_values_for(api.search({"portal_type": "ReferenceDefinition"}))
+    # XXX: Reference Samples live in SENAITE CATALOG
+    fix_range_values_for(api.search({"portal_type": "ReferenceSample"}))
+    logger.info("Fix min/max for reference definitions and samples [DONE]")
+
+
+def fix_range_values_for(brains):
+    """Fix range values for the given brains
+    """
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        reindex = False
+        logger.info("Checking range values %d/%d: `%s`" % (
+            num+1, total, api.get_path(obj)))
+        rr = obj.getReferenceResults()
+        for r in rr:
+            r_key = r.get("keyword")
+            r_min = api.to_float(r.get("min"), 0)
+            r_max = api.to_float(r.get("max"), 0)
+
+            # check if max > min
+            if r_min > r_max:
+                # set min value to the same as max value
+                r["min"] = r["max"]
+                logger.info(
+                    "Fixing range values for service '{r_key}': "
+                    "[{r_min},{r_max}] -> [{new_min},{new_max}]"
+                    .format(
+                        r_key=r_key,
+                        r_min=r_min,
+                        r_max=r_max,
+                        new_min=r["min"],
+                        new_max=r["max"],
+                    ))
+                reindex = True
+
+            # check if error < 0
+            r_err = api.to_float(r.get("error"), 0)
+            if r_err < 0:
+                r_err = abs(r_err)
+                r["error"] = str(r_err)
+                logger.info(
+                    "Fixing negative error % for service '{r_key}: {r_err}"
+                    .format(
+                        r_key=r_key,
+                        r_err=r["error"],
+                    ))
+                reindex = True
+
+        if reindex:
+            obj.reindexObject()
+        obj._p_deactivate()
