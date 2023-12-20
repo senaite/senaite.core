@@ -229,6 +229,8 @@ class ReferenceResultsWidget(TypesWidget):
             # If an error percentage was given, calculate the min/max from the
             # error percentage
             if s_err:
+                # Negative percentage not permitted to prevent min above max
+                s_err = abs(float(s_err))
                 s_min = float(result) * (1 - float(s_err)/100)
                 s_max = float(result) * (1 + float(s_err)/100)
 
@@ -239,7 +241,7 @@ class ReferenceResultsWidget(TypesWidget):
                 "result": result,
                 "min": s_min,
                 "max": s_max,
-                "error": s_err
+                "error": str(s_err),
             }
 
         return values.values(), {}
