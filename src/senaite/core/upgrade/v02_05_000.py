@@ -565,15 +565,7 @@ def fix_searches_worksheets(tool):
     logger.info("Reindexing listing_searchable_text from Worksheets ...")
     request = api.get_request()
     cat = api.get_tool(WORKSHEET_CATALOG)
-    brains = cat(portal_type="Worksheet")
-    total = len(brains)
-    for num, brain in enumerate(brains):
-        obj = api.get_object(brain)
-        logger.info("Reindexing control analysis %d/%d: `%s`" % (
-            num+1, total, api.get_path(obj)))
-        cat.manage_reindexIndex("listing_searchable_text", REQUEST=request)
-        obj._p_deactivate()
-
+    cat.manage_reindexIndex("listing_searchable_text", REQUEST=request)
     logger.info("Reindexing listing_searchable_text from Worksheets [DONE]")
 
 
