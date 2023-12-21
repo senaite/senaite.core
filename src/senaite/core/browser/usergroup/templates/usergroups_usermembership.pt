@@ -71,29 +71,30 @@
                 <table class="table table-bordered table-hover table-sm"
                        summary="Group Memberships Listing"
                        tal:condition="groups">
+                <colgroup>
+                  <col style="width:36px;"/>
+                </colgroup>
                 <tr>
+                  <th i18n:translate="listingheader_group_remove"></th>
                   <th i18n:translate="listingheader_group_name">Group Name</th>
-                  <th i18n:translate="listingheader_group_remove">Remove</th>
                 </tr>
                 <tal:block repeat="group groups">
                   <tr tal:define="oddrow repeat/group/odd;
                                   groupId group/getId;"
                       tal:attributes="class python:'odd' if oddrow else 'even'">
+                    <td class="listingCheckbox text-center">
+                      <input type="checkbox"
+                             class="noborder notify"
+                             name="delete:list"
+                             tal:attributes="value groupId;
+                                             disabled python:member.canRemoveFromGroup(groupId) and default or 'disabled'" />
+                    </td>
                     <td>
                       <i class="fas fa-users text-primary mr-1"></i>
                       <a href="@@usergroup-groupdetails"
                          tal:attributes="href string:@@usergroup-groupdetails?groupname=${groupId}">
                         <span tal:replace="group/getGroupTitleOrName">group name</span>
                       </a>
-                    </td>
-
-
-                    <td class="listingCheckbox">
-                      <input type="checkbox"
-                             class="noborder notify"
-                             name="delete:list"
-                             tal:attributes="value groupId;
-                                   disabled python:member.canRemoveFromGroup(groupId) and default or 'disabled'" />
                     </td>
                   </tr>
                 </tal:block>
@@ -111,6 +112,9 @@
 
                 <table class="table table-bordered table-hover table-sm"
                        summary="Groups">
+                <colgroup>
+                  <col style="width:36px;"/>
+                </colgroup>
                 <tr>
                   <th colspan="2" tal:condition="many_groups">
                     <span tal:omit-tag="" i18n:translate="label_quick_search">Quick search</span>:
@@ -132,15 +136,15 @@
                 <tal:block condition="python:results">
                   <tr>
                     <th>
-                      <input class="noborder"
-                             type="checkbox"
-                             src="select_all_icon.png"
-                             name="selectButton"
-                             title="Select all items"
-                             onClick="toggleSelect(this, 'add:list');"
-                             tal:attributes="src string:${context/portal_url}/select_all_icon.png"
-                             alt="Select all items"
-                             i18n:attributes="title label_select_all_items; alt label_select_all_items;"/>
+                      <!-- <input class="noborder"
+                           type="checkbox"
+                           src="select_all_icon.png"
+                           name="selectButton"
+                           title="Select all items"
+                           onClick="toggleSelect(this, 'add:list');"
+                           tal:attributes="src string:${context/portal_url}/select_all_icon.png"
+                           alt="Select all items"
+                           i18n:attributes="title label_select_all_items; alt label_select_all_items;"/> -->
                     </th>
                     <th i18n:translate="listingheader_group_name">Group Name</th>
                   </tr>
@@ -148,7 +152,7 @@
                     <tr tal:define="oddrow repeat/obj/odd"
                         tal:attributes="class python:'odd' if oddrow else 'even'">
 
-                      <td class="listingCheckbox">
+                      <td class="listingCheckbox text-center">
                         <input type="checkbox"
                                class="noborder"
                                name="add:list"

@@ -172,12 +172,18 @@
                                  value=""
                           />
 
-                        <i class="fas fa-users text-primary mr-1"></i>
-                          <a href="#"
-                             tal:attributes="href python:portal_url+'/@@usergroup-groupmembership?'+view.makeQuery(groupname=group_info['groupid']);
-                                   title group_info/description|string:''">
-                            <tal:group tal:replace="group_info/title" /> <tal:groupid tal:condition="python:group_info['groupid'] != group_info['title']">(<tal:id tal:replace="group_info/groupid" />)</tal:groupid>
-                          </a>
+                          <div class="text-nowrap">
+                            <i class="fas fa-users text-primary mr-1"></i>
+                            <a href="#"
+                               tal:attributes="href python:portal_url+'/@@usergroup-groupmembership?'+view.makeQuery(groupname=group_info['groupid']);
+                                     title group_info/description|string:''">
+
+                              <tal:group tal:replace="group_info/title" />
+                              <div class="small text-secondary">
+                                (<tal:id tal:replace="group_info/groupid" />)
+                              </div>
+                            </a>
+                          </div>
                         </td>
 
                         <td class="listingCheckbox text-center align-middle"
