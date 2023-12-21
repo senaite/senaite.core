@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-11-22 16:56+0000\n"
+"POT-Creation-Date: 2023-12-21 08:31+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Mexico) (https://app.transifex.com/senaite/teams/87045/es_MX/)\n"
@@ -195,7 +195,7 @@ msgstr ""
 msgid "Accreditation page header"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1522
+#: bika/lims/browser/analyses/view.py:1547
 #: bika/lims/browser/analysisrequest/manage_analyses.py:259
 #: bika/lims/browser/referencesample.py:358
 msgid "Accredited"
@@ -212,9 +212,9 @@ msgstr ""
 msgid "Activate"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:71
+#: senaite/core/browser/controlpanel/instrumentlocations.py:74
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:72
-#: senaite/core/browser/controlpanel/labels.py:53
+#: senaite/core/browser/controlpanel/labels.py:71
 msgid "Active"
 msgstr ""
 
@@ -223,9 +223,9 @@ msgstr ""
 msgid "Actor"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:43
+#: senaite/core/browser/controlpanel/instrumentlocations.py:46
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:47
-#: senaite/core/browser/controlpanel/labels.py:27
+#: senaite/core/browser/controlpanel/labels.py:45
 msgid "Add"
 msgstr ""
 
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/labels.py:34
+#: senaite/core/browser/controlpanel/labels.py:52
 msgid "Add default selectable labels"
 msgstr ""
 
@@ -328,9 +328,9 @@ msgstr ""
 msgid "Agency"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:81
+#: senaite/core/browser/controlpanel/instrumentlocations.py:84
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:84
-#: senaite/core/browser/controlpanel/labels.py:63
+#: senaite/core/browser/controlpanel/labels.py:81
 msgid "All"
 msgstr ""
 
@@ -537,7 +537,7 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1511
+#: bika/lims/browser/analyses/view.py:1536
 msgid "Assigned to: ${worksheet_id}"
 msgstr ""
 
@@ -553,7 +553,7 @@ msgstr ""
 msgid "Attach to Sample"
 msgstr ""
 
-#: senaite/core/extender/label.py:40
+#: senaite/core/extender/label.py:58
 msgid "Attached labels"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "Attachment added to the current sample"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1269
+#: bika/lims/browser/analyses/view.py:1294
 #: bika/lims/browser/analysisrequest/manage_analyses.py:262
 #: bika/lims/browser/referencesample.py:361
 msgid "Attachment required"
@@ -877,11 +877,11 @@ msgstr ""
 msgid "Calibrator"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1459
+#: bika/lims/browser/analyses/view.py:1484
 msgid "Can verify, but submitted by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1483
+#: bika/lims/browser/analyses/view.py:1508
 msgid "Can verify, but was already verified by current user"
 msgstr ""
 
@@ -909,15 +909,15 @@ msgstr ""
 msgid "Cannot send email for ${sample_id}: ${error}"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1489
+#: bika/lims/browser/analyses/view.py:1514
 msgid "Cannot verify, last verified by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1465
+#: bika/lims/browser/analyses/view.py:1490
 msgid "Cannot verify, submitted by current user"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1474
+#: bika/lims/browser/analyses/view.py:1499
 msgid "Cannot verify, was verified by current user"
 msgstr ""
 
@@ -1032,10 +1032,6 @@ msgstr ""
 
 # senaite.app.listing: ButtonBar
 msgid "Clear selection"
-msgstr ""
-
-#: bika/lims/content/referencedefinition.py:42
-msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:479
@@ -1622,11 +1618,11 @@ msgstr ""
 msgid "Default result"
 msgstr ""
 
-#: bika/lims/validators.py:1429
+#: bika/lims/validators.py:1371
 msgid "Default result is not numeric"
 msgstr ""
 
-#: bika/lims/validators.py:1422
+#: bika/lims/validators.py:1364
 msgid "Default result must be one of the following result options: {}"
 msgstr ""
 
@@ -1721,8 +1717,8 @@ msgstr ""
 msgid "Dependent Analyses"
 msgstr ""
 
-#: senaite/core/behaviors/label.py:93
-#: senaite/core/browser/controlpanel/instrumentlocations.py:62
+#: senaite/core/behaviors/label.py:111
+#: senaite/core/browser/controlpanel/instrumentlocations.py:65
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:59
 msgid "Description"
 msgstr ""
@@ -2263,6 +2259,14 @@ msgstr ""
 msgid "Filesize"
 msgstr ""
 
+#: bika/lims/browser/worksheet/views/add_analyses.py:192
+msgid "Filter by template method"
+msgstr ""
+
+#: bika/lims/browser/worksheet/views/add_analyses.py:177
+msgid "Filter by template services"
+msgstr ""
+
 #: bika/lims/content/dynamic_analysisspec.py:73
 msgid "First sheet does not contain a valid column definition"
 msgstr ""
@@ -2505,9 +2509,9 @@ msgstr ""
 msgid "In-lab calibration procedure"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:76
+#: senaite/core/browser/controlpanel/instrumentlocations.py:79
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:78
-#: senaite/core/browser/controlpanel/labels.py:58
+#: senaite/core/browser/controlpanel/labels.py:76
 msgid "Inactive"
 msgstr ""
 
@@ -2519,11 +2523,11 @@ msgstr ""
 msgid "Include descriptions"
 msgstr ""
 
-#: bika/lims/validators.py:1189
+#: bika/lims/validators.py:1131
 msgid "Incorrect IBAN number: %s"
 msgstr ""
 
-#: bika/lims/validators.py:1148
+#: bika/lims/validators.py:1090
 msgid "Incorrect NIB number: %s"
 msgstr ""
 
@@ -2595,7 +2599,7 @@ msgstr ""
 msgid "Instrument Location"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:50
+#: senaite/core/browser/controlpanel/instrumentlocations.py:53
 #: senaite/core/profiles/default/types/InstrumentLocations.xml
 msgid "Instrument Locations"
 msgstr ""
@@ -2743,7 +2747,7 @@ msgstr ""
 msgid "Invalid specifications file detected. Please upload an Excel spreadsheet with at least the following columns defined: '{}', "
 msgstr ""
 
-#: bika/lims/validators.py:1368
+#: bika/lims/validators.py:1310
 msgid "Invalid value: Please enter a value without spaces."
 msgstr ""
 
@@ -2872,8 +2876,8 @@ msgstr ""
 msgid "Lab URL"
 msgstr ""
 
-#: senaite/core/behaviors/label.py:89
-#: senaite/core/extender/label.py:58
+#: senaite/core/behaviors/label.py:107
+#: senaite/core/extender/label.py:76
 #: senaite/core/profiles/default/types/Label.xml
 msgid "Label"
 msgstr ""
@@ -2882,7 +2886,7 @@ msgstr ""
 msgid "Label configuration"
 msgstr ""
 
-#: senaite/core/content/label.py:41
+#: senaite/core/content/label.py:59
 msgid "Label names must be unique"
 msgstr ""
 
@@ -2890,13 +2894,13 @@ msgstr ""
 msgid "Label schema extender"
 msgstr ""
 
-#: senaite/core/browser/label/labeled_objects.py:32
+#: senaite/core/browser/label/labeled_objects.py:50
 msgid "Labeled Objects"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/labels.py:33
-#: senaite/core/browser/label/labeled_objects.py:47
-#: senaite/core/extender/label.py:39
+#: senaite/core/browser/controlpanel/labels.py:51
+#: senaite/core/browser/label/labeled_objects.py:65
+#: senaite/core/extender/label.py:57
 msgid "Labels"
 msgstr ""
 
@@ -2942,7 +2946,7 @@ msgid "Late Analyses"
 msgstr ""
 
 #: bika/lims/browser/analyses/view.py:924
-#: bika/lims/browser/worksheet/views/add_analyses.py:233
+#: bika/lims/browser/worksheet/views/add_analyses.py:263
 msgid "Late Analysis"
 msgstr ""
 
@@ -2976,7 +2980,7 @@ msgstr ""
 msgid "Link an existing User"
 msgstr ""
 
-#: senaite/core/browser/label/labeled_objects.py:33
+#: senaite/core/browser/label/labeled_objects.py:51
 msgid "List all objects with labels"
 msgstr ""
 
@@ -3000,7 +3004,7 @@ msgstr ""
 msgid "Load the certificate document here"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:59
+#: senaite/core/browser/controlpanel/instrumentlocations.py:62
 msgid "Location"
 msgstr ""
 
@@ -3337,7 +3341,7 @@ msgstr ""
 msgid "Multi Catalog Behavior for Dexterity Contents"
 msgstr ""
 
-#: senaite/core/browser/samples/multi_results_transposed.py:48
+#: senaite/core/browser/samples/multi_results_transposed.py:66
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Multi Results"
 msgstr ""
@@ -3346,7 +3350,7 @@ msgstr ""
 msgid "Multi Verification type"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1431
+#: bika/lims/browser/analyses/view.py:1456
 msgid "Multi-verification required"
 msgstr ""
 
@@ -3825,7 +3829,7 @@ msgstr ""
 msgid "Portal Types"
 msgstr ""
 
-#: senaite/core/browser/samples/multi_results_transposed.py:79
+#: senaite/core/browser/samples/multi_results_transposed.py:97
 msgid "Position"
 msgstr ""
 
@@ -4120,7 +4124,7 @@ msgstr ""
 msgid "Reasons for rejection"
 msgstr ""
 
-#: bika/lims/browser/worksheet/views/folder.py:270
+#: bika/lims/browser/worksheet/views/folder.py:283
 msgid "Reassign"
 msgstr ""
 
@@ -4183,12 +4187,10 @@ msgid "Reference Samples"
 msgstr ""
 
 #: bika/lims/browser/referencesample.py:257
-#: bika/lims/content/referencedefinition.py:41
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr ""
 
-#: bika/lims/content/referencedefinition.py:59
 #: bika/lims/content/referencesample.py:76
 msgid "Reference sample values are zero or 'blank'"
 msgstr ""
@@ -4405,15 +4407,15 @@ msgstr ""
 msgid "Result files folders"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1372
+#: bika/lims/browser/analyses/view.py:1397
 msgid "Result in shoulder range"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1369
+#: bika/lims/browser/analyses/view.py:1394
 msgid "Result out of range"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1391
+#: bika/lims/browser/analyses/view.py:1416
 msgid "Result range is different from Specification: {}"
 msgstr ""
 
@@ -4696,7 +4698,6 @@ msgstr ""
 msgid "Samples ${ARs} were successfully created."
 msgstr ""
 
-#: bika/lims/content/referencedefinition.py:67
 #: bika/lims/content/referencesample.py:84
 #: bika/lims/content/sampletype.py:128
 msgid "Samples of this type should be treated as hazardous"
@@ -5268,7 +5269,7 @@ msgstr ""
 msgid "Submit a valid Open XML (.XLSX) file containing setup records to continue."
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1416
+#: bika/lims/browser/analyses/view.py:1441
 msgid "Submitted and verified by the same user: {}"
 msgstr ""
 
@@ -5528,7 +5529,7 @@ msgstr ""
 msgid "The person who took the sample"
 msgstr ""
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:51
+#: senaite/core/browser/controlpanel/instrumentlocations.py:54
 msgid "The place where the instrument is located in the laboratory"
 msgstr ""
 
@@ -5677,8 +5678,8 @@ msgid "Tip. Attached documents will not be loaded unless they are present in the
 msgstr ""
 
 #: senaite/core/browser/controlpanel/interpretationtemplates.py:56
-#: senaite/core/browser/controlpanel/labels.py:41
-#: senaite/core/browser/label/labeled_objects.py:40
+#: senaite/core/browser/controlpanel/labels.py:59
+#: senaite/core/browser/label/labeled_objects.py:58
 msgid "Title"
 msgstr ""
 
@@ -5770,7 +5771,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: senaite/core/browser/label/labeled_objects.py:43
+#: senaite/core/browser/label/labeled_objects.py:61
 #: senaite/core/browser/viewlets/templates/attachments.pt:64
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:39
 msgid "Type"
@@ -5839,7 +5840,7 @@ msgstr ""
 msgid "Unit"
 msgstr ""
 
-#: bika/lims/validators.py:1176
+#: bika/lims/validators.py:1118
 msgid "Unknown IBAN country %s"
 msgstr ""
 
@@ -5984,7 +5985,7 @@ msgstr ""
 msgid "Validation failed: '${value}' is not unique"
 msgstr ""
 
-#: bika/lims/validators.py:1505
+#: bika/lims/validators.py:1447
 msgid "Validation failed: '{}' is not numeric"
 msgstr ""
 
@@ -5996,7 +5997,7 @@ msgstr ""
 msgid "Validation failed: Bearing must be N/S"
 msgstr ""
 
-#: bika/lims/validators.py:1394
+#: bika/lims/validators.py:1336
 msgid "Validation failed: Could not import module '%s'"
 msgstr ""
 
@@ -6028,11 +6029,11 @@ msgstr ""
 msgid "Validation failed: Min values must be numeric"
 msgstr ""
 
-#: bika/lims/validators.py:1491
+#: bika/lims/validators.py:1433
 msgid "Validation failed: Please set a default value when defining a required checkbox condition."
 msgstr ""
 
-#: bika/lims/validators.py:1485
+#: bika/lims/validators.py:1427
 msgid "Validation failed: Please use the character '|' to separate the available options in 'Choices' subfield"
 msgstr ""
 
@@ -6110,11 +6111,11 @@ msgstr ""
 msgid "Validation failed: minutes must be numeric"
 msgstr ""
 
-#: bika/lims/validators.py:1086
+#: bika/lims/validators.py:1028
 msgid "Validation failed: percent values must be between 0 and 100"
 msgstr ""
 
-#: bika/lims/validators.py:1082
+#: bika/lims/validators.py:1024
 msgid "Validation failed: percent values must be numbers"
 msgstr ""
 
@@ -6131,24 +6132,20 @@ msgstr ""
 msgid "Validation failed: title is required"
 msgstr ""
 
-#: bika/lims/validators.py:1496
+#: bika/lims/validators.py:1438
 msgid "Validation failed: value for Choices subfield is only required for when the control type of choice is 'Select'"
 msgstr ""
 
-#: bika/lims/validators.py:1478
+#: bika/lims/validators.py:1420
 msgid "Validation failed: value for Choices subfield is required when the control type of choice is 'Select'"
 msgstr ""
 
-#: bika/lims/validators.py:1312
+#: bika/lims/validators.py:1254
 msgid "Validation failed: value must be between 0 and 1000"
 msgstr ""
 
-#: bika/lims/validators.py:1308
+#: bika/lims/validators.py:1250
 msgid "Validation failed: value must be float"
-msgstr ""
-
-#: bika/lims/validators.py:1027
-msgid "Validation for '{}' failed"
 msgstr ""
 
 #: bika/lims/content/instrumentvalidation.py:51
@@ -6322,7 +6319,7 @@ msgstr ""
 msgid "Worksheets"
 msgstr ""
 
-#: bika/lims/validators.py:1183
+#: bika/lims/validators.py:1125
 msgid "Wrong IBAN length by %s: %sshort by %i"
 msgstr ""
 
@@ -6428,7 +6425,7 @@ msgid "deactivate"
 msgstr ""
 
 #. Default: "Attached labels"
-#: senaite/core/behaviors/label.py:100
+#: senaite/core/behaviors/label.py:118
 msgid "description_Labels"
 msgstr ""
 
@@ -6450,6 +6447,16 @@ msgstr ""
 msgid "description_analysis_results_options_sorting"
 msgstr ""
 
+#. in a range with minimum of 0 and maximum of 10, where the uncertainty value
+#. is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also
+#. specify the uncertainty value as a percentage of the result value, by
+#. adding a '%' to the value entered in the 'Uncertainty Value' column, e.g.
+#. for results in a range with minimum of 10.01 and a maximum of 100, where
+#. the uncertainty value is 2%, a result of 100 will be reported as 100 ±
+#. 2.<br/>If you don't want uncertainty to be displayed for a given range, set
+#. 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure
+#. successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 -
+#. 20.00, 20.01 - 30.00 etc."
 #. Default: "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2%, a result of 100 will be reported as 100 ± 2.<br/>If you don't want uncertainty to be displayed for a given range, set 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00 etc."
 #: bika/lims/content/abstractbaseanalysis.py:525
 msgid "description_analysis_uncertainty"
@@ -6676,6 +6683,21 @@ msgstr ""
 #. Default: "Supervisor of the Lab"
 #: bika/lims/content/laboratory.py:78
 msgid "description_laboratory_suervisor"
+msgstr ""
+
+#. Default: "Reference sample values are zero or 'blank'"
+#: bika/lims/content/referencedefinition.py:70
+msgid "description_referencedefinition_blank"
+msgstr ""
+
+#. Default: "Samples of this type should be treated as hazardous"
+#: bika/lims/content/referencedefinition.py:84
+msgid "description_referencedefinition_hazardous"
+msgstr ""
+
+#. Default: "Click on Analysis Categories to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+#: bika/lims/content/referencedefinition.py:48
+msgid "description_referencedefinition_referencevalues"
 msgstr ""
 
 #. Default: "Select the manufacturer for this sample"
@@ -6908,7 +6930,7 @@ msgid "in"
 msgstr ""
 
 #. Default: "Labels"
-#: senaite/core/behaviors/label.py:99
+#: senaite/core/behaviors/label.py:117
 msgid "label_Labels"
 msgstr ""
 
@@ -7137,6 +7159,21 @@ msgstr ""
 msgid "label_powered_by_plone"
 msgstr ""
 
+#. Default: "Blank"
+#: bika/lims/content/referencedefinition.py:68
+msgid "label_referencedefinition_blank"
+msgstr ""
+
+#. Default: "Hazardous"
+#: bika/lims/content/referencedefinition.py:82
+msgid "label_referencedefinition_hazardous"
+msgstr ""
+
+#. Default: "Reference Values"
+#: bika/lims/content/referencedefinition.py:46
+msgid "label_referencedefinition_referencevalues"
+msgstr ""
+
 #. Default: "Manufacturer"
 #: bika/lims/content/referencesample.py:94
 msgid "label_referencesample_manufacturer"
@@ -7307,6 +7344,16 @@ msgstr ""
 msgid "label_setup_landingpage"
 msgstr ""
 
+#. Default: "Item"
+#: senaite/core/browser/controlpanel/templates/setupview.pt:78
+msgid "label_setupview_item"
+msgstr ""
+
+#. Default: "Items"
+#: senaite/core/browser/controlpanel/templates/setupview.pt:81
+msgid "label_setupview_items"
+msgstr ""
+
 #. Default: "Out of range comment"
 #: bika/lims/browser/fields/resultrangefield.py:41
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:130
@@ -7378,7 +7425,7 @@ msgid "time_format"
 msgstr ""
 
 #. Default: "Analyst"
-#: senaite/core/permissions/localroles.py:12
+#: senaite/core/permissions/localroles.py:30
 msgid "title_analyst_role"
 msgstr ""
 
@@ -7393,32 +7440,32 @@ msgid "title_copyright"
 msgstr ""
 
 #. Default: "Lab Clerk"
-#: senaite/core/permissions/localroles.py:26
+#: senaite/core/permissions/localroles.py:44
 msgid "title_lab_clerk_role"
 msgstr ""
 
 #. Default: "Lab Manager"
-#: senaite/core/permissions/localroles.py:61
+#: senaite/core/permissions/localroles.py:79
 msgid "title_lab_manager_role"
 msgstr ""
 
 #. Default: "Manager"
-#: senaite/core/permissions/localroles.py:68
+#: senaite/core/permissions/localroles.py:86
 msgid "title_manager_role"
 msgstr ""
 
 #. Default: "Owner"
-#: senaite/core/permissions/localroles.py:19
+#: senaite/core/permissions/localroles.py:37
 msgid "title_owner_role"
 msgstr ""
 
 #. Default: "Preserver"
-#: senaite/core/permissions/localroles.py:33
+#: senaite/core/permissions/localroles.py:51
 msgid "title_preserver_role"
 msgstr ""
 
 #. Default: "Publisher"
-#: senaite/core/permissions/localroles.py:40
+#: senaite/core/permissions/localroles.py:58
 msgid "title_publisher_role"
 msgstr ""
 
@@ -7430,7 +7477,7 @@ msgid "title_required"
 msgstr ""
 
 #. Default: "Sampler"
-#: senaite/core/permissions/localroles.py:47
+#: senaite/core/permissions/localroles.py:65
 msgid "title_sampler_role"
 msgstr ""
 
@@ -7455,7 +7502,7 @@ msgid "title_senaitesetup_sampleanalysesrequired"
 msgstr ""
 
 #. Default: "Verifier"
-#: senaite/core/permissions/localroles.py:54
+#: senaite/core/permissions/localroles.py:72
 msgid "title_verifier_role"
 msgstr ""
 
@@ -7471,7 +7518,7 @@ msgstr ""
 msgid "updated every 2 hours"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1433
+#: bika/lims/browser/analyses/view.py:1458
 msgid "verification(s) pending"
 msgstr ""
 
