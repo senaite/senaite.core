@@ -319,14 +319,14 @@
                               keys batchformkeys|nothing;
                               linkparams python:keys and dict([(key, request.form[key]) for key in keys if key in request]) or request.form;
                               url batch_base_url | string:${context/absolute_url}/${template_id}">
-                    <a class="btn btn-sm btn-outline-secondary mr-2"
+                    <a class="btn btn-sm btn-outline-secondary ml-1"
                        tal:attributes="href python: '%s?%s' % (url, mq( linkparams, {'showAll':'y'} ))"
                        i18n:translate="description_pas_show_all_search_results">
                       Show all search results
                     </a>
                   </div>
 
-                  <input class="context btn btn-sm btn-primary"
+                  <input class="btn btn-sm btn-primary ml-1"
                          type="submit"
                          name="form.button.Add"
                          value="Add selected groups and users to this group"
