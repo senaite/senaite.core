@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-12-21 08:31+0000\n"
+"POT-Creation-Date: 2023-12-21 09:58+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2022\n"
 "Language-Team: Persian (https://app.transifex.com/senaite/teams/87045/fa/)\n"
@@ -6700,6 +6700,12 @@ msgstr ""
 msgid "description_referencedefinition_hazardous"
 msgstr ""
 
+#. category. Enter minimum and maximum values to indicate a valid results
+#. range. Any result outside this range will raise an alert. The % Error field
+#. allows for an % uncertainty to be considered when evaluating results
+#. against minimum and maximum values. A result out of range but still in
+#. range if the % error is taken into consideration, will raise a less severe
+#. alert."
 #. Default: "Click on Analysis Categories to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 #: bika/lims/content/referencedefinition.py:48
 msgid "description_referencedefinition_referencevalues"

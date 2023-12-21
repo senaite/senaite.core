@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-12-21 08:31+0000\n"
+"POT-Creation-Date: 2023-12-21 09:58+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
@@ -2269,11 +2269,11 @@ msgstr "Tamaño del fichero"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:192
 msgid "Filter by template method"
-msgstr ""
+msgstr "Filtro por método de plantilla"
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:177
 msgid "Filter by template services"
-msgstr ""
+msgstr "Filtro por servicios de plantilla"
 
 #: bika/lims/content/dynamic_analysisspec.py:73
 msgid "First sheet does not contain a valid column definition"
@@ -6708,17 +6708,24 @@ msgstr "Seleccione el supervisor o persona encargada del correcto functionamient
 #. Default: "Reference sample values are zero or 'blank'"
 #: bika/lims/content/referencedefinition.py:70
 msgid "description_referencedefinition_blank"
-msgstr ""
+msgstr "Los valores para las muestras de referencia son cero o 'blanco'"
 
 #. Default: "Samples of this type should be treated as hazardous"
 #: bika/lims/content/referencedefinition.py:84
 msgid "description_referencedefinition_hazardous"
-msgstr ""
+msgstr "Las muestras de este tipo deben ser tratadas como peligrosas"
 
+#. category. Enter minimum and maximum values to indicate a valid results
+#. range. Any result outside this range will raise an alert. The % Error field
+#. allows for an % uncertainty to be considered when evaluating results
+#. against minimum and maximum values. A result out of range but still in
+#. range if the % error is taken into consideration, will raise a less severe
+#. alert."
 #. Default: "Click on Analysis Categories to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 #: bika/lims/content/referencedefinition.py:48
+#, fuzzy
 msgid "description_referencedefinition_referencevalues"
-msgstr ""
+msgstr "Haga clic sobre las cabeceras de categorías de análisis (con fondo gris) para ver los servicios de análisis que contienen cada una de ellas. Introduzca los valores mínimo y máximo para indicar el rango válido de los resultados. Si el resultado se encuentra fuera de este rango, el sistema mostará una alerta. El campo '% Error' le permite indicar el porcentaje de incertidumbre que tiene que tener en cuenta el sistema al evaluar los resultados en relación al rango indicado."
 
 #. Default: "Select the manufacturer for this sample"
 #: bika/lims/content/referencesample.py:97
@@ -7192,17 +7199,17 @@ msgstr "Plone y Python"
 #. Default: "Blank"
 #: bika/lims/content/referencedefinition.py:68
 msgid "label_referencedefinition_blank"
-msgstr ""
+msgstr "Blanco"
 
 #. Default: "Hazardous"
 #: bika/lims/content/referencedefinition.py:82
 msgid "label_referencedefinition_hazardous"
-msgstr ""
+msgstr "Peligroso"
 
 #. Default: "Reference Values"
 #: bika/lims/content/referencedefinition.py:46
 msgid "label_referencedefinition_referencevalues"
-msgstr ""
+msgstr "Valores de referencia"
 
 #. Default: "Manufacturer"
 #: bika/lims/content/referencesample.py:94
@@ -7377,12 +7384,12 @@ msgstr "Página de bienvenida"
 #. Default: "Item"
 #: senaite/core/browser/controlpanel/templates/setupview.pt:78
 msgid "label_setupview_item"
-msgstr ""
+msgstr "ítem"
 
 #. Default: "Items"
 #: senaite/core/browser/controlpanel/templates/setupview.pt:81
 msgid "label_setupview_items"
-msgstr ""
+msgstr "ítems"
 
 #. Default: "Out of range comment"
 #: bika/lims/browser/fields/resultrangefield.py:41
