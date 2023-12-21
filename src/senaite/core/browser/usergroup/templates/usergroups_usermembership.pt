@@ -173,34 +173,38 @@
                 </tal:block>
               </table>
 
-              <div metal:use-macro="context/batch_macros/macros/navigation" />
+              <div class="form-inline form-group pb-3">
+                <div metal:use-macro="context/batch_macros/macros/navigation" />
 
-              <div class="showAllSearchResults"
-                   tal:condition="python:batch.next or batch.previous"
-                   tal:define="mq python:modules['ZTUtils'].make_query;
-                          keys batchformkeys|nothing;
-                          linkparams python:keys and dict([(key, request.form[key]) for key in keys if key in request]) or request.form;
-                          url batch_base_url | string:${context/absolute_url}/${template_id}">
-                <a tal:attributes="href python: '%s?%s' % (url, mq( linkparams, {'showAll':'y'} ))"
-                   i18n:translate="description_pas_show_all_search_results">
-                  Show all search results
-                </a>
+                <div class="showAllSearchResults ml-1"
+                     tal:condition="python:batch.next or batch.previous"
+                     tal:define="mq python:modules['ZTUtils'].make_query;
+                            keys batchformkeys|nothing;
+                            linkparams python:keys and dict([(key, request.form[key]) for key in keys if key in request]) or request.form;
+                            url batch_base_url | string:${context/absolute_url}/${template_id}">
+                  <a class="btn btn-sm btn-outline-secondary"
+                     tal:attributes="href python: '%s?%s' % (url, mq( linkparams, {'showAll':'y'} ))"
+                     i18n:translate="description_pas_show_all_search_results">
+                    Show all search results
+                  </a>
+                </div>
+
+                <input type="hidden" value="b_start" name="b_start"
+                       tal:attributes="value b_start"/>
+
+                <input type="hidden" value="" name="showAll"
+                       tal:attributes="value showAll"/>
+
+                <input type="hidden" name="form.submitted" value="1" />
+
+                <input class="btn btn-sm btn-primary ml-1"
+                       type="submit"
+                       name="form.button.Add"
+                       value="Add user to selected groups"
+                       tal:condition="batch"
+                       i18n:attributes="value label_add_user_to_group;" />
               </div>
 
-              <input type="hidden" value="b_start" name="b_start"
-                     tal:attributes="value b_start"/>
-
-              <input type="hidden" value="" name="showAll"
-                     tal:attributes="value showAll"/>
-
-              <input type="hidden" name="form.submitted" value="1" />
-
-              <input class="context btn btn-sm btn-primary"
-                     type="submit"
-                     name="form.button.Add"
-                     value="Add user to selected groups"
-                     tal:condition="batch"
-                     i18n:attributes="value label_add_user_to_group;" />
               <input tal:replace="structure context/@@authenticator/authenticator" />
 
             </form>
