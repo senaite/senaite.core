@@ -80,10 +80,10 @@
                                   groupId group/getId;"
                       tal:attributes="class python:'odd' if oddrow else 'even'">
                     <td>
+                      <i class="fas fa-users text-primary mr-1"></i>
                       <a href="@@usergroup-groupdetails"
                          tal:attributes="href string:@@usergroup-groupdetails?groupname=${groupId}">
-                        <tal:block replace="structure portal/group.png"/>&nbsp;<span
-                                                                                 tal:replace="group/getGroupTitleOrName">group name</span>
+                        <span tal:replace="group/getGroupTitleOrName">group name</span>
                       </a>
                     </td>
 
@@ -160,7 +160,7 @@
                       </td>
 
                       <td>
-                        <img src="group.png" alt="" />
+                        <i class="fas fa-users text-primary mr-1"></i>
                         <a href="" tal:attributes="href python:'@@usergroup-groupdetails?'+mq(groupname=obj.getGroupName())"
                            tal:content="obj/getGroupTitleOrName | default">
                           <span i18n:translate="link_groupname_not_available">
