@@ -179,10 +179,10 @@
                                      title group_info/description|string:''">
 
                               <tal:group tal:replace="group_info/title" />
-                              <div class="small text-secondary">
-                                (<tal:id tal:replace="group_info/groupid" />)
-                              </div>
                             </a>
+                            <div class="small text-secondary">
+                              (<tal:id tal:replace="group_info/groupid" />)
+                            </div>
                           </div>
                         </td>
 
