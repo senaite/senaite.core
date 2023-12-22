@@ -38,6 +38,7 @@
   <include package=".setup"/>
   <include package=".sharing"/>
   <include package=".usergroup"/>
+  <include package=".users"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
 
