@@ -149,13 +149,14 @@
                       </th>
 
                       <tal:header repeat="portal_role portal_roles">
-                        <th tal:content="portal_role"
+                        <th class="text-center"
+                            tal:content="portal_role"
                             i18n:translate="">
                           Role
                         </th>
                       </tal:header>
 
-                      <th rowspan=""
+                      <th rowspan="" class="text-center"
                           i18n:translate="listingheader_remove">
                         Remove
                       </th>

@@ -118,8 +118,8 @@
                   <tal:block tal:condition="portal_users" >
                     <tr class="odd">
                       <th rowspan="" i18n:translate="listingheader_user_name">User name</th>
-                      <th tal:repeat="portal_role portal_roles" tal:content="portal_role" i18n:translate="">Role</th>
-                      <th rowspan="" i18n:translate="listingheader_reset_password">Reset Password</th>
+                      <th class="text-center" tal:repeat="portal_role portal_roles" tal:content="portal_role" i18n:translate="">Role</th>
+                      <th class="text-center" rowspan="" i18n:translate="listingheader_reset_password">Reset Password</th>
                       <!-- <th rowspan="" i18n:translate="listingheader_remove">Remove</th> -->
                     </tr>
                   </tal:block>
