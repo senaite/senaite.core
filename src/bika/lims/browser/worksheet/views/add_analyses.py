@@ -198,9 +198,10 @@ class AddAnalysesView(BikaListingView):
                 })
                 self.default_review_state = "restrict_to_method"
 
-        for state in sorted(new_states, key=lambda s: s.get("id")):
-            if state not in self.review_states:
-                self.review_states.append(state)
+        existing_state_ids = [rs.get("id") for rs in self.review_states]
+        for new_state in new_states:
+            if new_state.get("id") not in existing_state_ids:
+                self.review_states.append(new_state)
 
     def handle_submit(self):
         """Handle form submission
