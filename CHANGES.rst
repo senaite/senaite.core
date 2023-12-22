@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2455 Fix users/groups overview batch navigation styling
 - #2454 Fix analyses not filtered by selected WST services
 - #2453 Fix worksheets are not uncatalogued when deleted
 - #2452 Fix reference definition range validation
