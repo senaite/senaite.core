@@ -4,6 +4,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
+- #2458 Allow portal_type as a parameter for api.get_icon function
 - #2456 Remove groups from user add form
 - #2455 Fix users/groups overview batch navigation styling
 - #2454 Fix analyses not filtered by selected WST services
