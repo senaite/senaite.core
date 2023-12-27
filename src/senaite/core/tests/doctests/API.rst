@@ -511,11 +511,32 @@ Getting the Icon of a Content
     >>> api.get_icon(brain)
     '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/client" title="Test Client" />'
 
+    >>> api.get_icon("Client")
+    '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/client" title="Client" />'
+
+    >>> api.get_icon("NonExistingType")
+    Traceback (most recent call last):
+    [...]
+    APIError: No type info for 'NonExistingType'
+
+    >>> api.get_icon(object)
+    Traceback (most recent call last):
+    [...]
+    APIError: <type 'object'> is not supported.
+
     >>> api.get_icon(client, html_tag=False)
     'http://nohost/plone/senaite_theme/icon/client'
 
     >>> api.get_icon(client, html_tag=False)
     'http://nohost/plone/senaite_theme/icon/client'
+
+    >>> api.get_icon("Client", html_tag=False)
+    'http://nohost/plone/senaite_theme/icon/client'
+
+    >>> api.get_icon("NonExistingType", html_tag=False)
+    Traceback (most recent call last):
+    [...]
+    APIError: No type info for 'NonExistingType'
 
 
 Getting a catalog brain by UID
