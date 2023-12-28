@@ -44,9 +44,6 @@ class ClientFolderContentsView(ListingView):
         self.description = ""
         self.form_id = "list_clientsfolder"
         self.sort_on = "sortable_title"
-        # Landing page to be added to the link of each client from the list
-        self.landing_page = get_registry_record("client_landing_page",
-                                                default="analysisrequests")
 
         self.catalog = CLIENT_CATALOG
         self.contentFilter = {
@@ -123,6 +120,10 @@ class ClientFolderContentsView(ListingView):
         """
         # Call `before_render` from the base class
         super(ClientFolderContentsView, self).before_render()
+
+        # Landing page to be added to the link of each client from the list
+        self.landing_page = get_registry_record("client_landing_page",
+                                                default="analysisrequests")
 
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):
