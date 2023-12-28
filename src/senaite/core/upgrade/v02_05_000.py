@@ -51,8 +51,6 @@ from senaite.core.setuphandlers import setup_portal_catalog
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import uncatalog_brain
 from senaite.core.upgrade.utils import UpgradeUtils
-from senaite.core.vocabularies.registry import \
-    ClientLandingPagesVocabularyFactory
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
