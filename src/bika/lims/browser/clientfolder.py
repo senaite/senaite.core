@@ -25,20 +25,17 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from bika.lims.utils import get_registry_value
 from Products.CMFCore.permissions import ModifyPortalContent
 from senaite.app.listing import ListingView
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.permissions import AddClient
 from senaite.core.permissions import ManageAnalysisRequests
+from senaite.core.registry import get_registry_record
 
 
 class ClientFolderContentsView(ListingView):
     """Listing view for all Clients
     """
-
-    _LANDING_PAGE_REGISTRY_KEY = "bika.lims.client.default_landing_page"
-    _DEFAULT_LANDING_PAGE = "analysisrequests"
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
@@ -48,8 +45,8 @@ class ClientFolderContentsView(ListingView):
         self.form_id = "list_clientsfolder"
         self.sort_on = "sortable_title"
         # Landing page to be added to the link of each client from the list
-        self.landing_page = get_registry_value(
-            self._LANDING_PAGE_REGISTRY_KEY, self._DEFAULT_LANDING_PAGE)
+        self.landing_page = get_registry_record("client_landing_page",
+                                                default="analysisrequests")
 
         self.catalog = CLIENT_CATALOG
         self.contentFilter = {

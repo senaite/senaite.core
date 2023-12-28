@@ -40,6 +40,7 @@ from senaite.core.config import PROJECTNAME as product
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionReceiveSample
 from senaite.core.registry import get_registry_record
+from senaite.core.registry import set_registry_record
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import CATALOG_MAPPINGS
@@ -50,9 +51,13 @@ from senaite.core.setuphandlers import setup_portal_catalog
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import uncatalog_brain
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.vocabularies.registry import \
+    ClientLandingPagesVocabularyFactory
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 
 PORTAL_CATALOG = "portal_catalog"
 
@@ -650,3 +655,27 @@ def purge_orphan_worksheets(tool):
         obj._p_deactivate()
 
     logger.info("Purging orphan Worksheet records from catalog [DONE]")
+
+
+def setup_client_landing_page(tool):
+    """Setup the registry record for the client's landing page
+    """
+    logger.info("Setup client's default landing page ...")
+
+    # import the client registry
+    import_registry(tool)
+
+    # look for the legacy registry record
+    import pdb;pdb.set_trace()
+    legacy_key = "bika.lims.client.default_landing_page"
+    legacy_value = get_registry_record(legacy_key, default="analysisrequests")
+
+    # set the value to the new registry record
+    vocab_key = "senaite.core.vocabularies.registry.client_landing_pages"
+    vocab_factory = getUtility(IVocabularyFactory, vocab_key)
+    vocabulary = vocab_factory(api.get_portal())
+    values = [item.value for item in vocabulary]
+    if legacy_value in values:
+        set_registry_record("client_landing_page", legacy_value)
+
+    logger.info("Setup client's default landing page [DONE]")
