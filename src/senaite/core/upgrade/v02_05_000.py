@@ -666,16 +666,15 @@ def setup_client_landing_page(tool):
     import_registry(tool)
 
     # look for the legacy registry record
-    import pdb;pdb.set_trace()
-    legacy_key = "bika.lims.client.default_landing_page"
-    legacy_value = get_registry_record(legacy_key, default="analysisrequests")
+    key = "bika.lims.client.default_landing_page"
+    value = api.get_registry_record(key, default="")
 
     # set the value to the new registry record
     vocab_key = "senaite.core.vocabularies.registry.client_landing_pages"
     vocab_factory = getUtility(IVocabularyFactory, vocab_key)
     vocabulary = vocab_factory(api.get_portal())
     values = [item.value for item in vocabulary]
-    if legacy_value in values:
-        set_registry_record("client_landing_page", legacy_value)
+    if value in values:
+        set_registry_record("client_landing_page", value)
 
     logger.info("Setup client's default landing page [DONE]")
