@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.browser import BrowserView
+from senaite.core.registry import get_registry_record
 
 
 class MyOrganizationView(BrowserView):
@@ -28,11 +29,22 @@ class MyOrganizationView(BrowserView):
     """
 
     def __call__(self):
-        url = api.get_url(api.get_portal())
+
+        client = api.get_current_client()
+        if client:
+            # User belongs to a client, redirect to client's default view
+            view = get_registry_record("client_landing_page")
+            url = "{}/{}".format(api.get_url(client), view)
+            return self.request.response.redirect(url)
+
         current_user = api.get_current_user()
         contact = api.get_user_contact(current_user)
         if contact:
+            # Redirect to the contact's container
             parent = api.get_parent(contact)
             url = api.get_url(parent)
+            return self.request.response.redirect(url)
 
+        # Not a contact, redirect to portal
+        url = api.get_url(api.get_portal())
         return self.request.response.redirect(url)
