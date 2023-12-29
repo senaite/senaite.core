@@ -266,6 +266,7 @@ def update_report_catalog(tool):
     logger.info("Update report catalog [DONE]")
 
 
+@upgradestep(product, version)
 def import_registry(tool):
     """Import registry step from profiles
     """
