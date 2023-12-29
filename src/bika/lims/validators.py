@@ -1010,64 +1010,6 @@ class DurationValidator:
 validation.register(DurationValidator())
 
 
-class ReferenceValuesValidator:
-    """Min value must be below max value
-       Percentage value must be between 0 and 100
-       Values must be numbers
-       Expected values must be between min and max values
-    """
-
-    implements(IValidator)
-    name = "referencevalues_validator"
-
-    def __call__(self, value, *args, **kwargs):
-        request = kwargs.get('REQUEST', {})
-        # Retrieve all AS uids
-        services = request.get('service', [{}])[0]
-        for uid, service_name in services.items():
-            err_msg = self.validate_service(request, uid)
-            if not err_msg:
-                continue
-
-            # Validation failed
-            err_msg = "{}: {}".format(_("Validation for '{}' failed"),
-                                      _(err_msg))
-            err_msg = err_msg.format(service_name)
-            translate = api.get_tool('translation_service').translate
-            return to_utf8(translate(safe_unicode(err_msg)))
-
-        return True
-
-    def validate_service(self, request, uid):
-        """Validates the specs values from request for the service uid. Returns
-        a non-translated message if the validation failed."""
-
-        result = get_record_value(request, uid, 'result')
-        if not result:
-            # No result set for this service, dismiss
-            return None
-
-        if not api.is_floatable(result):
-            return "Expected result value must be numeric"
-
-        spec_min = get_record_value(request, uid, "min", result)
-        spec_max = get_record_value(request, uid, "max", result)
-        error = get_record_value(request, uid, "error", "0")
-        if not api.is_floatable(spec_min):
-            return "'Min' value must be numeric"
-        if not api.is_floatable(spec_max):
-            return "'Max' value must be numeric"
-        if api.to_float(spec_min) > api.to_float(result):
-            return "'Min' value must be below the expected result"
-        if api.to_float(spec_max) < api.to_float(result):
-            return "'Max' value must be above the expected result"
-        if not api.is_floatable(error) or 0.0 < api.to_float(error) > 100:
-            return "% Error must be between 0 and 100"
-        return None
-
-validation.register(ReferenceValuesValidator())
-
-
 class PercentValidator:
     """ Floatable, >=0, <=100. """
 

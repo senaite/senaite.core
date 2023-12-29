@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import workflow as wf
 
 
@@ -31,11 +32,9 @@ def after_retract(worksheet):
 def after_remove(worksheet):
     """Removes the worksheet from the system
     """
-    container = worksheet.aq_parent
-
     # bypass security checks on object removal. The removal of worksheet
     # objects is governed by "Transition: Remove Worksheet" permission at
     # worksheet level, along with a specific guard to ensure that only empty
     # worksheets can be removed. Therefore, better keep the "Delete objects"
     # permission at Worksheets folder level as false, because is less specific
-    container._delObject(worksheet.getId())
+    api.delete(worksheet, check_permissions=False)

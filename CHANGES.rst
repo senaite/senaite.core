@@ -7,9 +7,16 @@ Changelog
 - #2435 Add datetime support for interim fields
 - #2434 Add string support for interim fields
 - #2411 Multiselection with duplicates support for interim fields
+- #2459 Fix default landing page is not considered in clients listing
+- #2456 Remove groups from user add form
+- #2455 Fix users/groups overview batch navigation styling
+- #2454 Fix analyses not filtered by selected WST services
+- #2453 Fix worksheets are not uncatalogued when deleted
+- #2452 Fix reference definition range validation
 - #2450 Fix search bar from worksheet listing does not work
 - #2449 Fix Mine button from worksheets listing does not filter by current user
 - #2448 Fix open filter is not visible to analysts in worksheets listing
+- #2445 Rename split_line -> splitLine in InstrumentTXTResultsFileParser for consistency
 - #2444 Fix reference widget search uses JSON encoded query
 - #2443 Fix missing required marker in edit forms
 - #2441 Fix items count in setupview for lab contacts tile

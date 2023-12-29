@@ -93,18 +93,21 @@
                 <table class="table table-bordered table-hover table-sm"
                        summary="Group Members Listing"
                        tal:condition="view/groupMembers">
+                  <colgroup>
+                    <col style="width:36px;"/>
+                  </colgroup>
 
                   <tr>
                     <th>
-                      <input class="noborder"
-                             type="checkbox"
-                             src="select_all_icon.png"
-                             name="selectButton"
-                             title="Select all items"
-                             onClick="toggleSelect(this, 'delete:list');"
-                             tal:attributes="src string:$portal_url/select_all_icon.png"
-                             alt="Select all items"
-                             i18n:attributes="title label_select_all_items; alt label_select_all_items;"/>
+                      <!-- <input class="noborder"
+                           type="checkbox"
+                           src="select_all_icon.png"
+                           name="selectButton"
+                           title="Select all items"
+                           onClick="toggleSelect(this, 'delete:list');"
+                           tal:attributes="src string:$portal_url/select_all_icon.png"
+                           alt="Select all items"
+                           i18n:attributes="title label_select_all_items; alt label_select_all_items;"/> -->
                       <!--Remove user from this group-->
                     </th>
                     <th i18n:translate="listingheader_user_name">User name</th>
@@ -126,24 +129,28 @@
 
                       <tal:block tal:condition="python: view.isGroup(this_user)">
                         <td>
-                          <img src="group.png" alt="" />
+                          <i class="fas fa-users text-primary mr-1"></i>
                           <a href="" tal:attributes="href python:'@@usergroup-groupdetails?' + view.makeQuery(groupname=this_user.getGroupName())" >
                             <span tal:replace="this_user/getGroupTitleOrName | default" />
-                            (<span tal:replace="this_user/id" />)
                           </a>
+                          <div class="small text-secondary">(<span tal:replace="this_user/id" />)</div>
                         </td>
                       </tal:block>
 
                       <tal:block tal:condition="python: not view.isGroup(this_user)">
                         <td>
-                          <img src="user.png" alt="" />
-                          <a href="" tal:attributes="href python:'@@user-information?' + view.makeQuery(userid=this_user.getId());
-                                   title this_user/getId">
-                            <span tal:replace="python:this_user.getProperty('fullname')">Full Name</span>
+                          <div class="text-nowrap">
+                            <i class="fas fa-user text-primary mr-1"></i>
+                            <a href="" tal:attributes="href python:'@@user-information?' + view.makeQuery(userid=this_user.getId());
+                                     title this_user/getId">
+                              <span tal:replace="python:this_user.getProperty('fullname')">Full Name</span>
+                            </a>
+                          </div>
+                          <div class="small text-secondary">
                             <tal:userid tal:condition="not:view/email_as_username">
                               (<span tal:replace="this_user/getUserName | default" />)
                             </tal:userid>
-                          </a>
+                          </div>
                         </td>
                       </tal:block>
 
@@ -182,6 +189,9 @@
 
                   <table class="table table-bordered table-hover table-sm"
                          summary="Groups">
+                    <colgroup>
+                      <col style="width:36px;">
+                    </colgroup>
                     <tr>
                       <th colspan="3">
                         <div class="input-group input-group-sm">
@@ -218,15 +228,15 @@
                     </tr>
                     <tr tal:condition="batch">
                       <th>
-                        <input class="noborder"
-                               type="checkbox"
-                               src="select_all_icon.png"
-                               name="selectButton"
-                               title="Select all items"
-                               onClick="toggleSelect(this, 'add:list');"
-                               tal:attributes="src string:$portal_url/select_all_icon.png"
-                               alt="Select all items"
-                               i18n:attributes="title label_select_all_items; alt label_select_all_items;"/>
+                        <!-- <input class="noborder"
+                             type="checkbox"
+                             src="select_all_icon.png"
+                             name="selectButton"
+                             title="Select all items"
+                             onClick="toggleSelect(this, 'add:list');"
+                             tal:attributes="src string:$portal_url/select_all_icon.png"
+                             alt="Select all items"
+                             i18n:attributes="title label_select_all_items; alt label_select_all_items;"/> -->
                       </th>
 
                       <th i18n:translate="listingheader_group_user_name">Group/User name</th>
@@ -249,21 +259,25 @@
 
                         <td>
                           <tal:block tal:condition="python:not view.isGroup(this_user)">
-                            <img src="user.png" alt="" />
+                            <i class="fas fa-user text-primary mr-1"></i>
                             <a href="" tal:attributes="href python:'@@user-information?' + view.makeQuery(userid=this_user.getId());
                                      title this_user/getId">
                               <span tal:replace="python:this_user.getProperty('fullname')">Full Name</span>
+                            </a>
+                            <div class="small text-secondary">
                               <tal:userid tal:condition="not:view/email_as_username">
                                 (<span tal:replace="this_user/getUserName | default" />)
                               </tal:userid>
-                            </a>
+                            </div>
                           </tal:block>
                           <tal:block tal:condition="python: view.isGroup(this_user)">
-                            <img src="group.png" alt="" />
+                            <i class="fas fa-users text-primary mr-1"></i>
                             <a href="" tal:attributes="href python:'@@usergroup-groupdetails?' + view.makeQuery(groupname=this_user.getGroupName())">
                               <span tal:replace="this_user/getGroupTitleOrName | default" />
-                              (<span tal:replace="this_user/id | default" />)
                             </a>
+                            <div class="small text-secondary">
+                              (<span tal:replace="this_user/id | default" />)
+                            </div>
                           </tal:block>
                         </td>
                         <td tal:define="email python: this_user.getProperty('email')">
@@ -298,9 +312,7 @@
                           Enter a group or user name to search for or click 'Show All'.
                         </td>
                       </tal:block>
-
                     </tr>
-
                   </table>
 
                   <input type="hidden" value="b_start" name="b_start"
@@ -309,29 +321,29 @@
                   <input type="hidden" value="" name="showAll"
                          tal:attributes="value showAll"/>
 
-                  <div class="d-flex">
+                  <div class="form-inline form-group pb-3">
                     <div metal:use-macro="context/batch_macros/macros/navigation" />
-                  </div>
+                    <div class="showAllSearchResults ml-1"
+                         tal:condition="python:batch.next or batch.previous"
+                         tal:define="mq python:modules['ZTUtils'].make_query;
+                                keys batchformkeys|nothing;
+                                linkparams python:keys and dict([(key, request.form[key]) for key in keys if key in request]) or request.form;
+                                url batch_base_url | string:${context/absolute_url}/${template_id}">
+                      <a class="btn btn-sm btn-outline-secondary"
+                         tal:attributes="href python: '%s?%s' % (url, mq( linkparams, {'showAll':'y'} ))"
+                         i18n:translate="description_pas_show_all_search_results">
+                        Show all search results
+                      </a>
+                    </div>
 
-                  <div class="showAllSearchResults"
-                       tal:condition="python:batch.next or batch.previous"
-                       tal:define="mq python:modules['ZTUtils'].make_query;
-                              keys batchformkeys|nothing;
-                              linkparams python:keys and dict([(key, request.form[key]) for key in keys if key in request]) or request.form;
-                              url batch_base_url | string:${context/absolute_url}/${template_id}">
-                    <a class="btn btn-sm btn-outline-secondary mr-2"
-                       tal:attributes="href python: '%s?%s' % (url, mq( linkparams, {'showAll':'y'} ))"
-                       i18n:translate="description_pas_show_all_search_results">
-                      Show all search results
-                    </a>
-                  </div>
+                    <input class="btn btn-sm btn-primary ml-1"
+                           type="submit"
+                           name="form.button.Add"
+                           value="Add selected groups and users to this group"
+                           tal:condition="batch"
+                           i18n:attributes="value label_add_users_to_group;" />
 
-                  <input class="context btn btn-sm btn-primary"
-                         type="submit"
-                         name="form.button.Add"
-                         value="Add selected groups and users to this group"
-                         tal:condition="batch"
-                         i18n:attributes="value label_add_users_to_group;" />
+                  </div>
 
                 </tal:addusers>
 
