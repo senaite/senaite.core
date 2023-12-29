@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.browser import BrowserView
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.registry import get_registry_record
 
 
@@ -33,7 +34,7 @@ class MyOrganizationView(BrowserView):
         client = api.get_current_client()
         if client:
             # User belongs to a client, redirect to client's default view
-            view = get_registry_record("client_landing_page")
+            view = get_registry_record(CLIENT_LANDING_PAGE)
             url = "{}/{}".format(api.get_url(client), view)
             return self.request.response.redirect(url)
 

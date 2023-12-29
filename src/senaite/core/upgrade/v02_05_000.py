@@ -37,6 +37,7 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionReceiveSample
 from senaite.core.registry import get_registry_record
@@ -673,6 +674,6 @@ def setup_client_landing_page(tool):
     vocabulary = vocab_factory(api.get_portal())
     values = [item.value for item in vocabulary]
     if value in values:
-        set_registry_record("client_landing_page", value)
+        set_registry_record(CLIENT_LANDING_PAGE, value)
 
     logger.info("Setup client's default landing page [DONE]")

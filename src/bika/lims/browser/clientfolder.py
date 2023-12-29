@@ -28,6 +28,7 @@ from bika.lims.utils import get_link
 from Products.CMFCore.permissions import ModifyPortalContent
 from senaite.app.listing import ListingView
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import AddClient
 from senaite.core.permissions import ManageAnalysisRequests
 from senaite.core.registry import get_registry_record
@@ -122,8 +123,7 @@ class ClientFolderContentsView(ListingView):
         super(ClientFolderContentsView, self).before_render()
 
         # Landing page to be added to the link of each client from the list
-        self.landing_page = get_registry_record("client_landing_page",
-                                                default="analysisrequests")
+        self.landing_page = get_registry_record(CLIENT_LANDING_PAGE)
 
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):
