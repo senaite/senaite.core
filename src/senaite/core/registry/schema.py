@@ -40,6 +40,7 @@ class IClientRegistry(ISenaiteRegistry):
         description=_("Settings for Clients"),
         fields=[
             "auto_create_client_group",
+            "client_landing_page",
         ],
     )
 
@@ -55,6 +56,22 @@ class IClientRegistry(ISenaiteRegistry):
                       ),
         default=True,
         required=False,
+    )
+
+    client_landing_page = schema.Choice(
+        title=_(
+            u"label_registry_client_landing_page",
+            default=u"Client landing page"
+        ),
+        description=_(
+            u"description_registry_client_landing_page",
+            default=u"Select the default landing page. This is used when a "
+                    u"Client user logs into the system, or when a client is "
+                    u"selected from the client folder listing"
+        ),
+        vocabulary="senaite.core.vocabularies.registry.client_landing_pages",
+        default="analysisrequests",
+        required=True,
     )
 
 

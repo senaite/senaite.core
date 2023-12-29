@@ -24,6 +24,8 @@ from bika.lims.interfaces import IFrontPageAdapter
 from plone import api as ploneapi
 from plone.protect.utils import addTokenToUrl
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
+from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 
 
@@ -88,6 +90,13 @@ class FrontPageView(BrowserView):
         # Third precedence: Custom Landing Page
         if landingpage:
             return self.request.response.redirect(landingpage.absolute_url())
+
+        # Fourth precedence: Default landing page in client view
+        client = api.get_current_client()
+        if client:
+            view = get_registry_record(CLIENT_LANDING_PAGE)
+            url = "{}/{}".format(api.get_url(client), view)
+            return self.request.response.redirect(url)
 
         # Last precedence: Front Page
         return self.template()
