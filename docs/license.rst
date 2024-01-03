@@ -1,7 +1,7 @@
 License
 =======
 
-**SENAITE.CORE** Copyright (C) 2018-2020 RIDING BYTES & NARALABS
+**SENAITE.CORE** Copyright (C) 2018-2024 RIDING BYTES & NARALABS
 
 `SENAITE.CORE`_ is available under the terms of the `GNU General Public
 License, version 2`_ as published by the `Free Software Foundation`_.
