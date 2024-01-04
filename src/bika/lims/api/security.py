@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import six
@@ -57,7 +57,7 @@ def get_mapped_permissions_for(brain_or_object):
     translated by the function `AccessControl.Permission.pname` to a valid
     attribute name:
 
-    >>> from bika.lims.permissions import FieldEditAnalysisResult
+    >>> from senaite.core.permissions import FieldEditAnalysisResult
     >>> AccessControl.Permission import pname
     >>> pname(FieldEditAnalysisResult)
     _Field__Edit_Result_Permission

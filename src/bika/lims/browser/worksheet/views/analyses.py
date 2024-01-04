@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -29,9 +29,9 @@ from bika.lims.browser.analyses import AnalysesView as BaseView
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import FieldEditAnalysisRemarks
+from senaite.core.permissions import FieldEditAnalysisRemarks
 from bika.lims.utils import get_image
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -67,7 +67,6 @@ class AnalysesView(BaseView):
         self.show_search = False
 
         self.bika_setup = api.get_bika_setup()
-        self.uids_strpositions = self.get_uids_strpositions()
         self.items_rowspans = dict()
 
         self.columns = collections.OrderedDict((
@@ -117,25 +116,6 @@ class AnalysesView(BaseView):
                 "title": _("State")}),
         ))
 
-        # Inject Remarks column for listing
-        if self.is_analysis_remarks_enabled():
-            self.columns["Remarks"] = {
-                "title": "Remarks",
-                "ajax": True,
-                "toggle": False,
-                "sortable": False,
-                "type": "remarks"
-            }
-
-        self.set_analysis_remarks_modal = {
-            "id": "modal_set_analysis_remarks",
-            "title": _("Set remarks"),
-            "url": "{}/set_analysis_remarks_modal".format(
-                api.get_url(self.context)),
-            "css_class": "btn btn-outline-secondary",
-            "help": _("Set remarks for selected analyses")
-        }
-
         self.review_states = [
             {
                 "id": "default",
@@ -158,10 +138,32 @@ class AnalysesView(BaseView):
 
     def before_render(self):
         super(AnalysesView, self).before_render()
+        if self.is_analysis_remarks_enabled():
+            self.enable_remarks()
 
+    def enable_remarks(self):
+        """Enable remarks functionality
+        """
+        # Inject Remarks column for listing
+        self.columns["Remarks"] = {
+            "title": "Remarks",
+            "ajax": True,
+            "toggle": False,
+            "sortable": False,
+            "type": "remarks"
+        }
+
+        # Inject custom transition for remarks
         if self.show_analysis_remarks_transition():
             for state in self.review_states:
-                state["custom_transitions"] = [self.set_analysis_remarks_modal]
+                state["custom_transitions"] = [{
+                    "id": "modal_set_analysis_remarks",
+                    "title": _("Set remarks"),
+                    "url": "{}/set_analysis_remarks_modal".format(
+                        api.get_url(self.context)),
+                    "css_class": "btn btn-outline-secondary",
+                    "help": _("Set remarks for selected analyses")
+                }]
 
     @view.memoize
     def get_default_columns_order(self):
@@ -184,13 +186,20 @@ class AnalysesView(BaseView):
 
         XXX: Convert maybe better to a real WF transition with a guard
         """
-        # Disable analysis remarks transition when global analysis remarks are disabled
+        # Disable analysis remarks transition if disabled in global setup
         if not self.is_analysis_remarks_enabled():
             return False
-        for analysis in self.context.getAnalyses():
+        for analysis in self.get_analyses():
             if check_permission(FieldEditAnalysisRemarks, analysis):
                 return True
         return False
+
+    def get_analyses(self, full_objects=False):
+        """Return all analyses of the current view
+
+        :returns: List of analyses
+        """
+        return self.context.getAnalyses(full_objects=full_objects)
 
     @view.memoize
     def is_analysis_remarks_enabled(self):
@@ -294,7 +303,9 @@ class AnalysesView(BaseView):
 
         return items
 
-    def get_uids_strpositions(self):
+    @property
+    @view.memoize
+    def uids_strpositions(self):
         """Returns a dict with the positions of each analysis within the
         current worksheet in accordance with the current layout. The key of the
         dict is the uid of the analysis and the value is an string

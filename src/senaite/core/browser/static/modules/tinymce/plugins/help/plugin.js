@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -403,8 +403,6 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
-    var premiumType = 'premium';
-    var openSourceType = 'opensource';
     var urls = map([
       {
         key: 'advlist',
@@ -527,6 +525,10 @@
         name: 'Print'
       },
       {
+        key: 'quickbars',
+        name: 'Quick Toolbars'
+      },
+      {
         key: 'save',
         name: 'Save'
       },
@@ -575,121 +577,111 @@
         name: 'Word Count'
       },
       {
-        key: 'advcode',
-        name: 'Advanced Code Editor*',
-        type: premiumType
-      },
-      {
-        key: 'formatpainter',
-        name: 'Format Painter*',
-        type: premiumType
-      },
-      {
-        key: 'powerpaste',
-        name: 'PowerPaste*',
-        type: premiumType
-      },
-      {
-        key: 'tinydrive',
-        name: 'Tiny Drive*',
-        type: premiumType
-      },
-      {
-        key: 'tinymcespellchecker',
-        name: 'Spell Checker Pro*',
-        type: premiumType
-      },
-      {
         key: 'a11ychecker',
-        name: 'Accessibility Checker*',
-        type: premiumType
+        name: 'Accessibility Checker',
+        type: 'premium'
       },
       {
-        key: 'linkchecker',
-        name: 'Link Checker*',
-        type: premiumType
-      },
-      {
-        key: 'mentions',
-        name: 'Mentions*',
-        type: premiumType
-      },
-      {
-        key: 'mediaembed',
-        name: 'Enhanced Media Embed*',
-        type: premiumType
-      },
-      {
-        key: 'checklist',
-        name: 'Checklist*',
-        type: premiumType
-      },
-      {
-        key: 'casechange',
-        name: 'Case Change*',
-        type: premiumType
-      },
-      {
-        key: 'permanentpen',
-        name: 'Permanent Pen*',
-        type: premiumType
-      },
-      {
-        key: 'pageembed',
-        name: 'Page Embed*',
-        type: premiumType
-      },
-      {
-        key: 'tinycomments',
-        name: 'Tiny Comments*',
-        type: premiumType,
-        slug: 'comments'
+        key: 'advcode',
+        name: 'Advanced Code Editor',
+        type: 'premium'
       },
       {
         key: 'advtable',
-        name: 'Advanced Tables*',
-        type: premiumType
+        name: 'Advanced Tables',
+        type: 'premium'
       },
       {
         key: 'autocorrect',
-        name: 'Autocorrect*',
-        type: premiumType
+        name: 'Autocorrect',
+        type: 'premium'
+      },
+      {
+        key: 'casechange',
+        name: 'Case Change',
+        type: 'premium'
+      },
+      {
+        key: 'checklist',
+        name: 'Checklist',
+        type: 'premium'
       },
       {
         key: 'export',
-        name: 'Export*',
-        type: premiumType
+        name: 'Export',
+        type: 'premium'
+      },
+      {
+        key: 'mediaembed',
+        name: 'Enhanced Media Embed',
+        type: 'premium'
+      },
+      {
+        key: 'formatpainter',
+        name: 'Format Painter',
+        type: 'premium'
+      },
+      {
+        key: 'linkchecker',
+        name: 'Link Checker',
+        type: 'premium'
+      },
+      {
+        key: 'mentions',
+        name: 'Mentions',
+        type: 'premium'
+      },
+      {
+        key: 'pageembed',
+        name: 'Page Embed',
+        type: 'premium'
+      },
+      {
+        key: 'permanentpen',
+        name: 'Permanent Pen',
+        type: 'premium'
+      },
+      {
+        key: 'powerpaste',
+        name: 'PowerPaste',
+        type: 'premium'
+      },
+      {
+        key: 'rtc',
+        name: 'Real-Time Collaboration',
+        type: 'premium'
+      },
+      {
+        key: 'tinymcespellchecker',
+        name: 'Spell Checker Pro',
+        type: 'premium'
+      },
+      {
+        key: 'tinycomments',
+        name: 'Tiny Comments',
+        type: 'premium',
+        slug: 'comments'
+      },
+      {
+        key: 'tinydrive',
+        name: 'Tiny Drive',
+        type: 'premium'
       }
     ], function (item) {
       return __assign(__assign({}, item), {
-        type: item.type || openSourceType,
+        type: item.type || 'opensource',
         slug: item.slug || item.key
       });
     });
 
     var tab$1 = function (editor) {
       var availablePlugins = function () {
-        var premiumPlugins = [
-          'Accessibility Checker',
-          'Advanced Code Editor',
-          'Advanced Tables',
-          'Case Change',
-          'Checklist',
-          'Export',
-          'Tiny Comments',
-          'Tiny Drive',
-          'Enhanced Media Embed',
-          'Format Painter',
-          'Link Checker',
-          'Mentions',
-          'MoxieManager',
-          'Page Embed',
-          'Permanent Pen',
-          'PowerPaste',
-          'Spell Checker Pro'
-        ];
+        var premiumPlugins = filter(urls, function (_a) {
+          var key = _a.key, type = _a.type;
+          return key !== 'autocorrect' && type === 'premium';
+        });
         var premiumPluginList = map(premiumPlugins, function (plugin) {
-          return '<li>' + global$1.translate(plugin) + '</li>';
+          return '<li>' + global$1.translate(plugin.name) + '</li>';
         }).join('');
         return '<div data-mce-tabstop="1" tabindex="-1">' + '<p><b>' + global$1.translate('Premium plugins:') + '</b></p>' + '<ul>' + premiumPluginList + '<li class="tox-help__more-link" "><a href="https://www.tiny.cloud/pricing/?utm_campaign=editor_referral&utm_medium=help_dialog&utm_source=tinymce" target="_blank">' + global$1.translate('Learn more...') + '</a></li>' + '</ul>' + '</div>';
       };
@@ -703,8 +695,9 @@
           var getMetadata = editor.plugins[key].getMetadata;
           return typeof getMetadata === 'function' ? makeLink(getMetadata()) : key;
         }, function (x) {
+          var name = x.type === 'premium' ? x.name + '*' : x.name;
           return makeLink({
-            name: x.name,
+            name: name,
             url: 'https://www.tiny.cloud/docs/plugins/' + x.type + '/' + x.slug
           });
         });

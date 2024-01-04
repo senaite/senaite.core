@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -28,13 +28,14 @@ from bika.lims.api import user as api_user
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
-from bika.lims.permissions import AddLabContact
+from senaite.core.permissions import AddLabContact
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
+from senaite.core.catalog import CONTACT_CATALOG
 
 
 # TODO: Separate content and view into own modules!
@@ -45,7 +46,7 @@ class LabContactsView(BikaListingView):
     def __init__(self, context, request):
         super(LabContactsView, self).__init__(context, request)
 
-        self.catalog = "senaite_catalog_setup"
+        self.catalog = CONTACT_CATALOG
         self.contentFilter = {
             "portal_type": "LabContact",
             "sort_on": "sortable_title",

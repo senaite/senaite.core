@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.CORE 2.6.0"
+      source="2525"
+      destination="2600"
+      handler=".v02_06_000.upgrade"
+      profile="senaite.core:default"/>
+
+</configure>

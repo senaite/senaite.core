@@ -4,6 +4,9 @@
   <!-- SENAITE Registry -->
   <records interface="senaite.core.registry.schema.ISenaiteRegistry" />
 
+  <!-- Registry for client configuration -->
+  <records interface="senaite.core.registry.schema.IClientRegistry" />
+
   <!-- Registry for label configuration -->
   <records interface="senaite.core.registry.schema.ILabelRegistry" />
 

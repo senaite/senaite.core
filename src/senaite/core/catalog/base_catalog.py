@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from threading import RLock
@@ -60,16 +60,17 @@ INDEXES = [
 
 COLUMNS = [
     # attribute name
+    "Creator",
+    "Description",  # used ind default reference widget columns
+    "Title",  # used in default reference widget columns
+    "UID",
     "allowedRolesAndUsers",
     "created",
-    "Creator",
     "getId",
     "meta_type",
     "portal_type",
     "review_state",
     "state_title",
-    "Title",
-    "UID",
 ]
 
 TYPES = [
@@ -135,7 +136,8 @@ class BaseCatalog(CatalogTool):
         """
         mapped_catalog_types = self.mapped_catalog_types
         mapped_at_types = self.get_mapped_at_types()
-        return mapped_catalog_types + mapped_at_types
+        all_types = set(mapped_catalog_types + mapped_at_types)
+        return list(all_types)
 
     def log_progress(self):
         """Log reindex progress
@@ -148,7 +150,17 @@ class BaseCatalog(CatalogTool):
                         .format(self.progress_counter, self.id))
 
         if self.progress_counter % 10000 == 0:
+            logger.info("Creating transaction savepoint after {} objects"
+                        .format(self.progress_counter))
             transaction.savepoint(optimistic=True)
+
+    def deactivate_object(self, obj):
+        """Deactivate the object to save memory
+        """
+        try:
+            obj._p_deactivate()
+        except AttributeError:
+            pass
 
     @security.protected(ManageZCatalogEntries)
     def clearFindAndRebuild(self):
@@ -174,6 +186,8 @@ class BaseCatalog(CatalogTool):
                 if self.is_obj_indexable(obj, portal_type, mapped_types):
                     self._reindexObject(obj, idxs=idxs)  # bypass queue
                     self.log_progress()
+                # flush object from memory
+                self.deactivate_object(obj)
             except TypeError:
                 # Catalogs have 'indexObject' as well, but they
                 # take different args, and will fail

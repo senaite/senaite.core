@@ -24,6 +24,10 @@ class window.AnalysisRequestAdd
     # brain for already applied templates
     @applied_templates = {}
 
+    # manually deselected references
+    # => keep track to avoid setting these fields with the default values
+    @deselected_uids = {}
+
     # Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable")
 
@@ -66,44 +70,51 @@ class window.AnalysisRequestAdd
      *
     ###
     console.debug "AnalysisRequestAdd::bind_eventhandler"
+
     # Categories header clicked
     $("body").on "click", ".service-listing-header", @on_service_listing_header_click
     # Category toggle button clicked
     $("body").on "click", "tr.category", @on_service_category_click
-    # Save button clicked
-    $("body").on "click", "[name='save_button']", @on_form_submit
-    # Save and copy button clicked
-    $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
-    # Cancel button clicked
-    $("body").on "click", "[name='cancel_button']", @on_cancel
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", @on_analysis_checkbox_click
-    # Generic onchange event handler for reference fields
-    $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
 
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
-    # Analysis Template changed
-    $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
-    # Analysis Profile selected
-    $("body").on "selected", "tr[fieldname=Profiles] input[type='text']", @on_analysis_profile_selected
-    # Analysis Profile deselected
-    $("body").on "click", "tr[fieldname=Profiles] img.deletebtn", @on_analysis_profile_removed
     # Copy button clicked
     $("body").on "click", "img.copybutton", @on_copy_button_click
+
+    # Generic select/deselect event handler for reference fields
+    $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
+
+    # Analysis Template selected
+    $("body").on "select", "tr[fieldname=Template] textarea", @on_analysis_template_selected
+    # Analysis Template removed
+    $("body").on "deselect", "tr[fieldname=Template] textarea", @on_analysis_template_removed
+
+    # Analysis Profile selected
+    $("body").on "select", "tr[fieldname=Profiles] textarea", @on_analysis_profile_selected
+    # Analysis Profile deselected
+    $("body").on "deselect", "tr[fieldname=Profiles] textarea", @on_analysis_profile_removed
+
+    # Save button clicked
+    $("body").on "click", "[name='save_button']", @on_form_submit
+    # Save and copy button clicked
+    $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
+    # Cancel button clicked
+    $("body").on "click", "[name='cancel_button']", @on_cancel
 
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @debounce @recalculate_records, 1500
+    $(this).on "form:changed", @debounce @recalculate_records, 1000
     # recalculate prices after services changed
-    $(this).on "services:changed", @debounce @recalculate_prices, 3000
+    $(this).on "services:changed", @debounce @recalculate_prices, 2000
     # update form from records after the data changed
     $(this).on "data:updated", @debounce @update_form
     # hide open service info after data changed
@@ -182,7 +193,7 @@ class window.AnalysisRequestAdd
 
   get_global_settings: =>
     ###
-     * Submit all form values to the server to recalculate the records
+     * Fetch global settings from the setup, e.g. show_prices
     ###
     @ajax_post_form("get_global_settings").done (settings) ->
       console.debug "Global Settings:", settings
@@ -194,7 +205,7 @@ class window.AnalysisRequestAdd
 
   get_flush_settings: =>
     ###
-     * Retrieve the flush settings
+     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
     ###
     @ajax_post_form("get_flush_settings").done (settings) ->
       console.debug "Flush settings:", settings
@@ -237,6 +248,8 @@ class window.AnalysisRequestAdd
   update_form: (event, records) =>
     ###
      * Update form according to the server data
+     *
+     * Records provided from the server (see ajax_recalculate_records)
     ###
     console.debug "*** update_form ***"
 
@@ -265,9 +278,6 @@ class window.AnalysisRequestAdd
         # service is included in a profile
         if uid of record.service_to_profiles
           lock.show()
-        # service is part of the template
-        # if uid of record.service_to_templates
-        #   lock.show()
 
         # select the service
         me.set_service arnum, uid, yes
@@ -320,65 +330,6 @@ class window.AnalysisRequestAdd
     return base_url.split("/ar_add")[0]
 
 
-  get_authenticator: =>
-    ###
-     * Get the authenticator value
-    ###
-    return $("input[name='_authenticator']").val()
-
-
-  get_form: =>
-    ###
-     * Return the form element
-    ###
-    return $("#analysisrequest_add_form")
-
-
-  get_fields: (arnum) =>
-    ###
-     * Get all fields of the form
-    ###
-    form = @get_form()
-
-    fields_selector = "tr[fieldname] td[arnum] input"
-    if arnum?
-      fields_selector = "tr[fieldname] td[arnum=#{arnum}] input"
-    fields = $(fields_selector, form)
-    return fields
-
-
-  get_field_by_id: (id, arnum) =>
-    ###
-     * Query the field by id
-    ###
-
-    # split the fieldname from the suffix
-    [name, suffix] = id.split "_"
-
-    # append the arnum
-    field_id = "#{name}-#{arnum}"
-
-    # append the suffix if it is there
-    if suffix?
-      field_id = "#{field_id}_#{suffix}"
-
-    # prepend a hash if it is not there
-    if not id.startsWith "#"
-      field_id = "##{field_id}"
-
-    console.debug "get_field_by_id: $(#{field_id})"
-    # query the field
-    return $(field_id)
-
-
-  typeIsArray = Array.isArray || (value) ->
-    ###
-     * Returns if the given value is an array
-     * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
-    ###
-    return {}.toString.call( value ) is '[object Array]'
-
-
   apply_field_value: (arnum, record) ->
     ###
      * Applies the value for the given record, by setting values and applying
@@ -397,7 +348,7 @@ class window.AnalysisRequestAdd
 
   apply_dependent_values: (arnum, record) ->
     ###
-     * Sets default field values to dependents
+     * Set default field values to dependents
     ###
     me = this
     $.each record.field_values, (field_name, values) ->
@@ -406,34 +357,53 @@ class window.AnalysisRequestAdd
 
   apply_dependent_value: (arnum, field_name, values) ->
     ###
-     * Apply search filters to dependendents
+     * Set values on field
     ###
+
+    # always handle values as array internally
+    if not Array.isArray values
+      values = [values]
+
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
-
-    if values.if_empty? and values.if_empty is true
-      # Set the value if the field is empty only
-      if field.val()
-        return
-
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
-    if values.uid? and values.title?
-      # This is a reference field
-      me.set_reference_field field, values.uid, values.title
+    # (multi-) reference fields, e.g. CC Contacts of selected Contact
+    if @is_reference_field field
+      manually_deselected = @deselected_uids[field_name] or []
+      # filter out values that were manually deselected
+      values = values.filter (value) ->
+        return value.uid not in manually_deselected
 
-    else if values.value?
-      # This is a normal input field
-      if typeof values.value == "boolean"
-        field.prop "checked", values.value
+      # get a list of uids
+      uids = values.map (value) ->
+        return value.uid
+
+      # update reference field data records
+      values.forEach (value) =>
+        @set_reference_field_records field, value
+
+      if field.data("multi_valued") is 1
+        @set_multi_reference_field field, uids
       else
-        field.val values.value
+        uid = if uids.length > 0 then uids[0] else ""
+        @set_reference_field field, uid
 
-    else if typeIsArray values
-      # This is a multi field (e.g. CCContact)
-      $.each values, (index, item) ->
-        me.apply_dependent_value arnum, field_name, item
+    # other fields, e.g. default CC Emails of Client
+    else
+      values.forEach (value, index) ->
+        # do not override if the `if_empty` flag is set
+        if value.if_empty? and value.if_empty is true
+          if field.val()
+            return
+
+        # set the value
+        if value.value?
+          if typeof value.value == "boolean"
+            field.prop "checked", value.value
+          else
+            field.val value.value
 
 
   apply_dependent_filter_queries: (record, arnum) ->
@@ -458,133 +428,93 @@ class window.AnalysisRequestAdd
       me.flush_reference_field field
 
 
+  is_reference_field: (field) ->
+    ###
+     * Checks if the given field is a reference field
+    ###
+    field = $(field)
+    if field.hasClass("senaite-uidreference-widget-input")
+      return yes
+    if field.hasClass("ArchetypesReferenceWidget")
+      return yes
+    return no
+
+
   flush_reference_field: (field) ->
     ###
      * Empty the reference field and restore the search query
     ###
-
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-
-    # flush values
-    field.val("")
-    $("input[type=hidden]", field.parent()).val("")
-    $(".multiValued-listing", field.parent()).empty()
+    return unless field.length > 0
 
     # restore the original search query
     @reset_reference_field_query field
+    # set emtpy value
+    @set_reference_field field, ""
+
 
   reset_reference_field_query: (field) =>
     ###
      * Restores the catalog search query for the given reference field
     ###
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-    query = JSON.parse field.attr "base_query"
-    @set_reference_field_query field, query
+    return unless field.length > 0
+    this.set_reference_field_query(field, {})
 
-  set_reference_field_query: (field, query, type="base_query") =>
+
+  set_reference_field_query: (field, query) =>
     ###
      * Set the catalog search query for the given reference field
-     * XXX This is lame! The field should provide a proper API.
     ###
-
-    catalog_name = field.attr "catalog_name"
-    return unless catalog_name
-
-    # get the combogrid options
-    options = JSON.parse field.attr "combogrid_options"
-
-    # we have absolute URLs now
-    # https://github.com/senaite/senaite.core/pull/1917
-    url = options.url
-
-    # prepare the new query url
-    url += "?_authenticator=#{@get_authenticator()}"
-    url += "&catalog_name=#{catalog_name}"
-    url += "&colModel=#{JSON.stringify options.colModel}"
-    url += "&search_fields=#{JSON.stringify options.search_fields}"
-    url += "&discard_empty=#{JSON.stringify options.discard_empty}"
-    url += "&minLength=#{JSON.stringify options.minLength}"
-
-    # get the current query (either "base_query" or "search_query" attribute)
-    catalog_query = JSON.parse field.attr type
-    # update this query with the passed in query
-    $.extend catalog_query, query
-
-    new_query = JSON.stringify catalog_query
-    console.debug "set_reference_field_query: query=#{new_query}"
-
-    if type is 'base_query'
-      url += "&base_query=#{new_query}"
-      url += "&search_query=#{field.attr('search_query')}"
-    else
-      url += "&base_query=#{field.attr('base_query')}"
-      url += "&search_query=#{new_query}"
-
-    options.url = url
-    options.force_all = "false"
-
-    field.combogrid options
-    field.attr "search_query", "{}"
-
-    # close on any open searchbox to force reload on the next focus
-    field.trigger("blur")
+    return unless field.length > 0
+    # set the new query
+    search_query = JSON.stringify(query)
+    field.attr("data-search_query", search_query)
+    console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
 
 
-  set_reference_field: (field, uid, title) =>
+  set_reference_field_records: (field, records) =>
     ###
-     * Set the value and the uid of a reference field
-     * XXX This is lame! The field should handle this on data change.
+     * Set data-records to display the UID of a reference field
     ###
-
-    me = this
+    records ?= {}
     $field = $(field)
 
-    # If the field doesn't exist in the form, avoid trying to set it's values
-    if ! $field.length
-      console.debug "field #{field} does not exist, skip set_reference_field"
-      return
-    $parent = field.closest("div.field")
-    fieldname = field.attr "name"
+    existing_records = JSON.parse($field.attr("data-records") or '{}')
+    new_records = Object.assign(existing_records, records)
+    $field.attr("data-records", JSON.stringify(new_records))
 
-    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid} title=#{title}"
 
-    uids_field = $("input[type=hidden]", $parent)
-    existing_uids = uids_field.val()
+  set_reference_field: (field, uid) ->
+    ###
+     * Set the UID of a reference field
+     * NOTE: This method overrides any existing value!
+    ###
+    return unless field.length > 0
 
-    # uid is already selected
-    if existing_uids.indexOf(uid) >= 0
-      return
+    fieldname = JSON.parse field.data("name")
+    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
+    textarea = field.find("textarea")
+    this.native_set_value(textarea[0], uid)
 
-    # nothing in the field -> uid is the first entry
-    if existing_uids.length == 0
-      uids_field.val uid
+
+  set_multi_reference_field: (field, uids, append=true) ->
+    ###
+     * Set multiple UIDs of a reference field
+    ###
+    return unless field.length > 0
+
+    uids ?= []
+    fieldname = JSON.parse field.data("name")
+    console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
+    textarea = field.find("textarea")
+
+    if not append
+      this.native_set_value(textarea[0], uids.join("\n"))
     else
-      # append to the list
-      uids = uids_field.val().split(",")
-      uids.push uid
-      uids_field.val uids.join ","
-
-    # set the title as the value
-    $field.val title
-
-    # handle multivalued reference fields
-    mvl = $(".multiValued-listing", $parent)
-    if mvl.length > 0
-      portal_url = @get_portal_url()
-      src = "#{portal_url}/senaite_theme/icon/delete"
-      img = $("<img class='deletebtn' width='16' />")
-      img.attr "src", src
-      img.attr "data-contact-title", title
-      img.attr "fieldname", fieldname
-      img.attr "uid", uid
-      div = $("<div class='reference_multi_item'/>")
-      div.attr "uid", uid
-      div.append img
-      div.append title
-      mvl.append div
-      $field.val("")
+      existing = textarea.val().split("\n")
+      uids.forEach (uid) ->
+        if uid not in existing
+          existing = existing.concat(uid)
+      this.native_set_value(textarea[0], existing.join("\n"))
 
 
   get_reference_field_value: (field) =>
@@ -592,35 +522,25 @@ class window.AnalysisRequestAdd
      * Return the value of a single/multi reference field
     ###
     $field = $(field)
-    if $field.attr("multivalued") is undefined
-      return []
-
-    multivalued = $field.attr("multivalued") == "1"
-
-    if not multivalued
-      return [$field.val()]
-
-    $parent = field.closest("div.field")
-    uids = $("input[type=hidden]", $parent)?.val()
-    if not uids
-      return []
-
-    return uids.split(",")
+    if $field.type is "textarea"
+      $textarea = $field
+    else
+      $textarea = $field.find("textarea")
+    return $textarea.val()
 
 
   set_template: (arnum, template) =>
     ###
      * Apply the template data to all fields of arnum
     ###
-
     me = this
 
     # apply template only once
-    field = $("#Template-#{arnum}")
-    uid = field.attr "uid"
-    template_uid = template.uid
+    template_field = $("#Template-#{arnum}")
+    template_uid = @get_reference_field_value(template_field)
 
     if arnum of @applied_templates
+      # Allow to remove fields set by the template
       if @applied_templates[arnum] == template_uid
         console.debug "Skipping already applied template"
         return
@@ -630,27 +550,24 @@ class window.AnalysisRequestAdd
 
     # set the sample type
     field = $("#SampleType-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(field)
+    if not value
       uid = template.sample_type_uid
-      title = template.sample_type_title
-      @flush_reference_field field
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the sample point
     field = $("#SamplePoint-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(field)
+    if not value
       uid = template.sample_point_uid
-      title = template.sample_point_title
-      @flush_reference_field field
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the analysis profile
     field = $("#Profiles-#{arnum}")
-    if not field.val()
+    value = @get_reference_field_value(field)
+    if not value
       uid = template.analysis_profile_uid
-      title = template.analysis_profile_title
-      @flush_reference_field field
-      @set_reference_field field, uid, title
+      @set_reference_field field, uid
 
     # set the remarks
     field = $("#Remarks-#{arnum}")
@@ -665,6 +582,10 @@ class window.AnalysisRequestAdd
     $.each template.service_uids, (index, uid) ->
       # select the service
       me.set_service arnum, uid, yes
+
+    # set the template field again
+    # XXX how to avoid that setting the sample types flushes the template field?
+    @set_reference_field template_field, template_uid
 
 
   set_service: (arnum, uid, checked) =>
@@ -759,15 +680,29 @@ class window.AnalysisRequestAdd
 
   on_referencefield_value_changed: (event) =>
     ###
-     * Generic event handler for when a field value changes
+     * Generic event handler for when a reference field value changed
     ###
     me = this
     el = event.currentTarget
     $el = $(el)
-    has_value = @get_reference_field_value $el
-    uid = $el.attr "uid"
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+
+    # handle manually selected/deselected UIDs
+    value = event.detail.value
+    if value
+      manually_deselected = @deselected_uids[field_name] or []
+      select = if event.type is "select" then yes else no
+      if select
+        # remove UID from the manually deselected list again
+        manually_deselected = manually_deselected.filter (item) -> item isnt value
+        console.debug "Reference with UID #{value} was manually selected"
+      else
+        # remember UID as manually deselected
+        manually_deselected = if manually_deselected.indexOf value > -1 then manually_deselected.concat value
+        console.debug "Reference with UID #{value} was manually deselected"
+      @deselected_uids[field_name] = manually_deselected
+
     if field_name in ["Template", "Profiles"]
       # These fields have it's own event handler
       return
@@ -777,9 +712,10 @@ class window.AnalysisRequestAdd
     # Flush depending fields
     me.flush_fields_for field_name, arnum
 
-    # Manually flush UID field if the field does not have a selected value
-    if not has_value
-      $("input[type=hidden]", $el.parent()).val("")
+    # trigger custom event <field_name>:after_change
+    event_data = { bubbles: true, detail: { value: el.value } }
+    after_change = new CustomEvent("#{ field_name }:after_change", event_data)
+    el.dispatchEvent(after_change)
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -871,106 +807,28 @@ class window.AnalysisRequestAdd
     dialog = @template_dialog "service-dependant-template", context, buttons
 
 
-  on_analysis_template_changed: (event) =>
+  on_analysis_template_selected: (event) =>
     ###
-     * Eventhandler when an Analysis Template was changed.
+     * Eventhandler when an Analysis Template was selected.
     ###
+    console.debug "°°° on_analysis_template_selected °°°"
+    # trigger form:changed event
+    $(this).trigger "form:changed"
 
-    me = this
+
+  on_analysis_template_removed: (event) =>
+    ###
+     * Eventhandler when an Analysis Template was removed.
+    ###
+    console.debug "°°° on_analysis_template_removed °°°"
+
     el = event.currentTarget
     $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
     arnum = $el.closest("[arnum]").attr "arnum"
-    has_template_selected = $el.val()
-    console.debug "°°° on_analysis_template_change::UID=#{uid} Template=#{val}°°°"
-
-    # remember the set uid to handle later removal
-    if uid
-      $el.attr "previous_uid", uid
-    else
-      uid = $el.attr "previous_uid"
-
-    # deselect the template if the field is empty
-    if not has_template_selected and uid
-      # forget the applied template
-      @applied_templates[arnum] = null
-
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-      record = @records_snapshot[arnum]
-      template_metadata = record.template_metadata[uid]
-      template_services = []
-
-      # prepare a list of services used by the template with the given UID
-      $.each record.template_to_services[uid], (index, uid) ->
-        # service might be deselected before and thus, absent
-        if uid of record.service_metadata
-          template_services.push record.service_metadata[uid]
-
-      if template_services.length
-        context = {}
-        context["template"] = template_metadata
-        context["services"] = template_services
-
-        dialog = @template_dialog "template-remove-template", context
-        dialog.on "yes", ->
-          # deselect the services
-          $.each template_services, (index, service) ->
-            me.set_service arnum, service.uid, no
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-        dialog.on "no", ->
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-
-      # deselect the profile coming from the template
-      # XXX: This is crazy and need to get refactored!
-      if template_metadata.analysis_profile_uid
-        field = $("#Profiles-#{arnum}")
-
-        # uid and title of the selected profile
-        uid = template_metadata.analysis_profile_uid
-        title = template_metadata.analysis_profile_title
-
-        # get the parent field wrapper (field is only the input)
-        $parent = field.closest("div.field")
-
-        # search for the multi item and remove it
-        item = $(".reference_multi_item[uid=#{uid}]", $parent)
-        if item.length
-          item.remove()
-          # remove the uid from the hidden field
-          uids_field = $("input[type=hidden]", $parent)
-          existing_uids = uids_field.val().split(",")
-          remove_index = existing_uids.indexOf(uid)
-          if remove_index > -1
-            existing_uids.splice remove_index, 1
-          uids_field.val existing_uids.join ","
-
-      # deselect the samplepoint
-      if template_metadata.sample_point_uid
-        field = $("#SamplePoint-#{arnum}")
-        @flush_reference_field(field)
-
-      # deselect the sampletype
-      if template_metadata.sample_type_uid
-        field = $("#SampleType-#{arnum}")
-        @flush_reference_field(field)
-
-      # flush the remarks field
-      if template_metadata.remarks
-        field = $("#Remarks-#{arnum}")
-        field.text ""
-
-      # reset the composite checkbox
-      if template_metadata.composite
-        field = $("#Composite-#{arnum}")
-        field.prop "checked", no
+    @applied_templates[arnum] = null
 
     # trigger form:changed event
-    $(me).trigger "form:changed"
+    $(this).trigger "form:changed"
 
 
   on_analysis_profile_selected: (event) =>
@@ -978,14 +836,8 @@ class window.AnalysisRequestAdd
      * Eventhandler when an Analysis Profile was selected.
     ###
     console.debug "°°° on_analysis_profile_selected °°°"
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-
     # trigger form:changed event
-    $(me).trigger "form:changed"
+    $(this).trigger "form:changed"
 
 
   # Note: Context of callback bound to this object
@@ -998,15 +850,17 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
-    uid = $el.attr "uid"
     arnum = $el.closest("[arnum]").attr "arnum"
 
+    # The event detail tells us which profile UID has been deselected
+    profile_uid = event.detail.value
+
     record = @records_snapshot[arnum]
-    profile_metadata = record.profiles_metadata[uid]
+    profile_metadata = record.profiles_metadata[profile_uid]
     profile_services = []
 
     # prepare a list of services used by the profile with the given UID
-    $.each record.profile_to_services[uid], (index, uid) ->
+    $.each record.profile_to_services[profile_uid], (index, uid) ->
       profile_services.push record.service_metadata[uid]
 
     context = {}
@@ -1115,40 +969,34 @@ class window.AnalysisRequestAdd
     # the record data of the first AR
     record_one = @records_snapshot[0]
 
-    # ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
-    # don't cooperate and the multiValued div must be copied.
+    # reference widget
     if $(td1).find('.ArchetypesReferenceWidget').length > 0
       console.debug "-> Copy reference field"
 
       el = $(td1).find(".ArchetypesReferenceWidget")
-      field = el.find("input[type=text]")
-      uid = field.attr("uid")
-      value = field.val()
-      mvl = el.find(".multiValued-listing")
+      records = JSON.parse(el.attr("data-records")) or {}
+      value = me.get_reference_field_value(el)
 
       $.each [1..ar_count], (arnum) ->
-        # skip the first column
+        # skip the first (source) column
         return unless arnum > 0
 
+        # find the reference widget of the next column
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find(".ArchetypesReferenceWidget")
-        _field = _el.find("input[type=text]")
 
-        # flush the field completely
-        me.flush_reference_field _field
+        # XXX: Needed?
+        _field_name = _el.closest("tr[fieldname]").attr "fieldname"
+        me.flush_fields_for _field_name, arnum
 
-        if mvl.length > 0
-          # multi valued reference field
-          $.each mvl.children(), (idx, item) ->
-            uid = $(item).attr "uid"
-            value = $(item).text()
-            me.set_reference_field _field, uid, value
-        else
-          # single reference field
-          me.set_reference_field _field, uid, value
+        # RectJS queryselect widget provides the JSON data of the selected
+        # records in the `data-records` attribute.
+        # This is needed because otherwise we would only see the raw UID value
+        # (or another Ajax call would be needed.)
+        me.set_reference_field_records(_el, records)
 
-        # notify that the field changed
-        $(_field).trigger "change"
+        # set the textarea (this triggers a select event on the field)
+        me.set_reference_field(_el, value)
 
       # trigger form:changed event
       $(me).trigger "form:changed"
@@ -1298,8 +1146,8 @@ class window.AnalysisRequestAdd
     if setter
       setter.call(input, value)
 
-    evt = new Event("input", {bubbles: true})
-    input.dispatchEvent(evt)
+    event = new Event("input", {bubbles: true})
+    input.dispatchEvent(event)
 
 
   # Note: Context of callback bound to this object

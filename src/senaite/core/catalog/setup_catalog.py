@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
@@ -54,16 +54,18 @@ INDEXES = BASE_INDEXES + [
 COLUMNS = BASE_COLUMNS + [
     # attribute name
     "Description",
+    "Type",
     "description",
     "getCategoryTitle",
     "getCategoryUID",
     "getClientUID",
     "getKeyword",
+    "getPrefix",  # used in reference widget columns
+    "getProfileKey",  # used in reference widget columns
     "id",
     "path",
     "sortable_title",
     "title",
-    "Type",
 ]
 
 TYPES = [

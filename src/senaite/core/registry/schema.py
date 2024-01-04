@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
@@ -29,6 +29,50 @@ from zope import schema
 class ISenaiteRegistry(model.Schema):
     """Senaite registry schema
     """
+
+
+class IClientRegistry(ISenaiteRegistry):
+    """Client settings
+    """
+    model.fieldset(
+        "client_settings",
+        label=_(u"Client Settings"),
+        description=_("Settings for Clients"),
+        fields=[
+            "auto_create_client_group",
+            "client_landing_page",
+        ],
+    )
+
+    auto_create_client_group = schema.Bool(
+        title=_("Automatically Create Client Group"),
+        description=_("Automatically create a new global client group when a "
+                      "new client is created. If this is disabled, a client "
+                      "group is still created when a client contact is linked "
+                      "to a user account. Therefore, disabling this option "
+                      "makes only sense if you do not plan to link client "
+                      "contacts to user accounts and you want to keep your "
+                      "groups clean."
+                      ),
+        default=True,
+        required=False,
+    )
+
+    client_landing_page = schema.Choice(
+        title=_(
+            u"label_registry_client_landing_page",
+            default=u"Client landing page"
+        ),
+        description=_(
+            u"description_registry_client_landing_page",
+            default=u"Select the default landing page. This is used when a "
+                    u"Client user logs into the system, or when a client is "
+                    u"selected from the client folder listing"
+        ),
+        vocabulary="senaite.core.vocabularies.registry.client_landing_pages",
+        default="analysisrequests",
+        required=True,
+    )
 
 
 class ILabelRegistry(ISenaiteRegistry):

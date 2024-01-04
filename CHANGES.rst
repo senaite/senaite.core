@@ -1,14 +1,127 @@
 Changelog
 =========
 
-2.5.0 (unreleased)
+2.6.0 (unreleased)
 ------------------
 
 - #2191 Apply category sort order on analysis specifications
+- #2434 Add string support for interim fields
+- #2417 Use dtime.to_DT instead of api.to_date
+- #2411 Multiselection with duplicates support for interim fields
+- #2460 Fix keyword missing in AnalysisSpecificationView
+- #2462 Fix manually deselected references in sample add form can not be set anymore
+
+
+2.5.0 (2024-01-03)
+------------------
+
+- #2435 Add datetime support for interim fields
+- #2434 Add string support for interim fields
+- #2411 Multiselection with duplicates support for interim fields
+- #2459 Fix default landing page is not considered in clients listing
+- #2456 Remove groups from user add form
+- #2455 Fix users/groups overview batch navigation styling
+- #2454 Fix analyses not filtered by selected WST services
+- #2453 Fix worksheets are not uncatalogued when deleted
+- #2452 Fix reference definition range validation
+- #2450 Fix search bar from worksheet listing does not work
+- #2449 Fix Mine button from worksheets listing does not filter by current user
+- #2448 Fix open filter is not visible to analysts in worksheets listing
+- #2445 Rename split_line -> splitLine in InstrumentTXTResultsFileParser for consistency
+- #2444 Fix reference widget search uses JSON encoded query
+- #2443 Fix missing required marker in edit forms
+- #2441 Fix items count in setupview for lab contacts tile
+- #2440 Fix multi Code_128_1x48mm sticker renders only 1 PDF
+- #2439 Fix analysis template view shows hidden subfields for sample partitions
+- #2437 Fix DX types imported from tarball do not have valid ids
+- #2431 Fix AttributeError when creating AnalysisSpec with results range via JSONAPI
+- #2436 Fix instrument locations not displayed in listing
+- #2433 Fix multi-valued interim fields are not displayed correctly
+- #2429 Fix recipients column in report listing to show those recipients to whom the report was also sent to
+- #2432 Fix results import files are always rendered for each analysis in report
+- #2427 Fix precision is not calculated from the rounded uncertainty
+- #2426 Fix ±0 is displayed for results within a range without uncertainty set
+- #2424 Fix sample in "registered" after creation when user cannot receive
+- #2422 Fix Maximum number of Iterations Exceeded when no catalogs set for AT type
+- #2421 Fix hanging sampletype listing view in setup
+- #2420 Fix page reload in multi results classic view
+- #2419 Check permission when automatic sample reception is enabled
+- #2416 Fix Template select empties existing Sample Type-, Point- and Profile values in sample add form
+- #2414 Fix missing empty selection in result option choices when no default value is set
+- #2415 Fix sample specs get overwritten on manage analyses save
+- #2413 Fix select custom value for queryselect widget
+- #2412 Layered listing searchable text adapter lookup
+- #2409 Fix empty results get interpreted as 0.0 by 2-Dimensional-CSV importer
+- #2410 Fix order of choices for interims on data entry is not preserved
+- #2408 Support DX type catalogs lookup
+- #2407 Fix analyses sort order in Transposed Multi Results Form
+- #2406 Fix missing interim fields in Transposed Multi Results Form
+- #2400 Add Transposed Multi Results Form
+- #2402 Fix user cannot enter future date for DateSampled when sampling enabled
+- #2401 Fix OverflowError when calculating datetime.min date for left-hand TZs
+- #2399 Support for min/max in DateTimeWidget, and drop _nopast and _nofuture
+- #2397 Fix district is not displayed in old address widget
+- #2395 Fix DateTimeError for non-valid/old timezones
+- #2396 Add after sequential transition event handler
+- #2394 Ajax support for transitions retract and retest
+- #2393 Allow empty analysis method selection
+- #2392 Fix display of orphan method instruments
+- #2388 Fix QC sample IDs are the same accross worksheets
+- #2387 Improve memory usage when rebuilding a catalog
+- #2389 Added i18n.translate function with multiple domains support
+- #2386 Add dynamic search index lookup for referencewidget and added default catalog metadata columns
+- #2385 Fix referencefield dependencies in sample add
+- #2384 Fix reference widget lookups
+- #2379 Add listing adapter for sample workflow "receive" transition
+- #2382 Fix missing fields in client edit mode and listing
+- #2378 Reactivate auditlog catalog mappings
+- #2377 Fix imports for moved idserver module
+- #2372 Generate unique ID for DX types on object creation
+- #2370 Override default DX add form to obtain renamed IDs correctly
+- #2368 Drop usage of portal_catalog tool
+- #2369 Allow to set a custom comment for when a result is out of range
+- #2367 Contact catalog
+- #2366 Add fallback to sample client field value
+- #2365 New function for interim fields formatting
+- #2364 Support for fieldname-prefixed values on sample header submit
+- #2363 Auto-hide non-multivalued reference widget input on value selection
+- #2359 Improve sample create performance
+- #2361 Fix KeyError if registry key not found
+- #2358 Add confirmation when unlinking reference
+- #2357 Skip object reindexing when global auditlog is disabled
+- #2354 Render all legacy resources at the end of the page
+- #2350 Display batch labels in listing
+- #2347 Remove unused inline validation view
+- #2346 Fix unauthorized error when accessing dispatch/partition sample view with shared client role
+- #2343 Allow to define the sorting criteria for Result Options
+- #2345 Retrieve setup items by object
+- #2344 Fix error on sample copy when fields are hidden
+- #2334 Remove legacy reports
+- #2341 Handle nonexisting UIDs gracefully in referencewidget
+- #2340 Fix UID copy method in AT->DX content migrator
+- #2332 Fix unauthorized error when accessing immediate results entry view with a client contact user
+- #2295 Integrate new UID reference widget
+- #2315 Apply dynamic analyses specs for new added analyses
+- #2314 Display error for required fields without value in current language
+- #2313 Log error when calculation fails
+- #2310 Added `get_relative_delta` and `get_tzinfo` in datetime API
+- #2311 Properly process and validate field values from sample header on submit
+- #2307 Rely on fields when validating submitted values on sample creation
+- #2305 Add support for dates in ANSI X3.30 and ANSI X3.43.3 formats
+- #2304 Fix dynamic sample specification not applied for new samples
+- #2303 Fix managed permission of analysis workflow for lab roles
+- #2301 Use client groups for local role sharing
+- #2300 Re-add searchable text provider adapters for sample catalog listing_searchable_text index
+- #2298 Move all permissions into senaite.core
+- #2299 Fix KeyError: 'prefs_main_template' after installation
+- #2292 Fix ValueError when displaying dates before 1900 (by datetimewidget)
+- #2297 Fix wrong characters on sample invalidation emails
+- #2288 Fix client dropdown on batch add
+- #2282 Fix sample reports retrieval
 - #2285 Fix string results with html characters not displayed after submit
 - #2284 Fix the email sent on sample rejection is not text/html
-- #2279 Allow all custom transitions in sample report listing
 - #2280 Remove custom date rendering in sample header
+- #2279 Allow all custom transitions in sample report listing
 - #2278 Client catalog
 - #2276 Senaite labels
 - #2275 Fix wrong result when both "Result options" and "String" are ena

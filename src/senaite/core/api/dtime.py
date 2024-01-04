@@ -15,13 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import os
+import re
 import time
 from datetime import date
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from string import Template
 
 import six
@@ -29,11 +31,12 @@ import six
 import pytz
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.api import get_tool
 from DateTime import DateTime
 from DateTime.DateTime import DateError
+from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
-from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope.i18n import translate
 
 
@@ -124,15 +127,34 @@ def to_DT(dt):
     :param dt: DateTime/datetime/date
     :returns: DateTime object
     """
+    INTERNATIONAL_FMT = re.compile(
+        r"^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.(\d{2,4})\s*"
+    )
     if is_DT(dt):
         return dt
     elif is_str(dt):
+        kwargs = {}
+        if re.match(INTERNATIONAL_FMT, dt):
+            # This will fail silently and you get a wrong date:
+            # dt = DateTime("02.07.2010") # Parses like US date 02/07/2010
+            # https://github.com/zopefoundation/DateTime/blob/master/src/DateTime/DateTime.py#L641-L645
+            kwargs["datefmt"] = "international"
         try:
-            return DateTime(dt)
-        except (DateError, TimeError, SyntaxError, IndexError):
+            return DateTime(dt, **kwargs)
+        except (DateError, TimeError):
+            try:
+                dt = ansi_to_dt(dt)
+                return to_DT(dt)
+            except ValueError:
+                return None
+        except (SyntaxError, IndexError):
             return None
     elif is_dt(dt):
-        return DateTime(dt.isoformat())
+        try:
+            # XXX Why do this instead of DateTime(dt)?
+            return DateTime(dt.isoformat())
+        except DateTimeError:
+            return DateTime(dt)
     elif is_d(dt):
         dt = datetime(dt.year, dt.month, dt.day)
         return DateTime(dt.isoformat())
@@ -164,8 +186,44 @@ def to_dt(dt):
         return None
 
 
+def ansi_to_dt(dt):
+    """The YYYYMMDD format is defined by ANSI X3.30. Therefore, 2 December 1,
+    1989 would be represented as 19891201. When times are transmitted, they
+    shall be represented as HHMMSS, and shall be linked to dates as specified
+    by ANSI X3.43.3 Date and time together shall be specified as up to a
+    14-character string: YYYYMMDD[HHMMSS]
+    :param str:
+    :return: datetime object
+    """
+    if not is_str(dt):
+        raise TypeError("Type is not supported")
+    if len(dt) == 8:
+        date_format = "%Y%m%d"
+    elif len(dt) == 14:
+        date_format = "%Y%m%d%H%M%S"
+    else:
+        raise ValueError("No ANSI format date")
+    return datetime.strptime(dt, date_format)
+
+
+def to_ansi(dt, show_time=True):
+    """Returns the date in ANSI X3.30/X4.43.3) format
+    :param dt: DateTime/datetime/date
+    :param show_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :returns: str that represents the datetime in ANSI format
+    """
+    dt = to_dt(dt)
+    if dt is None:
+        return None
+
+    ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
+    if not show_time:
+        return ansi
+    return "{}{:02d}{:02d}{:02d}".format(ansi, dt.hour, dt.minute, dt.second)
+
+
 def get_timezone(dt, default="Etc/GMT"):
-    """Get a valid pytz timezone of the datetime object
+    """Get a valid pytz timezone name of the datetime object
 
     :param dt: date object
     :returns: timezone as string, e.g. Etc/GMT or CET
@@ -193,6 +251,29 @@ def get_timezone(dt, default="Etc/GMT"):
         tz = default
 
     return tz
+
+
+def get_tzinfo(dt_tz, default=pytz.UTC):
+    """Returns the valid pytz tinfo from the date or timezone name
+
+    Returns the default timezone info if date does not have a valid timezone
+    set or is TZ-naive
+
+    :param dt: timezone name or date object to extract the tzinfo
+    :type dt: str/date/datetime/DateTime
+    :param: default: timezone name or pytz tzinfo object
+    :returns: pytz tzinfo object, e.g. `<UTC>, <StaticTzInfo 'Etc/GMT+2'>
+    :rtype: UTC/BaseTzInfo/StaticTzInfo/DstTzInfo
+    """
+    if is_str(default):
+        default = pytz.timezone(default)
+    try:
+        if is_str(dt_tz):
+            return pytz.timezone(dt_tz)
+        tz = get_timezone(dt_tz, default=default.zone)
+        return pytz.timezone(tz)
+    except pytz.UnknownTimeZoneError:
+        return default
 
 
 def is_valid_timezone(timezone):
@@ -364,12 +445,12 @@ def to_localized_time(dt, long_format=None, time_only=None,
     :returns: The formatted date as string
     :rtype: string
     """
-    dt = to_DT(dt)
     if not dt:
         return default
 
     try:
-        time_str = ulocalized_time(
+        ts = get_tool("translation_service")
+        time_str = ts.ulocalized_time(
             dt, long_format, time_only, context, "senaite.core", request)
     except ValueError:
         # Handle dates < 1900
@@ -392,5 +473,43 @@ def to_localized_time(dt, long_format=None, time_only=None,
                 formatstring = "%H:%M"  # 03:14
             else:
                 formatstring = "[INTERNAL ERROR]"
-        time_str = date_to_string(dt, formatstring)
+        time_str = date_to_string(dt, formatstring, default=default)
     return time_str
+
+
+def get_relative_delta(dt1, dt2=None):
+    """Calculates the relative delta between two dates or datetimes
+
+    If `dt2` is None, the current datetime is used.
+
+    :param dt1: the first date/time to compare
+    :type dt1: string/date/datetime/DateTime
+    :param dt2: the second date/time to compare
+    :type dt2: string/date/datetime/DateTime
+    :returns: interval of time (e.g. `relativedelta(hours=+3)`)
+    :rtype: dateutil.relativedelta
+    """
+    if not dt2:
+        dt2 = datetime.now()
+
+    dt1 = to_dt(dt1)
+    dt2 = to_dt(dt2)
+    if not all([dt1, dt2]):
+        raise ValueError("No valid date or dates")
+
+    naives = [is_timezone_naive(dt) for dt in [dt1, dt2]]
+    if all(naives):
+        # Both naive, no need to do anything special
+        return relativedelta(dt2, dt1)
+
+    elif is_timezone_naive(dt1):
+        # From date is naive, assume same TZ as the to date
+        tzinfo = get_tzinfo(dt2)
+        dt1 = dt1.replace(tzinfo=tzinfo)
+
+    elif is_timezone_naive(dt2):
+        # To date is naive, assume same TZ as the from date
+        tzinfo = get_tzinfo(dt1)
+        dt2 = dt2.replace(tzinfo=tzinfo)
+
+    return relativedelta(dt2, dt1)

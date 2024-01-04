@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
@@ -25,8 +25,8 @@ from zope.i18n.locales import locales
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
-from bika.lims.utils import t
-from bika.lims.permissions import *
+from senaite.core.i18n import translate as t
+from senaite.core.permissions import *
 
 
 PROJECTNAME = "bika.lims"

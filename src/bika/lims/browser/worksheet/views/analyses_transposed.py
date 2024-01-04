@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from collections import OrderedDict
@@ -23,7 +23,7 @@ from collections import OrderedDict
 from bika.lims import _
 from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize import view
 from senaite.app.listing.interfaces import ITransposedListingView
 from zope.interface import implements

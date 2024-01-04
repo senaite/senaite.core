@@ -10,11 +10,7 @@
       <script type="text/javascript"
               tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/datetimewidget.js'"></script>
       <script type="text/javascript"
-              tal:attributes="src python:portal.absolute_url() + '/senaite_widgets/referencewidget.js'"></script>
-      <script type="text/javascript"
               tal:attributes="src python:portal.absolute_url() + '/bika_widgets/rejectionwidget.js'"></script>
-      <link rel="stylesheet" type="text/css" media="all" href=""
-            tal:attributes="href string:${portal/absolute_url}/senaite_widgets/referencewidget.css"/>
       <!-- AR Add form -->
       <script type="text/javascript"
               src="handlebars.js"
@@ -439,15 +435,12 @@
               <tr style="display:none" tal:attributes="fieldName fieldName">
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum);
-                                  val python:view.fieldvalues.get(newFieldName)"
+                                  val python:view.fieldvalues.get(newFieldName);
+                                  val python:'' if not val else val;"
                       tal:attributes="arnum python:arnum; fieldName python:newFieldName">
-
                     <input type="hidden"
-                           tal:attributes="value val/Title|nothing;
+                           tal:attributes="value val/UID|val|nothing;
                                            name newFieldName;"/>
-                    <input type="hidden"
-                           tal:attributes="value val/UID|nothing;
-                                           name python:'{}_uid'.format(newFieldName);"/>
                   </td>
                 </tal:columns>
               </tr>

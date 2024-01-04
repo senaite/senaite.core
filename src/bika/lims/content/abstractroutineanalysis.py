@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import copy
@@ -32,6 +32,7 @@ from bika.lims.content.attachment import Attachment
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -274,6 +275,22 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :rtype: dict
         """
         return self.getField("ResultsRange").get(self)
+
+    @security.private
+    def setResultsRange(self, spec, update_dynamic_spec=True):
+        """Set the results range for this routine analysis
+
+        NOTE: This custom setter also applies dynamic specifications
+
+        :param spec: The result range to set
+        :param update_dynamic_spec: If True, dynamic specifications are update
+        """
+        adapter = IDynamicResultsRange(self, None)
+        if adapter and update_dynamic_spec:
+            # update the result range with the dynamic values
+            spec.update(adapter())
+        field = self.getField("ResultsRange")
+        field.set(self, spec)
 
     @security.public
     def getSiblings(self, with_retests=False):

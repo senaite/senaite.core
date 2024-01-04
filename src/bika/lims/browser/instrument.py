@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -32,11 +32,12 @@ from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from zExceptions import Forbidden
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
@@ -48,7 +49,7 @@ class InstrumentMaintenanceView(BikaListingView):
 
     def __init__(self, context, request):
         super(InstrumentMaintenanceView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentMaintenanceTask",
             "path": {
@@ -176,7 +177,7 @@ class InstrumentCalibrationsView(BikaListingView):
 
     def __init__(self, context, request):
         super(InstrumentCalibrationsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentCalibration",
             "path": {
@@ -273,7 +274,7 @@ class InstrumentValidationsView(BikaListingView):
 
     def __init__(self, context, request):
         super(InstrumentValidationsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentValidation",
             "path": {
@@ -365,7 +366,7 @@ class InstrumentScheduleView(BikaListingView):
 
     def __init__(self, context, request):
         super(InstrumentScheduleView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentScheduledTask",
             "path": {
@@ -611,7 +612,7 @@ class InstrumentCertificationsView(BikaListingView):
 
     def __init__(self, context, request, **kwargs):
         BikaListingView.__init__(self, context, request, **kwargs)
-        self.catalog = "portal_catalog"
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentCertification",
             "path": {

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -375,13 +375,11 @@ def uncatalog_brain(brain):
     """
     if not api.is_brain(brain):
         return False
-
     catalog = brain.aq_parent
-    uid = brain.UID
-    path = brain.getPath()
+    path = api.get_path(brain)
     logger.warn(80*"*")
-    logger.warn("Removing stale catalog entry for catalog %s: %s -> %s"
-                % (catalog.getId(), uid, path))
+    logger.warn("Removing stale catalog brain from catalog %s on path %s"
+                % (catalog.getId(), path))
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True

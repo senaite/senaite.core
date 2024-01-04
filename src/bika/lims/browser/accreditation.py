@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFPlone.utils import safe_unicode
@@ -25,7 +25,7 @@ from zope.interface import implements
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 
 
 class AccreditationView(AnalysisServicesView):

@@ -15,34 +15,34 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
-
-import six
+import string
 
 from bika.lims import api
-from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
+from bika.lims import logger
 from Products.CMFPlone.utils import base_hasattr
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.z3cform.interfaces import IQuerySelectWidget
+from senaite.core.z3cform.widgets.basewidget import BaseWidget
 from z3c.form.browser import widget
 from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import ISubForm
 from z3c.form.widget import FieldWidget
-from z3c.form.widget import Widget
 from zope.component import adapter
-from zope.component import getUtility
-from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import ISequence
 
-_marker = object
+# See IReferenceWidgetDataProvider for provided object data
+DISPLAY_TEMPLATE = "<div>${Title}</div>"
+
+# Search index placeholder for dynamic lookup by the search endpoint
+SEARCH_INDEX_MARKER = "__search__"
 
 
 @adapter(ISequence, IQuerySelectWidget)
@@ -71,7 +71,7 @@ class QuerySelectDataConverter(TextLinesConverter):
 
 
 @implementer_only(IQuerySelectWidget)
-class QuerySelectWidget(widget.HTMLInputWidget, Widget):
+class QuerySelectWidget(widget.HTMLInputWidget, BaseWidget):
     """A widget to select one or more items from catalog search
     """
     klass = u"senaite-queryselect-widget-input"
@@ -80,67 +80,76 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         super(QuerySelectWidget, self).update()
         widget.addFieldClass(self)
 
-    def get_form(self):
-        """Return the current form of the widget
+    def get_input_widget_attributes(self):
+        """Return input widget attributes for the ReactJS component
+
+        This method get called from the page template to populate the
+        attributes that are used by the ReactJS widget component.
         """
-        form = self.form
-        # form is a fieldset group
-        if IDescriptiveGroup.providedBy(form):
-            form = form.parentForm
-        # form is a subform (e.g. DataGridFieldObjectSubForm)
-        if ISubForm.providedBy(form):
-            form = form.parentForm
-        return form
+        context = self.get_context()
+        values = self.get_value()
+        field = self.field
 
-    def get_context(self):
-        """Get the current context
+        attributes = {
+            "data-id": self.id,
+            "data-name": self.name,
+            "data-values": values,
+            "data-records": dict(zip(values, map(
+                lambda ref: self.get_render_data(
+                    context, field, ref), values))),
+            "data-value_key": getattr(self, "value_key", "title"),
+            "data-value_query_index": getattr(
+                self, "value_query_index", "title"),
+            "data-api_url": getattr(self, "api_url", "referencewidget_search"),
+            "data-query": getattr(self, "query", {}),
+            "data-catalog": getattr(self, "catalog", None),
+            "data-search_index": getattr(
+                self, "search_index", SEARCH_INDEX_MARKER),
+            "data-search_wildcard": getattr(self, "search_wildcard", True),
+            "data-allow_user_value": getattr(self, "allow_user_value", False),
+            "data-columns": getattr(self, "columns", []),
+            "data-display_template": getattr(self, "display_template", None),
+            "data-limit": getattr(self, "limit", 5),
+            "data-multi_valued": getattr(self, "multi_valued", True),
+            "data-disabled": getattr(self, "disabled", False),
+            "data-readonly": getattr(self, "readonly", False),
+            "data-clear_results_after_select": getattr(
+                self, "clear_results_after_select", False),
+        }
 
-        NOTE: If we are in the ++add++ form, `self.context` is the container!
-              Therefore, we create one here to have access to the methods.
-        """
-        schema_iface = self.field.interface
-        if schema_iface and schema_iface.providedBy(self.context):
-            return self.context
+        for key, value in attributes.items():
+            # Remove the data prefix
+            name = key.replace("data-", "", 1)
+            # lookup attributes for overrides
+            value = self.lookup(name, context, field, default=value)
+            # convert all attributes to JSON
+            attributes[key] = json.dumps(value)
 
-        # we might be in a subform, so try first to retrieve the object from
-        # the base form itself first
-        form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
-        context = getattr(form, "context", None)
-        if api.is_object(context):
-            if api.get_portal_type(context) == portal_type:
-                return context
+        return attributes
 
-        # Hack alert!
-        # we are in ++add++ form and have no context!
-        # Create a temporary object to be able to access class methods
-        if not portal_type:
-            portal_type = api.get_portal_type(self.context)
-        portal_types = api.get_tool("portal_types")
-        fti = portal_types[portal_type]
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("temporary")
-        # hook into acquisition chain
-        context = context.__of__(self.context)
-        return context
-
-    def lookup(self, name, field, context, default=None):
+    def lookup(self, name, context, field, default=None):
         """Check if the context has an override for the given named property
 
         The context can either define an attribute or a method with the
-        following naming convention:
+        following naming convention (all lower case):
 
-            <fieldname>_<propertyname>
+            get_widget_<fieldname>_<propertyname>
 
         If an attribute or method is found, this value will be returned,
         otherwise the lookup will return the default value
+
+        :param name: The name of a method to lookup
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value for the given name
+        :returns: New value for the named property
         """
 
-        # check if the current context defines an attribute or method for the
-        # given property
-        key = "{}_{}".format(field.getName(), name)
-        if base_hasattr(context, key):
-            attr = getattr(context, key, default)
+        # check if the current context defines an attribute or a method for the
+        # given property following our naming convention
+        context_key = "get_widget_{}_{}".format(field.getName(), name).lower()
+        if base_hasattr(context, context_key):
+            attr = getattr(context, context_key, default)
             if callable(attr):
                 # call the context method with additional information
                 attr = attr(name=name,
@@ -150,8 +159,91 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
                             default=default)
             return attr
 
+        # Allow named methods for query/columns
+        if name in ["query", "columns"]:
+            value = getattr(self, name, None)
+            # allow named methods from the context class
+            if api.is_string(value):
+                method = getattr(context, value, None)
+                if callable(method):
+                    return method()
+            # allow function objects directly
+            if callable(value):
+                return value()
+
+        # Call custom getter from the widget class
+        getter = "get_{}".format(name)
+        method = getattr(self, getter, None)
+        if callable(method):
+            return method(context, field, default=default)
+
         # return the widget attribute
         return getattr(self, name, default)
+
+    def get_api_url(self, context, field, default=None):
+        """JSON API URL to use for this widget
+
+        NOTE: we need to call the search view on the correct context to allow
+              context adapter registrations for IReferenceWidgetVocabulary!
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: API URL that is contacted when the search changed
+        """
+        # ensure we have an absolute url for the current context
+        url = api.get_url(context)
+
+        # NOTE: The temporary context created by `self.get_context` when if we
+        #       are in the ++add++ creation form for Dexterity contents exists
+        #       only for the current request and will be gone after response.
+        #       Therefore, the search view called later will result in a 404!
+        if getattr(context, "_temporary_", False):
+            form = self.get_form()
+            portal_type = getattr(form, "portal_type", "")
+            parent_url = api.get_url(self.context)
+            # provide a dynamically created context for the search view to call
+            # the right search adapters.
+            url = "{}/@@temporary_context/{}".format(parent_url, portal_type)
+
+        # get the API URL
+        api_url = getattr(self, "api_url", default)
+        # ensure the search path does not contain already the url
+        search_path = api_url.split(url)[-1]
+        # return the absolute search url
+        return "/".join([url, search_path])
+
+    def get_display_template(self, context, field, default=None):
+        """Return the display template to use
+        """
+        template = getattr(self, "display_template", None)
+        if template is not None:
+            return template
+        return DISPLAY_TEMPLATE
+
+    def get_multi_valued(self, context, field, default=None):
+        """Returns if the field is multi valued or not
+        """
+        return getattr(self.field, "multi_valued", default)
+
+    def get_catalog(self, context, field, default=None):
+        """Lookup the catalog to query
+
+        :param context: The current context of the field
+        :param field: The current field of the widget
+        :param default: The default property value
+        :returns: Catalog name to query
+        """
+        # check if the new `catalog` property is set
+        catalog_name = getattr(self, "catalog", None)
+
+        if catalog_name is None:
+            # try to lookup the catalog for the given object
+            catalogs = api.get_catalogs_for(context)
+            # function always returns at least one catalog object
+            catalog_name = catalogs[0].getId()
+
+        return catalog_name
 
     def get_value(self):
         """Extract the value from the request or get it from the field
@@ -159,7 +251,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
         # get the processed value from the `update` method
         value = self.value
         # the value might come from the request, e.g. on object creation
-        if isinstance(value, six.string_types):
+        if api.is_string(value):
             value = IDataConverter(self).toFieldValue(value)
         # we handle always lists in the templates
         if value is None:
@@ -168,47 +260,40 @@ class QuerySelectWidget(widget.HTMLInputWidget, Widget):
             value = [value]
         return value
 
-    def get_input_widget_attributes(self):
-        """Return input widget attributes for the ReactJS component
+    def get_render_data(self, context, field, reference):
+        """Provides the needed data to render the display template
+
+        :returns: Dictionary with data needed to render the display template
         """
-        context = self.get_context()
-        values = self.get_value()
-        attributes = {
-            "data-id": self.id,
-            "data-name": self.name,
-            "data-values": values,
-            "data-value_key": getattr(self, "value_key", "uid"),
-            "data-api_url": self.get_api_url(),
-            "data-query": getattr(self, "query", {}),
-            "data-catalog": getattr(self, "catalog", "portal_catalog"),
-            "data-search_index": getattr(self, "search_index", "Title"),
-            "data-search_wildcard": getattr(self, "search_wildcard", True),
-            "data-allow_user_value": getattr(self, "allow_user_value", False),
-            "data-columns": getattr(self, "columns", []),
-            "data-display_template": getattr(self, "display_template", None),
-            "data-limit": getattr(self, "limit", 5),
-            "data-multi_valued": getattr(self, "multi_valued", True),
-            "data-disabled": getattr(self, "disabled", False),
-            "data-readonly": getattr(self, "readonly", False),
-            "data-hide_input_after_select": getattr(
-                self, "hide_user_input_after_select", False),
+        if not reference:
+            return {}
+
+        return {
+            "uid": "",
+            "url": "",
+            "Title": reference,
+            "Description": "",
+            "review_state": "active",
         }
 
-        for key, value in attributes.items():
-            # lookup attributes for overrides
-            value = self.lookup(key, self.field, context, default=value)
-            # convert all attributes to JSON
-            attributes[key] = json.dumps(value)
-
-        return attributes
-
-    def get_api_url(self):
-        """JSON API URL to use for this widget
+    def render_reference(self, reference):
+        """Returns a rendered HTML element for the reference
         """
-        portal = api.get_portal()
-        portal_url = api.get_url(portal)
-        api_url = "{}/@@API/senaite/v1".format(portal_url)
-        return api_url
+        context = self.get_context()
+        field = self.field
+        display_template = self.get_display_template(context, field)
+        template = string.Template(display_template)
+        try:
+            data = self.get_render_data(context, field, reference)
+        except ValueError as e:
+            # Current user might not have privileges to view this object
+            logger.error(e.message)
+            return ""
+
+        if not data:
+            return ""
+
+        return template.safe_substitute(data)
 
 
 @adapter(IField, ISenaiteFormLayer)

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -26,7 +26,6 @@ from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -42,6 +41,8 @@ from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import registerType
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 
 schema = BikaSchema.copy() + Schema((
 
@@ -57,7 +58,18 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         allowed_types=("AttachmentType",),
         widget=ReferenceWidget(
-            label=_("Attachment Type"),
+            label=_(
+                "label_attachment_type",
+                default="Attachment Type"),
+            description=_(
+                "description_attachment_type",
+                default="Select the type of the attachment"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
@@ -98,14 +110,13 @@ class Attachment(BaseFolder, ClientAwareMixin):
     """Attachments are stored per client and can be linked to ARs or Analyses
     """
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
         """Rename with the IDServer
         """
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     @security.public

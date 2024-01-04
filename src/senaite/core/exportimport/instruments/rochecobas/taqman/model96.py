@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 """ Roche Cobas Taqman 96
@@ -26,7 +26,7 @@ from DateTime import DateTime
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 import json
 import six
 import traceback

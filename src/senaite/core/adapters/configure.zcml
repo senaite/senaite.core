@@ -1,5 +1,10 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           i18n_domain="senaite.core">
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="senaite.core">
+
+  <!-- package includes -->
+  <include package=".referencewidget" />
 
   <class class="ZPublisher.HTTPRequest.FileUpload">
     <implements interface=".interfaces.ISenaiteFileUpload" />
@@ -37,14 +42,6 @@
 
   <!-- Dynamic calculation of local roles for a given context and principal -->
   <adapter factory=".localroles.DynamicLocalRoleAdapter" />
-
-  <!-- Dynamic assignment of local roles for objects that belong to the same
-  Client as the contact the current user is linked to -->
-  <adapter
-      for="*"
-      provides="senaite.core.interfaces.IDynamicLocalRoles"
-      factory=".localroles.ClientAwareLocalRoles"
-      name="senaite.core.adapter.localroles.clientaware" />
 
   <!-- Adapter for the dynamic assignment of local and client-specific roles
   for contents shared across clients -->

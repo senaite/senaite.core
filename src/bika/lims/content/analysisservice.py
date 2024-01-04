@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
@@ -30,7 +30,7 @@ from bika.lims.browser.fields.partitionsetupfield import getContainers
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
@@ -307,7 +307,7 @@ class AnalysisService(AbstractBaseAnalysis):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
 
         return renameAfterCreation(self)
 

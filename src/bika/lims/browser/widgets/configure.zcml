@@ -49,12 +49,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <browser:page
-      for="*"
-      name="referencewidget_search"
-      class="bika.lims.browser.widgets.referencewidget.ajaxReferenceWidgetSearch"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
 </configure>

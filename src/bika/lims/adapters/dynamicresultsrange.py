@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -45,7 +45,9 @@ class DynamicResultsRange(object):
     def __init__(self, analysis):
         self.analysis = analysis
         self.analysisrequest = analysis.getRequest()
-        self.specification = self.analysisrequest.getSpecification()
+        self.specification = None
+        if self.analysisrequest:
+            self.specification = self.analysisrequest.getSpecification()
         self.dynamicspec = None
         if self.specification:
             self.dynamicspec = self.specification.getDynamicAnalysisSpec()

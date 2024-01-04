@@ -15,19 +15,19 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import mimetypes
 import os
 import re
-import six
 import tempfile
 from email import Encoders
+
 from email.MIMEBase import MIMEBase
-from six.moves.urllib.request import urlopen
 from time import time
 
+import six
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
@@ -48,13 +48,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.DCWorkflow.events import AfterTransitionEvent
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.p3compat import cmp
+from six.moves.urllib.request import urlopen
 from weasyprint import CSS
 from weasyprint import HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
 from zope.event import notify
-from zope.i18n import translate
 from zope.i18n.locales import locales
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -81,15 +82,16 @@ def t(i18n_msg):
     """Safely translate and convert to UTF8, any zope i18n msgid returned from
     a bikaMessageFactory _
     """
-    text = to_unicode(i18n_msg)
-    try:
-        request = api.get_request()
-        domain = getattr(i18n_msg, "domain", "senaite.core")
-        text = translate(text, domain=domain, context=request)
-    except UnicodeDecodeError:
-        # TODO: This is only a quick fix
-        logger.warn("{} couldn't be translated".format(text))
-    return to_utf8(text)
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.i18n.translate instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+
+    # prevent circular dependencies
+    from senaite.core.i18n import translate
+    return translate(i18n_msg)
 
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
@@ -595,31 +597,29 @@ def getFromString(obj, string, default=None):
 
 
 def user_fullname(obj, userid):
-    """
-    Returns the user full name as string.
+    """Returns the user full name as string.
     """
     member = obj.portal_membership.getMemberById(userid)
     if member is None:
         return userid
-    member_fullname = member.getProperty('fullname')
-    portal_catalog = getToolByName(obj, 'portal_catalog')
-    c = portal_catalog(portal_type='Contact', getUsername=userid)
-    contact_fullname = c[0].getObject().getFullname() if c else None
+    member_fullname = member.getProperty("fullname")
+    catalog = api.get_tool(CONTACT_CATALOG)
+    res = catalog(portal_type="Contact", getUsername=userid)
+    contact_fullname = res[0].getObject().getFullname() if res else None
     return contact_fullname or member_fullname or userid
 
 
 def user_email(obj, userid):
-    """
-    This function returns the user email as string.
+    """This function returns the user email as string.
     """
     member = obj.portal_membership.getMemberById(userid)
     if member is None:
         return userid
-    member_email = member.getProperty('email')
-    portal_catalog = getToolByName(obj, 'portal_catalog')
-    c = portal_catalog(portal_type='Contact', getUsername=userid)
-    contact_email = c[0].getObject().getEmailAddress() if c else None
-    return contact_email or member_email or ''
+    member_email = member.getProperty("email")
+    catalog = api.get_tool(CONTACT_CATALOG)
+    res = catalog(portal_type="Contact", getUsername=userid)
+    contact_email = res[0].getObject().getEmailAddress() if res else None
+    return contact_email or member_email or ""
 
 
 def measure_time(func_to_measure):
@@ -663,11 +663,12 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
             dst_schema[fieldname].set(dst, value)
 
 
-def get_link(href, value=None, **kwargs):
+def get_link(href, value=None, csrf=True, **kwargs):
     """
     Returns a well-formed link. If href is None/empty, returns an empty string
     :param href: value to be set for attribute href
     :param value: the text to be displayed. If None, the href itself is used
+    :param value: if True, the CSRF token is added in the href
     :param kwargs: additional attributes and values
     :return: a well-formed html anchor
     """
@@ -676,7 +677,7 @@ def get_link(href, value=None, **kwargs):
     anchor_value = value and value or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token
-    if href.startswith("http"):
+    if csrf and href.startswith("http"):
         href = addTokenToUrl(href)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
@@ -753,8 +754,13 @@ def get_registry_value(key, default=None):
     :param default: default value if the key is not registered
     :return: value in the registry for the key passed in
     """
-    registry = queryUtility(IRegistry)
-    return registry.get(key, default)
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.api.get_registry_record instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+    return api.get_registry_record(key, default=default)
 
 
 def check_permission(permission, obj):

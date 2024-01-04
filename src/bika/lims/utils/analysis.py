@@ -15,9 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 import math
 
 from bika.lims import api
@@ -26,6 +27,7 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import format_supsub
 
 
 def create_analysis(context, source, **kwargs):
@@ -219,8 +221,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     the uncertainty neither the result. The fixed length precision is
     used instead.
 
-    If the result is not floatable or no uncertainty defined, returns
-    an empty string.
+    If the result is not floatable, the uncertainty is not defined or its value
+    is not above 0, an empty string is returned.
 
     The default decimal mark '.' will be replaced by the decimalmark
     specified.
@@ -242,8 +244,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         pass
 
     uncertainty = analysis.getUncertainty()
-
-    if not uncertainty:
+    if api.to_float(uncertainty, default=0) <= 0:
+        # uncertainty is not defined or not above 0
         return ""
 
     # always convert exponential notation to decimal
@@ -416,3 +418,42 @@ def generate_analysis_id(instance, keyword):
         new_id = "{}-{}".format(keyword, count)
         count += 1
     return new_id
+
+
+def format_interim(interim_field, html=True):
+    """Returns a copy of the interim field plus additional attributes suitable
+    for visualization, like formatted_result and formatted_unit
+    """
+    separator = "<br/>" if html else ", "
+
+    # copy to prevent persistent changes
+    item = copy.deepcopy(interim_field)
+
+    # get the raw value
+    value = item.get("value", "")
+    values = filter(None, api.to_list(value))
+
+    # if choices, display texts instead of values
+    choices = item.get("choices")
+    if choices:
+        # generate a {value:text} dict
+        choices = choices.split("|")
+        choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+
+        # set the text as the formatted value
+        texts = [choices.get(v, "") for v in values]
+        values = filter(None, texts)
+
+    else:
+        # default formatting
+        setup = api.get_setup()
+        decimal_mark = setup.getResultsDecimalMark()
+        values = [formatDecimalMark(val, decimal_mark) for val in values]
+
+    item["formatted_value"] = separator.join(values)
+
+    # unit formatting
+    unit = item.get("unit", "")
+    item["formatted_unit"] = format_supsub(unit) if html else unit
+
+    return item

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -27,7 +27,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
-from bika.lims.permissions import FieldEditSpecification
+from senaite.core.permissions import FieldEditSpecification
 from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
@@ -89,35 +89,53 @@ class AnalysisSpecificationView(BikaListingView):
                 "sortable": False}),
             ("warn_min", {
                 "title": _("Min warn"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("min_operator", {
                 "title": _("Min operator"),
                 "type": "choices",
-                "sortable": False}),
+                "sortable": False,
+            }),
             ("min", {
                 "title": _("Min"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("max_operator", {
                 "title": _("Max operator"),
                 "type": "choices",
-                "sortable": False}),
+                "sortable": False,
+            }),
             ("max", {
                 "title": _("Max"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("warn_max", {
                 "title": _("Max warn"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("hidemin", {
                 "title": _("< Min"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("hidemax", {
                 "title": _("> Max"),
-                "sortable": False}),
-            ("rangecomment", {
-                "title": _("Range comment"),
                 "sortable": False,
-                "type": "remarks",
-                "toggle": False}),
+                "type": "numeric",
+            }),
+            ("rangecomment", {
+                "title": _(
+                    u"label_specs_rangecomment",
+                    default=u"Out of range comment"
+                ),
+                "sortable": False,
+                "type": "string",
+                "size": "30",
+            }),
         ))
 
         self.review_states = [
@@ -228,6 +246,7 @@ class AnalysisSpecificationView(BikaListingView):
             item["category"] = category
 
         item["Title"] = title
+        item["Keyword"] = keyword
         item["replace"]["Title"] = get_link(url, value=title)
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices

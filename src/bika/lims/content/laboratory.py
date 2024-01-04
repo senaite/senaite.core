@@ -15,10 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.config import ManageBika
+from bika.lims.content.organisation import Organisation
+from bika.lims.interfaces import ILaboratory
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import ImageField
@@ -33,17 +39,10 @@ from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import implements
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.config import ManageBika
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import ILaboratory
 
 DEFAULT_ACCREDITATION_PAGE_HEADER = """${lab_name} has been accredited as
 ${accreditation_standard} conformant by ${accreditation_body_abbr},
@@ -73,15 +72,23 @@ schema = Organisation.schema.copy() + Schema((
         allowed_types=("LabContact",),
         write_permission=ManageBika,
         widget=ReferenceWidget(
-            label=_("Supervisor"),
-            description=_("Supervisor of the Lab"),
-            showOn=True,
-            catalog_name=SETUP_CATALOG,
-            base_query=dict(
-                is_active=True,
-                sort_on="sortable_title",
-                sort_order="ascending",
-            ),
+            label=_(
+                "label_laboratory_supervisor",
+                default="Supervisor"),
+            description=_(
+                "description_laboratory_suervisor",
+                default="Supervisor of the Lab"),
+            catalog_name=CONTACT_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+                {"name": "getJobTitle", "label": _("Job Title")},
+            ],
         )
     ),
 

@@ -15,14 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from Products.Archetypes.atapi import TextAreaWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -35,46 +35,70 @@ from Products.Archetypes.public import TextField
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.record import RecordField
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SAMPLE_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
+
     UIDReferenceField(
         "AnalysisRequest",
         allowed_types=("AnalysisRequest",),
         required=1,
+        widget=ReferenceWidget(
+            label=_(
+                "label_arreport_sample",
+                default="Primary Sample"),
+            description=_(
+                "description_arreport_sample",
+                default="The primary sample of the PDF"),
+            readonly=True,
+            visible={
+                "view": "visible",
+            },
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Sample")},
+                {"name": "ClientTitle", "label": _("Client")},
+            ],
+        )
     ),
+
+    # readonly field
     UIDReferenceField(
         "ContainedAnalysisRequests",
         multiValued=True,
         allowed_types=("AnalysisRequest",),
         relationship="ARReportAnalysisRequest",
         widget=ReferenceWidget(
-            label=_("Contained Samples"),
-            render_own_label=False,
-            size=20,
-            description=_("Referenced Samples in the PDF"),
+            label=_(
+                "label_arreport_contained_samples",
+                default="Contained Samples"),
+            description=_(
+                "description_arreport_contained_samples",
+                default="Contained samples in the PDF"),
+            readonly=True,
             visible={
-                "edit": "visible",
                 "view": "visible",
-                "add": "edit",
             },
-            catalog_name="senaite_catalog_sample",
-            base_query={},
-            showOn=True,
-            colModel=[
-                {
-                    "columnName": "UID",
-                    "hidden": True,
-                }, {
-                    "columnName": "Title",
-                    "label": "Title"
-                }, {
-                    "columnName": "ClientTitle",
-                    "label": "Client"
-                },
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Sample")},
+                {"name": "ClientTitle", "label": _("Client")},
             ],
-        ),
+        )
     ),
+
     RecordField(
         "Metadata",
         type="metadata",
@@ -86,6 +110,7 @@ schema = BikaSchema.copy() + Schema((
             "contained_requests",
         ),
     ),
+
     RecordsField(
         "SendLog",
         type="sendlog",
@@ -100,13 +125,21 @@ schema = BikaSchema.copy() + Schema((
             "email_attachments",
         ),
     ),
+
     TextField(
-        "Html"
+        "Html",
+        widget=TextAreaWidget(
+            label=_("HTML"),
+            cols=30,
+            rows=30,
+        ),
     ),
+
     BlobField(
         "Pdf",
         default_content_type="application/pdf",
     ),
+
     RecordsField(
         "Recipients",
         type="recipients",
@@ -118,6 +151,7 @@ schema = BikaSchema.copy() + Schema((
             "PublicationModes"
         ),
     ),
+
     DateTimeField(
         "DatePrinted",
         mode="rw",
@@ -143,13 +177,11 @@ class ARReport(BaseFolder, ClientAwareMixin):
     implements(IARReport)
 
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 

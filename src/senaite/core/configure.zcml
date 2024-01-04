@@ -10,21 +10,28 @@
   <five:registerPackage package="." initialize=".initialize" />
   <i18n:registerTranslations directory="locales" />
 
+  <!-- Required for referenceable behavior in content types -->
+  <include package="plone.app.referenceablebehavior" />
+
   <!-- package includes -->
   <include package=".adapters" />
+  <include package=".astm" />
   <include package=".behaviors" />
   <include package=".browser" />
   <include package=".catalog" />
   <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".extender" />
+  <include package=".idserver" />
   <include package=".migration" />
   <include package=".patches" />
   <include package=".permissions" />
   <include package=".registry" />
   <include package=".schema" />
+  <include package=".subscribers" />
   <include package=".upgrade" />
   <include package=".utilities" />
+  <include package=".vocabularies" />
   <include package=".z3cform" />
 
   <!-- portal skins -->

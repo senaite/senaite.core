@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -25,7 +25,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -505,16 +505,27 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
         mode="rw",
         multiValued=0,
-        relationship='SetupLandingPage',
+        relationship="SetupLandingPage",
         widget=ReferenceWidget(
-            label=_("Landing Page"),
+            label=_(
+                "label_setup_landingpage",
+                default="Landing Page"),
             description=_(
-                "The landing page is shown for non-authenticated users "
+                "description_setup_landingpage",
+                default="The landing page is shown for non-authenticated users "
                 "if the Dashboard is not selected as the default front page. "
                 "If no landing page is selected, the default frontpage is displayed."),
-            catalog_name="portal_catalog",
-            base_query={"review_State": "published"},
-            showOn=True,
+            catalog=["uid_catalog"],
+            query={
+                "is_active": True,
+                "sort_on": "id",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Title")},
+                {"name": "portal_type", "label": _("Type")},
+            ],
+
         ),
     ),
     BooleanField(

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
@@ -29,7 +29,7 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
-from bika.lims.permissions import AddAnalysis
+from senaite.core.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField

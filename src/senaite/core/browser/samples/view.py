@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -26,12 +26,12 @@ from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
-from bika.lims.permissions import AddAnalysisRequest
-from bika.lims.permissions import TransitionSampleSample
+from senaite.core.permissions import AddAnalysisRequest
+from senaite.core.permissions import TransitionSampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
 from senaite.core.api import dtime

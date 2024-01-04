@@ -15,21 +15,24 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import codecs
 
 import six
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.idserver import renameAfterCreation
+from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import dtime
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
 
 
@@ -329,7 +332,7 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
         lines = [line.strip() for line in lines]
         return lines
 
-    def split_line(self, line):
+    def splitLine(self, line):
         sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
@@ -358,12 +361,13 @@ class AnalysisResultsImporter(Logger):
         self._override = override
         self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
-        self.bsc = getToolByName(self.context, 'senaite_catalog_setup')
-        self.bac = getToolByName(self.context, 'senaite_catalog_analysis')
+
+        self.bsc = getToolByName(self.context, SETUP_CATALOG)
+        self.bac = getToolByName(self.context, ANALYSIS_CATALOG)
         self.ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
-        self.pc = getToolByName(self.context, 'portal_catalog')
-        self.bc = getToolByName(self.context, 'senaite_catalog')
+        self.bc = getToolByName(self.context, SENAITE_CATALOG)
         self.wf = getToolByName(self.context, 'portal_workflow')
+
         if not self._allowed_ar_states:
             self._allowed_ar_states = ['sample_received',
                                        'to_be_verified']
@@ -674,7 +678,9 @@ class AnalysisResultsImporter(Logger):
                 title=filename,
                 AttachmentFile=infile,
                 AttachmentType=attuid,
-                AttachmentKeys='Results, Automatic import')
+                AttachmentKeys='Results, Automatic import',
+                RenderInReport=False,
+            )
             attachment.reindexObject()
         return attachment
 
@@ -944,7 +950,7 @@ class AnalysisResultsImporter(Logger):
 
         if "DateTime" in values.keys():
             ts = values.get("DateTime")
-            capturedate = api.to_date(ts)
+            capturedate = dtime.to_DT(ts)
             if capturedate is None:
                 del values["DateTime"]
 

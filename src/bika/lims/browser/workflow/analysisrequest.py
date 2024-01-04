@@ -15,26 +15,28 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.Utils import formataddr
 from string import Template
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.mail import compose_email
+from bika.lims.api.mail import is_valid_email_address
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IContact
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from bika.lims.utils import encode_header
-from bika.lims.utils import t
+from bika.lims.utils import get_link_for
+from collections import OrderedDict
 from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
+from Products.PlonePAS.plugins.ufactory import PloneUser
+from Products.PlonePAS.tools.memberdata import MemberData
 from zope.interface import implements
 
 
@@ -162,12 +164,12 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         # Alert the client contacts who ordered the results, stating that a
         # possible mistake has been picked up and is under investigation.
         for sample in transitioned:
-            self.notify_ar_retract(sample)
+            self.send_invalidation_email(sample)
 
         # Redirect the user to success page
         return self.success(transitioned)
 
-    def notify_ar_retract(self, sample):
+    def send_invalidation_email(self, sample):
         """Sends an email notification to sample's client contact if the sample
         passed in has a retest associated
         """
@@ -177,84 +179,80 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
                         .format(api.get_id(sample)))
             return
 
-        # Email fields
-        sample_id = api.get_id(sample)
-        subject = t(_("Erroneous result publication from {}").format(sample_id))
-        emails_lab = self.get_lab_managers_formatted_emails()
-        emails_sample = self.get_sample_contacts_formatted_emails(sample)
-        recipients = list(set(emails_lab + emails_sample))
-
-        msg = MIMEMultipart("related")
-        msg["Subject"] = subject
-        msg["From"] = self.get_laboratory_formatted_email()
-        msg["To"] = ", ".join(recipients)
-        body = self.get_email_body(sample)
-        msg_txt = MIMEText(safe_unicode(body).encode('utf-8'), _subtype='html')
-        msg.preamble = 'This is a multi-part MIME message.'
-        msg.attach(msg_txt)
-
         # Send the email
         try:
+            email_message = self.get_invalidation_email(sample)
             host = api.get_tool("MailHost")
-            host.send(msg.as_string(), immediate=True)
+            host.send(email_message, immediate=True)
         except Exception as err_msg:
-            message = _("Unable to send an email to alert lab "
-                        "client contacts that the Sample has been "
-                        "retracted: ${error}",
-                        mapping={'error': safe_unicode(err_msg)})
-            self.context.plone_utils.addPortalMessage(message, 'warning')
+            message = _(
+                "Cannot send email for ${sample_id}: ${error}",
+                mapping={
+                    "sample_id": api.get_id(sample),
+                    "error": safe_unicode(err_msg)
+                })
+            self.context.plone_utils.addPortalMessage(message, "warning")
 
-    def get_email_body(self, sample):
-        """Returns the email body text
+    def get_invalidation_email(self, sample):
+        """Returns the sample invalidation MIME Message for the sample
         """
-        retest = sample.getRetest()
-        lab_address = api.get_bika_setup().laboratory.getPrintAddress()
+        # Get the recipients
+        managers = api.get_users_by_roles("LabManager")
+        recipients = managers + [sample.getContact()] + sample.getCCContact()
+        recipients = filter(None, map(self.get_email_address, recipients))
+        recipients = list(OrderedDict.fromkeys(recipients))
+
+        if not recipients:
+            sample_id = api.get_id(sample)
+            raise ValueError("No valid recipients for {}".format(sample_id))
+
+        # Compose the email
+        subject = self.context.translate(_(
+            "Erroneous result publication: ${sample_id}",
+            mapping={"sample_id": api.get_id(sample)}
+        ))
+
         setup = api.get_setup()
-        body = Template(setup.getEmailBodySampleInvalidation())\
-            .safe_substitute(
-            dict(sample_link=self.get_html_link(sample),
-                 retest_link=self.get_html_link(retest),
-                 sample_id=api.get_id(sample),
-                 retest_id=api.get_id(retest),
-                 lab_address="<br/>".join(lab_address)))
-        return body
+        retest = sample.getRetest()
+        lab_email = setup.laboratory.getEmailAddress()
+        lab_address = setup.laboratory.getPrintAddress()
+        body = Template(setup.getEmailBodySampleInvalidation())
+        body = body.safe_substitute({
+            "lab_address": "<br/>".join(lab_address),
+            "sample_id": api.get_id(sample),
+            "sample_link": get_link_for(sample, csrf=False),
+            "retest_id": api.get_id(retest),
+            "retest_link": get_link_for(retest, csrf=False),
+        })
 
-    def get_formatted_email(self, email_name):
-        """Formats a email
-        """
-        return formataddr((encode_header(email_name[0]), email_name[1]))
+        return compose_email(from_addr=lab_email, to_addr=recipients,
+                             subj=subject, body=body, html=True)
 
-    def get_laboratory_formatted_email(self):
-        """Returns the laboratory email formatted
+    def get_email_address(self, contact_user_email):
+        """Returns the email address for the contact, member or email
         """
-        lab = api.get_bika_setup().laboratory
-        return self.get_formatted_email((lab.getName(), lab.getEmailAddress()))
+        if is_valid_email_address(contact_user_email):
+            return contact_user_email
 
-    def get_lab_managers_formatted_emails(self):
-        """Returns a list with lab managers formatted emails
-        """
-        users = api.get_users_by_roles("LabManager")
-        users = map(lambda user: (user.getProperty("fullname"),
-                                  user.getProperty("email")), users)
-        return map(self.get_formatted_email, users)
+        if IContact.providedBy(contact_user_email):
+            contact_email = contact_user_email.getEmailAddress()
+            return self.get_email_address(contact_email)
 
-    def get_contact_formatted_email(self, contact):
-        """Returns a string with the formatted email for the given contact
-        """
-        contact_name = contact.Title()
-        contact_email = contact.getEmailAddress()
-        return self.get_formatted_email((contact_name, contact_email))
+        if isinstance(contact_user_email, MemberData):
+            contact_user_email = contact_user_email.getUser()
 
-    def get_sample_contacts_formatted_emails(self, sample):
-        """Returns a list with the formatted emails from sample contacts
-        """
-        contacts = list(set([sample.getContact()] + sample.getCCContact()))
-        return map(self.get_contact_formatted_email, contacts)
+        if isinstance(contact_user_email, PloneUser):
+            # Try with the contact's email first
+            contact = api.get_user_contact(contact_user_email)
+            contact_email = self.get_email_address(contact)
+            if contact_email:
+                return contact_email
 
-    def get_html_link(self, obj):
-        """Returns an html formatted link for the given object
-        """
-        return "<a href='{}'>{}</a>".format(api.get_url(obj), api.get_id(obj))
+            # Fallback to member's email
+            user_email = contact_user_email.getProperty("email")
+            return self.get_email_address(user_email)
+
+        return None
 
 
 class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
@@ -441,7 +439,13 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         hidden = map(lambda o: {
             "uid": api.get_uid(o), "hidden": self.is_hidden(o)
         }, services)
-        specs = map(lambda service: self.get_specs(service), services)
+
+        # Do not overwrite default result ranges set through sample
+        # specification field unless the edition of specs at analysis
+        # level is explicitely allowed
+        specs = []
+        if self.is_ar_specs_enabled:
+            specs = map(lambda service: self.get_specs(service), services)
 
         # Set new analyses to the sample
         sample.setAnalysisServicesSettings(hidden)
@@ -460,6 +464,14 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
 
         # Redirect the user to success page
         self.success([sample])
+
+    @property
+    def is_ar_specs_enabled(self):
+        """Returns whether the assignment of specs at analysis level within
+        sample context is enabled or not
+        """
+        setup = api.get_setup()
+        return setup.getEnableARSpecs()
 
     def is_hidden(self, service):
         """Returns whether the request Hidden param for the given obj is True

@@ -4,6 +4,21 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="plone">
 
+  <!-- Standard add view and form - invoked from ++add++ traverser -->
+  <adapter
+      for="Products.CMFCore.interfaces.IFolderish
+           senaite.core.interfaces.ISenaiteFormLayer
+           plone.dexterity.interfaces.IDexterityFTI"
+      provides="zope.publisher.interfaces.browser.IBrowserPage"
+      factory=".add.DefaultAddView"
+      />
+  <class class=".add.DefaultAddView">
+    <require
+        permission="cmf.AddPortalContent"
+        interface="zope.publisher.interfaces.browser.IBrowserPage"
+        />
+  </class>
+
   <!-- Override form/field/widget macros for edit mode -->
   <browser:page
       name="ploneform-macros"

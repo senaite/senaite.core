@@ -1,0 +1,47 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Adapter that provides data for the referencewidget render template -->
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".dataproviders.ReferenceWidgetDataProvider"
+      />
+
+  <!-- Adapter that provides search results for the referencewidget-->
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".vocabularies.DefaultReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+      />
+
+  <!-- ClientAwareReferenceWidgetVocabulary
+       Injects getClientUID or getParentUID as additional search criteria for
+       client-bound reference fields -->
+  <adapter
+      for="bika.lims.interfaces.IBatch
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
+
+  <adapter
+      for="bika.lims.interfaces.IClient
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
+
+  <adapter
+      for="bika.lims.interfaces.IContact
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
+
+  <adapter
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
+
+</configure>

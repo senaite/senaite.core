@@ -15,15 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IDeactivable
-from zope.interface import implements
+from bika.lims.interfaces import ISupplierContact
 from Products.Archetypes.public import registerType
+from zope.interface import implements
 
 schema = Person.schema.copy()
 
@@ -42,16 +43,14 @@ schema["title"].widget.visible = False
 class SupplierContact(Person):
     """Supplier Contact content
     """
-    implements(IDeactivable)
+    implements(ISupplierContact, IDeactivable)
 
     _at_rename_after_creation = True
-    displayContentsTab = False
-    isPrincipiaFolderish = 0
     schema = schema
     security = ClassSecurityInfo()
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 

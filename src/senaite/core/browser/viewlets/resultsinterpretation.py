@@ -15,14 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.permissions import FieldEditResultsInterpretation
+from senaite.core.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.layout.viewlets import ViewletBase
 from plone.app.textfield import RichTextValue

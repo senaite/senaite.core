@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.jsonapi.core import router
@@ -57,7 +57,7 @@ class Remove(object):
         >>> portal_url = portal.absolute_url()
         >>> from plone.app.testing import SITE_OWNER_NAME
         >>> from plone.app.testing import SITE_OWNER_PASSWORD
-        >>> blah = portal.portal_catalog(Type = "Contact")[-1]
+        >>> blah = portal.uid_catalog(Type = "Contact")[-1]
         >>> uid = blah.UID
 
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)

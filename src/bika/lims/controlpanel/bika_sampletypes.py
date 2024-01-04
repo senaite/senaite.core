@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -26,13 +26,13 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleTypes
-from bika.lims.permissions import AddSampleType
 from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.permissions import AddSampleType
 from zope.interface.declarations import implements
 
 # TODO: Separate content and view into own modules!
@@ -99,9 +99,6 @@ class SampleTypesView(BikaListingView):
             ("ContainerType", {
                 "title": _("Default Container"),
                 "toggle": True}),
-            ("SamplePoints", {
-                "title": _("Sample Points"),
-                "toggle": True}),
         ))
 
         self.review_states = [
@@ -164,21 +161,6 @@ class SampleTypesView(BikaListingView):
         # Minimum Volume
         vol = obj.getMinimumVolume()
         item["getMinimumVolume"] = vol
-
-        # Hide sample points assigned to this sample type that do not belong
-        # to the same container (Client or Setup)
-        sample_points = obj.getSamplePoints()
-        path = api.get_path(self.context)
-        setup = api.get_setup()
-        if api.get_parent(self.context) == setup:
-            path = api.get_path(setup.bika_samplepoints)
-
-        sample_points = filter(lambda sp: api.get_parent_path(sp) == path,
-                               sample_points)
-
-        # Display the links to the sample points
-        links = map(get_link_for, sample_points)
-        item["replace"]["SamplePoints"] = ", ".join(links)
 
         return item
 

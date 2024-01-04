@@ -23,6 +23,7 @@ Test Setup
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from bika.lims.api import create
 
     >>> portal = self.portal
     >>> portal_url = portal.absolute_url()
@@ -52,16 +53,6 @@ Test Setup
     ...     allowed = set(rolesForPermissionOn(permission, context))
     ...     return sorted(allowed)
 
-    >>> def create(container, portal_type, title=None):
-    ...     # Creates a content in a container and manually calls processForm
-    ...     title = title is None and "Test {}".format(portal_type) or title
-    ...     _ = container.invokeFactory(portal_type, id="tmpID", title=title)
-    ...     obj = container.get(_)
-    ...     obj.processForm()
-    ...     modified(obj)  # notify explicitly for the test
-    ...     transaction.commit()  # somehow the created method did not appear until I added this
-    ...     return obj
-
     >>> def get_workflows_for(context):
     ...     # Returns a tuple of assigned workflows for the given context
     ...     workflow = ploneapi.portal.get_tool("portal_workflow")
@@ -78,8 +69,8 @@ Client
 A `client` lives in the `/clients` folder::
 
     >>> clients = portal.clients
-    >>> client1 = create(clients, "Client", title="Client-1")
-    >>> client2 = create(clients, "Client", title="Client-2")
+    >>> client1 = create(clients, "Client", title="Client-1", ClientID="ClientID1")
+    >>> client2 = create(clients, "Client", title="Client-2", ClientID="ClientID2")
 
 
 Contact
@@ -123,10 +114,10 @@ Linking the user to a client contact grants access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Clients` group::
+Linking a user adds this user to the `Client` group::
 
-    >>> clients_group = ploneapi.group.get("Clients")
-    >>> user1.getId() in clients_group.getAllGroupMemberIds()
+    >>> client_group = client1.get_group()
+    >>> user1.getId() in client_group.getAllGroupMemberIds()
     True
 
 This gives the user the global `Client` role::
@@ -136,8 +127,8 @@ This gives the user the global `Client` role::
 
 It also grants local `Owner` role on the client object::
 
-    >>> sorted(user1.getRolesInContext(client1))
-    ['Authenticated', 'Member', 'Owner']
+    >>> sorted(ploneapi.user.get_roles(user=user1, obj=client1))
+    ['Authenticated', 'Client', 'Member', 'Owner']
 
 The user is able to modify the `client` object properties::
 
@@ -173,7 +164,7 @@ Unlink the user revokes all access to the client::
 
 The user has no local owner role anymore on the client::
 
-    >>> sorted(user1.getRolesInContext(client1))
+    >>> sorted(ploneapi.user.get_roles(user=user1, obj=client1))
     ['Authenticated', 'Member']
 
     >>> browser.open(client1.absolute_url())

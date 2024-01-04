@@ -15,16 +15,17 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.permissions import AddInstrumentLocation
 from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.permissions import AddInstrumentLocation
 
 
 class InstrumentLocationsView(ListingView):
@@ -33,6 +34,8 @@ class InstrumentLocationsView(ListingView):
 
     def __init__(self, context, request):
         super(InstrumentLocationsView, self).__init__(context, request)
+
+        self.catalog = SETUP_CATALOG
 
         self.contentFilter = {
             "portal_type": "InstrumentLocation",

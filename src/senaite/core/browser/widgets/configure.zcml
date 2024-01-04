@@ -7,7 +7,7 @@
   <browser:page
       for="*"
       name="referencewidget_search"
-      class=".referencewidget.ajaxReferenceWidgetSearch"
+      class=".referencewidget_search.ReferenceWidgetSearch"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />

@@ -15,9 +15,9 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.api.security import *
-    >>> from bika.lims.permissions import FieldEditAnalysisHidden
-    >>> from bika.lims.permissions import FieldEditAnalysisResult
-    >>> from bika.lims.permissions import FieldEditAnalysisRemarks
+    >>> from senaite.core.permissions import FieldEditAnalysisHidden
+    >>> from senaite.core.permissions import FieldEditAnalysisResult
+    >>> from senaite.core.permissions import FieldEditAnalysisRemarks
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
@@ -32,14 +32,14 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-		>>> def new_sample(services):
-		...     values = {
-		...         "Client": client.UID(),
-		...         "Contact": contact.UID(),
-		...         "DateSampled": date_now,
-		...         "SampleType": sampletype.UID()}
-		...     service_uids = map(api.get_uid, services)
-		...     return create_analysisrequest(client, request, values, service_uids)
+    >>> def new_sample(services):
+    ...     values = {
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     return create_analysisrequest(client, request, values, service_uids)
 
     >>> def get_analysis(sample, id):
     ...     ans = sample.getAnalyses(getId=id, full_objects=True)
@@ -206,7 +206,7 @@ This function is the opposite of `get_permissions_for_role` and returns
 the roles for a given permission:
 
     >>> get_roles_for_permission(FieldEditAnalysisResult, cu)
-    ('Manager', 'Sampler')
+    ('LabManager', 'Manager', 'Sampler')
 
 
 Get the roles of a user

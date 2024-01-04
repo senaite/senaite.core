@@ -4,6 +4,13 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <browser:page
+      name="temporary_context"
+      for="*"
+      permission="cmf.AddPortalContent"
+      class=".temporary_context.TemporaryContext"
+      />
+
+  <browser:page
       name="senaite_view"
       for="*"
       permission="zope.Public"

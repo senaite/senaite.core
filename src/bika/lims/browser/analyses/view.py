@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -26,6 +26,7 @@ from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
@@ -36,21 +37,20 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import FieldEditAnalysisConditions
-from bika.lims.permissions import FieldEditAnalysisHidden
-from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.permissions import TransitionVerify
-from bika.lims.permissions import ViewResults
-from bika.lims.permissions import ViewRetractedAnalyses
+from senaite.core.permissions import EditFieldResults
+from senaite.core.permissions import EditResults
+from senaite.core.permissions import FieldEditAnalysisConditions
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import TransitionVerify
+from senaite.core.permissions import ViewResults
+from senaite.core.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
-from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from plone.memoize import view as viewcache
@@ -59,6 +59,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate as t
 from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
@@ -486,16 +487,22 @@ class AnalysesView(ListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        obj = self.get_object(analysis_brain)
-        methods = obj.getAllowedMethods()
-        if not methods:
-            return [{"ResultValue": "", "ResultText": _("None")}]
         vocab = []
+        obj = self.get_object(analysis_brain)
+        default_method = obj.getMethod()
+        methods = obj.getAllowedMethods()
+        empty_option = {"ResultValue": "", "ResultText": _("None")}
         for method in methods:
             vocab.append({
                 "ResultValue": api.get_uid(method),
                 "ResultText": api.get_title(method),
             })
+        # allow empty option if we have no allowed methods
+        if not methods:
+            vocab = [empty_option]
+        # allow empty option if the default method is set to "None"
+        elif default_method is None:
+            vocab.insert(0, empty_option)
         return vocab
 
     def get_unit_vocabulary(self, analysis_brain):
@@ -967,10 +974,8 @@ class AnalysesView(ListingView):
                 item["Result"] = "{} {}".format(operand, result).strip()
 
             # Prepare result options
-            choices = obj.getResultOptions()
+            choices = self.get_result_options(obj)
             if choices:
-                # N.B.we copy here the list to avoid persistent changes
-                choices = copy(choices)
                 choices_type = obj.getResultOptionsType()
                 if choices_type == "select":
                     # By default set empty as the default selected choice
@@ -994,6 +999,18 @@ class AnalysesView(ListingView):
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
 
+    def get_result_options(self, analysis):
+        """Returns the result options of the analysis to be rendered or empty
+        """
+        options = copy(analysis.getResultOptions())
+        sort_by = analysis.getResultOptionsSorting()
+        if not sort_by:
+            return options
+
+        sort_by, sort_order = sort_by.split("-")
+        reverse = sort_order == "desc"
+        return sorted(options, key=itemgetter(sort_by), reverse=reverse)
+
     def is_multi_interim(self, interim):
         """Returns whether the interim stores a list of values instead of a
         single value
@@ -1001,18 +1018,21 @@ class AnalysesView(ListingView):
         result_type = interim.get("result_type", "")
         return result_type.startswith("multi")
 
+    @deprecated("Use api.to_list instead")
     def to_list(self, value):
         """Converts the value to a list
         """
-        try:
-            val = json.loads(value)
-            if isinstance(val, (list, tuple, set)):
-                value = val
-        except (ValueError, TypeError):
-            pass
-        if not isinstance(value, (list, tuple, set)):
-            value = [value]
-        return value
+        return api.to_list(value)
+
+    def get_interim_choices(self, interim):
+        """Parse the interim choices field
+        """
+        choices = interim.get("choices")
+        if not choices:
+            return None
+        items = choices.split("|")
+        pairs = map(lambda item: item.strip().split(":"), items)
+        return OrderedDict(pairs)
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -1044,15 +1064,19 @@ class AnalysesView(ListingView):
         # Copy to prevent to avoid persistent changes
         interim_fields = deepcopy(interim_fields)
         for interim_field in interim_fields:
-            interim_keyword = interim_field.get('keyword', '')
+            interim_keyword = interim_field.get("keyword", "")
             if not interim_keyword:
                 continue
 
             interim_value = interim_field.get("value", "")
             interim_allow_empty = interim_field.get("allow_empty") == "on"
             interim_unit = interim_field.get("unit", "")
-            interim_formatted = formatDecimalMark(interim_value, self.dmk)
+
+            # Get the interim's formatted value
+            interim_formatted = self.get_formatted_interim(interim_field)
             interim_field["formatted_value"] = interim_formatted
+
+            # Update the item with the interim
             item[interim_keyword] = interim_field
             item["class"][interim_keyword] = "interim"
 
@@ -1077,53 +1101,62 @@ class AnalysesView(ListingView):
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
-            choices = interim_field.get("choices")
+            choices = self.get_interim_choices(interim_field)
             if choices:
-                # Process the value as a list
-                interim_value = self.to_list(interim_value)
+                multi = self.is_multi_interim(interim_field)
 
-                # Get the {value:text} dict
-                choices = choices.split("|")
-                choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+                # Ensure empty option is available if no default value is set
+                if not interim_value and not multi:
+                    # allow empty selection and flush default value
+                    interim_allow_empty = True
 
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
                 dl = map(lambda it: dict(zip(headers, it)), choices.items())
-                # Allow empty selection by adding an empty record to the list
+
+                # Allow empty selection if allowed
                 if interim_allow_empty:
                     empty = {"ResultValue": "", "ResultText": ""}
                     dl = [empty] + list(dl)
 
                 item.setdefault("choices", {})[interim_keyword] = dl
 
-                # Set the text as the formatted value
-                texts = [choices.get(v, "") for v in interim_value]
-                text = "<br/>".join(filter(None, texts))
-                interim_field["formatted_value"] = text
+            if not is_editable:
+                # Display the text instead of the value
+                interim_field["value"] = interim_formatted
 
-                if not is_editable:
-                    # Display the text instead of the value
-                    interim_field["value"] = text
-
-                item[interim_keyword] = interim_field
-
-            elif self.is_multi_interim(interim_field):
-                # Process the value as a list
-                interim_value = self.to_list(interim_value)
-
-                # Set the text as the formatted value
-                text = "<br/>".join(filter(None, interim_value))
-                interim_field["formatted_value"] = text
-
-                if not is_editable:
-                    # Display the text instead of the value
-                    interim_field["value"] = text
-
-                item[interim_keyword] = interim_field
+            item[interim_keyword] = interim_field
 
         item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
+
+    def get_formatted_interim(self, interim):
+        """Returns the formatted value of the interim
+        """
+        # get the 'raw' value stored for this interim
+        raw_value = interim.get("value")
+
+        if self.is_multi_interim(interim):
+            # value is a jsonified list of values
+            values = api.to_list(raw_value)
+        else:
+            values = [raw_value]
+
+        # remove empties
+        values = filter(None, values)
+
+        choices = self.get_interim_choices(interim)
+        if choices:
+            # values are predefined options for selection
+            values = [choices.get(v) for v in values]
+        else:
+            # values are captured directly by the user
+            values = [formatDecimalMark(value, self.dmk) for value in values]
+
+        # return the values as a single string
+        values = filter(None, values)
+        return "<br/>".join(values)
 
     def _folder_item_unit(self, analysis_brain, item):
         """Fills the analysis' unit to the item passed in.

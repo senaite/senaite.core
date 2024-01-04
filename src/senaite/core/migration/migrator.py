@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -82,13 +82,14 @@ class ContentMigrator(object):
         """
         obj.reindexObject()
 
-    def copy_uid(self, obj, uid):
+    def copy_uid(self, src, target):
         """Set uid on object
         """
-        if api.is_dexterity_content(obj):
-            setattr(obj, "_plone.uuid", uid)
-        elif api.is_at_content(obj):
-            setattr(obj, "_at_uid", uid)
+        uid = api.get_uid(src)
+        if api.is_dexterity_content(target):
+            setattr(target, "_plone.uuid", uid)
+        elif api.is_at_content(target):
+            setattr(target, "_at_uid", uid)
         else:
             raise TypeError("Cannot set UID on that object")
 
