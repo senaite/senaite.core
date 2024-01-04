@@ -64,4 +64,7 @@
   <!-- Organization Indexer -->
   <adapter name="title" factory=".organisation.title"/>
 
+  <!-- Worksheet Indexer -->
+  <adapter name="listing_searchable_text" factory=".worksheet.listing_searchable_text"/>
+
 </configure>

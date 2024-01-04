@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -221,13 +221,26 @@ class FolderView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
+        # Update the "Mine" review status with current user id
+        mine = self.get_review_state("mine")
+        mine["contentFilter"]["getAnalyst"] = self.member.id
+
         if self.show_only_mine():
             # Remove 'Mine' button and hide 'Analyst' column
-            del self.review_states[1]  # Mine
+            self.remove_review_state("mine")
             self.columns["Analyst"]["toggle"] = False
             self.contentFilter["getAnalyst"] = self.member.id
             for rvw in self.review_states:
                 rvw["contentFilter"]["getAnalyst"] = self.member.id
+
+    def remove_review_state(self, id):
+        """Removes the review status button with the given id
+        """
+        ids = [review_state["id"] for review_state in self.review_states]
+        if id not in ids:
+            return
+        index = ids.index(id)
+        del self.review_states[index]
 
     def is_privileged_user(self):
         """Returns whether the current user is a privileged member

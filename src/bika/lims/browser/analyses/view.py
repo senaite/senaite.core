@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -1071,8 +1071,12 @@ class AnalysesView(ListingView):
             interim_value = interim_field.get("value", "")
             interim_allow_empty = interim_field.get("allow_empty") == "on"
             interim_unit = interim_field.get("unit", "")
-            interim_formatted = formatDecimalMark(interim_value, self.dmk)
+
+            # Get the interim's formatted value
+            interim_formatted = self.get_formatted_interim(interim_field)
             interim_field["formatted_value"] = interim_formatted
+
+            # Update the item with the interim
             item[interim_keyword] = interim_field
             item["class"][interim_keyword] = "interim"
 
@@ -1104,7 +1108,6 @@ class AnalysesView(ListingView):
                 # Ensure empty option is available if no default value is set
                 if not interim_value and not multi:
                     # allow empty selection and flush default value
-                    interim_value = ""
                     interim_allow_empty = True
 
                 # Generate the display list
@@ -1119,19 +1122,41 @@ class AnalysesView(ListingView):
 
                 item.setdefault("choices", {})[interim_keyword] = dl
 
-                # Set the text as the formatted value
-                texts = [choices.get(v, "") for v in api.to_list(interim_value)]
-                text = "<br/>".join(filter(None, texts))
-                interim_field["formatted_value"] = text
+            if not is_editable:
+                # Display the text instead of the value
+                interim_field["value"] = interim_formatted
 
-                if not is_editable:
-                    # Display the text instead of the value
-                    interim_field["value"] = text
-
-                item[interim_keyword] = interim_field
+            item[interim_keyword] = interim_field
 
         item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
+
+    def get_formatted_interim(self, interim):
+        """Returns the formatted value of the interim
+        """
+        # get the 'raw' value stored for this interim
+        raw_value = interim.get("value")
+
+        if self.is_multi_interim(interim):
+            # value is a jsonified list of values
+            values = api.to_list(raw_value)
+        else:
+            values = [raw_value]
+
+        # remove empties
+        values = filter(None, values)
+
+        choices = self.get_interim_choices(interim)
+        if choices:
+            # values are predefined options for selection
+            values = [choices.get(v) for v in values]
+        else:
+            # values are captured directly by the user
+            values = [formatDecimalMark(value, self.dmk) for value in values]
+
+        # return the values as a single string
+        values = filter(None, values)
+        return "<br/>".join(values)
 
     def _folder_item_unit(self, analysis_brain, item):
         """Fills the analysis' unit to the item passed in.

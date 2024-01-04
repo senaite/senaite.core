@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import codecs
@@ -332,7 +332,7 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
         lines = [line.strip() for line in lines]
         return lines
 
-    def split_line(self, line):
+    def splitLine(self, line):
         sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
@@ -678,7 +678,9 @@ class AnalysisResultsImporter(Logger):
                 title=filename,
                 AttachmentFile=infile,
                 AttachmentType=attuid,
-                AttachmentKeys='Results, Automatic import')
+                AttachmentKeys='Results, Automatic import',
+                RenderInReport=False,
+            )
             attachment.reindexObject()
         return attachment
 

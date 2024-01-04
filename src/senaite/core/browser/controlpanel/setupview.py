@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -24,7 +24,6 @@ from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from zope.component import getMultiAdapter
 
@@ -82,7 +81,8 @@ class SetupView(BrowserView):
         allowed_types = fti.allowed_content_types
         if len(allowed_types) != 1:
             return None
-        return allowed_types[0]
+        # convert from unicode -> str for api.search catalog lookup
+        return list(map(str, allowed_types))
 
     def get_count(self, obj):
         """Retrieve the count of contained items
@@ -97,7 +97,7 @@ class SetupView(BrowserView):
             "portal_type": contained_types,
             "is_active": True,
         }
-        brains = api.search(query, SETUP_CATALOG)
+        brains = api.search(query)
         return len(brains)
 
     def setupitems(self):

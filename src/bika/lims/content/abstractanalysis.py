@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import cgi
@@ -953,7 +953,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
           in accordance with the manual uncertainty set.
 
         - If Calculate Precision from Uncertainty is set in Analysis Service,
-          calculates the precision in accordance with the uncertainty infered
+          calculates the precision in accordance with the uncertainty inferred
           from uncertainties ranges.
 
         - If neither Manual Uncertainty nor Calculate Precision from
@@ -980,7 +980,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 strres = str(result)
                 numdecimals = strres[::-1].find('.')
                 return numdecimals
+
+            uncertainty = api.to_float(uncertainty)
+            # Get the 'raw' significant digits from uncertainty
+            sig_digits = get_significant_digits(uncertainty)
+            # Round the uncertainty to its significant digit.
+            # Needed because the precision for the result has to be based on
+            # the *rounded* uncertainty. Note the following for a given
+            # uncertainty value:
+            #   >>> round(0.09404, 2)
+            #   0.09
+            #   >>> round(0.09504, 2)
+            #   0.1
+            # The precision when the uncertainty is 0.09504 is not 2, but 1
+            uncertainty = abs(round(uncertainty, sig_digits))
+            # Return the significant digit to apply
             return get_significant_digits(uncertainty)
+
         return self.getField('Precision').get(self)
 
     @security.public

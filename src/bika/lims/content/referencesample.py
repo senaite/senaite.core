@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -170,7 +170,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
-                    'result':'referencevalues_validator',},
+                    'result':'analysisspecs_validator',},
         widget = ReferenceResultsWidget(
             label=_("Expected Values"),
         ),
