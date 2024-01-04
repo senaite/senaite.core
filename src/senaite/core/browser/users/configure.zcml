@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      name="new-user"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".register.AddUserForm"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import copy
@@ -55,6 +55,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.permissions import DeleteObjects
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
@@ -301,6 +302,58 @@ def edit(obj, check_permissions=True, **kwargs):
             mapply(mutator, value)
         else:
             field.set(obj, value)
+
+
+def uncatalog_object(obj):
+    """Un-catalog the object from all catalogs
+
+    :param obj: object to un-catalog
+    :type obj: ATContentType/DexterityContentType
+    """
+    # un-catalog from registered catalogs
+    obj.unindexObject()
+    # explicitly un-catalog from uid_catalog
+    uid_catalog = get_tool("uid_catalog")
+    # the uids of uid_catalog are relative paths to portal root
+    # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+    url = "/".join(obj.getPhysicalPath()[2:])
+    uid_catalog.uncatalog_object(url)
+
+
+def catalog_object(obj):
+    """Re-catalog the object
+
+    :param obj: object to un-catalog
+    :type obj: ATContentType/DexterityContentType
+    """
+    if is_at_content(obj):
+        # explicitly re-catalog AT types at uid_catalog (DX types are
+        # automatically reindexed in UID catalog on reindexObject)
+        uc = get_tool("uid_catalog")
+        # the uids of uid_catalog are relative paths to portal root
+        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+        url = "/".join(obj.getPhysicalPath()[2:])
+        uc.catalog_object(obj, url)
+    obj.reindexObject()
+
+
+def delete(obj, check_permissions=True, suppress_events=False):
+    """Deletes the given object
+
+    :param obj: object to un-catalog
+    :param check_permissions: whether delete permission must be checked
+    :param suppress_events: whether ondelete events have to be fired
+    :type obj: ATContentType/DexterityContentType
+    """
+    from security import check_permission
+    if check_permissions and not check_permission(DeleteObjects, obj):
+        raise Unauthorized("Do not have permissions to remove this object")
+
+    # un-catalog the object from all catalogs (uid_catalog included)
+    uncatalog_object(obj)
+    # delete the object
+    parent = get_parent(obj)
+    parent._delObject(obj.getId(), suppress_events=suppress_events)
 
 
 def get_tool(name, context=None, default=_marker):

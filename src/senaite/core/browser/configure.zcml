@@ -14,6 +14,7 @@
 
   <!-- Package includes -->
   <include package=".attachment"/>
+  <include package=".batching"/>
   <include package=".bootstrap"/>
   <include package=".contentmenu"/>
   <include package=".contentrules"/>
@@ -37,6 +38,7 @@
   <include package=".setup"/>
   <include package=".sharing"/>
   <include package=".usergroup"/>
+  <include package=".users"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
 

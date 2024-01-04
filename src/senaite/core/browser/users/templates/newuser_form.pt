@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+  <body>
+    <metal:body fill-slot="body">
+
+      <article id="content">
+        <h1 class="documentFirstHeading"
+            tal:content="view/label | nothing" />
+        <div id="content-core">
+          <metal:block use-macro="context/@@ploneform-macros/titlelessform">
+          <metal:actions-slot fill-slot="actions">
+            <!-- override the actions slot in
+                 plone/app/z3cform/templates/marcros.pt to apply custom styles -->
+            <metal:define define-macro="actions">
+              <div class="form-group" tal:condition="view/actions/values|nothing">
+                <tal:block repeat="action view/actions/values">
+                  <input type="submit" tal:replace="structure action/render" />
+                </tal:block>
+              </div>
+            </metal:define>
+          </metal:actions-slot>
+          </metal:block>
+        </div>
+      </article>
+
+    </metal:body>
+  </body>
+</html>
