@@ -226,6 +226,7 @@ class AnalysisSpecificationView(BikaListingView):
             item["category"] = category
 
         item["Title"] = title
+        item["Keyword"] = keyword
         item["replace"]["Title"] = get_link(url, value=title)
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices
