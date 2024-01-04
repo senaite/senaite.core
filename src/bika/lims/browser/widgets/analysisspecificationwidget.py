@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -226,6 +226,7 @@ class AnalysisSpecificationView(BikaListingView):
             item["category"] = category
 
         item["Title"] = title
+        item["Keyword"] = keyword
         item["replace"]["Title"] = get_link(url, value=title)
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices

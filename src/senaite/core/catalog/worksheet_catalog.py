@@ -15,13 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
-from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.interfaces import IWorksheetCatalog
 from zope.interface import implementer
 

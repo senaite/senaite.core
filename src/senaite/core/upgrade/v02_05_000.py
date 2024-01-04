@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import transaction
@@ -35,10 +35,13 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionReceiveSample
 from senaite.core.registry import get_registry_record
+from senaite.core.registry import set_registry_record
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import CATALOG_MAPPINGS
@@ -52,6 +55,8 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 
 PORTAL_CATALOG = "portal_catalog"
 
@@ -261,6 +266,7 @@ def update_report_catalog(tool):
     logger.info("Update report catalog [DONE]")
 
 
+@upgradestep(product, version)
 def import_registry(tool):
     """Import registry step from profiles
     """
@@ -556,3 +562,119 @@ def fix_samples_registered(tool):
         sample._p_deactivate()
 
     logger.info("Fixing samples in 'registered' status [DONE]")
+
+
+def fix_searches_worksheets(tool):
+    """Reindex listing_searchable_text index from Worksheets
+    """
+    logger.info("Reindexing listing_searchable_text from Worksheets ...")
+    request = api.get_request()
+    cat = api.get_tool(WORKSHEET_CATALOG)
+    cat.manage_reindexIndex("listing_searchable_text", REQUEST=request)
+    logger.info("Reindexing listing_searchable_text from Worksheets [DONE]")
+
+
+def fix_range_values(tool):
+    """Fix possible min > max in reference definition/sample ranges
+    """
+    logger.info("Fix min/max for reference definitions and samples ...")
+    fix_range_values_for(api.search({"portal_type": "ReferenceDefinition"}))
+    # XXX: Reference Samples live in SENAITE CATALOG
+    fix_range_values_for(api.search({"portal_type": "ReferenceSample"}))
+    logger.info("Fix min/max for reference definitions and samples [DONE]")
+
+
+def fix_range_values_for(brains):
+    """Fix range values for the given brains
+    """
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        reindex = False
+        logger.info("Checking range values %d/%d: `%s`" % (
+            num+1, total, api.get_path(obj)))
+        rr = obj.getReferenceResults()
+        for r in rr:
+            r_key = r.get("keyword")
+            r_min = api.to_float(r.get("min"), 0)
+            r_max = api.to_float(r.get("max"), 0)
+
+            # check if max > min
+            if r_min > r_max:
+                # set min value to the same as max value
+                r["min"] = r["max"]
+                logger.info(
+                    "Fixing range values for service '{r_key}': "
+                    "[{r_min},{r_max}] -> [{new_min},{new_max}]"
+                    .format(
+                        r_key=r_key,
+                        r_min=r_min,
+                        r_max=r_max,
+                        new_min=r["min"],
+                        new_max=r["max"],
+                    ))
+                reindex = True
+
+            # check if error < 0
+            r_err = api.to_float(r.get("error"), 0)
+            if r_err < 0:
+                r_err = abs(r_err)
+                r["error"] = str(r_err)
+                logger.info(
+                    "Fixing negative error % for service '{r_key}: {r_err}"
+                    .format(
+                        r_key=r_key,
+                        r_err=r["error"],
+                    ))
+                reindex = True
+
+        if reindex:
+            obj.reindexObject()
+        obj._p_deactivate()
+
+
+def purge_orphan_worksheets(tool):
+    """Walks through all records from worksheets catalog and remove orphans
+    """
+    logger.info("Purging orphan Worksheet records from catalog ...")
+    request = api.get_request()
+    cat = api.get_tool(WORKSHEET_CATALOG)
+    paths = cat._catalog.uids.keys()
+    for path in paths:
+        # try to wake-up the object
+        obj = cat.resolve_path(path)
+        if obj is None:
+            obj = cat.resolve_url(path, request)
+
+        if obj is None:
+            # object is missing, remove
+            logger.info("Removing stale record: {}".format(path))
+            cat.uncatalog_object(path)
+            continue
+
+        obj._p_deactivate()
+
+    logger.info("Purging orphan Worksheet records from catalog [DONE]")
+
+
+def setup_client_landing_page(tool):
+    """Setup the registry record for the client's landing page
+    """
+    logger.info("Setup client's default landing page ...")
+
+    # import the client registry
+    import_registry(tool)
+
+    # look for the legacy registry record
+    key = "bika.lims.client.default_landing_page"
+    value = api.get_registry_record(key, default="")
+
+    # set the value to the new registry record
+    vocab_key = "senaite.core.vocabularies.registry.client_landing_pages"
+    vocab_factory = getUtility(IVocabularyFactory, vocab_key)
+    vocabulary = vocab_factory(api.get_portal())
+    values = [item.value for item in vocabulary]
+    if value in values:
+        set_registry_record(CLIENT_LANDING_PAGE, value)
+
+    logger.info("Setup client's default landing page [DONE]")
