@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2442 Show partitions initially collapsed in partition preview mode
+- #2460 Fix keyword missing in AnalysisSpecificationView
 - #2462 Fix manually deselected references in sample add form can not be set anymore
 
 
