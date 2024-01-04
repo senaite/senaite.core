@@ -423,15 +423,21 @@ class InterimFieldsValidator:
     def validate_choices(self, interim):
         """Checks whether the choices are valid for the given interim
         """
+        types_with_choices = [
+            "select",
+            "multiselect",
+            "multiselect_duplicates",
+            "multichoice",
+        ]
         result_type = interim.get("result_type", "")
         choices = interim.get("choices")
         if not choices:
             # No choices set, result type should remain empty or multivalue
-            if result_type in ["", "multivalue"]:
+            if result_type not in types_with_choices:
                 return
             return _t(_("Control type is not supported for empty choices"))
 
-        # Choices are expressed like "value0:text0|value1:text1|..|valuen:textn"
+        # Choices are expressed as "value0:text0|value1:text1|..|valuen:textn"
         choices = choices.split("|") or []
         try:
             choices = dict(map(lambda ch: ch.strip().split(":"), choices))

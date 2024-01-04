@@ -33,6 +33,7 @@ from bika.lims.interfaces import IAuditable
 from plone.indexer import indexer
 from plone.memoize.ram import DontCache
 from plone.memoize.ram import cache
+from senaite.core.api import dtime
 from senaite.core.interfaces import IAuditlogCatalog
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
@@ -190,7 +191,7 @@ def snapshot_created(instance):
     """
     last_snapshot = get_last_snapshot(instance)
     snapshot_created = get_created(last_snapshot)
-    return api.to_date(snapshot_created)
+    return dtime.to_DT(snapshot_created)
 
 
 @indexer(IAuditable)
