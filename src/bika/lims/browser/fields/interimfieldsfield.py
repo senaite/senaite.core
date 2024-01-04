@@ -100,6 +100,7 @@ class InterimFieldsField(RecordsField):
             "result_type": DisplayList((
                 ("", _("Numeric")),
                 ("string", _("String")),
+                ("datetime", _("Datetime")),
                 ("select", _("Selection list")),
                 ("multiselect", _("Multiple selection")),
                 ("multiselect_duplicates", _(

@@ -14,6 +14,9 @@ Changelog
 2.5.0 (2024-01-03)
 ------------------
 
+- #2435 Add datetime support for interim fields
+- #2434 Add string support for interim fields
+- #2411 Multiselection with duplicates support for interim fields
 - #2459 Fix default landing page is not considered in clients listing
 - #2456 Remove groups from user add form
 - #2455 Fix users/groups overview batch navigation styling
