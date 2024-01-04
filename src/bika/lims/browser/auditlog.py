@@ -29,6 +29,7 @@ from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshot_version
 from bika.lims.api.snapshot import get_snapshots
 from bika.lims.interfaces import IAuditable
+from senaite.core.api import dtime
 from senaite.core.i18n import translate as t
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -146,7 +147,7 @@ class AuditLogView(ListingView):
     def to_localized_time(self, date, **kw):
         """Converts the given date to a localized time string
         """
-        date = api.to_date(date, default=None)
+        date = dtime.to_DT(date)
         if date is None:
             return ""
         # default options

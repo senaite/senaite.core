@@ -98,11 +98,16 @@ class InterimFieldsField(RecordsField):
         },
         "subfield_vocabularies": {
             "result_type": DisplayList((
-                ('', ''),
-                ('select', _('Selection list')),
-                ('multiselect', _('Multiple selection')),
-                ('multichoice', _('Multiple choices')),
-                ('multivalue', _('Multiple values')),
+                ("", _("Numeric")),
+                ("string", _("String")),
+                ("datetime", _("Datetime")),
+                ("select", _("Selection list")),
+                ("multiselect", _("Multiple selection")),
+                ("multiselect_duplicates", _(
+                    "Multiple selection (with duplicates)"
+                )),
+                ("multichoice", _("Multiple choices")),
+                ("multivalue", _("Multiple values")),
             )),
         },
     })
