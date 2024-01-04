@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2460 Fix keyword missing in AnalysisSpecificationView
 
 2.5.0 (2024-01-03)
 ------------------
