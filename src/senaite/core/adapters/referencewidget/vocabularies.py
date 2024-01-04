@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -98,9 +98,16 @@ class DefaultReferenceWidgetVocabulary(object):
         # Get the raw query to use
         # Raw query is built from base query baseline, including additional
         # parameters defined in the request and the search query as well
-        query = self.get_raw_query()
-        if not query:
+        raw_query = self.get_raw_query()
+        if not raw_query:
             return []
+
+        # JSON parse all query values
+        # NOTE: The raw query might have JSON encoded values,
+        #       e.g. it could contain {"is_active": "true"}
+        query = {}
+        for key, value in raw_query.items():
+            query[key] = api.parse_json(value, value)
 
         # Do the search
         logger.info("Reference Widget Raw Query for catalog {}: {}"

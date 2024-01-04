@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      name="batchnavigation"
+      for="*"
+      class="plone.batching.browser.PloneBatchView"
+      template="templates/batchnavigation.pt"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

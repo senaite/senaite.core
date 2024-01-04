@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import mimetypes
@@ -754,8 +754,13 @@ def get_registry_value(key, default=None):
     :param default: default value if the key is not registered
     :return: value in the registry for the key passed in
     """
-    registry = queryUtility(IRegistry)
-    return registry.get(key, default)
+    # cannot use bika.lims.deprecated (circular dependencies)
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.api.get_registry_record instead"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    warnings.simplefilter("default", DeprecationWarning)
+    return api.get_registry_record(key, default=default)
 
 
 def check_permission(permission, obj):

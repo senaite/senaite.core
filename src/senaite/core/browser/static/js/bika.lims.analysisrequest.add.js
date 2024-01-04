@@ -703,18 +703,26 @@
       /*
        * Generic event handler for when a reference field value changed
        */
-      var $el, after_change, arnum, deselected, el, event_data, field_name, me, value;
+      var $el, after_change, arnum, el, event_data, field_name, manually_deselected, me, select, value;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
-      if (event.type === "deselect") {
-        value = event.detail.value;
-        deselected = this.deselected_uids[field_name] || [];
-        if (value && indexOf.call(deselected, value) < 0) {
-          this.deselected_uids[field_name] = deselected.concat(value);
+      value = event.detail.value;
+      if (value) {
+        manually_deselected = this.deselected_uids[field_name] || [];
+        select = event.type === "select" ? true : false;
+        if (select) {
+          manually_deselected = manually_deselected.filter(function(item) {
+            return item !== value;
+          });
+          console.debug("Reference with UID " + value + " was manually selected");
+        } else {
+          manually_deselected = manually_deselected.indexOf(value > -1) ? manually_deselected.concat(value) : void 0;
+          console.debug("Reference with UID " + value + " was manually deselected");
         }
+        this.deselected_uids[field_name] = manually_deselected;
       }
       if (field_name === "Template" || field_name === "Profiles") {
         return;

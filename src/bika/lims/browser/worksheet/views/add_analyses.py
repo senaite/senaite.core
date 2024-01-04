@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -166,11 +166,42 @@ class AddAnalysesView(BikaListingView):
         """
         super(AddAnalysesView, self).update()
         wst = self.context.getWorksheetTemplate()
+        new_states = []
         if wst:
-            method = wst.getRawRestrictToMethod()
+
+            wst_service_uids = wst.getRawService()
+            # restrict to the selected template services
+            if wst_service_uids:
+                new_states.append({
+                    "id": "restrict_to_services",
+                    "title": _("Filter by template services"),
+                    "contentFilter": {
+                        "getServiceUID": wst_service_uids,
+                    },
+                    "transitions": [{"id": "assign"}, ],
+                    "columns": self.columns.keys(),
+                })
+                self.default_review_state = "restrict_to_services"
+
             # restrict the available analysis services by method
+            method = wst.getRawRestrictToMethod()
             if method:
-                self.contentFilter["getServiceUID"] = getServiceUidsByMethod(method)
+                service_uids = getServiceUidsByMethod(method)
+                new_states.append({
+                    "id": "restrict_to_method",
+                    "title": _("Filter by template method"),
+                    "contentFilter": {
+                        "getServiceUID": service_uids
+                    },
+                    "transitions": [{"id": "assign"}, ],
+                    "columns": self.columns.keys(),
+                })
+                self.default_review_state = "restrict_to_method"
+
+        existing_state_ids = [rs.get("id") for rs in self.review_states]
+        for new_state in new_states:
+            if new_state.get("id") not in existing_state_ids:
+                self.review_states.append(new_state)
 
     def handle_submit(self):
         """Handle form submission

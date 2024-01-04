@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -220,9 +220,17 @@ class ReferenceResultsWidget(TypesWidget):
             s_min = self._get_spec_value(form, uid, "min", result)
             s_max = self._get_spec_value(form, uid, "max", result)
 
+            # shift min/max values according to the result
+            if s_max < result:
+                s_max = result
+            if s_min > result:
+                s_min = result
+
             # If an error percentage was given, calculate the min/max from the
             # error percentage
             if s_err:
+                # Negative percentage not permitted to prevent min above max
+                s_err = abs(float(s_err))
                 s_min = float(result) * (1 - float(s_err)/100)
                 s_max = float(result) * (1 + float(s_err)/100)
 
@@ -233,7 +241,7 @@ class ReferenceResultsWidget(TypesWidget):
                 "result": result,
                 "min": s_min,
                 "max": s_max,
-                "error": s_err
+                "error": str(s_err),
             }
 
         return values.values(), {}

@@ -23,7 +23,7 @@
         <div class="col-sm-12">
           <!-- WS Template Select Form -->
           <form id="applytemplate_form"
-                class="form form-inline"
+                class="form form-inline mb-3"
                 method="POST">
             <input type="hidden" name="submitted" value="1"/>
             <input tal:replace="structure context/@@authenticator/authenticator"/>

@@ -688,12 +688,20 @@ class window.AnalysisRequestAdd
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
 
-    # remember deselected UIDs
-    if event.type is "deselect"
-      value = event.detail.value
-      deselected = @deselected_uids[field_name] or []
-      if value and value not in deselected
-        @deselected_uids[field_name] = deselected.concat value
+    # handle manually selected/deselected UIDs
+    value = event.detail.value
+    if value
+      manually_deselected = @deselected_uids[field_name] or []
+      select = if event.type is "select" then yes else no
+      if select
+        # remove UID from the manually deselected list again
+        manually_deselected = manually_deselected.filter (item) -> item isnt value
+        console.debug "Reference with UID #{value} was manually selected"
+      else
+        # remember UID as manually deselected
+        manually_deselected = if manually_deselected.indexOf value > -1 then manually_deselected.concat value
+        console.debug "Reference with UID #{value} was manually deselected"
+      @deselected_uids[field_name] = manually_deselected
 
     if field_name in ["Template", "Profiles"]
       # These fields have it's own event handler
