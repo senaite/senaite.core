@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2460 Fix keyword missing in AnalysisSpecificationView
 - #2462 Fix manually deselected references in sample add form can not be set anymore
 
 
