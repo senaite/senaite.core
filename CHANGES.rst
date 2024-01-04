@@ -1,10 +1,18 @@
 Changelog
 =========
 
-2.5.0 (unreleased)
+2.6.0 (unreleased)
 ------------------
 
 - #2458 Allow portal_type as a parameter for api.get_icon function
+- #2460 Fix keyword missing in AnalysisSpecificationView
+- #2462 Fix manually deselected references in sample add form can not be set anymore
+
+
+2.5.0 (2024-01-03)
+------------------
+
+- #2459 Fix default landing page is not considered in clients listing
 - #2456 Remove groups from user add form
 - #2455 Fix users/groups overview batch navigation styling
 - #2454 Fix analyses not filtered by selected WST services
