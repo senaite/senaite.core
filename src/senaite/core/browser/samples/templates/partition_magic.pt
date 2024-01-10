@@ -122,110 +122,121 @@
                         <!-- Partition number -->
                         <div class="col-sm-4">
                           <h3 class="text-muted">
-                            <span i18n:translate="">Partition</span>
-                            <strong tal:content="repeat/part_index/number"/>
+                            <a class="text-decoration-none" style="cursor:pointer;"
+                               data-toggle="collapse"
+                               tal:attributes="data-target string:#${partition}-body">
+                              <i tal:attributes="id string:${partition}-toggle-icon"
+                                 class="fas fa-caret-right"></i>
+                              <span i18n:translate="">Partition</span>
+                              <strong tal:content="repeat/part_index/number"/>
+                            </a>
                           </h3>
                           <!-- Remember the primary uid of this partition -->
                           <input type="hidden" name="partitions.primary_uid:records" tal:attributes="value ar/uid"/>
                         </div>
 
-                        <!-- Internal Use -->
-                        <div class="col-sm-2">
-                          <div class="form-group">
-                            <label  i18n:translate="">Internal use</label>
-                            <input name="partitions.internal_use:records"
-                                   type="checkbox" class="input-sm checkbox"
-                                   tal:attributes="checked python:internal_uses.get(partition, ar_internal_use);
-                                                   value string:1">
+                        <!-- Partition Body -->
+                        <div class="partition-body collapse"
+                             tal:attributes="id string:${partition}-body;
+                                             data-partition partition">
+                          <!-- Internal Use -->
+                          <div class="col-sm-2">
+                            <div class="form-group">
+                              <label  i18n:translate="">Internal use</label>
+                              <input name="partitions.internal_use:records"
+                                     type="checkbox" class="input-sm checkbox"
+                                     tal:attributes="checked python:internal_uses.get(partition, ar_internal_use);
+                                           value string:1">
+                            </div>
                           </div>
-                        </div>
 
-                        <!-- Sample Type Selection -->
-                        <div class="col-sm-2">
-                          <label i18n:translate="" for="sampletype">
-                            Sample Type
-                          </label>
-                          <div class="form-group">
-                            <select name="partitions.sampletype_uid:records" class="form-control">
-                              <tal:options repeat="sampletype view/get_sampletype_data"
-                                          define="ar_sampletype_uid ar/sampletype/uid;
-                                                  part_sampletype_uid python:sample_types.get(partition, ar_sampletype_uid);">
-                                <option tal:attributes="value sampletype/uid;
-                                                        selected python:sampletype.get('uid') == part_sampletype_uid"
-                                        tal:content="sampletype/title">
-                                  Sample Type
-                                </option>
-                              </tal:options>
-                            </select>
+                          <!-- Sample Type Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="sampletype">
+                              Sample Type
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.sampletype_uid:records" class="form-control">
+                                <tal:options repeat="sampletype view/get_sampletype_data"
+                                             define="ar_sampletype_uid ar/sampletype/uid;
+                                                     part_sampletype_uid python:sample_types.get(partition, ar_sampletype_uid);">
+                                  <option tal:attributes="value sampletype/uid;
+                                                          selected python:sampletype.get('uid') == part_sampletype_uid"
+                                          tal:content="sampletype/title">
+                                    Sample Type
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
                           </div>
-                        </div>
 
-                        <!-- Container Selection -->
-                        <div class="col-sm-2">
-                          <label i18n:translate="" for="container">
-                            Container
-                          </label>
-                          <div class="form-group">
-                            <select name="partitions.container_uid:records" class="form-control">
-                              <option value=""></option>
-                              <tal:options repeat="container view/get_container_data"
-                                          define="part_container_uid python:containers.get(partition, '');">
-                                <option tal:attributes="value container/uid;
-                                                        selected python:container.get('uid') == part_container_uid"
-                                        tal:content="container/title">
-                                  Container
-                                </option>
-                              </tal:options>
-                            </select>
+                          <!-- Container Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="container">
+                              Container
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.container_uid:records" class="form-control">
+                                <option value=""></option>
+                                <tal:options repeat="container view/get_container_data"
+                                             define="part_container_uid python:containers.get(partition, '');">
+                                  <option tal:attributes="value container/uid;
+                                                          selected python:container.get('uid') == part_container_uid"
+                                          tal:content="container/title">
+                                    Container
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
                           </div>
-                        </div>
 
-                        <!-- Preservation Selection -->
-                        <div class="col-sm-2">
-                          <label i18n:translate="" for="preservation">
-                            Preservation
-                          </label>
-                          <div class="form-group">
-                            <select name="partitions.preservation_uid:records" class="form-control">
-                              <option value=""></option>
-                              <tal:options repeat="preservation view/get_preservation_data"
-                                          define="part_preservation_uid python:preservations.get(partition, '');">
-                                <option tal:attributes="value preservation/uid;
-                                                        selected python:preservation.get('uid') == part_preservation_uid"
-                                        tal:content="preservation/title">
-                                  Preservation
-                                </option>
-                              </tal:options>
-                            </select>
+                          <!-- Preservation Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="preservation">
+                              Preservation
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.preservation_uid:records" class="form-control">
+                                <option value=""></option>
+                                <tal:options repeat="preservation view/get_preservation_data"
+                                             define="part_preservation_uid python:preservations.get(partition, '');">
+                                  <option tal:attributes="value preservation/uid;
+                                                          selected python:preservation.get('uid') == part_preservation_uid"
+                                          tal:content="preservation/title">
+                                    Preservation
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
                           </div>
-                        </div>
 
-                        <!-- Partition Analyses -->
-                        <div class="col-sm-12">
-                          <label i18n:translate="">
-                            Select Partition Analyses
-                          </label>
-                          <table class="table table-hover">
-                            <colgroup>
-                              <col style="width: 50px;">
-                              <col>
-                            </colgroup>
-                            <tr tal:repeat="analysis ar/analyses" class="analysis">
-                              <td class="text-center" tal:define="service_uid analysis/service_uid">
-                                <input name="partitions.analyses:records:list"
-                                      type="checkbox"
-                                      tal:attributes="value analysis/uid;
-                                                      checked python:service_uid in template.get('analyses', {}).get(partition, [])"/>
-                              </td>
-                              <td class="text-info">
-                                <span tal:content="analysis/title"/>
-                              </td>
-                            </tr>
-                          </table>
-                        </div>
+                          <!-- Partition Analyses -->
+                          <div class="col-sm-12">
+                            <label i18n:translate="">
+                              Select Partition Analyses
+                            </label>
+                            <table class="table table-hover">
+                              <colgroup>
+                                <col style="width: 50px;">
+                                <col>
+                              </colgroup>
+                              <tr tal:repeat="analysis ar/analyses" class="analysis">
+                                <td class="text-center" tal:define="service_uid analysis/service_uid">
+                                  <input name="partitions.analyses:records:list"
+                                         type="checkbox"
+                                         tal:attributes="value analysis/uid;
+                                               checked python:service_uid in template.get('analyses', {}).get(partition, [])"/>
+                                </td>
+                                <td class="text-info">
+                                  <span tal:content="analysis/title"/>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
 
+                        </div>
                       </td>
-                      </tal:partition>
+                    </tal:partition>
                   </tr>
 
                 </tbody>
@@ -259,6 +270,20 @@
         </div>
 
       </div>
+      <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+          $(".partition-body").on("show.bs.collapse", function(event) {
+            let el = event.currentTarget;
+            let partition = el.dataset.partition;
+            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-right fa-caret-down");
+          });
+          $(".partition-body").on("hide.bs.collapse", function(event) {
+            let el = event.currentTarget;
+            let partition = el.dataset.partition;
+            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-down fa-caret-right");
+          });
+        });
+      </script>
     </metal:core>
   </body>
 </html>
