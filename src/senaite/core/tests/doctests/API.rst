@@ -511,8 +511,17 @@ Getting the Icon of a Content
     >>> api.get_icon(brain)
     '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/client" title="Test Client" />'
 
+It works for portal types that resolve to DynamicViewTypeInformation (Archetypes):
+
     >>> api.get_icon("Client")
     '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/client" title="Client" />'
+
+And also for portal types that resolve to DexterityFTI (Dexterity):
+
+    >>> api.get_icon("SampleContainer")
+    '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/container" title="Sample Container" />'
+
+But fails when is not possible to resolve the FTI:
 
     >>> api.get_icon("NonExistingType")
     Traceback (most recent call last):
@@ -522,7 +531,9 @@ Getting the Icon of a Content
     >>> api.get_icon(object)
     Traceback (most recent call last):
     [...]
-    APIError: <type 'object'> is not supported.
+    APIError: No type info for <type 'object'>
+
+The function can also be used to simplyh retrieve the url:
 
     >>> api.get_icon(client, html_tag=False)
     'http://nohost/plone/senaite_theme/icon/client'
@@ -532,6 +543,9 @@ Getting the Icon of a Content
 
     >>> api.get_icon("Client", html_tag=False)
     'http://nohost/plone/senaite_theme/icon/client'
+
+    >>> api.get_icon("SampleContainer", html_tag=False)
+    'http://nohost/plone/senaite_theme/icon/container'
 
     >>> api.get_icon("NonExistingType", html_tag=False)
     Traceback (most recent call last):
