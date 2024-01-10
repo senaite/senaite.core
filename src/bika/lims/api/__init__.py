@@ -714,11 +714,14 @@ def get_icon(thing, html_tag=True):
     :returns: HTML '<img>' tag if 'html_tag' is True else the image url
     :rtype: string
     """
+    portal_type = thing
+    if is_object(thing):
+        portal_type = get_portal_type(thing)
+
     # Manual approach, because `plone.app.layout.getIcon` does not reliable
     # work for Contents coming from other catalogs than the
     # `portal_catalog`
     portal_types = get_tool("portal_types")
-    portal_type = thing if is_string(thing) else get_portal_type(thing)
     fti = portal_types.getTypeInfo(portal_type)
     if not fti:
         fail("No type info for {}".format(repr(thing)))
