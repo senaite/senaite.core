@@ -731,10 +731,14 @@ def get_icon(thing, html_tag=True):
     url = "%s/%s" % (get_url(get_portal()), icon)
     if not html_tag:
         return url
-    title = thing if is_string(thing) else get_title(thing)
-    tag = '<img width="16" height="16" src="{url}" title="{title}" />'.format(
-        url=url, title=title)
-    return tag
+
+    # build the img element
+    if is_object(thing):
+        title = get_title(thing)
+    else:
+        title = fti.Title()
+    tag = '<img width="16" height="16" src="{url}" title="{title}" />'
+    return tag.format(url=url, title=title)
 
 
 def get_object_by_uid(uid, default=_marker):
