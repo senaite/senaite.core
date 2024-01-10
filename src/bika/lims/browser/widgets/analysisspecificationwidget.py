@@ -35,6 +35,8 @@ from bika.lims.utils import to_choices
 from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
+from Products.CMFCore.utils import getToolByName
+
 
 
 class AnalysisSpecificationView(BikaListingView):
@@ -43,7 +45,6 @@ class AnalysisSpecificationView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisSpecificationView, self).__init__(context, request)
-
         self.catalog = "senaite_catalog_setup"
         self.contentFilter = {
             "portal_type": "AnalysisService",
@@ -188,8 +189,25 @@ class AnalysisSpecificationView(BikaListingView):
         return self.dynamic_spec.get_by_keyword()
 
     def folderitems(self):
+        """Sort by Categories
+        """
+
+        bsc = getToolByName(self.context, "senaite_catalog_setup")
+        self.an_cats = bsc(
+            portal_type="AnalysisCategory",
+            sort_on="sortable_title")
+        self.an_cats_order = dict([
+            (b.Title, "{:04}".format(a))
+            for a, b in enumerate(self.an_cats)])
+
         items = super(AnalysisSpecificationView, self).folderitems()
-        self.categories.sort()
+
+
+        if self.show_categories_enabled():
+            self.categories = map(lambda x: x[0],
+                                    sorted(self.categories, key=lambda x: x[1]))
+        else:
+            self.categories.sort()
         return items
 
     def folderitem(self, obj, item, index):
@@ -207,6 +225,8 @@ class AnalysisSpecificationView(BikaListingView):
         url = api.get_url(obj)
         title = api.get_title(obj)
         keyword = obj.getKeyword()
+        cat = obj.getCategoryTitle()
+        cat_order = self.an_cats_order.get(cat)
 
         # dynamic analysisspecs
         dspecs = self.get_dynamic_analysisspecs()
@@ -221,8 +241,8 @@ class AnalysisSpecificationView(BikaListingView):
         # get the category
         if self.show_categories_enabled():
             category = obj.getCategoryTitle()
-            if category not in self.categories:
-                self.categories.append(category)
+            if (category,cat_order) not in self.categories:
+                self.categories.append((category,cat_order))
             item["category"] = category
 
         item["Title"] = title

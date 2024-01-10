@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2191 Apply category sort order on analysis specifications
 - #2434 Add string support for interim fields
 - #2417 Use dtime.to_DT instead of api.to_date
 - #2411 Multiselection with duplicates support for interim fields
