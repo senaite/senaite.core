@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
@@ -40,6 +40,7 @@ class IClientRegistry(ISenaiteRegistry):
         description=_("Settings for Clients"),
         fields=[
             "auto_create_client_group",
+            "client_landing_page",
         ],
     )
 
@@ -55,6 +56,22 @@ class IClientRegistry(ISenaiteRegistry):
                       ),
         default=True,
         required=False,
+    )
+
+    client_landing_page = schema.Choice(
+        title=_(
+            u"label_registry_client_landing_page",
+            default=u"Client landing page"
+        ),
+        description=_(
+            u"description_registry_client_landing_page",
+            default=u"Select the default landing page. This is used when a "
+                    u"Client user logs into the system, or when a client is "
+                    u"selected from the client folder listing"
+        ),
+        vocabulary="senaite.core.vocabularies.registry.client_landing_pages",
+        default="analysisrequests",
+        required=True,
     )
 
 

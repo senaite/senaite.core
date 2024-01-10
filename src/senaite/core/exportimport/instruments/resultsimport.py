@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import codecs
@@ -28,6 +28,7 @@ from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
 from senaite.core.i18n import translate as t
 from Products.CMFCore.utils import getToolByName
+from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
@@ -949,7 +950,7 @@ class AnalysisResultsImporter(Logger):
 
         if "DateTime" in values.keys():
             ts = values.get("DateTime")
-            capturedate = api.to_date(ts)
+            capturedate = dtime.to_DT(ts)
             if capturedate is None:
                 del values["DateTime"]
 

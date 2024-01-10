@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -24,6 +24,8 @@ from bika.lims.interfaces import IFrontPageAdapter
 from plone import api as ploneapi
 from plone.protect.utils import addTokenToUrl
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
+from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 
 
@@ -88,6 +90,13 @@ class FrontPageView(BrowserView):
         # Third precedence: Custom Landing Page
         if landingpage:
             return self.request.response.redirect(landingpage.absolute_url())
+
+        # Fourth precedence: Default landing page in client view
+        client = api.get_current_client()
+        if client:
+            view = get_registry_record(CLIENT_LANDING_PAGE)
+            url = "{}/{}".format(api.get_url(client), view)
+            return self.request.response.redirect(url)
 
         # Last precedence: Front Page
         return self.template()

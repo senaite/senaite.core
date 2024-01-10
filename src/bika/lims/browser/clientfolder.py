@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -25,20 +25,18 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from bika.lims.utils import get_registry_value
 from Products.CMFCore.permissions import ModifyPortalContent
 from senaite.app.listing import ListingView
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import AddClient
 from senaite.core.permissions import ManageAnalysisRequests
+from senaite.core.registry import get_registry_record
 
 
 class ClientFolderContentsView(ListingView):
     """Listing view for all Clients
     """
-
-    _LANDING_PAGE_REGISTRY_KEY = "bika.lims.client.default_landing_page"
-    _DEFAULT_LANDING_PAGE = "analysisrequests"
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
@@ -47,9 +45,6 @@ class ClientFolderContentsView(ListingView):
         self.description = ""
         self.form_id = "list_clientsfolder"
         self.sort_on = "sortable_title"
-        # Landing page to be added to the link of each client from the list
-        self.landing_page = get_registry_value(
-            self._LANDING_PAGE_REGISTRY_KEY, self._DEFAULT_LANDING_PAGE)
 
         self.catalog = CLIENT_CATALOG
         self.contentFilter = {
@@ -126,6 +121,9 @@ class ClientFolderContentsView(ListingView):
         """
         # Call `before_render` from the base class
         super(ClientFolderContentsView, self).before_render()
+
+        # Landing page to be added to the link of each client from the list
+        self.landing_page = get_registry_record(CLIENT_LANDING_PAGE)
 
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):

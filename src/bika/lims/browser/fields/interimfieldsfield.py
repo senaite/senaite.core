@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import copy
@@ -98,11 +98,16 @@ class InterimFieldsField(RecordsField):
         },
         "subfield_vocabularies": {
             "result_type": DisplayList((
-                ('', ''),
-                ('select', _('Selection list')),
-                ('multiselect', _('Multiple selection')),
-                ('multichoice', _('Multiple choices')),
-                ('multivalue', _('Multiple values')),
+                ("", _("Numeric")),
+                ("string", _("String")),
+                ("datetime", _("Datetime")),
+                ("select", _("Selection list")),
+                ("multiselect", _("Multiple selection")),
+                ("multiselect_duplicates", _(
+                    "Multiple selection (with duplicates)"
+                )),
+                ("multichoice", _("Multiple choices")),
+                ("multivalue", _("Multiple values")),
             )),
         },
     })

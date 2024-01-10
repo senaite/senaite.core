@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup client landing page"
+      description="Setup client landing page configuration"
+      source="2524"
+      destination="2525"
+      handler=".v02_05_000.setup_client_landing_page"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.5.0: Un-catalog orphan worksheets"
       description="Un-catalog worksheets that were once removed"
       source="2523"
