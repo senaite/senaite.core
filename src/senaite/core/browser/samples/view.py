@@ -453,11 +453,6 @@ class SamplesView(ListingView):
         """Before template render hook
         """
         super(SamplesView, self).before_render()
-        client = api.get_current_client()
-        if client:
-            # No need to display the Client column
-            self.remove_column('Client')
-
         # remove query filter for root samples when listing is flat
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
