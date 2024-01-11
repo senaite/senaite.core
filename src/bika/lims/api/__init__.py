@@ -704,30 +704,41 @@ def get_url(brain_or_object):
     return get_object(brain_or_object).absolute_url()
 
 
-def get_icon(brain_or_object, html_tag=True):
+def get_icon(thing, html_tag=True):
     """Get the icon of the content object
 
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :param thing: A single catalog brain, content object or portal_type
+    :type thing: ATContentType/DexterityContentType/CatalogBrain/String
     :param html_tag: A value of 'True' returns the HTML tag, else the image url
     :type html_tag: bool
     :returns: HTML '<img>' tag if 'html_tag' is True else the image url
     :rtype: string
     """
+    portal_type = thing
+    if is_object(thing):
+        portal_type = get_portal_type(thing)
+
     # Manual approach, because `plone.app.layout.getIcon` does not reliable
     # work for Contents coming from other catalogs than the
     # `portal_catalog`
     portal_types = get_tool("portal_types")
-    fti = portal_types.getTypeInfo(brain_or_object.portal_type)
+    fti = portal_types.getTypeInfo(portal_type)
+    if not fti:
+        fail("No type info for {}".format(repr(thing)))
     icon = fti.getIcon()
     if not icon:
         return ""
     url = "%s/%s" % (get_url(get_portal()), icon)
     if not html_tag:
         return url
-    tag = '<img width="16" height="16" src="{url}" title="{title}" />'.format(
-        url=url, title=get_title(brain_or_object))
-    return tag
+
+    # build the img element
+    if is_object(thing):
+        title = get_title(thing)
+    else:
+        title = fti.Title()
+    tag = '<img width="16" height="16" src="{url}" title="{title}" />'
+    return tag.format(url=url, title=title)
 
 
 def get_object_by_uid(uid, default=_marker):
