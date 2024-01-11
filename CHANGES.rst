@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2464 Fix contact assigned to multiple clients cannot see samples from others
 - #2442 Show partitions initially collapsed in partition preview mode
 - #2434 Add string support for interim fields
 - #2417 Use dtime.to_DT instead of api.to_date
