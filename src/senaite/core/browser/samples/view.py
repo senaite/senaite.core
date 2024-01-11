@@ -452,17 +452,7 @@ class SamplesView(ListingView):
     def before_render(self):
         """Before template render hook
         """
-        # If the current user is a client contact, display those analysis
-        # requests that belong to same client only
         super(SamplesView, self).before_render()
-        client = api.get_current_client()
-        if client:
-            self.contentFilter['path'] = {
-                "query": "/".join(client.getPhysicalPath()),
-                "level": 0}
-            # No need to display the Client column
-            self.remove_column('Client')
-
         # remove query filter for root samples when listing is flat
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
