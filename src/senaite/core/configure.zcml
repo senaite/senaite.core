@@ -58,6 +58,7 @@
       title="SENAITE CORE: Run Setup Handler"
       description="Run install handler"
       handler="senaite.core.setuphandlers.install">
+    <depends name="typeinfo"/>
   </genericsetup:importStep>
 
   <!-- Hidden Profiles -->
