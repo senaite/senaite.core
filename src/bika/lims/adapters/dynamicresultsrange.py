@@ -20,6 +20,8 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDynamicResultsRange
+from plone.memoize.instance import memoize
+from senaite.core.p3compat import cmp
 from zope.interface import implementer
 
 marker = object()
@@ -74,6 +76,7 @@ class DynamicResultsRange(object):
             return api.get_title(obj)
         return value
 
+    @memoize
     def get_match_data(self):
         """Returns a fieldname -> value mapping of context data
 
@@ -98,6 +101,52 @@ class DynamicResultsRange(object):
 
         return data
 
+    def match(self, dynamic_range):
+        """Returns whether the values of all fields declared in the dynamic
+        specification for the current sample match with the values set in the
+        given results range
+        """
+        data = self.get_match_data()
+        if not data:
+            return False
+
+        for k, v in data.items():
+            # a missing value in excel is considered a match
+            value = dynamic_range.get(k)
+            if not value and value != 0:
+                continue
+
+            # break if the values do not match
+            if v != value:
+                return False
+
+        # all key values matched
+        return True
+
+    def cmp_specs(self, a, b):
+        """Compares two specification records
+        """
+        def is_empty(value):
+            return not value and value != 0
+
+        # specs with less empty values have priority
+        keys = set(a.keys() + b.keys())
+        empties_a = len(filter(lambda key: is_empty(a.get(key)), keys))
+        empties_b = len(filter(lambda key: is_empty(b.get(key)), keys))
+        if empties_a != empties_b:
+            return cmp(empties_a, empties_b)
+
+        # spec with highest min value has priority
+        min_a = api.to_float(a.get("min"), 0)
+        min_b = api.to_float(b.get("min"), 0)
+        if min_a != min_b:
+            return cmp(min_b, min_a)
+
+        # spec with lowest max value has priority
+        max_a = api.to_float(a.get("max"), 0)
+        max_b = api.to_float(b.get("max"), 0)
+        return cmp(max_a, max_b)
+
     def get_results_range(self):
         """Return the dynamic results range
 
@@ -109,49 +158,37 @@ class DynamicResultsRange(object):
         """
         if self.dynamicspec is None:
             return {}
+
         # A matching Analysis Keyword is mandatory for any further matches
         keyword = self.analysis.getKeyword()
         by_keyword = self.dynamicspec.get_by_keyword()
+
         # Get all specs (rows) from the Excel with the same Keyword
         specs = by_keyword.get(keyword)
         if not specs:
             return {}
 
-        # Generate a match data object, which match both the column names and
-        # the field names of the Analysis.
-        match_data = self.get_match_data()
+        # Filter those with a match
+        specs = filter(self.match, specs)
+        if not specs:
+            return {}
 
+        # Sort them and pick the first match, that is less generic
+        spec = sorted(specs, cmp=self.cmp_specs)[0]
+
+        # at this point we have a match, update the results range dict
         rr = {}
-
-        # Iterate over the rows and return the first where **all** values match
-        # with the analysis' values
-        for spec in specs:
-            skip = False
-
-            for k, v in match_data.items():
-                # break if the values do not match
-                if v != spec[k]:
-                    skip = True
-                    break
-
-            # skip the whole specification row
-            if skip:
+        for key in self.range_keys:
+            value = spec.get(key, marker)
+            # skip if the range key is not set in the Excel
+            if value is marker:
                 continue
-
-            # at this point we have a match, update the results range dict
-            for key in self.range_keys:
-                value = spec.get(key, marker)
-                # skip if the range key is not set in the Excel
-                if value is marker:
-                    continue
-                # skip if the value is not floatable
-                if not api.is_floatable(value):
-                    continue
-                # set the range value
-                rr[key] = value
-            # return the updated result range
-            return rr
-
+            # skip if the value is not floatable
+            if not api.is_floatable(value):
+                continue
+            # set the range value
+            rr[key] = value
+        # return the updated result range
         return rr
 
     def __call__(self):
