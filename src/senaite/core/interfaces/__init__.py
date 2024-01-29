@@ -170,6 +170,16 @@ class ISampleContainer(Interface):
     """
 
 
+class IDepartments(Interface):
+    """Marker interface for departments setup folder
+    """
+
+
+class IDepartment(Interface):
+    """Marker interface for departments
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """

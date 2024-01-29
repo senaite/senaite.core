@@ -23,4 +23,8 @@
   <!-- Labels -->
   <object name="Label" meta_type="Dexterity FTI" />
   <object name="Labels" meta_type="Dexterity FTI" />
+
+  <!-- Departments -->
+  <object name="Department" meta_type="Dexterity FTI" />
+  <object name="Departments" meta_type="Dexterity FTI" />
 </object>
