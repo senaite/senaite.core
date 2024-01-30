@@ -12,6 +12,7 @@
   <utility name="Manager" factory=".localroles.ManagerRole" />
 
   <!-- package includes -->
+  <include package=".analysis" />
   <include package=".sample" />
   <include package=".worksheet" />
 

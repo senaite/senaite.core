@@ -10,11 +10,11 @@
 
   <permission>senaite.core: Transition: Assign Analysis</permission>
   <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: Transition: Reject Analysis</permission>
   <permission>senaite.core: Transition: Retest</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
   <permission>senaite.core: View Results</permission>
-  <permission>Reject</permission>
   <permission>Modify portal content</permission>
 
   <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses,
@@ -147,10 +147,7 @@
       <permission-role>LabClerk</permission-role>
     </permission-map>
 
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Reject Analysis" acquired="True"/>
 
     <!-- FIELD PERMISSIONS (unsassigned) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
@@ -228,10 +225,7 @@
       <permission-role>LabClerk</permission-role>
     </permission-map>
 
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Reject Analysis" acquired="True"/>
 
     <!-- FIELD PERMISSIONS (assigned) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
@@ -294,10 +288,6 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <!-- Analysis cannot be rejected once cancelled -->
-    <permission-map name="Reject" acquired="False">
     </permission-map>
 
     <!-- FIELD PERMISSIONS (cancelled) -->
@@ -363,10 +353,7 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
-    <permission-map name="Reject" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Reject Analysis" acquired="True"/>
 
     <!-- FIELD PERMISSIONS (to_be_verified) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
@@ -414,10 +401,6 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
-    </permission-map>
-
-    <!-- Analysis cannot be rejected once retracted -->
-    <permission-map name="Reject" acquired="False">
     </permission-map>
 
     <!-- FIELD PERMISSIONS (retracted) -->
@@ -472,10 +455,6 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
 
-    <!-- Analysis cannot be rejected again -->
-    <permission-map name="Reject" acquired="False">
-    </permission-map>
-
     <!-- FIELD PERMISSIONS (rejected) -->
     <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
     </permission-map>
@@ -519,10 +498,6 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
-    </permission-map>
-
-    <!-- Analysis cannot be rejected once verified -->
-    <permission-map name="Reject" acquired="False">
     </permission-map>
 
     <!-- FIELD PERMISSIONS (verified) -->
@@ -573,10 +548,6 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
-    </permission-map>
-
-    <!-- Analyses cannot be rejected once published -->
-    <permission-map name="Reject" acquired="False">
     </permission-map>
 
     <!-- FIELD PERMISSIONS (published) -->
@@ -719,7 +690,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
-      <guard-permission>Reject</guard-permission>
+      <guard-permission>senaite.core: Transition: Reject Analysis</guard-permission>
       <guard-expression>python:here.guard_handler("reject")</guard-expression>
     </guard>
   </transition>

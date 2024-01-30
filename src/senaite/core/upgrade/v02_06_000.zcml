@@ -4,11 +4,27 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove old AT Departments folder"
+      description="Remove AT based setup folder"
+      source="2602"
+      destination="2603"
+      handler=".v02_06_000.remove_at_departments_setup_folder"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Departments to DX"
       description="Migrate Departments to Dexterity and move below new SENAITE Setup Folder"
+      source="2601"
+      destination="2602"
+      handler=".v02_06_000.migrate_departments_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix Reject permission for Analysis"
+      description="Fix Reject permission for Analysis"
       source="2600"
       destination="2601"
-      handler=".v02_06_000.migrate_departments_to_dx"
+      handler=".v02_06_000.fix_analysis_reject_permission"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

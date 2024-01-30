@@ -21,6 +21,7 @@
 from bika.lims import api
 from plone.dexterity.fti import DexterityFTI
 from senaite.core import logger
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
@@ -29,6 +30,7 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
@@ -132,7 +134,54 @@ def migrate_departments_to_dx(tool):
     # copy snapshots for the container
     copy_snapshots(old, new)
 
-    # delete the old object
-    delete_object(old)
-
     logger.info("Convert Departments to Dexterity [DONE]")
+
+
+def remove_at_departments_setup_folder(tool):
+    """Remove the old departments setup folder
+    """
+    logger.info("Remove AT Departments Setup Folder ...")
+    bikasetup = api.get_setup()
+
+    old = bikasetup.get("bika_departments")
+    if old:
+        delete_object(old)
+    logger.info("Remove AT Departments Setup Folder [DONE]")
+
+
+def fix_analysis_reject_permission(tool):
+    """Fixes the analysis reject permission, that was not defined at top-level
+    """
+    portal = api.get_portal()
+    setup = portal.portal_setup
+
+    # Reimport rolemap.xml
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    # Update role mappings of analyses, but only for those analyses that are
+    # in a state from which the new permission can apply
+    statuses = ["unassigned", "assigned", "to_be_verified"]
+    logger.info("Updating role mappings: Analysis ({}) ..."
+                .format(", ".join(statuses)))
+    query = {"portal_type": "Analysis", "review_state": statuses}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    update_workflow_role_mappings(ANALYSIS_WORKFLOW, brains)
+    logger.info("Updating role mappings: Analysis ({}) [DONE]"
+                .format(", ".join(statuses)))
+
+
+def update_workflow_role_mappings(wf_id, objs_or_brains):
+    """Update the workflow role mappings for the given objects or brains
+    """
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    total = len(objs_or_brains)
+
+    for num, obj_brain in enumerate(objs_or_brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings {0}/{1}".format(num, total))
+
+        obj = api.get_object(obj_brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject()
+        obj._p_deactivate()
