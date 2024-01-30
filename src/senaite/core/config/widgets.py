@@ -21,7 +21,7 @@
 from bika.lims import senaiteMessageFactory as _
 
 
-def get_labcontact_columns(self):
+def get_labcontact_columns():
     """Returns the default columns for the reference dropdown
     """
     return [

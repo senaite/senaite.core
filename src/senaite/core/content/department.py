@@ -28,7 +28,7 @@ from Products.CMFCore import permissions
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
-from senaite.core.content.config.widgets import get_labcontact_columns
+from senaite.core.config.widgets import get_labcontact_columns
 from senaite.core.interfaces import IDepartment
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -72,7 +72,7 @@ class IDepartmentSchema(model.Schema):
             "sort_on": "title",
             "sort_order": "ascending",
         },
-        display_template="<a href='${url}'>${title}</a>",
+        display_template="<a href='${url}'>${getFullname}</a>",
         columns=get_labcontact_columns,
         limit=5,
     )

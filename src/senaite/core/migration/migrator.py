@@ -21,11 +21,11 @@
 import json
 
 import six
-
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IAuditable
+from persistent.dict import PersistentDict
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IField
@@ -33,11 +33,14 @@ from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces import IFieldMigrator
 from senaite.core.migration.utils import copyPermMap
 from z3c.form.interfaces import IDataManager
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import directlyProvidedBy
 from zope.interface import implementer
+
+ATTRIBUTE_STORAGE = "senaite.core.contentmigration"
 
 SKIP_FIELDS = [
     "id",
@@ -52,6 +55,18 @@ SKIP_FIELDS = [
     "rights",
     "creation_date",
 ]
+
+
+def get_attribute_storage(obj):
+    """Get or create the attribute storage for the given object
+
+    :param obj: Content object
+    :returns: PersistentList
+    """
+    annotation = IAnnotations(obj)
+    if annotation.get(ATTRIBUTE_STORAGE) is None:
+        annotation[ATTRIBUTE_STORAGE] = PersistentDict()
+    return annotation[ATTRIBUTE_STORAGE]
 
 
 @implementer(IContentMigrator)
@@ -81,6 +96,16 @@ class ContentMigrator(object):
         """Catalog the object
         """
         obj.reindexObject()
+
+    def copy_id(self, src, target):
+        """Set id on object
+        """
+        source_id = api.get_id(src)
+        target_id = api.get_id(target)
+        if source_id == target_id:
+            return
+        # rename (move) the target object
+        target.aq_parent.manage_renameObject(target_id, source_id)
 
     def copy_uid(self, src, target):
         """Set uid on object
@@ -146,6 +171,13 @@ class ContentMigrator(object):
             # migrate the field
             field_migrator.migrate(mapping)
 
+    def copy_attributes(self, src, target):
+        """Copy raw attribute values
+        """
+        storage = get_attribute_storage(target)
+        for attribute, value in src.__dict__.items():
+            storage[attribute] = value
+
 
 class ATDXContentMigrator(ContentMigrator):
     """Migrate from AT to DX contents
@@ -161,7 +193,10 @@ class ATDXContentMigrator(ContentMigrator):
         if mapping is None:
             mapping = {}
 
-        # copy_fields
+        # copy all (raw) attributes from the source object to the target
+        self.copy_attributes(self.src, self.target)
+
+        # copy fields from the given mapping
         self.copy_fields(self.src, self.target, mapping)
 
         # copy the UID
@@ -184,6 +219,9 @@ class ATDXContentMigrator(ContentMigrator):
 
         # uncatalog the source object
         self.uncatalog_object(self.src)
+
+        # change the ID
+        self.copy_id(self.src, self.target)
 
         # reindex the new object
         self.catalog_object(self.target)
