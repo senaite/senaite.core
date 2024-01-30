@@ -1,0 +1,6 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Workflow permissions -->
+  <permission id="senaite.core.permissions.TransitionRejectAnalysis" title="senaite.core: Transition: Reject Analysis"/>
+
+</configure>
