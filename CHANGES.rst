@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2471 Migrate Lab Departments to Dexterity
 - #2467 Support for prioritized specs when using dynamic specifications
 - #2465 Fix traceback when re-installing senaite.core via quick installer
 - #2464 Fix contact assigned to multiple clients cannot see samples from others
