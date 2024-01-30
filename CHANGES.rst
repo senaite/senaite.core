@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
 - #2468 Make the prepublish guard to rely on interfaces instead of statuses
 - #2470 Fix min/max shifted on negative result and % error
 - #2467 Support for prioritized specs when using dynamic specifications

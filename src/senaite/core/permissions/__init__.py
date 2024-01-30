@@ -77,6 +77,8 @@ from .worksheet.permissions import ManageWorksheets
 from .worksheet.permissions import TransitionRejectWorksheet
 from .worksheet.permissions import TransitionRemoveWorksheet
 from .worksheet.permissions import WorksheetAddAttachment
+# Analysis permissions
+from .analysis.permissions import TransitionRejectAnalysis
 
 
 # Add Permissions
