@@ -243,7 +243,7 @@ def add_senaite_setup_items(portal):
     """
     items = [
         # ID, Title, FTI
-        ("departments", "Departments", "Departments"),
+        ("departments", "Lab Departments", "Departments"),
         ("labels", "Labels", "Labels"),
     ]
     setup = api.get_senaite_setup()
