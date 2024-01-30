@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
+from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.workflow import isTransitionAllowed
 
@@ -118,9 +119,9 @@ def guard_verify(analysis_request):
 
 
 def guard_prepublish(analysis_request):
-    """Returns whether 'prepublish' transition can be perform or not. Returns
-    True if the at least one of the analyses of the sample has been verified
-    and has not been retracted or rejected. Otherwise, return False
+    """Returns whether 'prepublish' transition can be performed or not. Returns
+    True if the at least one of the analyses of the sample has been submitted
+    and has not been retracted or rejected. Otherwise, returns False
     """
     if IInternalUse.providedBy(analysis_request):
         return False
@@ -131,8 +132,9 @@ def guard_prepublish(analysis_request):
             continue
         if IRejected.providedBy(analysis):
             continue
-        if IVerified.providedBy(analysis):
+        if ISubmitted.providedBy(analysis):
             return True
+
     return False
 
 
