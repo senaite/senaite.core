@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2468 Make the prepublish guard to rely on interfaces instead of statuses
+- #2470 Fix min/max shifted on negative result and % error
 - #2467 Support for prioritized specs when using dynamic specifications
 - #2465 Fix traceback when re-installing senaite.core via quick installer
 - #2464 Fix contact assigned to multiple clients cannot see samples from others
