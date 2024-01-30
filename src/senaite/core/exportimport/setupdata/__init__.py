@@ -491,31 +491,39 @@ class Lab_Contacts(WorksheetImporter):
                     if exists:
                         dept.setManager(exists[0].UID())
 
-class Lab_Departments(WorksheetImporter):
 
+class Lab_Departments(WorksheetImporter):
+    """Import Lab Departments
+    """
     def Import(self):
-        folder = self.context.bika_setup.bika_departments
-        bsc = getToolByName(self.context, SETUP_CATALOG)
-        lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
+        container = self.context.setup.departments
+        cat = getToolByName(self.context, CONTACT_CATALOG)
+        lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("Department", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''))
-                manager = None
-                for contact in lab_contacts:
-                    if contact.getUsername() == row['LabContact_Username']:
-                        manager = contact
-                        break
-                if manager:
-                    obj.setManager(manager.UID())
-                else:
-                    message = "Department: lookup of '%s' in LabContacts/Username failed." % row[
-                        'LabContact_Username']
-                    logger.info(message)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            description = row.get("description")
+            username = row.get("LabContact_Username")
+            manager = None
+
+            if not title:
+                continue
+
+            obj = api.create(container,
+                             "Department",
+                             title=title,
+                             description=description)
+
+            for contact in lab_contacts:
+                if contact.getUsername() == username:
+                    manager = contact
+                    break
+            if manager:
+                import pdb; pdb.set_trace()
+                obj.setManager(manager.UID())
+            else:
+                message = "Department: lookup of '%s' in LabContacts" \
+                            "/Username failed." % username
+                logger.info(message)
 
 
 class Lab_Products(WorksheetImporter):
