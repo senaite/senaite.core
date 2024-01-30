@@ -83,16 +83,4 @@
     <permission value="Modify portal content"/>
   </action>
 
-  <action title="Lab Contacts"
-          action_id="labcontacts"
-          category="object"
-          condition_expr=""
-          icon_expr="string:${portal_url}/images/labcontact.png"
-          url_expr="string:${object_url}/labcontacts"
-          i18n:attributes="title"
-          i18n:domain="senaite.core"
-          visible="True">
-    <permission value="View"/>
-  </action>
-
 </object>
