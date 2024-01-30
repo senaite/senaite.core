@@ -239,8 +239,8 @@ class ReferenceResultsWidget(TypesWidget):
                 "keyword": service.getKeyword(),
                 "uid": uid,
                 "result": result,
-                "min": s_min,
-                "max": s_max,
+                "min": min([s_min, s_max]),
+                "max": max([s_min, s_max]),
                 "error": str(s_err),
             }
 
