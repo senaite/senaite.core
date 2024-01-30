@@ -3,6 +3,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
+  <!-- Package includes -->
+  <include package=".departments" />
+
+
   <include package="bika.lims" file="permissions.zcml" />
 
   <!-- Labels -->
