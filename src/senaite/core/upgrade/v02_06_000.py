@@ -49,6 +49,7 @@ def upgrade(tool):
     return True
 
 
+@upgradestep(product, version)
 def fix_analysis_reject_permission(tool):
     """Fixes the analysis reject permission, that was not defined at top-level
     """
@@ -57,6 +58,9 @@ def fix_analysis_reject_permission(tool):
 
     # Reimport rolemap.xml
     setup.runImportStepFromProfile(profile, "rolemap")
+
+    # Reimport workflows
+    setup.runImportStepFromProfile(profile, "workflow")
 
     # Update role mappings of analyses, but only for those analyses that are
     # in a state from which the new permission can apply
