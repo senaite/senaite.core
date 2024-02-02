@@ -4945,7 +4945,7 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:570

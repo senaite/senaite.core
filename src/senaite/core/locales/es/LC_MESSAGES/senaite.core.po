@@ -4948,7 +4948,7 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr "Seleccione para permitir que un Coordinador de Muestreo programe un muestreo. Esta funcionalidad solo tiene efecto cuando el 'Flujo de trabajo de muestreo' está activo."
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr "Añadir una transición 'Imprimir' adicional solo aplicable a muestras publicadas. Desactivado por defecto."
 
 #: bika/lims/content/bikasetup.py:570
