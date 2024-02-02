@@ -518,7 +518,6 @@ class Lab_Departments(WorksheetImporter):
                     manager = contact
                     break
             if manager:
-                import pdb; pdb.set_trace()
                 obj.setManager(manager.UID())
             else:
                 message = "Department: lookup of '%s' in LabContacts" \
