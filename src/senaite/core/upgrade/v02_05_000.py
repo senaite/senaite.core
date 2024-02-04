@@ -472,7 +472,6 @@ def remove_legacy_reports(tool):
     logger.info("Removing legacy reports [DONE]")
 
 
-@upgradestep(product, version)
 def import_typeinfo(tool):
     """Import type info profile
     """
