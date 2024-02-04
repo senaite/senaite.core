@@ -85,16 +85,21 @@ class ContentMigrator(object):
     def uncatalog_object(self, obj):
         """Uncatalog the object for all catalogs
         """
-        # uncatalog from registered catalogs
-        obj.unindexObject()
         # explicitly uncatalog from uid_catalog
         uid_catalog = api.get_tool("uid_catalog")
         url = "/".join(obj.getPhysicalPath()[2:])
         uid_catalog.uncatalog_object(url)
+        # uncatalog from registered catalogs
+        obj.unindexObject()
 
     def catalog_object(self, obj):
-        """Catalog the object
+        """Catalog the object in all registered catalogs
         """
+        # explicitly catalog in uid_catalog
+        uid_catalog = api.get_tool("uid_catalog")
+        url = "/".join(obj.getPhysicalPath()[2:])
+        uid_catalog.catalog_object(obj, url)
+        # reindex in registered catalogs
         obj.reindexObject()
 
     def copy_id(self, src, target):
@@ -110,6 +115,9 @@ class ContentMigrator(object):
     def copy_uid(self, src, target):
         """Set uid on object
         """
+        # remove the target from any catalogs
+        self.uncatalog_object(target)
+
         uid = api.get_uid(src)
         if api.is_dexterity_content(target):
             setattr(target, "_plone.uuid", uid)
@@ -117,6 +125,9 @@ class ContentMigrator(object):
             setattr(target, "_at_uid", uid)
         else:
             raise TypeError("Cannot set UID on that object")
+
+        # recatalog
+        self.catalog_object(target)
 
     def copy_dates(self, src, target):
         """copy modification/creation date
@@ -222,9 +233,6 @@ class ATDXContentMigrator(ContentMigrator):
 
         # change the ID
         self.copy_id(self.src, self.target)
-
-        # reindex the new object
-        self.catalog_object(self.target)
 
         # delete source object if requested
         if delete_src:
