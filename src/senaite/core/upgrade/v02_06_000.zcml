@@ -20,7 +20,7 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.5.0: Fix Reject permission for Analysis"
+      title="SENAITE.CORE 2.6.0: Fix Reject permission for Analysis"
       description="Fix Reject permission for Analysis"
       source="2600"
       destination="2601"
