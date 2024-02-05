@@ -61,8 +61,8 @@ def upgrade(tool):
     return True
 
 
-def remove_at_portal_types(portal):
-    """Remove AT portal type information
+def remove_at_portal_types(tool):
+    """Remove obsolete AT portal type information
     """
     logger.info("Remove AT types from portal_types tool ...")
     pt = api.get_tool("portal_types")
@@ -86,8 +86,7 @@ def migrate_departments_to_dx(tool):
     logger.info("Convert Departments to Dexterity ...")
 
     # ensure old AT types are flushed first
-    portal = api.get_portal()
-    remove_at_portal_types(portal)
+    remove_at_portal_types(tool)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -103,6 +102,7 @@ def migrate_departments_to_dx(tool):
     new = setup.get(new_id)
 
     if not new:
+        portal = api.get_portal()
         add_senaite_setup_items(portal)
         new = setup.get(new_id)
 
