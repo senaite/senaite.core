@@ -22,13 +22,14 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
+from ComputedAttribute import ComputedAttribute
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.content.base import Container
 from senaite.core.config.widgets import get_labcontact_columns
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IDepartment
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -133,6 +134,9 @@ class Department(Container):
     def getManager(self):
         accessor = self.accessor("manager")
         return accessor(self)
+
+    # BBB Compatibility with senaite.imppress
+    Manager = ComputedAttribute(getManager, 1)
 
     @security.protected(permissions.ModifyPortalContent)
     def setManager(self, value):
