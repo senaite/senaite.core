@@ -37,14 +37,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IDepartments"
-      name="folder_view"
-      class=".bika_departments.DepartmentsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ILabContacts"
       name="folder_view"
       class=".bika_labcontacts.LabContactsView"
