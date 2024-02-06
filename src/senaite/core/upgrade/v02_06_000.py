@@ -20,18 +20,23 @@
 
 from bika.lims import api
 from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.utils import addContentToContainer
+from plone.dexterity.utils import createContent
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.interfaces import ISkipIDChooser
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.component import getMultiAdapter
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -124,9 +129,16 @@ def migrate_departments_to_dx(tool):
 
     # copy items from old -> new container
     for src in old.objectValues():
-        target = new.get(src.getId())
+        id = src.getId()
+        target = new.get(id)
         if not target:
-            target = api.create(new, "Department")
+            # create the object directly (assume DX)
+            target = createContent("Department", id=id)
+            target.id = id
+            # flag the object to skip the auto generation of id
+            alsoProvides(target, ISkipIDChooser)
+            target = addContentToContainer(new, target)
+
         migrator = getMultiAdapter(
             (src, target), interface=IContentMigrator)
         migrator.migrate(schema_mapping, delete_src=False)
