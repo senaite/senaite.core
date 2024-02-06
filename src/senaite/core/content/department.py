@@ -134,7 +134,7 @@ class Department(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setDepartmentID(self, value):
         mutator = self.mutator("department_id")
-        return mutator(self, value)
+        mutator(self, value)
 
     @security.protected(permissions.View)
     def getManager(self):
@@ -147,4 +147,4 @@ class Department(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setManager(self, value):
         mutator = self.mutator("manager")
-        return mutator(self, value)
+        mutator(self, value)
