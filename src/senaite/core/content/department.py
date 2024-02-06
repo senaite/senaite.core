@@ -141,7 +141,7 @@ class Department(Container):
         accessor = self.accessor("manager")
         return accessor(self)
 
-    # BBB Compatibility with senaite.imppress
+    # BBB Compatibility with senaite.impress
     Manager = ComputedAttribute(getManager, 1)
 
     @security.protected(permissions.ModifyPortalContent)
