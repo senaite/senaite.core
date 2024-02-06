@@ -230,8 +230,3 @@ class IASTMImporter(Interface):
     def import_data(data):
         """Import the processed JSON data from the wrapper
         """
-
-
-class ISkipIDChooser(Interface):
-    """Marker interface to skip id chooser
-    """
