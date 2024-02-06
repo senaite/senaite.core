@@ -55,11 +55,14 @@ class IDepartmentSchema(model.Schema):
 
     # Department ID
     department_id = schema.TextLine(
-        title=_("title_department_id",
-                default=u"Department ID"),
+        title=_(
+            u"title_department_id",
+            default=u"Department ID"
+        ),
         description=_(
-            "description_department_id",
-            default=u"Please provide a unique department identifier"),
+            u"description_department_id",
+            default=u"Please provide a unique department identifier"
+        ),
         required=True,
     )
 
@@ -78,14 +81,17 @@ class IDepartmentSchema(model.Schema):
         limit=5,
     )
     manager = UIDReferenceField(
-        title=_("label_department_manager",
-                default="Manager"),
+        title=_(
+            u"label_department_manager",
+            default=u"Manager"
+        ),
         description=_(
-            "description_department_manager",
+            u"description_department_manager",
             default=u"Select a manager from the available personnel "
-            "configured under the 'lab contacts' setup item. "
-            "Departmental managers are referenced on analysis results "
-            "reports containing analyses by their department."),
+                    u"configured under the 'lab contacts' setup item. "
+                    u"Departmental managers are referenced on analysis "
+                    u"results reports containing analyses by their department."
+        ),
         allowed_types=("LabContact", ),
         relationship="DepartmentLabContact",
         multi_valued=False,
@@ -108,12 +114,12 @@ class IDepartmentSchema(model.Schema):
         }
         results = api.search(query, catalog=SETUP_CATALOG)
         if len(results) > 0:
-            raise Invalid("Department ID must be unique!")
+            raise Invalid(_("Department ID must be unique"))
 
 
 @implementer(IDepartment, IDepartmentSchema, IDeactivable)
 class Department(Container):
-    """Deparment
+    """Department
     """
     # Catalogs where this type will be catalogued
     _catalogs = [SETUP_CATALOG]
