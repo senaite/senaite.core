@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.utils import createContent
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
@@ -124,9 +125,13 @@ def migrate_departments_to_dx(tool):
 
     # copy items from old -> new container
     for src in old.objectValues():
-        target = new.get(src.getId())
+        src_id = src.getId()
+        target = new.get(src_id)
         if not target:
-            target = api.create(new, "Department")
+            # Don' use the api to skip the auto-id generation
+            target = createContent("Department", id=src_id)
+            new._setObject(src_id, target)
+            target = new._getOb(src_id)
         migrator = getMultiAdapter(
             (src, target), interface=IContentMigrator)
         migrator.migrate(schema_mapping, delete_src=False)
