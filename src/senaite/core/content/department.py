@@ -129,12 +129,13 @@ class Department(Container):
     @security.protected(permissions.View)
     def getDepartmentID(self):
         accessor = self.accessor("department_id")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDepartmentID(self, value):
         mutator = self.mutator("department_id")
-        mutator(self, value)
+        mutator(self, api.safe_unicode(value))
 
     @security.protected(permissions.View)
     def getManager(self):
