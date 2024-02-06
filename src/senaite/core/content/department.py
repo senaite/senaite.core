@@ -100,7 +100,7 @@ class IDepartmentSchema(model.Schema):
 
     @invariant
     def validate_department_id(data):
-        """Checks if the deparment ID is unique
+        """Checks if the department ID is unique
         """
         dpt_id = data.department_id
         context = getattr(data, "__context__", None)
