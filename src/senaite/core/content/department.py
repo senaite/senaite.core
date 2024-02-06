@@ -138,6 +138,11 @@ class Department(Container):
         mutator(self, api.safe_unicode(value))
 
     @security.protected(permissions.View)
+    def getRawManager(self):
+        accessor = self.accessor("manager", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
     def getManager(self):
         accessor = self.accessor("manager")
         return accessor(self)
