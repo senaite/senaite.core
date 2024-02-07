@@ -137,6 +137,9 @@ class Department(Container):
         mutator = self.mutator("department_id")
         mutator(self, api.safe_unicode(value))
 
+    # BBB: direct AT schema field accessor
+    DepartmentID = ComputedAttribute(getDepartmentID, 1)
+
     @security.protected(permissions.View)
     def getRawManager(self):
         accessor = self.accessor("manager", raw=True)
@@ -147,10 +150,10 @@ class Department(Container):
         accessor = self.accessor("manager")
         return accessor(self)
 
-    # BBB Compatibility with senaite.impress
-    Manager = ComputedAttribute(getManager, 1)
-
     @security.protected(permissions.ModifyPortalContent)
     def setManager(self, value):
         mutator = self.mutator("manager")
         mutator(self, value)
+
+    # BBB: direct AT schema field accessor
+    Manager = ComputedAttribute(getManager, 1)
