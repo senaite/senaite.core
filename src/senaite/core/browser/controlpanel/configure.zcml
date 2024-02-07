@@ -3,41 +3,6 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
-  <include package="bika.lims" file="permissions.zcml" />
-
-  <!-- Labels -->
-  <browser:page
-      for="senaite.core.content.labels.ILabels"
-      name="view"
-      class=".labels.LabelsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
-
-  <!-- Sample Containers -->
-  <browser:page
-      for="senaite.core.content.samplecontainers.ISampleContainers"
-      name="view"
-      class=".samplecontainers.SampleContainersView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
-
-  <!-- Instrument Locations -->
-  <browser:page
-      for="senaite.core.content.instrumentlocations.IInstrumentLocations"
-      name="view"
-      class=".instrumentlocations.InstrumentLocationsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
-
-  <!-- Result Interpretation Templates View -->
-  <browser:page
-      for="senaite.core.content.interpretationtemplates.IInterpretationTemplates"
-      name="view"
-      class=".interpretationtemplates.InterpretationTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore"
-  />
-
   <!-- Control Panel Overview -->
   <browser:page
       name="overview-controlpanel"
@@ -45,7 +10,6 @@
       class=".overview.OverviewControlPanel"
       permission="plone.app.controlpanel.Overview"
       layer="senaite.core.interfaces.ISenaiteCore"/>
-
 
   <!-- SENAITE Setup View -->
   <browser:page
@@ -55,5 +19,11 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
+  <!-- Include controlpanel listing views -->
+  <include package=".departments" />
+  <include package=".instrumentlocations" />
+  <include package=".interpretationtemplates" />
+  <include package=".labels" />
+  <include package=".samplecontainers" />
 
 </configure>

@@ -17,3 +17,20 @@
 #
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import IDepartments
+from zope.interface import implementer
+
+
+class IDepartmentsSchema(model.Schema):
+    """Schema interface
+    """
+
+
+@implementer(IDepartments, IDepartmentsSchema, IHideActionsMenu)
+class Departments(Container):
+    """A container for departments
+    """

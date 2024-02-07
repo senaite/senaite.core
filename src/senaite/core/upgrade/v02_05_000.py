@@ -476,6 +476,11 @@ def remove_legacy_reports(tool):
 def import_typeinfo(tool):
     """Import type info profile
     """
+
+    # compatibility with DX migrations
+    from senaite.core.upgrade.v02_06_000 import remove_at_portal_types
+    remove_at_portal_types(tool)
+
     tool.runImportStepFromProfile(profile, "typeinfo")
 
 
@@ -661,6 +666,10 @@ def setup_client_landing_page(tool):
     """Setup the registry record for the client's landing page
     """
     logger.info("Setup client's default landing page ...")
+
+    # compatibility with DX migrations
+    from senaite.core.upgrade.v02_06_000 import remove_at_portal_types
+    remove_at_portal_types(tool)
 
     # import the client registry
     import_registry(tool)

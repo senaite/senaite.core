@@ -34,14 +34,14 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-		>>> def new_sample(services):
-		...     values = {
-		...         "Client": client.UID(),
-		...         "Contact": contact.UID(),
-		...         "DateSampled": date_now,
-		...         "SampleType": sampletype.UID()}
-		...     service_uids = map(api.get_uid, services)
-		...     return create_analysisrequest(client, request, values, service_uids)
+    >>> def new_sample(services):
+    ...     values = {
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     return create_analysisrequest(client, request, values, service_uids)
 
     >>> def get_analysis(sample, id):
     ...     ans = sample.getAnalyses(getId=id, full_objects=True)
@@ -57,7 +57,8 @@ Setup the testing environment:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
@@ -69,14 +70,14 @@ LIMS Setup
 
 Setup the Lab for testing:
 
-    >>> setup.setSelfVerificationEnabled(True)
-    >>> analysisservices = setup.bika_analysisservices
-    >>> calculations = setup.bika_calculations
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> analysisservices = bikasetup.bika_analysisservices
+    >>> calculations = bikasetup.bika_calculations
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
 
 
 Content Setup

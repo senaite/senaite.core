@@ -24,14 +24,15 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = api.get_setup()
+    >>> setup = portal.setup
+    >>> bikasetup = api.get_bika_setup()
 
 Create some basic objects for the test:
 
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
 
 
 Creation of Service with a Calculation that refers to itself
@@ -40,10 +41,10 @@ Creation of Service with a Calculation that refers to itself
 The most common case is when the Calculation is assigned to the same Analysis
 that is referred in the Calculation's formula:
 
-    >>> Ca = api.create(setup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="20", Category=category.UID())
-    >>> Mg = api.create(setup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
+    >>> Ca = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="20", Category=category.UID())
+    >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
 
-    >>> calc = api.create(setup.bika_calculations, "Calculation", title="Total Hardness")
+    >>> calc = api.create(bikasetup.bika_calculations, "Calculation", title="Total Hardness")
     >>> calc.setFormula("[Ca] + [Mg]")
     >>> calc.getFormula()
     '[Ca] + [Mg]'
@@ -67,7 +68,7 @@ that is referred in the Calculation's formula:
 The other case is when the initial Service is referred indirectly, through a
 calculation a dependency is bound to:
 
-    >>> calc_mg = api.create(setup.bika_calculations, "Calculation", title="Test")
+    >>> calc_mg = api.create(bikasetup.bika_calculations, "Calculation", title="Test")
     >>> calc_mg.setFormula("[Ca] + [Ca]")
     >>> calc_mg.getFormula()
     '[Ca] + [Ca]'
