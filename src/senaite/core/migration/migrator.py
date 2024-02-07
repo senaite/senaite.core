@@ -56,6 +56,8 @@ SKIP_FIELDS = [
     "creation_date",
 ]
 
+UID_CATALOG = "uid_catalog"
+
 
 def get_attribute_storage(obj):
     """Get or create the attribute storage for the given object
@@ -86,7 +88,7 @@ class ContentMigrator(object):
         """Uncatalog the object for all catalogs
         """
         # explicitly uncatalog from uid_catalog
-        uid_catalog = api.get_tool("uid_catalog")
+        uid_catalog = api.get_tool(UID_CATALOG)
         url = "/".join(obj.getPhysicalPath()[2:])
         uid_catalog.uncatalog_object(url)
         # uncatalog from registered catalogs
@@ -96,7 +98,7 @@ class ContentMigrator(object):
         """Catalog the object in all registered catalogs
         """
         # explicitly catalog in uid_catalog
-        uid_catalog = api.get_tool("uid_catalog")
+        uid_catalog = api.get_tool(UID_CATALOG)
         url = "/".join(obj.getPhysicalPath()[2:])
         uid_catalog.catalog_object(obj, url)
         # reindex in registered catalogs
