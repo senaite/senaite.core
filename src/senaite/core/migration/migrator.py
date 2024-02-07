@@ -71,6 +71,16 @@ def get_attribute_storage(obj):
     return annotation[ATTRIBUTE_STORAGE]
 
 
+def flush_attribute_storage(obj):
+    """Empty the attribute storage for the given object
+    """
+    annotation = IAnnotations(obj)
+    try:
+        del annotation[ATTRIBUTE_STORAGE]
+    except KeyError:
+        pass
+
+
 @implementer(IContentMigrator)
 class ContentMigrator(object):
     """SENAITE content migrator
