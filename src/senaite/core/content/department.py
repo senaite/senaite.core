@@ -22,7 +22,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
-from ComputedAttribute import ComputedAttribute
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -137,8 +136,8 @@ class Department(Container):
         mutator = self.mutator("department_id")
         mutator(self, api.safe_unicode(value))
 
-    # BBB: direct AT schema field accessor
-    DepartmentID = ComputedAttribute(getDepartmentID, 1)
+    # BBB: AT schema field property
+    DepartmentID = property(getDepartmentID, setDepartmentID)
 
     @security.protected(permissions.View)
     def getRawManager(self):
@@ -155,5 +154,5 @@ class Department(Container):
         mutator = self.mutator("manager")
         mutator(self, value)
 
-    # BBB: direct AT schema field accessor
-    Manager = ComputedAttribute(getManager, 1)
+    # BBB: AT schema field property
+    Manager = property(getManager, setManager)
