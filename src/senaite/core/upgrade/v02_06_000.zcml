@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate SampleConditions to DX"
+      description="Migrate SampleConditions to Dexterity"
+      source="2603"
+      destination="2604"
+      handler=".v02_06_000.migrate_sampleconditions_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove old AT Departments folder"
       description="Remove AT based setup folder"
       source="2602"

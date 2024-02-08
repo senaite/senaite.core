@@ -40,6 +40,8 @@ profile = "profile-{0}:default".format(product)
 REMOVE_AT_TYPES = [
     "Department",
     "Departments",
+    "SampleCondition",
+    "SampleConditions",
 ]
 
 
@@ -80,6 +82,97 @@ def remove_at_portal_types(tool):
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
+def migrate_to_dx(portal_type, origin, dest, schema_mapping):
+    """Migrates Setup AT contents to Dexterity
+    """
+    logger.info("Migrating {} to Dexterity ...".format(portal_type))
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        if api.get_portal_type(src) != portal_type:
+            logger.error("Not a '{}' object: {}".format(portal_type, src))
+            continue
+
+        # Create the object if it does not exist yet
+        src_id = src.getId()
+        target = dest.get(src_id)
+        if not target:
+            # Don' use the api to skip the auto-id generation
+            target = createContent(portal_type, id=src_id)
+            dest._setObject(src_id, target)
+            target = dest._getOb(src_id)
+
+        # Migrate the contents from AT to DX
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+        migrator.migrate(schema_mapping, delete_src=False)
+
+        # Delete the old AT object
+        delete_object(src)
+
+    logger.info("Migrating {} to Dexterity [DONE]".format(portal_type))
+
+
+def get_setup_folder(folder_id):
+    """Returns the folder from setup with the given name
+    """
+    setup = api.get_senaite_setup()
+    folder = setup.get(folder_id)
+    if not folder:
+        portal = api.get_portal()
+        add_senaite_setup_items(portal)
+        folder = setup.get(folder_id)
+    return folder
+
+
+@upgradestep(product, version)
+def migrate_sampleconditions_to_dx(tool):
+    """Converts existing sample conditions to Dexterity
+    """
+    logger.info("Convert SampleConditions to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_sampleconditions")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("sampleconditions")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("SampleCondition", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert SampleConditions to Dexterity [DONE]")
+
+
 @upgradestep(product, version)
 def migrate_departments_to_dx(tool):
     """Converts existing departments to Dexterity
@@ -93,26 +186,17 @@ def migrate_departments_to_dx(tool):
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
 
-    old_id = "bika_departments"
-    new_id = "departments"
-
-    setup = api.get_senaite_setup()
-    bikasetup = api.get_setup()
-
-    old = bikasetup.get(old_id)
-    new = setup.get(new_id)
-
-    if not new:
-        portal = api.get_portal()
-        add_senaite_setup_items(portal)
-        new = setup.get(new_id)
-
-    # return if the old container is already gone
-    if not all([old, new]):
+    # get the old container
+    origin = api.get_setup().get("bika_departments")
+    if not origin:
+        # old container is already gone
         return
 
-    # uncatalog the old object
-    uncatalog_object(old)
+    # get the destination container
+    destination = get_setup_folder("departments")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
 
     # Mapping from schema field name to a tuple of
     # (accessor, target field name, default value)
@@ -123,21 +207,11 @@ def migrate_departments_to_dx(tool):
         "Manager": ("getManager", "manager", None),
     }
 
-    # copy items from old -> new container
-    for src in old.objectValues():
-        src_id = src.getId()
-        target = new.get(src_id)
-        if not target:
-            # Don' use the api to skip the auto-id generation
-            target = createContent("Department", id=src_id)
-            new._setObject(src_id, target)
-            target = new._getOb(src_id)
-        migrator = getMultiAdapter(
-            (src, target), interface=IContentMigrator)
-        migrator.migrate(schema_mapping, delete_src=False)
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Department", origin, destination, schema_mapping)
 
     # copy snapshots for the container
-    copy_snapshots(old, new)
+    copy_snapshots(origin, destination)
 
     logger.info("Convert Departments to Dexterity [DONE]")
 
