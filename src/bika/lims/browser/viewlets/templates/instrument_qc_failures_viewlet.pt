@@ -25,11 +25,13 @@
           if (textContainer.classList.contains("contracted")) {
               textContainer.classList.remove("contracted");
               textContainer.classList.add("expanded");
-              toggleLink.textContent = "See less";
+              toggleLink.querySelector(".more").style.display = "none";
+              toggleLink.querySelector(".less").style.display = "inline";
           } else {
               textContainer.classList.remove("expanded");
               textContainer.classList.add("contracted");
-              toggleLink.textContent = "See more";
+              toggleLink.querySelector(".more").style.display = "inline";
+              toggleLink.querySelector(".less").style.display = "none";
           }
       }
   </script>
@@ -50,7 +52,10 @@
         <span i18n:translate="">Instruments' calibration certificates expired:</span>
       </p>
       <p class="contracted" id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
-      <a href="#" id="toggleLink" onclick="toggleText()">See more</a>
+      <a href="#" id="toggleLink" onclick="toggleText()">
+        <span class="more" i18n:translate="">See more</span>
+        <span class="less" style="display: none" i18n:translate="">See less</span>
+      </a>
     </div>
   </div>
 
