@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2477 Add expander and contractor to avoid huge instruments viewlets
 - #2471 Migrate Lab Departments to Dexterity
 - #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
 - #2468 Make the prepublish guard to rely on interfaces instead of statuses
