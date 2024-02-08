@@ -596,7 +596,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # convert any remaining placeholders, e.g. from interims etc.
         # NOTE: we assume remaining values are all floatable!
-        formula = formula.replace("[", "%(").replace("]", ")f")
+        formula = formula.replace("[", "%(").replace("]", ")r")
 
         # Calculate
         try:
