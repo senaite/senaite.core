@@ -20,22 +20,22 @@
 
 import collections
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link_for
+from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate
 from senaite.core.permissions import AddSampleCondition
 
 
-class SampleConditionsView(BikaListingView):
+class SampleConditionsView(ListingView):
 
     def __init__(self, context, request):
         super(SampleConditionsView, self).__init__(context, request)
 
         self.catalog = SETUP_CATALOG
-        self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 25
 
         self.contentFilter = {
             "portal_type": "SampleCondition",
@@ -44,24 +44,31 @@ class SampleConditionsView(BikaListingView):
         }
 
         self.context_actions = {
-            _("Add"): {
+            _(u"listing_sampleconditions_action_add", default=u"Add"): {
                 "url": "createObject?type_name=SampleCondition",
                 "permission": AddSampleCondition,
-                "icon": "++resource++bika.lims.images/add.png"}
+                "icon": "++resource++bika.lims.images/add.png"
+            }
         }
 
-        self.title = self.context.translate(_("Sample Conditions"))
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/samplecondition_big.png"
+        self.title = translate(_(
+            u"listing_sampleconditions_title",
+            default=u"Sample Conditions")
         )
+        self.icon = api.get_icon("SampleConditions", html_tag=False)
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Sample Condition"),
+                "title": _(
+                    u"listing_sampleconditions_column_title",
+                    default=u"Sample Condition"
+                ),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
+                "title": _(
+                    u"listing_sampleconditions_column_description",
+                    default=u"Description"
+                ),
                 "index": "description",
                 "toggle": True}),
         ))
@@ -69,19 +76,28 @@ class SampleConditionsView(BikaListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_sampleconditions_state_active",
+                    default=u"Active"
+                ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    u"listing_sampleconditions_state_inactive",
+                    default=u"Inactive"
+                ),
                 "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_sampleconditions_state_all",
+                    default=u"All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
