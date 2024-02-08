@@ -4,6 +4,36 @@
 
   <div class="visualClear"><!-- --></div>
 
+  <tal:css>
+    <style type="text/css">
+      .contracted {
+          max-height: 1.5em;
+          overflow: hidden;
+      }
+
+      .expanded {
+          max-height: none;
+      }
+    </style>
+  </tal:css>
+
+  <script>
+      function toggleText() {
+          var textContainer = document.getElementById("textContainer");
+          var toggleLink = document.getElementById("toggleLink");
+
+          if (textContainer.classList.contains("contracted")) {
+              textContainer.classList.remove("contracted");
+              textContainer.classList.add("expanded");
+              toggleLink.textContent = "See less";
+          } else {
+              textContainer.classList.remove("expanded");
+              textContainer.classList.add("contracted");
+              toggleLink.textContent = "See more";
+          }
+      }
+  </script>
+
   <div id="portal-alert"
        tal:define="items python:view.failed['out-of-date'];"
        tal:condition="python: len(items) > 0">
@@ -19,7 +49,8 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments' calibration certificates expired:</span>
       </p>
-      <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      <p class="contracted" id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+      <a href="#" id="toggleLink" onclick="toggleText()">See more</a>
     </div>
   </div>
 
