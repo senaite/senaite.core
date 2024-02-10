@@ -29,6 +29,9 @@ from senaite.core.catalog import AUDITLOG_CATALOG
 from zope.interface import alsoProvides
 
 
+ADDED_PATHS = "__added_paths"
+
+
 def reindex_object(obj):
     """Reindex the object in the AUDITLOG catalog
 
@@ -60,6 +63,41 @@ def unindex_object(obj):
         logger.warn("Auditlog catalog not found. Skipping unindex.")
         return
     auditlog_catalog.unindexObject(obj)
+
+
+def set_added(object):
+    """Keeps track of this object as being initialized/added within the
+    current request life-cycle
+    """
+    paths = get_added_paths()
+    path = api.get_path(object)
+    if path in paths:
+        return
+
+    # add the path and store in the request
+    paths.append(path)
+    request = api.get_request()
+    request.set(ADDED_PATHS, paths)
+
+
+def get_added_paths():
+    """Returns the paths that have been initialized (added) within the
+    current request life-cycle
+    """
+    request = api.get_request()
+    paths = request.get(ADDED_PATHS) or []
+    return list(paths)
+
+
+def is_content_added(obj):
+    """Returns whether at least one object has been added in this container
+    within the current request life-cycle
+    """
+    obj_path = api.get_path(obj)
+    for path in get_added_paths():
+        if obj_path in path:
+            return True
+    return False
 
 
 def ObjectTransitionedEventHandler(obj, event):
@@ -100,6 +138,10 @@ def ObjectModifiedEventHandler(obj, event):
     if not supports_snapshots(obj):
         return
 
+    # only edition is supported
+    if is_content_added(obj):
+        return
+
     # take a new snapshot
     take_snapshot(obj, action="edit")
 
@@ -110,6 +152,8 @@ def ObjectModifiedEventHandler(obj, event):
 def ObjectInitializedEventHandler(obj, event):
     """Object has been created
     """
+    # keep track of this addition within current request life-cycle
+    set_added(obj)
 
     # only snapshot supported objects
     if not supports_snapshots(obj):
