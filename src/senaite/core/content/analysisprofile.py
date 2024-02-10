@@ -32,6 +32,20 @@ from zope.interface import Invalid
 from zope.interface import implementer
 from zope.interface import invariant
 
+SUBFIELDS = [
+    {
+        "key": "uid",
+        "title": _("Service"),
+        "description": _("The service to include"),
+        "default": "",
+    }, {
+        "key": "hidden",
+        "title": _("Hidden"),
+        "description": _("Hide in report?"),
+        "default": "",
+    }
+]
+
 
 class IAnalysisProfileSchema(model.Schema):
     """Schema interface
@@ -56,7 +70,23 @@ class IAnalysisProfileSchema(model.Schema):
             u"description_analysisprofile_profile_key",
             default=u"Please provide a unique profile keyword"
         ),
+        required=False,
+    )
+
+    services = schema.List(
+        title=_(
+            u"title_analysisprofile_services",
+            default=u"Profile Analyses"
+        ),
+        description=_(
+            u"description_analysisprofile_services",
+            default=u"Select the included analyses for this profile"
+        ),
+        key_type=schema.ASCIILine(title=u"key"),
+        value_type=schema.TextLine(title=u"value"),
         required=True,
+        default=[],
+        subfields=SUBFIELDS,
     )
 
     @invariant
@@ -95,4 +125,15 @@ class AnalysisProfile(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAnalysisProfileID(self, value):
         mutator = self.mutator("profile_key")
+        mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
+    def getServices(self):
+        accessor = self.accessor("services")
+        value = accessor(self) or []
+        return value
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setServices(self, value):
+        mutator = self.mutator("services")
         mutator(self, api.safe_unicode(value))
