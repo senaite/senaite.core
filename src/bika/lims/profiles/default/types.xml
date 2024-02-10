@@ -2,8 +2,6 @@
 <object name="portal_types" meta_type="Plone Types Tool">
  <property name="title">Controls the available content types in your portal</property>
  <object name="AuditLog" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisProfile" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARReport" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
