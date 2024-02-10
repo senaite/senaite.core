@@ -656,23 +656,25 @@ class Container_Types(WorksheetImporter):
 class Preservations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_preservations
+        container = self.context.setup.samplepreservations
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("Preservation", folder, tmpID())
-            RP = {
-                'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
-                'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
-                'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
-            }
 
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''),
-                     RetentionPeriod=RP)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            days = row.get("RetentionPeriod_days")
+            hours = row.get("RetentionPeriod_hours")
+            minutes = row.get("RetentionPeriod_minutes")
+            retention_period = datetime.timedelta(
+                days=api.to_int(days, 0),
+                hours=api.to_int(hours, 0),
+                minutes=api.to_int(minutes, 0)
+            )
+
+            api.create(container, "SamplePreservation",
+                       title=title,
+                       description=row.get("description"),
+                       retention_period=retention_period)
 
 
 class Containers(WorksheetImporter):
