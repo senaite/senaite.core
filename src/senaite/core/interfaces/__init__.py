@@ -160,6 +160,16 @@ class IHaveUIDReferences(Interface):
     """
 
 
+class IAnalysisProfile(Interface):
+    """Marker interface for analysis profiles
+    """
+
+
+class IAnalysisProfiles(Interface):
+    """Marker interface for analysis profiles setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """

@@ -29,7 +29,6 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-
     >>> def get_services(sample):
     ...    analyses = sample.getAnalyses(full_objects=True)
     ...    services = map(lambda an: an.getAnalysisService(), analyses)
@@ -58,6 +57,7 @@ Variables:
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.setup
+    >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
@@ -79,9 +79,9 @@ We need to create some basic objects for the test:
     >>> service_uids1 = [Cu.UID(), Fe.UID(), Au.UID()]
     >>> service_uids2 = [Zn.UID()]
     >>> service_uids3 = [Cu.UID(), Fe.UID(), Au.UID(), Zn.UID()]
-    >>> profile1 = api.create(bikasetup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids1)
-    >>> profile2 = api.create(bikasetup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids2)
-    >>> profile3 = api.create(bikasetup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids3)
+    >>> profile1 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids1)
+    >>> profile2 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids2)
+    >>> profile3 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids3)
 
 
 Assign Profile(s)
