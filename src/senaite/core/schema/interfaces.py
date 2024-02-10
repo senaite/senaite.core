@@ -25,6 +25,7 @@ from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
 from zope.schema.interfaces import INativeString
+from zope.schema.interfaces import ITimedelta
 
 
 class IBaseField(IField):
@@ -69,4 +70,9 @@ class IRichTextField(IRichText):
 
 class IPhoneField(INativeString):
     """Input type "phone" widget
+    """
+
+
+class IDurationField(ITimedelta):
+    """Senaite Duration field
     """
