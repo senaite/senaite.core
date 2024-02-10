@@ -69,25 +69,26 @@ If we render the widget we get the HTML:
         <div class="senaite-duration-widget senaite-duration-widget-input">
           <div class="form-row">
             <div class="col-auto">
-              <label for="duration:days">Days</label>
-              <input name="duration:days" size="5" type="number" value="2">
+              <label for="duration.days:record:int">Days</label>
+              <input id="duration.days:record:int" name="duration.days:record:int" size="5" type="number" value="2">
             </div>
             <div class="col-auto">
-              <label for="duration:hours">Hours</label>
-              <input name="duration:hours" size="5" type="number" value="48">
+              <label for="duration.hours:record:int">Hours</label>
+              <input id="duration.hours:record:int" name="duration.hours:record:int" size="5" type="number" value="48">
             </div>
             <div class="col-auto">
-              <label for="duration:minutes">Minutes</label>
-              <input name="duration:minutes" size="5" type="number" value="70">
+              <label for="duration.minutes:record:int">Minutes</label>
+              <input id="duration.minutes:record:int" name="duration.minutes:record:int" size="5" type="number" value="70">
             </div>
             <div class="d-none">
-              <label for="duration:seconds">Seconds</label>
-              <input name="duration:seconds" size="5" type="number" value="70">
+              <label for="duration.seconds:record:int">Seconds</label>
+              <input id="duration.seconds:record:int" name="duration.seconds:record:int" size="5" type="number" value="70">
             </div>
           </div>
         </div>
       </body>
     </html>
+
 
 Render without the days component:
 
@@ -98,20 +99,20 @@ Render without the days component:
         <div class="senaite-duration-widget senaite-duration-widget-input">
           <div class="form-row">
             <div class="d-none">
-              <label for="duration:days">Days</label>
-              <input name="duration:days" size="5" type="number" value="2">
+              <label for="duration.days:record:int">Days</label>
+              <input id="duration.days:record:int" name="duration.days:record:int" size="5" type="number" value="2">
             </div>
             <div class="col-auto">
-              <label for="duration:hours">Hours</label>
-              <input name="duration:hours" size="5" type="number" value="48">
+              <label for="duration.hours:record:int">Hours</label>
+              <input id="duration.hours:record:int" name="duration.hours:record:int" size="5" type="number" value="48">
             </div>
             <div class="col-auto">
-              <label for="duration:minutes">Minutes</label>
-              <input name="duration:minutes" size="5" type="number" value="70">
+              <label for="duration.minutes:record:int">Minutes</label>
+              <input id="duration.minutes:record:int" name="duration.minutes:record:int" size="5" type="number" value="70">
             </div>
             <div class="d-none">
-              <label for="duration:seconds">Seconds</label>
-              <input name="duration:seconds" size="5" type="number" value="70">
+              <label for="duration.seconds:record:int">Seconds</label>
+              <input id="duration.seconds:record:int" name="duration.seconds:record:int" size="5" type="number" value="70">
             </div>
           </div>
         </div>
@@ -154,11 +155,9 @@ Check HIDDEN_MODE:
     >>> print(widget.render())
     <html>
       <body>
-        <div>
-          <input name="duration:days" type="hidden" value="2">
-          <input name="duration:hours" type="hidden" value="48">
-          <input name="duration:minutes" type="hidden" value="70">
-          <input name="duration:seconds" type="hidden" value="70">
-        </div>
+        <input name="duration.days:record:int" type="hidden" value="2">
+        <input name="duration.hours:record:int" type="hidden" value="48">
+        <input name="duration.minutes:record:int" type="hidden" value="70">
+        <input name="duration.seconds:record:int" type="hidden" value="70">
       </body>
     </html>

@@ -14,39 +14,43 @@
        tal:attributes="class klass">
 
     <div class="form-row">
-      <div tal:define="name  string:${name}:days;"
+      <div tal:define="id string:${name}.days:record:int"
            tal:attributes="class python:'col-auto' if view.show_days else 'd-none'">
         <label i18n:translate="duration_widget_label_days"
-               tal:attributes="for name">Days</label>
+               tal:attributes="for id">Days</label>
         <input type="number" size="5"
-               tal:attributes="name name;
+               tal:attributes="id id;
+                               name id;
                                value days;"/>
       </div>
       <div class="col-auto"
-           tal:define="name string:${name}:hours"
+           tal:define="id string:${name}.hours:record:int"
            tal:attributes="class python:'col-auto' if view.show_hours else 'd-none'">
         <label i18n:translate="duration_widget_label_hours"
-               tal:attributes="for name">Hours</label>
+               tal:attributes="for id">Hours</label>
         <input type="number" size="5"
-               tal:attributes="name name;
+               tal:attributes="id id;
+                               name id;
                                value hours"/>
       </div>
       <div class="col-auto"
-           tal:define="name string:${name}:minutes"
+           tal:define="id string:${name}.minutes:record:int"
            tal:attributes="class python:'col-auto' if view.show_minutes else 'd-none'">
         <label i18n:translate="duration_widget_label_minutes"
-               tal:attributes="for name">Minutes</label>
+               tal:attributes="for id">Minutes</label>
         <input type="number" size="5"
-               tal:attributes="name name;
+               tal:attributes="id id;
+                               name id;
                                value minutes"/>
       </div>
       <div class="col-auto"
-           tal:define="name string:${name}:seconds"
+           tal:define="id string:${name}.seconds:record:int"
            tal:attributes="class python:'col-auto' if view.show_seconds else 'd-none'">
         <label i18n:translate="duration_widget_label_seconds"
-               tal:attributes="for name">Seconds</label>
+               tal:attributes="for id">Seconds</label>
         <input type="number" size="5"
-               tal:attributes="name name;
+               tal:attributes="id id;
+                               name id;
                                value seconds"/>
       </div>
 

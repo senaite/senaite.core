@@ -1,7 +1,7 @@
 Duration field
 ==============
 
-The phone field stores timedeltas
+The duration field stores timedeltas
 
 Running this test from the buildout directory:
 

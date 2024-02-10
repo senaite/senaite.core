@@ -20,7 +20,6 @@
 
 from datetime import timedelta
 
-from bika.lims import api
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDurationField
 from senaite.core.z3cform.interfaces import IDurationWidget
@@ -56,17 +55,7 @@ class DurationDataConverter(TimedeltaDataConverter):
     def toFieldValue(self, value):
         """Converts from widget to field value
         """
-        # days, hours, minutes, seconds
-        dhms = list(value) + [0]*4
-        seconds = sum((
-            api.to_int(dhms[0], 0)*86400, # days
-            api.to_int(dhms[1], 0)*3600, # hours
-            api.to_int(dhms[2], 0)*60, # minutes
-            api.to_int(dhms[3], 0) # seconds
-        ))
-        if not seconds:
-            return self.field.missing_value
-        return timedelta(seconds=seconds)
+        return timedelta(**value)
 
 
 @implementer(IDurationWidget)
