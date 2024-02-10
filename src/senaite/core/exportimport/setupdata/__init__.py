@@ -1260,17 +1260,16 @@ class Storage_Locations(WorksheetImporter):
 class Sample_Conditions(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_sampleconditions
+        container = self.context.setup.sampleconditions
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("SampleCondition", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', '')
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            description = row.get("description")
+            api.create(container, "SampleCondition",
+                       title=title,
+                       description=description)
 
 
 class Analysis_Categories(WorksheetImporter):

@@ -180,6 +180,16 @@ class IDepartment(Interface):
     """
 
 
+class ISampleConditions(Interface):
+    """Marker interface for sample conditions setup folder
+    """
+
+
+class ISampleCondition(Interface):
+    """Marker interface for sample conditions
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """
