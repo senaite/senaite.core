@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2480 Do not create snapshots of parent DX folder on content creation
 - #2478 Migrate Sample Conditions to Dexterity
 - #2471 Migrate Lab Departments to Dexterity
 - #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
