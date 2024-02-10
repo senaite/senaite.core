@@ -95,9 +95,7 @@ def get_added_paths():
     """
     request = get_request()
     annotations = IAnnotations(request)
-    paths = annotations.get(ADDED_PATHS)
-    if not paths:
-        paths = []
+    paths = annotations.get(ADDED_PATHS) or []
     return list(paths)
 
 
