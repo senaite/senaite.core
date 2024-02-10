@@ -70,24 +70,25 @@ If we render the widget we get the HTML:
           <div class="form-row">
             <div class="col-auto">
               <label for="duration:days">Days</label>
-              <input name="duration:days" size="5" type="number" value="2">
+              <input id="duration:days" name="duration:days" size="5" type="number" value="2">
             </div>
             <div class="col-auto">
               <label for="duration:hours">Hours</label>
-              <input name="duration:hours" size="5" type="number" value="48">
+              <input id="duration:hours" name="duration:hours" size="5" type="number" value="48">
             </div>
             <div class="col-auto">
               <label for="duration:minutes">Minutes</label>
-              <input name="duration:minutes" size="5" type="number" value="70">
+              <input id="duration:minutes" name="duration:minutes" size="5" type="number" value="70">
             </div>
             <div class="d-none">
               <label for="duration:seconds">Seconds</label>
-              <input name="duration:seconds" size="5" type="number" value="70">
+              <input id="duration:seconds" name="duration:seconds" size="5" type="number" value="70">
             </div>
           </div>
         </div>
       </body>
     </html>
+
 
 Render without the days component:
 
@@ -99,19 +100,19 @@ Render without the days component:
           <div class="form-row">
             <div class="d-none">
               <label for="duration:days">Days</label>
-              <input name="duration:days" size="5" type="number" value="2">
+              <input id="duration:days" name="duration:days" size="5" type="number" value="2">
             </div>
             <div class="col-auto">
               <label for="duration:hours">Hours</label>
-              <input name="duration:hours" size="5" type="number" value="48">
+              <input id="duration:hours" name="duration:hours" size="5" type="number" value="48">
             </div>
             <div class="col-auto">
               <label for="duration:minutes">Minutes</label>
-              <input name="duration:minutes" size="5" type="number" value="70">
+              <input id="duration:minutes" name="duration:minutes" size="5" type="number" value="70">
             </div>
             <div class="d-none">
               <label for="duration:seconds">Seconds</label>
-              <input name="duration:seconds" size="5" type="number" value="70">
+              <input id="duration:seconds" name="duration:seconds" size="5" type="number" value="70">
             </div>
           </div>
         </div>
