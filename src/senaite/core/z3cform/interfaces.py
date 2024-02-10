@@ -61,3 +61,8 @@ class IPhoneWidget(IWidget):
 class IQuerySelectWidget(IWidget):
     """Allows to search and select a value
     """
+
+
+class IDurationWidget(IWidget):
+    """Allows to set a duration period in days, hours and minutes
+    """
