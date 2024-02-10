@@ -18,24 +18,19 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISampleConditions
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
+from plone.dexterity.content import Container
+from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
-
-schema = ATFolderSchema.copy()
-
-
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2478
-class SampleConditions(ATFolder):
-    implements(ISampleConditions, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
+from senaite.core.interfaces import ISampleConditions
+from zope.interface import implementer
 
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(SampleConditions, PROJECTNAME)
+class ISampleConditionsSchema(model.Schema):
+    """Schema interface
+    """
+
+
+@implementer(ISampleConditions, ISampleConditionsSchema, IHideActionsMenu)
+class SampleConditions(Container):
+    """A container for sample conditions
+    """

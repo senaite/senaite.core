@@ -18,24 +18,33 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISampleConditions
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
-
-schema = ATFolderSchema.copy()
+from bika.lims.interfaces import IDeactivable
+from plone.supermodel import model
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
+from senaite.core.interfaces import ISampleCondition
+from zope import schema
+from zope.interface import implementer
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2478
-class SampleConditions(ATFolder):
-    implements(ISampleConditions, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
+class ISampleConditionSchema(model.Schema):
+    """Schema interface
+    """
+
+    title = schema.TextLine(
+        title=u"Title",
+        required=False,
+    )
+
+    description = schema.Text(
+        title=u"Description",
+        required=False,
+    )
 
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(SampleConditions, PROJECTNAME)
+@implementer(ISampleCondition, ISampleConditionSchema, IDeactivable)
+class SampleCondition(Container):
+    """Sample condition
+    """
+    # Catalogs where this type will be catalogued
+    _catalogs = [SETUP_CATALOG]
