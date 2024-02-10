@@ -62,6 +62,10 @@ class ISamplePreservationSchema(model.Schema):
     retention_period = DurationField(
         title=_(
             u"label_samplepreservation_retention_period",
+            default=u"Retention Period"
+        ),
+        description=_(
+            u"description_samplepreservation_retention_period",
             default=u"Once preserved, the sample must be disposed of within "
                     u"this time period. If not specified, the sample type "
                     u"retention period will be used."
