@@ -119,6 +119,9 @@
     <type type_id="Preservations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
+    <type type_id="SamplePreservations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
     <type type_id="PricelistFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -230,6 +233,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Preservation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplePreservation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Pricelist">
