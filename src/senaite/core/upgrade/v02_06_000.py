@@ -106,10 +106,7 @@ def migrate_to_dx(portal_type, origin, dest, schema_mapping):
         # Migrate the contents from AT to DX
         migrator = getMultiAdapter(
             (src, target), interface=IContentMigrator)
-        migrator.migrate(schema_mapping, delete_src=False)
-
-        # Delete the old AT object
-        delete_object(src)
+        migrator.migrate(schema_mapping, delete_src=True)
 
     logger.info("Migrating {} to Dexterity [DONE]".format(portal_type))
 
