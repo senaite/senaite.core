@@ -65,6 +65,13 @@ def unindex_object(obj):
     auditlog_catalog.unindexObject(obj)
 
 
+def get_request():
+    """Returns the current request
+    """
+    # Fixture for tests that do not have a regular request!!!
+    return api.get_request() or api.get_test_request()
+
+
 def set_added(object):
     """Keeps track of this object as being initialized/added within the
     current request life-cycle
@@ -76,7 +83,7 @@ def set_added(object):
 
     # add the path and store in the request
     paths.append(path)
-    request = api.get_request()
+    request = get_request()
     request.set(ADDED_PATHS, paths)
 
 
@@ -84,7 +91,7 @@ def get_added_paths():
     """Returns the paths that have been initialized (added) within the
     current request life-cycle
     """
-    request = api.get_request()
+    request = get_request()
     paths = request.get(ADDED_PATHS) or []
     return list(paths)
 
