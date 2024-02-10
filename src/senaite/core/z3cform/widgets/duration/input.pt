@@ -14,7 +14,7 @@
        tal:attributes="class klass">
 
     <div class="form-row">
-      <div tal:define="id string:${name}:days;"
+      <div tal:define="id string:${name}.days:record:int"
            tal:attributes="class python:'col-auto' if view.show_days else 'd-none'">
         <label i18n:translate="duration_widget_label_days"
                tal:attributes="for id">Days</label>
@@ -24,7 +24,7 @@
                                value days;"/>
       </div>
       <div class="col-auto"
-           tal:define="id string:${name}:hours"
+           tal:define="id string:${name}.hours:record:int"
            tal:attributes="class python:'col-auto' if view.show_hours else 'd-none'">
         <label i18n:translate="duration_widget_label_hours"
                tal:attributes="for id">Hours</label>
@@ -34,7 +34,7 @@
                                value hours"/>
       </div>
       <div class="col-auto"
-           tal:define="id string:${name}:minutes"
+           tal:define="id string:${name}.minutes:record:int"
            tal:attributes="class python:'col-auto' if view.show_minutes else 'd-none'">
         <label i18n:translate="duration_widget_label_minutes"
                tal:attributes="for id">Minutes</label>
@@ -44,7 +44,7 @@
                                value minutes"/>
       </div>
       <div class="col-auto"
-           tal:define="id string:${name}:seconds"
+           tal:define="id string:${name}.seconds:record:int"
            tal:attributes="class python:'col-auto' if view.show_seconds else 'd-none'">
         <label i18n:translate="duration_widget_label_seconds"
                tal:attributes="for id">Seconds</label>
