@@ -446,3 +446,19 @@ def _get_title_or_id_from_uid(uid):
         return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id
+
+
+def disable_snapshots(obj):
+    """Disable and removes all snapshots from the given object
+    """
+    # do not take more snapshots
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+    # do not display audit log
+    noLongerProvides(obj, IAuditable)
+
+    # remove all snapshots
+    annotation = IAnnotations(obj)
+    storage = annotation.get(SNAPSHOT_STORAGE)
+    if storage:
+        del(annotation[SNAPSHOT_STORAGE])

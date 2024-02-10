@@ -15,6 +15,7 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.api.snapshot import *
+    >>> from bika.lims.interfaces import IAuditable
     >>> from senaite.core.permissions import FieldEditAnalysisHidden
     >>> from senaite.core.permissions import FieldEditAnalysisResult
     >>> from senaite.core.permissions import FieldEditAnalysisRemarks
@@ -369,3 +370,36 @@ Object modification events create new snapshots again:
 Unregister event subscribers:
 
     >>> unregister_event_subscribers()
+
+
+Disable and remove snapshots
+............................
+
+`IAuditLog` is an interface that is automatically added the first time a
+snapshot is created and is used to make the action "Audit Log" visible in the
+content view.
+
+    >>> IAuditable.providedBy(sample)
+    True
+
+Disable and remove all snapshots from an object in a single shot:
+
+    >>> supports_snapshots(sample)
+    True
+
+    >>> get_snapshot_count(sample)
+    5
+
+    >>> disable_snapshots(sample)
+
+    >>> supports_snapshots(sample)
+    False
+
+    >>> get_snapshot_count(sample)
+    0
+
+The sample is not flagged with IAuditable anymore, so the action "Audit Log"
+is also not displayed:
+
+    >>> IAuditable.providedBy(sample)
+    False

@@ -23,6 +23,7 @@ import collections
 from bika.lims import _
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from senaite.core.permissions import AddAnalysisSpec
 from bika.lims.utils import get_link
 from plone.dexterity.content import Container
@@ -126,4 +127,4 @@ class DynamicAnalysisSpecsView(ListingView):
 class DynamicAnalysisSpecs(Container):
     """Dynamic Analysis Specifications Folder
     """
-    implements(IDynamicAnalysisSpecs, IHideActionsMenu)
+    implements(IDynamicAnalysisSpecs, IDoNotSupportSnapshots, IHideActionsMenu)
