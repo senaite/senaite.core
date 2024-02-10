@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.snapshot import disable_snapshots
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from senaite.core import logger
@@ -26,7 +27,6 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
-from senaite.core.setuphandlers import disable_snapshots
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots

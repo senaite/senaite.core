@@ -20,9 +20,6 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from bika.lims.api import snapshot
-from bika.lims.interfaces import IAuditable
-from bika.lims.interfaces import IDoNotSupportSnapshots
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
@@ -53,11 +50,8 @@ from senaite.core.catalog import SetupCatalog
 from senaite.core.catalog import WorksheetCatalog
 from senaite.core.config import PROFILE_ID
 from senaite.core.upgrade.utils import temporary_allow_type
-from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility
-from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.interface import noLongerProvides
 
 try:
     from Products.CMFPlone.interfaces import IMarkupSchema
@@ -227,10 +221,6 @@ def add_dexterity_setup_items(portal):
     setup = api.get_setup()
     add_dexterity_items(setup, items)
 
-    # disable snapshots for setup folders
-    objects = [setup.get(item[0]) for item in items]
-    map(disable_snapshots, objects)
-
 
 def add_senaite_setup(portal):
     """Add the new SENAITE Setup container
@@ -260,26 +250,6 @@ def add_senaite_setup_items(portal):
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
 
-    # disable snapshots for setup folders
-    objects = [setup.get(item[0]) for item in items]
-    map(disable_snapshots, objects)
-
-
-def disable_snapshots(obj):
-    """Disable and removes snapshots from the given object
-    """
-    # do not take more snapshots
-    alsoProvides(obj, IDoNotSupportSnapshots)
-
-    # do not display audit log
-    noLongerProvides(obj, IAuditable)
-
-    # remove all snapshots
-    annotation = IAnnotations(obj)
-    storage = annotation.get(snapshot.SNAPSHOT_STORAGE)
-    if storage:
-        del(annotation[snapshot.SNAPSHOT_STORAGE])
-
 
 def add_dexterity_portal_items(portal):
     """Adds the Dexterity Container in the Site folder
@@ -293,10 +263,6 @@ def add_dexterity_portal_items(portal):
         ("samples", "Samples", "Samples"),
     ]
     add_dexterity_items(portal, items)
-
-    # disable snapshots for portal folders
-    objects = [portal.get(item[0]) for item in items]
-    map(disable_snapshots, objects)
 
     # Move Samples after Clients nav item
     position = portal.getObjectPosition("clients")
