@@ -28,4 +28,3 @@ from zope.schema import Timedelta
 class DurationField(Timedelta, BaseField):
     """A field that handles days, hours, minutes and seconds
     """
-    pass
