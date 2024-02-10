@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.snapshot import disable_snapshots
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from senaite.core import logger
@@ -265,3 +266,31 @@ def update_workflow_role_mappings(wf_id, objs_or_brains):
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject()
         obj._p_deactivate()
+
+
+def remove_folders_snapshots(tool):
+    """Removes the auditlog snapshots for portal and setup folders and remove
+    the IAuditable marker interface as well
+    """
+    logger.info("Removing snapshots from portal and setup folders ...")
+    portal = tool.aq_inner.aq_parent
+    bika_setup = api.get_setup()
+    setup = api.get_senaite_setup()
+
+    # pick all folders "folders"
+    folders = portal.objectValues()
+    folders += bika_setup.objectValues()
+    folders += setup.objectValues()
+
+    # remove non-objects
+    folders = filter(api.is_object, folders)
+    folders = list(set(folders))
+
+    # remove setup folders (they hold settings as fields)
+    skip = [bika_setup, setup]
+    folders = filter(lambda folder: folder not in skip, folders)
+
+    # disable auditlog and snapshots
+    map(disable_snapshots, folders)
+
+    logger.info("Removing snapshots from portal and setup folders [DONE]")

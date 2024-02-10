@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2482 Added DurationField and DurationWidget for Dexterity types
+- #2481 Disable snapshots for container on content add
 - #2478 Migrate Sample Conditions to Dexterity
 - #2471 Migrate Lab Departments to Dexterity
 - #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
