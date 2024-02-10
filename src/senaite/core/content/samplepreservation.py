@@ -58,7 +58,7 @@ class ISamplePreservationSchema(model.Schema):
         required=True,
     )
 
-    directives.widget("duration", DurationWidgetFactory)
+    directives.widget("retention_period", DurationWidgetFactory)
     retention_period = DurationField(
         title=_(
             u"label_samplepreservation_retention_period",
