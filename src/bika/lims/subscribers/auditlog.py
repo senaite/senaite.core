@@ -26,6 +26,7 @@ from bika.lims.api.snapshot import take_snapshot
 from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
 from senaite.core.catalog import AUDITLOG_CATALOG
+from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 
 
@@ -84,7 +85,8 @@ def set_added(object):
     # add the path and store in the request
     paths.append(path)
     request = get_request()
-    request.set(ADDED_PATHS, paths)
+    annotations = IAnnotations(request)
+    annotations[ADDED_PATHS] = tuple(paths)
 
 
 def get_added_paths():
@@ -92,7 +94,10 @@ def get_added_paths():
     current request life-cycle
     """
     request = get_request()
-    paths = request.get(ADDED_PATHS) or []
+    annotations = IAnnotations(request)
+    paths = annotations.get(ADDED_PATHS)
+    if not paths:
+        paths = []
     return list(paths)
 
 
