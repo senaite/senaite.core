@@ -13,7 +13,7 @@
                    klass      python:' '.join([klass, mode_klass]);"
        tal:attributes="class klass">
 
-    <div class="form-row align-items-center">
+    <div class="form-row">
       <div tal:define="name  string:${name}:days;"
            tal:attributes="class python:'col-auto' if view.show_days else 'd-none'">
         <label i18n:translate="duration_widget_label_days"
