@@ -13,12 +13,12 @@
                    klass      python:' '.join([klass, mode_klass]);"
        tal:attributes="class klass">
 
-    <div class="form-row align-items-center">
+    <div class="form-row">
       <div tal:define="name  string:${name}:days;"
            tal:attributes="class python:'col-auto' if view.show_days else 'd-none'">
         <label i18n:translate="duration_widget_label_days"
                tal:attributes="for name">Days</label>
-        <input type="number" size="6"
+        <input type="number" size="5"
                tal:attributes="name name;
                                value days;"/>
       </div>
@@ -27,7 +27,7 @@
            tal:attributes="class python:'col-auto' if view.show_hours else 'd-none'">
         <label i18n:translate="duration_widget_label_hours"
                tal:attributes="for name">Hours</label>
-        <input type="number" size="6"
+        <input type="number" size="5"
                tal:attributes="name name;
                                value hours"/>
       </div>
@@ -36,8 +36,7 @@
            tal:attributes="class python:'col-auto' if view.show_minutes else 'd-none'">
         <label i18n:translate="duration_widget_label_minutes"
                tal:attributes="for name">Minutes</label>
-        <input type="number" size="6"
-               i18n:attributes="placeholder"
+        <input type="number" size="5"
                tal:attributes="name name;
                                value minutes"/>
       </div>
@@ -46,7 +45,7 @@
            tal:attributes="class python:'col-auto' if view.show_seconds else 'd-none'">
         <label i18n:translate="duration_widget_label_seconds"
                tal:attributes="for name">Seconds</label>
-        <input type="number" size="6"
+        <input type="number" size="5"
                tal:attributes="name name;
                                value seconds"/>
       </div>
