@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from string import Template
 
 from bika.lims import _
 from bika.lims import api
@@ -26,20 +27,48 @@ from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
-from senaite.core.permissions import AddAnalysisRequest
-from senaite.core.permissions import TransitionSampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
-from senaite.core.i18n import translate as t
 from DateTime import DateTime
 from senaite.app.listing import ListingView
 from senaite.core.api import dtime
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.i18n import translate as t
 from senaite.core.interfaces import ISamples
 from senaite.core.interfaces import ISamplesView
+from senaite.core.permissions import AddAnalysisRequest
+from senaite.core.permissions import TransitionSampleSample
 from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
+
+ANALYSES_NUM_TPL = Template("$not_submitted/$to_be_verified/$verified/$total")
+ANALYSES_NUM_TPL_HTML = Template("""<div class="d-flex flex-row">
+  <span data-toggle="tooltip"
+        title="$not_submitted_title"
+        class="text-secondary cursor-pointer">
+    $not_submitted
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$to_be_verified_title"
+        class="text-state-to_be_verified cursor-pointer">
+    $to_be_verified
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$verified_title"
+        class="text-state-verified cursor-pointer">
+    $verified
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$total_title"
+        class="text-black cursor-pointer">
+    $total
+  </span>
+</div>
+""")
 
 
 @implementer(ISamplesView)
@@ -481,11 +510,23 @@ class SamplesView(ListingView):
         item["replace"]["Priority"] = priority_div % (priority, priority_text)
         item["replace"]["getProfilesTitle"] = obj.getProfilesTitleStr
 
+        # returns a list of
+        # [verified, total, not_submitted, to_be_verified]
         analysesnum = obj.getAnalysesNum
         if analysesnum:
-            num_verified = str(analysesnum[0])
-            num_total = str(analysesnum[1])
-            item["getAnalysesNum"] = "{0}/{1}".format(num_verified, num_total)
+            numbers = {
+                "verified": analysesnum[0],
+                "verified_title": t(_("Verified")),
+                "total": analysesnum[1],
+                "total_title": t(_("Total")),
+                "not_submitted": analysesnum[2],
+                "not_submitted_title": t(_("Open")),
+                "to_be_verified": analysesnum[3],
+                "to_be_verified_title": t(_("To be verified")),
+            }
+            item["getAnalysesNum"] = ANALYSES_NUM_TPL.safe_substitute(numbers)
+            html = ANALYSES_NUM_TPL_HTML.safe_substitute(numbers)
+            item["replace"]["getAnalysesNum"] = html
         else:
             item["getAnalysesNum"] = ""
 
