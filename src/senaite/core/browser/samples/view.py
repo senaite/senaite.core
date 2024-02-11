@@ -233,6 +233,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("getAnalysesNum", {
                 "title": _("Number of Analyses"),
+                "alt": _("Open / To be verified / Verified / Total"),
                 "sortable": True,
                 "index": "getAnalysesNum",
                 "toggle": False}),
