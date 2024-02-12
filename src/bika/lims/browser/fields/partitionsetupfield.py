@@ -109,7 +109,6 @@ class PartitionSetupField(RecordsField):
             'preservation',
             'container',
             'vol',
-            # 'retentionperiod',
         ),
         'subfield_labels': {
             'sampletype': _('Sample Type'),
@@ -117,7 +116,6 @@ class PartitionSetupField(RecordsField):
             'preservation': _('Preservation'),
             'container': _('Container'),
             'vol': _('Required Volume'),
-            # 'retentionperiod': _('Retention Period'),
         },
         'subfield_types': {
             'separate': 'boolean',
@@ -135,7 +133,6 @@ class PartitionSetupField(RecordsField):
             'preservation': 6,
             'vol': 8,
             'container': 6,
-            # 'retentionperiod':10,
         }
     })
     security = ClassSecurityInfo()
