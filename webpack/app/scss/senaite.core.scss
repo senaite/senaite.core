@@ -14,7 +14,7 @@ h1, .h1 { font-size: 2rem; }
 h2, .h2 { font-size: 1.85rem; }
 
 
-/* Colors */
+/* Text Colors */
 .text-state-active { color: $state-active-color; }
 .text-state-inactive { color: $state-inactive-color; }
 .text-state-sample_due { color: $state-sample_due-color; }
@@ -27,6 +27,20 @@ h2, .h2 { font-size: 1.85rem; }
 .text-state-unassigned { color: $state-unassigned-color; }
 .text-state-retracted { color: $state-retracted-color; }
 .text-state-cancelled { color: $state-cancelled-color; }
+
+/* Background Colors */
+.bg-state-active { background-color: $state-active-color !important; }
+.bg-state-inactive { background-color: $state-inactive-color !important; }
+.bg-state-sample_due { background-color: $state-sample_due-color !important; }
+.bg-state-sample_received { background-color: $state-sample_received-color !important; }
+.bg-state-to_be_verified { background-color: $state-to_be_verified-color !important; }
+.bg-state-verified { background-color: $state-verified-color !important; }
+.bg-state-published { background-color: $state-published-color !important; }
+.bg-state-invalid { background-color: $state-invalid-color !important; }
+.bg-state-rejected { background-color: $state-rejected-color !important; }
+.bg-state-unassigned { background-color: $state-unassigned-color !important; }
+.bg-state-retracted { background-color: $state-retracted-color !important; }
+.bg-state-cancelled { background-color: $state-cancelled-color !important; }
 
 /* Cursors */
 .cursor-pointer { cursor: pointer; }
