@@ -242,9 +242,10 @@ def add_senaite_setup_items(portal):
     """Adds setup items to the new SENAITE setup
     """
     items = [
-        ("labels",  # ID
-         "Labels",  # Title
-         "Labels"),  # FTI
+        # ID, Title, FTI
+        ("departments", "Lab Departments", "Departments"),
+        ("labels", "Labels", "Labels"),
+        ("sampleconditions", "Sample Conditions", "SampleConditions"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

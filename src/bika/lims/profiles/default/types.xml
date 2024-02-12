@@ -30,8 +30,6 @@
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerTypes" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Departments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
@@ -63,8 +61,6 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleCondition" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleConditions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>

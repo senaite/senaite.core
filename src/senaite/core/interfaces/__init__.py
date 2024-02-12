@@ -19,14 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.catalog import *
-from senaite.core.interfaces.datamanager import IDataManager
-from senaite.core.interfaces.widget import *
+from plone.protect.interfaces import IDisableCSRFProtection
+from senaite.core.interfaces.catalog import *  # noqa:F401,F403
+from senaite.core.interfaces.datamanager import IDataManager  # noqa:F401
+from senaite.core.interfaces.widget import *  # noqa:F401,F403
 from zope.interface import Interface
 
 
-class ISenaiteCore(Interface):
+class ISenaiteCore(IDisableCSRFProtection):
     """Marker interface that defines a Zope 3 browser layer.
+
+    NOTE: We disable CSRF protection site-wide.
     """
 
 
@@ -167,6 +170,26 @@ class ISampleContainers(Interface):
 
 class ISampleContainer(Interface):
     """Marker interface for sample containers
+    """
+
+
+class IDepartments(Interface):
+    """Marker interface for departments setup folder
+    """
+
+
+class IDepartment(Interface):
+    """Marker interface for departments
+    """
+
+
+class ISampleConditions(Interface):
+    """Marker interface for sample conditions setup folder
+    """
+
+
+class ISampleCondition(Interface):
+    """Marker interface for sample conditions
     """
 
 
