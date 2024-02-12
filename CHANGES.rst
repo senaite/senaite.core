@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2485 More informative progress of the sample analyses states
+- #2484 Disable CSRF protection in SENAITE
 - #2482 Added DurationField and DurationWidget for Dexterity types
 - #2481 Disable snapshots for container on content add
 - #2478 Migrate Sample Conditions to Dexterity
