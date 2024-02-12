@@ -331,7 +331,12 @@ def pause_snapshots_for(obj):
 def resume_snapshots_for(obj):
     """Resume snapshots for the given object
     """
-    noLongerProvides(obj, IDoNotSupportSnapshots)
+    try:
+        noLongerProvides(obj, IDoNotSupportSnapshots)
+    except ValueError:
+        # Handle ValueError: Can only remove directly provided interfaces.
+        # when the interface was directly provided on class level
+        pass
 
 
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
