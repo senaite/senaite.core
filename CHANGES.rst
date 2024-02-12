@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2476 Fix format type to include strings in calculation formulas
+- #2485 More informative progress of the sample analyses states
+- #2487 Fix ValueError when creating new Dexterity contents
+- #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
 - #2484 Disable CSRF protection in SENAITE
 - #2482 Added DurationField and DurationWidget for Dexterity types
 - #2481 Disable snapshots for container on content add
