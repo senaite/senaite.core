@@ -577,7 +577,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "Preservation",
         required=0,
-        allowed_types=("Preservation",),
+        allowed_types=("SamplePreservation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPreservation,
