@@ -43,34 +43,30 @@ from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
 
 ANALYSES_NUM_TPL = Template("$not_submitted/$to_be_verified/$verified/$total")
-ANALYSES_NUM_TPL_HTML = Template("""<div class="progress" style="height:17px;width:68px;">
-  <div data-toggle="tooltip"
-       title="$not_submitted_title"
-       style="width:25%"
-       class="progress-bar bg-light text-black-50 cursor-pointer">
+ANALYSES_NUM_TPL_HTML = Template("""<div class="d-flex flex-row">
+  <span data-toggle="tooltip"
+        title="$not_submitted_title"
+        class="text-secondary cursor-pointer">
     $not_submitted
-  </div>
-
-  <div data-toggle="tooltip"
-       title="$to_be_verified_title"
-       style="width:25%"
-       class="progress-bar bg-state-to_be_verified text-black-50 cursor-pointer">
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$to_be_verified_title"
+        class="text-state-to_be_verified cursor-pointer">
     $to_be_verified
-  </div>
-
-  <div data-toggle="tooltip"
-       title="$verified_title"
-       style="width:25%"
-       class="progress-bar bg-state-verified text-black-50 cursor-pointer">
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$verified_title"
+        class="text-state-verified cursor-pointer">
     $verified
-  </div>
-
-  <div data-toggle="tooltip"
-       title="$total_title"
-       style="width:25%"
-       class="progress-bar bg-secondary text-white-50 cursor-pointer">
+  </span>
+  <span class="separator">/</span>
+  <span data-toggle="tooltip"
+        title="$total_title"
+        class="text-black cursor-pointer">
     $total
-  </div>
+  </span>
 </div>
 """)
 
