@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2487 Fix ValueError when creating new Dexterity contents
 - #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
 - #2484 Disable CSRF protection in SENAITE
 - #2482 Added DurationField and DurationWidget for Dexterity types
