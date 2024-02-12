@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
 - #2484 Disable CSRF protection in SENAITE
 - #2482 Added DurationField and DurationWidget for Dexterity types
 - #2481 Disable snapshots for container on content add
