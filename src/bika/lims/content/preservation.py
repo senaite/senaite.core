@@ -76,7 +76,7 @@ registerType(Preservation, PROJECTNAME)
 class ajaxGetPreservations:
 
     catalog_name='senaite_catalog_setup'
-    contentFilter = {'portal_type': 'Preservation',
+    contentFilter = {'portal_type': 'SamplePreservation',
                      'is_active': True}
 
     def __init__(self, context, request):
