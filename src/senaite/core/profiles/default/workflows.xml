@@ -116,12 +116,6 @@
     <type type_id="Manufacturers">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="Preservations">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="SamplePreservations">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="PricelistFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -135,6 +129,9 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SamplePoints">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplePreservations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SampleTypes">
@@ -232,12 +229,6 @@
     <type type_id="Method">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
-    <type type_id="Preservation">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
-    <type type_id="SamplePreservation">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
     <type type_id="Pricelist">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
@@ -251,6 +242,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SamplePoint">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplePreservation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SampleType">
