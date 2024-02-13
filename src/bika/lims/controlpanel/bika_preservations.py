@@ -31,6 +31,7 @@ from zope.interface.declarations import implements
 schema = ATFolderSchema.copy()
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2483
 class Preservations(ATFolder):
     implements(IPreservations, IHideActionsMenu)
     displayContentsTab = False
