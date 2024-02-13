@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Data converter -->
+  <adapter factory=".widget.DictFieldDataConverter" />
+  <adapter factory=".widget.ListFieldDataConverter" />
+
+  <!-- Default listing widgets -->
+  <browser:page
+      name="default_listing_widget_view"
+      for="*"
+      class=".view.DefaultListingWidget"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- INPUT template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".widget.ListingWidget"
+      template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- DISPLAY template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".widget.ListingWidget"
+      template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- HIDDEN template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".widget.ListingWidget"
+      template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+</configure>

@@ -66,3 +66,8 @@ class IQuerySelectWidget(IWidget):
 class IDurationWidget(IWidget):
     """Allows to set a duration period in days, hours and minutes
     """
+
+
+class IListingWidget(IWidget):
+    """Listing view widget
+    """
