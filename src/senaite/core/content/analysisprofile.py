@@ -194,19 +194,62 @@ class AnalysisProfile(Container):
 
     @security.protected(permissions.View)
     def getRawServices(self):
+        """Return the raw value of the services field
+
+        >>> self.getRawServices()
+        [{'uid': '...', 'hidden': False}, {'uid': '...', 'hidden': True}, ...]
+
+        :returns: List of dictionaries containing `uid` and `hidden`
+        """
         accessor = self.accessor("services")
-        value = accessor(self) or []
-        return list(map(lambda r: r.get("uid"), value))
+        return accessor(self) or []
 
     @security.protected(permissions.View)
     def getServices(self):
-        service_uids = self.getRawServices()
+        """Returns a list of service objects
+
+        >>> self.getServices()
+        [<AnalysisService at ...>,  <AnalysisService at ...>, ...]
+
+        :returns: List of analysis service objects
+        """
+        records = self.getRawServices()
+        service_uids = map(lambda r: r.get("uid"), records)
         return list(map(api.get_object, service_uids))
 
     @security.protected(permissions.ModifyPortalContent)
     def setServices(self, value):
+        """Set services for the profile
+
+        This method accepts either a list of analysis service objects, a list
+        of analysis service UIDs or a list of analysis profile service records
+        containing the keys `uid` and `hidden`:
+
+        >>> self.setServices([<AnalysisService at ...>, ...])
+        >>> self.setServices(['353e1d9bd45d45dbabc837114a9c41e6', '...', ...])
+        >>> self.setServices([{'hidden': False, 'uid': '...'}, ...])
+
+        Raises a TypeError if the value does not match any allowed type.
+        """
+        if not isinstance(value, list):
+            value = [value]
+        records = []
+        for v in value:
+            uid = None
+            hidden = False
+            if isinstance(v, dict):
+                uid = v.get("uid")
+                hidden = v.get("hidden", False)
+            elif api.is_object(v):
+                uid = api.get_uid(v)
+            elif api.is_uid(v):
+                uid = v
+            else:
+                raise TypeError(
+                    "Expected object, uid or record, got %r" % type(v))
+            records.append({"uid": uid, "hidden": hidden})
         mutator = self.mutator("services")
-        mutator(self, value)
+        mutator(self, records)
 
     @security.protected(permissions.View)
     def getCommercialID(self):

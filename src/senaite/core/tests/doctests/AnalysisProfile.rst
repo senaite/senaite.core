@@ -79,9 +79,12 @@ We need to create some basic objects for the test:
     >>> service_uids1 = [Cu.UID(), Fe.UID(), Au.UID()]
     >>> service_uids2 = [Zn.UID()]
     >>> service_uids3 = [Cu.UID(), Fe.UID(), Au.UID(), Zn.UID()]
-    >>> profile1 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids1)
-    >>> profile2 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids2)
-    >>> profile3 = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids3)
+    >>> profile1 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile1.setServices(service_uids1)
+    >>> profile2 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile2.setServices(service_uids2)
+    >>> profile3 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile3.setServices(service_uids3)
 
 
 Assign Profile(s)

@@ -1558,7 +1558,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # determine all the services to add
             services_to_add = set(services)
             for profile in profiles:
-                services_to_add.update(profile.getService())
+                services_to_add.update(profile.getServices())
             # set all analyses
             self.setAnalyses(list(services_to_add))
 
