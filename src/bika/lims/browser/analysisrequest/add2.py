@@ -1364,7 +1364,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for uid, obj_info in profiles.items():
             obj = self.get_object_by_uid(uid)
             # get all services of this profile
-            services = obj.getService()
+            services = obj.getServices()
             # get all UIDs of the profile services
             service_uids = map(api.get_uid, services)
             # remember all services of this profile
