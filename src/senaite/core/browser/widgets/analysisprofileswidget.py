@@ -219,7 +219,8 @@ class AnalysisProfilesWidget(DefaultListingWidget):
 
         # Unit
         unit = obj.getUnit()
-        item["Unit"] = unit and format_supsub(unit) or ""
+        item["Unit"] = unit or ""
+        item["replace"]["Unit"] = unit and format_supsub(unit) or ""
 
         # Icons
         after_icons = ""
