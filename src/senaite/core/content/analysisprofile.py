@@ -21,6 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
@@ -173,7 +174,7 @@ class IAnalysisProfileSchema(model.Schema):
 
 
 @implementer(IAnalysisProfile, IAnalysisProfileSchema, IDeactivable)
-class AnalysisProfile(Container):
+class AnalysisProfile(Container, ClientAwareMixin):
     """AnalysisProfile
     """
     # Catalogs where this type will be catalogued
