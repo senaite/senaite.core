@@ -18,21 +18,33 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
+from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
-from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.interfaces import ISampleConditions
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
+from senaite.core.interfaces import ISampleMatrix
+from zope import schema
 from zope.interface import implementer
 
 
-class ISampleConditionsSchema(model.Schema):
+class ISampleMatrixSchema(model.Schema):
     """Schema interface
     """
 
+    title = schema.TextLine(
+        title=u"Title",
+        required=False,
+    )
 
-@implementer(ISampleConditions, ISampleConditionsSchema,
-             IDoNotSupportSnapshots, IHideActionsMenu)
-class SampleConditions(Container):
-    """A container for sample conditions
+    description = schema.Text(
+        title=u"Description",
+        required=False,
+    )
+
+
+@implementer(ISampleMatrix, ISampleMatrixSchema, IDeactivable)
+class SampleMatrix(Container):
+    """Sample matrix
     """
+    # Catalogs where this type will be catalogued
+    _catalogs = [SETUP_CATALOG]

@@ -28,6 +28,10 @@
   <object name="SampleContainer" meta_type="Dexterity FTI" />
   <object name="SampleContainers" meta_type="Dexterity FTI" />
 
+  <!-- Sample Matrices -->
+  <object name="SampleMatrix" meta_type="Dexterity FTI" />
+  <object name="SampleMatrices" meta_type="Dexterity FTI" />
+
   <!-- Labels -->
   <object name="Label" meta_type="Dexterity FTI" />
   <object name="Labels" meta_type="Dexterity FTI" />
