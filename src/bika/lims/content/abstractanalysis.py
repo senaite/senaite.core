@@ -554,6 +554,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if api.is_floatable(interim_value):
                 interim_value = float(interim_value)
 
+            # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
+            converter = "s" if i.get("result_type") else "f"
+            formula = formula.replace(
+                "[" + interim_keyword + "]", "%(" + interim_keyword + ")" + converter
+            )
+
             mapping[interim_keyword] = interim_value
 
         # Add dependencies results to mapping
@@ -595,16 +601,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
 
         # convert any remaining placeholders, e.g. from interims etc.
-        # NOTE: we assume remaining values are all floatable!
-        formula = formula.replace("[", "%(").replace("]", ")r")
+        formula = formula.replace("[", "%(").replace("]", ")f")
 
         # Calculate
         try:
+            formatted_mapping = {
+                mapping_key: '"{}"'.format(mapping_value)
+                if isinstance(mapping_value, str) else mapping_value
+                for mapping_key, mapping_value in mapping.items()
+            }
             formula = eval("'%s'%%mapping" % formula,
                            {"__builtins__": None,
                             'math': math,
                             'context': self},
-                           {'mapping': mapping})
+                           {'mapping': formatted_mapping})
             result = eval(formula, calc._getGlobals())
         except ZeroDivisionError:
             self.setResult('0/0')
