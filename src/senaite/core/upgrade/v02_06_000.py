@@ -279,9 +279,12 @@ def migrate_analysisprofiles_to_dx(tool):
             })
         target.services = services
         target.commercial_id = src.getCommercialID()
-        target.use_analysis_profile_price = src.getUseAnalysisProfilePrice()
-        target.analysis_profile_price = src.getAnalysisProfilePrice()
-        target.analysis_profile_vat = src.getAnalysisProfileVAT()
+        target.use_analysis_profile_price = bool(
+            src.getUseAnalysisProfilePrice())
+        target.analysis_profile_price = api.to_float(
+            src.getAnalysisProfilePrice(), 0.0)
+        target.analysis_profile_vat = api.to_float(
+            src.getAnalysisProfileVAT(), 0.0)
 
         # Migrate the contents from AT to DX
         migrator = getMultiAdapter(
