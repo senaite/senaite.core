@@ -22,29 +22,27 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
+from collective.z3cform.datagridfield.datagridfield import DataGridField
+from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IAnalysisProfile
+from senaite.core.schema.fields import DataGridRow
+from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from zope import schema
+from zope.interface import Interface
 from zope.interface import Invalid
 from zope.interface import implementer
 from zope.interface import invariant
 
-SUBFIELDS = [
-    {
-        "key": "uid",
-        "title": _("Service"),
-        "description": _("The service to include"),
-        "default": "",
-    }, {
-        "key": "hidden",
-        "title": _("Hidden"),
-        "description": _("Hide in report?"),
-        "default": "",
-    }
-]
+
+class IAnalysisProfileRecord(Interface):
+    """Record schema for selected services
+    """
+    uid = schema.TextLine(title=u"Profile UID")
+    hidden = schema.Bool(title=u"Hidden")
 
 
 class IAnalysisProfileSchema(model.Schema):
@@ -73,7 +71,10 @@ class IAnalysisProfileSchema(model.Schema):
         required=False,
     )
 
-    services = schema.List(
+    directives.widget("services",
+                      ListingWidgetFactory,
+                      listing_view="analysisprofiles_widget")
+    services = DataGridField(
         title=_(
             u"title_analysisprofile_services",
             default=u"Profile Analyses"
@@ -82,11 +83,56 @@ class IAnalysisProfileSchema(model.Schema):
             u"description_analysisprofile_services",
             default=u"Select the included analyses for this profile"
         ),
-        key_type=schema.ASCIILine(title=u"key"),
-        value_type=schema.TextLine(title=u"value"),
+        value_type=DataGridRow(schema=IAnalysisProfileRecord),
         required=True,
         default=[],
-        subfields=SUBFIELDS,
+    )
+
+    # Commecrial ID
+    commercial_id = schema.TextLine(
+        title=_(
+            u"title_analysisprofile_commercial_id",
+            default=u"Commercial ID"
+        ),
+        description=_(
+            u"description_analysisprofile_commercial_id",
+            default=u"Commercial ID used for accounting"
+        ),
+        required=True,
+    )
+
+    use_profile_price = schema.Bool(
+        title=_(
+            u"title_analysisprofile_use_profile_price",
+            default=u"Use analysis profile price"
+        ),
+        description=_(
+            u"description_analysisprofile_use_profile_price",
+            default=u"Use profile price instead of single analyses prices"
+        ),
+    )
+
+    profile_price = schema.TextLine(
+        title=_(
+            u"title_analysisprofile_profile_price",
+            default=u"Price (excluding VAT)"
+        ),
+        description=_(
+            u"description_analysisprofile_profile_price",
+            default=u"Please provide the price excluding VAT"
+        ),
+    )
+
+    profile_vat = schema.TextLine(
+        title=_(
+            u"title_analysisprofile_profile_vat",
+            default=u"VAT %"
+        ),
+        description=_(
+            u"description_analysisprofile_profile_vat",
+            default=u"Please provide the VAT in percent that is added to the "
+                    u"profile price"
+        ),
     )
 
     @invariant
