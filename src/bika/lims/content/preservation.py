@@ -44,13 +44,16 @@ schema = BikaSchema.copy() + Schema((
             label=_("Preservation Category"),
         ),
     ),
+    # TODO This field is not used anywhere. Has been removed on DX migration
+    #      https://github.com/senaite/senaite.core/pull/2483
     DurationField('RetentionPeriod',
         widget=DurationWidget(
             label=_("Retention Period"),
             description=_(
                 'Once preserved, the sample must be disposed of within this '
                 'time period.  If not specified, the sample type retention '
-                'period will be used.')
+                'period will be used.'),
+            visible=False,
         ),
     ),
 ))

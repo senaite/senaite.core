@@ -162,7 +162,6 @@ def migrate_preservations_to_dx(tool):
         "title": ("Title", "title", ""),
         "description": ("Description", "description", ""),
         "Category": ("getCategory", "category", ""),
-        "RetentionPeriod": ("getRetentionPeriod", "retention_period", None),
     }
 
     # migrate the contents from the old AT container to the new one

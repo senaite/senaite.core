@@ -22,14 +22,11 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
 from bika.lims.interfaces import IDeactivable
-from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ISamplePreservation
-from senaite.core.schema.durationfield import DurationField
-from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from zope import schema
 from zope.interface import implementer
 
@@ -58,21 +55,6 @@ class ISamplePreservationSchema(model.Schema):
         required=True,
     )
 
-    directives.widget("retention_period", DurationWidgetFactory)
-    retention_period = DurationField(
-        title=_(
-            u"label_samplepreservation_retention_period",
-            default=u"Retention Period"
-        ),
-        description=_(
-            u"description_samplepreservation_retention_period",
-            default=u"Once preserved, the sample must be disposed of within "
-                    u"this time period. If not specified, the sample type "
-                    u"retention period will be used."
-        ),
-        required=False,
-    )
-
 
 @implementer(ISamplePreservation, ISamplePreservationSchema, IDeactivable)
 class SamplePreservation(Container):
@@ -93,13 +75,3 @@ class SamplePreservation(Container):
     def setCategory(self, value):
         mutator = self.mutator("category")
         mutator(self, api.safe_unicode(value))
-
-    @security.protected(permissions.View)
-    def getRetentionPeriod(self):
-        accessor = self.accessor("retention_period")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setRetentionPeriod(self, value):
-        mutator = self.mutator("retention_period")
-        mutator(self, value)

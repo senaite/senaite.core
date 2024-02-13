@@ -662,19 +662,8 @@ class Preservations(WorksheetImporter):
             if not title:
                 continue
 
-            days = row.get("RetentionPeriod_days")
-            hours = row.get("RetentionPeriod_hours")
-            minutes = row.get("RetentionPeriod_minutes")
-            retention_period = datetime.timedelta(
-                days=api.to_int(days, 0),
-                hours=api.to_int(hours, 0),
-                minutes=api.to_int(minutes, 0)
-            )
-
             api.create(container, "SamplePreservation",
-                       title=title,
-                       description=row.get("description"),
-                       retention_period=retention_period)
+                       title=title, description=row.get("description"))
 
 
 class Containers(WorksheetImporter):
