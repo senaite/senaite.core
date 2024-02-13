@@ -561,6 +561,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             )
 
             mapping[interim_keyword] = interim_value
+            # Wrap strings from mapping in inverted commas
+            mapping = {
+                mapping_key: '"{}"'.format(mapping_value)
+                if isinstance(mapping_value, str) else mapping_value
+                for mapping_key, mapping_value in mapping.items()
+            }
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -605,16 +611,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Calculate
         try:
-            formatted_mapping = {
-                mapping_key: '"{}"'.format(mapping_value)
-                if isinstance(mapping_value, str) else mapping_value
-                for mapping_key, mapping_value in mapping.items()
-            }
             formula = eval("'%s'%%mapping" % formula,
                            {"__builtins__": None,
                             'math': math,
                             'context': self},
-                           {'mapping': formatted_mapping})
+                           {'mapping': mapping})
             result = eval(formula, calc._getGlobals())
         except ZeroDivisionError:
             self.setResult('0/0')
