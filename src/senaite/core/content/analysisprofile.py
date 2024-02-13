@@ -74,7 +74,7 @@ class IAnalysisProfileSchema(model.Schema):
     directives.widget("services",
                       ListingWidgetFactory,
                       listing_view="analysisprofiles_widget")
-    services = DataGridField(
+    services = schema.List(
         title=_(
             u"title_analysisprofile_services",
             default=u"Profile Analyses"
@@ -84,8 +84,6 @@ class IAnalysisProfileSchema(model.Schema):
             default=u"Select the included analyses for this profile"
         ),
         value_type=DataGridRow(schema=IAnalysisProfileRecord),
-        required=True,
-        default=[],
     )
 
     # Commecrial ID
