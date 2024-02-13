@@ -27,6 +27,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -224,6 +225,10 @@ def migrate_analysisprofiles_to_dx(tool):
 
     # ensure old AT types are flushed first
     remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
