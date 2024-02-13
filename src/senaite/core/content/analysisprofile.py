@@ -114,7 +114,7 @@ class IAnalysisProfileSchema(model.Schema):
             u"description_analysisprofile_commercial_id",
             default=u"Commercial ID used for accounting"
         ),
-        required=True,
+        required=False,
     )
 
     use_analysis_profile_price = schema.Bool(
@@ -126,6 +126,7 @@ class IAnalysisProfileSchema(model.Schema):
             u"description_analysisprofile_use_profile_price",
             default=u"Use profile price instead of single analyses prices"
         ),
+        required=False,
     )
 
     analysis_profile_price = schema.TextLine(
@@ -137,6 +138,7 @@ class IAnalysisProfileSchema(model.Schema):
             u"description_analysisprofile_profile_price",
             default=u"Please provide the price excluding VAT"
         ),
+        required=False,
     )
 
     analysis_profile_vat = schema.TextLine(
@@ -149,6 +151,7 @@ class IAnalysisProfileSchema(model.Schema):
             default=u"Please provide the VAT in percent that is added to the "
                     u"profile price"
         ),
+        required=False,
     )
 
     @invariant
