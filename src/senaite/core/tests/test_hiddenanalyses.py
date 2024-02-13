@@ -49,7 +49,7 @@ class TestHiddenAnalyses(DataTestCase):
         # Iron    - Hidden set to True
         self.services[2].setHidden(True)
 
-        profs = self.portal.bika_setup.bika_analysisprofiles
+        profs = self.portal.setup.analysisprofiles
         # analysisprofile-1: Trace Metals
         self.analysisprofile = profs['analysisprofile-1']
 
