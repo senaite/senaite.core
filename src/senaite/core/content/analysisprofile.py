@@ -21,13 +21,13 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
+from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import IAnalysisProfile
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
@@ -88,6 +88,7 @@ class IAnalysisProfileSchema(model.Schema):
             default=u"Please provide a unique profile keyword"
         ),
         required=False,
+        default=u""
     )
 
     directives.widget("services",
@@ -160,13 +161,16 @@ class IAnalysisProfileSchema(model.Schema):
         """Checks if the profile keyword is unique
         """
         profile_key = data.profile_key
+        if not profile_key:
+            # no further checks required
+            return
         context = getattr(data, "__context__", None)
         if context and context.profile_key == profile_key:
             # nothing changed
             return
         query = {
             "portal_type": "AnalysisProfile",
-            "profile_key": profile_key,  # TODO: add index
+            "profile_key": profile_key,
         }
         results = api.search(query, catalog=SETUP_CATALOG)
         if len(results) > 0:
@@ -189,7 +193,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
         return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
-    def setAnalysisProfileID(self, value):
+    def setProfileKey(self, value):
         mutator = self.mutator("profile_key")
         mutator(self, api.safe_unicode(value))
 
@@ -296,6 +300,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator = self.mutator("analysis_profile_vat")
         mutator(self, value)
 
+    @security.protected(permissions.View)
     def getAnalysisServiceSettings(self, uid):
         """Returns the hidden seettings for the given service UID
         """
@@ -303,6 +308,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
         record = by_uid.get(uid, {"uid": uid, "hidden": False})
         return record
 
+    @security.protected(permissions.View)
     def get_services_by_uid(self):
         """Return the selected services grouped by UID
         """
@@ -310,3 +316,36 @@ class AnalysisProfile(Container, ClientAwareMixin):
         for record in self.services:
             records[record.get("uid")] = record
         return records
+
+    def isAnalysisServiceHidden(self, service):
+        """Check if the service is configured as hidden
+        """
+        obj = api.get_object(service)
+        uid = api.get_uid(service)
+        services = self.get_services_by_uid()
+        record = services.get(uid)
+        if not record:
+            return obj.getRawHidden()
+        return record.get("hidden", False)
+
+    @security.protected(permissions.View)
+    def getPrice(self):
+        """Returns the price of the profile, without VAT
+        """
+        return self.getAnalysisProfilePrice()
+
+    @security.protected(permissions.View)
+    def getVATAmount(self):
+        """Compute VAT amount
+        """
+        price = self.getPrice()
+        vat = self.getAnalysisProfileVAT()
+        return float(price) * float(vat) / 100
+
+    @security.protected(permissions.View)
+    def getTotalPrice(self):
+        """Calculate the final price using the VAT and the subtotal price
+        """
+        price = self.getPrice()
+        vat = self.getVATAmount()
+        return float(price) + float(vat)

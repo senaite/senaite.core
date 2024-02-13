@@ -253,3 +253,18 @@ class IASTMImporter(Interface):
     def import_data(data):
         """Import the processed JSON data from the wrapper
         """
+
+
+class IClientAwareMixin(Interface):
+    """Marker interface for objects that can be bound to a Client, either
+    because they can be added inside a Client folder or because it can be
+    assigned through a Reference field
+    """
+
+    def getClient(self):
+        """Returns the client this object is bound to, if any
+        """
+
+    def getClientUID(self):
+        """Returns the client UID this object is bound to, if any
+        """
