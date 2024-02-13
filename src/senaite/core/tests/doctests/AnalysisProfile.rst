@@ -87,6 +87,17 @@ We need to create some basic objects for the test:
     >>> profile3.setServices(service_uids3)
 
 
+Test Profile Price, VAT and calcluations
+........................................
+
+    >>> profile1.setAnalysisProfilePrice(200)
+    >>> profile1.setAnalysisProfileVAT(19)
+    >>> profile1.getVATAmount()
+    38.0
+    >>> profile1.getTotalPrice()
+    238.0
+
+
 Assign Profile(s)
 .................
 
