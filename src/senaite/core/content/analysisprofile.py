@@ -22,7 +22,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
-from collective.z3cform.datagridfield.datagridfield import DataGridField
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -48,6 +47,25 @@ class IAnalysisProfileRecord(Interface):
 class IAnalysisProfileSchema(model.Schema):
     """Schema interface
     """
+
+    model.fieldset(
+        "analyses",
+        label=_(u"Analyses"),
+        fields=[
+            "services",
+        ]
+    )
+
+    model.fieldset(
+        "accounting",
+        label=_(u"Accounting"),
+        fields=[
+            "commercial_id",
+            "use_profile_price",
+            "profile_price",
+            "profile_vat",
+        ]
+    )
 
     title = schema.TextLine(
         title=u"Title",
