@@ -61,9 +61,9 @@ class IAnalysisProfileSchema(model.Schema):
         label=_(u"Accounting"),
         fields=[
             "commercial_id",
-            "use_profile_price",
-            "profile_price",
-            "profile_vat",
+            "use_analysis_profile_price",
+            "analysis_profile_price",
+            "analysis_profile_vat",
         ]
     )
 
@@ -117,7 +117,7 @@ class IAnalysisProfileSchema(model.Schema):
         required=True,
     )
 
-    use_profile_price = schema.Bool(
+    use_analysis_profile_price = schema.Bool(
         title=_(
             u"title_analysisprofile_use_profile_price",
             default=u"Use analysis profile price"
@@ -128,7 +128,7 @@ class IAnalysisProfileSchema(model.Schema):
         ),
     )
 
-    profile_price = schema.TextLine(
+    analysis_profile_price = schema.TextLine(
         title=_(
             u"title_analysisprofile_profile_price",
             default=u"Price (excluding VAT)"
@@ -139,7 +139,7 @@ class IAnalysisProfileSchema(model.Schema):
         ),
     )
 
-    profile_vat = schema.TextLine(
+    analysis_profile_vat = schema.TextLine(
         title=_(
             u"title_analysisprofile_profile_vat",
             default=u"VAT %"
@@ -199,3 +199,47 @@ class AnalysisProfile(Container):
     def setServices(self, value):
         mutator = self.mutator("services")
         mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
+    def getCommercialID(self):
+        accessor = self.accessor("commercial_id")
+        value = accessor(self) or ""
+        return value.encode("utf-8")
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setCommercialID(self, value):
+        mutator = self.mutator("commercial_id")
+        mutator(self, api.safe_unicode(value))
+
+    @security.protected(permissions.View)
+    def getUseAnalysisProfilePrice(self):
+        accessor = self.accessor("use_analysis_profile_price")
+        value = accessor(self)
+        return bool(value)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setUseAnalysisProfilePrice(self, value):
+        mutator = self.mutator("use_analysis_profile_price")
+        mutator(self, bool(value))
+
+    @security.protected(permissions.View)
+    def getAnalysisProfilePrice(self):
+        accessor = self.accessor("analysis_profile_price")
+        value = accessor(self) or ""
+        return api.to_float(value, 0.0)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAnalysisProfilePrice(self, value):
+        mutator = self.mutator("analysis_profile_price")
+        mutator(self, api.float_to_string(value))
+
+    @security.protected(permissions.View)
+    def getAnalysisProfileVAT(self):
+        accessor = self.accessor("analysis_profile_vat")
+        value = accessor(self) or ""
+        return api.to_float(value, 0.0)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAnalysisProfileVAT(self, value):
+        mutator = self.mutator("analysis_profile_vat")
+        mutator(self, api.float_to_string(value))
