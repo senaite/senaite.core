@@ -129,7 +129,7 @@ class IAnalysisProfileSchema(model.Schema):
         required=False,
     )
 
-    analysis_profile_price = schema.TextLine(
+    analysis_profile_price = schema.Decimal(
         title=_(
             u"title_analysisprofile_profile_price",
             default=u"Price (excluding VAT)"
@@ -141,7 +141,7 @@ class IAnalysisProfileSchema(model.Schema):
         required=False,
     )
 
-    analysis_profile_vat = schema.TextLine(
+    analysis_profile_vat = schema.Decimal(
         title=_(
             u"title_analysisprofile_profile_vat",
             default=u"VAT %"
