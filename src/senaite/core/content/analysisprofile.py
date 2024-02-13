@@ -193,15 +193,20 @@ class AnalysisProfile(Container):
         mutator(self, api.safe_unicode(value))
 
     @security.protected(permissions.View)
-    def getServices(self):
+    def getRawServices(self):
         accessor = self.accessor("services")
         value = accessor(self) or []
-        return value
+        return list(map(lambda r: r.get("uid"), value))
+
+    @security.protected(permissions.View)
+    def getServices(self):
+        service_uids = self.getRawServices()
+        return list(map(api.get_object, service_uids))
 
     @security.protected(permissions.ModifyPortalContent)
     def setServices(self, value):
         mutator = self.mutator("services")
-        mutator(self, api.safe_unicode(value))
+        mutator(self, value)
 
     @security.protected(permissions.View)
     def getCommercialID(self):
@@ -234,7 +239,7 @@ class AnalysisProfile(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAnalysisProfilePrice(self, value):
         mutator = self.mutator("analysis_profile_price")
-        mutator(self, api.float_to_string(value))
+        mutator(self, value)
 
     @security.protected(permissions.View)
     def getAnalysisProfileVAT(self):
@@ -245,4 +250,19 @@ class AnalysisProfile(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAnalysisProfileVAT(self, value):
         mutator = self.mutator("analysis_profile_vat")
-        mutator(self, api.float_to_string(value))
+        mutator(self, value)
+
+    def getAnalysisServiceSettings(self, uid):
+        """Returns the hidden seettings for the given service UID
+        """
+        by_uid = self.get_services_by_uid()
+        record = by_uid.get(uid, {"uid": uid, "hidden": False})
+        return record
+
+    def get_services_by_uid(self):
+        """Return the selected services grouped by UID
+        """
+        records = {}
+        for record in self.services:
+            records[record.get("uid")] = record
+        return records
