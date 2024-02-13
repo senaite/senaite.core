@@ -45,6 +45,7 @@ class AnalysisProfilesWidget(DefaultListingWidget):
         self.show_search = True
         self.show_select_all_checkbox = False
         self.show_select_column = True
+        self.show_table_footer = False
 
         # Categories
         if self.show_categories_enabled():
