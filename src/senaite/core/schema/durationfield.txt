@@ -1,0 +1,54 @@
+Duration field
+==============
+
+The duration field stores timedeltas
+
+Running this test from the buildout directory:
+
+bin/test test_schema_fields -t durationfield
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+
+Using the field
+---------------
+
+Create a content schema that uses the field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import DurationField
+
+    >>> class IContent(Interface):
+    ...     duration = DurationField(title=u"Duration")
+
+
+Get the field from the schema interface:
+
+    >>> field = IContent["duration"]
+    >>> field
+    <senaite.core.schema.durationfield.DurationField object at ...>
+
+
+Construct the field:
+
+    >>> from datetime import timedelta
+    >>> from persistent import Persistent
+
+    >>> duration = timedelta(days=2, hours=48, minutes=70, seconds=70)
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     def __init__(self, duration=duration):
+    ...         self.duration = duration
+
+    >>> content = Content()
+    >>> content.duration
+    datetime.timedelta(4, 4270)

@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   value      python:view.value;
+                   days       python:value.get('days', 0);
+                   hours      python:value.get('hours', 0);
+                   minutes    python:value.get('minutes', 0);
+                   seconds    python:value.get('seconds', 0);
+                   klass      python:view.klass;
+                   mode_klass python:'{}-display'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+     tal:attributes="class klass">
+
+    <span i18n:translate="duration_widget_days_number"
+          tal:condition="python: view.show_days and days > 0">
+      <span i18n:name="days" tal:replace="days"/>
+      days
+    </span>
+    <span i18n:translate="duration_widget_hours_number"
+          tal:condition="python: view.show_hours and hours > 0">
+      <span i18n:name="hours" tal:replace="hours"/>
+      hours
+    </span>
+    <span i18n:translate="duration_widget_minutes_number"
+          tal:condition="python: view.show_minutes and minutes > 0">
+      <span i18n:name="minutes" tal:replace="minutes"/>
+      minutes
+    </span>
+    <span i18n:translate="duration_widget_seconds_number"
+          tal:condition="python: view.show_seconds and seconds > 0">
+      <span i18n:name="seconds" tal:replace="seconds"/>
+      seconds
+    </span>
+
+  </div>
+
+</html>
