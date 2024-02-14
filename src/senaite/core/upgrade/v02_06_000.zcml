@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Analysis Profiles to DX"
       description="Migrate Analysis Profiles to Dexterity"
+      source="2606"
+      destination="2607"
+      handler=".v02_06_000.migrate_analysisprofiles_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove old AT from AT's factory tool"
+      description="Remove old AT types from factory tool"
       source="2605"
       destination="2606"
-      handler=".v02_06_000.migrate_analysisprofiles_to_dx"
+      handler=".v02_06_000.remove_at_portal_types"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
