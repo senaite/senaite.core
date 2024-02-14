@@ -233,7 +233,11 @@ def apply_hidden_services(sample):
     hidden.extend(hid_profiles)
 
     # Update the sample analyses
-    analyses = sample.getAnalyses(full_objects=True)
+    if api.is_temporary(sample):
+        # sample is in create process. Just return the object values.
+        analyses = sample.objectValues(spec="Analysis")
+    else:
+        analyses = sample.getAnalyses(full_objects=True)
     analyses = filter(lambda an: an.getServiceUID() in hidden, analyses)
     for analysis in analyses:
         analysis.setHidden(True)

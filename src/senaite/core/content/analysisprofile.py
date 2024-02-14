@@ -316,6 +316,16 @@ class AnalysisProfile(Container, ClientAwareMixin):
         return record
 
     @security.protected(permissions.View)
+    def getAnalysisServicesSettings(self):
+        """BBB: Return hidden settings for selected services
+
+        :returns: List of dictionaries containing `uid` and `hidden` settings
+        """
+        # Note: We store the selected service UIDs and the hidden setting in
+        # the `services` field. Therefore, we can just return the raw value.
+        return self.getRawServices()
+
+    @security.protected(permissions.View)
     def get_services_by_uid(self):
         """Return the selected services grouped by UID
         """
