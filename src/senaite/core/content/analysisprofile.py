@@ -257,6 +257,13 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator(self, records)
 
     @security.protected(permissions.View)
+    def getServiceUIDs(self):
+        """Returns a list of the selected service UIDs
+        """
+        services = self.getRawServices()
+        return list(map(lambda record: record.get("uid"), services))
+
+    @security.protected(permissions.View)
     def getCommercialID(self):
         accessor = self.accessor("commercial_id")
         value = accessor(self) or ""

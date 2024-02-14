@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+from collections import OrderedDict
 from string import Template
 
 import six
@@ -250,8 +251,8 @@ def get_hidden_service_uids(profile_or_template):
 
 
 def to_services_uids(services=None, values=None):
-    """
-    Returns a list of Analysis Services uids
+    """Returns a list of Analysis Services UIDS
+
     :param services: A list of service items (uid, keyword, brain, obj, title)
     :param values: a dict, where keys are AR|Sample schema field names.
     :returns: a list of Analyses Services UIDs
@@ -281,10 +282,10 @@ def to_services_uids(services=None, values=None):
         uid_catalog = api.get_tool(UID_CATALOG)
         for brain in uid_catalog(UID=profiles):
             profile = api.get_object(brain)
-            uids.extend(profile.getRawService() or [])
+            uids.extend(profile.getServiceUIDs() or [])
 
     # Get the service uids without duplicates, but preserving the order
-    return list(dict.fromkeys(uids).keys())
+    return list(OrderedDict.fromkeys(uids).keys())
 
 
 def to_service_uid(uid_brain_obj_str):
