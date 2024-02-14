@@ -555,8 +555,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 interim_value = float(interim_value)
             else:
                 # If the interim value is a string, since the formula is also a string,
-                # it is needed to wrap the string interim values in inverted commas.
+                # it is needed to wrap the string interim values in between inverted commas.
+                #
                 # E.g. formula = '"ok" if %(var)s == "example_value" else "not ok"'
+                #
                 # if interim_value = "example_value" after
                 # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
                 # print(formula)
