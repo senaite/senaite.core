@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2476 Fix format type to include strings in calculation formulas
+- #2490 Fix TypeError when creating a DX object that once was from AT type
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
 - #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
