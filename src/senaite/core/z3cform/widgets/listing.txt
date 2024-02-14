@@ -1,0 +1,173 @@
+Listing widget
+==============
+
+The listing widget allows to set arbitrary records (dictionaries) of list fields.
+
+Running this test from the buildout directory:
+
+    bin/test test_z3c_widgets -t listing
+
+Some needed imports:
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+    >>> import transaction; transaction.commit()
+
+Some variables we need:
+
+    >>> NAME = "listing"
+    >>> VALUE = [{"uid": 1, "title": "Test 1"}, {"uid": 2, "title": "Test 2"}]
+    >>> INPUT_TPL = "listing/input.pt"
+    >>> HIDDEN_TPL = "listing/hidden.pt"
+    >>> DISPLAY_TPL = "listing/display.pt"
+
+The widget can render a list fields containing dictionaries:
+
+    >>> from zope.interface.verify import verifyClass
+    >>> from z3c.form import interfaces
+    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
+
+Verify widget:
+
+    >>> verifyClass(interfaces.IWidget, ListingWidget)
+    True
+
+Create a content with a list field:
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from plone.dexterity.content import Container
+    >>> from plone.dexterity.fti import DexterityFTI
+    >>> from zope import schema
+    >>> from zope.interface import Interface
+    >>> from senaite.core.schema.fields import DataGridRow
+    >>> from zope.interface import implementer
+
+    >>> class IRecord(Interface):
+    ...     uid = schema.TextLine(title=u"UID")
+    ...     title = schema.TextLine(title=u"Title")
+
+
+    >>> class IContentSchema(Interface):
+    ...     records = schema.List(title=u"Records",
+    ...                           value_type=DataGridRow(schema=IRecord))
+
+    >>> @implementer(IContentSchema)
+    ... class Content(Container):
+    ...     portal_type = "Content"
+    ...     title = u""
+    ...     description = u""
+
+: When the content is created, it knows that it comes from `__builtin__.Content`.
+      Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
+
+    >>> module = sys.modules["__builtin__"]
+    >>> module.Content = Content
+    >>> module.IContentSchema = IContentSchema
+    >>> sys.modules["__builtin__"] = module
+
+Register the new type:
+
+    >>> fti = DexterityFTI("Content")
+    >>> fti.behaviors = ("plone.app.dexterity.behaviors.metadata.IBasic", )
+    >>> fti.filter_content_types = False
+    >>> fti.klass = "__builtin__.Content"
+    >>> fti.schema = "__builtin__.IContentSchema"
+    >>> fti_id = portal.portal_types._setObject("Content", fti)
+
+Now we can create our new type:
+
+    >>> newid = portal.invokeFactory("Content", "content")
+    >>> context = portal[newid]
+
+Set a value with the field setter:
+
+    >>> field = api.get_fields(context).get("records")
+    >>> field.set(context, [{"uid": 1, "title": "Test"}])
+    >>> field.get(context)
+    [{'uid': 1, 'title': 'Test'}]
+
+
+The widget can render a input field only by adapting a field and a request
+
+    >>> from z3c.form.testing import TestRequest
+    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
+    >>> request = TestRequest()
+    >>> widget = ListingWidgetFactory(field, request)
+    >>> widget.context = context
+
+Such a field provides IWidget:
+
+    >>> interfaces.IWidget.providedBy(widget)
+    True
+
+We also need to register the template for at least the widget and request:
+
+    >>> import os.path
+    >>> import zope.interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.pagetemplate.interfaces import IPageTemplate
+    >>> import senaite.core.z3cform.widgets
+    >>> import z3c.form.widget
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), INPUT_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='input')
+
+In INPUT mode, the widget renders the ReactJS root element.
+Please note the `data-api-url`, that traverses over the field, so that the listing view can access it:
+
+    >>> widget.name = NAME
+    >>> widget.value = VALUE
+    >>> widget.mode = interfaces.INPUT_MODE
+    >>> print(widget.render())
+    <div class="row mt-4">
+      <div class="col-sm-12">
+        <div class="small">
+          <!-- ReactJS managed component -->
+          <div class="ajax-contents-table w-100" data-form_id="list" data-listing_identifier="default_listing_widget_view" data-enable_ajax_transitions="true" data-active_ajax_transitions="[&quot;activate&quot;, &quot;cancel&quot;, &quot;deactivate&quot;, &quot;receive&quot;, &quot;reinstate&quot;, &quot;submit&quot;, &quot;verify&quot;]" data-pagesize="50" data-api_url="http://nohost/plone/content/++field++records/default_listing_widget_view" data-columns="{&quot;Title&quot;: {&quot;index&quot;: &quot;sortable_title&quot;, &quot;title&quot;: &quot;Title&quot;}, &quot;Description&quot;: {&quot;index&quot;: &quot;Description&quot;, &quot;title&quot;: &quot;Description&quot;}}" data-show_column_toggles="false" data-default_review_state="default" data-review_states="[{&quot;contentFilter&quot;: {}, &quot;title&quot;: &quot;All&quot;, &quot;custom_transitions&quot;: [], &quot;transitions&quot;: [], &quot;id&quot;: &quot;default&quot;, &quot;columns&quot;: []}]">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+In DISPLAY mode, the widget simply renders a HTML table:
+
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), DISPLAY_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='display')
+
+    >>> widget.name = NAME
+    >>> widget.value = VALUE
+    >>> widget.mode = interfaces.DISPLAY_MODE
+    >>> print(widget.render())
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-bordered table-striped table-sm">
+          <thead>
+            <tr>
+              <th>
+                <span>Title</span>
+              </th>
+              <th>
+                <span>Description</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>

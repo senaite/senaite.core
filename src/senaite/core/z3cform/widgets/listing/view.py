@@ -12,12 +12,10 @@ class DefaultListingWidget(ListingView):
     """Default listing widget
     """
     def __init__(self, field, request):
+        self.field = field
         self.context = field.context
         self.request = request
         super(DefaultListingWidget, self).__init__(self.context, request)
-
-        self.field = field
-        self.widget = self.get_widget(field)
 
         # default configuration that is usable for widget purposes
         self.allow_edit = True
@@ -26,6 +24,10 @@ class DefaultListingWidget(ListingView):
         self.omit_form = True
         self.show_column_toggles = False
         self.show_select_column = True
+
+    @property
+    def widget(self):
+        return self.get_widget(self.field)
 
     def get_widget(self, field):
         """Lookup the widget of the field
