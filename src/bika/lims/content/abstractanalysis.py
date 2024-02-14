@@ -607,6 +607,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
 
         # convert any remaining placeholders, e.g. from interims etc.
+        # NOTE: we assume remaining values are all floatable!
         formula = formula.replace("[", "%(").replace("]", ")f")
 
         # Calculate
