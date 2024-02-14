@@ -195,8 +195,15 @@ class AnalysisProfilesWidget(DefaultListingWidget):
                 self.categories.append(category)
             item["category"] = category
 
-        record = self.records.get(uid, {}) or {}
-        hidden = record.get("hidden", False)
+        hidden = False
+        # get the hidden setting from the records
+        if self.records.get(uid):
+            record = self.records.get(uid, {}) or {}
+            hidden = record.get("hidden", False)
+        else:
+            # get the default value from the service
+            hidden = obj.getHidden()
+
         item["replace"]["Title"] = get_link(url, value=title)
         item["Price"] = self.format_price(obj.Price)
         item["allow_edit"] = self.get_editable_columns()
