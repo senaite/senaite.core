@@ -566,7 +566,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
                 # print(formula)
                 # > '"ok" if "example_value" == "example_value" else "not ok"' -> Correct
-
                 interim_value = '"{}"'.format(interim_value)
 
             # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
