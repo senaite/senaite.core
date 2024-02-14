@@ -316,6 +316,44 @@ class AnalysisProfile(Container, ClientAwareMixin):
         record = by_uid.get(uid, {"uid": uid, "hidden": False})
         return record
 
+    @security.protected(permissions.ModifyPortalContent)
+    def setAnalysisServicesSettings(self, settings):
+        """BBB: Update settings for selected service UIDs
+
+        This method expects a list of dictionaries containing the service `uid`
+        and the `hidden` setting.
+
+        This is basically the same format as stored in the `services` field!
+
+        However, we want to just update the settings for selected service UIDs"
+
+        >>> settings =  [{'uid': '...', 'hidden': False}, ...]
+        >>> setAnalysisServicesSettings(settings)
+        """
+        if not isinstance(settings, list):
+            settings = [settings]
+
+        by_uid = self.get_services_by_uid()
+
+        for setting in settings:
+            if not isinstance(setting, dict):
+                raise TypeError(
+                    "Expected a record containing `uid` and `hidden`, got %s"
+                    % type(setting))
+            uid = setting.get("uid")
+            hidden = setting.get("hidden", False)
+
+            if not uid:
+                raise ValueError("UID is missing in setting %r" % setting)
+
+            record = by_uid.get(uid)
+            if not record:
+                continue
+            record["hidden"] = hidden
+
+        # set back the new services
+        self.setServices(by_uid.values())
+
     @security.protected(permissions.View)
     def getAnalysisServicesSettings(self):
         """BBB: Return hidden settings for selected services
