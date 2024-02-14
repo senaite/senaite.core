@@ -24,6 +24,12 @@
             </div>
 
             <div class="card-body">
+
+              <tal:card-header tal:condition="python:view.show_lab_name">
+                <h5 class="card-title" tal:content="python:view.lab_name"/>
+                <hr class="dashed"/>
+              </tal:card-header>
+
               <form action="."
                     method="post"
                     class="loginform"
