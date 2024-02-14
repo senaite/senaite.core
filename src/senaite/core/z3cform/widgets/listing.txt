@@ -58,7 +58,8 @@ Create a content with a list field:
 
     >>> class IContentSchema(Interface):
     ...     records = schema.List(title=u"Records",
-    ...                           value_type=DataGridRow(schema=IRecord))
+    ...                           value_type=DataGridRow(schema=IRecord),
+    ...                           default=[])
 
     >>> @implementer(IContentSchema)
     ... class Content(Container):
@@ -90,7 +91,8 @@ Now we can create our new type:
 
 Set a value with the field setter:
 
-    >>> field = api.get_fields(context).get("records")
+    >>> field = IContentSchema["records"]
+    >>> field = field.bind(context)
     >>> field.set(context, [{"uid": 1, "title": "Test"}])
     >>> field.get(context)
     [{'uid': 1, 'title': 'Test'}]
