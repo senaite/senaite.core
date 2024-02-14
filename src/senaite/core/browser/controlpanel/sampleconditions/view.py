@@ -45,7 +45,7 @@ class SampleConditionsView(ListingView):
 
         self.context_actions = {
             _(u"listing_sampleconditions_action_add", default=u"Add"): {
-                "url": "createObject?type_name=SampleCondition",
+                "url": "++add++SampleCondition",
                 "permission": AddSampleCondition,
                 "icon": "++resource++bika.lims.images/add.png"
             }
