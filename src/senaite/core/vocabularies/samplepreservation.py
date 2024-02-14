@@ -18,25 +18,17 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IPreservations
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from senaite.core.config.vocabularies import SAMPLE_PRESERVATION_CATEGORIES
+from senaite.core.schema.vocabulary import to_simple_vocabulary
+from zope.interface import implementer
+from zope.schema.interfaces import IVocabularyFactory
 
 
-schema = ATFolderSchema.copy()
+@implementer(IVocabularyFactory)
+class CategoriesVocabulary(object):
+
+    def __call__(self, context):
+        return to_simple_vocabulary(SAMPLE_PRESERVATION_CATEGORIES)
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2483
-class Preservations(ATFolder):
-    implements(IPreservations, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(Preservations, PROJECTNAME)
+CategoriesVocabularyFactory = CategoriesVocabulary()

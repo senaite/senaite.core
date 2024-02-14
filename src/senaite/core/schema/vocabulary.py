@@ -18,25 +18,12 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IPreservations
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
 
 
-schema = ATFolderSchema.copy()
-
-
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2483
-class Preservations(ATFolder):
-    implements(IPreservations, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(Preservations, PROJECTNAME)
+def to_simple_vocabulary(items):
+    """Converts a list of tuples (value, title) to a SimpleVocabulary
+    """
+    vocab = [SimpleTerm(value, value, title) for value, title in items]
+    return SimpleVocabulary(vocab)

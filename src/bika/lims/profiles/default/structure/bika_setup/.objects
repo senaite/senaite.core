@@ -13,7 +13,6 @@ bika_instrumenttypes,InstrumentTypes
 bika_labcontacts,LabContacts
 bika_labproducts,LabProducts
 bika_manufacturers,Manufacturers
-bika_preservations,Preservations
 bika_referencedefinitions,ReferenceDefinitions
 bika_samplematrices,SampleMatrices
 bika_samplepoints,SamplePoints

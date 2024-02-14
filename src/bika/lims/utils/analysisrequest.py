@@ -417,7 +417,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     :param analyses: uids/brains/objects of IAnalysis type
     :param sampletype: uid/brain/object of SampleType
     :param container: uid/brain/object of Container
-    :param preservation: uid/brain/object of Preservation
+    :param preservation: uid/brain/object of SamplePreservation
     :param skip_fields: names of fields to be skipped on copy from primary
     :return: the new partition
     """

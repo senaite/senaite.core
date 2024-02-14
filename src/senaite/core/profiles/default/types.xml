@@ -28,6 +28,10 @@
   <object name="SampleContainer" meta_type="Dexterity FTI" />
   <object name="SampleContainers" meta_type="Dexterity FTI" />
 
+  <!-- Sample Preservations -->
+  <object name="SamplePreservation" meta_type="Dexterity FTI" />
+  <object name="SamplePreservations" meta_type="Dexterity FTI" />
+
   <!-- Labels -->
   <object name="Label" meta_type="Dexterity FTI" />
   <object name="Labels" meta_type="Dexterity FTI" />

@@ -43,6 +43,8 @@ REMOVE_AT_TYPES = [
     "Departments",
     "SampleCondition",
     "SampleConditions",
+    "SamplePreservation",
+    "SamplePreservations",
 ]
 
 
@@ -91,16 +93,21 @@ def remove_at_portal_types(tool):
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
-def migrate_to_dx(portal_type, origin, dest, schema_mapping):
+def migrate_to_dx(at_portal_type, origin, dest, schema_mapping,
+                  dx_portal_type=None):
     """Migrates Setup AT contents to Dexterity
     """
-    logger.info("Migrating {} to Dexterity ...".format(portal_type))
+    logger.info("Migrating {} to Dexterity ...".format(at_portal_type))
+
+    if not dx_portal_type:
+        # keeps same portal type name as the AT type
+        dx_portal_type = at_portal_type
 
     # copy items from old -> new container
     objects = origin.objectValues()
     for src in objects:
-        if api.get_portal_type(src) != portal_type:
-            logger.error("Not a '{}' object: {}".format(portal_type, src))
+        if api.get_portal_type(src) != at_portal_type:
+            logger.error("Not a '{}' object: {}".format(at_portal_type, src))
             continue
 
         # Create the object if it does not exist yet
@@ -108,7 +115,7 @@ def migrate_to_dx(portal_type, origin, dest, schema_mapping):
         target = dest.get(src_id)
         if not target:
             # Don' use the api to skip the auto-id generation
-            target = createContent(portal_type, id=src_id)
+            target = createContent(dx_portal_type, id=src_id)
             dest._setObject(src_id, target)
             target = dest._getOb(src_id)
 
@@ -117,7 +124,7 @@ def migrate_to_dx(portal_type, origin, dest, schema_mapping):
             (src, target), interface=IContentMigrator)
         migrator.migrate(schema_mapping, delete_src=True)
 
-    logger.info("Migrating {} to Dexterity [DONE]".format(portal_type))
+    logger.info("Migrating {} to Dexterity [DONE]".format(at_portal_type))
 
 
 def get_setup_folder(folder_id):
@@ -130,6 +137,55 @@ def get_setup_folder(folder_id):
         add_senaite_setup_items(portal)
         folder = setup.get(folder_id)
     return folder
+
+
+@upgradestep(product, version)
+def migrate_preservations_to_dx(tool):
+    """Converts existing sample preservations to Dexterity
+    """
+    logger.info("Convert Preservations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_preservations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("samplepreservations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Category": ("getCategory", "category", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Preservation", origin, destination, schema_mapping,
+                  dx_portal_type="SamplePreservation")
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Preservations to Dexterity [DONE]")
 
 
 @upgradestep(product, version)
