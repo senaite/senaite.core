@@ -104,6 +104,8 @@ class IAnalysisProfileSchema(model.Schema):
             default=u"Select the included analyses for this profile"
         ),
         value_type=DataGridRow(schema=IAnalysisProfileRecord),
+        default=[],
+        required=True,
     )
 
     # Commecrial ID
