@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2493 Add listing widget for Dexterity records field
 - #2490 Fix TypeError when creating a DX object that once was from AT type
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
