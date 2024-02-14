@@ -375,11 +375,37 @@ def uncatalog_brain(brain):
     """
     if not api.is_brain(brain):
         return False
+
     catalog = brain.aq_parent
-    path = api.get_path(brain)
+    uid = api.get_path(brain)
+
+    # Un-cataloguing an object by using their path (UID) only works when
+    # the uid was the same as when the object was catalogued, otherwise it
+    # won't get removed from the catalog. Since we make use of AT's
+    # temporary creation of objects, might happen an object was wrongly
+    # catalogued in an early stage, just before it had its definitive path.
+    # Thus, check here first if there is a RID registered for the given path
+    # (UID) so ZCatalog's uncatalogObject can uncatalog the brain properly
+    # See Products.ZCatalog.Catalog#387
+    cat = catalog._catalog  # noqa
+    rid = cat.uids.get(uid)
+    if rid is None:
+        rid = brain.getRID()
+        if not rid:
+            logger.error(
+                "Unsuccessfully attempted to un-catalog a brain from catalog "
+                "%s on with uid of %s." % (catalog.getId(), uid))
+            return False
+
+        cat.uids[uid] = rid
+        if not cat.paths.get(rid):
+            cat.paths[rid] = uid
+        if not cat.data.get(rid):
+            cat.data[rid] = ()
+
     logger.warn(80*"*")
     logger.warn("Removing stale catalog brain from catalog %s on path %s"
-                % (catalog.getId(), path))
+                % (catalog.getId(), uid))
     logger.warn(80*"*")
-    catalog.uncatalog_object(path)
+    catalog.uncatalog_object(uid)
     return True
