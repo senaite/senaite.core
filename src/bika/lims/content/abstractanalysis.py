@@ -553,6 +553,21 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Convert to floatable if necessary
             if api.is_floatable(interim_value):
                 interim_value = float(interim_value)
+            else:
+                # If the interim value is a string, since the formula is also a string,
+                # it is needed to wrap the string interim values in inverted commas.
+                # E.g. formula = '"ok" if %(var)s == 'example_value' else "not ok"'
+                # if interim_value = 'example_value' after
+                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
+                # print(formula)
+                # > '"ok" if example_value == 'example_value' else "not ok"' -> Error
+                #
+                # else if interim_value ='"example_value"' after
+                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
+                # print(formula)
+                # > '"ok" if "example_value" == 'example_value' else "not ok"' -> Correct
+
+                interim_value = '"{}"'.format(interim_value)
 
             # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
             converter = "s" if i.get("result_type") else "f"
@@ -561,12 +576,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             )
 
             mapping[interim_keyword] = interim_value
-            # Wrap strings from mapping in inverted commas
-            mapping = {
-                mapping_key: '"{}"'.format(mapping_value)
-                if isinstance(mapping_value, str) else mapping_value
-                for mapping_key, mapping_value in mapping.items()
-            }
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
