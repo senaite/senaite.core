@@ -45,9 +45,9 @@ class SamplePreservationsView(ListingView):
 
         self.context_actions = {
             _(u"listing_samplepreservations_action_add", default=u"Add"): {
-                "url": "createObject?type_name=SamplePreservation",
+                "url": "++add++SamplePreservation",
                 "permission": AddPreservation,
-                "icon": "++resource++bika.lims.images/add.png"
+                "icon": "senaite_theme/icon/plus"
             }
         }
 
