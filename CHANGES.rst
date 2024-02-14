@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2489 Make uncatalog_brain to fallback to RID when no UID (as path) found
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
 - #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
