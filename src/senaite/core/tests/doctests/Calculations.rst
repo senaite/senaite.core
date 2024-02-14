@@ -129,18 +129,18 @@ Test the `Calculation` function with the scenario when the interim is a string.
 Test a new `Formula`.
 
     >>> calc.setFormula("([Comment]) if [Comment] == 'uncertain' else ([Ca] + [Mg])")
-    
-    >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'certain'"},]
-    >>> calc.setTestParameters(form_value)
-    >>> calc.setTestResult(form_value)
-    >>> calc.getTestResult()
-    '10'
 
     >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'uncertain'"},]
     >>> calc.setTestParameters(form_value)
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
     'uncertain'
+    
+    >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'certain'"},]
+    >>> calc.setTestParameters(form_value)
+    >>> calc.setTestResult(form_value)
+    >>> calc.getTestResult()
+    '10'
 
     >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": 10},]
     >>> calc.setTestParameters(form_value)
