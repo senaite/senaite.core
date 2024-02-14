@@ -1765,22 +1765,30 @@ class Analysis_Profiles(WorksheetImporter):
 
     def Import(self):
         self.load_analysis_profile_services()
-        folder = self.context.bika_setup.bika_analysisprofiles
+        folder = self.context.setup.analysisprofiles
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("AnalysisProfile", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''),
-                         ProfileKey=row['ProfileKey'],
-                         CommercialID=row.get('CommercialID', ''),
-                         AnalysisProfilePrice="%02f" % Float(row.get('AnalysisProfilePrice', '0.0')),
-                         AnalysisProfileVAT="%02f" % Float(row.get('AnalysisProfileVAT', '0.0')),
-                         UseAnalysisProfilePrice=row.get('UseAnalysisProfilePrice', False)
-                         )
-                obj.setService(self.profile_services[row['title']])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title", "")
+            description = row.get("description", "")
+            profile_key = row.get("ProfileKey", "")
+            commercial_id = row.get("CommercialID", "")
+            analysis_profile_price = row.get("AnalysisProfilePrice")
+            analysis_profile_vat = row.get("AnalysisProfileVAT")
+            use_analysis_profile_price = row.get("UseAnalysisProfilePrice")
+            if title:
+                obj = api.create(folder, "AnalysisProfile")
+                api.edit(obj,
+                         title=api.safe_unicode(title),
+                         description=api.safe_unicode(description),
+                         profile_key=api.safe_unicode(profile_key),
+                         commercial_id=api.safe_unicode(commercial_id),
+                         analysis_profile_price=api.to_float(
+                             analysis_profile_price, 0.0),
+                         analysis_profile_vat=api.to_float(
+                             analysis_profile_vat, 0.0),
+                         use_analysis_profile_price=bool(
+                             use_analysis_profile_price))
+                # set the services
+                obj.setServices(self.profile_services[row["title"]])
 
 
 class AR_Templates(WorksheetImporter):
