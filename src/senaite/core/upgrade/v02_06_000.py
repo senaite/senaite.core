@@ -80,6 +80,14 @@ def remove_at_portal_types(tool):
             # Removed already
             continue
         pt.manage_delObjects(fti.getId())
+
+    # remove from AT's factory tool as well. This is necessary for the AT's
+    # factory_tool to not shortcut `createObject?type_name=` on object creation
+    ft = api.get_tool("portal_factory")
+    at_types = ft.getFactoryTypes().keys()
+    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
+    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
+
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
