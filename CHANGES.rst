@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2491 Add setting to show/hidde the laboratory name in login page
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
 - #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
