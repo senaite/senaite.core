@@ -148,13 +148,13 @@ class TestCalculations(DataTestCase):
 
             {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
-             'interims': {'Comment': 10},
+             'interims': {'Comment': 'certain'},
              'exresult': '10'
             },
 
             {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
-             'interims': {'Comment': 'certain'},
+             'interims': {'Comment': 10},
              'exresult': '10'
             },
         ]
