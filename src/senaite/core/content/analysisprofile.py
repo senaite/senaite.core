@@ -311,6 +311,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
     def getAnalysisServiceSettings(self, uid):
         """Returns the hidden seettings for the given service UID
         """
+        uid = api.get_uid(uid)
         by_uid = self.get_services_by_uid()
         record = by_uid.get(uid, {"uid": uid, "hidden": False})
         return record
