@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2483 Migrate Preservations to Dexterity
+- #2491 Add setting to show/hide the laboratory name in login page
 - #2490 Fix TypeError when creating a DX object that once was from AT type
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
