@@ -2180,17 +2180,22 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Raise a ValueError if there is no hidden assignment in this request or
         no analysis service found for this uid.
         """
-        if not uid:
-            raise TypeError('None type or empty uid')
-        sets = self.getAnalysisServiceSettings(uid)
-        if 'hidden' not in sets:
-            uc = getToolByName(self, 'uid_catalog')
-            serv = uc(UID=uid)
+        if not api.is_uid(uid):
+            raise TypeError("Expected a UID, got '%s'" % type(uid))
+
+        # get the local (analysis/template/profile) service settings
+        settings = self.getAnalysisServiceSettings(uid)
+
+        # TODO: Rethink this logic and remove it afterwards!
+        if not settings.get("hidden", False):
+            # lookup the service
+            serv = api.search({"UID": uid}, catalog="uid_catalog")
             if serv and len(serv) == 1:
                 return serv[0].getObject().getRawHidden()
             else:
-                raise ValueError('{} is not valid'.format(uid))
-        return sets.get('hidden', False)
+                raise ValueError("{} is not valid".format(uid))
+
+        return settings.get("hidden", False)
 
     def getRejecter(self):
         """If the Analysis Request has been rejected, returns the user who did the
@@ -2384,7 +2389,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return True
 
     def setParentAnalysisRequest(self, value):
-        """Sets a parent analysis request, making the current a partition
+        """settings a parent analysis request, making the current a partition
         """
         parent = self.getParentAnalysisRequest()
         self.Schema().getField("ParentAnalysisRequest").set(self, value)
