@@ -2144,21 +2144,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
            returns a one entry dictionary with only the key 'uid'
         """
         sets = [s for s in self.getAnalysisServicesSettings()
-                if s.get('uid', '') == uid]
+                if s.get("uid", "") == uid]
 
         # Created by using an ARTemplate?
         if not sets and self.getTemplate():
             adv = self.getTemplate().getAnalysisServiceSettings(uid)
-            sets = [adv] if 'hidden' in adv else []
+            sets = [adv] if "hidden" in adv else []
 
         # Created by using an AR Profile?
         profiles = self.getProfiles()
         if not sets and profiles:
             adv = [profile.getAnalysisServiceSettings(uid) for profile in
                    profiles]
-            sets = adv if 'hidden' in adv[0] else []
+            sets = adv if "hidden" in adv[0] else []
 
-        return sets[0] if sets else {'uid': uid}
+        return sets[0] if sets else {"uid": uid}
 
     # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):
