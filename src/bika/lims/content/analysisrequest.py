@@ -2156,7 +2156,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not sets and profiles:
             adv = [profile.getAnalysisServiceSettings(uid) for profile in
                    profiles]
-            sets = adv if "hidden" in adv[0] else []
+            sets = adv if adv[0].get("hidden") else []
 
         return sets[0] if sets else {"uid": uid}
 
@@ -2187,7 +2187,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         settings = self.getAnalysisServiceSettings(uid)
 
         # TODO: Rethink this logic and remove it afterwards!
-        if not settings.get("hidden", False):
+        # NOTE: profiles provide always the "hidden" key now!
+        if not settings or "hidden" not in settings.keys():
             # lookup the service
             serv = api.search({"UID": uid}, catalog="uid_catalog")
             if serv and len(serv) == 1:

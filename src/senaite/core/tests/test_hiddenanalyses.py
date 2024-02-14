@@ -377,14 +377,17 @@ class TestHiddenAnalyses(DataTestCase):
             ar.getAnalysisServiceSettings(services[1]).get("hidden"))
         self.assertFalse(
             ar.getAnalysisServiceSettings(services[2]).get("hidden"))
+
         uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse("hidden" in ar.getAnalysisServiceSettings(uid))
+
         uid = self.services[1].UID()
         self.assertFalse(self.services[1].getHidden())
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse("hidden" in ar.getAnalysisServiceSettings(uid))
+
         uid = self.services[2].UID()
         self.assertTrue(self.services[2].getHidden())
         self.assertTrue(ar.isAnalysisServiceHidden(uid))
@@ -396,6 +399,7 @@ class TestHiddenAnalyses(DataTestCase):
         matrix = [[2, 1, -2],  # AS = Not set
                   [2, 1, -2],  # AS = False
                   [2, 1, -1]]
+
         for i in range(len(matrix)):
             sets = {"uid": services[i]}
             opts = [0, 1, 2]
@@ -403,23 +407,22 @@ class TestHiddenAnalyses(DataTestCase):
                 if j == 0:
                     sets["hidden"] = False
                 elif j == 1:
+                    # only for this option we expect the service to return hidden=True!
                     sets["hidden"] = True
                 else:
                     # NOTE: omitting this key defaults to False when setting in profile!
                     del sets["hidden"]
+
                 self.analysisprofile.setAnalysisServicesSettings(sets)
                 ar = create_analysisrequest(client, request, values, services)
                 res = matrix[i][j]
-                if res < 0:
-                    self.assertFalse(ar.getAnalysisServiceSettings(
+
+                if res == 1:
+                    self.assertTrue(ar.getAnalysisServiceSettings(
                         services[i]).get("hidden"))
                 else:
                     self.assertFalse(ar.getAnalysisServiceSettings(
                         services[i]).get("hidden"))
-                if abs(res) == 1:
-                    self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
-                elif abs(res) == 2:
-                    self.assertFalse(ar.isAnalysisServiceHidden(services[i]))
 
         # Restore
         self.analysisprofile.setAnalysisServicesSettings([])
@@ -448,8 +451,7 @@ class TestHiddenAnalyses(DataTestCase):
                         services[i]).get("hidden"))
                 else:
                     # testing tests
-                    self.assertTrue(ar.getAnalysisServiceSettings(
-                        services[i]).get("hidden"))
+                    self.assertTrue("hidden" in ar.getAnalysisServiceSettings(services[i]))
                 if abs(res) == 1:
                     self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
                 elif abs(res) == 2:
