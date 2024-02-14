@@ -102,7 +102,8 @@ class TestHiddenAnalyses(DataTestCase):
         # For Iron (True)
         uid = self.services[2].UID()
         self.assertTrue(self.services[2].getHidden())
-        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
+        # NOTE: the analysis profile overrides the service setting!
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse(
             self.analysisprofile.getAnalysisServiceSettings(uid).get("hidden"))
 
@@ -119,7 +120,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse(
             self.analysisprofile.isAnalysisServiceHidden(uid))
-        self.assertTrue(
+        self.assertFalse(
             self.analysisprofile.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
@@ -142,7 +143,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse(
             self.analysisprofile.isAnalysisServiceHidden(uid))
-        self.assertTrue(
+        self.assertFalse(
             self.analysisprofile.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
@@ -154,9 +155,10 @@ class TestHiddenAnalyses(DataTestCase):
 
         # Modify visibility for Iron in profile
         uid = self.services[2].UID()
+        # NOTE: omitted "hidden" defaults to False when set on profile!
         sets = [{"uid": uid}]
         self.analysisprofile.setAnalysisServicesSettings(sets)
-        self.assertTrue(
+        self.assertFalse(
             self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse(
             self.analysisprofile.getAnalysisServiceSettings(uid).get("hidden"))
@@ -165,7 +167,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse(
             self.analysisprofile.isAnalysisServiceHidden(uid))
-        self.assertTrue(
+        self.assertFalse(
             self.analysisprofile.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
@@ -243,7 +245,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.artemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
             self.artemplate.isAnalysisServiceHidden(uid))
-        self.assertTrue(
+        self.assertFalse(
             self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
@@ -264,8 +266,9 @@ class TestHiddenAnalyses(DataTestCase):
 
         sets = [{"uid": uid, "hidden": False}]
         self.artemplate.setAnalysisServicesSettings(sets)
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
-        self.assertTrue(
+        self.assertFalse(
+            self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertFalse(
             self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
@@ -402,6 +405,7 @@ class TestHiddenAnalyses(DataTestCase):
                 elif j == 1:
                     sets["hidden"] = True
                 else:
+                    # NOTE: omitting this key defaults to False when setting in profile!
                     del sets["hidden"]
                 self.analysisprofile.setAnalysisServicesSettings(sets)
                 ar = create_analysisrequest(client, request, values, services)
@@ -410,7 +414,7 @@ class TestHiddenAnalyses(DataTestCase):
                     self.assertFalse(ar.getAnalysisServiceSettings(
                         services[i]).get("hidden"))
                 else:
-                    self.assertTrue(ar.getAnalysisServiceSettings(
+                    self.assertFalse(ar.getAnalysisServiceSettings(
                         services[i]).get("hidden"))
                 if abs(res) == 1:
                     self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
