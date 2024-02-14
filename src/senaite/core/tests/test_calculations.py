@@ -344,6 +344,9 @@ class TestCalculations(DataTestCase):
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
             for k,v in f['interims'].items():
+                if str(v).replace('.', '').replace('-', '').isdigit():
+                    v = float(v)
+
                 rtype = str(type(v)).split("'")[1]
                 result_type = rtype if rtype == 'str' else None
                 interims.append({'keyword': k, 'title': k, 'value': v,
