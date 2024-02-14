@@ -140,21 +140,21 @@ class TestCalculations(DataTestCase):
              'exresult': '10'
             },
 
-            {'formula' : '([Comment]) if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
-             'interims': {'Comment':'uncertain'},
+             'interims': {'Comment': 'uncertain'},
              'exresult': 'uncertain'
             },
 
-            {'formula' : '([Comment]) if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
-             'interims': {'Comment':'10'},
+             'interims': {'Comment': 10},
              'exresult': '10'
             },
 
-            {'formula' : '([Comment]) if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
-             'interims': {'Comment':'certain'},
+             'interims': {'Comment': 'certain'},
              'exresult': '10'
             },
         ]
@@ -344,8 +344,11 @@ class TestCalculations(DataTestCase):
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
             for k,v in f['interims'].items():
+                rtype = str(type(v)).split("'")[1]
+                result_type = rtype if rtype == 'str' else None
                 interims.append({'keyword': k, 'title': k, 'value': v,
-                                 'hidden': False, 'type': 'int',
+                                 'hidden': False,
+                                 'result_type': result_type,
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
@@ -383,12 +386,18 @@ class TestCalculations(DataTestCase):
                 intermap = []
                 for i in interims:
                     if i['keyword'] in f['interims']:
-                        ival = float(f['interims'][i['keyword']])
+                        ival = f['interims'][i['keyword']]
+                        if str(ival).replace('.', '').replace('-', '').isdigit():
+                            ival = float(ival)
+
+                        rtype = str(type(ival)).split("'")[1]
+                        result_type = rtype if rtype == 'str' else None
+
                         intermap.append({'keyword': i['keyword'],
                                         'value': ival,
                                         'title': i['title'],
                                         'hidden': i['hidden'],
-                                        'type': i['type'],
+                                        'result_type': result_type,
                                         'unit': i['unit']})
                     else:
                         intermap.append(i)
@@ -400,7 +409,16 @@ class TestCalculations(DataTestCase):
             self.assertTrue(success, True)
             self.assertNotEqual(calcanalysis.getResult(), '',
                 'getResult returns an empty string')
-            self.assertEqual(float(calcanalysis.getResult()), float(f['exresult']))
+
+            result = calcanalysis.getResult()
+            if str(result).replace('.', '').replace('-', '').isdigit():
+                result = float(result)
+
+            exresult = f['exresult']
+            if str(exresult).replace('.', '').replace('-', '').isdigit():
+                exresult = float(exresult)
+
+            self.assertEqual(result, exresult)
 
     def test_calculation_fixed_precision(self):
         # Input results
