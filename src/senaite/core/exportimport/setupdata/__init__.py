@@ -496,7 +496,8 @@ class Lab_Departments(WorksheetImporter):
     """Import Lab Departments
     """
     def Import(self):
-        container = self.context.setup.departments
+        setup = api.get_senaite_setup()
+        container = setup.departments
         cat = getToolByName(self.context, CONTACT_CATALOG)
         lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]
         for row in self.get_rows(3):
