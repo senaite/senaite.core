@@ -29,7 +29,6 @@
   <type portal_type="LabProduct"/>
   <type portal_type="Manufacturer"/>
   <type portal_type="Method"/>
-  <type portal_type="Preservation"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>

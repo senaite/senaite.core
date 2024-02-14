@@ -9,7 +9,8 @@
                      client_order_num item/getClientOrderNumber|nothing;
                      composite item/getComposite|nothing;
                      deviation item/getSamplingDeviationTitle|nothing;
-                     preservation item/getPreservationTitle|nothing;
+                     preservation python:item.getPreservation();
+                     preservation python:preservation.Title() if preservation else '';
                      container item/getContainerTitle|nothing;
                      analyses python:item.getAnalyses(full_objects=True);
                      hazardous item/getHazardous|nothing;

@@ -93,6 +93,7 @@ CATALOG_MAPPINGS = (
     ("SampleCondition", [SETUP_CATALOG]),
     ("SampleMatrix", [SETUP_CATALOG]),
     ("SamplePoint", [SETUP_CATALOG]),
+    ("SamplePreservation", [SETUP_CATALOG]),
     ("SampleType", [SETUP_CATALOG]),
     ("SamplingDeviation", [SETUP_CATALOG]),
     ("StorageLocation", [SETUP_CATALOG]),

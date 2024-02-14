@@ -27,5 +27,6 @@
   <include package=".labels" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
+  <include package=".samplepreservations" />
 
 </configure>

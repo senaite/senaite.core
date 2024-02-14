@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Analysis Profiles to DX"
       description="Migrate Analysis Profiles to Dexterity"
+      source="2607"
+      destination="2608"
+      handler=".v02_06_000.migrate_analysisprofiles_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Preservations to DX"
+      description="Migrate Preservations to Dexterity"
       source="2606"
       destination="2607"
-      handler=".v02_06_000.migrate_analysisprofiles_to_dx"
+      handler=".v02_06_000.migrate_preservations_to_dx"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
