@@ -656,23 +656,14 @@ class Container_Types(WorksheetImporter):
 class Preservations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_preservations
+        container = self.context.setup.samplepreservations
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("Preservation", folder, tmpID())
-            RP = {
-                'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
-                'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
-                'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
-            }
 
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''),
-                     RetentionPeriod=RP)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            api.create(container, "SamplePreservation",
+                       title=title, description=row.get("description"))
 
 
 class Containers(WorksheetImporter):
@@ -694,8 +685,8 @@ class Containers(WorksheetImporter):
                 if ct:
                     obj.setContainerType(ct)
             if row["Preservation_title"]:
-                pres = self.get_object(
-                    bsc, "Preservation", row.get("Preservation_title", ""))
+                pres = self.get_object(bsc, "SamplePreservation",
+                                       row.get("Preservation_title", ""))
                 if pres:
                     obj.setPreservation(pres)
 
@@ -1572,7 +1563,7 @@ class Analysis_Services(WorksheetImporter):
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
-            preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
+            preservation = self.get_object(bsc, 'SamplePreservation', row.get('Preservation_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1816,7 +1807,7 @@ class AR_Templates(WorksheetImporter):
                 self.artemplate_partitions[row['ARTemplate']] = []
             container = self.get_object(bsc, 'Container',
                                         row.get('container'))
-            preservation = self.get_object(bsc, 'Preservation',
+            preservation = self.get_object(bsc, 'SamplePreservation',
                                            row.get('preservation'))
             self.artemplate_partitions[row['ARTemplate']].append({
                 'part_id': row['part_id'],

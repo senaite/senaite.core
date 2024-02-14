@@ -193,6 +193,16 @@ class ISampleCondition(Interface):
     """
 
 
+class ISamplePreservations(Interface):
+    """Marker interface for preservations setup folder
+    """
+
+
+class ISamplePreservation(Interface):
+    """Marker interface for preservations
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """

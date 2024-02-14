@@ -6,4 +6,8 @@
       component=".registry.ClientLandingPagesVocabularyFactory"
       name="senaite.core.vocabularies.registry.client_landing_pages" />
 
+  <utility
+      component=".samplepreservation.CategoriesVocabularyFactory"
+      name="senaite.core.vocabularies.samplepreservation.categories" />
+
 </configure>
