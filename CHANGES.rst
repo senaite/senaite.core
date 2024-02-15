@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2494 Cleanup UID catalog and remove orphan temporary objects
 - #2493 Add listing widget for Dexterity records field
 - #2492 Migrate Analysis Profiles to Dexterity
 - #2483 Migrate Preservations to Dexterity
