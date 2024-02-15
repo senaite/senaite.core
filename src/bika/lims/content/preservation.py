@@ -44,13 +44,16 @@ schema = BikaSchema.copy() + Schema((
             label=_("Preservation Category"),
         ),
     ),
+    # TODO This field is not used anywhere. Has been removed on DX migration
+    #      https://github.com/senaite/senaite.core/pull/2483
     DurationField('RetentionPeriod',
         widget=DurationWidget(
             label=_("Retention Period"),
             description=_(
                 'Once preserved, the sample must be disposed of within this '
                 'time period.  If not specified, the sample type retention '
-                'period will be used.')
+                'period will be used.'),
+            visible=False,
         ),
     ),
 ))
@@ -58,6 +61,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2483
 class Preservation(BaseContent):
     implements(IDeactivable)
     security = ClassSecurityInfo()
@@ -76,7 +80,7 @@ registerType(Preservation, PROJECTNAME)
 class ajaxGetPreservations:
 
     catalog_name='senaite_catalog_setup'
-    contentFilter = {'portal_type': 'Preservation',
+    contentFilter = {'portal_type': 'SamplePreservation',
                      'is_active': True}
 
     def __init__(self, context, request):

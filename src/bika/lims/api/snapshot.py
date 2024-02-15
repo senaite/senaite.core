@@ -331,7 +331,12 @@ def pause_snapshots_for(obj):
 def resume_snapshots_for(obj):
     """Resume snapshots for the given object
     """
-    noLongerProvides(obj, IDoNotSupportSnapshots)
+    try:
+        noLongerProvides(obj, IDoNotSupportSnapshots)
+    except ValueError:
+        # Handle ValueError: Can only remove directly provided interfaces.
+        # when the interface was directly provided on class level
+        pass
 
 
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
@@ -446,3 +451,19 @@ def _get_title_or_id_from_uid(uid):
         return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id
+
+
+def disable_snapshots(obj):
+    """Disable and removes all snapshots from the given object
+    """
+    # do not take more snapshots
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+    # do not display audit log
+    noLongerProvides(obj, IAuditable)
+
+    # remove all snapshots
+    annotation = IAnnotations(obj)
+    storage = annotation.get(SNAPSHOT_STORAGE)
+    if storage:
+        del(annotation[SNAPSHOT_STORAGE])

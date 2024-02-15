@@ -976,6 +976,22 @@ schema = BikaFolderSchema.copy() + Schema((
             ),
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
+    BooleanField(
+        "ShowLabNameInLogin",
+        schemata="Appearance",
+        default=False,
+        widget=BooleanWidget(
+            label=_(
+                u"title_senaitesetup_show_lab_name_in_login",
+                default=u"Display laboratory name in the login page"),
+            description=_(
+                u"description_senaitesetup_show_lab_name_in_login",
+                default=u"When selected, the laboratory name will be displayed"
+                        u"in the login page, above the access credentials."
+            ),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
@@ -1205,6 +1221,23 @@ class BikaSetup(folder.ATFolder):
             # we get a string value here!
             value = api.to_int(value, default=10)
             setup.setMaxNumberOfSamplesAdd(value)
+
+    def getShowLabNameInLogin(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getShowLabNameInLogin()
+        return False
+
+    def setShowLabNameInLogin(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setShowLabNameInLogin(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

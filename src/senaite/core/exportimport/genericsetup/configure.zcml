@@ -38,6 +38,7 @@
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXRichTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTextLineFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTimedeltaFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXTupleFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXChoiceFieldNodeAdapter"/>
 

@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   value      python:view.value;
+                   days       python:value.get('days', 0);
+                   hours      python:value.get('hours', 0);
+                   minutes    python:value.get('minutes', 0);
+                   seconds    python:value.get('seconds', 0);
+                   klass      python:view.klass;
+                   mode_klass python:'{}-input'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+       tal:attributes="class klass">
+
+    <div class="form-row">
+      <div tal:define="id string:${name}.days:record:int"
+           tal:attributes="class python:'col-auto' if view.show_days else 'd-none'">
+        <label i18n:translate="duration_widget_label_days"
+               tal:attributes="for id">Days</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value days;"/>
+      </div>
+      <div class="col-auto"
+           tal:define="id string:${name}.hours:record:int"
+           tal:attributes="class python:'col-auto' if view.show_hours else 'd-none'">
+        <label i18n:translate="duration_widget_label_hours"
+               tal:attributes="for id">Hours</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value hours"/>
+      </div>
+      <div class="col-auto"
+           tal:define="id string:${name}.minutes:record:int"
+           tal:attributes="class python:'col-auto' if view.show_minutes else 'd-none'">
+        <label i18n:translate="duration_widget_label_minutes"
+               tal:attributes="for id">Minutes</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value minutes"/>
+      </div>
+      <div class="col-auto"
+           tal:define="id string:${name}.seconds:record:int"
+           tal:attributes="class python:'col-auto' if view.show_seconds else 'd-none'">
+        <label i18n:translate="duration_widget_label_seconds"
+               tal:attributes="for id">Seconds</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value seconds"/>
+      </div>
+
+    </div>
+  </div>
+
+</html>

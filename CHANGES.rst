@@ -5,6 +5,16 @@ Changelog
 ------------------
 
 - #2477 Add expander and contractor to avoid huge instruments viewlets
+- #2483 Migrate Preservations to Dexterity
+- #2491 Add setting to show/hide the laboratory name in login page
+- #2490 Fix TypeError when creating a DX object that once was from AT type
+- #2485 More informative progress of the sample analyses states
+- #2487 Fix ValueError when creating new Dexterity contents
+- #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
+- #2484 Disable CSRF protection in SENAITE
+- #2482 Added DurationField and DurationWidget for Dexterity types
+- #2481 Disable snapshots for container on content add
+- #2478 Migrate Sample Conditions to Dexterity
 - #2471 Migrate Lab Departments to Dexterity
 - #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
 - #2468 Make the prepublish guard to rely on interfaces instead of statuses

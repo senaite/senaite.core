@@ -51,8 +51,6 @@
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Multifile" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Preservation" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Preservations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
@@ -61,8 +59,6 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleCondition" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleConditions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>

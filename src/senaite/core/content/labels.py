@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from plone.supermodel import model
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
@@ -30,7 +31,8 @@ class ILabelsSchema(model.Schema):
     """
 
 
-@implementer(ILabels, ILabelsSchema, IHideActionsMenu)
+@implementer(ILabels, ILabelsSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
 class Labels(Container):
     """A container for labels
     """
