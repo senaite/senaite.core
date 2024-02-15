@@ -4,6 +4,22 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Cleanup UID catalog and orphane objects"
+      description="Cleanup duplicate and orphane catalog entries and objects"
+      source="2609"
+      destination="2610"
+      handler=".v02_06_000.cleanup_uid_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Add path index to UID catalog"
+      description="Add extendend path index to UID catalog"
+      source="2608"
+      destination="2609"
+      handler=".v02_06_000.add_path_index_to_uid_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Analysis Profiles to DX"
       description="Migrate Analysis Profiles to Dexterity"
       source="2607"

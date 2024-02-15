@@ -18,16 +18,19 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.api.snapshot import disable_snapshots
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from Products.Archetypes.utils import getRelURL
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -478,3 +481,98 @@ def remove_folders_snapshots(tool):
     map(disable_snapshots, folders)
 
     logger.info("Removing snapshots from portal and setup folders [DONE]")
+
+
+def add_path_index_to_uid_catalog(tool):
+    """Add path index to UID catalog
+    """
+    logger.info("Setup path index for UID catalog ...")
+    setup_other_catalogs(api.get_portal())
+    logger.info("Setup path index for UID catalog [DONE]")
+
+
+def cleanup_uid_catalog(tool):
+    """Clean up duplicates and orphane catalog brains
+    """
+    logger.info("Cleanup UID catalog ...")
+    # ensure path index ins in UID Catalog
+    catalog = api.get_tool("uid_catalog")
+    brains = catalog.searchAll()
+    total = len(brains)
+    mapping = {}
+    duplicates = []
+    temporaries = []
+
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Checking catalog brain %s/%s"
+                        % (num+1, total))
+
+        # check for temporary objects
+        if api.is_temporary(brain):
+            temporaries.append(brain)
+            continue
+
+        # check if we found a duplicate
+        uid = brain.UID
+        path = brain.getPath()
+        duplicate = mapping.get(uid)
+
+        if duplicate is None:
+            mapping[uid] = path
+        else:
+            # duplicate detected!
+            duplicates.append(brain)
+            if duplicate not in duplicates:
+                duplicates.append(duplicate)
+
+    portal_types = api.get_tool("portal_types")
+    type_info = dict(map(lambda ti: (ti.id, ti), portal_types.listTypeInfo()))
+
+    # cleaning duplicates
+    for brain in duplicates:
+        oid = api.get_id(brain)
+        path = api.get_path(brain)
+        # uncatalog the object for the current path
+        logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+        catalog.uncatalog_object(path)
+
+        # AT objects are catalogued on the relative path
+        fti = type_info.get(brain.portal_type)
+        if fti.product:
+            # catalog the object on the relative path
+            obj = api.get_object(brain)
+            rel_url = getRelURL(catalog, obj.getPhysicalPath())
+            logger.info("Catalog brain '%s' at '%s'" % (oid, rel_url))
+            catalog.catalog_object(obj, rel_url)
+        else:
+            # catalog the object on the absolute path
+            obj = api.get_object(brain)
+            abs_url = "/".join(obj.getPhysicalPath())
+            logger.info("Catalog brain '%s' at '%s'" % (oid, abs_url))
+            catalog.catalog_object(obj, abs_url)
+
+    # cleaning temporaries
+    for brain in temporaries:
+        oid = api.get_id(brain)
+        path = api.get_path(brain)
+        # skip references
+        if "at_references" in path:
+            continue
+        try:
+            obj = api.get_object(brain)
+            logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+            catalog.uncatalog_object(path)
+            # unindex the temporary object
+            obj.unindexObject()
+            # delete the temporary object
+            opath = api.get_path(obj)
+            logger.info("Delete temporary object '%s' at '%s'" % (oid, opath))
+            parent = aq_parent(obj)
+            parent._delObject(oid, suppress_events=True)
+        except api.APIError:
+            # remove the catalog brain only
+            logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+            catalog.uncatalog_object(path)
+
+    logger.info("Cleanup UID catalog [DONE]")
