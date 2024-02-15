@@ -15,6 +15,16 @@ Some needed imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from zope.interface.verify import verifyClass
+    >>> from z3c.form import interfaces
+    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
+    >>> from senaite.core.schema.traversal import FieldTraversal
+    >>> from zope.component import getGlobalSiteManager
+
+Test fixture:
+
+    >>> gsm = getGlobalSiteManager()
+    >>> gsm.registerAdapter(FieldTraversal)
 
 Grant required privileges:
 
@@ -29,12 +39,6 @@ Some variables we need:
     >>> HIDDEN_TPL = "listing/hidden.pt"
     >>> DISPLAY_TPL = "listing/display.pt"
 
-The widget can render a list fields containing dictionaries:
-
-    >>> from zope.interface.verify import verifyClass
-    >>> from z3c.form import interfaces
-    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
-
 Verify widget:
 
     >>> verifyClass(interfaces.IWidget, ListingWidget)
@@ -46,12 +50,13 @@ Create a content with a list field:
     >>> from bika.lims import api
     >>> from plone.dexterity.content import Container
     >>> from plone.dexterity.fti import DexterityFTI
+    >>> from plone.supermodel import model
+    >>> from senaite.core.schema.fields import DataGridRow
     >>> from zope import schema
     >>> from zope.interface import Interface
-    >>> from senaite.core.schema.fields import DataGridRow
     >>> from zope.interface import implementer
 
-    >>> class IRecord(Interface):
+    >>> class IRecord(model.Schema):
     ...     uid = schema.TextLine(title=u"UID")
     ...     title = schema.TextLine(title=u"Title")
 
