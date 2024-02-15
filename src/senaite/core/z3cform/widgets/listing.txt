@@ -19,12 +19,6 @@ Some needed imports:
     >>> from z3c.form import interfaces
     >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
     >>> from senaite.core.schema.traversal import FieldTraversal
-    >>> from zope.component import getGlobalSiteManager
-
-Test fixture:
-
-    >>> gsm = getGlobalSiteManager()
-    >>> gsm.registerAdapter(FieldTraversal)
 
 Grant required privileges:
 
@@ -68,6 +62,7 @@ Create a content with a list field:
 
     >>> @implementer(IContentSchema)
     ... class Content(Container):
+    ...     __allow_access_to_unprotected_subobjects__ = 1
     ...     portal_type = "Content"
     ...     title = u""
     ...     description = u""
