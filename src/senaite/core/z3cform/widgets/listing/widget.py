@@ -65,10 +65,15 @@ class ListingWidget(widget.HTMLInputWidget, BaseWidget):
             return view.extract()
         return default
 
+    def get_widget_view_name(self, default="default_listing_widget_view"):
+        """Returns the configured listing view name
+        """
+        return getattr(self, "listing_view", default)
+
     def get_traversal_path(self):
         """Return the view traversal path including the field
         """
-        viewname = getattr(self, "listing_view", "default_listing_widget_view")
+        viewname = self.get_widget_view_name()
         fieldname = self.field.getName()
         return "++field++{}/{}".format(fieldname, viewname)
 
@@ -77,7 +82,9 @@ class ListingWidget(widget.HTMLInputWidget, BaseWidget):
         """
         context = self.context
         path = self.get_traversal_path()
-        view = context.restrictedTraverse(path)
+        view = context.unrestrictedTraverse(path, default=None)
+        if not view:
+            return None
         # Inject the API URL for Ajax requests coming from senaite.app.listing
         view.get_api_url = self.get_api_url
         return view
