@@ -18,6 +18,7 @@ Some needed imports:
     >>> from senaite.core.schema.traversal import FieldTraversal
     >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
     >>> from z3c.form import interfaces
+    >>> from z3c.form.interfaces import IContextAware
     >>> from z3c.form.interfaces import IFormLayer
     >>> from zope.annotation.interfaces import IAttributeAnnotatable
     >>> from zope.interface import alsoProvides
@@ -96,6 +97,7 @@ Now we can create our new type:
 
     >>> newid = portal.invokeFactory("Content", "content")
     >>> context = portal[newid]
+    >>> import transaction; transaction.commit()
 
 Set a value with the field setter:
 
@@ -111,6 +113,7 @@ The widget can render a input field only by adapting a field and a request
     >>> request = make_request()
     >>> widget = ListingWidgetFactory(field, request)
     >>> widget.context = context
+    >>> alsoProvides(widget, IContextAware)
 
 Such a field provides IWidget:
 
