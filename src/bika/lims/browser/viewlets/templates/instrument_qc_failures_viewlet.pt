@@ -4,36 +4,21 @@
 
   <div class="visualClear"><!-- --></div>
 
-  <tal:css>
-    <style type="text/css">
-      .contracted {
-          max-height: 1.5em;
-          overflow: hidden;
-      }
-
-      .expanded {
-          max-height: none;
-      }
-    </style>
-  </tal:css>
-
   <script>
-      function toggleText() {
-          var textContainer = document.getElementById("textContainer");
-          var toggleLink = document.getElementById("toggleLink");
+    function toggleText(containerId, linkId) {
+        var textContainer = document.getElementById(containerId);
+        var toggleLink = document.getElementById(linkId);
 
-          if (textContainer.classList.contains("contracted")) {
-              textContainer.classList.remove("contracted");
-              textContainer.classList.add("expanded");
-              toggleLink.querySelector(".more").style.display = "none";
-              toggleLink.querySelector(".less").style.display = "inline";
-          } else {
-              textContainer.classList.remove("expanded");
-              textContainer.classList.add("contracted");
-              toggleLink.querySelector(".more").style.display = "inline";
-              toggleLink.querySelector(".less").style.display = "none";
-          }
-      }
+        if (textContainer.classList.contains("show")) {
+            textContainer.classList.add("show");
+            toggleLink.querySelector(".more").style.display = "inline";
+            toggleLink.querySelector(".less").style.display = "none";
+        } else {
+            textContainer.classList.remove("show");
+            toggleLink.querySelector(".more").style.display = "none";
+            toggleLink.querySelector(".less").style.display = "inline";
+        }
+    }
   </script>
 
   <div id="portal-alert"
@@ -51,11 +36,19 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments' calibration certificates expired:</span>
       </p>
-      <p class="contracted" id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
-      <a href="#" id="toggleLink" onclick="toggleText()">
-        <span class="more" i18n:translate="">See more</span>
-        <span class="less" style="display: none" i18n:translate="">See less</span>
-      </a>
+      <div tal:condition="python: len(items) <= 5">
+        <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      </div>
+      <div tal:condition="python: len(items) > 5">
+        <div id="collapseExpiredViewlet" class="collapse">
+          <p id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+        </div>
+        <a id="toggleLinkExpired" onclick="toggleText('collapseExpiredViewlet', 'toggleLinkExpired')"
+        data-toggle="collapse" href="#collapseExpiredViewlet" aria-expanded="false" aria-controls="collapseViewlet">
+          <span class="more" i18n:translate="">Show list</span>
+          <span class="less" i18n:translate="" style="display: none">Hide list</span>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -74,7 +67,19 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments disabled until successful calibration:</span>
       </p>
-      <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      <div tal:condition="python: len(items) <= 5">
+        <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      </div>
+      <div tal:condition="python: len(items) > 5">
+        <div id="collapseFailedViewlet" class="collapse">
+          <p id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+        </div>
+        <a id="toggleLinkFailed" onclick="toggleText('collapseFailedViewlet', 'toggleLinkFailed')"
+        data-toggle="collapse" href="#collapseFailedViewlet" aria-expanded="false" aria-controls="collapseViewlet">
+          <span class="more" i18n:translate="">Show list</span>
+          <span class="less" i18n:translate="" style="display: none">Hide list</span>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -93,7 +98,19 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments disposed until new calibration tests being done:</span>
       </p>
-      <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      <div tal:condition="python: len(items) <= 5">
+        <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      </div>
+      <div tal:condition="python: len(items) > 5">
+        <div id="collapseNextViewlet" class="collapse">
+          <p id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+        </div>
+        <a id="toggleLinkNext" onclick="toggleText('collapseNextViewlet', 'toggleLinkNext')"
+        data-toggle="collapse" href="#collapseNextViewlet" aria-expanded="false" aria-controls="collapseViewlet">
+          <span class="more" i18n:translate="">Show list</span>
+          <span class="less" i18n:translate="" style="display: none">Hide list</span>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -112,7 +129,19 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments in validation progress:</span>
       </p>
-      <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      <div tal:condition="python: len(items) <= 5">
+        <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      </div>
+      <div tal:condition="python: len(items) > 5">
+        <div id="collapseValidationViewlet" class="collapse">
+          <p id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+        </div>
+        <a id="toggleLinkValidation" onclick="toggleText('collapseValidationViewlet', 'toggleLinkValidation')"
+        data-toggle="collapse" href="#collapseValidationViewlet" aria-expanded="false" aria-controls="collapseViewlet">
+          <span class="more" i18n:translate="">Show list</span>
+          <span class="less" i18n:translate="" style="display: none">Hide list</span>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -131,7 +160,19 @@
         <span tal:content="python:len(items)"/>
         <span i18n:translate="">Instruments in calibration progress:</span>
       </p>
-      <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      <div tal:condition="python: len(items) <= 5">
+        <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+      </div>
+      <div tal:condition="python: len(items) > 5">
+        <div id="collapseCalibratingViewlet" class="collapse">
+          <p id="textContainer" tal:content="structure python:', '.join([i['link'] for i in items])"></p>
+        </div>
+        <a id="toggleLinkCalibrating" onclick="toggleText('collapseCalibratingViewlet', 'toggleLinkCalibrating')"
+        data-toggle="collapse" href="#collapseCalibratingViewlet" aria-expanded="false" aria-controls="collapseViewlet">
+          <span class="more" i18n:translate="">Show list</span>
+          <span class="less" i18n:translate="" style="display: none">Hide list</span>
+        </a>
+      </div>
     </div>
   </div>
 
