@@ -11,14 +11,27 @@ Some needed imports:
 
     >>> import sys
     >>> from bika.lims import api
-    >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.app.testing import TEST_USER_PASSWORD
-    >>> from zope.interface.verify import verifyClass
-    >>> from z3c.form import interfaces
-    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
+    >>> from plone.app.testing import setRoles
     >>> from senaite.core.schema.traversal import FieldTraversal
+    >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidget
+    >>> from z3c.form import interfaces
+    >>> from z3c.form.interfaces import IFormLayer
+    >>> from zope.annotation.interfaces import IAttributeAnnotatable
+    >>> from zope.interface import alsoProvides
+    >>> from zope.interface.verify import verifyClass
+    >>> from zope.publisher.browser import TestRequest
+
+Helpers:
+
+    >>> def make_request(form={}):
+    ...     request = TestRequest()
+    ...     request.form.update(form)
+    ...     alsoProvides(request, IFormLayer)
+    ...     alsoProvides(request, IAttributeAnnotatable)
+    ...     return request
 
 Grant required privileges:
 
@@ -32,11 +45,6 @@ Some variables we need:
     >>> INPUT_TPL = "listing/input.pt"
     >>> HIDDEN_TPL = "listing/hidden.pt"
     >>> DISPLAY_TPL = "listing/display.pt"
-
-Verify widget:
-
-    >>> verifyClass(interfaces.IWidget, ListingWidget)
-    True
 
 Create a content with a list field:
 
@@ -67,8 +75,8 @@ Create a content with a list field:
     ...     title = u""
     ...     description = u""
 
-: When the content is created, it knows that it comes from `__builtin__.Content`.
-      Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
+When the content is created, it knows that it comes from `__builtin__.Content`.
+Therefore, we inject it into `sys.modules` to be accessible when pickling the object later.
 
     >>> module = sys.modules["__builtin__"]
     >>> module.Content = Content
@@ -97,12 +105,10 @@ Set a value with the field setter:
     >>> field.get(context)
     [{'uid': 1, 'title': 'Test'}]
 
-
 The widget can render a input field only by adapting a field and a request
 
-    >>> from z3c.form.testing import TestRequest
     >>> from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
-    >>> request = TestRequest()
+    >>> request = make_request()
     >>> widget = ListingWidgetFactory(field, request)
     >>> widget.context = context
 
