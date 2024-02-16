@@ -1816,7 +1816,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
         # All services contained in the billable profiles
         billable_profile_services = functools.reduce(lambda a, b: a+b, map(
-            lambda profile: profile.getService(), billable_profiles), [])
+            lambda profile: profile.getServices(), billable_profiles), [])
         # Keywords of the contained services
         billable_service_keys = map(
             lambda s: s.getKeyword(), set(billable_profile_services))
