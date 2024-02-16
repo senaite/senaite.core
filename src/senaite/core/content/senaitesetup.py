@@ -156,6 +156,17 @@ class ISetupSchema(model.Schema):
         ),
         default=10
     )
+    show_lab_name_in_login = schema.Bool(
+        title=_(
+            u"title_senaitesetup_show_lab_name_in_login",
+            default=u"Display laboratory name in the login page"),
+        description=_(
+            u"description_senaitesetup_show_lab_name_in_login",
+            default=u"When selected, the laboratory name will be displayed"
+                    u"in the login page, above the access credentials."
+        ),
+        default=False,
+    )
 
     ###
     # Fieldsets
@@ -192,6 +203,7 @@ class ISetupSchema(model.Schema):
         fields=[
             "site_logo",
             "site_logo_css",
+            "show_lab_name_in_login",
         ]
     )
 
@@ -341,4 +353,18 @@ class Setup(Container):
         field 'Number of samples'
         """
         mutator = self.mutator("max_number_of_samples_add")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getShowLabNameInLogin(self):
+        """Returns if the laboratory name has to be displayed in login page
+        """
+        accessor = self.accessor("show_lab_name_in_login")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setShowLabNameInLogin(self, value):
+        """Show/hide the laboratory name in the login page
+        """
+        mutator = self.mutator("show_lab_name_in_login")
         return mutator(self, value)

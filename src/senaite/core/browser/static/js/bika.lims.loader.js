@@ -98,9 +98,6 @@ window.bika.lims.controllers =  {
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
 
-    ".template-labcontacts.portaltype-department":
-        ['DepartmentLabContactsView'],
-
     // If RemarksWidget is in use on this page,
     // load RemarksWIdgetview
     ".ArchetypesRemarksWidget": ["RemarksWidgetView"],

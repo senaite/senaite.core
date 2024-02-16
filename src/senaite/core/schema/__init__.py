@@ -23,8 +23,10 @@ from zope.interface import classImplementsFirst
 from .addressfield import AddressField
 from .addressfield import IAddressField
 from .datetimefield import DatetimeField
+from .durationfield import DurationField
 from .fields import IntField
 from .interfaces import IDatetimeField
+from .interfaces import IDurationField
 from .interfaces import IIntField
 from .interfaces import IRichTextField
 from .phonefield import IPhoneField
@@ -35,6 +37,7 @@ from .uidreferencefield import UIDReferenceField
 
 classImplementsFirst(AddressField, IAddressField)
 classImplementsFirst(DatetimeField, IDatetimeField)
+classImplementsFirst(DurationField, IDurationField)
 classImplementsFirst(IntField, IIntField)
 classImplementsFirst(PhoneField, IPhoneField)
 classImplementsFirst(RichTextField, IRichTextField)

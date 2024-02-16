@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <tal:widget define="name     python:view.name;
+                      value    python:view.value;
+                      days     python:value.get('days', 0);
+                      hours    python:value.get('hours', 0);
+                      minutes  python:value.get('minutes', 0);
+                      seconds  python:value.get('seconds', 0);">
+
+    <input type="hidden"
+           tal:attributes="name string:${name}.days:record:int;
+                           value days;"/>
+    <input type="hidden"
+           tal:attributes="name string:${name}.hours:record:int;
+                           value hours;"/>
+    <input type="hidden"
+           tal:attributes="name string:${name}.minutes:record:int;
+                           value minutes;"/>
+    <input type="hidden"
+           tal:attributes="name string:${name}.seconds:record:int;
+                           value seconds;"/>
+
+  </tal:widget>
+
+</html>

@@ -19,15 +19,33 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.snapshot import disable_snapshots
+from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.utils import createContent
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.interfaces import IContentMigrator
+from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import ANALYSIS_WORKFLOW
+from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+REMOVE_AT_TYPES = [
+    "Department",
+    "Departments",
+    "SampleCondition",
+    "SampleConditions",
+    "SamplePreservation",
+    "SamplePreservations",
+]
 
 
 @upgradestep(product, version)
@@ -47,6 +65,229 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_at_portal_types(tool):
+    """Remove obsolete AT portal type information
+    """
+    logger.info("Remove AT types from portal_types tool ...")
+    pt = api.get_tool("portal_types")
+    for type_name in REMOVE_AT_TYPES:
+        fti = pt.getTypeInfo(type_name)
+        # keep DX FTIs
+        if isinstance(fti, DexterityFTI):
+            logger.info("Type '{}' is already a DX FTI".format(fti))
+            continue
+        elif not fti:
+            # Removed already
+            continue
+        pt.manage_delObjects(fti.getId())
+
+    # remove from AT's factory tool as well. This is necessary for the AT's
+    # factory_tool to not shortcut `createObject?type_name=` on object creation
+    ft = api.get_tool("portal_factory")
+    at_types = ft.getFactoryTypes().keys()
+    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
+    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
+
+    logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def migrate_to_dx(at_portal_type, origin, dest, schema_mapping,
+                  dx_portal_type=None):
+    """Migrates Setup AT contents to Dexterity
+    """
+    logger.info("Migrating {} to Dexterity ...".format(at_portal_type))
+
+    if not dx_portal_type:
+        # keeps same portal type name as the AT type
+        dx_portal_type = at_portal_type
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        if api.get_portal_type(src) != at_portal_type:
+            logger.error("Not a '{}' object: {}".format(at_portal_type, src))
+            continue
+
+        # Create the object if it does not exist yet
+        src_id = src.getId()
+        target = dest.get(src_id)
+        if not target:
+            # Don' use the api to skip the auto-id generation
+            target = createContent(dx_portal_type, id=src_id)
+            dest._setObject(src_id, target)
+            target = dest._getOb(src_id)
+
+        # Migrate the contents from AT to DX
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+        migrator.migrate(schema_mapping, delete_src=True)
+
+    logger.info("Migrating {} to Dexterity [DONE]".format(at_portal_type))
+
+
+def get_setup_folder(folder_id):
+    """Returns the folder from setup with the given name
+    """
+    setup = api.get_senaite_setup()
+    folder = setup.get(folder_id)
+    if not folder:
+        portal = api.get_portal()
+        add_senaite_setup_items(portal)
+        folder = setup.get(folder_id)
+    return folder
+
+
+@upgradestep(product, version)
+def migrate_preservations_to_dx(tool):
+    """Converts existing sample preservations to Dexterity
+    """
+    logger.info("Convert Preservations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_preservations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("samplepreservations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Category": ("getCategory", "category", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Preservation", origin, destination, schema_mapping,
+                  dx_portal_type="SamplePreservation")
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Preservations to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_sampleconditions_to_dx(tool):
+    """Converts existing sample conditions to Dexterity
+    """
+    logger.info("Convert SampleConditions to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_sampleconditions")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("sampleconditions")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("SampleCondition", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert SampleConditions to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_departments_to_dx(tool):
+    """Converts existing departments to Dexterity
+    """
+    logger.info("Convert Departments to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_departments")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("departments")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "DepartmentID": ("getDepartmentID", "department_id", ""),
+        "Manager": ("getManager", "manager", None),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Department", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    logger.info("Convert Departments to Dexterity [DONE]")
+
+
+def remove_at_departments_setup_folder(tool):
+    """Remove the old departments setup folder
+    """
+    logger.info("Remove AT Departments Setup Folder ...")
+    bikasetup = api.get_setup()
+
+    old = bikasetup.get("bika_departments")
+    if old:
+        delete_object(old)
+    logger.info("Remove AT Departments Setup Folder [DONE]")
 
 
 @upgradestep(product, version)
@@ -89,3 +330,31 @@ def update_workflow_role_mappings(wf_id, objs_or_brains):
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject()
         obj._p_deactivate()
+
+
+def remove_folders_snapshots(tool):
+    """Removes the auditlog snapshots for portal and setup folders and remove
+    the IAuditable marker interface as well
+    """
+    logger.info("Removing snapshots from portal and setup folders ...")
+    portal = tool.aq_inner.aq_parent
+    bika_setup = api.get_setup()
+    setup = api.get_senaite_setup()
+
+    # pick all folders "folders"
+    folders = portal.objectValues()
+    folders += bika_setup.objectValues()
+    folders += setup.objectValues()
+
+    # remove non-objects
+    folders = filter(api.is_object, folders)
+    folders = list(set(folders))
+
+    # remove setup folders (they hold settings as fields)
+    skip = [bika_setup, setup]
+    folders = filter(lambda folder: folder not in skip, folders)
+
+    # disable auditlog and snapshots
+    map(disable_snapshots, folders)
+
+    logger.info("Removing snapshots from portal and setup folders [DONE]")
