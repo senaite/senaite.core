@@ -199,6 +199,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator = self.mutator("profile_key")
         mutator(self, api.safe_unicode(value))
 
+    # BBB: AT schema field property
+    ProfileKey = property(getProfileKey, setProfileKey)
+
     @security.protected(permissions.View)
     def getRawServices(self):
         """Return the raw value of the services field
@@ -258,6 +261,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator = self.mutator("services")
         mutator(self, records)
 
+    # BBB: AT schema field property
+    Service = Services = property(getServices, setServices)
+
     @security.protected(permissions.View)
     def getServiceUIDs(self):
         """Returns a list of the selected service UIDs
@@ -276,6 +282,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator = self.mutator("commercial_id")
         mutator(self, api.safe_unicode(value))
 
+    # BBB: AT schema field property
+    CommercialID = property(getCommercialID, setCommercialID)
+
     @security.protected(permissions.View)
     def getUseAnalysisProfilePrice(self):
         accessor = self.accessor("use_analysis_profile_price")
@@ -286,6 +295,10 @@ class AnalysisProfile(Container, ClientAwareMixin):
     def setUseAnalysisProfilePrice(self, value):
         mutator = self.mutator("use_analysis_profile_price")
         mutator(self, bool(value))
+
+    # BBB: AT schema field property
+    UseAnalysisProfilePrice = property(
+        getUseAnalysisProfilePrice, setUseAnalysisProfilePrice)
 
     @security.protected(permissions.View)
     def getAnalysisProfilePrice(self):
@@ -298,6 +311,10 @@ class AnalysisProfile(Container, ClientAwareMixin):
         mutator = self.mutator("analysis_profile_price")
         mutator(self, value)
 
+    # BBB: AT schema field property
+    AnalysisProfilePrice = property(
+        getAnalysisProfilePrice, setAnalysisProfilePrice)
+
     @security.protected(permissions.View)
     def getAnalysisProfileVAT(self):
         accessor = self.accessor("analysis_profile_vat")
@@ -308,6 +325,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
     def setAnalysisProfileVAT(self, value):
         mutator = self.mutator("analysis_profile_vat")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    AnalysisProfileVAT = property(getAnalysisProfileVAT, setAnalysisProfileVAT)
 
     @security.protected(permissions.View)
     def getAnalysisServiceSettings(self, uid):
@@ -366,6 +386,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
         # the `services` field. Therefore, we can just return the raw value.
         return self.getRawServices()
 
+    # BBB: AT schema (computed) field property
+    AnalysisServicesSettings = property(getAnalysisServicesSettings)
+
     @security.protected(permissions.View)
     def get_services_by_uid(self):
         """Return the selected services grouped by UID
@@ -400,6 +423,9 @@ class AnalysisProfile(Container, ClientAwareMixin):
         vat = self.getAnalysisProfileVAT()
         return float(price) * float(vat) / 100
 
+    # BBB: AT schema (computed) field property
+    VATAmount = property(getVATAmount)
+
     @security.protected(permissions.View)
     def getTotalPrice(self):
         """Calculate the final price using the VAT and the subtotal price
@@ -407,3 +433,6 @@ class AnalysisProfile(Container, ClientAwareMixin):
         price = self.getPrice()
         vat = self.getVATAmount()
         return float(price) + float(vat)
+
+    # BBB: AT schema (computed) field property
+    TotalPrice = property(getTotalPrice)
