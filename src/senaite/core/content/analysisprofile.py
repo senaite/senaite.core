@@ -436,3 +436,35 @@ class AnalysisProfile(Container, ClientAwareMixin):
 
     # BBB: AT schema (computed) field property
     TotalPrice = property(getTotalPrice)
+
+    def remove_service(self, service):
+        """Remove the service from the profile
+
+        If the service is not selected in the profile, returns False.
+
+        NOTE: This method is used when an Analysis Service was deactivated.
+
+        :param service: The service to be removed from this profile
+        :type service: AnalysisService
+        :return: True if the AnalysisService has been removed successfully
+        """
+        # get the UID of the service that should be removed
+        uid = api.get_uid(service)
+        # get the current raw value of the services field.
+        current_services = self.getRawServices()
+        # filter out the UID of the service
+        new_services = filter(
+            lambda record: record.get("uid") != uid, current_services)
+
+        # check if the service was removed or not
+        current_services_count = len(current_services)
+        new_services_count = len(new_services)
+
+        if current_services_count == new_services_count:
+            # service was not part of the profile
+            return False
+
+        # set the new services
+        self.setServices(new_services)
+
+        return True
