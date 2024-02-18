@@ -2390,7 +2390,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return True
 
     def setParentAnalysisRequest(self, value):
-        """settings a parent analysis request, making the current a partition
+        """Sets a parent analysis request, making the current a partition
         """
         parent = self.getParentAnalysisRequest()
         self.Schema().getField("ParentAnalysisRequest").set(self, value)
