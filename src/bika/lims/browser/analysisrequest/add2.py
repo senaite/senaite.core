@@ -1531,11 +1531,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 profile_price = float(profile.getAnalysisProfilePrice())
                 arprofiles_price += profile_price
                 arprofiles_vat_amount += profile.getVATAmount()
-                profile_services = profile.getService()
+                profile_services = profile.getServices()
                 services_from_priced_profile.extend(profile_services)
 
             # ANALYSIS SERVICES PRICE
             for service in services:
+                # skip services that are part of a priced profile
                 if service in services_from_priced_profile:
                     continue
                 service_price = float(service.getPrice())
