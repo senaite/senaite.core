@@ -26,20 +26,25 @@ class EditForm(EditFormAdapterBase):
     """
 
     def initialized(self, data):
-        self.toggle_price_vat_fields(False)
+        if not self.use_profile_price(data.get("form", {})):
+            self.toggle_price_vat_fields(False)
         return self.data
 
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")
-        if name == "UseAnalysisProfilePrice":
+        if name == "form.widgets.use_analysis_profile_price":
             self.toggle_price_vat_fields(value)
         return self.data
 
+    def use_profile_price(self, form):
+        value = form.get("form.widgets.use_analysis_profile_price:list")
+        return value == "selected"
+
     def toggle_price_vat_fields(self, toggle=False):
         if toggle:
-            self.add_show_field("AnalysisProfilePrice")
-            self.add_show_field("AnalysisProfileVAT")
+            self.add_show_field("form.widgets.analysis_profile_price")
+            self.add_show_field("form.widgets.analysis_profile_vat")
         else:
-            self.add_hide_field("AnalysisProfilePrice")
-            self.add_hide_field("AnalysisProfileVAT")
+            self.add_hide_field("form.widgets.analysis_profile_price")
+            self.add_hide_field("form.widgets.analysis_profile_vat")

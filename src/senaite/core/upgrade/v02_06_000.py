@@ -27,6 +27,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -39,6 +40,8 @@ version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "AnalysisProfiles",
+    "AnalysisProfile",
     "Department",
     "Departments",
     "SampleCondition",
@@ -276,6 +279,123 @@ def migrate_departments_to_dx(tool):
     copy_snapshots(origin, destination)
 
     logger.info("Convert Departments to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_analysisprofiles_to_dx(tool):
+    """Converts existing analysis profiles to Dexterity
+    """
+    logger.info("Convert Analysis Profiles to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_analysisprofiles")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("analysisprofiles")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # migrate the contents from the old AT container to the new one
+    portal_type = "AnalysisProfile"
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        if api.get_portal_type(src) != portal_type:
+            logger.error("Not a '{}' object: {}".format(portal_type, src))
+            continue
+
+        # Create the object if it does not exist yet
+        src_id = src.getId()
+        target = destination.get(src_id)
+        if not target:
+            # Don' use the api to skip the auto-id generation
+            target = createContent(portal_type, id=src_id)
+            destination._setObject(src_id, target)
+            target = destination._getOb(src_id)
+
+        # Manually set the fields
+        target.title = src.Title()
+        target.description = src.Description()
+        target.profile_key = src.getProfileKey()
+
+        # services is now a records field containing the selected service and
+        # the hidden settings
+        services = []
+        selected_services = src.getService()
+        for obj in selected_services:
+            uid = api.get_uid(obj)
+            service_setting = src.getAnalysisServiceSettings(uid)
+            hidden = service_setting.get("hidden", False)
+            services.append({
+                "uid": uid,
+                "hidden": hidden,
+            })
+        target.services = services
+        target.commercial_id = src.getCommercialID()
+        target.use_analysis_profile_price = bool(
+            src.getUseAnalysisProfilePrice())
+        target.analysis_profile_price = api.to_float(
+            src.getAnalysisProfilePrice(), 0.0)
+        target.analysis_profile_vat = api.to_float(
+            src.getAnalysisProfileVAT(), 0.0)
+
+        # Migrate the contents from AT to DX
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+
+        # copy all (raw) attributes from the source object to the target
+        migrator.copy_attributes(src, target)
+
+        # copy the UID
+        migrator.copy_uid(src, target)
+
+        # copy auditlog
+        migrator.copy_snapshots(src, target)
+
+        # copy creators
+        migrator.copy_creators(src, target)
+
+        # copy workflow history
+        migrator.copy_workflow_history(src, target)
+
+        # copy marker interfaces
+        migrator.copy_marker_interfaces(src, target)
+
+        # copy dates
+        migrator.copy_dates(src, target)
+
+        # uncatalog the source object
+        migrator.uncatalog_object(src)
+
+        # delete the old object
+        migrator.delete_object(src)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Analysis Profiles to Dexterity [DONE]")
 
 
 def remove_at_departments_setup_folder(tool):

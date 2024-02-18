@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2493 Add listing widget for Dexterity records field
+- #2492 Migrate Analysis Profiles to Dexterity
 - #2483 Migrate Preservations to Dexterity
 - #2491 Add setting to show/hide the laboratory name in login page
 - #2490 Fix TypeError when creating a DX object that once was from AT type
