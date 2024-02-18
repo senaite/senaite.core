@@ -536,7 +536,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Enable the Results Report Printing workflow"),
             description=_("Select this to allow the user to set an "
                           "additional 'Printed' status to those Analysis "
-                          "Requests tha have been Published. "
+                          "Requests that have been Published. "
                           "Disabled by default.")
         ),
     ),
