@@ -61,7 +61,7 @@ class SamplePreservationsView(ListingView):
             ("Title", {
                 "title": _(
                     u"listing_samplepreservations_column_title",
-                    default=u"Sample Condition"
+                    default=u"Sample Preservation"
                 ),
                 "index": "sortable_title"}),
             ("Description", {
@@ -69,7 +69,7 @@ class SamplePreservationsView(ListingView):
                     u"listing_samplepreservations_column_description",
                     default=u"Description"
                 ),
-                "index": "description",
+                "index": "Description",
                 "toggle": True}),
         ))
 
