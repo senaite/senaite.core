@@ -55,25 +55,48 @@ class AnalysisProfilesWidget(DefaultListingWidget):
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Service"),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_title",
+                    default=u"Service"
+                ),
                 "index": "sortable_title",
-                "sortable": False}),
+                "sortable": False
+            }),
             ("Keyword", {
-                "title": _("Keyword"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_keyword",
+                    default=u"Keyword"
+                ),
+                "sortable": False
+            }),
             ("Methods", {
-                "title": _("Methods"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_methods",
+                    default=u"Methods"
+                ),
+                "sortable": False
+            }),
             ("Unit", {
-                "title": _("Unit"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_unit",
+                    default=u"Unit"
+                ),
+                "sortable": False
+            }),
             ("Price", {
-                "title": _("Price"),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_price",
+                    default=u"Price"
+                ),
                 "sortable": False,
             }),
             ("Hidden", {
-                "title": _("Hidden"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_analysisprofileswidget_column_hidden",
+                    default=u"Hidden"
+                ),
+                "sortable": False,
+            }),
         ))
 
         cols = self.columns.keys()
@@ -83,7 +106,10 @@ class AnalysisProfilesWidget(DefaultListingWidget):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("All"),
+                "title": _(
+                    u"listing_analysisprofileswidget_state_all",
+                    default=u"All"
+                ),
                 "contentFilter": {},
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": cols,
