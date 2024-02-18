@@ -114,6 +114,7 @@ CATALOGS = (
 
 INDEXES = (
     # catalog, id, indexed attribute, type
+    ("uid_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
 )
 
 COLUMNS = (
