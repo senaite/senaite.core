@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2495 Fix dynamic analysisspecs are not linked to keywords containing only numbers
 - #2494 Cleanup UID catalog and remove orphan temporary objects
 - #2493 Add listing widget for Dexterity records field
 - #2492 Migrate Analysis Profiles to Dexterity

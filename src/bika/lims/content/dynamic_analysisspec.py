@@ -19,15 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 from collections import defaultdict
-from six import StringIO
 
 from bika.lims import _
+from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
+from six import StringIO
 from z3c.form.interfaces import NOT_CHANGED
 from zope.interface import Invalid
 from zope.interface import implementer
@@ -118,11 +119,20 @@ class DynamicAnalysisSpec(Item):
             return []
         keys = self.get_header()
         specs = []
+
+        def get_cell_string_value(cell):
+            value = cell.value
+            if api.is_string(value):
+                return value
+            elif value is None:
+                return None
+            return str(value)
+
         for num, row in enumerate(ps.rows):
             # skip the header
             if num == 0:
                 continue
-            values = map(lambda cell: cell.value, row)
+            values = map(get_cell_string_value, row)
             data = dict(zip(keys, values))
             specs.append(data)
         return specs
