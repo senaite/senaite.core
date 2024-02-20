@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from plone.dexterity.utils import resolveDottedName
 from zope.component import adapter
 from zope.interface import Interface
 from zope.interface import implementer
@@ -19,8 +20,14 @@ class FieldTraversal(object):
         self.request = request
 
     def traverse(self, name, ignored):
-        fields = api.get_fields(self.context)
-        field = fields.get(name)
+        if "." in name:
+            # we expect the dotted schema interface + the fieldname
+            iface, fieldname = name.rsplit(".", 1)
+            schema = resolveDottedName(iface)
+            field = schema.get(fieldname)
+        else:
+            fields = api.get_fields(self.context)
+            field = fields.get(name)
         if not field:
             raise TraversalError(name)
         field = field.bind(self.context)
