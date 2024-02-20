@@ -96,6 +96,7 @@ Create the new content:
 Set a value with the field setter:
 
     >>> field = IMyContentSchema["records"]
+    >>> field.interface.__identifier__ = "mycontent.IMyContentSchema"
     >>> field = field.bind(context)
     >>> field.set(context, [{"uid": 1, "title": "Test"}])
     >>> field.get(context)
@@ -137,7 +138,7 @@ Please note the `data-api-url`, that traverses over the field, so that the listi
       <div class="col-sm-12">
         <div class="small">
           <!-- ReactJS managed component -->
-          <div class="ajax-contents-table w-100" data-form_id="list" data-listing_identifier="default_listing_widget_view" data-enable_ajax_transitions="true" data-active_ajax_transitions="[&quot;activate&quot;, &quot;cancel&quot;, &quot;deactivate&quot;, &quot;receive&quot;, &quot;reinstate&quot;, &quot;submit&quot;, &quot;verify&quot;]" data-pagesize="50" data-api_url="http://nohost/plone/my-content/++field++records/default_listing_widget_view" data-columns="{&quot;Title&quot;: {&quot;index&quot;: &quot;sortable_title&quot;, &quot;title&quot;: &quot;Title&quot;}, &quot;Description&quot;: {&quot;index&quot;: &quot;Description&quot;, &quot;title&quot;: &quot;Description&quot;}}" data-show_column_toggles="false" data-default_review_state="default" data-review_states="[{&quot;contentFilter&quot;: {}, &quot;title&quot;: &quot;All&quot;, &quot;custom_transitions&quot;: [], &quot;transitions&quot;: [], &quot;id&quot;: &quot;default&quot;, &quot;columns&quot;: []}]">
+          <div class="ajax-contents-table w-100" data-form_id="list" data-listing_identifier="default_listing_widget_view" data-enable_ajax_transitions="true" data-active_ajax_transitions="[&quot;activate&quot;, &quot;cancel&quot;, &quot;deactivate&quot;, &quot;receive&quot;, &quot;reinstate&quot;, &quot;submit&quot;, &quot;verify&quot;]" data-pagesize="50" data-api_url="http://nohost/plone/my-content/++field++mycontent.IMyContentSchema.records/default_listing_widget_view" data-columns="{&quot;Title&quot;: {&quot;index&quot;: &quot;sortable_title&quot;, &quot;title&quot;: &quot;Title&quot;}, &quot;Description&quot;: {&quot;index&quot;: &quot;Description&quot;, &quot;title&quot;: &quot;Description&quot;}}" data-show_column_toggles="false" data-default_review_state="default" data-review_states="[{&quot;contentFilter&quot;: {}, &quot;title&quot;: &quot;All&quot;, &quot;custom_transitions&quot;: [], &quot;transitions&quot;: [], &quot;id&quot;: &quot;default&quot;, &quot;columns&quot;: []}]">
           </div>
         </div>
       </div>
