@@ -75,7 +75,8 @@ class ListingWidget(widget.HTMLInputWidget, BaseWidget):
         """
         viewname = self.get_widget_view_name()
         fieldname = self.field.getName()
-        return "++field++{}/{}".format(fieldname, viewname)
+        iface = self.field.interface.__identifier__
+        return "++field++{}.{}/{}".format(iface, fieldname, viewname)
 
     def get_listing_view(self):
         """Lookup the listing view by name

@@ -120,30 +120,31 @@ class AnalysisProfilesWidget(DefaultListingWidget):
     def show_categories_enabled(self):
         """Check in the setup if categories are enabled
         """
-        return self.context.bika_setup.getCategoriseAnalysisServices()
+        bika_setup = api.get_bika_setup()
+        return bika_setup.getCategoriseAnalysisServices()
 
     @view.memoize
     def show_prices(self):
         """Checks if prices should be shown or not
         """
-        setup = api.get_setup()
-        return setup.getShowPrices()
+        bika_setup = api.get_setup()
+        return bika_setup.getShowPrices()
 
     @view.memoize
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
         locale = locales.getLocale("en")
-        setup = api.get_setup()
-        currency = setup.getCurrency()
+        bika_setup = api.get_bika_setup()
+        currency = bika_setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
     @view.memoize
     def get_decimal_mark(self):
         """Returns the decimal mark
         """
-        setup = api.get_setup()
-        return setup.getDecimalMark()
+        bika_setup = api.get_bika_setup()
+        return bika_setup.getDecimalMark()
 
     @view.memoize
     def format_price(self, price):

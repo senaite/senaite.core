@@ -45,7 +45,11 @@ class DefaultListingWidget(ListingView):
     def get_value(self):
         """Return the current value of the field
         """
-        return self.field.get(self.context)
+        try:
+            # we might be in ++add++ view
+            return self.field.get(self.context)
+        except AttributeError:
+            return self.field.default
 
     def extract(self):
         """Extract the selected valued from the request
