@@ -20,11 +20,13 @@
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
   <!-- Include controlpanel listing views -->
+  <include package=".analysisprofiles" />
   <include package=".departments" />
   <include package=".instrumentlocations" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
+  <include package=".samplepreservations" />
 
 </configure>

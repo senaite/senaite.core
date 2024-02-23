@@ -101,11 +101,11 @@
       <element>LabProducts</element>
       <element>Laboratory</element>
       <element>Manufacturers</element>
-      <element>Preservations</element>
       <element>ReferenceDefinitions</element>
       <element>SampleConditions</element>
       <element>SampleMatrices</element>
       <element>SamplePoints</element>
+      <element>SamplePreservations</element>
       <element>SampleTypes</element>
       <element>SamplingDeviations</element>
       <element>StorageLocations</element>

@@ -496,7 +496,8 @@ class Lab_Departments(WorksheetImporter):
     """Import Lab Departments
     """
     def Import(self):
-        container = self.context.setup.departments
+        setup = api.get_senaite_setup()
+        container = setup.departments
         cat = getToolByName(self.context, CONTACT_CATALOG)
         lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]
         for row in self.get_rows(3):
@@ -656,23 +657,14 @@ class Container_Types(WorksheetImporter):
 class Preservations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_preservations
+        container = self.context.setup.samplepreservations
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("Preservation", folder, tmpID())
-            RP = {
-                'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
-                'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
-                'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
-            }
 
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''),
-                     RetentionPeriod=RP)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            api.create(container, "SamplePreservation",
+                       title=title, description=row.get("description"))
 
 
 class Containers(WorksheetImporter):
@@ -694,8 +686,8 @@ class Containers(WorksheetImporter):
                 if ct:
                     obj.setContainerType(ct)
             if row["Preservation_title"]:
-                pres = self.get_object(
-                    bsc, "Preservation", row.get("Preservation_title", ""))
+                pres = self.get_object(bsc, "SamplePreservation",
+                                       row.get("Preservation_title", ""))
                 if pres:
                     obj.setPreservation(pres)
 
@@ -1572,7 +1564,7 @@ class Analysis_Services(WorksheetImporter):
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
-            preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
+            preservation = self.get_object(bsc, 'SamplePreservation', row.get('Preservation_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1765,22 +1757,30 @@ class Analysis_Profiles(WorksheetImporter):
 
     def Import(self):
         self.load_analysis_profile_services()
-        folder = self.context.bika_setup.bika_analysisprofiles
+        folder = self.context.setup.analysisprofiles
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("AnalysisProfile", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''),
-                         ProfileKey=row['ProfileKey'],
-                         CommercialID=row.get('CommercialID', ''),
-                         AnalysisProfilePrice="%02f" % Float(row.get('AnalysisProfilePrice', '0.0')),
-                         AnalysisProfileVAT="%02f" % Float(row.get('AnalysisProfileVAT', '0.0')),
-                         UseAnalysisProfilePrice=row.get('UseAnalysisProfilePrice', False)
-                         )
-                obj.setService(self.profile_services[row['title']])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title", "")
+            description = row.get("description", "")
+            profile_key = row.get("ProfileKey", "")
+            commercial_id = row.get("CommercialID", "")
+            analysis_profile_price = row.get("AnalysisProfilePrice")
+            analysis_profile_vat = row.get("AnalysisProfileVAT")
+            use_analysis_profile_price = row.get("UseAnalysisProfilePrice")
+            if title:
+                obj = api.create(folder, "AnalysisProfile")
+                api.edit(obj,
+                         title=api.safe_unicode(title),
+                         description=api.safe_unicode(description),
+                         profile_key=api.safe_unicode(profile_key),
+                         commercial_id=api.safe_unicode(commercial_id),
+                         analysis_profile_price=api.to_float(
+                             analysis_profile_price, 0.0),
+                         analysis_profile_vat=api.to_float(
+                             analysis_profile_vat, 0.0),
+                         use_analysis_profile_price=bool(
+                             use_analysis_profile_price))
+                # set the services
+                obj.setServices(self.profile_services[row["title"]])
 
 
 class AR_Templates(WorksheetImporter):
@@ -1816,7 +1816,7 @@ class AR_Templates(WorksheetImporter):
                 self.artemplate_partitions[row['ARTemplate']] = []
             container = self.get_object(bsc, 'Container',
                                         row.get('container'))
-            preservation = self.get_object(bsc, 'Preservation',
+            preservation = self.get_object(bsc, 'SamplePreservation',
                                            row.get('preservation'))
             self.artemplate_partitions[row['ARTemplate']].append({
                 'part_id': row['part_id'],

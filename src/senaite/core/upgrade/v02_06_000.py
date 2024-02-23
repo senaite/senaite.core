@@ -18,15 +18,19 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.api.snapshot import disable_snapshots
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from Products.Archetypes.utils import getRelURL
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
+from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -39,10 +43,14 @@ version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "AnalysisProfiles",
+    "AnalysisProfile",
     "Department",
     "Departments",
     "SampleCondition",
     "SampleConditions",
+    "SamplePreservation",
+    "SamplePreservations",
 ]
 
 
@@ -91,16 +99,21 @@ def remove_at_portal_types(tool):
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
-def migrate_to_dx(portal_type, origin, dest, schema_mapping):
+def migrate_to_dx(at_portal_type, origin, dest, schema_mapping,
+                  dx_portal_type=None):
     """Migrates Setup AT contents to Dexterity
     """
-    logger.info("Migrating {} to Dexterity ...".format(portal_type))
+    logger.info("Migrating {} to Dexterity ...".format(at_portal_type))
+
+    if not dx_portal_type:
+        # keeps same portal type name as the AT type
+        dx_portal_type = at_portal_type
 
     # copy items from old -> new container
     objects = origin.objectValues()
     for src in objects:
-        if api.get_portal_type(src) != portal_type:
-            logger.error("Not a '{}' object: {}".format(portal_type, src))
+        if api.get_portal_type(src) != at_portal_type:
+            logger.error("Not a '{}' object: {}".format(at_portal_type, src))
             continue
 
         # Create the object if it does not exist yet
@@ -108,7 +121,7 @@ def migrate_to_dx(portal_type, origin, dest, schema_mapping):
         target = dest.get(src_id)
         if not target:
             # Don' use the api to skip the auto-id generation
-            target = createContent(portal_type, id=src_id)
+            target = createContent(dx_portal_type, id=src_id)
             dest._setObject(src_id, target)
             target = dest._getOb(src_id)
 
@@ -117,7 +130,7 @@ def migrate_to_dx(portal_type, origin, dest, schema_mapping):
             (src, target), interface=IContentMigrator)
         migrator.migrate(schema_mapping, delete_src=True)
 
-    logger.info("Migrating {} to Dexterity [DONE]".format(portal_type))
+    logger.info("Migrating {} to Dexterity [DONE]".format(at_portal_type))
 
 
 def get_setup_folder(folder_id):
@@ -130,6 +143,55 @@ def get_setup_folder(folder_id):
         add_senaite_setup_items(portal)
         folder = setup.get(folder_id)
     return folder
+
+
+@upgradestep(product, version)
+def migrate_preservations_to_dx(tool):
+    """Converts existing sample preservations to Dexterity
+    """
+    logger.info("Convert Preservations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_preservations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("samplepreservations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Category": ("getCategory", "category", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Preservation", origin, destination, schema_mapping,
+                  dx_portal_type="SamplePreservation")
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Preservations to Dexterity [DONE]")
 
 
 @upgradestep(product, version)
@@ -222,6 +284,123 @@ def migrate_departments_to_dx(tool):
     logger.info("Convert Departments to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
+def migrate_analysisprofiles_to_dx(tool):
+    """Converts existing analysis profiles to Dexterity
+    """
+    logger.info("Convert Analysis Profiles to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_analysisprofiles")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("analysisprofiles")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # migrate the contents from the old AT container to the new one
+    portal_type = "AnalysisProfile"
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        if api.get_portal_type(src) != portal_type:
+            logger.error("Not a '{}' object: {}".format(portal_type, src))
+            continue
+
+        # Create the object if it does not exist yet
+        src_id = src.getId()
+        target = destination.get(src_id)
+        if not target:
+            # Don' use the api to skip the auto-id generation
+            target = createContent(portal_type, id=src_id)
+            destination._setObject(src_id, target)
+            target = destination._getOb(src_id)
+
+        # Manually set the fields
+        target.title = src.Title()
+        target.description = src.Description()
+        target.profile_key = src.getProfileKey()
+
+        # services is now a records field containing the selected service and
+        # the hidden settings
+        services = []
+        selected_services = src.getService()
+        for obj in selected_services:
+            uid = api.get_uid(obj)
+            service_setting = src.getAnalysisServiceSettings(uid)
+            hidden = service_setting.get("hidden", False)
+            services.append({
+                "uid": uid,
+                "hidden": hidden,
+            })
+        target.services = services
+        target.commercial_id = src.getCommercialID()
+        target.use_analysis_profile_price = bool(
+            src.getUseAnalysisProfilePrice())
+        target.analysis_profile_price = api.to_float(
+            src.getAnalysisProfilePrice(), 0.0)
+        target.analysis_profile_vat = api.to_float(
+            src.getAnalysisProfileVAT(), 0.0)
+
+        # Migrate the contents from AT to DX
+        migrator = getMultiAdapter(
+            (src, target), interface=IContentMigrator)
+
+        # copy all (raw) attributes from the source object to the target
+        migrator.copy_attributes(src, target)
+
+        # copy the UID
+        migrator.copy_uid(src, target)
+
+        # copy auditlog
+        migrator.copy_snapshots(src, target)
+
+        # copy creators
+        migrator.copy_creators(src, target)
+
+        # copy workflow history
+        migrator.copy_workflow_history(src, target)
+
+        # copy marker interfaces
+        migrator.copy_marker_interfaces(src, target)
+
+        # copy dates
+        migrator.copy_dates(src, target)
+
+        # uncatalog the source object
+        migrator.uncatalog_object(src)
+
+        # delete the old object
+        migrator.delete_object(src)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Analysis Profiles to Dexterity [DONE]")
+
+
 def remove_at_departments_setup_folder(tool):
     """Remove the old departments setup folder
     """
@@ -302,3 +481,98 @@ def remove_folders_snapshots(tool):
     map(disable_snapshots, folders)
 
     logger.info("Removing snapshots from portal and setup folders [DONE]")
+
+
+def add_path_index_to_uid_catalog(tool):
+    """Add path index to UID catalog
+    """
+    logger.info("Setup path index for UID catalog ...")
+    setup_other_catalogs(api.get_portal())
+    logger.info("Setup path index for UID catalog [DONE]")
+
+
+def cleanup_uid_catalog(tool):
+    """Clean up duplicates and orphane catalog brains
+    """
+    logger.info("Cleanup UID catalog ...")
+    # ensure path index ins in UID Catalog
+    catalog = api.get_tool("uid_catalog")
+    brains = catalog.searchAll()
+    total = len(brains)
+    mapping = {}
+    duplicates = []
+    temporaries = []
+
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Checking catalog brain %s/%s"
+                        % (num+1, total))
+
+        # check for temporary objects
+        if api.is_temporary(brain):
+            temporaries.append(brain)
+            continue
+
+        # check if we found a duplicate
+        uid = brain.UID
+        path = brain.getPath()
+        duplicate = mapping.get(uid)
+
+        if duplicate is None:
+            mapping[uid] = path
+        else:
+            # duplicate detected!
+            duplicates.append(brain)
+            if duplicate not in duplicates:
+                duplicates.append(duplicate)
+
+    portal_types = api.get_tool("portal_types")
+    type_info = dict(map(lambda ti: (ti.id, ti), portal_types.listTypeInfo()))
+
+    # cleaning duplicates
+    for brain in duplicates:
+        oid = api.get_id(brain)
+        path = api.get_path(brain)
+        # uncatalog the object for the current path
+        logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+        catalog.uncatalog_object(path)
+
+        # AT objects are catalogued on the relative path
+        fti = type_info.get(brain.portal_type)
+        if fti.product:
+            # catalog the object on the relative path
+            obj = api.get_object(brain)
+            rel_url = getRelURL(catalog, obj.getPhysicalPath())
+            logger.info("Catalog brain '%s' at '%s'" % (oid, rel_url))
+            catalog.catalog_object(obj, rel_url)
+        else:
+            # catalog the object on the absolute path
+            obj = api.get_object(brain)
+            abs_url = "/".join(obj.getPhysicalPath())
+            logger.info("Catalog brain '%s' at '%s'" % (oid, abs_url))
+            catalog.catalog_object(obj, abs_url)
+
+    # cleaning temporaries
+    for brain in temporaries:
+        oid = api.get_id(brain)
+        path = api.get_path(brain)
+        # skip references
+        if "at_references" in path:
+            continue
+        try:
+            obj = api.get_object(brain)
+            logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+            catalog.uncatalog_object(path)
+            # unindex the temporary object
+            obj.unindexObject()
+            # delete the temporary object
+            opath = api.get_path(obj)
+            logger.info("Delete temporary object '%s' at '%s'" % (oid, opath))
+            parent = aq_parent(obj)
+            parent._delObject(oid, suppress_events=True)
+        except api.APIError:
+            # remove the catalog brain only
+            logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+            catalog.uncatalog_object(path)
+
+    logger.info("Cleanup UID catalog [DONE]")

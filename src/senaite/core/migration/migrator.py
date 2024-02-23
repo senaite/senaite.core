@@ -29,6 +29,7 @@ from persistent.dict import PersistentDict
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IField
+from Products.Archetypes.utils import getRelURL
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces import IFieldMigrator
 from senaite.core.migration.utils import copyPermMap
@@ -99,8 +100,11 @@ class ContentMigrator(object):
         """
         # explicitly uncatalog from uid_catalog
         uid_catalog = api.get_tool(UID_CATALOG)
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uid_catalog.uncatalog_object(url)
+        # make sure that both AT/DX paths are uncatalogued
+        rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
+        abs_url = "/".join(obj.getPhysicalPath())
+        uid_catalog.uncatalog_object(rel_url)
+        uid_catalog.uncatalog_object(abs_url)
         # uncatalog from registered catalogs
         obj.unindexObject()
 
@@ -109,8 +113,10 @@ class ContentMigrator(object):
         """
         # explicitly catalog in uid_catalog
         uid_catalog = api.get_tool(UID_CATALOG)
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uid_catalog.catalog_object(obj, url)
+        # we catalog the object here below the absolute path, as it is done in
+        # `plone.app.referencablebehavior.uidcatalog``
+        abs_url = "/".join(obj.getPhysicalPath())
+        uid_catalog.catalog_object(obj, abs_url)
         # reindex in registered catalogs
         obj.reindexObject()
 

@@ -2,7 +2,6 @@
 <object name="portal_factory" meta_type="Plone Factory Tool">
  <factorytypes>
   <type portal_type="ARReport"/>
-  <type portal_type="AnalysisProfile"/>
   <type portal_type="ARTemplate"/>
   <type portal_type="Analysis"/>
   <type portal_type="AnalysisCategory"/>
@@ -30,7 +29,6 @@
   <type portal_type="LabProduct"/>
   <type portal_type="Manufacturer"/>
   <type portal_type="Method"/>
-  <type portal_type="Preservation"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>

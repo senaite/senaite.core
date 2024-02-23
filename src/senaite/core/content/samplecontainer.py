@@ -106,7 +106,7 @@ class ISampleContainerSchema(model.Schema):
     )
     preservation = UIDReferenceField(
         title=_(u"Preservation"),
-        allowed_types=("Preservation", ),
+        allowed_types=("SamplePreservation", ),
         multi_valued=False,
         description=_(u"Preservation method of this container"),
         required=False,
@@ -212,7 +212,7 @@ class SampleContainer(Container):
         """Return the query for the preservation field
         """
         return {
-            "portal_type": "Preservation",
+            "portal_type": "SamplePreservation",
             "is_active": True,
             "sort_on": "title",
             "sort_order": "ascending",

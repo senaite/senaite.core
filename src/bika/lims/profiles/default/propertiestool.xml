@@ -65,7 +65,6 @@
     <element value="Manufacturer"/>
     <element value="Method"/>
     <element value="Supplier"/>
-    <element value="Preservation"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>

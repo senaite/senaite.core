@@ -435,7 +435,9 @@ def create_or_get(parent, id, uid, portal_type):
     # return first level objects directly
     if api.is_portal(parent):
         return parent.get(id)
-    elif api.get_setup() == parent:
+    elif api.get_bika_setup() == parent:
+        return parent.get(id)
+    elif api.get_senaite_setup() == parent:
         return parent.get(id)
 
     # query object by UID
