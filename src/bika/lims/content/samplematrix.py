@@ -35,6 +35,7 @@ schema["description"].schemata = "default"
 schema["description"].widget.visible = True
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2501
 class SampleMatrix(BaseFolder):
     implements(IDeactivable)
     security = ClassSecurityInfo()
