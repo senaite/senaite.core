@@ -65,79 +65,100 @@ class TestCalculations(DataTestCase):
             {'formula' : '[Ca]+[Mg]',
              'analyses': {'Ca':'10', 'Mg': '15'},
              'interims': {},
-             'exresult': '25'
+             'exresult': '25.0'
             },
 
             {'formula' : '[Ca]+[Mg]',
              'analyses': {'Ca':'-20', 'Mg': '5'},
              'interims': {},
-             'exresult': '-15'
+             'exresult': '-15.0'
             },
 
             {'formula' : '[Ca]+[Mg]+[IN1]',
              'analyses': {'Ca': '10', 'Mg': '15'},
              'interims': {'IN1':'2'},
-             'exresult': '27'
+             'exresult': '27.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '5', 'Mg': '1'},
              'interims': {'IN1':'5'},
-             'exresult': '15'
+             'exresult': '15.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '10', 'Mg': '1'},
              'interims': {'IN1':'5'},
-             'exresult': '16'
+             'exresult': '16.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '10', 'Mg': '2'},
              'interims': {'IN1':'5'},
-             'exresult': '17'
+             'exresult': '17.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '15', 'Mg': '2'},
              'interims': {'IN1':'5'},
-             'exresult': '22'
+             'exresult': '22.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '15', 'Mg': '3'},
              'interims': {'IN1':'5'},
-             'exresult': '23'
+             'exresult': '23.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '20', 'Mg': '3'},
              'interims': {'IN1':'5'},
-             'exresult': '28'
+             'exresult': '28.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '20', 'Mg': '3'},
              'interims': {'IN1':'10'},
-             'exresult': '33'
+             'exresult': '33.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '30', 'Mg': '3'},
              'interims': {'IN1':'10'},
-             'exresult': '50'
+             'exresult': '50.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '>30', 'Mg': '5'},
              'interims': {'IN1':'10'},
-             'exresult': '60'
+             'exresult': '60.0'
             },
 
             {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '<5', 'Mg': '5'},
              'interims': {'IN1':'10'},
-             'exresult': '10'
+             'exresult': '10.0'
+            },
+
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+             'analyses': {'Ca': '5', 'Mg': '5'},
+             'interims': {'Comment': 'uncertain'},
+             'result_types': {'Comment': 'str'},
+             'exresult': 'uncertain'
+            },
+
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+             'analyses': {'Ca': '5', 'Mg': '5'},
+             'interims': {'Comment': 'certain'},
+             'result_types': {'Comment': 'str'},
+             'exresult': '10.0'
+            },
+
+            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+             'analyses': {'Ca': '5', 'Mg': '5'},
+             'interims': {'Comment': '10'},
+             'result_types': {'Comment': 'str'},
+             'exresult': '10.0'
             },
         ]
         # New formulas for precision testing
@@ -325,9 +346,12 @@ class TestCalculations(DataTestCase):
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
+            result_types = f.get("result_types") or {}
             for k,v in f['interims'].items():
+                result_type = result_types.get(k)
                 interims.append({'keyword': k, 'title': k, 'value': v,
-                                 'hidden': False, 'type': 'int',
+                                 'hidden': False,
+                                 'result_type': result_type,
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
@@ -365,12 +389,13 @@ class TestCalculations(DataTestCase):
                 intermap = []
                 for i in interims:
                     if i['keyword'] in f['interims']:
-                        ival = float(f['interims'][i['keyword']])
+                        ival = f['interims'][i['keyword']]
+                        result_type = i.get("result_type")
                         intermap.append({'keyword': i['keyword'],
                                         'value': ival,
                                         'title': i['title'],
                                         'hidden': i['hidden'],
-                                        'type': i['type'],
+                                        'result_type': result_type,
                                         'unit': i['unit']})
                     else:
                         intermap.append(i)
@@ -382,7 +407,10 @@ class TestCalculations(DataTestCase):
             self.assertTrue(success, True)
             self.assertNotEqual(calcanalysis.getResult(), '',
                 'getResult returns an empty string')
-            self.assertEqual(float(calcanalysis.getResult()), float(f['exresult']))
+
+            result = calcanalysis.getResult()
+            exresult = f['exresult']
+            self.assertEqual(result, exresult)
 
     def test_calculation_fixed_precision(self):
         # Input results

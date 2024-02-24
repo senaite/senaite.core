@@ -122,7 +122,9 @@ class DepartmentsView(BikaListingView):
         # Department ID
         department_id = obj.getDepartmentID()
         item["DepartmentID"] = department_id
-        item["replace"]["DepartmentID"] = get_link(url, value=department_id)
+        if department_id:
+            item["replace"]["DepartmentID"] = get_link(
+                url, value=department_id)
 
         item["Manager"] = ""
         item["ManagerPhone"] = ""

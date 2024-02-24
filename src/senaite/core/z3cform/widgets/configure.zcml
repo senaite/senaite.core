@@ -4,6 +4,7 @@
 
   <!-- package includes -->
   <include package=".duration" />
+  <include package=".listing" />
   <include package=".uidreference" />
   <include package=".queryselect" />
 

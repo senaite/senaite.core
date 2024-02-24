@@ -46,9 +46,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.Widget import StringWidget
-from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 Methods = UIDReferenceField(
@@ -139,7 +137,7 @@ Separate = BooleanField(
 Preservation = UIDReferenceField(
     "Preservation",
     schemata="Container and Preservation",
-    allowed_types=("Preservation",),
+    allowed_types=("SamplePreservation",),
     vocabulary="getPreservations",
     required=0,
     multiValued=0,
@@ -594,11 +592,15 @@ class AnalysisService(AbstractBaseAnalysis):
         return DisplayList(containers)
 
     def getPreservations(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation', is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+        query = {
+            "portal_type": "SamplePreservation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        items = [(brain.UID, brain.Title) for brain in brains]
+        return DisplayList(items)
 
     def getAvailableMethods(self):
         """Returns the methods available for this analysis.

@@ -150,6 +150,7 @@ schema['description'].widget.visible = True
 IdField = schema['id']
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2492
 class AnalysisProfile(BaseContent, ClientAwareMixin):
     security = ClassSecurityInfo()
     schema = schema

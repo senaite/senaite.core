@@ -1,6 +1,5 @@
 auditlog
 bika_analysiscategories
-bika_analysisprofiles
 bika_analysisservices
 bika_analysisspecs
 bika_artemplates
@@ -13,7 +12,6 @@ bika_instrumenttypes
 bika_labcontacts
 bika_labproducts
 bika_manufacturers
-bika_preservations
 bika_referencedefinitions
 bika_samplepoints
 bika_sampletypes

@@ -4947,7 +4947,7 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr "选择此项以允许取样协调员安排采样。此功能仅在“采样工作流程”处于启用状态时生效"
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr "选择此选项可允许用户为已发布的请检样本求设置额外的“已打印”状态。默认情况下禁用。"
 
 #: bika/lims/content/bikasetup.py:570
