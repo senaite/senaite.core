@@ -45,9 +45,9 @@ class SampleMatricesView(ListingView):
 
         self.context_actions = {
             _(u"listing_samplematrices_action_add", default=u"Add"): {
-                "url": "createObject?type_name=SampleMatrix",
+                "url": "++add++SampleMatrix",
                 "permission": AddSampleMatrix,
-                "icon": "++resource++bika.lims.images/add.png"
+                "icon": "senaite_theme/icon/plus"
             }
         }
 
@@ -81,7 +81,6 @@ class SampleMatricesView(ListingView):
                     default=u"Active"
                 ),
                 "contentFilter": {"is_active": True},
-                "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
@@ -90,7 +89,6 @@ class SampleMatricesView(ListingView):
                     default=u"Inactive"
                 ),
                 "contentFilter": {"is_active": False},
-                "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
