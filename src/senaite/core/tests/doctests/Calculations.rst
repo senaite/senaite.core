@@ -65,6 +65,9 @@ Each `AnalysisService` contains a `Keyword` field, which can be referenced in a 
     >>> as2.setKeyword("Mg")
     >>> as2.reindexObject()
 
+    >>> as3 = api.create(bika_analysisservices, "AnalysisService", title="Comment")
+    >>> as3.setKeyword("Comment")
+    >>> as3.reindexObject()
 
 Create one `Calculation`::
 
@@ -120,6 +123,30 @@ function in the `PythonImports` field::
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
     '8.0'
+
+
+Test the `Calculation` function with the scenario when the interim is a string.
+Test a new `Formula`.
+
+    >>> calc.setFormula("([Comment]) if [Comment] == 'uncertain' else ([Ca] + [Mg])")
+
+    >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'uncertain'"},]
+    >>> calc.setTestParameters(form_value)
+    >>> calc.setTestResult(form_value)
+    >>> calc.getTestResult()
+    'uncertain'
+    
+    >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'certain'"},]
+    >>> calc.setTestParameters(form_value)
+    >>> calc.setTestResult(form_value)
+    >>> calc.getTestResult()
+    '10'
+
+    >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": 10},]
+    >>> calc.setTestParameters(form_value)
+    >>> calc.setTestResult(form_value)
+    >>> calc.getTestResult()
+    '10'
 
 
 A `Calculation` can therefore dynamically get a module and a member::
