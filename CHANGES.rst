@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2502 Un-catalog orphan brains on uid_catalog's clean-up (upgrade step 2610)
 - #2476 Fix format type to include strings in calculation formulas
 - #2498 Fix services widget not found when creating new profiles
 - #2496 Fix non existing department ID is rendered as link in listing
