@@ -513,6 +513,7 @@ def cleanup_uid_catalog(tool):
         obj = api.get_object(brain, default=None)
         if not obj:
             orphans.append(brain)
+            continue
 
         # flush obj from memory
         obj._p_deactivate()  # noqa
