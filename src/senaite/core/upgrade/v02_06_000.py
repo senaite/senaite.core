@@ -502,11 +502,20 @@ def cleanup_uid_catalog(tool):
     mapping = {}
     duplicates = []
     temporaries = []
+    orphans = []
 
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Checking catalog brain %s/%s"
                         % (num+1, total))
+
+        # chek for orphan brains
+        obj = api.get_object(brain, default=None)
+        if not obj:
+            orphans.append(brain)
+
+        # flush obj from memory
+        obj._p_deactivate()  # noqa
 
         # check for temporary objects
         if api.is_temporary(brain):
@@ -528,6 +537,13 @@ def cleanup_uid_catalog(tool):
 
     portal_types = api.get_tool("portal_types")
     type_info = dict(map(lambda ti: (ti.id, ti), portal_types.listTypeInfo()))
+
+    # cleaning orphans
+    for brain in orphans:
+        oid = api.get_id(brain)
+        path = api.get_path(brain)
+        logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
+        catalog.uncatalog_object(path)
 
     # cleaning duplicates
     for brain in duplicates:
