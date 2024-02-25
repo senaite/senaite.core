@@ -509,7 +509,7 @@ def cleanup_uid_catalog(tool):
             logger.info("Checking catalog brain %s/%s"
                         % (num+1, total))
 
-        # chek for orphan brains
+        # check for orphan brains
         obj = api.get_object(brain, default=None)
         if not obj:
             orphans.append(brain)
