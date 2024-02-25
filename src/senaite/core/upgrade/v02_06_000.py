@@ -515,11 +515,10 @@ def cleanup_uid_catalog(tool):
 
         # check if we found a duplicate
         uid = brain.UID
-        path = brain.getPath()
         duplicate = mapping.get(uid)
 
         if duplicate is None:
-            mapping[uid] = path
+            mapping[uid] = brain
         else:
             obj = api.get_object(brain)
             dup_obj = api.get_object(duplicate)
