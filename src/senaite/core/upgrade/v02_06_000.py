@@ -521,6 +521,13 @@ def cleanup_uid_catalog(tool):
         if duplicate is None:
             mapping[uid] = path
         else:
+            obj = api.get_object(brain)
+            dup_obj = api.get_object(duplicate)
+            if obj != dup_obj:
+                # different objects with same UID!
+                logger.error("Different objects with same UID: {}".format(uid))
+                continue
+
             # duplicate detected!
             duplicates.append(brain)
             if duplicate not in duplicates:
