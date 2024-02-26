@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2504 Fix subfield_sizes have no effect when rendering RecordField
 - #2476 Fix format type to include strings in calculation formulas
 - #2498 Fix services widget not found when creating new profiles
 - #2496 Fix non existing department ID is rendered as link in listing
