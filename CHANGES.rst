@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2504 Fix subfield_sizes have no effect when rendering RecordField
 - #2503 Fix traceback on upgrade step 2610 while cleaning up uid_catalog
 - #2476 Fix format type to include strings in calculation formulas
 - #2498 Fix services widget not found when creating new profiles
