@@ -104,12 +104,14 @@
                           value=""
                           size="30"
                           tabindex="#"
+                          tal:define="width python: field.getSubfieldWidth(key, default=235);
+                                      width string: ${width}px;"
                           tal:attributes="class string:records_inputstring form-control form-control-sm;
                                           title description;
                                           name string:${fieldName}.${key}:records:ignore_empty;
                                           id string:${fieldName}-${key}-${repeat/idx/index};
                                           value python:field.getSubfieldValue(values, idx, key);
-                                          size python:field.getSubfieldSize(key);
+                                          style python:'width:%s;;min-width:%s;;max-width:%s' % (width, width, width);
                                           maxlength maxlength|nothing;
                                           readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
                                           tabindex tabindex/next|nothing;

@@ -8,4 +8,7 @@
            zope.lifecycleevent.interfaces.IObjectCreatedEvent"
       handler=".uidreferencefield.on_object_created" />
 
+  <!-- ++field++ namespace -->
+  <adapter factory=".traversal.FieldTraversal" name="field" />
+
 </configure>

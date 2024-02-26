@@ -4954,7 +4954,7 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr "Auswählen um dem Probenahme-Koordinator zu erlauben, eine Probe zeitlich einzuplanen. Diese Funktionalität ist nur dann von Bedeutung, wenn der \"Probenahme Ablauf\" aktiviert ist."
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr "Wählen Sie diese Option aus, damit der Benutzer den Status „Gedruckt“ für veröffentlichte Proben festlegen kann. Standardmäßig deaktiviert."
 
 #: bika/lims/content/bikasetup.py:570

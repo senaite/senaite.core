@@ -27,6 +27,7 @@ from types import TupleType
 
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
+from bika.lims import api
 from DateTime import DateTime
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.debug import log
@@ -70,6 +71,7 @@ class RecordField(ObjectField):
         "subfield_vocabularies": {},
         "subfield_labels": {},
         "subfield_sizes": {},
+        "subfield_widths": {},
         "subfield_maxlength": {},
         "required_subfields": (),
         "subfield_validators": {},
@@ -109,6 +111,24 @@ class RecordField(ObjectField):
         optional custom description for the subfield
         """
         return self.subfield_descriptions.get(subfield)
+
+    def getSubfieldWidth(self, subfield, default=305):
+        """Returns the optional width for the subfield
+        """
+        width = self.subfield_widths.get(subfield)
+        width = api.to_int(width, 0)
+        if width > 0:
+            return width
+
+        # backwards compatibility: rely on subfield size
+        # https://github.com/senaite/senaite.core/pull/2504
+        size = self.getSubfieldSize(subfield, default=-1)
+        size = api.to_int(size, 0)
+        if size > 0:
+            # guess a ratio of 10 between width and size
+            return int(size * 10)
+
+        return default
 
     def getSubfieldSize(self, subfield, default=40):
         """
@@ -409,5 +429,6 @@ registerPropertyType('subfield_vocabularies', 'mapping', RecordField)
 registerPropertyType('subfield_labels', 'mapping', RecordField)
 registerPropertyType('subfield_sizes', 'mapping', RecordField)
 registerPropertyType('subfield_maxlength', 'mapping', RecordField)
+registerPropertyType('subfield_widths', 'mapping', RecordField)
 registerPropertyType('innerJoin', 'string', RecordField)
 registerPropertyType('outerJoin', 'string', RecordField)

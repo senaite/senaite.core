@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+from collections import OrderedDict
 from string import Template
 
 import six
@@ -232,7 +233,11 @@ def apply_hidden_services(sample):
     hidden.extend(hid_profiles)
 
     # Update the sample analyses
-    analyses = sample.getAnalyses(full_objects=True)
+    if api.is_temporary(sample):
+        # sample is in create process. Just return the object values.
+        analyses = sample.objectValues(spec="Analysis")
+    else:
+        analyses = sample.getAnalyses(full_objects=True)
     analyses = filter(lambda an: an.getServiceUID() in hidden, analyses)
     for analysis in analyses:
         analysis.setHidden(True)
@@ -250,8 +255,8 @@ def get_hidden_service_uids(profile_or_template):
 
 
 def to_services_uids(services=None, values=None):
-    """
-    Returns a list of Analysis Services uids
+    """Returns a list of Analysis Services UIDS
+
     :param services: A list of service items (uid, keyword, brain, obj, title)
     :param values: a dict, where keys are AR|Sample schema field names.
     :returns: a list of Analyses Services UIDs
@@ -281,10 +286,10 @@ def to_services_uids(services=None, values=None):
         uid_catalog = api.get_tool(UID_CATALOG)
         for brain in uid_catalog(UID=profiles):
             profile = api.get_object(brain)
-            uids.extend(profile.getRawService() or [])
+            uids.extend(profile.getServiceUIDs() or [])
 
     # Get the service uids without duplicates, but preserving the order
-    return list(dict.fromkeys(uids).keys())
+    return list(OrderedDict.fromkeys(uids).keys())
 
 
 def to_service_uid(uid_brain_obj_str):
@@ -417,7 +422,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     :param analyses: uids/brains/objects of IAnalysis type
     :param sampletype: uid/brain/object of SampleType
     :param container: uid/brain/object of Container
-    :param preservation: uid/brain/object of Preservation
+    :param preservation: uid/brain/object of SamplePreservation
     :param skip_fields: names of fields to be skipped on copy from primary
     :return: the new partition
     """

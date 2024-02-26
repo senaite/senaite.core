@@ -4945,7 +4945,7 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr "Wybierz tę opcję, aby umożliwić koordynatorowi pobierania próbek zaplanowanie pobierania próbek. Ta funkcja działa tylko wtedy, gdy aktywny jest przepływ pracy próbkowania"
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr "Wybierz tę opcję, aby zezwolić użytkownikowi na ustawienie dodatkowego statusu 'Wydrukowano' dla tych żądań analizy, które zostały opublikowane. Domyślnie wyłączone."
 
 #: bika/lims/content/bikasetup.py:570

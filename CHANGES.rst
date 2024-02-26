@@ -5,6 +5,18 @@ Changelog
 ------------------
 
 - #2489 Make uncatalog_brain to fallback to RID when no UID (as path) found
+- #2504 Fix subfield_sizes have no effect when rendering RecordField
+- #2503 Fix traceback on upgrade step 2610 while cleaning up uid_catalog
+- #2476 Fix format type to include strings in calculation formulas
+- #2498 Fix services widget not found when creating new profiles
+- #2496 Fix non existing department ID is rendered as link in listing
+- #2495 Fix dynamic analysisspecs are not linked to keywords containing only numbers
+- #2494 Cleanup UID catalog and remove orphan temporary objects
+- #2493 Add listing widget for Dexterity records field
+- #2492 Migrate Analysis Profiles to Dexterity
+- #2483 Migrate Preservations to Dexterity
+- #2491 Add setting to show/hide the laboratory name in login page
+- #2490 Fix TypeError when creating a DX object that once was from AT type
 - #2485 More informative progress of the sample analyses states
 - #2487 Fix ValueError when creating new Dexterity contents
 - #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
