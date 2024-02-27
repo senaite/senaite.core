@@ -70,7 +70,6 @@ class DepartmentsView(BikaListingView):
                 "toggle": False}),
             ("Description", {
                 "title": _("Description"),
-                "index": "Description",
                 "toggle": True}),
             ("Manager", {
                 "title": _("Manager"),

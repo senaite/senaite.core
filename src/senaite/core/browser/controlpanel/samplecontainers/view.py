@@ -60,7 +60,6 @@ class SampleContainersView(ListingView):
                 "index": "sortable_title"}),
             ("description", {
                 "title": _("Description"),
-                "index": "Description",
                 "toggle": True,
             }),
             ("containertype", {

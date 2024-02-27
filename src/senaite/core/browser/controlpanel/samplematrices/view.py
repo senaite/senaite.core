@@ -69,7 +69,6 @@ class SampleMatricesView(ListingView):
                     u"listing_samplematrices_column_description",
                     default=u"Description"
                 ),
-                "index": "Description",
                 "toggle": True}),
         ))
 

@@ -69,7 +69,6 @@ class SamplePreservationsView(ListingView):
                     u"listing_samplepreservations_column_description",
                     default=u"Description"
                 ),
-                "index": "Description",
                 "toggle": True}),
         ))
 
