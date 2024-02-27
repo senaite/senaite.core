@@ -564,12 +564,18 @@ def cleanup_uid_catalog(tool):
 
         # check if we found a duplicate
         uid = brain.UID
-        path = brain.getPath()
         duplicate = mapping.get(uid)
 
         if duplicate is None:
-            mapping[uid] = path
+            mapping[uid] = brain
         else:
+            obj = api.get_object(brain)
+            dup_obj = api.get_object(duplicate)
+            if obj != dup_obj:
+                # different objects with same UID!
+                logger.error("Different objects with same UID: {}".format(uid))
+                continue
+
             # duplicate detected!
             duplicates.append(brain)
             if duplicate not in duplicates:
@@ -582,6 +588,7 @@ def cleanup_uid_catalog(tool):
     for brain in duplicates:
         oid = api.get_id(brain)
         path = api.get_path(brain)
+        obj = api.get_object(brain)
         # uncatalog the object for the current path
         logger.info("Uncatalog brain '%s' at '%s'" % (oid, path))
         catalog.uncatalog_object(path)
@@ -590,13 +597,11 @@ def cleanup_uid_catalog(tool):
         fti = type_info.get(brain.portal_type)
         if fti.product:
             # catalog the object on the relative path
-            obj = api.get_object(brain)
             rel_url = getRelURL(catalog, obj.getPhysicalPath())
             logger.info("Catalog brain '%s' at '%s'" % (oid, rel_url))
             catalog.catalog_object(obj, rel_url)
         else:
             # catalog the object on the absolute path
-            obj = api.get_object(brain)
             abs_url = "/".join(obj.getPhysicalPath())
             logger.info("Catalog brain '%s' at '%s'" % (oid, abs_url))
             catalog.catalog_object(obj, abs_url)
