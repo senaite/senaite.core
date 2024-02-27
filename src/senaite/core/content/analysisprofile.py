@@ -29,8 +29,10 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import IAnalysisProfile
+from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
+from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
 from zope.interface import Invalid
@@ -155,6 +157,33 @@ class IAnalysisProfileSchema(model.Schema):
             default=u"Please provide the VAT in percent that is added to the "
                     u"profile price"
         ),
+        required=False,
+    )
+
+    directives.widget(
+        "sample_types",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        },
+    )
+    sample_types = UIDReferenceField(
+        title=_(
+            u"label_analysisprofile_sampletypes",
+            default=u"Sample types"
+        ),
+        description=_(
+            u"description_analysisprofile_sampletypes",
+            default=u"Sample types for which this analysis profile is "
+                    u"supported. When selecting a sample type on sample "
+                    u"creation form, the system will automatically filter for "
+                    u"selection the profiles that are supported."."
+        ),
+        allowed_types=("SampleType", ),
+        multi_valued=True,
         required=False,
     )
 
@@ -468,3 +497,18 @@ class AnalysisProfile(Container, ClientAwareMixin):
         self.setServices(new_services)
 
         return True
+
+    @security.protected(permissions.View)
+    def getRawSampleTypes(self):
+        accessor = self.accessor("sample_types", raw=True)
+        return accessor(self.context) or []
+
+    @security.protected(permissions.View)
+    def getSampleTypes(self):
+        accessor = self.accessor("sample_types")
+        return accessor(self.context) or []
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleTypes(self, value):
+        mutator = self.mutator("sample_types")
+        mutator(self, value)
