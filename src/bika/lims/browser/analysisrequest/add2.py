@@ -1028,6 +1028,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sampletype_uid": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             },
+            # Display Analysis Profiles that have this sample type assigned
+            # in addition to those that do not have a sample profile assigned
+            "Profiles": {
+                "sampletype_uid": [sample_type_uid, ""],
+                "getClientUID": [client_uid, ""],
+            },
             # Display Specifications that have this sample type assigned only
             "Specification": {
                 "sampletype_uid": sample_type_uid,
@@ -1187,6 +1193,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ],
             "SampleType": [
                 "SamplePoint",
+                "Profiles",
                 "Specification",
                 "Template",
             ],
