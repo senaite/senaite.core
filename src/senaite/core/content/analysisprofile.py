@@ -192,7 +192,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
     def getProfileKey(self):
         accessor = self.accessor("profile_key")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return api.to_utf8(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setProfileKey(self, value):
@@ -275,7 +275,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
     def getCommercialID(self):
         accessor = self.accessor("commercial_id")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return api.to_utf8(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setCommercialID(self, value):
