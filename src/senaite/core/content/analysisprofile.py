@@ -184,9 +184,11 @@ class IAnalysisProfileSchema(model.Schema):
         description=_(
             u"description_analysisprofile_sampletypes",
             default=u"Sample types for which this analysis profile is "
-                    u"supported. When selecting a sample type on sample "
-                    u"creation form, the system will automatically filter for "
-                    u"selection the profiles that are supported."."
+                    u"supported. This profile won't be available for "
+                    u"selection in sample creation and edit forms unless the "
+                    u"selected sample type is one of these. If no sample type "
+                    u"is set here, this profile will always be available for "
+                    u"selection, regardless of the sample type of the sample."
         ),
         allowed_types=("SampleType", ),
         multi_valued=True,
