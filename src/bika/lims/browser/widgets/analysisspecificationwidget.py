@@ -348,8 +348,10 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "max": s_max,
                 "warn_min": self._get_spec_value(form, uid, "warn_min"),
                 "warn_max": self._get_spec_value(form, uid, "warn_max"),
-                "hidemin": self._get_spec_value(form, uid, "hidemin"),
-                "hidemax": self._get_spec_value(form, uid, "hidemax"),
+                "hidemin": self._get_spec_value(
+                    form, uid, "hidemin", check_floatable=False),
+                "hidemax": self._get_spec_value(
+                    form, uid, "hidemax", check_floatable=False),
                 "rangecomment": self._get_spec_value(form, uid, "rangecomment",
                                                      check_floatable=False)
             }
