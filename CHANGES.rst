@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2501 Migrate Sample Matrices to Dexterity
+- #2505 Fix UnicodeDecodeError when migrating Analysis Profiles
 - #2504 Fix subfield_sizes have no effect when rendering RecordField
 - #2503 Fix traceback on upgrade step 2610 while cleaning up uid_catalog
 - #2476 Fix format type to include strings in calculation formulas
