@@ -249,12 +249,12 @@ class ATDXContentMigrator(ContentMigrator):
         # uncatalog the source object
         self.uncatalog_object(self.src)
 
-        # change the ID
-        self.copy_id(self.src, self.target)
-
         # delete source object if requested
         if delete_src:
             self.delete_object(self.src)
+
+        # change the ID *after* the original object was deleted
+        self.copy_id(self.src, self.target)
 
 
 @implementer(IFieldMigrator)
