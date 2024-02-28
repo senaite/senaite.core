@@ -82,6 +82,14 @@ class AnalysisProfilesView(ListingView):
                 "sortable": False,
                 "toggle": True,
             }),
+            ("SampleTypes", {
+                "title": _(
+                    u"listing_analysisprofiles_column_sampletypes",
+                    default=u"Sample Types",
+                ),
+                "index": "sampletype_title",
+                "sortable": True,
+            }),
         ))
 
         self.review_states = [
@@ -116,4 +124,7 @@ class AnalysisProfilesView(ListingView):
         obj = api.get_object(obj)
         item["replace"]["Title"] = get_link_for(obj)
         item["ProfileKey"] = obj.getProfileKey()
+        item["SampleTypes"] = obj.getRawSampleTypes()
+        links = map(get_link_for, obj.getSampleTypes())
+        item["replace"]["SampleTypes"] = ", ".join(links)
         return item
