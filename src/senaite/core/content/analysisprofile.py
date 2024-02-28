@@ -509,12 +509,12 @@ class AnalysisProfile(Container, ClientAwareMixin):
     @security.protected(permissions.View)
     def getRawSampleTypes(self):
         accessor = self.accessor("sample_types", raw=True)
-        return accessor(self.context) or []
+        return accessor(self) or []
 
     @security.protected(permissions.View)
     def getSampleTypes(self):
         accessor = self.accessor("sample_types")
-        return accessor(self.context) or []
+        return accessor(self) or []
 
     @security.protected(permissions.ModifyPortalContent)
     def setSampleTypes(self, value):
