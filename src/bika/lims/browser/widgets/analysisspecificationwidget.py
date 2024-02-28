@@ -91,18 +91,13 @@ class AnalysisSpecificationView(BikaListingView):
                 "sortable": False,
                 "type": "numeric",
             }),
-            ("min_operator", {
-                "title": _("Min operator"),
-                "type": "choices",
-                "sortable": False,
-            }),
             ("min", {
                 "title": _("Min"),
                 "sortable": False,
                 "type": "numeric",
             }),
-            ("max_operator", {
-                "title": _("Max operator"),
+            ("min_operator", {
+                "title": _("Min operator"),
                 "type": "choices",
                 "sortable": False,
             }),
@@ -115,6 +110,11 @@ class AnalysisSpecificationView(BikaListingView):
                 "title": _("Max warn"),
                 "sortable": False,
                 "type": "numeric",
+            }),
+            ("max_operator", {
+                "title": _("Max operator"),
+                "type": "choices",
+                "sortable": False,
             }),
             ("hidemin", {
                 "title": _("< Min"),
