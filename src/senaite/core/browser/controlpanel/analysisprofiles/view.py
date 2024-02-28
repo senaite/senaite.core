@@ -72,7 +72,6 @@ class AnalysisProfilesView(ListingView):
                     u"listing_analysisprofiles_column_description",
                     default=u"Description"
                 ),
-                "index": "Description",
                 "toggle": True,
             }),
             ("ProfileKey", {

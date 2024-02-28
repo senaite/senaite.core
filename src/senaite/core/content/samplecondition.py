@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
 from senaite.core.catalog import SETUP_CATALOG
@@ -32,12 +33,18 @@ class ISampleConditionSchema(model.Schema):
     """
 
     title = schema.TextLine(
-        title=u"Title",
-        required=False,
+        title=_(
+            u"title_samplecondition_title",
+            default=u"Name"
+        ),
+        required=True,
     )
 
     description = schema.Text(
-        title=u"Description",
+        title=_(
+            u"title_samplecondition_description",
+            default=u"Description"
+        ),
         required=False,
     )
 
