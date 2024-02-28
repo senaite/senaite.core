@@ -667,6 +667,7 @@ def migrate_client_located_analysisprofiles_to_dx(tool):
     portal = api.get_portal()
     clients = portal.clients
 
+    # search for all client located Analysis Profiles
     query = {
         "portal_type": "AnalysisProfile",
         "path": {
@@ -674,6 +675,7 @@ def migrate_client_located_analysisprofiles_to_dx(tool):
         }
     }
     brains = api.search(query, SETUP_CATALOG)
+
     for brain in brains:
         obj = api.get_object(brain)
         # Check if the object contains the AT UID attribute
