@@ -21,11 +21,13 @@
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.api.snapshot import disable_snapshots
+from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from Products.Archetypes.utils import getRelURL
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
@@ -362,82 +364,10 @@ def migrate_analysisprofiles_to_dx(tool):
     # un-catalog the old container
     uncatalog_object(origin)
 
-    # migrate the contents from the old AT container to the new one
-    portal_type = "AnalysisProfile"
-
     # copy items from old -> new container
     objects = origin.objectValues()
     for src in objects:
-        if api.get_portal_type(src) != portal_type:
-            logger.error("Not a '{}' object: {}".format(portal_type, src))
-            continue
-
-        # Create the object if it does not exist yet
-        src_id = src.getId()
-        target = destination.get(src_id)
-        if not target:
-            # Don' use the api to skip the auto-id generation
-            target = createContent(portal_type, id=src_id)
-            destination._setObject(src_id, target)
-            target = destination._getOb(src_id)
-
-        # Manually set the fields
-        # NOTE: always convert string values to unicode for dexterity fields!
-        target.title = api.safe_unicode(src.Title() or "")
-        target.description = api.safe_unicode(src.Description() or "")
-        target.profile_key = api.safe_unicode(src.getProfileKey() or "")
-
-        # services is now a records field containing the selected service and
-        # the hidden settings
-        services = []
-        selected_services = src.getService()
-        for obj in selected_services:
-            uid = api.get_uid(obj)
-            service_setting = src.getAnalysisServiceSettings(uid)
-            hidden = service_setting.get("hidden", False)
-            services.append({
-                "uid": uid,
-                "hidden": hidden,
-            })
-        target.services = services
-        target.commercial_id = src.getCommercialID()
-        target.use_analysis_profile_price = bool(
-            src.getUseAnalysisProfilePrice())
-        target.analysis_profile_price = api.to_float(
-            src.getAnalysisProfilePrice(), 0.0)
-        target.analysis_profile_vat = api.to_float(
-            src.getAnalysisProfileVAT(), 0.0)
-
-        # Migrate the contents from AT to DX
-        migrator = getMultiAdapter(
-            (src, target), interface=IContentMigrator)
-
-        # copy all (raw) attributes from the source object to the target
-        migrator.copy_attributes(src, target)
-
-        # copy the UID
-        migrator.copy_uid(src, target)
-
-        # copy auditlog
-        migrator.copy_snapshots(src, target)
-
-        # copy creators
-        migrator.copy_creators(src, target)
-
-        # copy workflow history
-        migrator.copy_workflow_history(src, target)
-
-        # copy marker interfaces
-        migrator.copy_marker_interfaces(src, target)
-
-        # copy dates
-        migrator.copy_dates(src, target)
-
-        # uncatalog the source object
-        migrator.uncatalog_object(src)
-
-        # delete the old object
-        migrator.delete_object(src)
+        migrate_profile_to_dx(src, destination)
 
     # copy snapshots for the container
     copy_snapshots(origin, destination)
@@ -449,6 +379,102 @@ def migrate_analysisprofiles_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert Analysis Profiles to Dexterity [DONE]")
+
+
+def migrate_profile_to_dx(src, destination=None):
+    """Migrate an AT profile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "AnalysisProfile"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.profile_key = api.safe_unicode(src.getProfileKey() or "")
+
+    # services is now a records field containing the selected service and
+    # the hidden settings
+    services = []
+    selected_services = src.getService()
+    for obj in selected_services:
+        uid = api.get_uid(obj)
+        service_setting = src.getAnalysisServiceSettings(uid)
+        hidden = service_setting.get("hidden", False)
+        services.append({
+            "uid": uid,
+            "hidden": hidden,
+        })
+    target.services = services
+    target.commercial_id = api.safe_unicode(src.getCommercialID())
+    target.use_analysis_profile_price = bool(
+        src.getUseAnalysisProfilePrice())
+    target.analysis_profile_price = api.to_float(
+        src.getAnalysisProfilePrice(), 0.0)
+    target.analysis_profile_vat = api.to_float(
+        src.getAnalysisProfileVAT(), 0.0)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated Profile from %s -> %s" % (src, target))
 
 
 def remove_at_departments_setup_folder(tool):
@@ -555,8 +581,7 @@ def cleanup_uid_catalog(tool):
 
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
-            logger.info("Checking catalog brain %s/%s"
-                        % (num+1, total))
+            logger.info("Checking catalog brain %s/%s" % (num, total))
 
         # check for temporary objects
         if api.is_temporary(brain):
@@ -631,3 +656,32 @@ def cleanup_uid_catalog(tool):
             catalog.uncatalog_object(path)
 
     logger.info("Cleanup UID catalog [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_client_located_analysisprofiles_to_dx(tool):
+    """Migrate client located Profiles to DX
+    """
+    logger.info("Convert Client located Profiles to Dexterity ...")
+
+    portal = api.get_portal()
+    clients = portal.clients
+
+    # search for all client located Analysis Profiles
+    query = {
+        "portal_type": "AnalysisProfile",
+        "path": {
+            "query": api.get_path(clients),
+        }
+    }
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        obj = api.get_object(brain)
+        # Check if the object contains the AT UID attribute
+        at_uid = getattr(obj, "_at_uid", "")
+        if not at_uid:
+            continue
+        migrate_profile_to_dx(obj)
+
+    logger.info("Convert Client located Profiles to Dexterity [DONE]")

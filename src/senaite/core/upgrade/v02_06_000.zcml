@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Client located Analysis Profiles to DX"
+      description="Supplementary upgrade step for 2608"
+      source="2611"
+      destination="2612"
+      handler=".v02_06_000.migrate_client_located_analysisprofiles_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SampleMatrices to DX"
       description="Migrate SampleMatrices to Dexterity"
       source="2610"
