@@ -41,12 +41,18 @@ class ISampleContainerSchema(model.Schema):
     """
 
     title = schema.TextLine(
-        title=u"Title",
-        required=False,
+        title=_(
+            u"title_samplecontainer_title",
+            default=u"Name"
+        ),
+        required=True,
     )
 
     description = schema.Text(
-        title=u"Description",
+        title=_(
+            u"title_samplecontainer_description",
+            default=u"Description"
+        ),
         required=False,
     )
 

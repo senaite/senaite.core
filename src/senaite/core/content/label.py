@@ -35,12 +35,18 @@ class ILabelSchema(model.Schema):
     """Schema interface
     """
     title = schema.TextLine(
-        title=u"Title",
-        required=False,
+        title=_(
+            u"title_label_title",
+            default=u"Name"
+        ),
+        required=True,
     )
 
     description = schema.Text(
-        title=u"Description",
+        title=_(
+            u"title_label_description",
+            default=u"Description"
+        ),
         required=False,
     )
 

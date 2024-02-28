@@ -63,7 +63,6 @@ class InstrumentLocationsView(ListingView):
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _("Description"),
-                "index": "Description",
                 "toggle": True,
             }),
         ))

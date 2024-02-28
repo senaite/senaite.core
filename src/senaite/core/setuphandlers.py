@@ -249,6 +249,7 @@ def add_senaite_setup_items(portal):
         ("sampleconditions", "Sample Conditions", "SampleConditions"),
         ("analysisprofiles", "Analysis Profiles", "AnalysisProfiles"),
         ("samplepreservations", "Sample Preservations", "SamplePreservations"),
+        ("samplematrices", "Sample Matrices", "SampleMatrices"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

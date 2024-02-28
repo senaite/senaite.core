@@ -22,17 +22,17 @@ from bika.lims.interfaces import IDoNotSupportSnapshots
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.interfaces import ISampleConditions
+from senaite.core.interfaces import ISampleMatrices
 from zope.interface import implementer
 
 
-class ISampleConditionsSchema(model.Schema):
+class ISampleMatricesSchema(model.Schema):
     """Schema interface
     """
 
 
-@implementer(ISampleConditions, ISampleConditionsSchema,
-             IDoNotSupportSnapshots, IHideActionsMenu)
-class SampleConditions(Container):
-    """A container for sample conditions
+@implementer(ISampleMatrices, ISampleMatricesSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class SampleMatrices(Container):
+    """A container for sample matrices
     """

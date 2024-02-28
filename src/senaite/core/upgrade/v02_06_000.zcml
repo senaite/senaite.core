@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate SampleMatrices to DX"
+      description="Migrate SampleMatrices to Dexterity"
+      source="2610"
+      destination="2611"
+      handler=".v02_06_000.migrate_samplematrices_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Cleanup UID catalog and orphane objects"
       description="Cleanup duplicate and orphane catalog entries and objects"
       source="2609"

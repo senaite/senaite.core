@@ -25,79 +25,81 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate
+from senaite.core.permissions import AddSampleMatrix
 
 
-class LabelsView(ListingView):
-    """Displays all available labels
-    """
+class SampleMatricesView(ListingView):
 
     def __init__(self, context, request):
-        super(LabelsView, self).__init__(context, request)
+        super(SampleMatricesView, self).__init__(context, request)
 
         self.catalog = SETUP_CATALOG
+        self.show_select_column = True
 
         self.contentFilter = {
-            "portal_type": "Label",
+            "portal_type": "SampleMatrix",
             "sort_on": "sortable_title",
+            "sort_order": "ascending",
         }
 
         self.context_actions = {
-            _("Add"): {
-                "url": "++add++Label",
-                "icon": "++resource++bika.lims.images/add.png",
-            }}
+            _(u"listing_samplematrices_action_add", default=u"Add"): {
+                "url": "++add++SampleMatrix",
+                "permission": AddSampleMatrix,
+                "icon": "senaite_theme/icon/plus"
+            }
+        }
 
-        t = self.context.translate
-        self.title = t(_("Labels"))
-        self.description = t(_("Add default selectable labels"))
-
-        self.show_select_column = True
-        self.show_all = False
+        self.title = translate(_(
+            u"listing_samplematrices_title",
+            default=u"Sample Matrices")
+        )
+        self.icon = api.get_icon("SampleMatrices", html_tag=False)
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Title"),
+                "title": _(
+                    u"listing_samplematrices_column_title",
+                    default=u"Sample Matrix"
+                ),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
-                "toggle": True,
-            }),
+                "title": _(
+                    u"listing_samplematrices_column_description",
+                    default=u"Description"
+                ),
+                "toggle": True}),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_samplematrices_state_active",
+                    default=u"Active"
+                ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
-                "contentFilter": {'is_active': False},
+                "title": _(
+                    u"listing_samplematrices_state_inactive",
+                    default=u"Inactive"
+                ),
+                "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_samplematrices_state_all",
+                    default=u"All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
         ]
 
     def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
-        obj = api.get_object(obj)
-
         item["replace"]["Title"] = get_link_for(obj)
-        item["Description"] = api.get_description(obj)
-
         return item
-
-    def folderitems(self):
-        items = super(LabelsView, self).folderitems()
-        return items
