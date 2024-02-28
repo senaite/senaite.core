@@ -333,9 +333,10 @@ def migrate_analysisprofiles_to_dx(tool):
             target = destination._getOb(src_id)
 
         # Manually set the fields
-        target.title = src.Title()
-        target.description = src.Description()
-        target.profile_key = src.getProfileKey()
+        # NOTE: always convert string values to unicode for dexterity fields!
+        target.title = api.safe_unicode(src.Title() or "")
+        target.description = api.safe_unicode(src.Description() or "")
+        target.profile_key = api.safe_unicode(src.getProfileKey() or "")
 
         # services is now a records field containing the selected service and
         # the hidden settings
