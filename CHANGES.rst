@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2508 Fix specification values for hide min/max not stored on save
 - #2501 Migrate Sample Matrices to Dexterity
 - #2505 Fix UnicodeDecodeError when migrating Analysis Profiles
 - #2504 Fix subfield_sizes have no effect when rendering RecordField
