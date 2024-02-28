@@ -56,8 +56,7 @@ class InterpretationTemplatesView(ListingView):
                 "title": _("Title"),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
-                "index": "Description"}),
+                "title": _("Description")}),
             ("SampleTypes", {
                 "title": _("Sample Types"),
                 "sortable": False}),

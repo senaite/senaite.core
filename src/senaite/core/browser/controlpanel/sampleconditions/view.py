@@ -69,7 +69,6 @@ class SampleConditionsView(ListingView):
                     u"listing_sampleconditions_column_description",
                     default=u"Description"
                 ),
-                "index": "description",
                 "toggle": True}),
         ))
 

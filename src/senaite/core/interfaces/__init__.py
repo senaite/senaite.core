@@ -213,6 +213,16 @@ class ISamplePreservation(Interface):
     """
 
 
+class ISampleMatrices(Interface):
+    """Marker interface for sample matrices setup folder
+    """
+
+
+class ISampleMatrix(Interface):
+    """Marker interface for sample matrices
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """

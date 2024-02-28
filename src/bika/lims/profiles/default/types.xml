@@ -57,8 +57,6 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
