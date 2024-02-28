@@ -381,8 +381,12 @@ def migrate_analysisprofiles_to_dx(tool):
     logger.info("Convert Analysis Profiles to Dexterity [DONE]")
 
 
-def migrate_profile_to_dx(src, destination):
+def migrate_profile_to_dx(src, destination=None):
     """Migrate an AT profile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
     """
     # migrate the contents from the old AT container to the new one
     portal_type = "AnalysisProfile"
@@ -396,9 +400,11 @@ def migrate_profile_to_dx(src, destination):
     target_id = src_id
 
     # check if we migrate within the same folder
-    parent = api.get_parent(src)
-    if parent == destination:
+    if destination is None:
+        # use a temporary ID for the migrated content
         target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
 
     target = destination.get(target_id)
     if not target:
@@ -426,7 +432,7 @@ def migrate_profile_to_dx(src, destination):
             "hidden": hidden,
         })
     target.services = services
-    target.commercial_id = src.getCommercialID()
+    target.commercial_id = api.safe_unicode(src.getCommercialID())
     target.use_analysis_profile_price = bool(
         src.getUseAnalysisProfilePrice())
     target.analysis_profile_price = api.to_float(
@@ -674,8 +680,6 @@ def migrate_client_located_analysisprofiles_to_dx(tool):
         at_uid = getattr(obj, "_at_uid", "")
         if not at_uid:
             continue
-        parent = api.get_parent(obj)
-        # migrate
-        migrate_profile_to_dx(obj, parent)
+        migrate_profile_to_dx(obj)
 
     logger.info("Convert Client located Profiles to Dexterity [DONE]")
