@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2510 Fix Add action of the Client located Analysis Profiles Listing
+- #2508 Fix specification values for hide min/max not stored on save
 - #2509 Allow analysis profiles to be filtered by sample type
 - #2501 Migrate Sample Matrices to Dexterity
 - #2505 Fix UnicodeDecodeError when migrating Analysis Profiles
