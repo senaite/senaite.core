@@ -21,9 +21,10 @@
 from bika.lims import api
 from plone.indexer import indexer
 from senaite.core.interfaces import IAnalysisProfile
+from senaite.core.interfaces import ISetupCatalog
 
 
-@indexer(IAnalysisProfile)
+@indexer(IAnalysisProfile, ISetupCatalog)
 def sampletype_title(instance):
     """Returns a list of titles from SampleType the instance is assigned to
     If the instance has no sample type assigned, it returns a tuple with an
@@ -33,7 +34,7 @@ def sampletype_title(instance):
     return map(api.get_title, sample_type) or [""]
 
 
-@indexer(IAnalysisProfile)
+@indexer(IAnalysisProfile, ISetupCatalog)
 def sampletype_uid(instance):
     """Returns a list of uids from SampleType the instance is assigned to
     If the instance has no SampleType assigned, it returns a tuple with an
