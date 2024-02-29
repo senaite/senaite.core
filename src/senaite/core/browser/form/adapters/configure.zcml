@@ -13,6 +13,13 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".labcontact.EditForm"/>
 
+  <!-- ++add++AnalysisProfile add view handler -->
+  <adapter
+      for="*
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      name="++add++AnalysisProfile"
+      factory=".analysisprofile.EditForm"/>
+
   <!-- Edit Form: Analysis Profile -->
   <adapter
       for="senaite.core.interfaces.IAnalysisProfile
