@@ -26,6 +26,7 @@ from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from Products.Archetypes.utils import getRelURL
 from senaite.core import logger
+from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
@@ -685,3 +686,11 @@ def migrate_client_located_analysisprofiles_to_dx(tool):
         migrate_profile_to_dx(obj)
 
     logger.info("Convert Client located Profiles to Dexterity [DONE]")
+
+
+def reindex_sampletype_uid(tool):
+    """Reindex the sampletype_uid index from setup catalog
+    """
+    logger.info("Reindexing sampletype_uid index from setup ...")
+    reindex_index(SETUP_CATALOG, "sampletype_uid")
+    logger.info("Reindexing sampletype_uid index from setup [DONE]")
