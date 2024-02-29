@@ -124,7 +124,10 @@ class AnalysisProfilesView(ListingView):
         obj = api.get_object(obj)
         item["replace"]["Title"] = get_link_for(obj)
         item["ProfileKey"] = obj.getProfileKey()
-        item["SampleTypes"] = obj.getRawSampleTypes()
-        links = map(get_link_for, obj.getSampleTypes())
+
+        sample_types = obj.getSampleTypes()
+        titles = map(api.get_title, sample_types)
+        links = map(get_link_for, sample_types)
+        item["SampleTypes"] = ", ".join(titles)
         item["replace"]["SampleTypes"] = ", ".join(links)
         return item
