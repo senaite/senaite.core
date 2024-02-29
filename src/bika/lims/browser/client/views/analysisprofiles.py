@@ -20,7 +20,6 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.api import security
 from senaite.core.browser.controlpanel.analysisprofiles.view import \
     AnalysisProfilesView
 from senaite.core.permissions import AddAnalysisProfile
@@ -33,19 +32,15 @@ class ClientAnalysisProfilesView(AnalysisProfilesView):
     def __init__(self, context, request):
         super(ClientAnalysisProfilesView, self).__init__(context, request)
 
-        self.context_actions = {}
         self.contentFilter["path"] = {
                 "query": api.get_path(self.context),
                 "level": 0,
         }
 
-    def before_render(self):
-        super(ClientAnalysisProfilesView, self).before_render()
-        if security.check_permission(AddAnalysisProfile, self.context):
-            self.context_actions = {
-                _(u"listing_analysisprofiles_action_add", default=u"Add"): {
-                    "url": "++add++AnalysisProfile",
-                    "permission": AddAnalysisProfile,
-                    "icon": "senaite_theme/icon/plus"
-                }
+        self.context_actions = {
+            _(u"listing_analysisprofiles_action_add", default=u"Add"): {
+                "url": "++add++AnalysisProfile",
+                "permission": AddAnalysisProfile,
+                "icon": "senaite_theme/icon/plus"
             }
+        }
