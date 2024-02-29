@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2510 Fix Add action of the Client located Analysis Profiles Listing
 - #2509 Allow analysis profiles to be filtered by sample type
 - #2501 Migrate Sample Matrices to Dexterity
 - #2505 Fix UnicodeDecodeError when migrating Analysis Profiles
