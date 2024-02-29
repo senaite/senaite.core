@@ -411,11 +411,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "edit",
             },
             catalog_name=SETUP_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending"
-            },
+            query="get_profiles_query",
             columns=[
                 {"name": "Title", "label": _("Profile Name")},
                 {"name": "getProfileKey", "label": _("Profile Key")},
@@ -2612,6 +2608,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # no future, has to be collected before registration
             return api.get_creation_date(self)
         return datetime.max
+
+    def get_profiles_query(self):
+        """Returns the query for the Profiles field, so only profiles without
+        any sample type set and those that support the sample's sample type are
+        considered
+        """
+        sample_type_uid = self.getRawSampleType()
+        query = {
+            "portal_type": "AnalysisProfile",
+            "sampletype_uid": [sample_type_uid, ""],
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        }
+        return query
 
 
 registerType(AnalysisRequest, PROJECTNAME)
