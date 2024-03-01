@@ -28,7 +28,7 @@
           <ul class="list-inline m-0">
             <tal:loop tal:repeat="subfield subfields">
               <li tal:define="value python:field.getViewFor(context, idx, subfield, innerJoin)"
-                  tal:condition="python:hidden.get(subfield, False) is False"
+                  tal:condition="python:value and hidden.get(subfield, False) is False"
                   class="list-inline-item mr-0 mb-2">
                 <span class="p-1 bg-light border rounded">
                   <span tal:content="structure value"/>

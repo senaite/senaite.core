@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2512 Skip rendering of empty record fiels
 - #2510 Fix Add action of the Client located Analysis Profiles Listing
 - #2508 Fix specification values for hide min/max not stored on save
 - #2509 Allow analysis profiles to be filtered by sample type
