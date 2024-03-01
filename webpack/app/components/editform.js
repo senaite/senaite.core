@@ -637,14 +637,20 @@ class EditForm {
 
   /**
    * send multipart/form-data to the server
+   *
+   * NOTE: This is used by the import form and hooked by the `ajax-submit="1"` attribute
+   *       Therefore, we send here the data as multipart/form-data
    */
   ajax_submit(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
-    let payload = Object.assign({
-      form: this.get_form_data(form)
-    }, data)
+    let payload = new FormData(form);
+
+    // update form data
+    for(let [key, value] of Object.entries(data)) {
+      payload.set(key, value);
+    }
 
     console.debug("EditForm::ajax_submit --> ", payload)
 
