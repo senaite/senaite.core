@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-03-06 18:48+0000\n"
+"POT-Creation-Date: 2024-03-06 22:27+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
