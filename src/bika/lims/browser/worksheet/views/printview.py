@@ -112,9 +112,11 @@ class PrintView(BrowserView):
         """
         out = []
         for template_id in self._TEMPLATES_LIST:
+            name_parts = template_id.replace(".pt", "").split(":")
+            template_filename = " ".join(map(lambda p: p.capitalize(), name_parts[1].split("_")))
             out.append({
                 "id": template_id,
-                "title": "{1} ({0})".format(*template_id.split(":")).replace(".pt", ""),
+                "title": "{} ({})".format(template_filename, name_parts[0]),
             })
         return out
 

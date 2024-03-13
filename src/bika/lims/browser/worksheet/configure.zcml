@@ -135,7 +135,7 @@
   <plone:static
       directory="templates/print"
       type="worksheets"
-      name="SENAITE.CORE default templates"
+      name="Worksheet Print Templates"
   />
 
 </configure>
