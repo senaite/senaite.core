@@ -126,6 +126,12 @@ WORKSHEET_LAYOUT_OPTIONS = (
     ('analyses_transposed_view', _('Transposed')),
 )
 DEFAULT_WORKSHEET_LAYOUT = 'analyses_classic_view'
+
+# Add-on folder to look for templates
+WS_TEMPLATES_ADDON_DIR = 'worksheets'
+
+WS_TEMPLATES_REGISTRY_NAME = "worksheet_print_templates_order"
+
 MULTI_VERIFICATION_TYPE = DisplayList((
     ('self_multi_enabled', _('Allow same user to verify multiple times')),
     ('self_multi_not_cons', _('Allow same user to verify multiple times, but not consecutively')),

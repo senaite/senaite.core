@@ -19,12 +19,19 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.interfaces import IWorksheetLayouts
+from bika.lims.config import WS_TEMPLATES_ADDON_DIR
+from bika.lims.config import WS_TEMPLATES_REGISTRY_NAME
+
+from senaite.core.registry import get_registry_record
+from senaite.core.registry import set_registry_record
 
 from zope.component import getUtilitiesFor
 
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import DisplayList
+from plone.resource.utils import iterDirectoriesOfType
 
 
 def checkUserAccess(worksheet, request, redirect=True):
@@ -39,9 +46,9 @@ def checkUserAccess(worksheet, request, redirect=True):
     # Deny access to foreign analysts
     allowed = worksheet.checkUserAccess()
     if not allowed and redirect:
-        msg =  _('You do not have sufficient privileges to view '
-                 'the worksheet ${worksheet_title}.',
-                 mapping={"worksheet_title": worksheet.Title()})
+        msg = _('You do not have sufficient privileges to view '
+                'the worksheet ${worksheet_title}.',
+                mapping={"worksheet_title": worksheet.Title()})
         worksheet.plone_utils.addPortalMessage(msg, 'warning')
         # Redirect to WS list
         portal = getToolByName(worksheet, 'portal_url').getPortalObject()
@@ -49,6 +56,7 @@ def checkUserAccess(worksheet, request, redirect=True):
         request.response.redirect(destination_url)
 
     return allowed
+
 
 def checkUserManage(worksheet, request, redirect=True):
     """ Checks if the current user has granted access to the worksheet
@@ -62,6 +70,7 @@ def checkUserManage(worksheet, request, redirect=True):
         destination_url = worksheet.absolute_url() + "/manage_results"
         request.response.redirect(destination_url)
 
+
 def showRejectionMessage(worksheet):
     """ Adds a portalMessage if
         a) the worksheet has been rejected and replaced by another or
@@ -73,7 +82,7 @@ def showRejectionMessage(worksheet):
         uid = getattr(worksheet, 'replaced_by')
         _ws = uc(UID=uid)[0].getObject()
         msg = _("This worksheet has been rejected.  The replacement worksheet is ${ws_id}",
-                mapping={'ws_id':_ws.getId()})
+                mapping={'ws_id': _ws.getId()})
         worksheet.plone_utils.addPortalMessage(msg)
     if hasattr(worksheet, 'replaces_rejected_worksheet'):
         uc = getToolByName(worksheet, 'uid_catalog')
@@ -81,7 +90,7 @@ def showRejectionMessage(worksheet):
         _ws = uc(UID=uid)[0].getObject()
         msg = _("This worksheet has been created to replace the rejected "
                 "worksheet at ${ws_id}",
-                mapping={'ws_id':_ws.getId()})
+                mapping={'ws_id': _ws.getId()})
         worksheet.plone_utils.addPortalMessage(msg)
 
 
@@ -93,3 +102,25 @@ def getWorksheetLayouts():
         [layouts.append(layout) for layout in layout_utility.getLayouts()]
 
     return DisplayList(tuple(layouts))
+
+
+def get_all_worksheet_print_templates():
+    """ Getting worksheet templates for printing
+    """
+    all_tpl = []
+    directories = sorted(iterDirectoriesOfType(WS_TEMPLATES_ADDON_DIR), key=lambda d: d.__name__)
+    for templates_resource in directories:
+        prefix = templates_resource.__name__
+        templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
+        for template in sorted(templates):
+            all_tpl.append('{0}:{1}'.format(prefix, template))
+
+    order = get_registry_record(WS_TEMPLATES_REGISTRY_NAME, default=[]) or []
+    ordered_templates = list(
+        filter(lambda item: item,
+               sorted(all_tpl, key=lambda item: order.index(item) if item in order else len(order))))
+
+    if not (sorted(ordered_templates) == sorted(order)):
+        set_registry_record(WS_TEMPLATES_REGISTRY_NAME, ordered_templates)
+
+    return ordered_templates

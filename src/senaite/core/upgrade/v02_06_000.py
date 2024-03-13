@@ -694,3 +694,12 @@ def reindex_sampletype_uid(tool):
     logger.info("Reindexing sampletype_uid index from setup ...")
     reindex_index(SETUP_CATALOG, "sampletype_uid")
     logger.info("Reindexing sampletype_uid index from setup [DONE]")
+
+
+@upgradestep(product, version)
+def import_registry(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "plone.app.registry")

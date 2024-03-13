@@ -18,7 +18,6 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import glob
 import os
 import traceback
 from operator import itemgetter
@@ -28,7 +27,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView
+from bika.lims.browser.worksheet.tools import get_all_worksheet_print_templates
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import WS_TEMPLATES_ADDON_DIR
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import format_supsub
@@ -36,12 +37,10 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
-from plone.resource.utils import iterDirectoriesOfType
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.p3compat import cmp
-
 
 class PrintView(BrowserView):
     """ Print view for a worksheet. This view acts as a placeholder, so
@@ -51,17 +50,16 @@ class PrintView(BrowserView):
     """
 
     template = ViewPageTemplateFile("../templates/print.pt")
-    _DEFAULT_TEMPLATE = 'ar_by_column.pt'
     _DEFAULT_NUMCOLS = 3
     _TEMPLATES_DIR = '../templates/print'
-    # Add-on folder to look for templates
-    _TEMPLATES_ADDON_DIR = 'worksheets'
+    _TEMPLATES_LIST = []
     _current_ws_index = 0
     _worksheets = []
 
     def __init__(self, context, request):
         super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
+        self._TEMPLATES_LIST = get_all_worksheet_print_templates()
 
     def __call__(self):
         """ Entry point of PrintView.
@@ -112,21 +110,12 @@ class PrintView(BrowserView):
         """ Returns a DisplayList with the available templates found in
             templates/worksheets
         """
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
-        tempath = '%s/%s' % (templates_dir, '*.pt')
-        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
         out = []
-        for template in templates:
-            out.append({'id': template, 'title': template[:-3]})
-        for templates_resource in iterDirectoriesOfType(self._TEMPLATES_ADDON_DIR):
-            prefix = templates_resource.__name__
-            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
-            for template in templates:
-                out.append({
-                    'id': '{0}:{1}'.format(prefix, template),
-                    'title': '{0} ({1})'.format(template[:-3], prefix),
-                })
+        for template_id in self._TEMPLATES_LIST:
+            out.append({
+                "id": template_id,
+                "title": "{1} ({0})".format(*template_id.split(":")).replace(".pt", ""),
+            })
         return out
 
     def renderWSTemplate(self):
@@ -135,10 +124,10 @@ class PrintView(BrowserView):
             Moves the iterator to the next worksheet available.
         """
         templates_dir = self._TEMPLATES_DIR
-        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        embedt = self.request.get('template', self._TEMPLATES_LIST[0])
         if embedt.find(':') >= 0:
             prefix, embedt = embedt.split(':')
-            templates_dir = queryResourceDirectory(self._TEMPLATES_ADDON_DIR, prefix).directory
+            templates_dir = queryResourceDirectory(WS_TEMPLATES_ADDON_DIR, prefix).directory
         embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
         reptemplate = ""
         try:
@@ -157,11 +146,11 @@ class PrintView(BrowserView):
             return the content from 'default.css'. If no css file found
             for the current template, returns empty string
         """
-        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        template = self.request.get('template', self._TEMPLATES_LIST[0])
         content = ''
         if template.find(':') >= 0:
             prefix, template = template.split(':')
-            resource = queryResourceDirectory(self._TEMPLATES_ADDON_DIR, prefix)
+            resource = queryResourceDirectory(WS_TEMPLATES_ADDON_DIR, prefix)
             css = '{0}.css'.format(template[:-3])
             if css in resource.listDirectory():
                 content = resource.readFile(css)
