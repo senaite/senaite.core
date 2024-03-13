@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.interfaces import IWorksheetLayouts
 from bika.lims.config import WS_TEMPLATES_ADDON_DIR
 from bika.lims.config import WS_TEMPLATES_REGISTRY_NAME
