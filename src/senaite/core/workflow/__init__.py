@@ -58,7 +58,7 @@ def get_workflow(thing, default=_marker):
             return workflow
         if default is not _marker:
             return default
-        raise ValueError("Workflow not found: %s " % repr(thing))
+        raise ValueError("Workflow not found: %s" % repr(thing))
 
     if api.is_object(thing):
         # Return the primary workflow of the object
@@ -82,11 +82,11 @@ def get_workflow_state(workflow_or_id, state_id, default=_marker):
     """
     wf = get_workflow(workflow_or_id)
     state = wf.states.get(state_id)
-    if not state:
-        if default is _marker:
-            raise ValueError("State %s not found for %s" % (state_id, wf.id))
+    if state:
+        return state
+    if default is not _marker:
         return default
-    return state
+    raise ValueError("State %s not found for %s" % (state_id, wf.id))
 
 
 def get_workflow_transition(workflow_or_id, transition_id, default=_marker):
@@ -94,12 +94,11 @@ def get_workflow_transition(workflow_or_id, transition_id, default=_marker):
     """
     wf = get_workflow(workflow_or_id)
     transition = wf.transitions.get(transition_id)
-    if not transition:
-        if default is _marker:
-            raise ValueError("Transition %s not found for %s" %
-                             (transition_id, wf.id))
+    if transition:
+        return transition
+    if default is not _marker:
         return default
-    return transition
+    raise ValueError("Transition %s not found for %s" % (transition_id, wf.id))
 
 
 def update_workflow(workflow, **kwargs):
