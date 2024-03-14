@@ -39,10 +39,8 @@ def get_workflow(thing, default=_marker):
     """
     if isinstance(thing, DCWorkflowDefinition):
         return thing
-
     if isinstance(thing, StateDefinition):
         return thing.getWorkflow()
-
     if isinstance(thing, TransitionDefinition):
         return thing.getWorkflow()
 
@@ -53,20 +51,8 @@ def get_workflow(thing, default=_marker):
         if workflow:
             return workflow
 
-        # Look-up the workflow by portal type
-        workflows = wf_tool.getChainFor(thing)
-        if len(workflows) == 1:
-            return wf_tool.getWorkflowById(workflows[0])
-        if default is not _marker:
-            if default is None:
-                return default
-            return get_workflow(default)
-        if len(workflows) > 1:
-            raise ValueError("More than one workflow: %s" % repr(thing))
-        raise ValueError("Workflow not found: %s" % repr(thing))
-
-    if api.is_object(thing):
-        # Return the primary workflow of the object
+    if api.is_string(thing) or api.is_object(thing):
+        # Look-up the workflow by portal type or object
         wf_tool = api.get_tool("portal_workflow")
         workflows = wf_tool.getChainFor(thing)
         if len(workflows) == 1:
