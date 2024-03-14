@@ -19,11 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api import _marker
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.DCWorkflow.Guard import Guard
 from senaite.core import logger
-
-_marker = object()
 
 
 def get_workflow(thing, default=_marker):
@@ -45,29 +44,37 @@ def get_workflow(thing, default=_marker):
         workflow = wf_tool.getWorkflowById(thing)
         if workflow:
             return workflow
-        # Might be the portal type instead
+
+        # Look-up the workflow by portal type
         workflows = wf_tool.getChainFor(thing)
         if len(workflows) == 1:
             return wf_tool.getWorkflowById(workflows[0])
         if default is not _marker:
-            return default
+            if default is None:
+                return default
+            return get_workflow(default)
         if len(workflows) > 1:
             raise ValueError("More than one workflow: %s" % repr(thing))
         raise ValueError("Workflow not found: %s" % repr(thing))
 
     if api.is_object(thing):
         # Return the primary workflow of the object
-        workflows = api.get_workflows_for(thing)
+        wf_tool = api.get_tool("portal_workflow")
+        workflows = wf_tool.getChainFor(thing)
         if len(workflows) == 1:
-            return workflows[0]
+            return wf_tool.getWorkflowById(workflows[0])
         if default is not _marker:
-            return default
+            if default is None:
+                return default
+            return get_workflow(default)
         if len(workflows) > 1:
             raise ValueError("More than one workflow: %s" % repr(thing))
         raise ValueError("Workflow not found: %s" % repr(thing))
 
     if default is not _marker:
-        return default
+        if default is None:
+            return default
+        return get_workflow(default)
 
     raise ValueError("Type is not supported: %s" % repr(type(thing)))
 
