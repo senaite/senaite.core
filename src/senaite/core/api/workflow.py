@@ -256,7 +256,7 @@ def update_workflow_state(workflow, state_id, transitions=None,
         update_permission(state, perm_id, roles)
 
 
-def update_transition(transition, **properties):
+def update_transition(transition, **kwargs):
     """Updates a workflow transition
 
     Usage::
@@ -300,33 +300,29 @@ def update_transition(transition, **properties):
         'guard_permissions'
     :type guard: dict
     """
-    def safe_empty(val):
-        if val in ["None", None]:
-            return ""
-        return val
+    # attrs conversions
+    mapping = {
+        "title": "title",
+        "description": "description",
+        "action": "actbox_name",
+        "action_url": "actbox_url",
+        "after_script": "after_script_name",
+        "new_state": "new_state_id",
+    }
+    properties = {}
+    for key, property in mapping.items():
+        default = getattr(transition, property)
+        value = kwargs.get(key, None)
+        if value is None:
+            value = default
+        properties[property] = value
 
-    title = properties.get("title", transition.title)
-    description = properties.get("description", transition.description)
-    new_state_id = properties.get("new_state", transition.new_state_id)
-    after_script = properties.get("after_script", transition.after_script_name)
-    action_url = properties.get("action_url", transition.actbox_url)
-    action = properties.get("action", transition.actbox_name)
-    action = safe_empty(action)
-    if not action:
-        action = title
-
-    transition.setProperties(
-        title=safe_empty(title),
-        description=safe_empty(description),
-        new_state_id=safe_empty(new_state_id),
-        after_script_name=after_script,
-        actbox_name=action,
-        actbox_url=safe_empty(action_url),
-    )
+    # update the transition properties
+    transition.setProperties(**properties)
 
     # update the guard
     guard = transition.guard or Guard()
-    guard_props = properties.get("guard")
+    guard_props = kwargs.get("guard")
     if guard_props:
         guard.changeFromProperties(guard_props)
     transition.guard = guard
