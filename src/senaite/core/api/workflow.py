@@ -22,6 +22,8 @@ from bika.lims import api
 from bika.lims.api import _marker
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 from Products.DCWorkflow.Guard import Guard
+from Products.DCWorkflow.States import StateDefinition
+from Products.DCWorkflow.Transitions import TransitionDefinition
 from senaite.core import logger
 
 
@@ -29,14 +31,20 @@ def get_workflow(thing, default=_marker):
     """Returns the primary DCWorkflowDefinition object for the thing passed-in
 
     :param thing: A single catalog brain, content object, supermodel, workflow,
-        workflow id or portal type
-    :type thing: DCWorkflowDefinition/ATContentType/DexterityContentType/
-        CatalogBrain/SuperModel/string
+        workflow id, workflow state, workflow transition or portal type
+    :type thing: DCWorkflowDefinition/StateDefinition/TransitionDefinition/
+        ATContentType/DexterityContentType/CatalogBrain/SuperModel/string
     :return: The primary workflow of the thing
     :rtype: Products.DCWorkflow.DCWorkflow.DCWorkflowDefinition
     """
     if isinstance(thing, DCWorkflowDefinition):
         return thing
+
+    if isinstance(thing, StateDefinition):
+        return thing.getWorkflow()
+
+    if isinstance(thing, TransitionDefinition):
+        return thing.getWorkflow()
 
     if api.is_string(thing):
         # Look-up the workflow by id
@@ -77,6 +85,42 @@ def get_workflow(thing, default=_marker):
         return get_workflow(default)
 
     raise ValueError("Type is not supported: %s" % repr(type(thing)))
+
+
+def get_state(workflow, state_id, default=_marker):
+    """Returns the workflow state with the given id
+    :param workflow: Workflow object or workflow id
+    :type workflow: DCWorkflowDefinition/string
+    :param state_id: Workflow state id
+    :type state_id: string
+    :return: The state object for the given workflow and id
+    :rtype: Products.DCWorkflow.States.StateDefinition
+    """
+    wf = get_workflow(workflow)
+    state = wf.states.get(state_id)
+    if state:
+        return state
+    if default is not _marker:
+        return default
+    raise ValueError("State %s not found for %s" % (state_id, wf.id))
+
+
+def get_transition(workflow, transition_id, default=_marker):
+    """Returns the workflow transition with the given id
+    :param workflow: Workflow object or workflow id
+    :type workflow: DCWorkflowDefinition/string
+    :param transition_id: Workflow transition id
+    :type transition_id: string
+    :return: The transition object for the given workflow and id
+    :rtype: Products.DCWorkflow.Transitions.TransitionDefinition
+    """
+    wf = get_workflow(workflow)
+    transition = wf.transitions.get(transition_id)
+    if transition:
+        return transition
+    if default is not _marker:
+        return default
+    raise ValueError("Transition %s not found for %s" % (transition_id, wf.id))
 
 
 def update_workflow(workflow, states=None, transitions=None, **kwargs):
@@ -143,11 +187,13 @@ def update_workflow(workflow, states=None, transitions=None, **kwargs):
     for state_id, values in states.items():
 
         # Create the state if it does not exist yet
-        if not wf.states.get(state_id):
+        state = wf.states.get(state_id)
+        if not state:
             wf.states.addState(state_id)
+            state = wf.states.get(state_id)
 
         # Update the state with the settings passed-in
-        update_workflow_state(wf, state_id, **values)
+        update_state(state, **values)
 
     # Update transitions
     transitions = transitions or {}
@@ -162,8 +208,7 @@ def update_workflow(workflow, states=None, transitions=None, **kwargs):
         update_transition(transition, **values)
 
 
-def update_workflow_state(workflow, state_id, transitions=None,
-                          permissions=None, **kwargs):
+def update_state(state, transitions=None, permissions=None, **kwargs):
     """Updates the state of an existing workflow
 
     Note that regarding the use of tuples/lists for roles in permissions and
@@ -186,36 +231,33 @@ def update_workflow_state(workflow, state_id, transitions=None,
         >>> # Use tuples to override existing roles per permission and to also
         >>> # set acquire to False. To extend existing roles and preserve
         >>> # acquire, use a list
-        >>> mappings = {
+        >>> perms = {
         ...     permissions.TransitionCancelAnalysisRequest: (),
         ...     permissions.TransitionReinstateAnalysisRequest: (),
         ... }
 
-        >>> optional = {
+        >>> kwargs = {
         ...     "title": "Stored",
         ...     "description": "Sample is stored",
         ...     # Copy permissions from sample_received first
         ...     "permissions_copy_from": "sample_received",
         ... }
 
-        >>> update_workflow_state(SAMPLE_WORKFLOW, "stored",
-        ...                       transitions=trans,
-        ...                       permissions=mappings,
-        ...                       **optional)
+        >>> state = get_state(SAMPLE_WORKFLOW, "stored")
+        >>> update_state(state, transitions=trans, permissions=perms, **kwargs)
 
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param state_id: workflow state id
-    :type state_id: string
+    :param state: Workflow state definition object
+    :type state: Products.DCWorkflow.States.StateDefinition
     :param transitions: Tuple or list of ids from transitions to be considered
         as exit transitions of the state. If a tuple, existing transitions are
         replaced by the new ones. If a list, existing transitions are extended
-        with the new ones.
+        with the new ones. If None, keeps the original transitions.
     :type transitions: list[string]
     :param permissions: dict of {permission_id:roles} where 'roles' can be a
         tuple or a list. If a tuple, existing roles are replaced by new ones
         and acquired is set to 'False'. If a list, existing roles are extended
-        with the new ones and acquired is not changed.
+        with the new ones and acquired is not changed. If None, keeps the
+        original permissions
     :type: permissions: dict({string:tuple|list})
     :param title: (optional) the title of the workflow or None
     :type title: string
@@ -227,16 +269,14 @@ def update_workflow_state(workflow, state_id, transitions=None,
         the permissions with those passed-in takes place.
     :type: permissions_copy_from: string
     """
-    wf = get_workflow(workflow)
-    state = wf.states.get(state_id)
-
     # set basic info (title, description, etc.)
     state.title = kwargs.get("title", state.title)
     state.description = kwargs.get("description", state.description)
 
     # check if we need to replace or extend existing transitions
-    transitions = transitions or []
-    if isinstance(transitions, list):
+    if transitions is None:
+        transitions = state.transitions
+    elif isinstance(transitions, list):
         transitions = set(transitions)
         transitions.update(state.transitions)
         transitions = tuple(transitions)
@@ -246,8 +286,9 @@ def update_workflow_state(workflow, state_id, transitions=None,
 
     # copy permissions fromm another state
     source = kwargs.get("permissions_copy_from")
-    source = wf.states.get(source)
     if source:
+        wf = get_workflow(state)
+        source = wf.states.get(source)
         copy_permissions(source, state)
 
     # update existing permissions
@@ -310,12 +351,12 @@ def update_transition(transition, **kwargs):
         "new_state": "new_state_id",
     }
     properties = {}
-    for key, property in mapping.items():
-        default = getattr(transition, property)
+    for key, property_id in mapping.items():
+        default = getattr(transition, property_id)
         value = kwargs.get(key, None)
         if value is None:
             value = default
-        properties[property] = value
+        properties[property_id] = value
 
     # update the transition properties
     transition.setProperties(**properties)
@@ -342,7 +383,7 @@ def update_permission(state, permission_id, roles):
         with new ones and acquire setting is not modified.
     :type roles: list/tuple
     """
-    # Resolve acquire
+    # resolve acquire
     if isinstance(roles, tuple):
         acquired = 0
     else:
@@ -350,14 +391,16 @@ def update_permission(state, permission_id, roles):
         acquired = info.get("acquired", 1)
         roles = set(roles)
         roles.update(info.get("roles", []))
-        roles = tuple(roles)
 
-    # Add this permission to the workflow if not globally defined yet
-    wf = state.getWorkflow()
+    # sort them for human-friendly reading on retrieval
+    roles = tuple(sorted(roles))
+
+    # add this permission to the workflow if not globally defined yet
+    wf = get_workflow(state)
     if permission_id not in wf.permissions:
         wf.permissions = wf.permissions + (permission_id,)
 
-    # Set the permission
+    # set the permission
     logger.info("{}.{}: '{}' (acquired={}): '{}'".format(
         wf.id, state.id, permission_id, repr(acquired), ', '.join(roles)))
     state.setPermission(permission_id, acquired, roles)
@@ -376,4 +419,4 @@ def copy_permissions(source, destination):
         roles = info.get("roles") or []
         acquired = info.get("acquired", 1)
         # update the roles for this permission at destination
-        destination.setPermission(permission, acquired, roles)
+        destination.setPermission(permission, acquired, sorted(roles))
