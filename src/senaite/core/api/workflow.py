@@ -95,7 +95,7 @@ def update_workflow(workflow, states=None, transitions=None, **kwargs):
         ...         "transitions": ("recover", "detach", "dispatch", ),
         ...         # Copy permissions from sample_received first
         ...         "permissions_copy_from": "sample_received",
-        ...         # Overwrite permissions
+        ...         # Permissions mapping
         ...         "permissions": {
         ...             # Use tuples to overwrite existing and acquire=False.
         ...             # To extend existing roles, use a list
