@@ -82,16 +82,3 @@ But unless `None`, `default` has to be a workflow as well:
     Traceback (most recent call last):
     [...]
     ValueError: Type is not supported: <type 'object'>
-
-
-Get the state of a workflow
-...........................
-
-Get a workflow state by id:
-
-    >>> wapi.get_workflow_state(SAMPLE_WORKFLOW, "sample_received")
-    <StateDefinition at /plone/portal_workflow/senaite_sample_workflow/states/sample_received>
-
-    >>> wf = wapi.get_workflow(SAMPLE_WORKFLOW)
-    >>> wapi.get_workflow_state(wf, "sample_received")
-    <StateDefinition at /plone/portal_workflow/senaite_sample_workflow/states/sample_received>

@@ -79,44 +79,6 @@ def get_workflow(thing, default=_marker):
     raise ValueError("Type is not supported: %s" % repr(type(thing)))
 
 
-def get_workflow_state(workflow, state_id, default=_marker):
-    """Returns the workflow state with the given id
-
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param state_id: Workflow state id
-    :type state_id: string
-    :return: The state object for the given workflow and id
-    :rtype: Products.DCWorkflow.States.StateDefinition
-    """
-    wf = get_workflow(workflow)
-    state = wf.states.get(state_id)
-    if state:
-        return state
-    if default is not _marker:
-        return default
-    raise ValueError("State %s not found for %s" % (state_id, wf.id))
-
-
-def get_workflow_transition(workflow, transition_id, default=_marker):
-    """Returns the workflow transition with the given id
-
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param transition_id: Workflow transition id
-    :type transition_id: string
-    :return: The transition object for the given workflow and id
-    :rtype: Products.DCWorkflow.Transitions.TransitionDefinition
-    """
-    wf = get_workflow(workflow)
-    transition = wf.transitions.get(transition_id)
-    if transition:
-        return transition
-    if default is not _marker:
-        return default
-    raise ValueError("Transition %s not found for %s" % (transition_id, wf.id))
-
-
 def update_workflow(workflow, states=None, transitions=None, **kwargs):
     """Updates an existing workflow
 
@@ -265,7 +227,7 @@ def update_workflow_state(workflow, state_id, transitions=None,
     :type: permissions_copy_from: string
     """
     wf = get_workflow(workflow)
-    state = get_workflow_state(wf, state_id)
+    state = wf.states.get(state_id)
 
     # Set basic info (title, description, etc.)
     state.title = kwargs.get("title", state.title)
@@ -326,7 +288,7 @@ def update_workflow_permissions(workflow, state_id, permissions):
     :type: permissions: dict({string:tuple|list})
     """
     wf = get_workflow(workflow)
-    state = get_workflow_state(wf, state_id)
+    state = wf.states.get(state_id)
 
     # Update permissions
     permissions = permissions or {}
@@ -363,7 +325,7 @@ def copy_workflow_permissions(workflow, source_id, destination_id):
     :type destination_id: string
     """
     wf = get_workflow(workflow)
-    source = get_workflow_state(wf, source_id)
+    source = wf.states.get(source_id)
 
     # Create the mapping of permissions -> roles
     mapping = {}
@@ -416,7 +378,7 @@ def update_workflow_transition(workflow, transition_id, **kwargs):
     :type guard: dict
     """
     wf = get_workflow(workflow)
-    transition = get_workflow_transition(wf, transition_id)
+    transition = wf.transitions.get(transition_id)
 
     # Update transition properties
     title = kwargs.get("title", transition.title)
