@@ -153,12 +153,13 @@ def update_workflow(workflow, states=None, transitions=None, **kwargs):
     transitions = transitions or {}
     for transition_id, values in transitions.items():
 
-        # Create the transition if it does not exist yet
-        if not wf.transitions.get(transition_id):
+        transition = wf.transitions.get(transition_id)
+        if not transition:
             wf.transitions.addTransition(transition_id)
+            transition = wf.transitions.get(transition_id)
 
         # Update the transition with the settings passed-in
-        update_workflow_transition(wf, transition_id, **values)
+        update_transition(transition, **values)
 
 
 def update_workflow_state(workflow, state_id, transitions=None,
@@ -229,118 +230,34 @@ def update_workflow_state(workflow, state_id, transitions=None,
     wf = get_workflow(workflow)
     state = wf.states.get(state_id)
 
-    # Set basic info (title, description, etc.)
+    # set basic info (title, description, etc.)
     state.title = kwargs.get("title", state.title)
     state.description = kwargs.get("description", state.description)
 
-    # Check if we need to replace or extend existing transitions
+    # check if we need to replace or extend existing transitions
     transitions = transitions or []
     if isinstance(transitions, list):
         transitions = set(transitions)
         transitions.update(state.transitions)
         transitions = tuple(transitions)
 
-    # Set transitions
+    # set transitions
     state.transitions = transitions
 
-    # Copy permissions fromm another state
-    perms_source = kwargs.get("permissions_copy_from", False)
-    if perms_source:
-        copy_workflow_permissions(wf, perms_source, state_id)
+    # copy permissions fromm another state
+    source = kwargs.get("permissions_copy_from")
+    source = wf.states.get(source)
+    if source:
+        copy_permissions(source, state)
 
-    # Update existing permissions
-    permissions = permissions or {}
-    update_workflow_permissions(wf, state_id, permissions)
-
-
-def update_workflow_permissions(workflow, state_id, permissions):
-    """Updates the permission mappings of an existing workflow state
-
-    'permissions' is a dict of {permission_id: roles}, where roles can be a
-    tuple or a list. Same principles from DCWorkflow apply:
-
-    - if a tuple, existing roles are replaced and acquired is set 0
-    - if a list, existing roles are extended and acquired is kept
-
-    Usage::
-
-        >>> from senaite.core import permissions
-        >>> from senaite.core.workflow import SAMPLE_WORKFLOW
-
-        >>> # Use tuples to override existing roles per permission and to also
-        >>> # set acquire to False. To extend existing roles and preserve
-        >>> # acquire, use a list
-        >>> mappings = {
-        ...     permissions.TransitionCancelAnalysisRequest: (),
-        ...     permissions.TransitionReinstateAnalysisRequest: (),
-        ... }
-
-        >>> update_workflow_permissions(SAMPLE_WORKFLOW, "stored", mappings)
-
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param state_id: workflow state id
-    :type state_id: string
-    :param permissions: dict of {permission_id:roles} where 'roles' can be a
-        tuple or a list. If a tuple, existing roles are replaced by new ones
-        and acquired is set to 'False'. If a list, existing roles are extended
-        with the new ones and acquired is not changed.
-    :type: permissions: dict({string:tuple|list})
-    """
-    wf = get_workflow(workflow)
-    state = wf.states.get(state_id)
-
-    # Update permissions
+    # update existing permissions
     permissions = permissions or {}
     for perm_id, roles in permissions.items():
-
-        # Resolve acquire
-        if isinstance(roles, tuple):
-            acquired = 0
-        else:
-            info = state.getPermissionInfo(perm_id) or {}
-            acquired = info.get("acquired", 1)
-            roles = set(roles)
-            roles.update(info.get("roles", []))
-            roles = tuple(roles)
-
-        # Add this permission to the workflow if not globally defined yet
-        if perm_id not in workflow.permissions:
-            wf.permissions = wf.permissions + (perm_id,)
-
-        # Set the permission
-        logger.info("{}.{}: '{}' (acquired={}): '{}'".format(
-            wf.id, state.id, perm_id, repr(acquired), ', '.join(roles)))
-        state.setPermission(perm_id, acquired, roles)
+        update_permission(state, perm_id, roles)
 
 
-def copy_workflow_permissions(workflow, source_id, destination_id):
-    """Copies the permissions from the source status to destination status
-
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param source_id: id of the workflow state to use as the source
-    :type source_id: string
-    :param destination_id: id of the workflow state to use as destination
-    :type destination_id: string
-    """
-    wf = get_workflow(workflow)
-    source = wf.states.get(source_id)
-
-    # Create the mapping of permissions -> roles
-    mapping = {}
-    for perm_id in source.permissions:
-        perm_info = source.getPermissionInfo(perm_id)
-        acquired = perm_info.get("acquired", 1)
-        roles = perm_info.get("roles", acquired and [] or ())
-        mapping[perm_id] = roles
-
-    # Update the permissions at destination
-    update_workflow_permissions(wf, destination_id, mapping)
-
-
-def update_workflow_transition(workflow, transition_id, **kwargs):
-    """Updates an existing workflow transition
+def update_transition(transition, **properties):
+    """Updates a workflow transition
 
     Usage::
 
@@ -352,55 +269,115 @@ def update_workflow_transition(workflow, transition_id, **kwargs):
         ...     "guard_expr": "python:here.guard_handler('store')",
         ... }
 
-        >>> update_workflow_transition(SAMPLE_WORKFLOW, "store",
-        ...                            title="Store",
-        ...                            action="Store sample",
-        ...                            new_state="stored",
-        ...                            guard=guard)
+        >>> wf = get_workflow(SAMPLE_WORKFLOW)
+        >>> transition = wf.transitions.get("store")
+        >>> update_transition(transition,
+        ...                   title="Store",
+        ...                   description="The action to store the sample",
+        ...                   action="Store sample",
+        ...                   new_state="stored",
+        ...                   guard=guard)
 
-    :param workflow: Workflow object or workflow id
-    :type workflow: DCWorkflowDefinition/string
-    :param transition_id: the id of the transition to update
-    :type transition_id: string
-    :param title: (optional) the title of the workflow or None
+    :param transition: Workflow transition definition object
+    :type transition: Products.DCWorkflow.Transitions.TransitionDefinition
+    :param title: (optional) the title of the transition
     :type title: string
-    :param new_state: (optional) the state that will reach the object after
-        this transition is triggered.
+    :param description: (optional) the descrioption of the transition
+    :type title: string
+    :param new_state: (optional) the state of the object after the transition
     :type new_state: string
-    :param after_script: (optional) the Script Python to execute after this
-        transition is triggered.
+    :param after_script: (optional) Script (Python) to run after the transition
     :type after_script: string
     :param action: (optional) the action name to display in the actions box
     :type action: string
-    :param action_url: (optional) the url to use for this action
+    :param action_url: (optional) the url to use for this action. The
+        %(content_url) wildcard is replaced by absolute path at runtime. If
+        empty, the default `content_status_modify?workflow_action=<action_id>`
+        will be used at runtime
     :type action_url: string
-    :param guard: (optional) a dict with the Guard properties
+    :param guard: (optional) a dict with Guard properties. The supported
+        properties are: 'guard_roles', 'guard_groups', 'guard_expr' and
+        'guard_permissions'
     :type guard: dict
     """
-    wf = get_workflow(workflow)
-    transition = wf.transitions.get(transition_id)
+    def safe_empty(val):
+        if val in ["None", None]:
+            return ""
+        return val
 
-    # Update transition properties
-    title = kwargs.get("title", transition.title)
-
-    new_state_id = kwargs.get("new_state", transition.new_state_id)
-    if new_state_id in ["None", None]:
-        new_state_id = ""
-
-    after_script = kwargs.get("after_script", transition.after_script_name)
-    if after_script in ["None", None]:
-        after_script = ""
+    title = properties.get("title", transition.title)
+    description = properties.get("description", transition.description)
+    new_state_id = properties.get("new_state", transition.new_state_id)
+    after_script = properties.get("after_script", transition.after_script_name)
+    action_url = properties.get("action_url", transition.actbox_url)
+    action = properties.get("action", transition.actbox_name)
+    action = safe_empty(action)
+    if not action:
+        action = title
 
     transition.setProperties(
-        title=title,
-        new_state_id=new_state_id,
+        title=safe_empty(title),
+        description=safe_empty(description),
+        new_state_id=safe_empty(new_state_id),
         after_script_name=after_script,
-        actbox_name=kwargs.get("action", title),
-        actbox_url=kwargs.get("action_url", ""),
+        actbox_name=action,
+        actbox_url=safe_empty(action_url),
     )
 
-    # Update transition guard
+    # update the guard
     guard = transition.guard or Guard()
-    if "guard" in kwargs:
-        guard.changeFromProperties(kwargs.get("guard"))
+    guard_props = properties.get("guard")
+    if guard_props:
+        guard.changeFromProperties(guard_props)
     transition.guard = guard
+
+
+def update_permission(state, permission_id, roles):
+    """Updates the permission mappings of an existing workflow state
+
+    :param state: Workflow state definition object
+    :type state: Products.DCWorkflow.States.StateDefinition
+    :param permission_id: id of the permission
+    :type permission_id: string
+    :param roles: List or tuple with roles to which the given permission has
+        to be granted for the workflow status. If a tuple, acquire is set to
+        False and roles overwritten. Thus, an empty tuple clears all roles for
+        this permission and state. If a list, the existing roles are extended
+        with new ones and acquire setting is not modified.
+    :type roles: list/tuple
+    """
+    # Resolve acquire
+    if isinstance(roles, tuple):
+        acquired = 0
+    else:
+        info = state.getPermissionInfo(permission_id) or {}
+        acquired = info.get("acquired", 1)
+        roles = set(roles)
+        roles.update(info.get("roles", []))
+        roles = tuple(roles)
+
+    # Add this permission to the workflow if not globally defined yet
+    wf = state.getWorkflow()
+    if permission_id not in wf.permissions:
+        wf.permissions = wf.permissions + (permission_id,)
+
+    # Set the permission
+    logger.info("{}.{}: '{}' (acquired={}): '{}'".format(
+        wf.id, state.id, permission_id, repr(acquired), ', '.join(roles)))
+    state.setPermission(permission_id, acquired, roles)
+
+
+def copy_permissions(source, destination):
+    """Copies the permission mappings of a workflow state to another
+
+    :param source: Workflow state definition object used as source
+    :type source: Products.DCWorkflow.States.StateDefinition
+    :param destination: Workflow state definition object used as destination
+    :type destination: Products.DCWorkflow.States.StateDefinition
+    """
+    for permission in source.permissions:
+        info = source.getPermissionInfo(permission)
+        roles = info.get("roles") or []
+        acquired = info.get("acquired", 1)
+        # update the roles for this permission at destination
+        destination.setPermission(permission, acquired, roles)
