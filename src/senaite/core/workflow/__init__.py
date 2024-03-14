@@ -34,21 +34,47 @@ WORKSHEET_WORKFLOW = "senaite_worksheet_workflow"
 _marker = object()
 
 
-def get_workflow(workflow_or_id, default=_marker):
-    """Returns the DCWorkflow object for the given id or workflow
-    """
-    if isinstance(workflow_or_id, DCWorkflowDefinition):
-        return workflow_or_id
+def get_workflow(thing, default=_marker):
+    """Returns the primary DCWorkflowDefinition object for the thing passed-in
 
-    # Look-up the workflow by id
-    wf_tool = api.get_tool("portal_workflow")
-    workflow = wf_tool.getWorkflowById(workflow_or_id)
-    if not workflow:
-        if default is _marker:
-            raise ValueError("Workflow not found: %s " % workflow_or_id)
+    :param thing: A single catalog brain, content object, supermodel, workflow,
+        workflow id or portal type
+    portal type
+    :type thing: DCWorkflowDefinition, ATContentType, DexterityContentType,
+        CatalogBrain or workflow id
+    :returns: The primary workflow of the thing
+    :rtype: DCWorkflowDefinition
+    """
+    if isinstance(thing, DCWorkflowDefinition):
+        return thing
+
+    if api.is_string(thing):
+        # Look-up the workflow by id
+        wf_tool = api.get_tool("portal_workflow")
+        workflow = wf_tool.getWorkflowById(thing)
+        # Might be the portal type instead
+        workflow = workflow or wf_tool.getChainFor(thing)
+        if workflow:
+            return workflow
+        if default is not _marker:
+            return default
+        raise ValueError("Workflow not found: %s " % repr(thing))
+
+    if api.is_object(thing):
+        # Return the primary workflow of the object
+        workflows = api.get_workflows_for(thing)
+        if len(workflows) == 1:
+            return workflows[0]
+        if default is not _marker:
+            return default
+        if len(workflows) > 1:
+            raise ValueError("More than one workflow: %s" % repr(thing))
+        raise ValueError("Workflow not found: %s" % repr(thing))
+
+    if default is not _marker:
         return default
 
-    return workflow
+    raise ValueError("Type is not supported: %s" % repr(type(thing)))
 
 
 def get_workflow_state(workflow_or_id, state_id, default=_marker):
