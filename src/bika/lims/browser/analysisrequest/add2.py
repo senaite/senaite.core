@@ -15,14 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
 from collections import OrderedDict
 from datetime import datetime
-
-import six
 
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
@@ -31,11 +28,14 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
+from bika.lims.api.security import check_permission
+from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
 from bika.lims.interfaces import IAddSampleFieldsFlush
 from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
+from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -48,7 +48,9 @@ from Products.Archetypes.interfaces import IField
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.p3compat import cmp
+from senaite.core.permissions import TransitionMultiResults
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -60,19 +62,7 @@ from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
-                      "NumSamples"]
-
-
-def returns_json(func):
-    """Decorator for functions which return JSON
-    """
-    def decorator(*args, **kwargs):
-        instance = args[0]
-        request = getattr(instance, 'request', None)
-        request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
-        return json.dumps(result)
-    return decorator
+                      "NumSamples", "_ARAttachment"]
 
 
 def cache_key(method, self, obj):
@@ -99,7 +89,6 @@ class AnalysisRequestAddView(BrowserView):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
         self.setup = api.get_setup()
-        self.request.set("disable_plone.rightcolumn", 1)
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -130,7 +119,7 @@ class AnalysisRequestAddView(BrowserView):
         logger.debug("get_object_by_uid::UID={}".format(uid))
         obj = api.get_object_by_uid(uid, None)
         if obj is None:
-            logger.warn("!! No object found for UID #{} !!")
+            logger.warn("!! No object found for UID '%s' !!" % uid)
         return obj
 
     @viewcache.memoize
@@ -145,7 +134,7 @@ class AnalysisRequestAddView(BrowserView):
         """
         setup = api.get_setup()
         currency = setup.getCurrency()
-        currencies = locales.getLocale('en').numbers.currencies
+        currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
 
     def get_ar_count(self):
@@ -413,7 +402,7 @@ class AnalysisRequestAddView(BrowserView):
         :returns: The default contact for the AR
         :rtype: Client object or None
         """
-        catalog = api.get_tool("portal_catalog")
+        catalog = api.get_tool(CONTACT_CATALOG)
         client = client or self.get_client()
         path = api.get_path(self.context)
         if client:
@@ -738,6 +727,26 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         raise TypeError("{} is neiter an instance of DateTime nor datetime"
                         .format(repr(dt)))
 
+    @viewcache.memoize
+    def is_uid_reference_field(self, fieldname):
+        """Checks if the field is a UID reference field
+        """
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        if field is None:
+            return False
+        return IUIDReferenceField.providedBy(field)
+
+    @viewcache.memoize
+    def is_multi_reference_field(self, fieldname):
+        """Checks if the field is a multi UID reference field
+        """
+        if not self.is_uid_reference_field(fieldname):
+            return False
+        schema = self.get_ar_schema()
+        field = schema.get(fieldname)
+        return getattr(field, "multiValued", False)
+
     def get_records(self):
         """Returns a list of AR records
 
@@ -761,6 +770,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for key in keys:
                 new_key = key.replace(s1, "")
                 value = form.get(key)
+                if self.is_uid_reference_field(new_key):
+                    # handle new UID reference fields that store references in
+                    # a textarea (one UID per line)
+                    uids = value.split("\r\n")
+                    # remove empties
+                    uids = list(filter(None, uids))
+                    if self.is_multi_reference_field(new_key):
+                        value = uids
+                    else:
+                        value = uids[0] if len(uids) > 0 else ""
                 record[new_key] = value
             records.append(record)
         return records
@@ -769,17 +788,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns a list of parsed UIDs from a single form field identified by
         the given key.
 
-        A form field ending with `_uid` can contain an empty value, a
-        single UID or multiple UIDs separated by a comma.
+        A form field of an UID reference can contain an empty value, a single
+        UID or multiple UIDs separated by a \r\n.
 
         This method parses the UID value and returns a list of non-empty UIDs.
         """
-        value = record.get(key, None)
-        if value is None:
+        if not self.is_uid_reference_field(key):
             return []
-        if isinstance(value, six.string_types):
-            value = value.split(",")
-        return filter(lambda uid: uid, value)
+        value = record.get(key, None)
+        if not value:
+            return []
+        if api.is_string(value):
+            value = value.split("\r\n")
+        return list(filter(None, value))
 
     @cache(cache_key)
     def get_base_info(self, obj):
@@ -791,6 +812,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info = {
             "id": api.get_id(obj),
             "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
             "title": api.get_title(obj),
             "field_values": {},
             "filter_queries": {},
@@ -829,9 +851,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "getParentUID": [uid]
             },
             "CCContact": {
-                "getParentUID": [uid]
-            },
-            "InvoiceContact": {
                 "getParentUID": [uid]
             },
             "SamplePoint": {
@@ -1010,6 +1029,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sampletype_uid": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             },
+            # Display Analysis Profiles that have this sample type assigned
+            # in addition to those that do not have a sample profile assigned
+            "Profiles": {
+                "sampletype_uid": [sample_type_uid, ""],
+                "getClientUID": [client_uid, ""],
+            },
             # Display Specifications that have this sample type assigned only
             "Specification": {
                 "sampletype_uid": sample_type_uid,
@@ -1157,7 +1182,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Client": [
                 "Contact",
                 "CCContact",
-                "InvoiceContact",
                 "SamplePoint",
                 "Template",
                 "Profiles",
@@ -1170,6 +1194,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ],
             "SampleType": [
                 "SamplePoint",
+                "Profiles",
                 "Specification",
                 "Template",
             ],
@@ -1185,7 +1210,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "ContainerType",
                 "DateSampled",
                 "EnvironmentalConditions",
-                "InvoiceContact",
                 "Preservation",
                 "Profiles",
                 "SampleCondition",
@@ -1254,14 +1278,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         metadata = {}
         extra_fields = {}
         for key, value in record.items():
-            if not key.endswith("_uid"):
-                continue
-
-            # This is a reference field (ends with _uid), so we add the
-            # metadata key, even if there is no way to handle objects this
-            # field refers to
-            metadata_key = key.replace("_uid", "")
-            metadata_key = "{}_metadata".format(metadata_key.lower())
+            metadata_key = "{}_metadata".format(key.lower())
             metadata[metadata_key] = {}
 
             if not value:
@@ -1355,7 +1372,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for uid, obj_info in profiles.items():
             obj = self.get_object_by_uid(uid)
             # get all services of this profile
-            services = obj.getService()
+            services = obj.getServices()
             # get all UIDs of the profile services
             service_uids = map(api.get_uid, services)
             # remember all services of this profile
@@ -1427,7 +1444,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def object_info_cache_key(method, self, obj, key, **kw):
         if obj is None or not key:
             raise DontCache
-        field_name = key.replace("_uid", "").lower()
+        field_name = key.lower()
         obj_key = api.get_cache_key(obj)
         return "-".join([field_name, obj_key] + kw.keys())
 
@@ -1439,7 +1456,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         :return: dict that represents the object
         """
         # Check if there is a function to handle objects for this field
-        field_name = key.replace("_uid", "")
+        field_name = key
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
@@ -1509,8 +1526,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             arservice_vat_amount = 0.00
             services_from_priced_profile = []
 
-            profile_uids = record.get("Profiles_uid", "").split(",")
-            profile_uids = filter(lambda x: x, profile_uids)
+            profile_uids = record.get("Profiles", [])
             profiles = map(self.get_object_by_uid, profile_uids)
             services = map(self.get_object_by_uid, record.get("Analyses", []))
 
@@ -1523,11 +1539,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 profile_price = float(profile.getAnalysisProfilePrice())
                 arprofiles_price += profile_price
                 arprofiles_vat_amount += profile.getVATAmount()
-                profile_services = profile.getService()
+                profile_services = profile.getServices()
                 services_from_priced_profile.extend(profile_services)
 
             # ANALYSIS SERVICES PRICE
             for service in services:
+                # skip services that are part of a priced profile
                 if service in services_from_priced_profile:
                     continue
                 service_price = float(service.getPrice())
@@ -1634,15 +1651,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Validate required fields
         for num, record in enumerate(records):
 
-            # Process UID fields first and set their values to the linked field
-            uid_fields = filter(lambda f: f.endswith("_uid"), record)
-            for field in uid_fields:
-                name = field.replace("_uid", "")
-                value = record.get(field)
-                if "," in value:
-                    value = value.split(",")
-                record[name] = value
-
             # Extract file uploads (fields ending with _file)
             # These files will be added later as attachments
             file_fields = filter(lambda f: f.endswith("_file"), record)
@@ -1657,7 +1665,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # it therefore from the list of required fields to let empty
             # columns pass the required check below.
             if record.get("Client", False):
-                required_fields.pop('Client', None)
+                required_fields.pop("Client", None)
 
             # Check if analyses are required for sample registration
             if not self.analyses_required():
@@ -1864,7 +1872,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Automatic label printing
         setup = api.get_setup()
         auto_print = self.is_automatic_label_printing_enabled()
-        immediate_results_entry = setup.getImmediateResultsEntry()
+        # Check if immediate results entry is enabled in setup and the current
+        # user has enough privileges to do so
+        multi_results = setup.getImmediateResultsEntry() and check_permission(
+            TransitionMultiResults, self.context)
         redirect_to = self.context.absolute_url()
 
         # UIDs of the new created samples
@@ -1886,7 +1897,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         elif auto_print and sample_uids:
             redirect_to = "{}/sticker?autoprint=1&items={}".format(
                 self.context.absolute_url(), sample_uids)
-        elif immediate_results_entry and sample_uids:
+        elif multi_results and sample_uids:
             redirect_to = "{}/multi_results?uids={}".format(
                 self.context.absolute_url(),
                 sample_uids)

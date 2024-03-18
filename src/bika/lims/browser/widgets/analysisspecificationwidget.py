@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -88,35 +88,53 @@ class AnalysisSpecificationView(BikaListingView):
                 "sortable": False}),
             ("warn_min", {
                 "title": _("Min warn"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
+            ("min", {
+                "title": _("Min"),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("min_operator", {
                 "title": _("Min operator"),
                 "type": "choices",
-                "sortable": False}),
-            ("min", {
-                "title": _("Min"),
-                "sortable": False}),
+                "sortable": False,
+            }),
+            ("max", {
+                "title": _("Max"),
+                "sortable": False,
+                "type": "numeric",
+            }),
+            ("warn_max", {
+                "title": _("Max warn"),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("max_operator", {
                 "title": _("Max operator"),
                 "type": "choices",
-                "sortable": False}),
-            ("max", {
-                "title": _("Max"),
-                "sortable": False}),
-            ("warn_max", {
-                "title": _("Max warn"),
-                "sortable": False}),
+                "sortable": False,
+            }),
             ("hidemin", {
                 "title": _("< Min"),
-                "sortable": False}),
+                "sortable": False,
+                "type": "numeric",
+            }),
             ("hidemax", {
                 "title": _("> Max"),
-                "sortable": False}),
-            ("rangecomment", {
-                "title": _("Range comment"),
                 "sortable": False,
-                "type": "remarks",
-                "toggle": False}),
+                "type": "numeric",
+            }),
+            ("rangecomment", {
+                "title": _(
+                    u"label_specs_rangecomment",
+                    default=u"Out of range comment"
+                ),
+                "sortable": False,
+                "type": "string",
+                "size": "30",
+            }),
         ))
 
         self.review_states = [
@@ -208,6 +226,7 @@ class AnalysisSpecificationView(BikaListingView):
             item["category"] = category
 
         item["Title"] = title
+        item["Keyword"] = keyword
         item["replace"]["Title"] = get_link(url, value=title)
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices
@@ -370,6 +389,14 @@ class AnalysisSpecificationWidget(TypesWidget):
         value = values[0].get(uid, default)
         if not check_floatable:
             return value
+
+        value = value.strip()
+        for operator in ["<", ">"]:
+            if value.startswith(operator):
+                # also remove any additional spaces between the operator
+                # and the value
+                value = value.lstrip(operator + " ")
+
         return api.is_floatable(value) and value or default
 
     security.declarePublic("AnalysisSpecificationResults")

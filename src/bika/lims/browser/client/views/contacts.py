@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from collections import OrderedDict
@@ -24,8 +24,10 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IContacts
-from bika.lims.utils import get_link, get_email_link
+from bika.lims.utils import get_email_link
+from bika.lims.utils import get_link
 from bika.lims.vocabularies import CatalogVocabulary
+from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 
@@ -34,7 +36,7 @@ class ClientContactsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = CONTACT_CATALOG
         self.contentFilter = {
             'portal_type': 'Contact',
             'sort_on': 'sortable_title',

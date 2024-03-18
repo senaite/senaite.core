@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.2 (2021-09-08)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -275,6 +275,20 @@
       }
       return r;
     };
+    var findUntil = function (xs, pred, until) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          return Optional.some(x);
+        } else if (until(x, i)) {
+          break;
+        }
+      }
+      return Optional.none();
+    };
+    var find$1 = function (xs, pred) {
+      return findUntil(xs, pred, never);
+    };
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
@@ -294,6 +308,15 @@
     var head = function (xs) {
       return get$4(xs, 0);
     };
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Optional.none();
+    };
 
     var keys = Object.keys;
     var each = function (obj, f) {
@@ -303,6 +326,10 @@
         var x = obj[i];
         f(x, i);
       }
+    };
+
+    var contains = function (str, substr) {
+      return str.indexOf(substr) !== -1;
     };
 
     var isSupported$1 = function (dom) {
@@ -365,6 +392,358 @@
     var isText = isType(TEXT);
     var isDocument = isType(DOCUMENT);
     var isDocumentFragment = isType(DOCUMENT_FRAGMENT);
+
+    var cached = function (f) {
+      var called = false;
+      var r;
+      return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        if (!called) {
+          called = true;
+          r = f.apply(null, args);
+        }
+        return r;
+      };
+    };
+
+    var DeviceType = function (os, browser, userAgent, mediaMatch) {
+      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
+      var isiPhone = os.isiOS() && !isiPad;
+      var isMobile = os.isiOS() || os.isAndroid();
+      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
+      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+      var isPhone = isiPhone || isMobile && !isTablet;
+      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+      var isDesktop = !isPhone && !isTablet && !iOSwebview;
+      return {
+        isiPad: constant(isiPad),
+        isiPhone: constant(isiPhone),
+        isTablet: constant(isTablet),
+        isPhone: constant(isPhone),
+        isTouch: constant(isTouch),
+        isAndroid: os.isAndroid,
+        isiOS: os.isiOS,
+        isWebView: constant(iOSwebview),
+        isDesktop: constant(isDesktop)
+      };
+    };
+
+    var firstMatch = function (regexes, s) {
+      for (var i = 0; i < regexes.length; i++) {
+        var x = regexes[i];
+        if (x.test(s)) {
+          return x;
+        }
+      }
+      return undefined;
+    };
+    var find = function (regexes, agent) {
+      var r = firstMatch(regexes, agent);
+      if (!r) {
+        return {
+          major: 0,
+          minor: 0
+        };
+      }
+      var group = function (i) {
+        return Number(agent.replace(r, '$' + i));
+      };
+      return nu$2(group(1), group(2));
+    };
+    var detect$3 = function (versionRegexes, agent) {
+      var cleanedAgent = String(agent).toLowerCase();
+      if (versionRegexes.length === 0) {
+        return unknown$2();
+      }
+      return find(versionRegexes, cleanedAgent);
+    };
+    var unknown$2 = function () {
+      return nu$2(0, 0);
+    };
+    var nu$2 = function (major, minor) {
+      return {
+        major: major,
+        minor: minor
+      };
+    };
+    var Version = {
+      nu: nu$2,
+      detect: detect$3,
+      unknown: unknown$2
+    };
+
+    var detectBrowser$1 = function (browsers, userAgentData) {
+      return findMap(userAgentData.brands, function (uaBrand) {
+        var lcBrand = uaBrand.brand.toLowerCase();
+        return find$1(browsers, function (browser) {
+          var _a;
+          return lcBrand === ((_a = browser.brand) === null || _a === void 0 ? void 0 : _a.toLowerCase());
+        }).map(function (info) {
+          return {
+            current: info.name,
+            version: Version.nu(parseInt(uaBrand.version, 10), 0)
+          };
+        });
+      });
+    };
+
+    var detect$2 = function (candidates, userAgent) {
+      var agent = String(userAgent).toLowerCase();
+      return find$1(candidates, function (candidate) {
+        return candidate.search(agent);
+      });
+    };
+    var detectBrowser = function (browsers, userAgent) {
+      return detect$2(browsers, userAgent).map(function (browser) {
+        var version = Version.detect(browser.versionRegexes, userAgent);
+        return {
+          current: browser.name,
+          version: version
+        };
+      });
+    };
+    var detectOs = function (oses, userAgent) {
+      return detect$2(oses, userAgent).map(function (os) {
+        var version = Version.detect(os.versionRegexes, userAgent);
+        return {
+          current: os.name,
+          version: version
+        };
+      });
+    };
+
+    var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
+    var checkContains = function (target) {
+      return function (uastring) {
+        return contains(uastring, target);
+      };
+    };
+    var browsers = [
+      {
+        name: 'Edge',
+        versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
+        search: function (uastring) {
+          return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
+        }
+      },
+      {
+        name: 'Chrome',
+        brand: 'Chromium',
+        versionRegexes: [
+          /.*?chrome\/([0-9]+)\.([0-9]+).*/,
+          normalVersionRegex
+        ],
+        search: function (uastring) {
+          return contains(uastring, 'chrome') && !contains(uastring, 'chromeframe');
+        }
+      },
+      {
+        name: 'IE',
+        versionRegexes: [
+          /.*?msie\ ?([0-9]+)\.([0-9]+).*/,
+          /.*?rv:([0-9]+)\.([0-9]+).*/
+        ],
+        search: function (uastring) {
+          return contains(uastring, 'msie') || contains(uastring, 'trident');
+        }
+      },
+      {
+        name: 'Opera',
+        versionRegexes: [
+          normalVersionRegex,
+          /.*?opera\/([0-9]+)\.([0-9]+).*/
+        ],
+        search: checkContains('opera')
+      },
+      {
+        name: 'Firefox',
+        versionRegexes: [/.*?firefox\/\ ?([0-9]+)\.([0-9]+).*/],
+        search: checkContains('firefox')
+      },
+      {
+        name: 'Safari',
+        versionRegexes: [
+          normalVersionRegex,
+          /.*?cpu os ([0-9]+)_([0-9]+).*/
+        ],
+        search: function (uastring) {
+          return (contains(uastring, 'safari') || contains(uastring, 'mobile/')) && contains(uastring, 'applewebkit');
+        }
+      }
+    ];
+    var oses = [
+      {
+        name: 'Windows',
+        search: checkContains('win'),
+        versionRegexes: [/.*?windows\ nt\ ?([0-9]+)\.([0-9]+).*/]
+      },
+      {
+        name: 'iOS',
+        search: function (uastring) {
+          return contains(uastring, 'iphone') || contains(uastring, 'ipad');
+        },
+        versionRegexes: [
+          /.*?version\/\ ?([0-9]+)\.([0-9]+).*/,
+          /.*cpu os ([0-9]+)_([0-9]+).*/,
+          /.*cpu iphone os ([0-9]+)_([0-9]+).*/
+        ]
+      },
+      {
+        name: 'Android',
+        search: checkContains('android'),
+        versionRegexes: [/.*?android\ ?([0-9]+)\.([0-9]+).*/]
+      },
+      {
+        name: 'OSX',
+        search: checkContains('mac os x'),
+        versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
+      },
+      {
+        name: 'Linux',
+        search: checkContains('linux'),
+        versionRegexes: []
+      },
+      {
+        name: 'Solaris',
+        search: checkContains('sunos'),
+        versionRegexes: []
+      },
+      {
+        name: 'FreeBSD',
+        search: checkContains('freebsd'),
+        versionRegexes: []
+      },
+      {
+        name: 'ChromeOS',
+        search: checkContains('cros'),
+        versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
+      }
+    ];
+    var PlatformInfo = {
+      browsers: constant(browsers),
+      oses: constant(oses)
+    };
+
+    var edge = 'Edge';
+    var chrome = 'Chrome';
+    var ie = 'IE';
+    var opera = 'Opera';
+    var firefox = 'Firefox';
+    var safari = 'Safari';
+    var unknown$1 = function () {
+      return nu$1({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu$1 = function (info) {
+      var current = info.current;
+      var version = info.version;
+      var isBrowser = function (name) {
+        return function () {
+          return current === name;
+        };
+      };
+      return {
+        current: current,
+        version: version,
+        isEdge: isBrowser(edge),
+        isChrome: isBrowser(chrome),
+        isIE: isBrowser(ie),
+        isOpera: isBrowser(opera),
+        isFirefox: isBrowser(firefox),
+        isSafari: isBrowser(safari)
+      };
+    };
+    var Browser = {
+      unknown: unknown$1,
+      nu: nu$1,
+      edge: constant(edge),
+      chrome: constant(chrome),
+      ie: constant(ie),
+      opera: constant(opera),
+      firefox: constant(firefox),
+      safari: constant(safari)
+    };
+
+    var windows = 'Windows';
+    var ios = 'iOS';
+    var android = 'Android';
+    var linux = 'Linux';
+    var osx = 'OSX';
+    var solaris = 'Solaris';
+    var freebsd = 'FreeBSD';
+    var chromeos = 'ChromeOS';
+    var unknown = function () {
+      return nu({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu = function (info) {
+      var current = info.current;
+      var version = info.version;
+      var isOS = function (name) {
+        return function () {
+          return current === name;
+        };
+      };
+      return {
+        current: current,
+        version: version,
+        isWindows: isOS(windows),
+        isiOS: isOS(ios),
+        isAndroid: isOS(android),
+        isOSX: isOS(osx),
+        isLinux: isOS(linux),
+        isSolaris: isOS(solaris),
+        isFreeBSD: isOS(freebsd),
+        isChromeOS: isOS(chromeos)
+      };
+    };
+    var OperatingSystem = {
+      unknown: unknown,
+      nu: nu,
+      windows: constant(windows),
+      ios: constant(ios),
+      android: constant(android),
+      linux: constant(linux),
+      osx: constant(osx),
+      solaris: constant(solaris),
+      freebsd: constant(freebsd),
+      chromeos: constant(chromeos)
+    };
+
+    var detect$1 = function (userAgent, userAgentDataOpt, mediaMatch) {
+      var browsers = PlatformInfo.browsers();
+      var oses = PlatformInfo.oses();
+      var browser = userAgentDataOpt.bind(function (userAgentData) {
+        return detectBrowser$1(browsers, userAgentData);
+      }).orThunk(function () {
+        return detectBrowser(browsers, userAgent);
+      }).fold(Browser.unknown, Browser.nu);
+      var os = detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
+      var deviceType = DeviceType(os, browser, userAgent, mediaMatch);
+      return {
+        browser: browser,
+        os: os,
+        deviceType: deviceType
+      };
+    };
+    var PlatformDetection = { detect: detect$1 };
+
+    var mediaMatch = function (query) {
+      return window.matchMedia(query).matches;
+    };
+    var platform = cached(function () {
+      return PlatformDetection.detect(navigator.userAgent, Optional.from(navigator.userAgentData), mediaMatch);
+    });
+    var detect = function () {
+      return platform();
+    };
 
     var is = function (element, selector) {
       var dom = element.dom;
@@ -596,7 +975,11 @@
 
     var get = function (_win) {
       var win = _win === undefined ? window : _win;
-      return Optional.from(win['visualViewport']);
+      if (detect().browser.isFirefox()) {
+        return Optional.none();
+      } else {
+        return Optional.from(win['visualViewport']);
+      }
     };
     var bounds = function (x, y, width, height) {
       return {
@@ -645,6 +1028,7 @@
 
     var fireFullscreenStateChanged = function (editor, state) {
       editor.fire('FullscreenStateChanged', { state: state });
+      editor.fire('ResizeEditor');
     };
 
     var getFullscreenNative = function (editor) {
@@ -900,10 +1284,10 @@
         editorContainerStyle.height = fullscreenInfo.containerHeight;
         editorContainerStyle.top = fullscreenInfo.containerTop;
         editorContainerStyle.left = fullscreenInfo.containerLeft;
+        cleanup();
         setScrollPos(fullscreenInfo.scrollPos);
         fullscreenState.set(null);
         fireFullscreenStateChanged(editor, false);
-        cleanup();
         editor.off('remove', cleanup);
       }
     };

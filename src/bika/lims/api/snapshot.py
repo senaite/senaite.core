@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -144,9 +144,11 @@ def get_snapshot_version(obj, snapshot):
 
     :param obj: Content object
     :param snapshot: Snapshot dictionary
-    :returns: Index where the object is lcated
+    :returns: Index where the object is located
     """
     snapshots = get_snapshots(obj)
+    if snapshot not in snapshots:
+        return -1
     return snapshots.index(snapshot)
 
 
@@ -183,8 +185,8 @@ def get_object_data(obj):
     :returns: Dictionary of extracted schema data
     """
 
-    model = SuperModel(obj)
     try:
+        model = SuperModel(obj)
         data = model.to_dict()
     except Exception as exc:
         logger.error("Failed to get schema data for {}: {}"
@@ -329,7 +331,12 @@ def pause_snapshots_for(obj):
 def resume_snapshots_for(obj):
     """Resume snapshots for the given object
     """
-    noLongerProvides(obj, IDoNotSupportSnapshots)
+    try:
+        noLongerProvides(obj, IDoNotSupportSnapshots)
+    except ValueError:
+        # Handle ValueError: Can only remove directly provided interfaces.
+        # when the interface was directly provided on class level
+        pass
 
 
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
@@ -444,3 +451,19 @@ def _get_title_or_id_from_uid(uid):
         return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id
+
+
+def disable_snapshots(obj):
+    """Disable and removes all snapshots from the given object
+    """
+    # do not take more snapshots
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+    # do not display audit log
+    noLongerProvides(obj, IAuditable)
+
+    # remove all snapshots
+    annotation = IAnnotations(obj)
+    storage = annotation.get(SNAPSHOT_STORAGE)
+    if storage:
+        del(annotation[SNAPSHOT_STORAGE])

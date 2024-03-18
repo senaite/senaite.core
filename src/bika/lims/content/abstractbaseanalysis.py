@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -24,7 +24,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
@@ -51,10 +51,8 @@ from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
@@ -419,20 +417,22 @@ PointOfCapture = StringField(
 # The category of the analysis service, used for filtering, collapsing and
 # reporting on analyses.
 Category = UIDReferenceField(
-    'Category',
+    "Category",
     schemata="Description",
     required=1,
-    allowed_types=('AnalysisCategory',),
-    vocabulary='getAnalysisCategories',
+    allowed_types=("AnalysisCategory",),
     widget=ReferenceWidget(
-        label=_("Analysis Category"),
-        description=_("The category the analysis service belongs to"),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query={
-            'is_active': True,
-            'sort_on': 'sortable_title',
-            'sort_order': 'ascending',
+        label=_(
+            "label_analysis_category",
+            default="Analysis Category"),
+        description=_(
+            "description_analysis_category",
+            default="The category the analysis service belongs to"),
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         },
     )
 )
@@ -475,20 +475,27 @@ VAT = FixedPointField(
 # The analysis service's Department.  This is used to filter analyses,
 # and for indicating the responsibile lab manager in reports.
 Department = UIDReferenceField(
-    'Department',
+    "Department",
     schemata="Description",
     required=0,
-    allowed_types=('Department',),
+    allowed_types=("Department",),
     widget=ReferenceWidget(
-        label=_("Department"),
-        description=_("The laboratory department"),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query=dict(
-            is_active=True,
-            sort_on="sortable_title",
-            sort_order="ascending",
-        ),
+        label=_(
+            "label_analysis_department",
+            default="Department"),
+        description=_(
+            "description_analysis_department",
+            default="Select the responsible department"),
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending"
+        },
+        columns=[
+            {"name": "Title", "label": _("Department Name")},
+            {"name": "getDepartmentID", "label": _("Department ID")},
+        ],
     )
 )
 
@@ -516,17 +523,24 @@ Uncertainties = RecordsField(
     widget=RecordsWidget(
         label=_("Uncertainty"),
         description=_(
-            "Specify the uncertainty value for a given range, e.g. for "
-            "results in a range with minimum of 0 and maximum of 10, "
-            "where the uncertainty value is 0.5 - a result of 6.67 will be "
-            "reported as 6.67 +- 0.5. You can also specify the uncertainty "
-            "value as a percentage of the result value, by adding a '%' to "
-            "the value entered in the 'Uncertainty Value' column, e.g. for "
-            "results in a range with minimum of 10.01 and a maximum of 100, "
-            "where the uncertainty value is 2% - a result of 100 will be "
-            "reported as 100 +- 2. Please ensure successive ranges are "
-            "continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, "
-            "20.01 - 30 .00 etc."),
+            u"description_analysis_uncertainty",
+            default=u"Specify the uncertainty value for a given range, e.g. "
+                    u"for results in a range with minimum of 0 and maximum of "
+                    u"10, where the uncertainty value is 0.5 - a result of "
+                    u"6.67 will be reported as 6.67 ± 0.5.<br/>"
+                    u"You can also specify the uncertainty value as a "
+                    u"percentage of the result value, by adding a '%' to the "
+                    u"value entered in the 'Uncertainty Value' column, e.g. "
+                    u"for results in a range with minimum of 10.01 and a "
+                    u"maximum of 100, where the uncertainty value is 2%, a "
+                    u"result of 100 will be reported as 100 ± 2.<br/>"
+                    u"If you don't want uncertainty to be displayed for a "
+                    u"given range, set 0 (or a value below 0) as the "
+                    u"Uncertainty value.<br/>"
+                    u"Please ensure successive ranges are continuous, e.g. "
+                    u"0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00"
+                    u" etc."
+        ),
     )
 )
 
@@ -616,6 +630,35 @@ ResultOptionsType = StringField(
             "results are set"
         ),
         format="select",
+    )
+)
+
+RESULT_OPTIONS_SORTING = (
+    ("", _("Keep order above")),
+    ("ResultValue-asc", _("By 'Result Value' ascending")),
+    ("ResultValue-desc", _("By 'Result Value' descending")),
+    ("ResultText-asc", _("By 'Display Value' ascending")),
+    ("ResultText-desc", _("By 'Display Value' descending")),
+)
+
+ResultOptionsSorting = StringField(
+    "ResultOptionsSorting",
+    schemata="Result Options",
+    default="ResultText-asc",
+    vocabulary=DisplayList(RESULT_OPTIONS_SORTING),
+    widget=SelectionWidget(
+        label=_(
+            u"label_analysis_results_options_sorting",
+            default=u"Sorting criteria"
+        ),
+        description=_(
+            u"description_analysis_results_options_sorting",
+            default=u"Criteria to use when result options are displayed for "
+                    u"selection in results entry listings. Note this only "
+                    u"applies to the options displayed in the selection list. "
+                    u"It does not have any effect to the order in which "
+                    u"results are displayed after being submitted"
+        ),
     )
 )
 
@@ -753,6 +796,7 @@ schema = BikaSchema.copy() + Schema((
     AllowManualUncertainty,
     ResultOptions,
     ResultOptionsType,
+    ResultOptionsSorting,
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,
@@ -862,19 +906,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         price = price and price or 0
         vat = vat and vat or 0
         return float(price) + (float(price) * float(vat)) / 100
-
-    @security.public
-    def getAnalysisCategories(self):
-        """A vocabulary listing available (and activated) categories.
-        """
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        cats = bsc(portal_type='AnalysisCategory', is_active=True)
-        items = [(o.UID, o.Title) for o in cats]
-        o = self.getCategory()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
 
     @security.public
     def getLowerDetectionLimit(self):

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <configure zcml:condition="installed senaite.jsonapi">
+    <!-- Adapter to handle instrument pushes from senaite.astm -->
+    <adapter factory=".consumer.PushConsumer"
+             name="senaite.core.lis2a.import" />
+    <!-- Adapter to handle instrument imports -->
+    <adapter factory=".importer.ASTMImporter" />
+  </configure>
+
+</configure>

@@ -26,6 +26,8 @@ class EditForm {
     this.on_blur = this.on_blur.bind(this);
     this.on_click = this.on_click.bind(this);
     this.on_change = this.on_change.bind(this);
+    this.on_reference_select = this.on_reference_select.bind(this);
+    this.on_reference_deselect = this.on_reference_deselect.bind(this);
     this.init_forms();
   }
 
@@ -82,6 +84,11 @@ class EditForm {
     if (this.is_button(field) || this.is_input_button(field)) {
       // bind click event
       field.addEventListener("click", this.on_click);
+    }
+    else if (this.is_reference(field)) {
+      // bind custom events from the ReactJS queryselect widget
+      field.addEventListener("select", this.on_reference_select);
+      field.addEventListener("deselect", this.on_reference_deselect);
     }
     else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
       // bind change event
@@ -460,6 +467,13 @@ class EditForm {
     form_data.forEach(function(value, key) {
       data[key] = value;
     });
+    // handle DX add views
+    let view_name = this.get_view_name();
+    if (view_name.indexOf("++add++") > -1) {
+      // inject `form_adapter_name` for named multi adapter lookup
+      // see senaite.core.browser.form.ajax.FormView for lookup logic
+      data.form_adapter_name = view_name;
+    }
     return data;
   }
 
@@ -496,14 +510,8 @@ class EditForm {
       // returns a list of selected option
       let selected = field.selectedOptions;
       return Array.prototype.map.call(selected, (option) => option.value)
-    } else if (this.is_single_reference(field)) {
-      // returns the value of the `uid` attribute
-      return field.getAttribute("uid");
-    } else if (this.is_multi_reference(field)) {
-      // returns the value of the `uid` attribute and splits it on `,`
-      let uids = field.getAttribute("uid");
-      if (uids.length == 0) return [];
-      return uids.split(",");
+    } else if (this.is_reference(field)) {
+      return field.value.split("\n");
     }
     // return the plain field value
     return field.value;
@@ -518,11 +526,8 @@ class EditForm {
     let options = value.options || [];
 
     // set reference value
-    if (this.is_single_reference(field)) {
-      for (const item of selected) {
-        field.setAttribute("uid", item.value);
-        field.value = item.title;
-      }
+    if (this.is_reference(field)) {
+      field.value = selected.join("\n");
     }
     // set select field
     else if (this.is_select(field)) {
@@ -612,7 +617,7 @@ class EditForm {
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
     let payload = Object.assign({
-      "form": this.get_form_data(form)
+      form: this.get_form_data(form)
     }, data)
 
     console.debug("EditForm::ajax_send --> ", payload)
@@ -632,6 +637,9 @@ class EditForm {
 
   /**
    * send multipart/form-data to the server
+   *
+   * NOTE: This is used by the import form and hooked by the `ajax-submit="1"` attribute
+   *       Therefore, we send here the data as multipart/form-data
    */
   ajax_submit(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
@@ -678,6 +686,15 @@ class EditForm {
         console.error(error);
         this.loading(false);
       });
+  }
+
+
+  /**
+   * get the current view name from the URL
+   */
+  get_view_name() {
+    let segments = location.pathname.split("/");
+    return segments.pop();
   }
 
   /**
@@ -753,24 +770,13 @@ class EditForm {
   }
 
   /**
-   * Checks if the element is a SENAITE reference field
+   * Checks if the element is a SENAITE reference field (textarea)
    */
   is_reference(el) {
-    return el.classList.contains("referencewidget");
-  }
-
-  /**
-   * Checks if the element is a SENAITE single-reference field
-   */
-  is_single_reference(el) {
-    return this.is_reference(el) && el.getAttribute("multivalued") == "0";
-  }
-
-  /**
-   * Checks if the element is a SENAITE multi-reference field
-   */
-  is_multi_reference(el) {
-    return this.is_reference(el) && el.getAttribute("multivalued") == "1";
+    if (!this.is_textarea(el)) {
+      return false;
+    }
+    return el.classList.contains("queryselectwidget-value");
   }
 
   /**
@@ -846,6 +852,35 @@ class EditForm {
   on_change(event) {
     console.debug("EditForm::on_change");
     let el = event.currentTarget;
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `select` event
+   */
+  on_reference_select(event) {
+    console.debug("EditForm::on_reference_select");
+    let el = event.currentTarget;
+    // add the selected value to the list
+    let selected = el.value.split("\n");
+    selected = selected.concat(event.detail.value);
+    el.value = selected.join("\n");
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `deselect` event
+   */
+  on_reference_deselect(event) {
+    console.debug("EditForm::on_reference_deselect");
+    let el = event.currentTarget;
+    // remove the delelected value from the list
+    let selected = el.value.split("\n");
+    let index = selected.indexOf(event.detail.value);
+    if (index > -1) {
+      selected.splice(index, 1)
+    }
+    el.value = selected.join("\n");
     this.modified(el);
   }
 

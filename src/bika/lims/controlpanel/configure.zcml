@@ -29,22 +29,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IPreservations"
-      name="folder_view"
-      class=".bika_preservations.PreservationsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IDepartments"
-      name="folder_view"
-      class=".bika_departments.DepartmentsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ILabContacts"
       name="folder_view"
       class=".bika_labcontacts.LabContactsView"
@@ -61,33 +45,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisProfiles"
-      name="folder_view"
-      class=".bika_analysisprofiles.AnalysisProfilesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IARTemplates"
       name="folder_view"
       class=".bika_artemplates.TemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISampleConditions"
-      name="folder_view"
-      class=".bika_sampleconditions.SampleConditionsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISampleMatrices"
-      name="folder_view"
-      class=".bika_samplematrices.SampleMatricesView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

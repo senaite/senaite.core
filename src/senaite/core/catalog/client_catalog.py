@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2024 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
 from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
@@ -12,7 +30,7 @@ CATALOG_TITLE = "Senaite Client Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
-    ("Title", "", "ZCTextIndex"),
+    ("Title", "", "ZCTextIndex"),  # needed for reference fields
     ("client_searchable_text", "", "ZCTextIndex"),
     ("getClientID", "", "FieldIndex"),
     ("getName", "", "FieldIndex"),
@@ -21,9 +39,9 @@ INDEXES = BASE_INDEXES + [
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
-    "Description",
     "getClientID",
     "getName",
+    "getEmailAddress",  # used in reference widget columns
 ]
 
 TYPES = [

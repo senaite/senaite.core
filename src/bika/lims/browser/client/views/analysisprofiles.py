@@ -15,73 +15,32 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
+from senaite.core.browser.controlpanel.analysisprofiles.view import \
+    AnalysisProfilesView
 from senaite.core.permissions import AddAnalysisProfile
-from Products.CMFCore.utils import getToolByName
 
 
-class ClientAnalysisProfilesView(BikaListingView):
-    """This is displayed in the Profiles client action,
-       in the "Analysis Profiles" tab
+class ClientAnalysisProfilesView(AnalysisProfilesView):
+    """Client located Analysis Profiles listing
     """
 
     def __init__(self, context, request):
         super(ClientAnalysisProfilesView, self).__init__(context, request)
-        self.catalog = "senaite_catalog_setup"
-        self.contentFilter = {
-            'portal_type': 'AnalysisProfile',
-            'sort_on': 'sortable_title',
-            'path': {
-                "query": "/".join(self.context.getPhysicalPath()),
-                "level": 0},
+
+        self.contentFilter["path"] = {
+                "query": api.get_path(self.context),
+                "level": 0,
         }
 
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 50
-        self.form_id = "analysisprofiles"
-
-        self.icon = self.portal_url + \
-                    "/++resource++bika.lims.images/analysisprofile_big.png"
-        self.title = self.context.translate(_("Analysis Profiles"))
-        self.description = ""
-
-        self.columns = {
-            'title': {'title': _('Title'),
-                      'index': 'sortable_title',
-                      'replace_url': 'getURL'},
-            'Description': {'title': _('Description'),
-                            'index': 'description'},
-            'getProfileKey': {'title': _('Profile Key')},
-
+        self.context_actions = {
+            _(u"listing_analysisprofiles_action_add", default=u"Add"): {
+                "url": "++add++AnalysisProfile",
+                "permission": AddAnalysisProfile,
+                "icon": "senaite_theme/icon/plus"
+            }
         }
-        self.review_states = [
-            {'id': 'default',
-             'title': _('Active'),
-             'contentFilter': {'is_active': True},
-             'transitions': [{'id': 'deactivate'}, ],
-             'columns': ['title', 'Description', 'getProfileKey']},
-            {'id': 'inactive',
-             'title': _('Inactive'),
-             'contentFilter': {'is_active': False},
-             'transitions': [{'id': 'activate'}, ],
-             'columns': ['title', 'Description', 'getProfileKey']},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['title', 'Description', 'getProfileKey']},
-        ]
-
-    def __call__(self):
-        mtool = getToolByName(self.context, 'portal_membership')
-        checkPermission = mtool.checkPermission
-        if checkPermission(AddAnalysisProfile, self.context):
-            self.context_actions[_('Add')] = \
-                {'url': 'createObject?type_name=AnalysisProfile',
-                 'permission': 'Add portal content',
-                 'icon': '++resource++bika.lims.images/add.png'}
-        return super(ClientAnalysisProfilesView, self).__call__()

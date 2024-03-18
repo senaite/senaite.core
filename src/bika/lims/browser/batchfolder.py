@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -66,6 +66,9 @@ class BatchFolderContentsView(ListingView):
             ("BatchID", {
                 "title": _("Batch ID"),
                 "index": "getId", }),
+            ("BatchLabels", {
+                "title": _("Batch Labels"),
+                "sortable": False, }),
             ("Description", {
                 "title": _("Description"),
                 "sortable": False, }),
@@ -156,6 +159,15 @@ class BatchFolderContentsView(ListingView):
             return False
         return True
 
+    def to_pretty_label(self, label):
+        """Make a pretty label for the given label string
+
+        :param label: text batch label
+        :returns: Bootstrap HTML batch label
+        """
+        tpl = u"<span class='badge badge-secondary mr-1'>{}</span>"
+        return tpl.format(api.safe_unicode(label))
+
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Batch) that is currently being
         rendered as a row in the list
@@ -178,6 +190,7 @@ class BatchFolderContentsView(ListingView):
         client = obj.getClient()
         created = api.get_creation_date(obj)
         date = obj.getBatchDate()
+        batch_labels = obj.getLabelNames()
 
         # total sample progress
         progress = obj.getProgress()
@@ -191,6 +204,12 @@ class BatchFolderContentsView(ListingView):
         item["replace"]["Title"] = get_link(url, title)
         item["created"] = self.ulocalized_time(created, long_format=True)
         item["BatchDate"] = self.ulocalized_time(date, long_format=True)
+        item["BatchLabels"] = ""
+
+        if batch_labels:
+            item["BatchLabels"] = ",".join(batch_labels)
+            item["replace"]["BatchLabels"] = "".join(map(
+                self.to_pretty_label, batch_labels))
 
         if client:
             client_url = api.get_url(client)

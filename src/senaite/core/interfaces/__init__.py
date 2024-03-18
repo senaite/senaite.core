@@ -15,17 +15,21 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.datamanager import IDataManager
+from plone.protect.interfaces import IDisableCSRFProtection
+from senaite.core.interfaces.catalog import *  # noqa:F401,F403
+from senaite.core.interfaces.datamanager import IDataManager  # noqa:F401
+from senaite.core.interfaces.widget import *  # noqa:F401,F403
 from zope.interface import Interface
-from senaite.core.interfaces.catalog import *
 
 
-class ISenaiteCore(Interface):
+class ISenaiteCore(IDisableCSRFProtection):
     """Marker interface that defines a Zope 3 browser layer.
+
+    NOTE: We disable CSRF protection site-wide.
     """
 
 
@@ -75,6 +79,45 @@ class IAjaxEditForm(Interface):
         """
 
 
+class IMultiCatalogBehavior(Interface):
+    """Support multiple catalogs for Dexterity contents
+    """
+
+
+class IAutoGenerateID(Interface):
+    """Auto-generate ID with ID server
+    """
+
+
+class IIdServer(Interface):
+    """Marker Interface for ID server
+    """
+
+    def generate_id(self, portal_type, batch_size=None):
+        """Generate a new id for 'portal_type'
+        """
+
+
+class IIdServerVariables(Interface):
+    """Marker interfaces for variables generator for ID Server
+    """
+
+    def get_variables(self, **kw):
+        """Returns a dict with variables
+        """
+
+
+class IIdServerTypeID(Interface):
+    """Marker interface for type id resolution for ID Server
+    """
+
+    def get_type_id(self, **kw):
+        """Returns the type id for the context passed in the constructor, that
+        is used for custom ID formatting, regardless of the real portal type of
+        the context. Return None if no type id can be resolved by this adapter
+        """
+
+
 class INumberGenerator(Interface):
     """A utility to generates unique numbers by key
     """
@@ -87,6 +130,16 @@ class IContainer(Interface):
 
 class IItem(Interface):
     """SENAITE Base Item
+    """
+
+
+class ITemporaryObject(Interface):
+    """Marker interface for temporary objects
+
+    This is similar to the `creationFlag`, but skips indexing for any object
+    that implements this interface.
+
+    Also see: `senaite.core.patches.catalog.catlog_object`
     """
 
 
@@ -110,6 +163,16 @@ class IHaveUIDReferences(Interface):
     """
 
 
+class IAnalysisProfile(Interface):
+    """Marker interface for analysis profiles
+    """
+
+
+class IAnalysisProfiles(Interface):
+    """Marker interface for analysis profiles setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
@@ -117,6 +180,46 @@ class ISampleContainers(Interface):
 
 class ISampleContainer(Interface):
     """Marker interface for sample containers
+    """
+
+
+class IDepartments(Interface):
+    """Marker interface for departments setup folder
+    """
+
+
+class IDepartment(Interface):
+    """Marker interface for departments
+    """
+
+
+class ISampleConditions(Interface):
+    """Marker interface for sample conditions setup folder
+    """
+
+
+class ISampleCondition(Interface):
+    """Marker interface for sample conditions
+    """
+
+
+class ISamplePreservations(Interface):
+    """Marker interface for preservations setup folder
+    """
+
+
+class ISamplePreservation(Interface):
+    """Marker interface for preservations
+    """
+
+
+class ISampleMatrices(Interface):
+    """Marker interface for sample matrices setup folder
+    """
+
+
+class ISampleMatrix(Interface):
+    """Marker interface for sample matrices
     """
 
 
@@ -161,3 +264,27 @@ class IHaveLabels(ICanHaveLabels):
     NOTE: We inherit from `ICanHaveLabels` to always show the schema extended
           fields for already labeled objects
     """
+
+
+class IASTMImporter(Interface):
+    """Marker interface for ASTM Wrappers
+    """
+
+    def import_data(data):
+        """Import the processed JSON data from the wrapper
+        """
+
+
+class IClientAwareMixin(Interface):
+    """Marker interface for objects that can be bound to a Client, either
+    because they can be added inside a Client folder or because it can be
+    assigned through a Reference field
+    """
+
+    def getClient(self):
+        """Returns the client this object is bound to, if any
+        """
+
+    def getClientUID(self):
+        """Returns the client UID this object is bound to, if any
+        """

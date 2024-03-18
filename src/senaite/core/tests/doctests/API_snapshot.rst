@@ -15,6 +15,7 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.api.snapshot import *
+    >>> from bika.lims.interfaces import IAuditable
     >>> from senaite.core.permissions import FieldEditAnalysisHidden
     >>> from senaite.core.permissions import FieldEditAnalysisResult
     >>> from senaite.core.permissions import FieldEditAnalysisRemarks
@@ -70,7 +71,8 @@ Setup the testing environment:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
@@ -82,13 +84,13 @@ LIMS Setup
 
 Setup the Lab for testing:
 
-    >>> setup.setSelfVerificationEnabled(True)
-    >>> analysisservices = setup.bika_analysisservices
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> analysisservices = bikasetup.bika_analysisservices
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
 
 
 Content Setup
@@ -165,7 +167,7 @@ To check if an object has snapshots, we can call `has_snapshots`:
     >>> has_snapshots(au)
     True
 
-    >>> has_snapshots(setup)
+    >>> has_snapshots(bikasetup)
     False
 
 
@@ -176,9 +178,9 @@ To check the number of snapshots (versions) an object has, we can call
 `get_snapshot_count`:
 
     >>> get_snapshot_count(sample)
-    2
+    1
 
-    >>> get_snapshot_count(setup)
+    >>> get_snapshot_count(bikasetup)
     0
 
 
@@ -218,13 +220,15 @@ Get the version of a snapshot
 
 The index (version) of each snapshot can be retrieved:
 
-    >>> snap1 = get_snapshot_by_version(sample, 0)
-    >>> get_snapshot_version(sample, snap1)
+    >>> snap0 = get_snapshot_by_version(sample, 0)
+    >>> get_snapshot_version(sample, snap0)
     0
 
-    >>> snap2 = get_snapshot_by_version(sample, 1)
-    >>> get_snapshot_version(sample, snap2)
-    1
+Non existing versions return -1:
+
+    >>> snap1 = get_snapshot_by_version(sample, 1)
+    >>> get_snapshot_version(sample, snap1)
+    -1
 
 
 Get the last snapshot taken
@@ -232,9 +236,9 @@ Get the last snapshot taken
 
 To get the latest snapshot, we can call `get_last_snapshot`:
 
-   >>> snap = get_last_snapshot(sample)
-   >>> get_snapshot_version(sample, snap)
-   1
+   >>> last_snap = get_last_snapshot(sample)
+   >>> get_snapshot_version(sample, last_snap)
+   0
 
 
 Get the metadata of a snapshot
@@ -242,7 +246,7 @@ Get the metadata of a snapshot
 
 Each snapshot contains metadata which can be retrieved:
 
-   >>> metadata = get_snapshot_metadata(snap)
+   >>> metadata = get_snapshot_metadata(last_snap)
    >>> metadata
    {...}
 
@@ -261,7 +265,7 @@ Take a new Snapshot
 Snapshots can be taken programatically with the function `take_snapshot`:
 
     >>> get_version(sample)
-    1
+    0
 
 Now we take a new snapshot:
 
@@ -270,7 +274,7 @@ Now we take a new snapshot:
 The version should be increased:
 
     >>> get_version(sample)
-    2
+    1
 
 The new snapshot should be the most recent snapshot now:
 
@@ -285,25 +289,24 @@ Comparing Snapshots
 
 The changes of two snapshots can be compared with `compare_snapshots`:
 
-   >>> snap0 = get_snapshot_by_version(sample, 2)
+   >>> snap1 = get_snapshot_by_version(sample, 1)
 
 Add 2 more analyses (Mg and Ca):
 
    >>> sample.edit(Analyses=[Cu, Fe, Au, Mg, Ca])
-   >>> new_snapshot = take_snapshot(sample)
-   >>> snap1 = get_snapshot_by_version(sample, 3)
+   >>> snap2 = take_snapshot(sample)
 
 Passing the `raw=True` keyword returns the raw field changes, e.g. in this case,
 the field `Analyses` is a `UIDReferenceField` which contained initially 3 values
 and after adding 2 analyses, 2 UID more references:
 
-   >>> diff_raw = compare_snapshots(snap0, snap1, raw=True)
+   >>> diff_raw = compare_snapshots(snap1, snap2, raw=True)
    >>> diff_raw["Analyses"]
-   [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]
+   [([u'...', u'...', u'...'], ['...', '...', '...', '...', '...'])]
 
 It is also possible to process the values to get a more human readable diff:
 
-   >>> diff = compare_snapshots(snap0, snap1, raw=False)
+   >>> diff = compare_snapshots(snap1, snap2, raw=False)
    >>> diff["Analyses"]
    [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]
 
@@ -341,12 +344,12 @@ The object no longer supports snapshots now:
 Object modification events create then no snapshots anymore:
 
     >>> get_version(sample)
-    4
+    3
 
     >>> modified(sample)
 
     >>> get_version(sample)
-    4
+    3
 
 Resuming the snapshots will enable snapshots for a given object:
 
@@ -362,8 +365,41 @@ Object modification events create new snapshots again:
     >>> modified(sample)
 
     >>> get_version(sample)
-    5
+    4
 
 Unregister event subscribers:
 
     >>> unregister_event_subscribers()
+
+
+Disable and remove snapshots
+............................
+
+`IAuditLog` is an interface that is automatically added the first time a
+snapshot is created and is used to make the action "Audit Log" visible in the
+content view.
+
+    >>> IAuditable.providedBy(sample)
+    True
+
+Disable and remove all snapshots from an object in a single shot:
+
+    >>> supports_snapshots(sample)
+    True
+
+    >>> get_snapshot_count(sample)
+    5
+
+    >>> disable_snapshots(sample)
+
+    >>> supports_snapshots(sample)
+    False
+
+    >>> get_snapshot_count(sample)
+    0
+
+The sample is not flagged with IAuditable anymore, so the action "Audit Log"
+is also not displayed:
+
+    >>> IAuditable.providedBy(sample)
+    False

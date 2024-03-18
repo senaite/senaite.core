@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -29,7 +29,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from senaite.core.permissions import FieldEditTemplate
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
@@ -301,7 +301,7 @@ class ARTemplateAnalysesWidget(TypesWidget):
         services = set(services + dependencies)
 
         # get the profile
-        profile_uid = form.get("AnalysisProfile_uid")
+        profile_uid = form.get("AnalysisProfile")
         if profile_uid:
             profile = api.get_object_by_uid(profile_uid)
             # update the services with those from the profile

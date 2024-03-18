@@ -50,12 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Reload the whole view if the status of the view's context has changed
   // due to the transition submission of some items from the listing
-  document.body.addEventListener("listing:submit", (event) => {
+  document.body.addEventListener("listing:after_transition_event", (event) => {
 
     // skip site reload for multi_results view
-    // TODO: find a better way for this check!
-    if (document.body.classList.contains("template-multi_results")) {
-      return;
+    let multi_results_templates = ["template-multi_results", "template-multi_results_classic"];
+    let body_class_list = document.body.classList;
+    for (let class_name of multi_results_templates) {
+      if (body_class_list.contains(class_name)) {
+        return;
+      }
     }
 
     // get the old workflow state of the view context
@@ -63,8 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // get the new workflow state of the view context
     // https://github.com/senaite/senaite.app.listing/pull/92
-    let data = event.detail.data;
-    let new_workflow_state = data.view_context_state;
+    let config = event.detail.config;
+    let new_workflow_state = config.view_context_state;
 
     // reload the entire page if workflow state of the view context changed
     if (old_workflow_state != new_workflow_state) {

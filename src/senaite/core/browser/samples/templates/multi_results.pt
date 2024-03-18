@@ -12,16 +12,31 @@
 
     <!-- Title -->
     <metal:title fill-slot="content-title">
-      <h2 i18n:translate="">
-        Manage Analyses Results
+      <h2 i18n:translate="" class="d-inline align-middle">
+        Edit Multiple Analyses Results
       </h2>
+      <span class="d-inline">
+        <!-- switch to transposed view -->
+        <a href="#"
+           class="btn btn-link"
+           tal:attributes="href view/transposed_url"
+           tal:condition="view/classic|nothing">
+          <i class="fas fa-sync"></i>
+          <span i18n:translate="">Switch to transposed view</span>
+        </a>
+        <!-- switch to classic view -->
+        <a href="#"
+           class="btn btn-link"
+           tal:attributes="href view/classic_url"
+           tal:condition="view/transposed|nothing">
+          <i class="fas fa-sync"></i>
+          <span i18n:translate="">Switch to classic view</span>
+        </a>
+      </span>
     </metal:title>
 
     <!-- Description -->
     <metal:description fill-slot="content-description">
-      <p class="text-secondary" i18n:translate="">
-        Enter or view the analyses results of multiple samples.
-      </p>
     </metal:description>
 
     <!-- Content -->
@@ -36,7 +51,11 @@
         </a>
       </div>
 
-      <div class="multi-results-container">
+      <div class="multi-results-transposed-container" tal:condition="view/transposed|nothing">
+        <div tal:content="structure python:view.contents_table()"/>
+      </div>
+
+      <div class="multi-results-container" tal:condition="view/classic|nothing">
         <div class="sample"
              tal:attributes="data-uid python:sample.UID()"
              tal:define="portal context/@@plone_portal_state/portal;

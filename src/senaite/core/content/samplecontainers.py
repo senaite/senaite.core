@@ -15,9 +15,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
@@ -30,7 +31,8 @@ class ISampleContainersSchema(model.Schema):
     """
 
 
-@implementer(ISampleContainers, ISampleContainersSchema, IHideActionsMenu)
+@implementer(ISampleContainers, ISampleContainersSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
 class SampleContainers(Container):
     """A container for sample containers
     """

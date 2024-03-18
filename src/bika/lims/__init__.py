@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import logging
@@ -104,8 +104,6 @@ def initialize(context):
     from bika.lims.content.referencesample import ReferenceSample
     from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder
     from bika.lims.content.rejectanalysis import RejectAnalysis
-    from bika.lims.content.report import Report
-    from bika.lims.content.reportfolder import ReportFolder
     from bika.lims.content.samplecondition import SampleCondition
     from bika.lims.content.samplematrix import SampleMatrix
     from bika.lims.content.samplepoint import SamplePoint

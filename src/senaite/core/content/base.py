@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -37,10 +37,10 @@ class Container(BaseContainer):
     def accessor(self, fieldname, raw=False):
         """Return the field accessor for the fieldname
         """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
+        fields = api.get_fields(self)
+        field = fields.get(fieldname, None)
+        if not field:
             return None
-        field = schema[fieldname]
         if raw:
             if hasattr(field, "get_raw"):
                 return field.get_raw
@@ -51,10 +51,11 @@ class Container(BaseContainer):
     def mutator(self, fieldname):
         """Return the field mutator for the fieldname
         """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
+        fields = api.get_fields(self)
+        field = fields.get(fieldname, None)
+        if not field:
             return None
-        return schema[fieldname].set
+        return field.set
 
 
 @implementer(IItem)
@@ -67,10 +68,10 @@ class Item(BaseItem):
     def accessor(self, fieldname, raw=False):
         """Return the field accessor for the fieldname
         """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
+        fields = api.get_fields(self)
+        field = fields.get(fieldname, None)
+        if not field:
             return None
-        field = schema[fieldname]
         if raw:
             if hasattr(field, "get_raw"):
                 return field.get_raw
@@ -81,7 +82,8 @@ class Item(BaseItem):
     def mutator(self, fieldname):
         """Return the field mutator for the fieldname
         """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
+        fields = api.get_fields(self)
+        field = fields.get(fieldname, None)
+        if not field:
             return None
-        return schema[fieldname].set
+        return field.set

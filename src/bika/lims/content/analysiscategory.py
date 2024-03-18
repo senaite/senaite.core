@@ -15,31 +15,30 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import transaction
 from AccessControl import ClassSecurityInfo
-from bika.lims.browser.fields import UIDReferenceField
-from Products.Archetypes.Field import FloatField
-from Products.Archetypes.Field import TextField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import DecimalWidget
-from Products.Archetypes.Widget import TextAreaWidget
-from Products.Archetypes.public import BaseContent
-from Products.Archetypes.public import registerType
-from Products.CMFCore.WorkflowCore import WorkflowException
-from zope.interface import implements
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveDepartment
+from Products.Archetypes.Field import FloatField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import registerType
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import DecimalWidget
+from Products.Archetypes.Widget import TextAreaWidget
+from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from zope.interface import implements
 
 Comments = TextField(
     "Comments",
@@ -57,15 +56,22 @@ Department = UIDReferenceField(
     required=1,
     allowed_types=("Department",),
     widget=ReferenceWidget(
-        label=_("Department"),
-        description=_("The laboratory department"),
-        showOn=True,
-        catalog_name=SETUP_CATALOG,
-        base_query={
+        label=_(
+            "label_category_department",
+            default="Department"),
+        description=_(
+            "description_category_department",
+            default="Select the responsible department"),
+        catalog=SETUP_CATALOG,
+        query={
             "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending"
         },
+        columns=[
+            {"name": "Title", "label": _("Department Name")},
+            {"name": "getDepartmentID", "label": _("Department ID")},
+        ],
     )
 )
 
@@ -99,7 +105,7 @@ class AnalysisCategory(BaseContent):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def workflow_script_deactivate(self):

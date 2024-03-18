@@ -15,14 +15,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES
@@ -34,14 +33,14 @@ from bika.lims.interfaces import IWorksheetTemplate
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import registerType
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
+from senaite.core import logger
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -88,32 +87,42 @@ schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
         "RestrictToMethod",
-        schemata="Description",
-        vocabulary="_getMethodsVoc",
         allowed_types=("Method",),
         widget=ReferenceWidget(
-            label=_("Method"),
+            label=_(
+                "label_worksheettemplate_restrict_to_method",
+                default="Restrict to Method"),
             description=_(
-                "Restrict the available analysis services and instruments"
-                "to those with the selected method."
-                " In order to apply this change to the services list, you "
+                "description_worksheettemplate_restrict_to_method",
+                default="Restrict the available analysis services and "
+                "instruments to those with the selected method. <br/>"
+                "In order to apply this change to the services list, you "
                 "should save the change first."
             ),
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query={
+                "portal_type": "Method",
+                "is_active": True,
+                "sort_limit": 5,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
     UIDReferenceField(
         "Instrument",
-        schemata="Description",
-        vocabulary="getInstrumentsDisplayList",
         allowed_types=("Instrument",),
         widget=ReferenceWidget(
-            label=_("Instrument"),
+            label=_(
+                "label_worksheettemplate_instrument",
+                default="Preferred instrument"),
             description=_(
-                "Select the preferred instrument"
+                "description_worksheettemplate_instrument",
+                default="Select the preferred instrument"
             ),
-            showOn=True,
+            catalog=SETUP_CATALOG,
+            query="get_widget_instrument_query",
         ),
     ),
 
@@ -127,7 +136,6 @@ schema = BikaSchema.copy() + Schema((
     BooleanField(
         "EnableMultipleUseOfInstrument",
         default=True,
-        schemata="Description",
         widget=BooleanWidget(
             label=_("Enable Multiple Use of Instrument in Worksheets."),
             description=_(
@@ -139,11 +147,9 @@ schema = BikaSchema.copy() + Schema((
 
 ))
 
-schema["title"].schemata = "Description"
 schema["title"].widget.visible = True
-
-schema["description"].schemata = "Description"
 schema["description"].widget.visible = True
+schema["description"].widget.description = ""
 
 
 class WorksheetTemplate(BaseContent):
@@ -151,12 +157,11 @@ class WorksheetTemplate(BaseContent):
     """
     implements(IWorksheetTemplate, IHaveInstrument, IDeactivable)
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     @security.public
@@ -165,72 +170,37 @@ class WorksheetTemplate(BaseContent):
         """
         return ANALYSIS_TYPES
 
-    @security.public
-    def getInstrumentsDisplayList(self):
-        """Returns a display list with the instruments that are allowed for
-        this worksheet template based on the method selected, sorted by title
-        ascending. It also includes "No instrument" as the first option
+    def get_widget_instrument_query(self, **kw):
+        """Return the preferred instruments
         """
-        items = []
-        for instrument in self.getInstruments():
-            uid = api.get_uid(instrument)
-            title = api.get_title(instrument)
-            items.append((uid, title))
-
-        # Sort them alphabetically by title
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ("", _("No instrument")))
-        return DisplayList(items)
-
-    def getInstruments(self):
-        """Returns the list of active Instrument objects that are allowed for
-        this worksheet template based on the method selected
-        """
-        uids = self.getRawInstruments()
-        return [api.get_object_by_uid(uid) for uid in uids]
-
-    def getRawInstruments(self):
-        """Returns the list of UIDs from active instruments that are allowed
-        for this worksheet template based on the method selected, if any
-        """
-        uids = []
-        method_uid = self.getRawRestrictToMethod()
         query = {
             "portal_type": "Instrument",
             "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         }
-        brains = api.search(query, SETUP_CATALOG)
-        for brain in brains:
-            uid = api.get_uid(brain)
-            if not method_uid:
-                uids.append(uid)
-                continue
 
-            # Restrict available instruments to those with the selected method
-            instrument = api.get_object(brain)
-            if method_uid in instrument.getRawMethods():
-                uids.append(uid)
+        # Restrict available instruments to those with the selected method
+        method_uid = self.getRawRestrictToMethod()
+        if method_uid:
+            # prepare subquery
+            uids = []
+            brains = api.search(query, SETUP_CATALOG)
+            for brain in brains:
+                uid = api.get_uid(brain)
+                instrument = api.get_object(brain)
+                if method_uid in instrument.getRawMethods():
+                    uids.append(uid)
+            # create a simple UID query
+            query = {"UID": uids}
 
-        return uids
+        logger.info("get_widget_contact_query: %r" % query)
+        return query
 
     def getMethodUID(self):
         """Return method UID
         """
         return self.getRawRestrictToMethod()
-
-    def _getMethodsVoc(self):
-        """Return the registered methods as DisplayList
-        """
-        methods = api.search({
-            "portal_type": "Method",
-            "is_active": True
-        }, "senaite_catalog_setup")
-
-        items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ("", _("Not specified")))
-
-        return DisplayList(list(items))
 
 
 registerType(WorksheetTemplate, PROJECTNAME)

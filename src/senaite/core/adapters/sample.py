@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -45,7 +45,7 @@ class WorkflowActionMultiResultsAdapter(RequestContextAware):
     def __call__(self, action, uids):
         """Redirects the user to the multi results form
         """
-        portal_url = api.get_url(api.get_portal())
-        url = "{}/samples/multi_results?uids={}".format(
-            portal_url, ",".join(uids))
+        context_url = api.get_url(self.context)
+        url = "{}/multi_results?uids={}".format(
+            context_url, ",".join(uids))
         return self.redirect(redirect_url=url)

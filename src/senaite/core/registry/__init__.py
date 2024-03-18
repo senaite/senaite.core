@@ -15,14 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from plone.registry.interfaces import IRegistry
+from senaite.core import logger
 from senaite.core.registry.schema import ISenaiteRegistry
 from zope.component import getUtility
-from zope.schema._bootstrapinterfaces import WrongType
 from zope.dottedname.resolve import resolve
+from zope.schema._bootstrapinterfaces import WrongType
 
 
 def get_registry():
@@ -62,11 +63,17 @@ def get_registry_record(name, default=None):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
-        proxy = registry.forInterface(interface)
         try:
+            proxy = registry.forInterface(interface)
             return getattr(proxy, name)
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
+
+    interfaces = map(lambda i: i.__identifier__, get_registry_interfaces())
+    logger.error("No registry record found for '{}' in interfaces '{}'. "
+                 "Returning default value: '{}'. Upgrade step not run?"
+                 .format(name, interfaces, default))
+
     return default
 
 

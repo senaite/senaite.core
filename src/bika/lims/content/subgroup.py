@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -54,7 +54,7 @@ class SubGroup(BaseContent):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
 

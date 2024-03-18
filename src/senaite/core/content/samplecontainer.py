@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -41,12 +41,18 @@ class ISampleContainerSchema(model.Schema):
     """
 
     title = schema.TextLine(
-        title=u"Title",
-        required=False,
+        title=_(
+            u"title_samplecontainer_title",
+            default=u"Name"
+        ),
+        required=True,
     )
 
     description = schema.Text(
-        title=u"Description",
+        title=_(
+            u"title_samplecontainer_description",
+            default=u"Description"
+        ),
         required=False,
     )
 
@@ -106,7 +112,7 @@ class ISampleContainerSchema(model.Schema):
     )
     preservation = UIDReferenceField(
         title=_(u"Preservation"),
-        allowed_types=("Preservation", ),
+        allowed_types=("SamplePreservation", ),
         multi_valued=False,
         description=_(u"Preservation method of this container"),
         required=False,
@@ -212,7 +218,7 @@ class SampleContainer(Container):
         """Return the query for the preservation field
         """
         return {
-            "portal_type": "Preservation",
+            "portal_type": "SamplePreservation",
             "is_active": True,
             "sort_on": "title",
             "sort_order": "ascending",

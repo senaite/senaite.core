@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
@@ -188,21 +188,6 @@ class RegistryHiddenFieldsVisibility(SenaiteATWidgetVisibility):
 
     def isVisible(self, field, mode="view", default="visible"):
         return "invisible"
-
-
-class AccountancyFieldsVisibility(SenaiteATWidgetVisibility):
-    """Display/Hide fields related with Accountancy (Discount, prices, invoice)
-    """
-    def __init__(self, context):
-        super(AccountancyFieldsVisibility, self).__init__(
-            context=context, sort=3,
-            field_names=["BulkDiscount", "MemberDiscountApplies",
-                         "InvoiceExclude", "MemberDiscount"])
-
-    def isVisible(self, field, mode="view", default="visible"):
-        if not self.context.bika_setup.getShowPrices():
-            return "invisible"
-        return default
 
 
 class DateReceivedFieldVisibility(SenaiteATWidgetVisibility):

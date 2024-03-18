@@ -33,20 +33,6 @@
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
-  <!-- Plone behavior for Dexterity based contents -->
-  <plone:behavior
-      title="Auto-Generate ID Beahvior for Dexterity Contents"
-      description="Generates an ID with the IDServer"
-      provides="bika.lims.interfaces.IAutoGenerateID"
-      />
-
-  <!-- Multicatalog Behavior for Dexterity based contents -->
-  <plone:behavior
-      title="Multi Catalog Behavior for Dexterity Contents"
-      description="Catalog Dexterity contents in multiple catalogs"
-      provides="bika.lims.interfaces.IMultiCatalogBehavior"
-      />
-
   <!-- XXX: to be removed
        Put javascript errors in Plone log -->
   <browser:page

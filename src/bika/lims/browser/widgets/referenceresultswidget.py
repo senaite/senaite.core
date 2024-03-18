@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -197,7 +197,7 @@ class ReferenceResultsWidget(TypesWidget):
         values = {}
 
         # Process settings from the reference definition first
-        ref_def_uid = form.get("ReferenceDefinition_uid")
+        ref_def_uid = form.get("ReferenceDefinition")
         if api.is_uid(ref_def_uid):
             ref_def_obj = api.get_object_by_uid(ref_def_uid)
             ref_results = ref_def_obj.getReferenceResults()
@@ -220,9 +220,17 @@ class ReferenceResultsWidget(TypesWidget):
             s_min = self._get_spec_value(form, uid, "min", result)
             s_max = self._get_spec_value(form, uid, "max", result)
 
+            # shift min/max values according to the result
+            if s_max < result:
+                s_max = result
+            if s_min > result:
+                s_min = result
+
             # If an error percentage was given, calculate the min/max from the
             # error percentage
             if s_err:
+                # Negative percentage not permitted to prevent min above max
+                s_err = abs(float(s_err))
                 s_min = float(result) * (1 - float(s_err)/100)
                 s_max = float(result) * (1 + float(s_err)/100)
 
@@ -231,9 +239,9 @@ class ReferenceResultsWidget(TypesWidget):
                 "keyword": service.getKeyword(),
                 "uid": uid,
                 "result": result,
-                "min": s_min,
-                "max": s_max,
-                "error": s_err
+                "min": min([s_min, s_max]),
+                "max": max([s_min, s_max]),
+                "error": str(s_err),
             }
 
         return values.values(), {}

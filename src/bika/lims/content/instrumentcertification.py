@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import math
@@ -25,7 +25,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ComboBoxWidget
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCertification
@@ -45,8 +44,9 @@ from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.widgets import DateTimeWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -140,37 +140,50 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Preparator',
-        vocabulary='getLabContacts',
-        allowed_types=('LabContact',),
+        "Preparator",
+        allowed_types=("LabContact", "SupplierContact"),
         widget=ReferenceWidget(
-            label=_("Prepared by"),
-            description=_("The person at the supplier who prepared the certificate"),
-            size=30,
-            base_query={'is_active': True},
-            showOn=True,
-            colModel=[
-                {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
-                {'columnName': 'Title', 'width': '80', 'label': _('Name')}
+            label=_(
+                "label_instrumentcertification_preparator",
+                default="Prepared by"),
+            description=_(
+                "description_instrumentcertification_preparator",
+                default="The person at the supplier who prepared the certificat"),
+            catalog=CONTACT_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+                {"name": "getJobTitle", "label": _("Job Title")},
             ],
         ),
     ),
 
     UIDReferenceField(
-        'Validator',
-        vocabulary='getLabContacts',
-        allowed_types=('LabContact',),
+        "Validator",
+        allowed_types=("LabContact", "SupplierContact"),
         widget=ReferenceWidget(
-            label=_("Approved by"),
-            description=_("The person at the supplier who approved the certificate"),
-            size=30,
-            base_query={'is_active': True},
-            showOn=True,
-            colModel=[
-                {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
-                {'columnName': 'Title', 'width': '80', 'label': _('Name')}
+            label=_(
+                "label_instrumentcertification_validator",
+                default="Approved by"),
+            description=_(
+                "description_instrumentcertification_validator",
+                default="The person at the supplier who approved the "
+                        "certificate"),
+            catalog=CONTACT_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "getFullname", "label": _("Name")},
+                {"name": "getEmailAddress", "label": _("Email")},
+                {"name": "getJobTitle", "label": _("Job Title")},
             ],
         ),
     ),
@@ -205,7 +218,7 @@ class InstrumentCertification(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     @security.protected("Modify portal content")
@@ -227,16 +240,6 @@ class InstrumentCertification(BaseFolder):
         else:
             # just set the value
             self.getField("ValidTo").set(self, value)
-
-    def getLabContacts(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        # fallback - all Lab Contacts
-        pairs = []
-        for contact in bsc(portal_type='LabContact',
-                           is_active=True,
-                           sort_on='sortable_title'):
-            pairs.append((contact.UID, contact.Title))
-        return DisplayList(pairs)
 
     def getInterval(self):
         """Vocabulary of date intervals to calculate the "To" field date based

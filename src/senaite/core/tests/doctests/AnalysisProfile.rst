@@ -29,7 +29,6 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-
     >>> def get_services(sample):
     ...    analyses = sample.getAnalyses(full_objects=True)
     ...    services = map(lambda an: an.getAnalysisService(), analyses)
@@ -57,7 +56,9 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> setup = portal.setup
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
 
@@ -66,21 +67,35 @@ We need to create some basic objects for the test:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> supplier = api.create(setup.bika_suppliers, "Supplier", Name="Naralabs")
-    >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
-    >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
-    >>> Au = api.create(setup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> Zn = api.create(setup.bika_analysisservices, "AnalysisService", title="Zink", Keyword="Zn", Price="20", Category=category.UID())
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
+    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+    >>> Zn = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Zink", Keyword="Zn", Price="20", Category=category.UID())
     >>> service_uids1 = [Cu.UID(), Fe.UID(), Au.UID()]
     >>> service_uids2 = [Zn.UID()]
     >>> service_uids3 = [Cu.UID(), Fe.UID(), Au.UID(), Zn.UID()]
-    >>> profile1 = api.create(setup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids1)
-    >>> profile2 = api.create(setup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids2)
-    >>> profile3 = api.create(setup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=service_uids3)
+    >>> profile1 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile1.setServices(service_uids1)
+    >>> profile2 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile2.setServices(service_uids2)
+    >>> profile3 = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile3.setServices(service_uids3)
+
+
+Test Profile Price, VAT and calcluations
+........................................
+
+    >>> profile1.setAnalysisProfilePrice(200)
+    >>> profile1.setAnalysisProfileVAT(19)
+    >>> profile1.getVATAmount()
+    38.0
+    >>> profile1.getTotalPrice()
+    238.0
 
 
 Assign Profile(s)
@@ -88,7 +103,7 @@ Assign Profile(s)
 
 Assigning Analysis Profiles adds the Analyses of the profile to the sample.
 
-    >>> setup.setSelfVerificationEnabled(True)
+    >>> bikasetup.setSelfVerificationEnabled(True)
 
     >>> values = {
     ...     'Client': client.UID(),

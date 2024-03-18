@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from itertools import islice
@@ -26,6 +26,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.api.security import get_roles
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
+from bika.lims.interfaces.field import IUIDReferenceField
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize import view as viewcache
 from plone.protect import PostOnly
@@ -73,17 +74,20 @@ class SampleHeaderViewlet(ViewletBase):
         form = request.form
 
         for name, field in self.fields.items():
-            # get the raw value from the form. This shouldn't be necessary,
-            # but there are still some widgets out there with a name that
-            # follows the format <fieldname>_uid. Otherwise, we could simply
-            # pass the form object to the widget's process_form function.
+            # get the raw value from the form
             value = self.get_field_value(field, form)
             if value is _fieldname_not_in_form:
                 continue
 
+            # some legacy widgets need values with <fieldname>_ as prefix
+            prefix = "{}_".format(name)
+            extra = filter(lambda key: key.startswith(prefix), form.keys())
+            form_values = dict((key, form[key]) for key in extra)
+            form_values[name] = value
+
             # process the value as the widget would usually do
             process_value = field.widget.process_form
-            value, msgs = process_value(self.context, field, {name: value})
+            value, msgs = process_value(self.context, field, form_values)
 
             # Keep track of field-values
             field_values.update({name: value})
@@ -113,8 +117,8 @@ class SampleHeaderViewlet(ViewletBase):
     def get_configuration(self):
         """Return header configuration
 
-        This method retrieves the customized field and column configuration from
-        the management view directly.
+        This method retrieves the customized field and column configuration
+        from the management view directly.
 
         :returns: Field and columns configuration dictionary
         """
@@ -151,16 +155,13 @@ class SampleHeaderViewlet(ViewletBase):
 
         fieldvalue = form[fieldname]
 
-        # Handle (multiValued) reference fields
-        # https://github.com/bikalims/bika.lims/issues/2270
-        uid_fieldname = "{}_uid".format(fieldname)
-        if uid_fieldname in form:
-            # get the value from the corresponding `uid_<fieldname>` key
-            value = form[uid_fieldname]
+        # Handle  reference fields
+        if IUIDReferenceField.providedBy(field):
+            value = fieldvalue
 
             # extract the assigned UIDs for multi-reference fields
             if field.multiValued:
-                value = filter(None, value.split(","))
+                value = filter(None, fieldvalue.split("\r\n"))
 
             # allow to flush single reference fields
             if not field.multiValued and not fieldvalue:

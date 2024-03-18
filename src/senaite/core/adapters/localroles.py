@@ -15,16 +15,17 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import six
-from bika.lims import api
 from bika.lims import APIError
+from bika.lims import api
 from bika.lims import logger
 from borg.localrole.default_adapter import DefaultLocalRoleAdapter
 from plone.memoize.request import cache
 from senaite.core.behaviors import IClientShareableBehavior
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.interfaces import IDynamicLocalRoles
 from zope.component import getAdapters
 from zope.interface import implementer
@@ -140,7 +141,7 @@ class ClientShareableLocalRoles(object):
             "getUsername": principal_id,
             "getParentUID": clients,
         }
-        brains = api.search(query, catalog="portal_catalog")
+        brains = api.search(query, catalog=CONTACT_CATALOG)
         if len(brains) == 0:
             return []
 

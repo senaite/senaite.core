@@ -15,13 +15,14 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
+from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISampleCatalog
 from zope.component import getAdapters
@@ -118,10 +119,24 @@ def listing_searchable_text(instance):
         batch = obj.getBatch()
         entries.add(batch.getId() if batch else '')
 
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    text_providers = getAdapters((instance, api.get_request(), catalog),
+                                 IListingSearchableTextProvider)
+    # BBB
+    bbb_text_providers = getAdapters((instance, catalog),
+                                     IListingSearchableTextProvider)
+
+    # combine the adapters for backwards compatibility
+    adapters = list(text_providers) + list(bbb_text_providers)
+
     # Allow to extend search tokens via adapters
-    for name, adapter in getAdapters((instance, api.get_tool(SAMPLE_CATALOG)),
-                                     IListingSearchableTextProvider):
-        value = adapter()
+    for name, adapter in adapters:
+        try:
+            value = adapter()
+        except (AttributeError, TypeError, api.APIError) as exc:
+            logger.error(exc)
+            value = []
+
         if isinstance(value, (list, tuple)):
             values = map(api.to_searchable_text_metadata, value)
             entries.update(values)

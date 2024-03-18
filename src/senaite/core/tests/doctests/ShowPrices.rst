@@ -47,8 +47,9 @@ Variables:
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> request = self.request
     >>> portal = self.portal
-    >>> bs = portal.bika_setup
-    >>> laboratory = bs.laboratory
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
+    >>> laboratory = bikasetup.laboratory
     >>> portal_url = portal.absolute_url()
 
 We need certain permissions to create and access objects used in this test,
@@ -60,14 +61,15 @@ Now we need to create some basic content for our tests:
 
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(portal.bika_setup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
-    >>> labcontact = api.create(portal.bika_setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(portal.bika_setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(portal.bika_setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> Cu = api.create(portal.bika_setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="409.17", Category=category.UID(), Accredited=True)
-    >>> Fe = api.create(portal.bika_setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="208.20", Category=category.UID())
-    >>> profile = api.create(portal.bika_setup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=[Fe.UID(), Cu.UID()])
-    >>> template = api.create(portal.bika_setup.bika_artemplates, "ARTemplate", title="Template", AnalysisProfile=[profile.UID()])
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="409.17", Category=category.UID(), Accredited=True)
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="208.20", Category=category.UID())
+    >>> profile = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile")
+    >>> profile.setServices([Fe, Cu])
+    >>> template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Template", AnalysisProfile=[profile.UID()])
 
 Enable accreditation for the lab
 
@@ -94,8 +96,6 @@ Verify that the price and invoice fields are present when ShowPrices is enabled:
     True
     >>> True if "Total" in browser.contents else "ShowPrices is True, and Total field is missing from AR Add."
     True
-    >>> True if "Invoice Exclude" in browser.contents else "ShowPrices is True, and Invoice Exclude field is missing from AR Add."
-    True
 
 And then that the opposite is true:
 
@@ -109,8 +109,6 @@ And then that the opposite is true:
     >>> True if "VAT" not in browser.contents else "ShowPrices is False, VAT field should not be present in AR Add."
     True
     >>> True if "Total" not in browser.contents else "ShowPrices is False, Total field should not be present in AR Add."
-    True
-    >>> True if "Invoice Exclude" not in browser.contents else "ShowPrices is False, Invoice Exclude field should not be present in AR Add."
     True
 
 Disable MemberDiscountApplies, and verify that it always vanishes from AR add:
@@ -155,16 +153,3 @@ Test show/hide prices when viewing an AR.  First, create an AR:
        browser.open(ar.absolute_url())
        True if 'contentview-invoice' not in browser.contents else "Invoice Tab is visible, but ShowPrices is False."
        True
-
-Client discount fields show/hide
-................................
-
-    >>> enableShowPrices()
-    >>> browser.open(client.absolute_url() + "/edit")
-    >>> True if 'discount' in browser.contents else "Client discount field should be visible, but is not"
-    True
-
-    >>> disableShowPrices()
-    >>> browser.open(client.absolute_url() + "/edit")
-    >>> True if 'discount' not in browser.contents else "Client discount field should not be visible, but here it is"
-    True

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from string import Template
@@ -439,7 +439,13 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         hidden = map(lambda o: {
             "uid": api.get_uid(o), "hidden": self.is_hidden(o)
         }, services)
-        specs = map(lambda service: self.get_specs(service), services)
+
+        # Do not overwrite default result ranges set through sample
+        # specification field unless the edition of specs at analysis
+        # level is explicitely allowed
+        specs = []
+        if self.is_ar_specs_enabled:
+            specs = map(lambda service: self.get_specs(service), services)
 
         # Set new analyses to the sample
         sample.setAnalysisServicesSettings(hidden)
@@ -458,6 +464,14 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
 
         # Redirect the user to success page
         self.success([sample])
+
+    @property
+    def is_ar_specs_enabled(self):
+        """Returns whether the assignment of specs at analysis level within
+        sample context is enabled or not
+        """
+        setup = api.get_setup()
+        return setup.getEnableARSpecs()
 
     def is_hidden(self, service):
         """Returns whether the request Hidden param for the given obj is True

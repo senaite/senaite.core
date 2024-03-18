@@ -15,12 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import is_active
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
@@ -44,7 +44,7 @@ class CatalogVocabulary(object):
     """
     implements(IDisplayListVocabulary)
 
-    catalog = 'portal_catalog'
+    catalog = 'uid_catalog'
     contentFilter = {}
     key = 'UID'
     value = 'Title'

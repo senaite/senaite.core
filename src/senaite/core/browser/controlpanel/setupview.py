@@ -15,11 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.utils import t
+from senaite.core.i18n import translate as t
 from plone.memoize.instance import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
@@ -72,29 +72,45 @@ class SetupView(BrowserView):
         """
         return self.bootstrap.get_icon_for(brain, **kw)
 
+    @memoize_contextless
+    def get_allowed_content_types(self, obj):
+        """Get the allowed content types
+        """
+        portal_types = api.get_tool("portal_types")
+        fti = portal_types.getTypeInfo(api.get_portal_type(obj))
+        allowed_types = fti.allowed_content_types
+        if len(allowed_types) != 1:
+            return None
+        # convert from unicode -> str for api.search catalog lookup
+        return list(map(str, allowed_types))
+
+    def get_count(self, obj):
+        """Retrieve the count of contained items
+        """
+        contained_types = self.get_allowed_content_types(obj)
+
+        # fallback
+        if contained_types is None:
+            return len(obj.objectIds())
+
+        query = {
+            "portal_type": contained_types,
+            "is_active": True,
+        }
+        brains = api.search(query)
+        return len(brains)
+
     def setupitems(self):
         """Lookup available setup items
 
-        :returns: catalog brains
+        :returns: objects
         """
-        query = {
-            "path": {
-                "query": [
-                    api.get_path(self.setup),
-                    api.get_path(self.senaite_setup),
-                ],
-                "depth": 1,
-            },
-        }
-        items = api.search(query, "portal_catalog")
-        # filter out items
-        items = filter(lambda item: not item.exclude_from_nav, items)
+        items = self.setup.objectValues() + self.senaite_setup.objectValues()
 
         # sort by (translated) title
-        def cmp_by_translated_title(brain1, brain2):
-            title1 = t(api.get_title(brain1))
-            title2 = t(api.get_title(brain2))
-            # XXX: Python 3 compatibility
+        def cmp_by_translated_title(obj1, obj2):
+            title1 = t(api.get_title(obj1))
+            title2 = t(api.get_title(obj2))
             return cmp(title1, title2)
 
         return sorted(items, cmp=cmp_by_translated_title)

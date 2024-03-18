@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 
@@ -25,6 +25,7 @@ from bika.lims import logger
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView as BaseBrowserView
 from senaite.core.api.dtime import to_localized_time as ulocalized_time
+from senaite.core.catalog import CONTACT_CATALOG
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 
@@ -98,8 +99,8 @@ class BrowserView(BaseBrowserView):
         if member is None:
             return userid
         member_fullname = member.getProperty('fullname')
-        portal_catalog = getToolByName(self, 'portal_catalog')
-        c = portal_catalog(portal_type='Contact', getUsername=userid)
+        catalog = getToolByName(self, CONTACT_CATALOG)
+        c = catalog(portal_type='Contact', getUsername=userid)
         contact_fullname = c[0].getObject().getFullname() if c else None
         return contact_fullname or member_fullname or userid
 
@@ -112,8 +113,8 @@ class BrowserView(BaseBrowserView):
         if member is None:
             return userid
         member_email = member.getProperty('email')
-        portal_catalog = getToolByName(self, 'portal_catalog')
-        c = portal_catalog(portal_type='Contact', getUsername=userid)
+        catalog = getToolByName(self, CONTACT_CATALOG)
+        c = catalog(portal_type='Contact', getUsername=userid)
         contact_email = c[0].getObject().getEmailAddress() if c else None
         return contact_email or member_email or ''
 

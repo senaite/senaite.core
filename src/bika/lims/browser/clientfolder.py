@@ -15,33 +15,28 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
-from senaite.core.permissions import AddClient
-from senaite.core.permissions import ManageAnalysisRequests
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from bika.lims.utils import get_registry_value
-from plone.app.content.browser.interfaces import IFolderContentsView
 from Products.CMFCore.permissions import ModifyPortalContent
+from senaite.app.listing import ListingView
 from senaite.core.catalog import CLIENT_CATALOG
-from zope.interface import implements
+from senaite.core.config.registry import CLIENT_LANDING_PAGE
+from senaite.core.permissions import AddClient
+from senaite.core.permissions import ManageAnalysisRequests
+from senaite.core.registry import get_registry_record
 
 
-class ClientFolderContentsView(BikaListingView):
+class ClientFolderContentsView(ListingView):
     """Listing view for all Clients
     """
-    implements(IFolderContentsView)
-
-    _LANDING_PAGE_REGISTRY_KEY = "bika.lims.client.default_landing_page"
-    _DEFAULT_LANDING_PAGE = "analysisrequests"
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
@@ -50,9 +45,6 @@ class ClientFolderContentsView(BikaListingView):
         self.description = ""
         self.form_id = "list_clientsfolder"
         self.sort_on = "sortable_title"
-        # Landing page to be added to the link of each client from the list
-        self.landing_page = get_registry_value(
-            self._LANDING_PAGE_REGISTRY_KEY, self._DEFAULT_LANDING_PAGE)
 
         self.catalog = CLIENT_CATALOG
         self.contentFilter = {
@@ -61,10 +53,6 @@ class ClientFolderContentsView(BikaListingView):
             "sort_order": "ascending"
         }
 
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
-        self.show_select_column = False
-        self.pagesize = 25
         self.icon = "{}/{}".format(
             self.portal_url, "++resource++bika.lims.images/client_big.png")
 
@@ -72,20 +60,20 @@ class ClientFolderContentsView(BikaListingView):
             ("title", {
                 "title": _("Name"),
                 "index": "sortable_title"},),
-            ("getClientID", {
+            ("ClientID", {
                 "title": _("Client ID")}),
             ("EmailAddress", {
                 "title": _("Email Address"),
                 "sortable": False}),
-            ("getCountry", {
+            ("Country", {
                 "toggle": False,
                 "sortable": False,
                 "title": _("Country")}),
-            ("getProvince", {
+            ("Province", {
                 "toggle": False,
                 "sortable": False,
                 "title": _("Province")}),
-            ("getDistrict", {
+            ("District", {
                 "toggle": False,
                 "sortable": False,
                 "title": _("District")}),
@@ -100,7 +88,7 @@ class ClientFolderContentsView(BikaListingView):
                 "toggle": False,
                 "sortable": False,
                 "title": _("Bulk Discount")}),
-            ("MemberDiscountApplies", {
+            ("MemberDiscount", {
                 "toggle": False,
                 "sortable": False,
                 "title": _("Member Discount")}),
@@ -133,6 +121,9 @@ class ClientFolderContentsView(BikaListingView):
         """
         # Call `before_render` from the base class
         super(ClientFolderContentsView, self).before_render()
+
+        # Landing page to be added to the link of each client from the list
+        self.landing_page = get_registry_record(CLIENT_LANDING_PAGE)
 
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):
@@ -171,32 +162,45 @@ class ClientFolderContentsView(BikaListingView):
         :rtype: dict
         """
         obj = api.get_object(obj)
+
         # render a link to the defined start page
         link_url = "{}/{}".format(item["url"], self.landing_page)
         item["replace"]["title"] = get_link(link_url, item["title"])
-        item["replace"]["getClientID"] = get_link(link_url, item["getClientID"])
-        # render an email link
+
+        # Client ID
+        client_id = obj.getClientID()
+        item["ClientID"] = client_id
+        if client_id:
+            item["replace"]["ClientID"] = get_link(link_url, client_id)
+
+        # Email address
         email = obj.getEmailAddress()
-        item["replace"]["EmailAddress"] = get_email_link(email)
-        # translate True/FALSE values
-        item["replace"]["BulkDiscount"] = obj.getBulkDiscount() and _("Yes") or _("No")
-        item["replace"]["MemberDiscountApplies"] = obj.getMemberDiscountApplies() and _("Yes") or _("No")
-        # render a phone link
+        item["EmailAddress"] = get_email_link(email)
+        if email:
+            item["replace"]["EmailAddress"] = get_email_link(email)
+
+        # Country, Province, District
+        item["Country"] = obj.getCountry()
+        item["Province"] = obj.getProvince()
+        item["District"] = obj.getDistrict()
+
+        # Phone
         phone = obj.getPhone()
+        item["Phone"] = phone
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
 
+        # Fax
+        item["Fax"] = obj.getFax()
+
+        # Bulk Discount
+        bulk_discount = obj.getBulkDiscount()
+        bulk_discount_value = _("Yes") if bulk_discount else _("No")
+        item["replace"]["BulkDiscount"] = bulk_discount_value
+
+        # Member Discount
+        member_discount = obj.getMemberDiscountApplies()
+        member_discount_value = _("Yes") if member_discount else _("No")
+        item["replace"]["MemberDiscount"] = member_discount_value
+
         return item
-
-
-def client_match(client, search_term):
-    # Check if the search_term matches some common fields
-    if search_term in client.getClientID().lower():
-        return True
-    if search_term in client.Title().lower():
-        return True
-    if search_term in client.getName().lower():
-        return True
-    if search_term in client.Description().lower():
-        return True
-    return False

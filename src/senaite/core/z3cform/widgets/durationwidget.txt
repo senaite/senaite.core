@@ -1,0 +1,163 @@
+Duration widget
+===============
+
+The duration field widget allows to set a duration in days, hours, minutes and
+seconds and display it.
+
+
+Running this test from the buildout directory:
+
+    bin/test test_z3c_widgets -t durationwidget
+
+Hints:
+
+`plone.app.z3cform.widget.DurationWidget`
+
+
+Some variables we need:
+
+    >>> NAME = "duration"
+    >>> VALUE = {"days": 2, "hours": 48, "minutes": 70, "seconds": 70}
+    >>> INPUT_TPL = "duration/input.pt"
+    >>> HIDDEN_TPL = "duration/hidden.pt"
+    >>> DISPLAY_TPL = "duration/display.pt"
+
+The widget can render a input field for a days, hours, minutes and seconds:
+
+    >>> from zope.interface.verify import verifyClass
+    >>> from z3c.form import interfaces
+    >>> from senaite.core.z3cform.widgets.duration.widget import DurationWidget
+
+Verify widget:
+
+    >>> verifyClass(interfaces.IWidget, DurationWidget)
+    True
+
+The widget can render a input field only by adapting a request:
+
+    >>> from z3c.form.testing import TestRequest
+    >>> request = TestRequest()
+    >>> widget = DurationWidget(request)
+
+Such a field provides IWidget:
+
+    >>> interfaces.IWidget.providedBy(widget)
+    True
+
+We also need to register the template for at least the widget and request:
+
+    >>> import os.path
+    >>> import zope.interface
+    >>> from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+    >>> from zope.pagetemplate.interfaces import IPageTemplate
+    >>> import senaite.core.z3cform.widgets
+    >>> import z3c.form.widget
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), INPUT_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='input')
+
+If we render the widget we get the HTML:
+
+    >>> widget.name = NAME
+    >>> widget.value = VALUE
+    >>> widget.mode = interfaces.INPUT_MODE
+    >>> print(widget.render().replace('\n', ''))
+    <html>
+      <body>
+        <div class="senaite-duration-widget senaite-duration-widget-input">
+          <div class="form-row">
+            <div class="col-auto">
+              <label for="duration.days:record:int">Days</label>
+              <input id="duration.days:record:int" name="duration.days:record:int" size="5" type="number" value="2">
+            </div>
+            <div class="col-auto">
+              <label for="duration.hours:record:int">Hours</label>
+              <input id="duration.hours:record:int" name="duration.hours:record:int" size="5" type="number" value="48">
+            </div>
+            <div class="col-auto">
+              <label for="duration.minutes:record:int">Minutes</label>
+              <input id="duration.minutes:record:int" name="duration.minutes:record:int" size="5" type="number" value="70">
+            </div>
+            <div class="d-none">
+              <label for="duration.seconds:record:int">Seconds</label>
+              <input id="duration.seconds:record:int" name="duration.seconds:record:int" size="5" type="number" value="70">
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+
+
+Render without the days component:
+
+    >>> widget.show_days = False
+    >>> print(widget.render().replace('\n', ''))
+    <html>
+      <body>
+        <div class="senaite-duration-widget senaite-duration-widget-input">
+          <div class="form-row">
+            <div class="d-none">
+              <label for="duration.days:record:int">Days</label>
+              <input id="duration.days:record:int" name="duration.days:record:int" size="5" type="number" value="2">
+            </div>
+            <div class="col-auto">
+              <label for="duration.hours:record:int">Hours</label>
+              <input id="duration.hours:record:int" name="duration.hours:record:int" size="5" type="number" value="48">
+            </div>
+            <div class="col-auto">
+              <label for="duration.minutes:record:int">Minutes</label>
+              <input id="duration.minutes:record:int" name="duration.minutes:record:int" size="5" type="number" value="70">
+            </div>
+            <div class="d-none">
+              <label for="duration.seconds:record:int">Seconds</label>
+              <input id="duration.seconds:record:int" name="duration.seconds:record:int" size="5" type="number" value="70">
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+
+Check DISPLAY_MODE:
+
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), DISPLAY_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='display')
+
+    >>> widget.name = NAME
+    >>> widget.value = VALUE
+    >>> widget.mode = interfaces.DISPLAY_MODE
+    >>> print(widget.render())
+    <html>
+      <body>
+        <div class="senaite-duration-widget senaite-duration-widget-display">
+          <span>48 hours</span>
+          <span>70 minutes</span>
+        </div>
+      </body>
+    </html>
+
+
+Check HIDDEN_MODE:
+
+    >>> template = os.path.join(os.path.dirname(senaite.core.z3cform.widgets.__file__), HIDDEN_TPL)
+    >>> factory = z3c.form.widget.WidgetTemplateFactory(template)
+    >>> zope.component.provideAdapter(factory,
+    ...     (zope.interface.Interface, IDefaultBrowserLayer, None, None, None),
+    ...     IPageTemplate, name='hidden')
+
+    >>> widget.name = NAME
+    >>> widget.value = VALUE
+    >>> widget.mode = interfaces.HIDDEN_MODE
+    >>> print(widget.render())
+    <html>
+      <body>
+        <input name="duration.days:record:int" type="hidden" value="2">
+        <input name="duration.hours:record:int" type="hidden" value="48">
+        <input name="duration.minutes:record:int" type="hidden" value="70">
+        <input name="duration.seconds:record:int" type="hidden" value="70">
+      </body>
+    </html>

@@ -2,205 +2,80 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      i18n:domain="plone">
-  <head><title></title></head>
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
   <body>
 
-    <!-- Reference Widget -->
-    <metal:view_macro define-macro="view"
-                      tal:define="kssClassesView context/@@kss_field_decorator_view;
-                                  getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
-
-      <!-- View Mode: Single Valued Field -->
-      <tal:singlevalued tal:condition="not:field/multiValued">
-        <span metal:define-macro="string-field-view"
-              tal:define="kss_class python:getKssClasses(fieldName,
-                          templateId='widgets/string', macro='string-field-view');
-                          uid context/UID|nothing"
-              tal:attributes="class kss_class;
-                              id string:parent-fieldname-$fieldName-$uid">
-          <span metal:define-slot="inside"
-                tal:define="value accessor;
-                            text_default python: (value and hasattr(value, 'Title')) and value.Title() or '';
-                            text_attr widget/ui_item|nothing;
-                            text python:text_attr and getattr(value, text_attr, text_default) or text_default;"
-                tal:attributes="value text;">
-            <a href="#"
-               tal:condition="python:value"
-               tal:attributes="href python:value.absolute_url();
-                               class python:value.portal_type.replace(' ', '_') + ' overlay_panel'"
-               tal:content="python:value.Title() or value.absolute_url(relative=1)">
-              Target Title
-            </a>
-          </span>
-        </span>
-      </tal:singlevalued>
-
-      <!-- View Mode: Multi Valued Field -->
-      <tal:multivalued tal:condition="field/multiValued">
-        <ul class="list-unstyled" tal:define="value accessor">
-          <li tal:repeat="obj value">
-            <a href="#"
-               tal:attributes="href obj/absolute_url;
-                               class python:obj.portal_type.replace(' ', '_') + ' overlay_panel'"
-               tal:content="python:obj.Title() or obj.absolute_url(relative=1)">
-              Target Title
-            </a>
+    <!-- VIEW MACRO -->
+    <metal:view_macro define-macro="view">
+      <div metal:define-slot="inside"
+           tal:define="value python:accessor();
+                       refs python:widget.get_value(context, field, value)">
+        <ul class="list-unstyled d-table-row">
+          <li tal:repeat="ref refs" class="d-inline-block">
+            <tal:ref tal:define="rendered python:widget.render_reference(context, field, ref)">
+              <div tal:condition="python:rendered"
+                  class="p-1 mb-1 mr-1 bg-light border rounded">
+                <span tal:replace="structure rendered"/>
+              </div>
+              <div tal:condition="python:not rendered" class="text-danger">
+                <span tal:attributes="title string:broken reference ${ref}"
+                      tal:content="ref"></span>
+              </div>
+            </tal:ref>
           </li>
         </ul>
-      </tal:multivalued>
-
+      </div>
     </metal:view_macro>
 
-    <metal:edit_macro define-macro="edit"
-      tal:define="visibility_mode python: widget.isVisible(context, mode='edit', field=field);">
+    <!-- EDIT MACRO -->
+    <metal:edit_macro define-macro="edit">
+      <tal:values define="value python:field.getEditAccessor(here)() or [];
+                          session_value python:here.session_restore_value(fieldName, value);
+                          cached_value python:request.get(fieldName, session_value);
+                          value python:cached_value or value;
+                          required field/required|nothing;
+                          required python: required and 'required' or None;
+                          error_id python:errors.get(fieldName);
+                          i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
 
-      <tal:edit_visible tal:condition="python: visibility_mode == 'visible'">
-        <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-          <metal:fill metal:fill-slot="widget_body">
-            <div class="d-table-row">
+        <tal:ifLabel tal:condition="not: widget/render_own_label | nothing">
+          <label class="formQuestion"
+                 tal:attributes="for python:fieldName">
+            <span tal:replace="python:widget.Label(here)"
+                  i18n:translate="" />
+            <span class="required"
+                  tal:condition="field/required"
+                  title="Required"
+                  i18n:attributes="title title_required;">&nbsp;</span>
+            <span class="formHelp"
+                  tal:define="description python:widget.Description(here)"
+                  tal:content="structure description"
+                  tal:attributes="id string:${fieldName}_help"
+                  i18n:translate="">
+              Help
+            </span>
+          </label>
+        </tal:ifLabel>
 
-            <!-- Edit Mode: Multi Valued Field -->
-            <div class="multiValued-listing"
-                 tal:condition="python:context.Schema()[fieldName].multiValued"
-                 tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
-                 tal:define="portal_state python:context.restrictedTraverse('@@plone_portal_state');
-                             portal_url python:portal_state.portal_url();
-                             values python:context.Schema()[fieldName].getAccessor(context)();">
-              <tal:repeat repeat="value values">
-                <div class="reference_multi_item"
-                     tal:attributes="uid value/UID">
-                  <img
-                    class="deletebtn"
-                    tal:attributes="
-                      src string:${portal_url}/++plone++senaite.core.static/assets/icons/delete.svg;
-                      fieldName fieldName;
-                      uid value/UID"/>
-                  <a class="" href="#"
-                     target="blank"
-                     tal:content="python:str(value.Title())"
-                     tal:attributes="href python:value.absolute_url()">
-                  </a>
-                </div>
-              </tal:repeat>
-            </div>
+        <!-- Reference -->
+        <div tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
+             tal:attributes="id python:fieldName;
+                             class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + widget.klass;
+                             data-required python:required and '1' or '0';
+                             python:widget_attrs;">
+          <!-- ReactJS controlled component -->
+        </div>
 
-            <tal:input_field define="val python:context.Schema()[fieldName].getAccessor(context)();
-                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
-                                     text_default val/Title|nothing;
-                                     text_attr widget/ui_item|nothing;
-                                     text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
-              <input type="text"
-                     class="blurrable firstToFocus referencewidget"
-                     tal:condition="python:context.Schema()[fieldName].required"
-                     tal:attributes="name fieldName;
-                                     id fieldName;
-                                     value text;
-                                     uid val/UID|nothing;
-                                     size widget/size;
-                                     placeholder widget/placeholder|nothing;
-                                     maxlength widget/maxlength;
-                                     catalog_name widget/catalog_name;
-                                     base_query python:widget.get_base_query(context, fieldName);
-                                     search_query string:{};
-                                     showOn widget/showOn;
-                                     searchIcon widget/searchIcon;
-                                     resetButton widget/resetButton;
-                                     minLength python:widget.minLength;
-                                     ui_item widget/ui_item;
-                                     multiValued multiValued;
-                                     combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
+        <div class="fieldErrorBox" tal:condition="required"></div>
+        <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
 
-              <input type="text"
-                     class="blurrable firstToFocus referencewidget"
-                     tal:condition="python:not context.Schema()[fieldName].required"
-                     tal:attributes="name fieldName;
-                                     id fieldName;
-                                     value text;
-                                     uid val/UID|nothing;
-                                     size widget/size;
-                                     placeholder widget/placeholder|nothing;
-                                     maxlength widget/maxlength;
-                                     catalog_name widget/catalog_name;
-                                     base_query python:widget.get_base_query(context, fieldName);
-                                     search_query string:{};
-                                     showOn widget/showOn;
-                                     searchIcon widget/searchIcon;
-                                     resetButton widget/resetButton;
-                                     minLength widget/minLength;
-                                     ui_item widget/ui_item;
-                                     multiValued multiValued;
-                                     combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
-
-                <input type="hidden"
-                       name=""
-                       value=""
-                       tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
-                       tal:attributes="name string:${fieldName}_uid;
-                                       id string:${fieldName}_uid;
-                                       value python:widget.initial_uid_field_value(val);"/>
-
-                <!-- Link to single valued object in edit mode -->
-                <tal:link tal:condition="python:hasattr(val, 'absolute_url') and not multiValued">
-                  <a class="pl-2 d-table-cell" href="#"
-                     target="blank"
-                     tal:attributes="href python:val.absolute_url()">
-                    <i class="fas fa-info-circle small text-secondary"></i>
-                  </a>
-                </tal:link>
-
-              </tal:input_field>
-
-            </div>
-          </metal:fill>
-        </metal:use>
-      </tal:edit_visible>
-
-      <tal:edit_hidden tal:condition="python: visibility_mode in ['hidden', 'readonly']"
-        define="val python:context.Schema()[fieldName].getAccessor(context)();
-                text_default val/Title|nothing;
-                text_attr widget/ui_item|nothing;
-                text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
-
-        <tal:readonly tal:condition="python: visibility_mode == 'readonly'">
-          <div class="field form-group">
-            <label class="formQuestion">
-                <span tal:replace="python:widget.Label(here)"
-                      i18n:translate="" />
-                <span class="required"
-                      tal:condition="field/required"
-                      title="Required"
-                      i18n:attributes="title title_required;">&nbsp;</span>
-                <span class="formHelp"
-                     tal:define="description python:widget.Description(here)"
-                     tal:content="structure description"
-                     tal:attributes="id string:${fieldName}_help"
-                     i18n:translate="">
-                </span>
-            </label>
-            <div>
-              <span tal:content="text"/>
-            </div>
-          </div>
-        </tal:readonly>
-
-        <input type="hidden"
-               tal:attributes="name fieldName;
-                               id fieldName;
-                               value text;
-                               uid val/UID|nothing;" />
-        <input type="hidden"
-               tal:attributes="name string:${fieldName}_uid;
-                               id string:${fieldName}_uid;
-                               value python:widget.initial_uid_field_value(val);"/>
-      </tal:edit_hidden>
+      </tal:values>
     </metal:edit_macro>
 
-    <div metal:define-macro="search">
-      <div metal:use-macro="context/widgets/string/macros/edit">
-      </div>
-    </div>
+    <metal:search_macro define-macro="search">
+      <div metal:use-macro="context/widgets/string/macros/edit"></div>
+    </metal:search_macro>
 
   </body>
-
 </html>

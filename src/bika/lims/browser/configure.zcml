@@ -31,10 +31,8 @@
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
-  <include package=".department"/>
   <include package=".fields"/>
   <include package=".publish"/>
-  <include package=".reports"/>
   <include package=".resultsimport"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
@@ -56,23 +54,6 @@
       class=".myorganization.MyOrganizationView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS" />
-
-  <browser:page
-      for="*"
-      name="at_validate_field"
-      class=".validation.InlineValidationView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-  <!-- AR Partition Magic View -->
-  <browser:page
-      for="*"
-      name="partition_magic"
-      class=".partition_magic.PartitionMagicView"
-      permission="senaite.core.permissions.AddAnalysisRequest"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
 
   <!-- Searches for sample types (TemplatePartitions) -->
   <browser:page

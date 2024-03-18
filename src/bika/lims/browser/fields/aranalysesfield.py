@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
@@ -375,7 +375,7 @@ class ARAnalysesField(ObjectField):
     def set_default_result(self, analysis, default_result):
         """Sets the default result to the analysis w/o updating the results
         capture date. It does nothing if the instance is a multi-component
-        analysis or if the analysios has a result already set
+        analysis or if the analysis has a result already set
         """
         if not default_result:
             return
@@ -396,7 +396,6 @@ class ARAnalysesField(ObjectField):
         # if multi, restore the original capture date
         if multi:
             multi.setResultCaptureDate(multi_capture)
-
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants

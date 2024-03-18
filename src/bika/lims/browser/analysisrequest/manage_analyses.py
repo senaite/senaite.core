@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import collections
@@ -29,9 +29,9 @@ from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import t
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.i18n import translate as t
 from zope.i18n.locales import locales
 
 DETACHED_STATES = ["cancelled", "rejected", "retracted"]
@@ -146,11 +146,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
         result ranges set in analyses. This guarantees that result ranges for
         already present analyses are not overriden after form submission
         """
-        # Extract the result ranges from Sample analyses
-        analyses = self.analyses.values()
-        analyses_rrs = map(lambda an: an.getResultsRange(), analyses)
-        analyses_rrs = filter(None, analyses_rrs)
-        rrs = dicts_to_dict(analyses_rrs, "keyword")
+        # Extract the result ranges from Sample analyses grouped by keyword
+        rrs = {}
+        for analysis in self.analyses.values():
+            results_range = analysis.getResultsRange()
+            if not results_range:
+                continue
+            keyword = analysis.getKeyword()
+            rrs[keyword] = results_range
 
         # Bail out ranges from Sample that are already present in analyses
         sample_rrs = self.context.getResultsRange()

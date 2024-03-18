@@ -15,11 +15,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
 from datetime import datetime
+from datetime import timedelta
 from mimetypes import guess_type
 
 import six
@@ -56,6 +57,7 @@ from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField as ISchemaField
 from zope.schema.interfaces import IText
 from zope.schema.interfaces import ITextLine
+from zope.schema.interfaces import ITimedelta
 from zope.schema.interfaces import ITuple
 
 from .config import SITE_ID
@@ -347,6 +349,25 @@ class DXDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
         # Avoid `UnknownTimeZoneError` by using the date API for conversion
         # also see https://github.com/senaite/senaite.patient/pull/29
         return dtime.to_dt(value)
+
+
+class DXTimedeltaFieldNodeAdapter(DXFieldNodeAdapter):
+    """Import/Export Timedelta Fields (e.g. like DurationField)
+    """
+    adapts(IDexterityContent, ITimedelta, ISetupEnviron)
+
+    def get_json_value(self):
+        """Returns the timedelta in milliseconds
+        """
+        value = self.field.get(self.context)
+        if not isinstance(value, timedelta):
+            value = timedelta()
+        milli = value.total_seconds()*1000
+        return api.float_to_string(milli)
+
+    def parse_json_value(self, value):
+        milli = api.to_int(value, 0)
+        return timedelta(milliseconds=milli)
 
 
 class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):

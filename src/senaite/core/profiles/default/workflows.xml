@@ -22,7 +22,6 @@
   <object name="senaite_referencesample_workflow" meta_type="Workflow" />
   <object name="senaite_referencesamples_workflow" meta_type="Workflow" />
   <object name="senaite_rejectanalysis_workflow" meta_type="Workflow" />
-  <object name="senaite_reports_workflow" meta_type="Workflow" />
   <object name="senaite_sample_workflow" meta_type="Workflow"/>
   <object name="senaite_setup_workflow" meta_type="Workflow"/>
   <object name="senaite_worksheet_workflow" meta_type="Workflow"/>
@@ -117,9 +116,6 @@
     <type type_id="Manufacturers">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="Preservations">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="PricelistFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -133,6 +129,9 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SamplePoints">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplePreservations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SampleTypes">
@@ -230,9 +229,6 @@
     <type type_id="Method">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
-    <type type_id="Preservation">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
     <type type_id="Pricelist">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
@@ -246,6 +242,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SamplePoint">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplePreservation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SampleType">
@@ -323,9 +322,6 @@
     </type>
     <type type_id="RejectAnalysis">
       <bound-workflow workflow_id="senaite_rejectanalysis_workflow"/>
-    </type>
-    <type type_id="ReportFolder">
-      <bound-workflow workflow_id="senaite_reports_workflow"/>
     </type>
     <type type_id="Worksheet">
       <bound-workflow workflow_id="senaite_worksheet_workflow"/>

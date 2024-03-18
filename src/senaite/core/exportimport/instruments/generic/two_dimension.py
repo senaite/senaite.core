@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -251,12 +251,19 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
 
     def get_result(self, column_name, result, line):
         result = str(result)
-        if result.startswith('--') or result == '' or result == 'ND':
+
+        # allow empty values
+        if len(result) == 0:
+            return
+
+        # XXX: Probably this does not belong to here either
+        if result.startswith("--") or result == "ND":
             return 0.0
 
         if api.is_floatable(result):
             result = api.to_float(result)
             return result > 0.0 and result or 0.0
+
         self.err("No valid number ${result} in column (${column_name})",
                  mapping={"result": result,
                           "column_name": column_name},

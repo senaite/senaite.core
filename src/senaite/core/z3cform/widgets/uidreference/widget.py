@@ -15,139 +15,97 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
-import string
-
-import six
+import re
 
 from bika.lims import api
 from bika.lims import logger
-from Products.CMFPlone.utils import base_hasattr
-from senaite.app.supermodel import SuperModel
+from bika.lims import senaiteMessageFactory as _
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.interfaces import IUIDReferenceWidget
-from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
+from senaite.core.z3cform.widgets.queryselect import QuerySelectDataConverter
+from senaite.core.z3cform.widgets.queryselect import QuerySelectWidget
 from z3c.form import interfaces
-from z3c.form.browser import widget
-from z3c.form.browser.textlines import TextLinesWidget
-from z3c.form.converter import TextLinesConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import ISubForm
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
-from zope.component import getUtility
-from zope.component.interfaces import IFactory
 from zope.interface import implementer
 
-DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${title}</a>"
-
-_marker = object
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${Title}</a>"
 
 
 @adapter(IUIDReferenceField, interfaces.IWidget)
-class UIDReferenceDataConverter(TextLinesConverter):
+class UIDReferenceDataConverter(QuerySelectDataConverter):
     """Converts the raw field data for widget/field usage
     """
 
-    def toWidgetValue(self, value):
-        """Return the value w/o changes
-
-        Note:
-
-        All widget templates use the `get_value` method,
-        which ensures a list of UIDs.
-
-        However, `toWidgetValue` is called by `widget.update()` implicitly for
-        `self.value`, which is then used by the `get_value` method again.
-        """
-        return value
-
-    def toFieldValue(self, value):
-        """Converts a unicode string to a list of UIDs
-        """
-        # remove any blank lines at the end
-        value = value.rstrip("\r\n")
-        return super(UIDReferenceDataConverter, self).toFieldValue(value)
-
 
 @implementer(IUIDReferenceWidget)
-class UIDReferenceWidget(TextLinesWidget):
+class UIDReferenceWidget(QuerySelectWidget):
     """Senaite UID reference widget
     """
     klass = u"senaite-uidreference-widget-input"
 
-    def __init__(self, request, *args, **kw):
-        super(UIDReferenceWidget, self).__init__(request)
-        self.request = request
-
-    def update(self):
-        super(UIDReferenceWidget, self).update()
-        widget.addFieldClass(self)
-
-    def get_form(self):
-        """Return the current form of the widget
+    def get_value_key(self, context, field, default=None):
+        """Returns the data key that should be set as the value
         """
-        form = self.form
-        # form is a fieldset group
-        if IDescriptiveGroup.providedBy(form):
-            form = form.parentForm
-        # form is a subform (e.g. DataGridFieldObjectSubForm)
-        if ISubForm.providedBy(form):
-            form = form.parentForm
-        return form
+        return "uid"
 
-    def get_context(self):
-        """Get the current context
-
-        NOTE: If we are in the ++add++ form, `self.context` is the container!
-              Therefore, we create one here to have access to the methods.
+    def get_value_query_index(self, context, field, default=None):
+        """Index that needs to be queried to fetch the data for the current values
         """
-        schema_iface = self.field.interface
-        if schema_iface and schema_iface.providedBy(self.context):
-            return self.context
+        return "UID"
 
-        # we might be in a subform, so try first to retrieve the object from
-        # the base form itself first
-        form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
-        context = getattr(form, "context", None)
-        if api.is_object(context):
-            if api.get_portal_type(context) == portal_type:
-                return context
+    def get_query(self, context, field, default=None):
+        """Ensure the allowed types are in the query
 
-        # Hack alert!
-        # we are in ++add++ form and have no context!
-        # Create a temporary object to be able to access class methods
-        if not portal_type:
-            portal_type = api.get_portal_type(self.context)
-        portal_types = api.get_tool("portal_types")
-        fti = portal_types[portal_type]
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("temporary")
-        # hook into acquisition chain
-        context = context.__of__(self.context)
-        return context
-
-    def attr(self, name, default=None):
-        """Get the named attribute of the widget or the field
+        NOTE: This method is called from `self.lookup` as the last resort if no
+              custom query method or callable was found for this widget.
         """
-        value = getattr(self, name, _marker)
-        if value is _marker:
-            return default
-        if isinstance(value, six.string_types):
-            context = self.get_context()
-            if base_hasattr(context, value):
-                attr = getattr(context, value)
-                if callable(attr):
-                    value = attr()
-                else:
-                    value = attr
-        return value
+        query = getattr(self, "query", {})
+        if not isinstance(query, dict):
+            logger.error(
+                "Invalid query provided for field '%s'" % field.getName())
+            query = {}
+
+        # ensure the query is always limited to the allowed types
+        allowed_types = field.get_allowed_types()
+        query["portal_type"] = list(allowed_types)
+
+        return query
+
+    def get_columns(self, context, field, default=None):
+        """Ensure default columns if not set
+
+        NOTE: This method is called from `self.lookup` as the last resort if no
+              custom columns method or callable was found for this widget.
+        """
+        columns = getattr(self, "columns", [])
+        if not isinstance(columns, list):
+            logger.error(
+                "Invalid columns provided for field '%s'" % field.getName())
+            columns = []
+
+        # Provide default columns
+        if not columns:
+            columns = [
+                {"name": "Title", "label": _("Title")},
+                {"name": "Description", "label": _("Description")},
+            ]
+
+        return columns
+
+    def get_display_template(self, context, field, default=None):
+        """Return the display template to use
+        """
+        template = getattr(self, "display_template", None)
+        if template is not None:
+            return template
+        return DISPLAY_TEMPLATE
 
     def get_value(self):
         """Extract the value from the request or get it from the field
@@ -155,7 +113,7 @@ class UIDReferenceWidget(TextLinesWidget):
         # get the processed value from the `update` method
         value = self.value
         # the value might come from the request, e.g. on object creation
-        if isinstance(value, six.string_types):
+        if api.is_string(value):
             value = IDataConverter(self).toFieldValue(value)
         # we handle always lists in the templates
         if value is None:
@@ -165,86 +123,37 @@ class UIDReferenceWidget(TextLinesWidget):
         # just to be sure (paranoid)
         return [uid for uid in value if api.is_uid(uid)]
 
-    def get_api_url(self):
-        portal = api.get_portal()
-        portal_url = api.get_url(portal)
-        api_url = "{}/@@API/senaite/v1".format(portal_url)
-        return api_url
+    def get_render_data(self, context, field, uid):
+        """Provides the needed data to render the display template from the UID
 
-    def get_display_template(self):
-        return self.attr("display_template", DISPLAY_TEMPLATE)
-
-    def get_catalog(self):
-        return self.attr("catalog", "portal_catalog")
-
-    def get_query(self):
-        return self.attr("query", {})
-
-    def get_search_index(self):
-        return self.attr("search_index", "")
-
-    def get_columns(self):
-        return self.attr("columns", [])
-
-    def get_limit(self):
-        return self.attr("limit", 25)
-
-    def is_multi_valued(self):
-        return getattr(self.field, "multi_valued", False)
-
-    def get_hide_input_after_select(self):
-        return self.attr("hide_input_after_select", False)
-
-    def get_input_widget_attributes(self):
-        """Return input widget attributes for the ReactJS component
+        :returns: Dictionary with data needed to render the display template
         """
-        uids = self.get_value()
-        attributes = {
-            "data-id": self.id,
-            "data-name": self.name,
-            "data-values": uids,
-            "data-value_key": "uid",
-            "data-api_url": self.get_api_url(),
-            "data-records": dict(zip(uids, map(self.get_obj_info, uids))),
-            "data-query": self.get_query(),
-            "data-catalog": self.get_catalog(),
-            "data-search_index": self.get_search_index(),
-            "data-columns": self.get_columns(),
-            "data-display_template": self.get_display_template(),
-            "data-limit": self.get_limit(),
-            "data-multi_valued": self.is_multi_valued(),
-            "data-disabled": self.disabled or False,
-            "data-readonly": self.readonly or False,
-            "data-hide_input_after_select": self.get_hide_input_after_select(),
-        }
+        regex = r"\{(.*?)\}"
+        context = self.get_context()
+        template = self.get_display_template(context, self.field)
+        names = re.findall(regex, template)
 
-        # convert all attributes to JSON
-        for key, value in attributes.items():
-            attributes[key] = json.dumps(value)
-
-        return attributes
-
-    def get_obj_info(self, uid):
-        """Returns a dictionary with the object info
-        """
-        model = SuperModel(uid)
-        obj_info = model.to_dict()
-        obj_info["uid"] = uid
-        obj_info["url"] = api.get_url(model)
-        return obj_info
-
-    def render_reference(self, uid):
-        """Returns a rendered HTML element for the reference
-        """
-        template = string.Template(self.get_display_template())
         try:
-            obj_info = self.get_obj_info(uid)
-        except ValueError as e:
-            # Current user might not have privileges to view this object
-            logger.error(e.message)
-            return ""
+            obj = api.get_object(uid)
+        except api.APIError:
+            logger.error("No object found for field '{}' with UID '{}'".format(
+                field.getName(), uid))
+            return {}
 
-        return template.safe_substitute(obj_info)
+        data = {
+            "uid": api.get_uid(obj),
+            "url": api.get_url(obj),
+            "Title": api.get_title(obj),
+            "Description": api.get_description(obj),
+        }
+        for name in names:
+            if name not in data:
+                value = getattr(obj, name, None)
+                if callable(value):
+                    value = value()
+                data[name] = value
+
+        return data
 
 
 @adapter(IUIDReferenceField, ISenaiteFormLayer)

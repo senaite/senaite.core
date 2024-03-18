@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import importlib
@@ -32,7 +32,6 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -47,6 +46,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -67,15 +68,27 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # hidden field
     UIDReferenceField(
-        'DependentServices',
+        "DependentServices",
         required=1,
         multiValued=1,
         relationship="CalculationDependentServices",
-        allowed_types=('AnalysisService',),
+        allowed_types=("AnalysisService",),
         widget=ReferenceWidget(
             visible=False,
-            label=_("Dependent Analyses"),
+            label=_(
+                "label_calculation_dependentservices",
+                default="Dependent services"),
+            description=_(
+                "description_calculation_dependentservices",
+                default="Dependent services of this calculation"),
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
         ),
     ),
 
@@ -178,7 +191,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def setInterimFields(self, value):

@@ -1,0 +1,289 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="senaite_legacy_js"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <script type="text/javascript"
+              src="partition_magic.js"
+              tal:attributes="src string:${portal/absolute_url}/++plone++senaite.core.static/js/senaite.core.partitionmagic.js"></script>
+    </metal:block>
+    <metal:block fill-slot="senaite_legacy_css"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Partitions
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="partition-magic-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="partition_magic_form"
+                name="partition_magic_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:ars repeat="ar view/get_ar_data">
+
+              <!-- Remember the initial UIDs coming in -->
+              <input type="hidden" name="uids:list" tal:attributes="value ar/uid"/>
+
+              <!-- Partition Magic Table -->
+              <table class="table table-bordered" style="margin-bottom:5em;">
+                <thead>
+                  <tr>
+                    <th colspan="3" class="info">
+                      <div class="row">
+                        <!-- AR Title -->
+                        <div class="col-sm-8">
+                          <div class="text-muted">Primary Sample</div>
+                          <h2>
+                            <!-- AR Title -->
+                            <span class="text-primary" tal:content="ar/title"/>
+                            <!-- Template Title -->
+                            <small tal:content="ar/template/title|nothing"/>
+                          </h2>
+                          <!-- Primary AR UID -->
+                          <input name="primary.uid:record"
+                                 type="hidden"
+                                 tal:attributes="value ar/uid;
+                                                 name string:primary.${ar/uid}:record"/>
+                        </div>
+
+                        <!-- Number of Partitions Selection -->
+                        <div class="col-sm-4">
+                          <label i18n:translate="" for="number_of_partitions">
+                            Number of Partitions to create
+                          </label>
+                          <input tal:attributes="value ar/number_of_partitions;
+                                                 name string:primary.${ar/uid}:record"
+                                 type="number"
+                                 class="form-control"
+                                 step="1"
+                                 min="0"
+                                 value="1"
+                                 placeholder="Number of Partitions"
+                                 id="number_of_partitions"/>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody tal:define="number_of_partitions ar/number_of_partitions;
+                                   template python:ar.get('template', {});
+                                   partitions python:template.get('partitions', []);
+                                   sample_types python:template.get('sample_types', {});
+                                   containers python:template.get('containers', {});
+                                   preservations python:template.get('preservations', {});
+                                   ar_internal_use python:ar.get('internal_use', False);
+                                   internal_uses python:template.get('internal_uses', {});">
+                  <!-- No Partitions -->
+                  <tr tal:condition="python:not number_of_partitions">
+                    <td>
+                      <div class="font-italic text-muted" i18n:translate="">
+                        Please select number of partitions to create and press the preview button
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- Partitions -->
+                  <tr tal:repeat="part_index python:range(number_of_partitions);">
+                    <tal:partition define="default_part_name python:'part-%s' % str(part_index + 1);
+                                           partition python:part_index<len(partitions) and partitions[part_index] or default_part_name">
+
+                      <td style="background-color: #fff;">
+                        <!-- Partition number -->
+                        <div class="col-sm-4">
+                          <h3 class="text-muted">
+                            <a class="text-decoration-none" style="cursor:pointer;"
+                               data-toggle="collapse"
+                               tal:attributes="data-target string:#${partition}-body">
+                              <i tal:attributes="id string:${partition}-toggle-icon"
+                                 class="fas fa-caret-right"></i>
+                              <span i18n:translate="">Partition</span>
+                              <strong tal:content="repeat/part_index/number"/>
+                            </a>
+                          </h3>
+                          <!-- Remember the primary uid of this partition -->
+                          <input type="hidden" name="partitions.primary_uid:records" tal:attributes="value ar/uid"/>
+                        </div>
+
+                        <!-- Partition Body -->
+                        <div class="partition-body collapse"
+                             tal:attributes="id string:${partition}-body;
+                                             data-partition partition">
+                          <!-- Internal Use -->
+                          <div class="col-sm-2">
+                            <div class="form-group">
+                              <label  i18n:translate="">Internal use</label>
+                              <input name="partitions.internal_use:records"
+                                     type="checkbox" class="input-sm checkbox"
+                                     tal:attributes="checked python:internal_uses.get(partition, ar_internal_use);
+                                           value string:1">
+                            </div>
+                          </div>
+
+                          <!-- Sample Type Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="sampletype">
+                              Sample Type
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.sampletype_uid:records" class="form-control">
+                                <tal:options repeat="sampletype view/get_sampletype_data"
+                                             define="ar_sampletype_uid ar/sampletype/uid;
+                                                     part_sampletype_uid python:sample_types.get(partition, ar_sampletype_uid);">
+                                  <option tal:attributes="value sampletype/uid;
+                                                          selected python:sampletype.get('uid') == part_sampletype_uid"
+                                          tal:content="sampletype/title">
+                                    Sample Type
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
+                          </div>
+
+                          <!-- Container Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="container">
+                              Container
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.container_uid:records" class="form-control">
+                                <option value=""></option>
+                                <tal:options repeat="container view/get_container_data"
+                                             define="part_container_uid python:containers.get(partition, '');">
+                                  <option tal:attributes="value container/uid;
+                                                          selected python:container.get('uid') == part_container_uid"
+                                          tal:content="container/title">
+                                    Container
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
+                          </div>
+
+                          <!-- Preservation Selection -->
+                          <div class="col-sm-2">
+                            <label i18n:translate="" for="preservation">
+                              Preservation
+                            </label>
+                            <div class="form-group">
+                              <select name="partitions.preservation_uid:records" class="form-control">
+                                <option value=""></option>
+                                <tal:options repeat="preservation view/get_preservation_data"
+                                             define="part_preservation_uid python:preservations.get(partition, '');">
+                                  <option tal:attributes="value preservation/uid;
+                                                          selected python:preservation.get('uid') == part_preservation_uid"
+                                          tal:content="preservation/title">
+                                    Preservation
+                                  </option>
+                                </tal:options>
+                              </select>
+                            </div>
+                          </div>
+
+                          <!-- Partition Analyses -->
+                          <div class="col-sm-12">
+                            <label i18n:translate="">
+                              Select Partition Analyses
+                            </label>
+                            <table class="table table-hover">
+                              <colgroup>
+                                <col style="width: 50px;">
+                                <col>
+                              </colgroup>
+                              <tr tal:repeat="analysis ar/analyses" class="analysis">
+                                <td class="text-center" tal:define="service_uid analysis/service_uid">
+                                  <input name="partitions.analyses:records:list"
+                                         type="checkbox"
+                                         tal:attributes="value analysis/uid;
+                                               checked python:service_uid in template.get('analyses', {}).get(partition, [])"/>
+                                </td>
+                                <td class="text-info">
+                                  <span tal:content="analysis/title"/>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+
+                        </div>
+                      </td>
+                    </tal:partition>
+                  </tr>
+
+                </tbody>
+
+              </table>
+            </tal:ars>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Preview -->
+              <input class="btn btn-info btn-sm"
+                     type="submit"
+                     name="button_preview"
+                     i18n:attributes="value"
+                     value="Preview"/>
+              <!-- Create Partitions -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_create"
+                     i18n:attributes="value"
+                     value="Create Partitions"/>
+              <!-- Cancel -->
+              <input class="btn btn-secondary btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+      <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+          $(".partition-body").on("show.bs.collapse", function(event) {
+            let el = event.currentTarget;
+            let partition = el.dataset.partition;
+            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-right fa-caret-down");
+          });
+          $(".partition-body").on("hide.bs.collapse", function(event) {
+            let el = event.currentTarget;
+            let partition = el.dataset.partition;
+            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-down fa-caret-right");
+          });
+        });
+      </script>
+    </metal:core>
+  </body>
+</html>

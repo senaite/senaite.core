@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import itertools
@@ -30,7 +30,7 @@ from bika.lims.browser.fields.partitionsetupfield import getContainers
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
@@ -46,9 +46,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.Widget import StringWidget
-from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
-from senaite.core.p3compat import cmp
 from zope.interface import implements
 
 Methods = UIDReferenceField(
@@ -139,7 +137,7 @@ Separate = BooleanField(
 Preservation = UIDReferenceField(
     "Preservation",
     schemata="Container and Preservation",
-    allowed_types=("Preservation",),
+    allowed_types=("SamplePreservation",),
     vocabulary="getPreservations",
     required=0,
     multiValued=0,
@@ -382,7 +380,7 @@ class AnalysisService(AbstractBaseAnalysis):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
+        from senaite.core.idserver import renameAfterCreation
 
         return renameAfterCreation(self)
 
@@ -669,11 +667,15 @@ class AnalysisService(AbstractBaseAnalysis):
         return DisplayList(containers)
 
     def getPreservations(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation', is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+        query = {
+            "portal_type": "SamplePreservation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        items = [(brain.UID, brain.Title) for brain in brains]
+        return DisplayList(items)
 
     def getAvailableMethods(self):
         """Returns the methods available for this analysis.

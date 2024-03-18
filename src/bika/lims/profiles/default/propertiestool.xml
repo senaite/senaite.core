@@ -65,13 +65,10 @@
     <element value="Manufacturer"/>
     <element value="Method"/>
     <element value="Supplier"/>
-    <element value="Preservation"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>
     <element value="RejectAnalysis"/>
-    <element value="Report"/>
-    <element value="ReportFolder"/>
     <element value="SamplePoint"/>
     <element value="StorageLocation"/>
     <element value="SampleType"/>

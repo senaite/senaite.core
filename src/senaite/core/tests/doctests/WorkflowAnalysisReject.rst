@@ -22,6 +22,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from senaite.core.permissions import TransitionRejectAnalysis
 
 Functional Helpers:
 
@@ -80,6 +81,7 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
@@ -91,7 +93,7 @@ We need to create some basic objects for the test:
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
@@ -414,7 +416,7 @@ In `unassigned` state, exactly these roles can reject:
 
     >>> api.get_workflow_status_of(analysis)
     'unassigned'
-    >>> get_roles_for_permission("Reject", analysis)
+    >>> get_roles_for_permission(TransitionRejectAnalysis, analysis)
     ['LabManager', 'Manager']
 
 Current user can reject because has the `LabManager` role:
@@ -448,7 +450,7 @@ In `assigned` state, exactly these roles can reject:
     >>> worksheet.addAnalysis(analysis)
     >>> api.get_workflow_status_of(analysis)
     'assigned'
-    >>> get_roles_for_permission("Reject", analysis)
+    >>> get_roles_for_permission(TransitionRejectAnalysis, analysis)
     ['LabManager', 'Manager']
     >>> isTransitionAllowed(analysis, "reject")
     True
@@ -484,7 +486,7 @@ In `to_be_verified` state, exactly these roles can reject:
     >>> success = do_action_for(analysis, "submit")
     >>> api.get_workflow_status_of(analysis)
     'to_be_verified'
-    >>> get_roles_for_permission("Reject", analysis)
+    >>> get_roles_for_permission(TransitionRejectAnalysis, analysis)
     ['LabManager', 'Manager']
     >>> isTransitionAllowed(analysis, "reject")
     True
@@ -519,8 +521,6 @@ In `retracted` state, the analysis cannot be rejected:
     >>> success = do_action_for(analysis, "retract")
     >>> api.get_workflow_status_of(analysis)
     'retracted'
-    >>> get_roles_for_permission("Reject", analysis)
-    []
     >>> isTransitionAllowed(analysis, "reject")
     False
 
@@ -537,8 +537,6 @@ In `verified` state, the analysis cannot be rejected:
     >>> success = do_action_for(analysis, "verify")
     >>> api.get_workflow_status_of(analysis)
     'verified'
-    >>> get_roles_for_permission("Reject", analysis)
-    []
     >>> isTransitionAllowed(analysis, "reject")
     False
 
@@ -552,8 +550,6 @@ In `published` state, the analysis cannot be rejected:
     (True, '')
     >>> api.get_workflow_status_of(analysis)
     'published'
-    >>> get_roles_for_permission("Reject", analysis)
-    []
     >>> isTransitionAllowed(analysis, "reject")
     False
 
@@ -567,8 +563,6 @@ In `cancelled` state, the analysis cannot be rejected:
     >>> success = do_action_for(ar, "cancel")
     >>> api.get_workflow_status_of(analysis)
     'cancelled'
-    >>> get_roles_for_permission("Reject", analysis)
-    []
     >>> isTransitionAllowed(analysis, "reject")
     False
 

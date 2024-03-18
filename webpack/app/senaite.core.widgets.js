@@ -26,22 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
     content_css : "/++plone++senaite.core.static/bundles/senaite.core.css",
   })
 
-  // Referencewidget
+  // UIDReferenceWidget
   let ref_widgets = document.getElementsByClassName("senaite-uidreference-widget-input");
   for (let widget of ref_widgets) {
     ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={widget} />, widget);
-  }
-
-  // AddressWidget
-  let address_widgets = document.getElementsByClassName("senaite-address-widget-input");
-  for (let widget of address_widgets) {
-    ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
   }
 
   // QuerySelectWidget
   let queryselect_widgets = document.getElementsByClassName("senaite-queryselect-widget-input");
   for (let widget of queryselect_widgets) {
     ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={widget} />, widget);
+  }
+
+  // AddressWidget
+  let address_widgets = document.getElementsByClassName("senaite-address-widget-input");
+  for (let widget of address_widgets) {
+    ReactDOM.render(<AddressWidgetController root_el={widget} />, widget);
   }
 
   // PhoneWidget

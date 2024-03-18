@@ -15,10 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -26,6 +27,7 @@ from Products.Archetypes.public import DisplayList
 from Products.Archetypes.Registry import registerField
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.catalog import SETUP_CATALOG
 
 
 def getContainers(instance,
@@ -107,7 +109,6 @@ class PartitionSetupField(RecordsField):
             'preservation',
             'container',
             'vol',
-            # 'retentionperiod',
         ),
         'subfield_labels': {
             'sampletype': _('Sample Type'),
@@ -115,7 +116,6 @@ class PartitionSetupField(RecordsField):
             'preservation': _('Preservation'),
             'container': _('Container'),
             'vol': _('Required Volume'),
-            # 'retentionperiod': _('Retention Period'),
         },
         'subfield_types': {
             'separate': 'boolean',
@@ -133,7 +133,6 @@ class PartitionSetupField(RecordsField):
             'preservation': 6,
             'vol': 8,
             'container': 6,
-            # 'retentionperiod':10,
         }
     })
     security = ClassSecurityInfo()
@@ -156,12 +155,14 @@ class PartitionSetupField(RecordsField):
     security.declarePublic('Preservations')
 
     def Preservations(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'senaite_catalog_setup')
-        items = [[c.UID, c.title] for c in
-                 bsc(portal_type='Preservation',
-                     is_active=True,
-                     sort_on='sortable_title')]
+        query = {
+            "portal_type": "SamplePreservation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        items = [[brain.UID, brain.title] for brain in brains]
         items = [['', _('Any')]] + list(items)
         return DisplayList(items)
 

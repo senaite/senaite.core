@@ -95,6 +95,20 @@
                                         id string:${fieldName}.district"
                         tal:define="values python:widget.getDistricts(defcountry, state)">
                   <option value=''></option>
+
+                  <!--
+                  For some countries, districts that come from pycountry do not
+                  match with those that were hardcoded in code and available
+                  before https://github.com/senaite/senaite.core/pull/1961
+                  We simply display the original value if not present
+                  -->
+                  <option tal:define="districts python:[val[2] for val in values];
+                                      missing python:district and district not in districts"
+                          tal:condition="missing"
+                          tal:attributes="value python:district"
+                          tal:content="python:district"
+                          selected="selected"/>
+
                   <tal:x tal:repeat="value values">
                     <option tal:content="python:value[2]"
                             tal:attributes="value python:value[2];

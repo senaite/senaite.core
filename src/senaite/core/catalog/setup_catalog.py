@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
@@ -30,40 +30,43 @@ CATALOG_TITLE = "Senaite Setup Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
+    ("Description", "", "ZCTextIndex"),
+    ("Title", "", "ZCTextIndex"),
+    ("Type", "", "FieldIndex"),
     ("category_uid", "", "KeywordIndex"),
     ("department_id", "", "KeywordIndex"),
     ("department_title", "", "KeywordIndex"),
     ("department_uid", "", "KeywordIndex"),
-    ("Description", "", "ZCTextIndex"),
     ("getClientUID", "", "FieldIndex"),
     ("getKeyword", "", "FieldIndex"),
-    ("instrumenttype_title", "", "KeywordIndex"),
     ("instrument_title", "", "KeywordIndex"),
+    ("instrumenttype_title", "", "KeywordIndex"),
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("method_available_uid", "", "KeywordIndex"),
     ("point_of_capture", "", "FieldIndex"),
     ("price", "", "FieldIndex"),
     ("price_total", "", "FieldIndex"),
+    ("profile_key", "getProfileKey", "FieldIndex"),
     ("sampletype_title", "", "KeywordIndex"),
     ("sampletype_uid", "", "KeywordIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("Title", "", "ZCTextIndex"),
-    ("Type", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
     # attribute name
     "Description",
+    "Type",
     "description",
     "getCategoryTitle",
     "getCategoryUID",
     "getClientUID",
     "getKeyword",
+    "getPrefix",  # used in reference widget columns
+    "getProfileKey",  # used in reference widget columns
     "id",
     "path",
     "sortable_title",
     "title",
-    "Type",
 ]
 
 TYPES = [

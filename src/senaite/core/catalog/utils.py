@@ -15,15 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.interfaces import IListingSearchableTextProvider
 from Products.CMFPlone.CatalogTool import \
     sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
+from senaite.core import logger
 from zope.component import getAdapters
 
 
@@ -65,10 +65,23 @@ def get_searchable_text_tokens(instance, catalog_name,
         field_value = api.to_searchable_text_metadata(field_value)
         entries.add(field_value)
 
+    text_providers = getAdapters((instance, api.get_request(), catalog),
+                                 IListingSearchableTextProvider)
+    # BBB
+    bbb_text_providers = getAdapters((instance, catalog),
+                                     IListingSearchableTextProvider)
+
+    # combine the adapters for backwards compatibility
+    adapters = list(text_providers) + list(bbb_text_providers)
+
     # Extend metadata entries with pluggable text providers
-    for name, adapter in getAdapters((instance, catalog),
-                                     IListingSearchableTextProvider):
-        value = adapter()
+    for name, adapter in adapters:
+        try:
+            value = adapter()
+        except (AttributeError, TypeError, api.APIError) as exc:
+            logger.error(exc)
+            value = []
+
         if isinstance(value, (list, tuple)):
             values = map(api.to_searchable_text_metadata, value)
             entries.update(values)

@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2021 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -25,7 +25,7 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import ReferenceWidget
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -505,16 +505,27 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
         mode="rw",
         multiValued=0,
-        relationship='SetupLandingPage',
+        relationship="SetupLandingPage",
         widget=ReferenceWidget(
-            label=_("Landing Page"),
+            label=_(
+                "label_setup_landingpage",
+                default="Landing Page"),
             description=_(
-                "The landing page is shown for non-authenticated users "
+                "description_setup_landingpage",
+                default="The landing page is shown for non-authenticated users "
                 "if the Dashboard is not selected as the default front page. "
                 "If no landing page is selected, the default frontpage is displayed."),
-            catalog_name="portal_catalog",
-            base_query={"review_State": "published"},
-            showOn=True,
+            catalog=["uid_catalog"],
+            query={
+                "is_active": True,
+                "sort_on": "id",
+                "sort_order": "ascending"
+            },
+            columns=[
+                {"name": "Title", "label": _("Title")},
+                {"name": "portal_type", "label": _("Type")},
+            ],
+
         ),
     ),
     BooleanField(
@@ -525,7 +536,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Enable the Results Report Printing workflow"),
             description=_("Select this to allow the user to set an "
                           "additional 'Printed' status to those Analysis "
-                          "Requests tha have been Published. "
+                          "Requests that have been Published. "
                           "Disabled by default.")
         ),
     ),
@@ -965,6 +976,22 @@ schema = BikaFolderSchema.copy() + Schema((
             ),
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
+    BooleanField(
+        "ShowLabNameInLogin",
+        schemata="Appearance",
+        default=False,
+        widget=BooleanWidget(
+            label=_(
+                u"title_senaitesetup_show_lab_name_in_login",
+                default=u"Display laboratory name in the login page"),
+            description=_(
+                u"description_senaitesetup_show_lab_name_in_login",
+                default=u"When selected, the laboratory name will be displayed"
+                        u"in the login page, above the access credentials."
+            ),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
@@ -1194,6 +1221,23 @@ class BikaSetup(folder.ATFolder):
             # we get a string value here!
             value = api.to_int(value, default=10)
             setup.setMaxNumberOfSamplesAdd(value)
+
+    def getShowLabNameInLogin(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getShowLabNameInLogin()
+        return False
+
+    def setShowLabNameInLogin(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setShowLabNameInLogin(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

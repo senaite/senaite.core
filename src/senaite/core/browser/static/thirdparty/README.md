@@ -16,24 +16,6 @@ Downloaded on 2020-02-06 from https://code.jquery.com/jquery-migrate-1.4.1.min.j
 - jquery-migrate-1.4.1.min.js
 
 
-## Timepicker for jQuery UI Datepicker
-
-REMOVED: we use now the default `type="date"` html field instead.
-
-The timepicker addon adds a timepicker to jQuery UI Datepicker, thus the
-datepicker and slider components (jQueryUI) are required for using any of these.
-In addition all datepicker options are still available through the timepicker
-addon.
-
-URL: https://trentrichardson.com/examples/timepicker
-LICENSE: MIT (https://github.com/trentrichardson/jQuery-Timepicker-Addon/blob/master/LICENSE-MIT)
-
-Downloaded on 2020-02-05 from https://cdnjs.com/libraries/jquery-ui-timepicker-addon:
-
-- jquery-ui-timepicker-addon-i18n.min.js
-- jquery-ui-timepicker-addon.min.js
-
-
 ## Handlebars
 
 Minimal templating on steroids

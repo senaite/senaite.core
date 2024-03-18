@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from collective.z3cform.datagridfield.interfaces import IDataGridField
@@ -60,4 +60,14 @@ class IPhoneWidget(IWidget):
 
 class IQuerySelectWidget(IWidget):
     """Allows to search and select a value
+    """
+
+
+class IDurationWidget(IWidget):
+    """Allows to set a duration period in days, hours and minutes
+    """
+
+
+class IListingWidget(IWidget):
+    """Listing view widget
     """

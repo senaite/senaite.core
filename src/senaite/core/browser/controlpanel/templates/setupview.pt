@@ -53,21 +53,34 @@
         </tal:setup>
 
         <!-- The other setup items -->
-        <tal:tiles tal:repeat="brain view/setupitems">
+        <tal:tiles tal:repeat="item view/setupitems">
           <div class="tilewrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
             <a class="tile text-capitalized text-decoration-none"
-               tal:attributes="href brain/getURL;
-                               title brain/Title"
+               tal:attributes="href item/absolute_url;
+                               title item/Title"
                i18n:attributes="title">
               <div class="item text-truncate">
                 <img src="#"
                      class="icon"
-                     tal:replace="structure python:view.get_icon_for(brain, css_class='icon')"/>
+                     tal:replace="structure python:view.get_icon_for(item, css_class='icon')"/>
                 <span class="title"
                       i18n:translate=""
-                      tal:content="brain/Title">
+                      tal:content="item/Title">
                   Setup Item Title
                 </span>
+              </div>
+              <div class="small text-right"
+                   tal:define="count python:view.get_count(item)"
+                   tal:condition="python:count>0">
+                <span class="text-secondary">
+                  <span tal:content="count"></span>
+                </span>
+                <span i18n:translate="label_setupview_item"
+                      tal:condition="python:count == 1"
+                      class="text-secondary">Item</span>
+                <span i18n:translate="label_setupview_items"
+                      tal:condition="python:count > 1"
+                      class="text-secondary">Items</span>
               </div>
             </a>
           </div>

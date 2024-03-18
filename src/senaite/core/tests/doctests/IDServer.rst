@@ -40,9 +40,9 @@ Needed Imports:
     >>> from plone import api as ploneapi
     >>> from zope.component import getUtility
 
-    >>> from bika.lims import alphanumber as alpha
+    >>> from senaite.core.idserver import alphanumber as alpha
     >>> from bika.lims import api
-    >>> from bika.lims import idserver
+    >>> from senaite.core import idserver
     >>> from senaite.core.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
@@ -72,7 +72,6 @@ Variables:
     >>> bika_labcontacts = setup.bika_labcontacts
     >>> bika_storagelocations = setup.bika_storagelocations
     >>> bika_samplingdeviations = setup.bika_samplingdeviations
-    >>> bika_sampleconditions = setup.bika_sampleconditions
     >>> portal_url = portal.absolute_url()
     >>> setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()

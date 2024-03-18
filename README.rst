@@ -9,8 +9,8 @@
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
 
-.. image:: https://img.shields.io/travis/com/senaite/senaite.core/2.x.svg?style=flat-square
-    :target: https://app.travis-ci.com/github/senaite/senaite.core
+.. image:: https://img.shields.io/github/actions/workflow/status/senaite/senaite.core/build-and-test.yml?branch=2.x
+    :target: https://github.com/senaite/senaite.core/actions/workflows/build-and-test.yml?query=branch:2.x
 
 .. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/2.x.svg?style=flat-square
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/?branch=2.x
@@ -79,7 +79,7 @@ Feedback and support
 License
 =======
 
-**SENAITE.CORE** Copyright (C) 2018-2023 RIDING BYTES & NARALABS
+**SENAITE.CORE** Copyright (C) 2018-2024 RIDING BYTES & NARALABS
 
 This software, henceforth "SENAITE.CORE" is an add-on for the
 `Plone CMS <https://plone.org/>`_ and a derivative work of BIKA LIMS.

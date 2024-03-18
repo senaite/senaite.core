@@ -174,6 +174,16 @@ Timezone naive datetimes are converterd to `GMT+0`:
     >>> dtime.to_DT(date.fromtimestamp(0))
     DateTime('1970/01/01 00:00:00 GMT+0')
 
+International format is automatically detected and supported:
+
+    >>> dtime.to_DT("02.07.2010 17:50:34 GMT+2")
+    DateTime('2010/07/02 17:50:34 GMT+2')
+
+    >>> dtime.to_DT("13.12.2018 17:50:34 GMT+1")
+    DateTime('2018/12/13 17:50:34 GMT+1')
+
+    >>> dtime.to_DT("12.13.2018 17:50:34 GMT+1")
+    DateTime('2018/12/13 17:50:34 GMT+1')
 
 Timezone aware datetimes are converterd to `GMT+<tzoffset>`
 
@@ -184,6 +194,19 @@ Timezone aware datetimes are converterd to `GMT+<tzoffset>`
     >>> dtime.to_DT(local_dt)
     DateTime('2021/08/01 12:00:00 GMT+2')
 
+Old dates with obsolete timezones (e.g. LMT) are converted as well
+
+    >>> old_dt = datetime(1682, 8, 16, 2, 44, 52)
+    >>> old_dt = dtime.to_zone(old_dt, "Pacific/Port_Moresby")
+    >>> old_dt
+    datetime.datetime(1682, 8, 16, 2, 44, 52, tzinfo=<DstTzInfo 'Pacific/Port_Moresby' LMT+9:49:00 STD>)
+    >>> old_dt.utcoffset().total_seconds()
+    35340.0
+    >>> old_DT = dtime.to_DT(old_dt)
+    >>> old_DT
+    DateTime('1682/08/16 02:44:52 Pacific/Port_Moresby')
+    >>> old_DT.tzoffset()
+    35340
 
 Convert to datetime
 ...................
@@ -247,6 +270,12 @@ Get the timezone from `datetime.date` objects:
     >>> dtime.get_timezone(dt.date)
     'Etc/GMT'
 
+We can even get the obsolete timezone that was applying to an old date:
+
+    >>> old_dt = datetime(1682, 8, 16, 2, 44, 54)
+    >>> old_dt = dtime.to_zone(old_dt, "Pacific/Port_Moresby")
+    >>> dtime.get_timezone(old_dt)
+    'LMT'
 
 Get the timezone info
 .....................
@@ -335,6 +364,9 @@ Check if timezone is valid
     True
 
     >>> dtime.is_valid_timezone("CEST")
+    False
+
+    >>> dtime.is_valid_timezone("LMT")
     False
 
 

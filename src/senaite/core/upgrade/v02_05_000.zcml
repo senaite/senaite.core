@@ -4,11 +4,107 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
-      title="SENAITE CORE 2.5.0: Additional index for analyses catalog"
-      description="Add isAnalyte index in analyses catalog"
+      title="SENAITE.CORE 2.5.0: Setup client landing page"
+      description="Setup client landing page configuration"
+      source="2524"
+      destination="2525"
+      handler=".v02_05_000.setup_client_landing_page"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Un-catalog orphan worksheets"
+      description="Un-catalog worksheets that were once removed"
+      source="2523"
+      destination="2524"
+      handler=".v02_05_000.purge_orphan_worksheets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix min/max range values"
+      description="Fix possible min > max in range values for reference definitions/samples"
+      source="2522"
+      destination="2523"
+      handler=".v02_05_000.fix_range_values"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix searches in worksheets not working"
+      description="Reindex the listing_searchable_text index for worksheets"
+      source="2521"
+      destination="2522"
+      handler=".v02_05_000.fix_searches_worksheets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix samples in registered status"
+      description="Fixes the status of samples in registered status"
+      source="2520"
+      destination="2521"
+      handler=".v02_05_000.fix_samples_registered"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Import Workflow"
+      description="Update Managed Permissions of Sample Workflow"
+      source="2519"
+      destination="2520"
+      handler=".v02_05_000.import_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Reindex control analyses"
+      description="Reindex all control analyses to fix stale `getReferenceAnalysesGroupID` index"
+      source="2518"
+      destination="2519"
+      handler=".v02_05_000.reindex_control_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Add catalog metadata columns for reference widget"
+      description="Add default metadata columns for all catalogs"
+      source="2517"
+      destination="2518"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup auditlog catalog mappings"
+      description="Setup auditlog catalog mappings"
+      source="2516"
+      destination="2517"
+      handler=".v02_05_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Fix type information for DX types"
+      description="Reimport typeinfo profile"
+      source="2515"
+      destination="2516"
+      handler=".v02_05_000.import_typeinfo"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Drop Portal Catalog"
+      description="Drop all indexing in portal_catalog"
+      source="2514"
+      destination="2515"
+      handler=".v02_05_000.drop_portal_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Setup Contact Catalog"
+      description="Create contact catalog and clean up contact related indexes and metadata from portal catalog"
+      source="2513"
+      destination="2514"
+      handler=".v02_05_000.setup_contact_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.5.0: Remove legacy reports"
+      description="Remove legacy reports"
       source="2512"
       destination="2513"
-      handler="senaite.core.upgrade.v02_05_000.setup_catalogs"
+      handler=".v02_05_000.remove_legacy_reports"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

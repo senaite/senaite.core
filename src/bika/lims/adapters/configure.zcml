@@ -13,33 +13,6 @@
       provides="bika.lims.interfaces.IDynamicResultsRange"
       />
 
-    <adapter
-      for="zope.interface.Interface
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-    />
-
-    <!-- ClientAwareReferenceWidgetVocabulary
-    Injects getClientUID or getParentUID as additional search criteria for
-    client-bound reference fields -->
-    <adapter
-      for="bika.lims.interfaces.IBatch
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-    <adapter
-      for="bika.lims.interfaces.IClient
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-    <adapter
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".referencewidgetvocabulary.ClientAwareReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
-
-
     <!--
     FIELDS/WIDGETS VISIBILITY
     ·························
@@ -63,24 +36,6 @@
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="RegistryHiddenFieldsVisibility"
-    />
-
-    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
-    based on system settings (setup's "Show Prices" option) -->
-    <adapter
-      factory=".widgetvisibility.AccountancyFieldsVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IClient"
-      name="AccountancyFieldsVisibility"
-    />
-
-    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
-    based on system settings (setup's "Show Prices" option) -->
-    <adapter
-      factory=".widgetvisibility.AccountancyFieldsVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="AccountancyFieldsVisibility"
     />
 
     <!-- Display/Hide Batch field in AR Add form when creation takes place

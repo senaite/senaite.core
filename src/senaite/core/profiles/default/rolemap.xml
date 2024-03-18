@@ -58,6 +58,13 @@
     </permission>
     <!-- /WORKSHEET -->
 
+    <!-- ANALYSIS -->
+    <permission name="senaite.core: Transition: Reject Analysis" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <!-- /ANALYSIS -->
+
   </permissions>
 
 </rolemap>

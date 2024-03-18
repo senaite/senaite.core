@@ -3,6 +3,7 @@
 <!-- Operation Definitions -->
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
+    <!-- Ported to 2.x: https://github.com/senaite/senaite.core/pull/2459 -->
     <record name="bika.lims.client.default_landing_page">
       <field type="plone.registry.field.Choice">
         <default>analysisrequests</default>

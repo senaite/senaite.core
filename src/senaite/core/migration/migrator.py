@@ -15,29 +15,33 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
 
 import six
-
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IAuditable
+from persistent.dict import PersistentDict
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IField
+from Products.Archetypes.utils import getRelURL
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces import IFieldMigrator
 from senaite.core.migration.utils import copyPermMap
 from z3c.form.interfaces import IDataManager
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import directlyProvidedBy
 from zope.interface import implementer
+
+ATTRIBUTE_STORAGE = "senaite.core.contentmigration"
 
 SKIP_FIELDS = [
     "id",
@@ -52,6 +56,30 @@ SKIP_FIELDS = [
     "rights",
     "creation_date",
 ]
+
+UID_CATALOG = "uid_catalog"
+
+
+def get_attribute_storage(obj):
+    """Get or create the attribute storage for the given object
+
+    :param obj: Content object
+    :returns: PersistentList
+    """
+    annotation = IAnnotations(obj)
+    if annotation.get(ATTRIBUTE_STORAGE) is None:
+        annotation[ATTRIBUTE_STORAGE] = PersistentDict()
+    return annotation[ATTRIBUTE_STORAGE]
+
+
+def flush_attribute_storage(obj):
+    """Empty the attribute storage for the given object
+    """
+    annotation = IAnnotations(obj)
+    try:
+        del annotation[ATTRIBUTE_STORAGE]
+    except KeyError:
+        pass
 
 
 @implementer(IContentMigrator)
@@ -70,27 +98,54 @@ class ContentMigrator(object):
     def uncatalog_object(self, obj):
         """Uncatalog the object for all catalogs
         """
+        # explicitly uncatalog from uid_catalog
+        uid_catalog = api.get_tool(UID_CATALOG)
+        # make sure that both AT/DX paths are uncatalogued
+        rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
+        abs_url = "/".join(obj.getPhysicalPath())
+        uid_catalog.uncatalog_object(rel_url)
+        uid_catalog.uncatalog_object(abs_url)
         # uncatalog from registered catalogs
         obj.unindexObject()
-        # explicitly uncatalog from uid_catalog
-        uid_catalog = api.get_tool("uid_catalog")
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uid_catalog.uncatalog_object(url)
 
     def catalog_object(self, obj):
-        """Catalog the object
+        """Catalog the object in all registered catalogs
         """
+        # explicitly catalog in uid_catalog
+        uid_catalog = api.get_tool(UID_CATALOG)
+        # we catalog the object here below the absolute path, as it is done in
+        # `plone.app.referencablebehavior.uidcatalog``
+        abs_url = "/".join(obj.getPhysicalPath())
+        uid_catalog.catalog_object(obj, abs_url)
+        # reindex in registered catalogs
         obj.reindexObject()
 
-    def copy_uid(self, obj, uid):
+    def copy_id(self, src, target):
+        """Set id on object
+        """
+        source_id = api.get_id(src)
+        target_id = api.get_id(target)
+        if source_id == target_id:
+            return
+        # rename (move) the target object
+        target.aq_parent.manage_renameObject(target_id, source_id)
+
+    def copy_uid(self, src, target):
         """Set uid on object
         """
-        if api.is_dexterity_content(obj):
-            setattr(obj, "_plone.uuid", uid)
-        elif api.is_at_content(obj):
-            setattr(obj, "_at_uid", uid)
+        # remove the target from any catalogs
+        self.uncatalog_object(target)
+
+        uid = api.get_uid(src)
+        if api.is_dexterity_content(target):
+            setattr(target, "_plone.uuid", uid)
+        elif api.is_at_content(target):
+            setattr(target, "_at_uid", uid)
         else:
             raise TypeError("Cannot set UID on that object")
+
+        # recatalog
+        self.catalog_object(target)
 
     def copy_dates(self, src, target):
         """copy modification/creation date
@@ -145,6 +200,13 @@ class ContentMigrator(object):
             # migrate the field
             field_migrator.migrate(mapping)
 
+    def copy_attributes(self, src, target):
+        """Copy raw attribute values
+        """
+        storage = get_attribute_storage(target)
+        for attribute, value in src.__dict__.items():
+            storage[attribute] = value
+
 
 class ATDXContentMigrator(ContentMigrator):
     """Migrate from AT to DX contents
@@ -160,7 +222,10 @@ class ATDXContentMigrator(ContentMigrator):
         if mapping is None:
             mapping = {}
 
-        # copy_fields
+        # copy all (raw) attributes from the source object to the target
+        self.copy_attributes(self.src, self.target)
+
+        # copy fields from the given mapping
         self.copy_fields(self.src, self.target, mapping)
 
         # copy the UID
@@ -184,12 +249,12 @@ class ATDXContentMigrator(ContentMigrator):
         # uncatalog the source object
         self.uncatalog_object(self.src)
 
-        # reindex the new object
-        self.catalog_object(self.target)
-
         # delete source object if requested
         if delete_src:
             self.delete_object(self.src)
+
+        # change the ID *after* the original object was deleted
+        self.copy_id(self.src, self.target)
 
 
 @implementer(IFieldMigrator)

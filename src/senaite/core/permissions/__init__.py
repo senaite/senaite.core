@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 # flake8:noqa
@@ -77,6 +77,8 @@ from .worksheet.permissions import ManageWorksheets
 from .worksheet.permissions import TransitionRejectWorksheet
 from .worksheet.permissions import TransitionRemoveWorksheet
 from .worksheet.permissions import WorksheetAddAttachment
+# Analysis permissions
+from .analysis.permissions import TransitionRejectAnalysis
 
 
 # Add Permissions

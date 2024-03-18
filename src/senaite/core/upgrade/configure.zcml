@@ -3,6 +3,9 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- 2.6.0 -->
+  <include file="v02_06_000.zcml" />
+
   <!-- 2.5.0 -->
   <include file="v02_05_000.zcml" />
 
