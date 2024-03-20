@@ -926,3 +926,10 @@ def get_client(obj):
             return obj.getClient()
 
     return None
+
+
+def is_true(val):
+    """Returns whether val evaluates to True
+    """
+    val = str(val).strip().lower()
+    return val in ["y", "yes", "1", "true", "on"]

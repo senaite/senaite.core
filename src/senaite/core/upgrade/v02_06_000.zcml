@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE CORE 2.6.0: Additional index for analyses catalog"
+      description="Add isAnalyte index in analyses catalog"
+      source="2613"
+      destination="2614"
+      handler=".v02_06_000.setup_catalogs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Re-index sampletype_uid index"
       description="Re-index sampletype_uid index"
       source="2612"

@@ -292,6 +292,44 @@
         </div>
       </script>
 
+      <!-- Service Analytes template -->
+      <script id="service-analytes" type="text/x-handlebars-template">
+        <div data-fieldname="ServiceAnalytes-{{arnum}}">
+          <table class="service-analytes-table table table-condensed table-bordered">
+            {{#each analytes}}
+            <tr data-subfield="{{title}}">
+              <td class="service-analytes-label">
+                <label class="formQuestion">
+                  <span class="">{{{title}}} ({{{keyword}}})</span>
+                </label>
+              </td>
+              <td class="service-analytes-value">
+                <input type='hidden'
+                       name="ServiceAnalytes-{{../arnum}}.uid:records"
+                       value="{{../uid}}"/>
+                <input type="hidden"
+                       name="ServiceAnalytes-{{../arnum}}.title:records"
+                       value="{{title}}"/>
+                <input type="hidden"
+                       name="ServiceAnalytes-{{../arnum}}.keyword:records"
+                       value="{{keyword}}"/>
+                <input type="hidden"
+                       name="ServiceAnalytes-{{../arnum}}.selected:records"
+                       value="{{selected}}"/>
+                {{# if selected}}
+                <input type="checkbox"
+                       name="ServiceAnalytes-{{../arnum}}.value:records"
+                       checked="checked"/>
+                {{else}}
+                <input type="checkbox"
+                       name="ServiceAnalytes-{{../arnum}}.value:records"/>
+                {{/if}}
+              </td>
+            </tr>
+            {{/each}}
+          </table>
+        </div>
+      </script>
     </metal:block>
   </head>
 
@@ -569,6 +607,11 @@
                           <!-- Service conditions -->
                           <div tal:attributes="id python:'{}-conditions'.format(service_uid);
                                                class python:'{}-conditions service-conditions'.format(service_uid);">
+                          </div>
+
+                          <!-- Service analytes -->
+                          <div tal:attributes="id python:'{}-analytes'.format(service_uid);
+                                               class python:'{}-analytes service-analytes'.format(service_uid);">
                           </div>
 
                         </td>

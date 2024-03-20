@@ -81,6 +81,7 @@ class AnalysesView(ListingView):
             "portal_type": "Analysis",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            "isAnalyte": False,
         })
 
         # set the listing view config
@@ -386,6 +387,10 @@ class AnalysesView(ListingView):
 
         # Get the ananylsis object
         obj = self.get_object(analysis_brain)
+
+        if obj.isMultiComponent():
+            # The results entry cannot be done directly, but for its analytes
+            return False
 
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
@@ -778,6 +783,11 @@ class AnalysesView(ListingView):
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
 
+        # Analytes (if a multi component analysis)
+        obj = self.get_object(obj)
+        item["children"] = obj.getRawAnalytes()
+        item["parent"] = obj.getRawMultiComponentAnalysis()
+
         return item
 
     def folderitems(self):
@@ -940,6 +950,12 @@ class AnalysesView(ListingView):
             item["before"]["Result"] = img
             return
 
+        # Get the analysis object
+        obj = self.get_object(analysis_brain)
+        if obj.isMultiComponent():
+            # Don't display the "NA" result of a multi-component analysis
+            return
+
         result = analysis_brain.getResult
         capture_date = analysis_brain.getResultCaptureDate
         capture_date_str = self.ulocalized_time(capture_date, long_format=0)
@@ -952,9 +968,6 @@ class AnalysesView(ListingView):
         unit = item.get("Unit")
         if unit:
             item["after"]["Result"] = self.render_unit(unit)
-
-        # Get the analysis object
-        obj = self.get_object(analysis_brain)
 
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
@@ -1167,6 +1180,12 @@ class AnalysesView(ListingView):
         if not self.is_analysis_edition_allowed(analysis_brain):
             return
 
+        obj = self.get_object(analysis_brain)
+        if obj.isMultiComponent():
+            # Leave units empty
+            item["Unit"] = ""
+            return
+
         # Edition allowed
         voc = self.get_unit_vocabulary(analysis_brain)
         if voc:
@@ -1179,7 +1198,11 @@ class AnalysesView(ListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
+        item["Method"] = ""
         obj = self.get_object(analysis_brain)
+        if obj.isAnalyte():
+            return
+
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
@@ -1221,6 +1244,9 @@ class AnalysesView(ListingView):
         :param item: analysis' dictionary counterpart that represents a row
         """
         item["Instrument"] = ""
+        obj = self.get_object(analysis_brain)
+        if obj.isAnalyte():
+            return
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
@@ -1261,7 +1287,13 @@ class AnalysesView(ListingView):
         item["Analyst"] = self.get_user_name(analyst)
 
     def _folder_item_submitted_by(self, obj, item):
+        item["SubmittedBy"] = ""
+
         obj = self.get_object(obj)
+        if obj.isMultiComponent():
+            # Do not display submitter for multi-component analyses
+            return
+
         submitted_by = obj.getSubmittedBy()
         item["SubmittedBy"] = self.get_user_name(submitted_by)
 
@@ -1357,10 +1389,16 @@ class AnalysesView(ListingView):
         if not obj.getDetectionLimitSelector():
             return None
 
+        # Display the column for the selector
+        self.columns["DetectionLimitOperand"]["toggle"] = True
+
+        # If multicomponent only render the selector for analytes
+        if obj.isMultiComponent():
+            return
+
         # Show Detection Limit Operand Selector
         item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
         item["allow_edit"].append("DetectionLimitOperand")
-        self.columns["DetectionLimitOperand"]["toggle"] = True
 
         # Prepare selection list for LDL/UDL
         choices = [
@@ -1583,6 +1621,9 @@ class AnalysesView(ListingView):
             return
 
         full_obj = self.get_object(analysis_brain)
+        if full_obj.isMultiComponent():
+            return
+
         item['Hidden'] = full_obj.getHidden()
 
         # Hidden checkbox is not reachable by tabbing

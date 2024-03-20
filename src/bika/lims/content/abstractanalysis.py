@@ -159,6 +159,12 @@ ResultsRange = ResultRangeField(
     required=0
 )
 
+# The Multi-component Analysis this analysis belongs to
+MultiComponentAnalysis = UIDReferenceField(
+    "MultiComponentAnalysis",
+    relationship="AnalysisMultiComponentAnalysis",
+)
+
 schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
@@ -173,6 +179,7 @@ schema = schema.copy() + Schema((
     Calculation,
     InterimFields,
     ResultsRange,
+    MultiComponentAnalysis,
 ))
 
 
@@ -459,6 +466,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
+        if self.isMultiComponent():
+            # Cannot set a result to a multi-component analysis
+            msg = "setResult is not supported for Multi-component analyses"
+            raise ValueError(msg)
+
         prev_result = self.getField("Result").get(self) or ""
 
         # Convert to list ff the analysis has result options set with multi
@@ -514,6 +526,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Set the result field
         self.getField("Result").set(self, val)
+
+        # Set a 'NA' result to the multi-component analysis this belongs to,
+        # but only if results for all analytes have been captured
+        if val and prev_result != val:
+            multi_component = self.getMultiComponentAnalysis()
+            if multi_component:
+                captured = self.getResultCaptureDate()
+                multi_component.setStringResult(True)
+                multi_component.getField("Result").set(multi_component, "NA")
+                multi_component.setResultCaptureDate(captured)
 
     @security.public
     def calculateResult(self, override=False, cascade=False):
@@ -1026,7 +1048,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the stored Analyst or the user who submitted the result
         """
         analyst = self.getField("Analyst").get(self) or self.getAssignedAnalyst()
-        if not analyst:
+        if not analyst and not self.isMultiComponent():
             analyst = self.getSubmittedBy()
         return analyst or ""
 
@@ -1189,3 +1211,55 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if self.getRawRetest():
             return True
         return False
+
+    def getRawAnalytes(self):
+        """Returns the UIDs of the analytes of this multi-component analysis
+        """
+        return get_backreferences(self, "AnalysisMultiComponentAnalysis")
+
+    def getAnalytes(self):
+        """Returns the analytes of this multi-component analysis, if any
+        """
+        uids = self.getRawAnalytes()
+        if not uids:
+            return []
+
+        cat = api.get_tool("uid_catalog")
+        brains = cat(UID=uids)
+        return [api.get_object(brain) for brain in brains]
+
+    def isAnalyte(self):
+        """Returns whether this analysis is an analyte of a multi-component
+        analysis
+        """
+        if self.getRawMultiComponentAnalysis():
+            return True
+        return False
+
+    def isMultiComponent(self):
+        """Returns whether this analysis is a multi-component analysis
+        """
+        if self.getRawAnalytes():
+            return True
+        return False
+
+    def setMethod(self, value):
+        """Sets the method to this analysis and analytes if multi-component
+        """
+        self.getField("Method").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setMethod(value)
+
+    def setInstrument(self, value):
+        """Sets the method to this analysis and analytes if multi-component
+        """
+        self.getField("Instrument").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setInstrument(value)
+
+    def setAnalyst(self, value):
+        """Sets the analyst to this analysis and analytes if multi-component
+        """
+        self.getField("Analyst").set(self, value)
+        for analyte in self.getAnalytes():
+            analyte.setAnalyst(value)

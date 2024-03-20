@@ -32,6 +32,8 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
+from senaite.core.setuphandlers import setup_auditlog_catalog_mappings
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
@@ -694,3 +696,16 @@ def reindex_sampletype_uid(tool):
     logger.info("Reindexing sampletype_uid index from setup ...")
     reindex_index(SETUP_CATALOG, "sampletype_uid")
     logger.info("Reindexing sampletype_uid index from setup [DONE]")
+
+
+def setup_catalogs(tool):
+    """Setup all core catalogs and ensure all indexes are present
+    """
+    logger.info("Setup Catalogs ...")
+    portal = api.get_portal()
+
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+    setup_auditlog_catalog_mappings(portal)
+
+    logger.info("Setup Catalogs [DONE]")

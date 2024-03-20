@@ -148,3 +148,9 @@
   display:none;
 }
 /* /Service conditions */
+
+/* Service analytes */
+.ar-table tr td.service-column div.service-analytes {
+  display:block;
+}
+/* /Service analytes */

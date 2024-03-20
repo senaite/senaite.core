@@ -483,6 +483,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         set on sample registration and are stored at sample level. Do not return
         conditions with empty value unless `empties` is True
         """
+        if self.isAnalyte():
+            return []
+
         sample = self.getRequest()
         service_uid = self.getRawAnalysisService()
         attachments = self.getRawAttachment()
@@ -508,6 +511,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         """
         if not conditions:
             conditions = []
+
+        if conditions and self.isAnalyte():
+            raise ValueError("Conditions for analytes is not supported")
 
         sample = self.getRequest()
         service_uid = self.getRawAnalysisService()

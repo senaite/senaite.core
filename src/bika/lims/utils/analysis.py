@@ -28,6 +28,7 @@ from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
+from bika.lims.utils import is_true
 
 
 def create_analysis(context, source, **kwargs):
@@ -364,11 +365,16 @@ def create_retest(analysis, **kwargs):
     })
     retest = create_analysis(parent, analysis, **kwargs)
 
+    # Create the analytes if necessary
+    if analysis.isMultiComponent():
+        create_analytes(retest)
+
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(retest)
 
+    retest.reindexObject()
     return retest
 
 
@@ -407,6 +413,64 @@ def create_reference_analysis(reference_sample, source, **kwargs):
         "ReferenceType": ref_type,
     })
     return create_analysis(ref, source, **kwargs)
+
+
+def create_analytes(analysis):
+    """Creates Analysis objects that represent analytes of the given multi
+    component analysis. Returns empty otherwise
+    """
+    if analysis.isAnalyte():
+        raise ValueError("An analyte already: {}".format(analysis))
+
+    analytes = []
+    service = analysis.getAnalysisService()
+    container = api.get_parent(analysis)
+
+    keywords = []
+
+    # if a retest, pick the analytes from the retested
+    retests_of = {}
+    if hasattr(analysis, 'getRetestOf'):
+        retested = analysis.getRetestOf()
+        analytes = retested and retested.getAnalytes() or []
+
+        # skip those that are not valid
+        skip = ["cancelled", "retracted", "rejected"]
+        get_status = api.get_review_status
+        analytes = filter(lambda an: get_status(an) not in skip, analytes)
+
+        # extract the keywords and map with original analyte
+        keywords = [analyte.getKeyword() for analyte in analytes]
+        retests_of = dict(zip(keywords, analytes))
+
+    # pick the analytes that were selected for this service and sample
+    if not keywords and IRequestAnalysis.providedBy(analysis):
+        sample = analysis.getRequest()
+        sample_analytes = sample.getServiceAnalytesFor(service)
+        keywords = [analyte.get("keyword") for analyte in sample_analytes]
+
+    for analyte_record in service.getAnalytes():
+        keyword = analyte_record.get("keyword")
+        if keywords and keyword not in keywords:
+            continue
+
+        analyte_id = generate_analysis_id(container, keyword)
+        retest_of = retests_of.get(keyword, None)
+        select_dl = analyte_record.get("selectdl")
+        manual_dl = analyte_record.get("manualdl")
+        values = {
+            "id": analyte_id,
+            "title": analyte_record.get("title"),
+            "Keyword": keyword,
+            "MultiComponentAnalysis": analysis,
+            "RetestOf": retest_of,
+            "DetectionLimitSelector": is_true(select_dl),
+            "AllowManualDetectionLimit": is_true(manual_dl),
+        }
+        analyte = create_analysis(container, service, **values)
+        analytes.append(analyte)
+
+    return analytes
 
 
 def generate_analysis_id(instance, keyword):

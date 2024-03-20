@@ -379,6 +379,10 @@ class AnalysisServicesView(BikaListingView):
         if after_icons:
             item["after"]["Title"] = after_icons
 
+        if obj.isMultiComponent():
+            img = get_image("multicomponent.svg", title=_("Multiple component"))
+            item["before"]["Title"] = img
+
         return item
 
     def folderitems(self):

@@ -927,6 +927,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
             "conditions": self.get_conditions_info(obj),
+            "analytes": obj.getAnalytes(),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()

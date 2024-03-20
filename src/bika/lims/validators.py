@@ -38,6 +38,9 @@ from Products.ZCTextIndex.ParseTree import ParseError
 from zope.interface import implements
 
 
+RX_NO_SPECIAL_CHARACTERS = r"[^A-Za-z\w\d\-_]"
+
+
 class IdentifierTypeAttributesValidator:
     """Validate IdentifierTypeAttributes to ensure that attributes are
     not duplicated.
@@ -1383,11 +1386,11 @@ class DefaultResultValidator(object):
 validation.register(DefaultResultValidator())
 
 
-class ServiceConditionsValidator(object):
-    """Validate AnalysisService Conditions field
+class RecordsValidator(object):
+    """Records validator
     """
     implements(IValidator)
-    name = "service_conditions_validator"
+    name = "generic_records_validator"
 
     def __call__(self, field_value, **kwargs):
         instance = kwargs["instance"]
@@ -1407,14 +1410,25 @@ class ServiceConditionsValidator(object):
         records = request.get(field_name_value, [])
         for record in records:
             # Validate the record
-            msg = self.validate_record(record)
+            msg = self.validate_record(instance, record)
             if msg:
                 return to_utf8(translate(msg))
 
         instance.REQUEST[key] = True
         return True
 
-    def validate_record(self, record):
+    def validate_record(self, instance, record):
+        """Validates a dict-like item/record. Returns None if no error. Returns
+        a message otherwise"""
+        raise NotImplementedError("Must be implemented by subclass")
+
+
+class ServiceConditionsValidator(RecordsValidator):
+    """Validate AnalysisService Conditions field
+    """
+    name = "service_conditions_validator"
+
+    def validate_record(self, instance, record):
         control_type = record.get("type")
         choices = record.get("choices")
         required = record.get("required") == "on"
@@ -1455,3 +1469,18 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
+
+
+class ServiceAnalytesValidator(RecordsValidator):
+    """Validate AnalysisService Analytes field
+    """
+    name = "service_analytes_validator"
+
+    def validate_record(self, instance, record):
+        # Keyword cannot contain invalid characters
+        keyword = record.get("keyword")
+        if re.findall(RX_NO_SPECIAL_CHARACTERS, keyword):
+            return _("Validation failed: Keyword contains invalid characters")
+
+
+validation.register(ServiceAnalytesValidator())

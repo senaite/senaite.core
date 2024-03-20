@@ -11,6 +11,8 @@
 
   window.AnalysisRequestAdd = (function() {
     function AnalysisRequestAdd() {
+      this.set_service_analytes = bind(this.set_service_analytes, this);
+      this.init_service_analytes = bind(this.init_service_analytes, this);
       this.init_service_conditions = bind(this.init_service_conditions, this);
       this.copy_service_conditions = bind(this.copy_service_conditions, this);
       this.set_service_conditions = bind(this.set_service_conditions, this);
@@ -69,6 +71,7 @@
       this.get_flush_settings();
       this.recalculate_records();
       this.init_service_conditions();
+      this.init_service_analytes();
       this.recalculate_prices();
       return this;
     };
@@ -624,6 +627,7 @@
         el.closest("tr").addClass("visible");
       }
       me.set_service_conditions(el);
+      me.set_service_analytes(el);
       return $(this).trigger("services:changed");
     };
 
@@ -900,6 +904,7 @@
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
       me.set_service_conditions($el);
+      me.set_service_analytes($el);
       $(me).trigger("form:changed");
       return $(me).trigger("services:changed");
     };
@@ -1015,7 +1020,8 @@
           if (is_service) {
             uid = $el.closest("[uid]").attr("uid");
             me.set_service_conditions($(_el));
-            return me.copy_service_conditions(0, arnum, uid);
+            me.copy_service_conditions(0, arnum, uid);
+            return me.set_service_analytes($(_el));
           }
         });
         if (is_service) {
@@ -1489,6 +1495,64 @@
         $el = $(el);
         return me.set_service_conditions($el);
       });
+    };
+
+    AnalysisRequestAdd.prototype.init_service_analytes = function() {
+
+      /*
+       * Updates the visibility of the analytes for the selected services
+       */
+      var me, services;
+      console.debug("init_service_analytes");
+      me = this;
+      services = $("input[type=checkbox].analysisservice-cb:checked");
+      return $(services).each(function(idx, el) {
+        var $el;
+        $el = $(el);
+        return me.set_service_analytes($el);
+      });
+    };
+
+    AnalysisRequestAdd.prototype.set_service_analytes = function(el) {
+
+      /*
+       * Shows or hides the service analytes checkboxes for the (multi-component)
+       * service bound to the checkbox element passed-in
+       */
+      var analytes, arnum, base_info, checked, context, data, parent, template, uid;
+      checked = el.prop("checked");
+      parent = el.closest("td[uid][arnum]");
+      uid = parent.attr("uid");
+      arnum = parent.attr("arnum");
+      analytes = $("div.service-analytes", parent);
+      analytes.empty();
+      if (!checked) {
+        analytes.hide();
+        return;
+      }
+      data = analytes.data("data");
+      base_info = {
+        arnum: arnum
+      };
+      if (!data) {
+        return this.get_service(uid).done(function(data) {
+          var context, template;
+          context = $.extend({}, data, base_info);
+          if (context.analytes && context.analytes.length > 0) {
+            template = this.render_template("service-analytes", context);
+            analytes.append(template);
+            analytes.data("data", context);
+            return analytes.show();
+          }
+        });
+      } else {
+        context = $.extend({}, data, base_info);
+        if (context.analytes && context.analytes.length > 0) {
+          template = this.render_template("service-analytes", context);
+          analytes.append(template);
+          return analytes.show();
+        }
+      }
     };
 
     return AnalysisRequestAdd;

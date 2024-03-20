@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2120 Support for Multiple component analysis
 - #2514 Added functions for easy update of workflows
 - #2512 Skip rendering of empty record fiels
 - #2510 Fix Add action of the Client located Analysis Profiles Listing

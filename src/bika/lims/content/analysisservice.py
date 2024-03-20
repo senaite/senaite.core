@@ -273,6 +273,80 @@ Conditions = RecordsField(
     )
 )
 
+Analytes = RecordsField(
+    "Analytes",
+    schemata="Analytes",
+    subfields=(
+        "title",
+        "keyword",
+        "selectdl",
+        "manualdl",
+        "selected",
+    ),
+    required_subfields=(
+        "title",
+        "keyword",
+    ),
+    subfield_labels={
+        "title": _(
+            u"label_analysisservice_analytes_title",
+            default=u"Name"
+        ),
+        "keyword": _(
+            u"label_analysisservice_analytes_keyword",
+            default=u"Keyword"
+        ),
+        "selectdl": _(
+            u"label_analysisservice_analytes_dlselector",
+            default=u"DL Selector"
+        ),
+        "manualdl": _(
+            u"label_analysisservice_analytes_manualdl",
+            default=u"Manual DL"
+        ),
+        "selected": _(
+            u"label_analysisservice_analytes_selected",
+            default=u"Selected"
+        ),
+    },
+    subfield_descriptions={
+        "selected": _(
+            u"description_analysisservice_analytes_selected",
+            default=u"Whether this analyte is checked by default when "
+                    u"the multi-component analysis is selected in the sample "
+                    u"registration form. Only checked analytes will be "
+                    u"available for results entry after sample creation"
+        ),
+    },
+    subfield_types={
+        "title": "string",
+        "keyword": "string",
+        "selectdl": "boolean",
+        "manualdl": "boolean",
+        "selected": "boolean",
+    },
+    subfield_sizes={
+        "title": 20,
+        "keyword": 20,
+        "selectdl": 20,
+        "manualdl": 20,
+        "selected": 20,
+    },
+    subfield_validators={
+        "keyword": "service_analytes_validator",
+    },
+    subfield_maxlength={
+        "title": 50,
+        "keyword": 20,
+    },
+    widget=RecordsWidget(
+        label=_(u"label_analysisservice_analytes", default="Analytes"),
+        description=_(
+            u"description_analysisservice_analytes",
+            default=u"Individual components of this multi-component analysis"
+        ),
+    )
+)
 
 schema = schema.copy() + Schema((
     Methods,
@@ -286,6 +360,7 @@ schema = schema.copy() + Schema((
     PartitionSetup,
     DefaultResult,
     Conditions,
+    Analytes,
 ))
 
 # Move default method field after available methods field
@@ -615,6 +690,12 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         # N.B. we return a copy of the list to avoid accidental writes
         return self.getRawMethods()[:]
+
+    def isMultiComponent(self):
+        """Returns whether this service is a multi-component service
+        """
+        analytes = self.getAnalytes() or []
+        return len(analytes) > 0
 
 
 registerType(AnalysisService, PROJECTNAME)

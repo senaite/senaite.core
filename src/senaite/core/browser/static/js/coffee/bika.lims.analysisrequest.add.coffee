@@ -52,6 +52,9 @@ class window.AnalysisRequestAdd
     # initialize service conditions (needed for AR copies)
     @init_service_conditions()
 
+    # initialize service analytes
+    @init_service_analytes()
+
     # always recalculate prices in the first run
     @recalculate_prices()
 
@@ -608,6 +611,8 @@ class window.AnalysisRequestAdd
       el.closest("tr").addClass "visible"
     # show/hide the service conditions for this analysis
     me.set_service_conditions el
+    # show/hide the service analytes for this analysis
+    me.set_service_analytes el
     # trigger event for price recalculation
     $(@).trigger "services:changed"
 
@@ -895,6 +900,8 @@ class window.AnalysisRequestAdd
 
     # show/hide the service conditions for this analysis
     me.set_service_conditions $el
+    # show/hide the service analytes for this analysis
+    me.set_service_analytes $el
     # trigger form:changed event
     $(me).trigger "form:changed"
     # trigger event for price recalculation
@@ -1021,6 +1028,8 @@ class window.AnalysisRequestAdd
           me.set_service_conditions $(_el)
           # copy the conditions for this analysis
           me.copy_service_conditions 0, arnum, uid
+          # show/hide the service analytes for this analysis
+          me.set_service_analytes $(_el)
 
       # trigger event for price recalculation
       if is_service
@@ -1456,3 +1465,62 @@ class window.AnalysisRequestAdd
     $(services).each (idx, el) ->
       $el = $(el)
       me.set_service_conditions $el
+
+
+  init_service_analytes: =>
+    ###
+     * Updates the visibility of the analytes for the selected services
+    ###
+    console.debug "init_service_analytes"
+
+    me = this
+
+    # Find out all selected services checkboxes
+    services = $("input[type=checkbox].analysisservice-cb:checked")
+    $(services).each (idx, el) ->
+      $el = $(el)
+      me.set_service_analytes $el
+
+
+  set_service_analytes: (el) =>
+    ###
+     * Shows or hides the service analytes checkboxes for the (multi-component)
+     * service bound to the checkbox element passed-in
+    ###
+
+    # Check whether the checkbox is selected or not
+    checked = el.prop "checked"
+
+    # Get the uid of the analysis and the column number
+    parent = el.closest("td[uid][arnum]")
+    uid = parent.attr "uid"
+    arnum = parent.attr "arnum"
+
+    # Get the div where service analytes are rendered
+    analytes = $("div.service-analytes", parent)
+    analytes.empty()
+
+    # If the service is unchecked, remove the analytes form
+    if not checked
+      analytes.hide()
+      return
+
+    # Check if this service has analytes
+    data = analytes.data "data"
+    base_info =
+      arnum: arnum
+
+    if not data
+      @get_service(uid).done (data) ->
+        context = $.extend({}, data, base_info)
+        if context.analytes and context.analytes.length > 0
+          template = @render_template "service-analytes", context
+          analytes.append template
+          analytes.data "data", context
+          analytes.show()
+    else
+      context = $.extend({}, data, base_info)
+      if context.analytes and context.analytes.length > 0
+        template = @render_template "service-analytes", context
+        analytes.append template
+        analytes.show()

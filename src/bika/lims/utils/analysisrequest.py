@@ -366,6 +366,9 @@ def create_retest(ar):
     # Rename the retest according to the ID server setup
     renameAfterCreation(retest)
 
+    # Keep a mapping of UIDs between original and new analyses
+    source_target = {}
+
     # Copy the analyses from the source
     intermediate_states = ['retracted', ]
     for an in ar.getAnalyses(full_objects=True):
@@ -388,9 +391,20 @@ def create_retest(ar):
         nan = _createObjectByType("Analysis", retest, keyword)
 
         # Make a copy
-        ignore_fieldnames = ['DataAnalysisPublished']
+        ignore_fieldnames = ['DataAnalysisPublished', 'MultiComponentAnalysis']
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
+
+        # Keep track of relationships
+        source_uid = api.get_uid(an)
+        source_target[source_uid] = api.get_uid(nan)
+
+        # If analyte, assign the proper parent multi-component
+        if an.isAnalyte():
+            source_multi_uid = an.getRawMultiComponentAnalysis()
+            target_multi_uid = source_target.get(source_multi_uid)
+            nan.setMultiComponentAnalysis(target_multi_uid)
+
         push_reindex_to_actions_pool(nan)
 
     # Transition the retest to "sample_received"!

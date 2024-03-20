@@ -18,15 +18,26 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from functools import wraps
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
+from bika.lims.interfaces import IRejectAnalysis
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from zope.annotation import IAnnotations
+
+
+def get_request():
+    # Fixture for tests that do not have a regular request!!!
+    return api.get_request() or api.get_test_request()
 
 
 def is_worksheet_context():
@@ -47,6 +58,36 @@ def is_worksheet_context():
     return False
 
 
+def is_on_guard(analysis, guard):
+    """Function that checks if the guard for the given analysis is being
+    evaluated within the current thread. This is useful to prevent max depth
+    recursion errors when evaluating guards from interdependent objects
+    """
+    key = "guard_%s:%s" % (guard, analysis.UID())
+    storage = IAnnotations(get_request())
+    return key in storage
+
+
+def on_guard(func):
+    """Decorator that keeps track of the guard and analysis that is being
+    evaluated within the current thread. This is useful to prevent max depth
+    recursion errors when evaluating guards from independent objects
+    """
+    @wraps(func)
+    def decorator(*args):
+        analysis = args[0]
+        key = "%s:%s" % (func.__name__, analysis.UID())
+        storage = IAnnotations(get_request())
+        storage[key] = api.to_int(storage.get(key), 0) + 1
+        logger.info("{}: {}".format(key, storage[key]))
+        out = func(*args)
+        storage[key] = api.to_int(storage.get(key), 1) - 1
+        if storage[key] < 1:
+            del(storage[key])
+        return out
+    return decorator
+
+
 def guard_initialize(analysis):
     """Return whether the transition "initialize" can be performed or not
     """
@@ -59,6 +100,12 @@ def guard_initialize(analysis):
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
+    multi_component = analysis.getMultiComponentAnalysis()
+    if multi_component:
+        # Analyte can be assigned if the multi-component can be assigned or
+        # has been assigned already
+        return is_assigned_or_assignable(multi_component)
+
     # Only if the request was done from worksheet context.
     if not is_worksheet_context():
         return False
@@ -68,21 +115,39 @@ def guard_assign(analysis):
         return False
 
     # Cannot assign if the analysis has a worksheet assigned already
-    if analysis.getWorksheet():
+    if analysis.getWorksheetUID():
         return False
 
     return True
 
 
+@on_guard
 def guard_unassign(analysis):
     """Return whether the transition "unassign" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if not multi_component.getWorksheetUID():
+            return True
+
+        # Direct un-assignment of analytes is not permitted. Return False
+        # unless the guard for the multiple component is being evaluated
+        # already in the current recursive call
+        if not is_on_guard(multi_component, "unassign"):
+            return False
+
+        # Analyte can be unassigned if the multi-component can be unassigned
+        # or has been unassigned already
+        return is_unassigned_or_unassignable(multi_component)
+
     # Only if the request was done from worksheet context.
     if not is_worksheet_context():
         return False
 
     # Cannot unassign if the analysis is not assigned to any worksheet
-    if not analysis.getWorksheet():
+    if not analysis.getWorksheetUID():
         return False
 
     return True
@@ -146,10 +211,16 @@ def guard_submit(analysis):
             if analyst != security.get_user_id():
                 return False
 
+    # If multi-component, cannot submit unless all analytes were submitted
+    for analyte in analysis.getAnalytes():
+        if not ISubmitted.providedBy(analyte):
+            return False
+
     # Cannot submit unless all dependencies are submitted or can be submitted
     for dependency in analysis.getDependencies():
         if not is_submitted_or_submittable(dependency):
             return False
+
     return True
 
 
@@ -186,9 +257,36 @@ def guard_multi_verify(analysis):
     return True
 
 
+@on_guard
 def guard_verify(analysis):
     """Return whether the transition "verify" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if IVerified.providedBy(multi_component):
+            return True
+
+        # Direct verification of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "verify"):
+            return False
+
+    elif analysis.isMultiComponent():
+
+        # Multi-component can be verified if all analytes can be verified or
+        # have already been verified
+        for analyte in analysis.getAnalytes():
+
+            # Prevent max depth exceed error
+            if is_on_guard(analyte, "verify"):
+                continue
+
+            if not is_verified_or_verifiable(analyte):
+                return False
+
     # Cannot verify if the number of remaining verifications is > 1
     remaining_verifications = analysis.getNumberOfRemainingVerifications()
     if remaining_verifications > 1:
@@ -225,9 +323,36 @@ def guard_verify(analysis):
     return True
 
 
+@on_guard
 def guard_retract(analysis):
     """ Return whether the transition "retract" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if IRetracted.providedBy(multi_component):
+            return True
+
+        # Direct retraction of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "retract"):
+            return False
+
+    elif analysis.isMultiComponent():
+
+        # Multi-component can be retracted if all analytes can be retracted or
+        # have already been retracted
+        for analyte in analysis.getAnalytes():
+
+            # Prevent max depth exceed error
+            if is_on_guard(analyte, "retract"):
+                continue
+
+            if not is_retracted_or_retractable(analyte):
+                return False
+
     # Cannot retract if there are dependents that cannot be retracted
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
@@ -243,9 +368,23 @@ def guard_retract(analysis):
     return True
 
 
-def guard_retest(analysis, check_dependents=True):
+@on_guard
+def guard_retest(analysis):
     """Return whether the transition "retest" can be performed or not
     """
+    if analysis.isAnalyte():
+
+        # Get the multi component analysis
+        multi_component = analysis.getMultiComponentAnalysis()
+        if multi_component.isRetested():
+            return True
+
+        # Direct retest of analytes is not permitted. Return False unless
+        # the guard for the multiple component is being evaluated already in
+        # the current recursive call
+        if not is_on_guard(multi_component, "retest"):
+            return False
+
     # Retest transition does an automatic verify transition, so the analysis
     # should be verifiable first
     if not is_transition_allowed(analysis, "verify"):
@@ -261,8 +400,23 @@ def guard_retest(analysis, check_dependents=True):
 def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """
+    if analysis.isMultiComponent():
+        # Multi-component can be rejected if all analytes can be rejected or
+        # have already been rejected
+        for analyte in analysis.getAnalytes():
+            if not is_rejected_or_rejectable(analyte):
+                return False
+
     # Cannot reject if there are dependents that cannot be rejected
-    return is_transition_allowed(analysis.getDependents(), "reject")
+    if not is_transition_allowed(analysis.getDependents(), "reject"):
+        return False
+
+    # Cannot reject if multi-component with analytes that cannot be rejected
+    for analyte in analysis.getAnalytes():
+        if not is_rejected_or_rejectable(analyte):
+            return False
+
+    return True
 
 
 def guard_publish(analysis):
@@ -388,5 +542,48 @@ def is_verified_or_verifiable(analysis):
     if is_transition_allowed(analysis, "verify"):
         return True
     if is_transition_allowed(analysis, "multi_verify"):
+        return True
+    return False
+
+
+def is_rejected_or_rejectable(analysis):
+    """Returns whether the analysis is rejectable or has already been rejected
+    """
+    if IRejectAnalysis.providedBy(analysis):
+        return True
+    if IRejected.providedBy(analysis):
+        return True
+    if is_transition_allowed(analysis, "reject"):
+        return True
+    return False
+
+
+def is_retracted_or_retractable(analysis):
+    """Returns whether the analysis is retractable or has been retracted already
+    """
+    if IRetracted.providedBy(analysis):
+        return True
+    if is_transition_allowed(analysis, "retract"):
+        return True
+    return False
+
+
+def is_assigned_or_assignable(analysis):
+    """Returns whether the analysis is assignable or has been assigned already
+    """
+    if analysis.getWorksheetUID():
+        return True
+    if is_transition_allowed(analysis, "assign"):
+        return True
+    return False
+
+
+def is_unassigned_or_unassignable(analysis):
+    """Returns whether the analysis is unassignable or has been unassigned
+    already
+    """
+    if not analysis.getWorksheetUID():
+        return True
+    if is_transition_allowed(analysis, "unassign"):
         return True
     return False

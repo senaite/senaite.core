@@ -31,6 +31,7 @@ from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
 from senaite.core.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
+from bika.lims.utils.analysis import create_analytes
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
@@ -277,6 +278,10 @@ class ARAnalysesField(ObjectField):
             analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
+            # Create the analytes if multi-component analysis
+            analytes = create_analytes(analysis)
+            analyses.extend(analytes)
+
         for analysis in analyses:
             # Set the hidden status
             analysis.setHidden(hidden)
@@ -288,18 +293,17 @@ class ARAnalysesField(ObjectField):
             parent_sample = analysis.getRequest()
             analysis.setInternalUse(parent_sample.getInternalUse())
 
-            # Set the default result to the analysis
-            if not analysis.getResult() and default_result:
-                analysis.setResult(default_result)
-                analysis.setResultCaptureDate(None)
+            # Set default result, but only if not a multi-component
+            self.set_default_result(analysis, default_result)
 
             # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
             analysis.setResultsRange(analysis_rr)
 
             # Set default (pre)conditions
-            conditions = self.resolve_conditions(analysis)
-            analysis.setConditions(conditions)
+            if not analysis.isAnalyte():
+                conditions = self.resolve_conditions(analysis)
+                analysis.setConditions(conditions)
 
             analysis.reindexObject()
 
@@ -367,6 +371,31 @@ class ARAnalysesField(ObjectField):
         analyses.extend(from_descendant)
 
         return analyses
+
+    def set_default_result(self, analysis, default_result):
+        """Sets the default result to the analysis w/o updating the results
+        capture date. It does nothing if the instance is a multi-component
+        analysis or if the analysis has a result already set
+        """
+        if not default_result:
+            return
+        if analysis.getResult():
+            return
+        if analysis.isMultiComponent():
+            return
+
+        # keep track of original capture date of the multi-component the
+        # analysis belongs to
+        multi = analysis.getMultiComponentAnalysis()
+        multi_capture = multi.getResultCaptureDate() if multi else None
+
+        # set the default result and reset capture date
+        analysis.setResult(default_result)
+        analysis.setResultCaptureDate(None)
+
+        # if multi, restore the original capture date
+        if multi:
+            multi.setResultCaptureDate(multi_capture)
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants

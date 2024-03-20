@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import ServiceAnalytesValidator
 from six import string_types
 from itertools import chain
 
@@ -115,6 +116,10 @@ class EditForm(EditFormAdapterBase):
             self.add_update_field("Instrument", {
                 "options": empty + i_opts})
 
+        # Handle Analytes Change
+        elif name == "Analytes":
+            self.add_error_field("Analytes", self.validate_analytes(value))
+
         return self.data
 
     def get_available_instruments_for(self, methods):
@@ -181,6 +186,20 @@ class EditForm(EditFormAdapterBase):
 
         # Check the current value with the validator
         validator = ServiceKeywordValidator()
+        check = validator(value, instance=self.context)
+        if isinstance(check, string_types):
+            return _(check)
+        return None
+
+    def validate_analytes(self, value):
+        """Validate the Analytes records
+        """
+        current_value = self.context.getAnalytes()
+        if current_value == value:
+            # nothing changed
+            return
+        # Check current value with the validator
+        validator = ServiceAnalytesValidator()
         check = validator(value, instance=self.context)
         if isinstance(check, string_types):
             return _(check)

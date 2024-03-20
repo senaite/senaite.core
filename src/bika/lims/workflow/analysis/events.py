@@ -64,31 +64,32 @@ def before_reject(analysis):
 
 
 def after_retest(analysis):
-    """Function triggered before 'retest' transition takes place. Creates a
-    copy of the current analysis
+    """Function triggered after 'retest' transition takes place. Verifies and
+    creates a copy of the given analysis, dependents and dependencies
     """
     # When an analysis is retested, it automatically transitions to verified,
     # so we need to mark the analysis as such
     alsoProvides(analysis, IVerified)
 
-    def verify_and_retest(relative):
-        if not ISubmitted.providedBy(relative):
+    # Retest and auto-verify relatives, from bottom to top
+    to_retest = list(reversed(analysis.getDependents(recursive=True)))
+    to_retest.extend(analysis.getDependencies(recursive=True))
+    to_retest.append(analysis)
+
+    for obj in to_retest:
+        if not ISubmitted.providedBy(obj):
             # Result not yet submitted, no need to create a retest
             return
 
-        # Apply the transition manually, but only if analysis can be verified
-        doActionFor(relative, "verify")
-
         # Create the retest
-        create_retest(relative)
+        create_retest(obj)
 
-    # Retest and auto-verify relatives, from bottom to top
-    relatives = list(reversed(analysis.getDependents(recursive=True)))
-    relatives.extend(analysis.getDependencies(recursive=True))
-    map(verify_and_retest, relatives)
+        # Verify the analysis
+        doActionFor(obj, "verify")
 
-    # Create the retest
-    create_retest(analysis)
+        # Verify the analytes
+        for analyte in obj.getAnalytes():
+            doActionFor(analyte, "verify")
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
@@ -102,6 +103,11 @@ def after_unassign(analysis):
     """
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
+
+    # If multi-component, unassign all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "unassign")
+
     # Reindex the Analysis Request
     reindex_request(analysis)
 
@@ -140,6 +146,11 @@ def after_submit(analysis):
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
+    # Promote to the multi-component analysis this analysis belongs to
+    multi_result = analysis.getMultiComponentAnalysis()
+    if multi_result:
+        doActionFor(multi_result, "submit")
+
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
@@ -172,8 +183,14 @@ def after_retract(analysis):
     # Retract our dependencies (analyses this analysis depends on)
     promote_to_dependencies(analysis, "retract")
 
-    # Create the retest
-    create_retest(analysis)
+    # If multi-component, retract all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "retract")
+
+    # Create the retest if not an Analyte, cause otherwise we end-up with a
+    # retracted multi-component analysis with non-retracted analytes inside
+    if not analysis.isAnalyte():
+        create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
@@ -196,6 +213,18 @@ def after_reject(analysis):
 
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")
+
+    # If multi-component, reject all analytes
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "reject")
+
+    # If analyte, reject the multi-component if all analytes are rejected
+    multi_component = analysis.getMultiComponentAnalysis()
+    if multi_component:
+        analytes = multi_component.getAnalytes()
+        rejected = [IRejected.providedBy(analyte) for analyte in analytes]
+        if all(rejected):
+            doActionFor(multi_component, "reject")
 
     if IRequestAnalysis.providedBy(analysis):
         # Try verify (for when remaining analyses are in 'verified')
@@ -222,6 +251,10 @@ def after_verify(analysis):
 
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
+
+    # If multi-component, verify all analytes as well
+    for analyte in analysis.getAnalytes():
+        doActionFor(analyte, "verify")
 
     # Promote transition to worksheet
     ws = analysis.getWorksheet()

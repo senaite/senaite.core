@@ -240,6 +240,10 @@ class AnalysesView(BaseView):
         item_obj = api.get_object(obj)
         uid = item["uid"]
 
+        # Analytes are rendered like the rest, as a flat list
+        item["parent"] = ""
+        item["children"] = ""
+
         # Slot is the row position where all analyses sharing the same parent
         # (eg. AnalysisRequest, SampleReference), will be displayed as a group
         slot = self.get_item_slot(uid)
