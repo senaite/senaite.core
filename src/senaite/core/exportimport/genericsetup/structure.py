@@ -41,7 +41,6 @@ from Products.GenericSetup.utils import XMLAdapterBase
 from senaite.core.p3compat import cmp
 from senaite.core.registry import get_registry_record
 from xml.dom.minidom import parseString
-from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
