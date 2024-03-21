@@ -38,7 +38,9 @@ from Products.GenericSetup.utils import I18NURI
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from senaite.core.p3compat import cmp
+from senaite.core.registry import get_registry_record
 from xml.dom.minidom import parseString
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
@@ -46,18 +48,6 @@ from zope.component.interfaces import IFactory
 from zope.interface import alsoProvides
 
 from .config import SITE_ID
-
-# Skip user created contents
-SKIP_EXPORT_TYPES = [
-    "ARReport",
-    "AnalysisRequest",
-    "Attachment",
-    "AutoImportLog",
-    "Batch",
-    "Invoice",
-    "ReferenceSample",
-    "Worksheet",
-]
 
 ID_MAP = {}
 
@@ -483,14 +473,27 @@ def create_or_get(parent, id, uid, portal_type):
     return obj
 
 
+def can_export_type(portal_type):
+    """Returns whether objects from this type can be exported
+    """
+    key = "can-export-%s" % portal_type
+    annotations = IAnnotations(api.get_request())
+    export = annotations.get(key)
+    if export is None:
+        name = "generic_setup_skip_export_types"
+        skip = get_registry_record(name, default=[])
+        annotations[key] = portal_type not in skip
+        export = annotations[key]
+    return export
+
+
 def can_export(obj):
     """Decides if the object can be exported or not
     """
     if not api.is_object(obj):
         return False
-    if api.get_portal_type(obj) in SKIP_EXPORT_TYPES:
-        return False
-    return True
+    portal_type = api.get_portal_type(obj)
+    return can_export_type(portal_type)
 
 
 def can_import(obj):
