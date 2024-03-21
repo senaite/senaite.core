@@ -28,6 +28,7 @@ from OFS.interfaces import IOrderedContainer
 from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.interfaces import IDexterityItem
 from plone.dexterity.utils import addContentToContainer
+from plone.memoize.request import cache
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
@@ -473,18 +474,17 @@ def create_or_get(parent, id, uid, portal_type):
     return obj
 
 
-def can_export_type(portal_type):
+def get_cache_key(fun, portal_type, request):
+    return "%s-%s" % (fun.__name__, portal_type)
+
+
+@cache(get_key=get_cache_key)
+def can_export_type(portal_type, request):
     """Returns whether objects from this type can be exported
     """
-    key = "can-export-%s" % portal_type
-    annotations = IAnnotations(api.get_request())
-    export = annotations.get(key)
-    if export is None:
-        name = "generic_setup_skip_export_types"
-        skip = get_registry_record(name, default=[])
-        annotations[key] = portal_type not in skip
-        export = annotations[key]
-    return export
+    name = "generic_setup_skip_export_types"
+    skip = get_registry_record(name, default=[])
+    return portal_type not in skip
 
 
 def can_export(obj):
@@ -493,7 +493,8 @@ def can_export(obj):
     if not api.is_object(obj):
         return False
     portal_type = api.get_portal_type(obj)
-    return can_export_type(portal_type)
+    request = api.get_request()
+    return can_export_type(portal_type, request)
 
 
 def can_import(obj):
