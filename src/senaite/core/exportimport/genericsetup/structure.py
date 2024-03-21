@@ -473,11 +473,7 @@ def create_or_get(parent, id, uid, portal_type):
     return obj
 
 
-def get_cache_key(fun, portal_type, request):
-    return "%s-%s" % (fun.__name__, portal_type)
-
-
-@cache(get_key=get_cache_key)
+@cache(get_key=lambda *args: 'can-export-%s' % args[1])
 def can_export_type(portal_type, request):
     """Returns whether objects from this type can be exported
     """
