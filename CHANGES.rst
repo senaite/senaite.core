@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2515 Worksheet print templates sorting feature
+- #2516 Allow to configure the types to be skipped on content structure export
+- #2514 Added functions for easy update of workflows
 - #2512 Skip rendering of empty record fiels
 - #2510 Fix Add action of the Client located Analysis Profiles Listing
 - #2508 Fix specification values for hide min/max not stored on save

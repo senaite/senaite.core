@@ -280,3 +280,42 @@ class ISampleHeaderRegistry(ISenaiteRegistry):
         value_type=schema.Bool(title=_("Field visibility"), default=True),
         required=False,
     )
+
+
+class IGenericSetupRegistry(ISenaiteRegistry):
+    """Registry settings for Generic Setup
+    """
+
+    model.fieldset(
+        "generic_setup",
+        label=_(u"Generic Setup"),
+        description=_("Configuration for Generic Setup"),
+        fields=[
+            "generic_setup_skip_export_types",
+        ],
+    )
+
+    generic_setup_skip_export_types = schema.List(
+        title=_(
+            u"label_registry_generic_setup_skip_export_types",
+            default=u"Portal types to skip on content structure export"
+        ),
+        description=_(
+            u"description_registry_generic_setup_skip_export_types",
+            default=u"List of portal types to be skipped when exporting the "
+                    u"content structure of the site via Generic Setup"
+        ),
+        value_type=schema.ASCIILine(),
+        required=False,
+        default=[
+            "AnalysisRequest",
+            "ARReport",
+            "Attachment",
+            "AutoImportLog",
+            "Batch",
+            "Invoice",
+            "ReferenceSample",
+            "Report",
+            "Worksheet",
+        ]
+    )
