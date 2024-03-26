@@ -48,6 +48,11 @@ class TemporaryContext(BrowserView):
 
         # we expect the portal_type on the first position
         portal_type = self.traverse_subpath[0]
+        context = self.create_temporary_context(portal_type)
+        # call the context to return the rendered html
+        return context()
+
+    def create_temporary_context(self, portal_type):
         portal_types = api.get_tool("portal_types")
         if portal_type not in portal_types:
             raise TypeError("'%s' is not a valid portal_type" % portal_type)
@@ -58,10 +63,10 @@ class TemporaryContext(BrowserView):
         context = factory("%s_temporary" % portal_type)
         # hook into acquisition chain
         context = context.__of__(self.context)
+        # mark the context as temporary
+        setattr(context, "_temporary_", True)
         # Traverse any further paths
         if len(self.traverse_subpath) > 1:
             path = "/".join(self.traverse_subpath[1:])
             context = context.unrestrictedTraverse(path)
-
-        # return the context
-        return context()
+        return context
