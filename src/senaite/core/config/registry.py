@@ -19,3 +19,5 @@
 # Some rights reserved, see README and LICENSE.
 
 CLIENT_LANDING_PAGE = "client_landing_page"
+
+WS_TEMPLATES_PRINT_REGISTRY_NAME = "worksheet_print_templates_order"

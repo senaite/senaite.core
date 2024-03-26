@@ -27,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView
-from bika.lims.browser.worksheet.tools import get_all_worksheet_print_templates
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.config import WS_TEMPLATES_ADDON_DIR
 from bika.lims.interfaces import IReferenceAnalysis
@@ -41,6 +40,9 @@ from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.p3compat import cmp
+from senaite.core.registry import get_registry_record
+from senaite.core.config.registry import WS_TEMPLATES_PRINT_REGISTRY_NAME
+
 
 class PrintView(BrowserView):
     """ Print view for a worksheet. This view acts as a placeholder, so
@@ -59,7 +61,7 @@ class PrintView(BrowserView):
     def __init__(self, context, request):
         super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
-        self._TEMPLATES_LIST = get_all_worksheet_print_templates()
+        self._TEMPLATES_LIST = get_registry_record(WS_TEMPLATES_PRINT_REGISTRY_NAME)
 
     def __call__(self):
         """ Entry point of PrintView.

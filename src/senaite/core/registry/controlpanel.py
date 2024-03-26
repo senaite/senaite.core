@@ -26,6 +26,7 @@ from plone.z3cform import layout
 from senaite.core.registry import get_registry_interfaces
 from senaite.core.registry.schema import ISenaiteRegistry
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.interface import alsoProvides
 
 
@@ -45,7 +46,8 @@ class ContextProxy(object):
 
         registry = getUtility(IRegistry)
         for interface in self.__interfaces:
-            proxy = registry.forInterface(interface)
+            factory = queryUtility(interface, name=interface.__identifier__, default=None)
+            proxy = registry.forInterface(interface, factory=factory)
             try:
                 getattr(proxy, name)
             except AttributeError:
@@ -60,7 +62,8 @@ class ContextProxy(object):
 
         registry = getUtility(IRegistry)
         for interface in self.__interfaces:
-            proxy = registry.forInterface(interface)
+            factory = queryUtility(interface, name=interface.__identifier__, default=None)
+            proxy = registry.forInterface(interface, factory=factory)
             try:
                 return getattr(proxy, name)
             except AttributeError:

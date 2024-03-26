@@ -20,17 +20,11 @@
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IWorksheetLayouts
-from bika.lims.config import WS_TEMPLATES_ADDON_DIR
-from bika.lims.config import WS_TEMPLATES_REGISTRY_NAME
-
-from senaite.core.registry import get_registry_record
-from senaite.core.registry import set_registry_record
 
 from zope.component import getUtilitiesFor
 
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import DisplayList
-from plone.resource.utils import iterDirectoriesOfType
 
 
 def checkUserAccess(worksheet, request, redirect=True):
@@ -101,25 +95,3 @@ def getWorksheetLayouts():
         [layouts.append(layout) for layout in layout_utility.getLayouts()]
 
     return DisplayList(tuple(layouts))
-
-
-def get_all_worksheet_print_templates():
-    """ Getting worksheet templates for printing
-    """
-    all_templates = []
-    directories = sorted(iterDirectoriesOfType(WS_TEMPLATES_ADDON_DIR), key=lambda d: d.__name__)
-    for templates_resource in directories:
-        prefix = templates_resource.__name__
-        templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
-        for template in sorted(templates):
-            all_templates.append('{0}:{1}'.format(prefix, template))
-
-    order = get_registry_record(WS_TEMPLATES_REGISTRY_NAME, default=[]) or []
-    ordered_templates = list(
-        filter(lambda item: item,
-               sorted(all_templates, key=lambda item: order.index(item) if item in order else len(order))))
-
-    if not (sorted(ordered_templates) == sorted(order)):
-        set_registry_record(WS_TEMPLATES_REGISTRY_NAME, ordered_templates)
-
-    return ordered_templates

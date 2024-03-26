@@ -26,4 +26,10 @@
       handler=".subscribers.init_labels"
       />
 
+  <utility
+      component=".factories.WSTemplatesPrintFactory"
+      name="senaite.core.registry.schema.IWorksheetViewRegistry"
+      provides="senaite.core.registry.schema.IWorksheetViewRegistry"
+  />
+
 </configure>
