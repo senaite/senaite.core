@@ -65,6 +65,14 @@
     </permission>
     <!-- /ANALYSIS -->
 
+    <!-- Sample Template (NOTE: Can also be client local!) -->
+    <permission name="senaite.core: Add SampleTemplate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
   </permissions>
 
 </rolemap>

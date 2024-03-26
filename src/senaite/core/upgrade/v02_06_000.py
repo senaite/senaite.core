@@ -46,16 +46,18 @@ version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
-    "AnalysisProfiles",
     "AnalysisProfile",
+    "AnalysisProfiles",
     "Department",
     "Departments",
     "SampleCondition",
     "SampleConditions",
-    "SampleMatrix",
     "SampleMatrices",
+    "SampleMatrix",
     "SamplePreservation",
     "SamplePreservations",
+    "SampleTemplate",
+    "SampleTemplates",
 ]
 
 
@@ -703,3 +705,27 @@ def import_registry(tool):
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
+@upgradestep(product, version)
+def migrate_sampletemplates_to_dx(tool):
+    """Converts existing sample templates to Dexterity
+    """
+    logger.info("Convert SampleTemplates to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "rolemap")
+
+    # get the old container
+    origin = api.get_setup().get("bika_artemplates")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("sampletemplates")

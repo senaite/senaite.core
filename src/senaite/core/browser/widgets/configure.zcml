@@ -12,6 +12,13 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
+  <browser:page
+      for="*"
+      name="services_widget"
+      class=".analysisprofileswidget.AnalysisProfilesWidget"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
 
   <browser:page
       for="*"

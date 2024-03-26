@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Sample Templates to DX"
+      description="Migrate Sample Templates to Dexterity"
+      source="2614"
+      destination="2615"
+      handler=".v02_06_000.migrate_sampletemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Import registry settings"
       description="Import generic setup settings to SENAITE registry"
       source="2613"

@@ -31,6 +31,7 @@
   <permission id="senaite.core.permissions.AddAnalysisService" title="senaite.core: Add AnalysisService"/>
   <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
   <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+  <permission id="senaite.core.permissions.AddSampleTemplate" title="senaite.core: Add SampleTemplate"/>
   <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
   <permission id="senaite.core.permissions.AddAttachmentType" title="senaite.core: Add AttachmentType"/>
   <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
