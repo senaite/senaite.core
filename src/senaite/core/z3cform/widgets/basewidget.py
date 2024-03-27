@@ -59,20 +59,15 @@ class BaseWidget(Widget):
         NOTE: If we are in the ++add++ form, `self.context` is the container!
               Therefore, we create one here to have access to the methods.
         """
+        # We are in the edit view. Return the context directly
         schema_iface = self.field.interface if self.field else None
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
-
         # We might be in a subform or in a datagrid widget.
         # Therefore, `self.context` is not set or set to `<NO_VALUE>`
         form = self.get_form()
         portal_type = self.get_portal_type()
         context = getattr(form, "context", None)
-        if api.is_object(context):
-            # edit view
-            if api.get_portal_type(context) == portal_type:
-                return context
-
         # Hack alert!
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
