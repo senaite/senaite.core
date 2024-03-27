@@ -57,10 +57,16 @@ class TemporaryContext(BrowserView):
         if portal_type not in portal_types:
             raise TypeError("'%s' is not a valid portal_type" % portal_type)
         fti = portal_types[portal_type]
+        tmp_id = "%s_temporary" % portal_type
         if fti.product:
-            raise TypeError("Only Dexterity Types supported")
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("%s_temporary" % portal_type)
+            factory = fti._getFactoryMethod(self.context, check_security=0)
+            factory(tmp_id)
+            context = self.context[tmp_id]
+            # remove the temporary created object
+            self.context._delOb(tmp_id)
+        else:
+            factory = getUtility(IFactory, fti.factory)
+            context = factory(tmp_id)
         # hook into acquisition chain
         context = context.__of__(self.context)
         # mark the context as temporary
