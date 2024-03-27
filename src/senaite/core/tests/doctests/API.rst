@@ -1986,22 +1986,22 @@ Check if an object is list iterable
 
 This function checks if the given object can be handled like a list:
 
-    >>> api.is_list([])
+    >>> api.is_list_iterable([])
     True
 
-    >>> api.is_list([1,2,3])
+    >>> api.is_list_iterable([1,2,3])
     True
 
-    >>> api.is_list(set())
+    >>> api.is_list_iterable(set())
     True
 
-    >>> api.is_list(tuple())
+    >>> api.is_list_iterable(tuple())
     True
 
-    >>> api.is_list(dict())
+    >>> api.is_list_iterable(dict())
     False
 
-    >>> api.is_list("[]")
+    >>> api.is_list_iterable("[]")
     False
 
 
