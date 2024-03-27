@@ -49,7 +49,7 @@ class BaseWidget(Widget):
         if not portal_type:
             query = getattr(self, "query", {})
             portal_type = query.get("portal_type")
-            if portal_type and isinstance(portal_type, list):
+            if api.is_list(portal_type):
                 portal_type = portal_type[0]
         return portal_type or default
 
