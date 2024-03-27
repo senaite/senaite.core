@@ -249,7 +249,7 @@ class ReferenceSamplesView(BikaListingView):
 
         # Supported Services
         supported_services_choices = self.make_supported_services_choices(obj)
-        item["choices"]["SupportedServices"] = supported_services_choices
+        item["choices"]["SupportedServices"] = sorted(supported_services_choices, key=lambda d: d['ResultText'])
 
         # Position
         item["Position"] = "new"
