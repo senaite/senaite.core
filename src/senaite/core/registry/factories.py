@@ -20,7 +20,7 @@
 
 from bika.lims.config import WS_TEMPLATES_ADDON_DIR
 
-from senaite.core.registry.schema import IWorksheetViewRegistry
+from senaite.core.interfaces import ISenaiteRegistryFactory
 
 from plone.resource.utils import iterDirectoriesOfType
 from plone.registry.recordsproxy import RecordsProxy
@@ -28,7 +28,7 @@ from plone.registry.recordsproxy import RecordsProxy
 from zope.interface import implementer
 
 
-@implementer(IWorksheetViewRegistry)
+@implementer(ISenaiteRegistryFactory)
 class WSTemplatesPrintFactory(RecordsProxy):
     """ Proxy for IWorksheetViewRegistry
     """

@@ -29,7 +29,7 @@
   <utility
       component=".factories.WSTemplatesPrintFactory"
       name="senaite.core.registry.schema.IWorksheetViewRegistry"
-      provides="senaite.core.registry.schema.IWorksheetViewRegistry"
+      provides="senaite.core.interfaces.ISenaiteRegistryFactory"
   />
 
 </configure>
