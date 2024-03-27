@@ -64,7 +64,7 @@ class TemporaryContext(BrowserView):
         # hook into acquisition chain
         context = context.__of__(self.context)
         # mark the context as temporary
-        setattr(context, "_temporary_", True)
+        api.mark_temporary(context)
         # Traverse any further paths
         if len(self.traverse_subpath) > 1:
             path = "/".join(self.traverse_subpath[1:])

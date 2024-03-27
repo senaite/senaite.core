@@ -63,8 +63,8 @@ class BaseWidget(Widget):
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
 
-        # we might be in a subform, so try first to get the context from the
-        # base form
+        # We might be in a subform or in a datagrid widget.
+        # Therefore, `self.context` is not set or set to `<NO_VALUE>`
         form = self.get_form()
         portal_type = self.get_portal_type()
         context = getattr(form, "context", None)

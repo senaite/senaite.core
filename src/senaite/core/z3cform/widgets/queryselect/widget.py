@@ -198,7 +198,7 @@ class QuerySelectWidget(widget.HTMLInputWidget, BaseWidget):
         #       in the ++add++ creation form for Dexterity contents exists only
         #       for the current request and will be gone after response!
         #       Therefore, the search view called later will result in a 404!
-        if getattr(context, "_temporary_", False):
+        if api.is_temporary(context):
             portal_type = self.get_portal_type()
             parent_url = api.get_url(api.get_parent(context))
             # provide a dynamically created context for the search view to call
