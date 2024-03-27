@@ -50,12 +50,17 @@ class IServiceRecord(Interface):
 
 
 class IPartitionRecord(Interface):
+    """DataGrid Row for Sample Partition Schema
+    """
+
+    # PARTITION ID
     part_id = schema.TextLine(
         title=_(u"Partition ID"),
         description=_(""),
         required=True,
-    )
+        default=u"part-1")
 
+    # CONTAINER
     directives.widget(
         "container",
         UIDReferenceWidgetFactory,
@@ -68,8 +73,7 @@ class IPartitionRecord(Interface):
         },
         display_template="<a href='${url}'>${Title}</a>",
         columns=get_default_columns,
-        limit=5,
-    )
+        limit=5)
     container = UIDReferenceField(
         title=_(
             u"label_sampletemplate_partition_container",
@@ -77,8 +81,53 @@ class IPartitionRecord(Interface):
         ),
         allowed_types=("SampleContainer", ),
         multi_valued=False,
-        required=False,
-    )
+        required=False)
+
+    # PRESERVATION
+    directives.widget(
+        "preservation",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "Preservation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${Title}</a>",
+        columns=get_default_columns,
+        limit=5)
+    preservation = UIDReferenceField(
+        title=_(
+            u"label_sampletemplate_partition_preservation",
+            default=u"Preservation"
+        ),
+        allowed_types=("SamplePreservation", ),
+        multi_valued=False,
+        required=False)
+
+    # SAMPLE TYPE
+    directives.widget(
+        "sampletype",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "SampleType",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${Title}</a>",
+        columns=get_default_columns,
+        limit=5)
+    sampletype = UIDReferenceField(
+        title=_(
+            u"label_sampletemplate_partition_sampletype",
+            default=u"Sample Type"
+        ),
+        allowed_types=("SampleType", ),
+        multi_valued=False,
+        required=False)
 
 
 class ISampleTemplateSchema(model.Schema):
