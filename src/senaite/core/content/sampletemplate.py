@@ -49,13 +49,15 @@ class IServiceRecord(Interface):
 class IPartitionRecord(Interface):
     """DataGrid Row for Sample Partition Schema
     """
-
     # PARTITION ID
+    directives.widget("part_id",
+                      readonly="readonly",
+                      style=u"width:80px!important")
     part_id = schema.TextLine(
         title=_(u"Partition ID"),
-        description=_(""),
         required=True,
-        default=u"part-1")
+        default=u"part-1",
+    )
 
     # CONTAINER
     directives.widget(
