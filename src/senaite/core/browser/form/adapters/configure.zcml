@@ -1,6 +1,18 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="senaite.core">
 
+  <!-- Add Form: DX Sample Template -->
+  <adapter
+      name="++add++SampleTemplate"
+      for="senaite.core.interfaces.ISampleTemplates
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".sampletemplate.EditForm"/>
+  <!-- Edit Form: DX Sample Template -->
+  <adapter
+      for="senaite.core.interfaces.ISampleTemplate
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".sampletemplate.EditForm"/>
+
   <!-- Edit Form: Sample Type -->
   <adapter
       for="bika.lims.interfaces.ISampleType
