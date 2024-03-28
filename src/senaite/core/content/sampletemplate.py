@@ -236,6 +236,8 @@ class ISampleTemplateSchema(model.Schema):
     directives.widget(
         "partitions",
         DataGridWidgetFactory,
+        allow_insert=True,
+        allow_delete=True,
         allow_reorder=True,
         auto_append=True)
     partitions = schema.List(
