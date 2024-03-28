@@ -18,21 +18,25 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.supermodel import model
-from senaite.core.content.base import Container
-from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.interfaces import ISampleTemplates
-from zope.interface import implementer
+from senaite.core.browser.form.adapters import EditFormAdapterBase
 
 
-class ISampleTemplatesSchema(model.Schema):
-    """Schema interface
+class EditForm(EditFormAdapterBase):
+    """Edit form adapter for DX Sample Template
     """
+    def initialized(self, data):
+        # form = data.get("form", {})
+        # for k, v in form.items():
+        #     if k.endswith("part_id"):
+        #         self.add_attribute("input[name='%s']" % k, "readonly", "1")
+        return self.data
 
-
-@implementer(ISampleTemplates, ISampleTemplatesSchema, IDoNotSupportSnapshots,
-             IHideActionsMenu)
-class SampleTemplates(Container):
-    """A container for Sample Templates
-    """
+    def modified(self, data):
+        form = data.get("form", {})
+        partitions = []
+        for k, v in form.items():
+            if k.endswith("part_id"):
+                partitions.append((k, v), )
+        for num, part in enumerate(sorted(partitions, key=lambda x: x[0])):
+            self.add_update_field(part[0], "part-%s" % str(num + 1))
+        return self.data
