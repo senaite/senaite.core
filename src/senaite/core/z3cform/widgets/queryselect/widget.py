@@ -65,8 +65,14 @@ class QuerySelectDataConverter(TextLinesConverter):
     def toFieldValue(self, value):
         """Converts a unicode string to a list of UIDs
         """
-        # remove any blank lines at the end
-        value = value.rstrip("\r\n")
+        if api.is_list(value):
+            value = "\r\n".join(value)
+        elif api.is_string(value):
+            # remove any blank lines at the end
+            value = value.rstrip("\r\n")
+        else:
+            value = ""
+
         return super(QuerySelectDataConverter, self).toFieldValue(value)
 
 
