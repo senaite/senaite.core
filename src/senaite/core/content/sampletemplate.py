@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
@@ -36,9 +35,7 @@ from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
-from zope.interface import Invalid
 from zope.interface import implementer
-from zope.interface import invariant
 
 
 class IServiceRecord(Interface):
