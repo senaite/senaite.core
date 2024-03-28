@@ -26,7 +26,7 @@ def get_default_columns():
     """
     return [
         {
-            "name": "title",
+            "name": "Title",
             "width": "50",
             "align": "left",
             "label": _(u"Name"),
