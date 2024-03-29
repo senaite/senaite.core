@@ -47,6 +47,15 @@ class EditForm(EditFormAdapterBase):
     def modified(self, data):
         return self.data
 
+    def added(self, data):
+        empty = [{"title": "", "value": ""}]
+        opts = map(lambda o: dict(title=o, value=o),
+                   self.get_current_partition_ids(data, only_numbered=True))
+        for uid in self.get_service_uids():
+            fieldname = "Partition.{}:records".format(uid)
+            self.add_update_field(fieldname, {"options": empty + opts})
+        return self.data
+
     def callback(self, data):
         name = data.get("name")
         if not name:

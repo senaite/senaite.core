@@ -169,6 +169,16 @@ class FormView(BrowserView):
             return {}
         return self.adapter.modified(data)
 
+    @readonly_transaction
+    @returns_json
+    def added(self):
+        data = self.get_data()
+        if not data:
+            data = {}
+        if not self.adapter:
+            return {}
+        return self.adapter.added(data)
+
     @returns_json
     def submit(self):
         data = self.get_data()

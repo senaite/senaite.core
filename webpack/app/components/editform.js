@@ -90,8 +90,13 @@ class EditForm {
       field.addEventListener("select", this.on_reference_select);
       field.addEventListener("deselect", this.on_reference_deselect);
     }
-    else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
+    else if (this.is_text(field) || this.is_textarea(field)) {
       // bind change event
+      field.addEventListener("change", this.on_change);
+    }
+    else if (this.is_select(field)) {
+      // bind events for select field
+      field.addEventListener("click", this.on_click);
       field.addEventListener("change", this.on_change);
     }
     else if (this.is_radio(field) || this.is_checkbox(field)) {
@@ -145,6 +150,11 @@ class EditForm {
       for (const field of target.querySelectorAll(selectors)) {
         this.hook_field(field);
       }
+    }
+    // notify new added elements, e.g. when a category was expanded or the
+    // "show more" button was clicked in listings
+    if (added.length > 0) {
+      return this.notify_added(form, added, "added")
     }
   }
 
@@ -443,9 +453,9 @@ class EditForm {
       ({selector, event, name, ...rest} = record);
       // register local callback to apply additional data
       let callback = (event) => {
-        let target = event.currentTarget;
         let data = {
           name: name,
+          target: event.currentTarget
         }
         this.ajax_send(form, data, "callback");
       }
@@ -633,6 +643,25 @@ class EditForm {
   }
 
   /**
+   * notify that DOM Elements were added
+   */
+  notify_added(form, added, endpoint) {
+    let data = {
+      added: []
+    }
+    added.forEach((el) => {
+      let record = {};
+      for (let attribute of el.attributes) {
+        let name = attribute.name;
+        let value = attribute.value;
+        record[name] = value;
+      }
+      data.added = data.added.concat(record);
+    });
+    this.ajax_send(form, data, endpoint);
+  }
+
+  /**
    * send application/json to the server
    */
   ajax_send(form, data, endpoint) {
@@ -802,6 +831,12 @@ class EditForm {
     return el.classList.contains("queryselectwidget-value");
   }
 
+  /**
+   * Checks if the element is a table row element
+   */
+  is_table_row(el) {
+    return el.tagName === "TR";
+  }
   /**
    * event handler for `mutated` event
    */

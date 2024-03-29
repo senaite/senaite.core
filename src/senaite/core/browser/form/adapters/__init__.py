@@ -49,13 +49,16 @@ class EditFormAdapterBase(object):
         return self._data
 
     def initialized(self, data):
-        return NotImplementedError("Must be implemented by subclass")
+        pass
+
+    def added(self, data):
+        pass
 
     def modified(self, data):
-        return NotImplementedError("Must be implemented by subclass")
+        pass
 
     def callback(self, data):
-        return NotImplementedError("Must be implemented by subclass")
+        pass
 
     def add_record_to(self, key, record):
         """Add a record to the dictionary
