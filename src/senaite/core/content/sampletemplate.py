@@ -23,6 +23,7 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
+from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config.widgets import get_default_columns
 from senaite.core.content.base import Container
@@ -281,11 +282,10 @@ class SampleTemplate(Container):
 
     security = ClassSecurityInfo()
 
-#    @security.protected(permissions.View)
-#    def getSampleTemplateID(self):
-#        accessor = self.accessor("sampleTemplate_id")
-#        value = accessor(self) or ""
-#        return value.encode("utf-8")
+    @security.protected(permissions.View)
+    def getPartitions(self):
+        accessor = self.accessor("partitions")
+        return accessor(self) or []
 #
 #    @security.protected(permissions.ModifyPortalContent)
 #    def setSampleTemplateID(self, value):
