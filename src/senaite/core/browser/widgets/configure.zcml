@@ -4,18 +4,19 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
-  <!-- Listing widget for Analysis Profiles -->
   <browser:page
       for="*"
-      name="analysisprofiles_widget"
-      class=".analysisprofileswidget.AnalysisProfilesWidget"
+      name="sampletemplate_services_widget"
+      class=".sampletemplate_services_widget.SampleTemplateServicesWidget"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
+
+  <!-- Listing widget for Analysis Profiles -->
   <browser:page
       for="*"
-      name="services_widget"
-      class=".analysisprofileswidget.AnalysisProfilesWidget"
+      name="analysisprofile_services_widget"
+      class=".analysisprofile_services_widget.AnalysisProfileServicesWidget"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />

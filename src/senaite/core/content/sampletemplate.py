@@ -256,15 +256,15 @@ class ISampleTemplateSchema(model.Schema):
 
     directives.widget("services",
                       ListingWidgetFactory,
-                      listing_view="services_widget")
+                      listing_view="sampletemplate_services_widget")
     services = schema.List(
         title=_(
             u"title_sampletemplate_services",
-            default=u" Analyses"
+            default=u"Services"
         ),
         description=_(
-            u"description_analysisprofile_services",
-            default=u"Select the included analyses for this profile"
+            u"description_sampletemplate_services",
+            default=u"Select the services for this template"
         ),
         value_type=DataGridRow(schema=IServiceRecord),
         default=[],

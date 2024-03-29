@@ -101,7 +101,7 @@ class IAnalysisProfileSchema(model.Schema):
 
     directives.widget("services",
                       ListingWidgetFactory,
-                      listing_view="analysisprofiles_widget")
+                      listing_view="analysisprofile_services_widget")
     services = schema.List(
         title=_(
             u"title_analysisprofile_services",

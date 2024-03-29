@@ -15,11 +15,11 @@ from senaite.core.z3cform.widgets.listing.view import DefaultListingWidget
 from zope.i18n.locales import locales
 
 
-class AnalysisProfilesWidget(DefaultListingWidget):
-    """Listing widget for Analysis Profiles
+class ServicesWidget(DefaultListingWidget):
+    """Listing widget for Analysis Services
     """
     def __init__(self, field, request):
-        super(AnalysisProfilesWidget, self).__init__(field, request)
+        super(ServicesWidget, self).__init__(field, request)
 
         self.catalog = SETUP_CATALOG
         self.contentFilter = {
@@ -56,7 +56,7 @@ class AnalysisProfilesWidget(DefaultListingWidget):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_title",
+                    u"listing_services_column_title",
                     default=u"Service"
                 ),
                 "index": "sortable_title",
@@ -64,35 +64,35 @@ class AnalysisProfilesWidget(DefaultListingWidget):
             }),
             ("Keyword", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_keyword",
+                    u"listing_services_column_keyword",
                     default=u"Keyword"
                 ),
                 "sortable": False
             }),
             ("Methods", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_methods",
+                    u"listing_services_column_methods",
                     default=u"Methods"
                 ),
                 "sortable": False
             }),
             ("Unit", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_unit",
+                    u"listing_services_column_unit",
                     default=u"Unit"
                 ),
                 "sortable": False
             }),
             ("Price", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_price",
+                    u"listing_services_column_price",
                     default=u"Price"
                 ),
                 "sortable": False,
             }),
             ("Hidden", {
                 "title": _(
-                    u"listing_analysisprofileswidget_column_hidden",
+                    u"listing_services_column_hidden",
                     default=u"Hidden"
                 ),
                 "sortable": False,
@@ -107,7 +107,7 @@ class AnalysisProfilesWidget(DefaultListingWidget):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_analysisprofileswidget_state_all",
+                    u"listing_services_state_all",
                     default=u"All"
                 ),
                 "contentFilter": {},
@@ -193,7 +193,7 @@ class AnalysisProfilesWidget(DefaultListingWidget):
         return records
 
     def folderitems(self):
-        items = super(AnalysisProfilesWidget, self).folderitems()
+        items = super(ServicesWidget, self).folderitems()
         self.categories.sort()
         return items
 
@@ -207,13 +207,14 @@ class AnalysisProfilesWidget(DefaultListingWidget):
             the template
         :index: current index of the item
         """
-        item = super(AnalysisProfilesWidget, self).folderitem(obj, item, index)
+        item = super(ServicesWidget, self).folderitem(obj, item, index)
 
         # ensure we have an object and not a brain
         obj = api.get_object(obj)
         uid = api.get_uid(obj)
         url = api.get_url(obj)
         title = api.get_title(obj)
+        keyword = obj.getKeyword()
 
         # get the category
         if self.show_categories_enabled():
@@ -238,7 +239,8 @@ class AnalysisProfilesWidget(DefaultListingWidget):
         item["Hidden"] = hidden
         item["replace"]["Hidden"] = _("Yes") if hidden else _("No")
         item["selected"] = uid in self.records
-        item["Keyword"] = obj.getKeyword()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
 
         # Add methods
         methods = obj.getMethods()
