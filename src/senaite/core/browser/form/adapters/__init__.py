@@ -127,8 +127,8 @@ class EditFormAdapterBase(object):
         record = dict(selector=selector, name=name, value=value, **kw)
         self.add_record_to("attributes", record)
 
-    def add_callback(self, selector, name, event, **kw):
+    def add_callback(self, selector, event, name, **kw):
         """Register a callback
         """
-        record = dict(selector=selector, name=name, event=event, **kw)
+        record = dict(selector=selector, event=event, name=name, **kw)
         self.add_record_to("callbacks", record)

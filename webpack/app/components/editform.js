@@ -439,8 +439,8 @@ class EditForm {
 
     // register callbacks
     for (const record of callbacks) {
-      let selector, name, event, rest;
-      ({selector, name, event, ...rest} = record);
+      let selector, event, name, rest;
+      ({selector, event, name, ...rest} = record);
       // register local callback to apply additional data
       let callback = (event) => {
         let target = event.currentTarget;

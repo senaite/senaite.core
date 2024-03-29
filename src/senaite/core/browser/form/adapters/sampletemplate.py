@@ -29,13 +29,19 @@ class EditForm(EditFormAdapterBase):
     """
     def initialized(self, data):
         # register callbacks
-        self.add_callback(
-            "body", "on_partition_added", "datagrid:row_added")
-        self.add_callback(
-            "body", "on_partition_removed", "datagrid:row_removed")
+        self.add_callback("body",
+                          "datagrid:row_added",
+                          "on_partition_added")
+        self.add_callback("body",
+                          "datagrid:row_removed",
+                          "on_partition_removed")
+        self.add_callback("select[name^='Partition'][name$=':records']",
+                          "click",
+                          "on_partition_select")
 
         # handle additional rendered row on edit view
-        self.on_partition_added(data)
+        if self.get_current_partition_count(data) > 1:
+            self.on_partition_added(data)
         return self.data
 
     def modified(self, data):
@@ -85,4 +91,8 @@ class EditForm(EditFormAdapterBase):
         self.add_update_field(
             "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count))
+        return self.data
+
+    def on_partition_select(self, data):
+        import pdb; pdb.set_trace()
         return self.data
