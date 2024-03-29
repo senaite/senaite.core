@@ -25,18 +25,7 @@ class EditForm(EditFormAdapterBase):
     """Edit form adapter for DX Sample Template
     """
     def initialized(self, data):
-        # form = data.get("form", {})
-        # for k, v in form.items():
-        #     if k.endswith("part_id"):
-        #         self.add_attribute("input[name='%s']" % k, "readonly", "1")
         return self.data
 
     def modified(self, data):
-        form = data.get("form", {})
-        partitions = []
-        for k, v in form.items():
-            if k.endswith("part_id"):
-                partitions.append((k, v), )
-        for num, part in enumerate(sorted(partitions, key=lambda x: x[0])):
-            self.add_update_field(part[0], "part-%s" % str(num + 1))
         return self.data
