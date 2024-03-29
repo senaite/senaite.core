@@ -237,7 +237,7 @@ class ISampleTemplateSchema(model.Schema):
     directives.widget(
         "partitions",
         DataGridWidgetFactory,
-        allow_insert=True,
+        allow_insert=False,  # only auto append
         allow_delete=True,
         allow_reorder=True,
         auto_append=True)
