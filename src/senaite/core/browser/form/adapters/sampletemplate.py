@@ -93,16 +93,20 @@ class EditForm(EditFormAdapterBase):
     def get_current_service_settings(self):
         """Get the current service settings
         """
+        # We are probably on the ++add++ form and have no proper context
         if not ISampleTemplate.providedBy(self.context):
             return {}
+
+        # Get the current service settings of the template
         services = {}
         for service in self.context.getServices():
             uid = service.get("uid")
             services[uid] = service
+
         return services
 
     def get_all_service_uids(self):
-        """Return all service
+        """Return the UIDs of all services
         """
         query = {
             "portal_type": "AnalysisService",
@@ -119,7 +123,9 @@ class EditForm(EditFormAdapterBase):
         :returns: list of unique parition IDs
         """
         form = data.get("form")
+
         if (only_numbered):
+            # filter only partition keys that are numbered (without AA/TT keys)
             partitions = [(k, v) for k, v in form.items() if re.search(RX1, k)]
         else:
             partitions = [(k, v) for k, v in form.items() if re.search(RX2, k)]
