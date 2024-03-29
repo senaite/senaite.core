@@ -29,7 +29,6 @@ from senaite.core.config.widgets import get_default_columns
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ISampleTemplate
 from senaite.core.schema import UIDReferenceField
-# from Products.CMFCore import permissions
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
