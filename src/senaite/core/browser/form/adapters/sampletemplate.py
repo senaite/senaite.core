@@ -49,24 +49,7 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def added(self, data):
-        empty = [{"title": "", "value": ""}]
-        opts = map(lambda o: dict(title=o, value=o),
-                   self.get_current_partition_ids(data, only_numbered=True))
-
-        # get the current selected services of the context
-        services = self.get_current_services()
-
-        # iterate over all service UIDs to fill the partition selectors with
-        # the current (unsaved) partition scheme
-        for uid in self.get_all_service_uids():
-            fieldname = "Partition.{}:records".format(uid)
-            selected = services.get(uid)
-            part_id = None
-            if selected:
-                part_id = selected.get("part_id")
-            self.add_update_field(fieldname, {
-                "selected": [part_id] if part_id else [],
-                "options": empty + opts})
+        self.update_partition_selectors(data)
         return self.data
 
     def callback(self, data):
@@ -78,7 +61,36 @@ class EditForm(EditFormAdapterBase):
             return
         return method(data)
 
-    def get_current_services(self):
+    def update_partition_selectors(self, data):
+        """Update all service partition selectors with the current settings
+        """
+        # Prepare the options list
+        options = [{"title": "", "value": ""}]
+        options.extend(
+            map(lambda o: dict(title=o, value=o),
+                self.get_current_partition_ids(data, only_numbered=True)))
+
+        # get the current selected service settings of the template (includes
+        # partition/hidden settings)
+        services = self.get_current_service_settings()
+
+        # iterate over all service UIDs to fill the partition selectors with
+        # the current (unsaved) partition scheme
+        for uid in self.get_all_service_uids():
+            # field name used in the listing widget for the partition select
+            fieldname = "Partition.{}:records".format(uid)
+            # current selected service settings
+            selected = services.get(uid)
+            # check if we have a partition assigned to this service
+            part_id = None
+            if selected:
+                part_id = selected.get("part_id")
+            # update the partition select box with the current settings
+            self.add_update_field(fieldname, {
+                "selected": [part_id] if part_id else [],
+                "options": options})
+
+    def get_current_service_settings(self):
         """Get the current service settings
         """
         if not ISampleTemplate.providedBy(self.context):
