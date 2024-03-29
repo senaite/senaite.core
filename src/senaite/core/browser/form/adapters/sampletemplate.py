@@ -23,6 +23,7 @@ import re
 from bika.lims import api
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.interfaces import ISampleTemplate
 
 RX1 = r"\d+\.(widgets)\.(part_id)"
 RX2 = r"\.(widgets)\.(part_id)"
@@ -51,9 +52,21 @@ class EditForm(EditFormAdapterBase):
         empty = [{"title": "", "value": ""}]
         opts = map(lambda o: dict(title=o, value=o),
                    self.get_current_partition_ids(data, only_numbered=True))
-        for uid in self.get_service_uids():
+
+        # get the current selected services of the context
+        services = self.get_current_services()
+
+        # iterate over all service UIDs to fill the partition selectors with
+        # the current (unsaved) partition scheme
+        for uid in self.get_all_service_uids():
             fieldname = "Partition.{}:records".format(uid)
-            self.add_update_field(fieldname, {"options": empty + opts})
+            selected = services.get(uid)
+            part_id = None
+            if selected:
+                part_id = selected.get("part_id")
+            self.add_update_field(fieldname, {
+                "selected": [part_id] if part_id else [],
+                "options": empty + opts})
         return self.data
 
     def callback(self, data):
@@ -65,7 +78,18 @@ class EditForm(EditFormAdapterBase):
             return
         return method(data)
 
-    def get_service_uids(self):
+    def get_current_services(self):
+        """Get the current service settings
+        """
+        if not ISampleTemplate.providedBy(self.context):
+            return {}
+        services = {}
+        for service in self.context.getServices():
+            uid = service.get("uid")
+            services[uid] = service
+        return services
+
+    def get_all_service_uids(self):
         """Return all service
         """
         query = {
@@ -78,7 +102,7 @@ class EditForm(EditFormAdapterBase):
         return list(map(api.get_uid, results))
 
     def get_current_partition_ids(self, data, only_numbered=False):
-        """Get the current unique IDs
+        """Get the current unique partition IDs from the request
 
         :returns: list of unique parition IDs
         """
@@ -90,7 +114,7 @@ class EditForm(EditFormAdapterBase):
         return list(set(dict(partitions).values()))
 
     def get_current_partition_count(self, data):
-        """Count the current unique IDs
+        """Count the current unique partition IDs
 
         :returns: Number of rows containing a unique Partition ID
         """
@@ -98,7 +122,7 @@ class EditForm(EditFormAdapterBase):
         return len(unique_ids)
 
     def on_partition_added(self, data):
-        """A new partition was added
+        """Handle new partition rows
         """
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
@@ -108,7 +132,7 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def on_partition_removed(self, data):
-        """An existing partition was deleted
+        """Handle removed partition rows
         """
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
