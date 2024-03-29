@@ -56,10 +56,10 @@ class SampleTemplateServicesWidget(ServicesWidget):
         partition_choices = [{"ResultValue": "", "ResultText": ""}]
         # extract the partition settings from the context
         for num, part in enumerate(self.get_partitions()):
-            partition = part.get("partition")
+            part_id = part.get("part_id")
             self.partition_choices.append({
-                "ResultValue": partition,
-                "ResultText": _("Partition") + " {}".format(partition)
+                "ResultValue": part_id,
+                "ResultText": part_id,
             })
         return partition_choices
 
@@ -85,7 +85,7 @@ class SampleTemplateServicesWidget(ServicesWidget):
             records.append({
                 "uid": uid,
                 "hidden": hidden_services.get(uid) == "on",
-                "partition": api.safe_unicode(partition_mapping.get(uid, u"")),
+                "part_id": api.safe_unicode(partition_mapping.get(uid, u"")),
             })
 
         return records
@@ -105,12 +105,12 @@ class SampleTemplateServicesWidget(ServicesWidget):
         record = self.records.get(uid, {}) or {}
 
         # get the partition setting
-        partition = u""
+        part_id = u""
         if record:
-            partition = record.get("partition")
+            part_id = record.get("part_id")
 
         item["allow_edit"] = self.get_editable_columns()
-        item["Partition"] = partition
+        item["Partition"] = part_id
         item["choices"]["Partition"] = self.get_partition_choices()
 
         return item

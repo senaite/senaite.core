@@ -43,7 +43,7 @@ class IServiceRecord(Interface):
     """
     uid = schema.TextLine(title=u"Service UID")
     hidden = schema.Bool(title=u"Hidden")
-    partition = schema.TextLine(title=u"Partition")
+    part_id = schema.TextLine(title=u"Partition ID")
 
 
 class IPartitionRecord(Interface):
@@ -51,13 +51,15 @@ class IPartitionRecord(Interface):
     """
 
     # PARTITION
-    directives.widget("partition",
-                      readonly="readonly",
-                      style=u"width:50px!important")
-    partition = schema.TextLine(
-        title=_(u"Partition"),
+    directives.widget("part_id",
+                      style=u"width:100px!important")
+    part_id = schema.TextLine(
+        title=_(
+            u"label_sampletemplate_partition_part_id",
+            default=u"Partition ID"
+        ),
         required=False,
-        default=u"1")
+        default=u"part-1")
 
     # CONTAINER
     directives.widget(
@@ -245,8 +247,8 @@ class ISampleTemplateSchema(model.Schema):
             default=u"Partitions"),
         description=_(
             u"description_sampletemplate_partitions",
-            default=u"Define the Partitions that should be created"
-        ),
+            default=u"Each line defines a new partition identified by the "
+                    u"'Partition ID'"),
         value_type=DataGridRow(
             title=u"Partition Scheme",
             schema=IPartitionRecord),
