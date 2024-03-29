@@ -57,7 +57,7 @@ class SampleTemplateServicesWidget(ServicesWidget):
         # extract the partition settings from the context
         for num, part in enumerate(self.get_partitions()):
             part_id = part.get("part_id")
-            self.partition_choices.append({
+            partition_choices.append({
                 "ResultValue": part_id,
                 "ResultText": part_id,
             })

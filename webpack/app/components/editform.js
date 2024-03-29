@@ -334,6 +334,7 @@ class EditForm {
     let updates = data.updates || [];
     let html = data.html || [];
     let attributes = data.attributes || [];
+    let callbacks = data.callbacks || [];
 
     // render field errors
     for (const record of errors) {
@@ -433,6 +434,28 @@ class EditForm {
         el.removeAttribute(name);
       } else {
         el.addAttribute(name, value);
+      }
+    }
+
+    // register callbacks
+    for (const record of callbacks) {
+      let selector, name, event, rest;
+      ({selector, name, event, ...rest} = record);
+      // register local callback to apply additional data
+      let callback = (event) => {
+        let target = event.currentTarget;
+        let data = {
+          name: name,
+        }
+        this.ajax_send(form, data, "callback");
+      }
+
+      if (selector === "document") {
+        document.addEventListener(event, callback);
+      } else {
+        document.querySelectorAll(selector).forEach((el) => {
+          el.addEventListener(event, callback);
+        });
       }
     }
 

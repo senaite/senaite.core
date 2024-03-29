@@ -18,14 +18,71 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+
+RX = r"\.(widgets)\.(part_id)"
 
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for DX Sample Template
     """
     def initialized(self, data):
+        # register callbacks
+        self.add_callback(
+            "body", "on_partition_added", "datagrid:row_added")
+        self.add_callback(
+            "body", "on_partition_removed", "datagrid:row_removed")
+
+        # handle additional rendered row on edit view
+        self.on_partition_added(data)
         return self.data
 
     def modified(self, data):
+        return self.data
+
+    def callback(self, data):
+        name = data.get("name")
+        if not name:
+            return
+        method = getattr(self, name, None)
+        if not callable(method):
+            return
+        return method(data)
+
+    def get_current_partition_ids(self, data):
+        """Get the current unique IDs
+
+        :returns: list of unique parition IDs
+        """
+        form = data.get("form")
+        partitions = [(k, v) for k, v in form.items() if re.search(RX, k)]
+        return list(set(dict(partitions).values()))
+
+    def get_current_partition_count(self, data):
+        """Count the current unique IDs
+
+        :returns: Number of rows containing a unique Partition ID
+        """
+        unique_ids = self.get_current_partition_ids(data)
+        return len(unique_ids)
+
+    def on_partition_added(self, data):
+        """A new partition was added
+        """
+        count = self.get_current_partition_count(data)
+        # we just want to get the next ID right
+        self.add_update_field(
+            "form.widgets.partitions.AA.widgets.part_id",
+            "part-{}".format(count + 1))
+        return self.data
+
+    def on_partition_removed(self, data):
+        """An existing partition was deleted
+        """
+        count = self.get_current_partition_count(data)
+        # we just want to get the next ID right
+        self.add_update_field(
+            "form.widgets.partitions.AA.widgets.part_id",
+            "part-{}".format(count))
         return self.data
