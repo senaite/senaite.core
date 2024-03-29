@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import collections
+from string import Template as T
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from plone.memoize import view
-from bika.lims import api
 from senaite.core.interfaces import ISampleTemplate
 
 from .services_widget import ServicesWidget
+
+PART_TPL = T("""<span class='badge badge-info'>
+  $part_id
+</span>
+""")
 
 
 class SampleTemplateServicesWidget(ServicesWidget):
@@ -111,6 +118,7 @@ class SampleTemplateServicesWidget(ServicesWidget):
 
         item["allow_edit"] = self.get_editable_columns()
         item["Partition"] = part_id
+        item["replace"]["Partition"] = PART_TPL.substitute(part_id=part_id)
         item["choices"]["Partition"] = self.get_partition_choices()
 
         return item
