@@ -287,29 +287,24 @@ class SampleTemplate(Container):
     def getPartitions(self):
         accessor = self.accessor("partitions")
         return accessor(self) or []
-#
-#    @security.protected(permissions.ModifyPortalContent)
-#    def setSampleTemplateID(self, value):
-#        mutator = self.mutator("sampleTemplate_id")
-#        mutator(self, api.safe_unicode(value))
-#
-#    # BBB: AT schema field property
-#    SampleTemplateID = property(getSampleTemplateID, setSampleTemplateID)
-#
-#    @security.protected(permissions.View)
-#    def getRawManager(self):
-#        accessor = self.accessor("manager", raw=True)
-#        return accessor(self)
-#
-#    @security.protected(permissions.View)
-#    def getManager(self):
-#        accessor = self.accessor("manager")
-#        return accessor(self)
-#
-#    @security.protected(permissions.ModifyPortalContent)
-#    def setManager(self, value):
-#        mutator = self.mutator("manager")
-#        mutator(self, value)
-#
-#    # BBB: AT schema field property
-#    Manager = property(getManager, setManager)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPartitions(self, value):
+        mutator = self.mutator("partitions")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Partitions = property(getPartitions, setPartitions)
+
+    @security.protected(permissions.View)
+    def getServices(self):
+        accessor = self.accessor("services")
+        return accessor(self) or []
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setServices(self, value):
+        mutator = self.mutator("services")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Services = property(getServices, setServices)
