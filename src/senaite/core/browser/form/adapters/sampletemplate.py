@@ -19,9 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
-from senaite.core.browser.form.adapters import EditFormAdapterBase
 
-RX = r"\.(widgets)\.(part_id)"
+from bika.lims import api
+from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.catalog import SETUP_CATALOG
+
+RX1 = r"\d+\.(widgets)\.(part_id)"
+RX2 = r"\.(widgets)\.(part_id)"
 
 
 class EditForm(EditFormAdapterBase):
@@ -35,10 +39,6 @@ class EditForm(EditFormAdapterBase):
         self.add_callback("body",
                           "datagrid:row_removed",
                           "on_partition_removed")
-        self.add_callback("select[name^='Partition'][name$=':records']",
-                          "click",
-                          "on_partition_select")
-
         # handle additional rendered row on edit view
         if self.get_current_partition_count(data) > 1:
             self.on_partition_added(data)
@@ -65,13 +65,28 @@ class EditForm(EditFormAdapterBase):
             return
         return method(data)
 
-    def get_current_partition_ids(self, data):
+    def get_service_uids(self):
+        """Return all service
+        """
+        query = {
+            "portal_type": "AnalysisService",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        results = api.search(query, SETUP_CATALOG)
+        return list(map(api.get_uid, results))
+
+    def get_current_partition_ids(self, data, only_numbered=False):
         """Get the current unique IDs
 
         :returns: list of unique parition IDs
         """
         form = data.get("form")
-        partitions = [(k, v) for k, v in form.items() if re.search(RX, k)]
+        if (only_numbered):
+            partitions = [(k, v) for k, v in form.items() if re.search(RX1, k)]
+        else:
+            partitions = [(k, v) for k, v in form.items() if re.search(RX2, k)]
         return list(set(dict(partitions).values()))
 
     def get_current_partition_count(self, data):
@@ -100,8 +115,4 @@ class EditForm(EditFormAdapterBase):
         self.add_update_field(
             "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count))
-        return self.data
-
-    def on_partition_select(self, data):
-        import pdb; pdb.set_trace()
         return self.data
