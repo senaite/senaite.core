@@ -39,25 +39,25 @@ from zope.interface import implementer
 
 
 class IServiceRecord(Interface):
-    """Record schema for selected services
+    """Record schema for selected services and partitions
     """
     uid = schema.TextLine(title=u"Service UID")
-    partition = schema.List(title=u"Partition", value_type=schema.Text())
     hidden = schema.Bool(title=u"Hidden")
+    partition = schema.TextLine(title=u"Partition")
 
 
 class IPartitionRecord(Interface):
     """DataGrid Row for Sample Partition Schema
     """
-    # PARTITION ID
-    directives.widget("part_id",
+
+    # PARTITION
+    directives.widget("partition",
                       readonly="readonly",
-                      style=u"width:80px!important")
-    part_id = schema.TextLine(
-        title=_(u"Partition ID"),
-        required=True,
-        default=u"part-1",
-    )
+                      style=u"width:50px!important")
+    partition = schema.TextLine(
+        title=_(u"Partition"),
+        required=False,
+        default=u"1")
 
     # CONTAINER
     directives.widget(

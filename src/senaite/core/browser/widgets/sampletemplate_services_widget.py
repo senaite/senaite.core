@@ -13,8 +13,8 @@ class SampleTemplateServicesWidget(ServicesWidget):
     """Listing widget for Sample Template Services
     """
 
-    # def __init__(self, field, request):
-    #     super(SampleTemplateServicesWidget, self).__init__(field, request)
+    def __init__(self, field, request):
+        super(SampleTemplateServicesWidget, self).__init__(field, request)
 
     def update(self):
         super(SampleTemplateServicesWidget, self).update()
@@ -42,19 +42,24 @@ class SampleTemplateServicesWidget(ServicesWidget):
         return columns
 
     @view.memoize
-    def get_partition_choices(self):
+    def get_partitions(self):
+        """Return the current stored partitions
+        """
+        # No context
         if not ISampleTemplate.providedBy(self.context):
-            return [{
-                "ResultValue": "part-1",
-                "ResultText": "Part 1"
-            }]
+            return []
+        return self.context.getPartitions()
 
-        partition_choices = []
-        for num, part in enumerate(self.context.getPartitions()):
-            part_id = part.get("part_id")
+    @view.memoize
+    def get_partition_choices(self):
+        # default empty choice
+        partition_choices = [{"ResultValue": "", "ResultText": ""}]
+        # extract the partition settings from the context
+        for num, part in enumerate(self.get_partitions()):
+            partition = part.get("partition")
             self.partition_choices.append({
-                "ResultValue": part_id,
-                "ResultText": part_id.capitalize().replace("-", " "),
+                "ResultValue": partition,
+                "ResultText": _("Partition") + " {}".format(partition)
             })
         return partition_choices
 
@@ -67,14 +72,20 @@ class SampleTemplateServicesWidget(ServicesWidget):
         if not selected:
             return []
 
+        # get the selected partition mapping
+        partition_mapping = {}
+        # Note: Partition comes in as a list with one dict from the form
+        map(lambda m: partition_mapping.update(m), form.get("Partition", []))
+
         # extract the data from the form for the field
         records = []
         hidden_services = form.get("Hidden", {})
+
         for uid in selected:
             records.append({
                 "uid": uid,
                 "hidden": hidden_services.get(uid) == "on",
-                # TBD: add partition
+                "partition": api.safe_unicode(partition_mapping.get(uid, u"")),
             })
 
         return records
@@ -94,9 +105,9 @@ class SampleTemplateServicesWidget(ServicesWidget):
         record = self.records.get(uid, {}) or {}
 
         # get the partition setting
-        partition = "part-1"
+        partition = u""
         if record:
-            partition = record.get("part_id")
+            partition = record.get("partition")
 
         item["allow_edit"] = self.get_editable_columns()
         item["Partition"] = partition
