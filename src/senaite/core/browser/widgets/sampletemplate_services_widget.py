@@ -11,7 +11,7 @@ from senaite.core.interfaces import ISampleTemplate
 from .services_widget import ServicesWidget
 
 PART_TPL = T("""<span class='badge badge-info'>
-  $part_id
+  $partition
 </span>
 """)
 
@@ -63,10 +63,10 @@ class SampleTemplateServicesWidget(ServicesWidget):
         partition_choices = [{"ResultValue": "", "ResultText": ""}]
         # extract the partition settings from the context
         for num, part in enumerate(self.get_partitions()):
-            part_id = part.get("part_id")
+            partition = part.get("partition")
             partition_choices.append({
-                "ResultValue": part_id,
-                "ResultText": part_id,
+                "ResultValue": partition,
+                "ResultText": partition,
             })
         return partition_choices
 
@@ -92,7 +92,7 @@ class SampleTemplateServicesWidget(ServicesWidget):
             records.append({
                 "uid": uid,
                 "hidden": hidden_services.get(uid) == "on",
-                "part_id": api.safe_unicode(partition_mapping.get(uid, u"")),
+                "partition": api.safe_unicode(partition_mapping.get(uid, u"")),
             })
 
         return records
@@ -112,13 +112,13 @@ class SampleTemplateServicesWidget(ServicesWidget):
         record = self.records.get(uid, {}) or {}
 
         # get the partition setting
-        part_id = u""
+        partition = u""
         if record:
-            part_id = record.get("part_id")
+            partition = record.get("partition")
 
         item["allow_edit"] = self.get_editable_columns()
-        item["Partition"] = part_id
-        item["replace"]["Partition"] = PART_TPL.substitute(part_id=part_id)
+        item["Partition"] = partition
+        item["replace"]["Partition"] = PART_TPL.substitute(partition=partition)
         item["choices"]["Partition"] = self.get_partition_choices()
 
         return item

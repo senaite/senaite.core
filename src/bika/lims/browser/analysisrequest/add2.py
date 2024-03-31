@@ -1318,12 +1318,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # We don't expect more than one template, but who knows about future?
         for uid, obj_info in template.items():
             obj = self.get_object_by_uid(uid)
-            # get the template analyses
-            # [{'partition': 'part-1', 'service_uid': '...'},
-            # {'partition': 'part-1', 'service_uid': '...'}]
-            analyses = obj.getAnalyses() or []
+            # get the template services
+            # [{'partition': 'part-1', 'uid': '...'},
+            # {'partition': 'part-1', 'uid': '...'}]
+            services = obj.getServices() or []
             # get all UIDs of the template records
-            service_uids = map(lambda rec: rec.get("service_uid"), analyses)
+            service_uids = map(lambda rec: rec.get("uid"), services)
             # remember a mapping of template uid -> service
             template_to_services[uid] = service_uids
             # remember a mapping of service uid -> templates
