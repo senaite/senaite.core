@@ -25,13 +25,16 @@ from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ISampleTemplate
 
-RX1 = r"\d+\.(widgets)\.(partition$)"
-RX2 = r"\.(widgets)\.(partition$)"
+RX1 = r"\d+\.(widgets)\.(part_id$)"
+RX2 = r"\.(widgets)\.(part_id$)"
 
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for DX Sample Template
     """
+    def __init__(self, context, request):
+        super(EditForm, self).__init__(context, request)
+
     def initialized(self, data):
         # register callbacks
         self.add_callback("body",
@@ -49,6 +52,8 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def added(self, data):
+        # We need to update the partition selectors when rows get rendered,
+        # e.g. in categories.
         self.update_partition_selectors(data)
         return self.data
 
@@ -82,12 +87,12 @@ class EditForm(EditFormAdapterBase):
             # current selected service settings
             selected = services.get(uid)
             # check if we have a partition assigned to this service
-            partition = None
+            part_id = None
             if selected:
-                partition = selected.get("partition")
+                part_id = selected.get("part_id")
             # update the partition select box with the current settings
             self.add_update_field(fieldname, {
-                "selected": [partition] if partition else [],
+                "selected": [part_id] if part_id else [],
                 "options": options})
 
     def get_current_service_settings(self):
@@ -99,7 +104,7 @@ class EditForm(EditFormAdapterBase):
 
         # Get the current service settings of the template
         services = {}
-        for service in self.context.getServices():
+        for service in self.context.getRawServices():
             uid = service.get("uid")
             services[uid] = service
 
@@ -145,7 +150,7 @@ class EditForm(EditFormAdapterBase):
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
         self.add_update_field(
-            "form.widgets.partitions.AA.widgets.partition",
+            "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count + 1))
         return self.data
 
@@ -155,6 +160,6 @@ class EditForm(EditFormAdapterBase):
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
         self.add_update_field(
-            "form.widgets.partitions.AA.widgets.partition",
+            "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count))
         return self.data

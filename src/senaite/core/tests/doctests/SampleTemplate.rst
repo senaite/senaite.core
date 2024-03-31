@@ -182,7 +182,7 @@ Partitions
 Templates can define a partition scheme for samples, which allow to set the
 following fields:
 
-    - `partition`: A unique partition ID
+    - `part_id`: A unique partition ID
     - `container`: The container used for the partition
     - `preservation`: The preservation used for the partition
     - `sampletype`: The sample type of the partition
@@ -194,12 +194,12 @@ Test get/set methods:
 
     >>> partition_schema = [
     ...     {
-    ...         'partition': 'part-1',
+    ...         'part_id': 'part-1',
     ...         'container': container,
     ...         'preservation': preservation,
     ...         'sampletype': sampletype,
     ...     }, {
-    ...         'partition': 'part-2',
+    ...         'part_id': 'part-2',
     ...         'container': api.get_uid(container),
     ...         'preservation': api.get_uid(preservation),
     ...         'sampletype': api.get_uid(sampletype),
@@ -254,15 +254,15 @@ Assign services with a list of configuration dictionaries:
     >>> services_config = [
     ...     {
     ...         'hidden': False,
-    ...         'partition': 'part-1',
+    ...         'part_id': 'part-1',
     ...         'uid': api.get_uid(Cu),
     ...     }, {
     ...         'hidden': False,
-    ...         'partition': 'part-1',
+    ...         'part_id': 'part-1',
     ...         'uid': api.get_uid(Fe),
     ...     }, {
     ...         'hidden': True,
-    ...         'partition': 'part-2',
+    ...         'part_id': 'part-2',
     ...         'uid': api.get_uid(Au),
     ...     }
     ... ]
@@ -277,7 +277,7 @@ Test `getRaw` method:
     True
 
     >>> list(sorted(template1.getRawServices()[0].keys()))
-    ['hidden', 'partition', 'uid']
+    ['hidden', 'part_id', 'uid']
 
 
 Get the settings for all assigned services:

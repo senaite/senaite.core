@@ -955,7 +955,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for record in services:
             service_uid = record.get("uid")
             service_uids.append(service_uid)
-            analyses_partitions[service_uid] = record.get("partition")
+            analyses_partitions[service_uid] = record.get("part_id")
 
         info = self.get_base_info(obj)
         info.update({
@@ -1319,8 +1319,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for uid, obj_info in template.items():
             obj = self.get_object_by_uid(uid)
             # get the template services
-            # [{'partition': 'part-1', 'uid': '...'},
-            # {'partition': 'part-1', 'uid': '...'}]
+            # [{'part_id': 'part-1', 'uid': '...'},
+            # {'part_id': 'part-1', 'uid': '...'}]
             services = obj.getServices() or []
             # get all UIDs of the template records
             service_uids = map(lambda rec: rec.get("uid"), services)
