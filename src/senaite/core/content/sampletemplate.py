@@ -44,7 +44,7 @@ class IServiceRecord(Interface):
     """
     uid = schema.TextLine(title=u"Service UID")
     hidden = schema.Bool(title=u"Hidden")
-    part_id = schema.TextLine(title=u"Partition ID")
+    partition = schema.TextLine(title=u"Partition ID")
 
 
 class IPartitionRecord(Interface):
@@ -52,11 +52,11 @@ class IPartitionRecord(Interface):
     """
 
     # PARTITION
-    directives.widget("part_id",
+    directives.widget("partition",
                       style=u"width:100px!important")
-    part_id = schema.TextLine(
+    partition = schema.TextLine(
         title=_(
-            u"label_sampletemplate_partition_part_id",
+            u"label_sampletemplate_partition_partition",
             default=u"Partition ID"
         ),
         required=False,
@@ -385,7 +385,7 @@ class SampleTemplate(Container):
             value = [value]
         records = []
         for v in value:
-            part_id = v.get("part_id", "")
+            partition = v.get("partition", "")
             container = v.get("container", "")
             preservation = v.get("preservation", "")
             sampletype = v.get("sampletype", "")
@@ -399,7 +399,7 @@ class SampleTemplate(Container):
                 sampletype = api.get_uid(sampletype)
 
             records.append({
-                "part_id": part_id,
+                "partition": partition,
                 "container": container,
                 "preservation": preservation,
                 "sampletype": sampletype,
@@ -428,9 +428,9 @@ class SampleTemplate(Container):
         """Return the raw value of the services field
 
         >>> self.getRawServices()
-        [{'uid': '...', 'part_id': 'part-1', 'hidden': False}, ...]
+        [{'uid': '...', 'partition': 'part-1', 'hidden': False}, ...]
 
-        :returns: List of dictionaries containing `uid`, `hidden` and `part_id`
+        :returns: List of dicts including `uid`, `hidden` and `partition`
         """
         accessor = self.accessor("services")
         return accessor(self) or []
@@ -454,7 +454,7 @@ class SampleTemplate(Container):
 
         This method accepts either a list of analysis service objects, a list
         of analysis service UIDs or a list of analysis profile service records
-        containing the keys `uid`, `hidden` and `part_id`:
+        containing the keys `uid`, `hidden` and `partition`:
 
         >>> self.setServices([<AnalysisService at ...>, ...])
         >>> self.setServices(['353e1d9bd45d45dbabc837114a9c41e6', '...', ...])
@@ -469,11 +469,11 @@ class SampleTemplate(Container):
         for v in value:
             uid = ""
             hidden = False
-            part_id = ""
+            partition = ""
             if isinstance(v, dict):
                 uid = api.get_uid(v.get("uid"))
                 hidden = v.get("hidden", False)
-                part_id = v.get("part_id", "")
+                partition = v.get("partition", "")
             elif api.is_object(v):
                 uid = api.get_uid(v)
             elif api.is_uid(v):
@@ -481,7 +481,11 @@ class SampleTemplate(Container):
             else:
                 raise TypeError(
                     "Expected object, uid or record, got %r" % type(v))
-            records.append({"uid": uid, "hidden": hidden, "part_id": part_id})
+            records.append({
+                "uid": uid,
+                "hidden": hidden,
+                "partition": partition,
+            })
 
         mutator = self.mutator("services")
         mutator(self, records)
@@ -493,7 +497,7 @@ class SampleTemplate(Container):
     def getAnalysisServicesSettings(self):
         """BBB: Return the settings for all assigned services
 
-        :returns: List of dictionaries containing `uid`, `hidden` and `part_id`
+        :returns: List of dicts including `uid`, `hidden` and `partition`
         """
         # Note: We store the selected service UIDs, hidden and partition
         # settings in the `services` field. Therefore, we can just return the
@@ -505,13 +509,13 @@ class SampleTemplate(Container):
         """BBB: Update settings for all assigned service UIDs
 
         This method expects a list of dictionaries containing the service
-        `uid`, `part_id` and the `hidden` setting.
+        `uid`, `partition` and the `hidden` setting.
 
         This is basically the same format as stored in the `services` field!
 
         However, we want to just update the settings for selected service UIDs"
 
-        >>> settings =  [{'uid': '...', 'hidden': False, 'part_id': 'part-1'}]
+        >>> settings =  [{'uid': '...', 'hidden': False, 'partition': 'part-1'}]
         >>> setAnalysisServicesSettings(settings)
         """
         if not isinstance(settings, list):
@@ -523,9 +527,9 @@ class SampleTemplate(Container):
             if not isinstance(setting, dict):
                 raise TypeError(
                     "Expected a record containing `uid`, `hidden` and"
-                    "`part_id`, got %s" % type(setting))
+                    "`partition`, got %s" % type(setting))
             hidden = setting.get("hidden", False)
-            part_id = setting.get("part_id", "")
+            partition = setting.get("partition", "")
             uid = api.get_uid(setting.get("uid"))
 
             if not uid:
@@ -535,7 +539,7 @@ class SampleTemplate(Container):
             if not record:
                 continue
             record["hidden"] = hidden
-            record["part_id"] = part_id
+            record["partition"] = partition
 
         # set back the new services
         self.setServices(by_uid.values())
@@ -546,7 +550,11 @@ class SampleTemplate(Container):
         """
         uid = api.get_uid(service)
         by_uid = self.get_services_by_uid()
-        record = by_uid.get(uid, {"uid": uid, "part_id": "", "hidden": False})
+        record = by_uid.get(uid, {
+            "uid": uid,
+            "partition": "",
+            "hidden": False,
+        })
         return record
 
     @security.protected(permissions.View)
@@ -570,7 +578,7 @@ class SampleTemplate(Container):
         record = services.get(uid)
         if not record:
             return ""
-        return record.get("part_id", False)
+        return record.get("partition", False)
 
     @security.protected(permissions.View)
     def getAnalysisServiceUIDs(self):

@@ -25,8 +25,8 @@ from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ISampleTemplate
 
-RX1 = r"\d+\.(widgets)\.(part_id)"
-RX2 = r"\.(widgets)\.(part_id)"
+RX1 = r"\d+\.(widgets)\.(partition$)"
+RX2 = r"\.(widgets)\.(partition$)"
 
 
 class EditForm(EditFormAdapterBase):
@@ -82,12 +82,12 @@ class EditForm(EditFormAdapterBase):
             # current selected service settings
             selected = services.get(uid)
             # check if we have a partition assigned to this service
-            part_id = None
+            partition = None
             if selected:
-                part_id = selected.get("part_id")
+                partition = selected.get("partition")
             # update the partition select box with the current settings
             self.add_update_field(fieldname, {
-                "selected": [part_id] if part_id else [],
+                "selected": [partition] if partition else [],
                 "options": options})
 
     def get_current_service_settings(self):
@@ -145,7 +145,7 @@ class EditForm(EditFormAdapterBase):
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
         self.add_update_field(
-            "form.widgets.partitions.AA.widgets.part_id",
+            "form.widgets.partitions.AA.widgets.partition",
             "part-{}".format(count + 1))
         return self.data
 
@@ -155,6 +155,6 @@ class EditForm(EditFormAdapterBase):
         count = self.get_current_partition_count(data)
         # we just want to get the next ID right
         self.add_update_field(
-            "form.widgets.partitions.AA.widgets.part_id",
+            "form.widgets.partitions.AA.widgets.partition",
             "part-{}".format(count))
         return self.data

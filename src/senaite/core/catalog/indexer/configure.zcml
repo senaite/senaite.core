@@ -67,8 +67,11 @@
   <!-- Worksheet Indexer -->
   <adapter name="listing_searchable_text" factory=".worksheet.listing_searchable_text"/>
 
-  <!-- AnalysisProfile Indexes -->
+  <!-- AnalysisProfile Indexer -->
   <adapter name="sampletype_title" factory=".analysisprofile.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".analysisprofile.sampletype_uid"/>
+
+  <!-- SampleTemplate Indexer -->
+  <adapter name="sampletype_uid" factory=".sampletemplate.sampletype_uid"/>
 
 </configure>
