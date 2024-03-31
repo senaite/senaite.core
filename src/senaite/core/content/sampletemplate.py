@@ -28,6 +28,7 @@ from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config.widgets import get_default_columns
 from senaite.core.content.base import Container
+from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISampleTemplate
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridRow
@@ -284,7 +285,7 @@ class ISampleTemplateSchema(model.Schema):
 
 
 @implementer(ISampleTemplate, ISampleTemplateSchema, IDeactivable)
-class SampleTemplate(Container):
+class SampleTemplate(Container, ClientAwareMixin):
     """SampleTemplate
     """
     # Catalogs where this type will be catalogued
