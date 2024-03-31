@@ -1032,7 +1032,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sampletype_uid": sample_type_uid,
                 "getClientUID": [client_uid, ""],
             },
-            # Display AR Templates that have this sample type assigned plus
+            # Display Sample Templates that have this sample type assigned plus
             # those that do not have a sample type assigned
             "Template": {
                 "sampletype_uid": [sample_type_uid, ""],
@@ -1313,7 +1313,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         template_to_services = {}
         service_to_templates = {}
         service_metadata = metadata.get("service_metadata", {})
-        profiles_metadata = metadata.get("profiles_metadata", {})
         template = metadata.get("template_metadata", {})
         # We don't expect more than one template, but who knows about future?
         for uid, obj_info in template.items():
@@ -1321,7 +1320,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # get the template services
             # [{'part_id': 'part-1', 'uid': '...'},
             # {'part_id': 'part-1', 'uid': '...'}]
-            services = obj.getServices() or []
+            services = obj.getRawServices() or []
             # get all UIDs of the template records
             service_uids = map(lambda rec: rec.get("uid"), services)
             # remember a mapping of template uid -> service
@@ -1343,7 +1342,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "service_to_templates": service_to_templates,
             "template_to_services": template_to_services,
             "service_metadata": service_metadata,
-            "profiles_metadata": profiles_metadata,
         }
 
     def get_profiles_additional_info(self, metadata):
