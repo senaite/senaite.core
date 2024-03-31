@@ -321,8 +321,24 @@ Unassign a service from the template:
     >>> template1.remove_service(Au)
     True
 
-    >>> api.get_uid(Au) not in template1.getAnalysisServiceUIDs()
-    True
+    >>> api.get_uid(Au) in template1.getAnalysisServiceUIDs()
+    False
 
     >>> template1.remove_service(Au)
+    False
+
+Unassignment happens automatically if an Analysis Service was deactivated:
+
+    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    True
+
+    >>> api.get_workflow_status_of(Fe)
+    'active'
+
+    >>> success = do_action_for(Fe, "deactivate")
+
+    >>> api.get_workflow_status_of(Fe)
+    'inactive'
+
+    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
     False
