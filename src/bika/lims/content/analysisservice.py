@@ -573,7 +573,7 @@ class AnalysisService(AbstractBaseAnalysis):
 
         # Remove the service from templates to which is assigned
         catalog = api.get_tool(SETUP_CATALOG)
-        templates = catalog(portal_type="ARTemplate")
+        templates = catalog(portal_type="SampleTemplate")
         for template in templates:
             template = api.get_object(template)
             template.remove_service(self)
