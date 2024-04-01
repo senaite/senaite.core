@@ -406,7 +406,7 @@ class SampleTemplate(Container, ClientAwareMixin):
                 "preservation": preservation,
                 "sampletype": sampletype,
             })
-        mutator = self.mutator("part_id")
+        mutator = self.mutator("partitions")
         mutator(self, records)
 
     # BBB: AT schema field property
