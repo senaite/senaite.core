@@ -92,7 +92,7 @@ class IPartitionRecord(Interface):
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
         query={
-            "portal_type": "Preservation",
+            "portal_type": "SamplePreservation",
             "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending",
