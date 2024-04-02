@@ -474,12 +474,16 @@ class SampleTemplate(Container, ClientAwareMixin):
             part_id = ""
             if isinstance(v, dict):
                 uid = api.get_uid(v.get("uid"))
-                hidden = v.get("hidden", False)
+                hidden = v.get("hidden",
+                               api.get_object(uid).getHidden())
                 part_id = v.get("part_id", "")
             elif api.is_object(v):
                 uid = api.get_uid(v)
+                hidden = v.getHidden()
             elif api.is_uid(v):
+                obj = api.get_object(v)
                 uid = v
+                hidden = obj.getHidden()
             else:
                 raise TypeError(
                     "Expected object, uid or record, got %r" % type(v))
@@ -530,9 +534,9 @@ class SampleTemplate(Container, ClientAwareMixin):
                 raise TypeError(
                     "Expected a record containing `uid`, `hidden` and"
                     "`partition`, got %s" % type(setting))
-            hidden = setting.get("hidden", False)
-            part_id = setting.get("part_id", "")
             uid = api.get_uid(setting.get("uid"))
+            hidden = setting.get("hidden", api.get_object(uid).getHidden())
+            part_id = setting.get("part_id", "")
 
             if not uid:
                 raise ValueError("UID is missing in setting %r" % setting)
