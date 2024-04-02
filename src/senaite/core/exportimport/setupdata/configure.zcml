@@ -207,8 +207,8 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
-      name="AR_Templates"
-      factory="senaite.core.exportimport.setupdata.AR_Templates"
+      name="Sample_Templates"
+      factory="senaite.core.exportimport.setupdata.Sample_Templates"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
