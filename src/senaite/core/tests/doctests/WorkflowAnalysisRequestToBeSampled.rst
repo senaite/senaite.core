@@ -31,13 +31,13 @@ Functional Helpers:
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-    >>> def new_ar(services, ar_template=None):
+    >>> def new_ar(services, sample_template=None):
     ...     values = {
     ...         'Client': client.UID(),
     ...         'Contact': contact.UID(),
     ...         'DateSampled': date_now,
     ...         'SampleType': sampletype.UID(),
-    ...         'Template': ar_template,
+    ...         'Template': sample_template,
     ...     }
     ...     service_uids = map(api.get_uid, services)
     ...     ar = create_analysisrequest(client, request, values, service_uids)
@@ -63,7 +63,7 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> ar_template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Test Template", SampleType=sampletype)
+    >>> sample_template = api.create(setup.sampletemplates, "SampleTemplate", title="Test Template", SampleType=sampletype)
 
 To_be_sampled transition and guard basic constraints
 ....................................................
@@ -89,15 +89,15 @@ If we use a template with "SamplingRequired" setting set to False, the status
 of the Analysis Request once created is "sample_due", regardless of the setting
 from setup:
 
-    >>> ar_template.setSamplingRequired(False)
-    >>> ar = new_ar([Cu], ar_template)
+    >>> sample_template.setSamplingRequired(False)
+    >>> ar = new_ar([Cu], sample_template)
     >>> api.get_workflow_status_of(ar)
     'sample_due'
 
 And same the other way round:
 
     >>> bikasetup.setSamplingWorkflowEnabled(False)
-    >>> ar_template.setSamplingRequired(True)
-    >>> ar = new_ar([Cu], ar_template)
+    >>> sample_template.setSamplingRequired(True)
+    >>> ar = new_ar([Cu], sample_template)
     >>> api.get_workflow_status_of(ar)
     'to_be_sampled'

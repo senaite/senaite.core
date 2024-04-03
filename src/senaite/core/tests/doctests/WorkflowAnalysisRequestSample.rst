@@ -37,15 +37,15 @@ Functional Helpers:
     ...      state = api.get_workflow_status_of(object)
     ...      return success and state == target_state_id
 
-    >>> def new_ar(services, ar_template=None):
+    >>> def new_ar(services, sample_template=None):
     ...     values = {
     ...         'Client': client.UID(),
     ...         'Contact': contact.UID(),
     ...         'SampleType': sampletype.UID(),
-    ...         'Template': ar_template,
+    ...         'Template': sample_template,
     ...     }
     ...     date_key = "DateSampled"
-    ...     if ar_template and ar_template.getSamplingRequired():
+    ...     if sample_template and sample_template.getSamplingRequired():
     ...         date_key = "SamplingDate"
     ...     elif bikasetup.getSamplingWorkflowEnabled():
     ...         date_key = "SamplingDate"
@@ -98,7 +98,7 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> ar_template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Test Template", SampleType=sampletype)
+    >>> sample_template = api.create(setup.sampletemplates, "SampleTemplate", title="Test Template", SampleType=sampletype)
     >>> sampler_user = ploneapi.user.create(email="sampler1@example.com", username="sampler1", password="secret", properties=dict(fullname="Sampler 1"))
     >>> setRoles(portal, "sampler1", ['Authenticated', 'Member', 'Sampler'])
 
@@ -169,8 +169,8 @@ Declare the roles allowed and not allowed to perform the "sample" transition:
 Create an Analysis Request by using a template with Sampling workflow enabled:
 
     >>> bikasetup.setSamplingWorkflowEnabled(False)
-    >>> ar_template.setSamplingRequired(True)
-    >>> ar = new_ar([Cu], ar_template)
+    >>> sample_template.setSamplingRequired(True)
+    >>> ar = new_ar([Cu], sample_template)
     >>> ar.setDateSampled(timestamp())
     >>> ar.setSampler(sampler_user.id)
 

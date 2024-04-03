@@ -69,7 +69,6 @@ Now we need to create some basic content for our tests:
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="208.20", Category=category.UID())
     >>> profile = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile")
     >>> profile.setServices([Fe, Cu])
-    >>> template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Template", AnalysisProfile=[profile.UID()])
 
 Enable accreditation for the lab
 
