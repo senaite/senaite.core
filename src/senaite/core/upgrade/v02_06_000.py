@@ -728,4 +728,4 @@ def migrate_sampletemplates_to_dx(tool):
         return
 
     # get the destination container
-    destination = get_setup_folder("sampletemplates")
+    # destination = get_setup_folder("sampletemplates")
