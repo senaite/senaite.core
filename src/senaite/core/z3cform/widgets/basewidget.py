@@ -68,6 +68,10 @@ class BaseWidget(Widget):
         form = self.get_form()
         portal_type = self.get_portal_type()
         context = getattr(form, "context", None)
+        # no context found, return
+        # happens e.g. in the `datetimewidget.txt` doctest
+        if context is None:
+            return None
         # Hack alert!
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
