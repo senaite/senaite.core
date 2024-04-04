@@ -108,6 +108,11 @@ created (the "retest") and the original analysis is transitioned to `verified`:
     >>> sorted(map(api.get_workflow_status_of, analyses))
     ['to_be_verified', 'to_be_verified', 'unassigned', 'verified']
 
+And the user who triggered the transition is considered a verifier:
+
+    >>> analysis.getVerificators() == [TEST_USER_ID]
+    True
+
 Since there is one new analysis (the "retest") in `unassigned` status, the
 Analysis Request is transitioned to `sample_received`:
 
@@ -133,6 +138,11 @@ And Result capture date is None:
 
     >>> not retest.getResultCaptureDate()
     True
+
+And has not been verified by anybody:
+
+    >>> retest.getVerificators()
+    []
 
 If I submit a result for the "retest":
 
