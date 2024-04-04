@@ -736,8 +736,6 @@ def migrate_sampletemplates_to_dx(tool):
     # get the new setup folder
     new_parent = get_setup_folder("sampletemplates")
 
-    import pdb; pdb.set_trace()
-
     for num, brain in enumerate(brains):
         # NOTE: we have a different portal type for new DX based templates and
         # don't need any further type checks here.
