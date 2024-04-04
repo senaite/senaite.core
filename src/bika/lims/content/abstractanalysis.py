@@ -215,8 +215,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the user ids of the users that verified this analysis
         """
         verifiers = list()
+        actions = ["retest", "verify", "multi_verify"]
         for event in api.get_review_history(self, rev=False):
-            if event.get("review_state") == "verified":
+            if event['action'] in actions:
                 verifiers.append(event['actor'])
         return verifiers
 
