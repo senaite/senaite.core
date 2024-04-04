@@ -217,8 +217,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         verifiers = list()
         actions = ["retest", "verify", "multi_verify"]
         for event in api.get_review_history(self, rev=False):
-            if event['action'] in actions:
-                verifiers.append(event['actor'])
+            if event.get("review_state") == "verified":
+                # include all transitions their end state is 'verified'
+                verifiers.append(event["actor"])
+            elif event.get("action") in actions:
+                # include some transitions their end state is not 'verified'
+                verifiers.append(event["actor"])
         return verifiers
 
     @security.public
