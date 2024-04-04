@@ -40,6 +40,7 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
     >>> bika_analysiscategories = bikasetup.bika_analysiscategories
     >>> bika_analysisservices = bikasetup.bika_analysisservices
@@ -50,7 +51,7 @@ We need to create some basic objects for the test:
 
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> supplier = api.create(bika_suppliers, "Supplier", Name="Naralabs")
     >>> Ca = api.create(bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="15", Category=category.UID())

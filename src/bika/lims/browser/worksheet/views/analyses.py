@@ -566,9 +566,9 @@ class AnalysesView(BaseView):
             # item
             sample = obj.getSample()
             item_obj = sample
-            obj_id = api.get_id(obj)
             sample_id = api.get_id(sample)
-            item_title = "%s (%s)" % (obj_id, sample_id)
+            sample_title = api.get_title(sample)
+            item_title = "%s (%s)" % (sample_title, sample_id)
             item_url = api.get_url(sample)
             item_img_url = api.get_url(sample)
             item_img = "control.png"

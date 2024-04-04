@@ -53,7 +53,8 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
 
 We need to create some basic objects for the test:
@@ -61,14 +62,14 @@ We need to create some basic objects for the test:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
-    >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
-    >>> Au = api.create(setup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> setup.setSelfVerificationEnabled(True)
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
+    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+    >>> bikasetup.setSelfVerificationEnabled(True)
 
 Retest transition and guard basic constraints
 .............................................
@@ -107,6 +108,11 @@ created (the "retest") and the original analysis is transitioned to `verified`:
     >>> sorted(map(api.get_workflow_status_of, analyses))
     ['to_be_verified', 'to_be_verified', 'unassigned', 'verified']
 
+And the user who triggered the transition is considered a verifier:
+
+    >>> analysis.getVerificators() == [TEST_USER_ID]
+    True
+
 Since there is one new analysis (the "retest") in `unassigned` status, the
 Analysis Request is transitioned to `sample_received`:
 
@@ -132,6 +138,11 @@ And Result capture date is None:
 
     >>> not retest.getResultCaptureDate()
     True
+
+And has not been verified by anybody:
+
+    >>> retest.getVerificators()
+    []
 
 If I submit a result for the "retest":
 
@@ -224,13 +235,13 @@ dependents to be retested too:
 
 Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
-    >>> calc_fe = api.create(setup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
     >>> calc_fe.setFormula("[Cu]*10")
     >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
 
-    >>> calc_au = api.create(setup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
     >>> calc_au.setFormula("([Fe])/2")
     >>> Au.setCalculation(calc_au)
 
@@ -307,13 +318,13 @@ recursively up, finding out all dependencies.
 
 Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
-    >>> calc_fe = api.create(setup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
     >>> calc_fe.setFormula("[Cu]*10")
     >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
 
-    >>> calc_au = api.create(setup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
     >>> calc_au.setFormula("([Fe])/2")
     >>> Au.setCalculation(calc_au)
 
@@ -390,13 +401,13 @@ recursively down, finding out all dependents.
 
 Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
-    >>> calc_fe = api.create(setup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
     >>> calc_fe.setFormula("[Cu]*10")
     >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
 
-    >>> calc_au = api.create(setup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
     >>> calc_au.setFormula("([Fe])/2")
     >>> Au.setCalculation(calc_au)
 

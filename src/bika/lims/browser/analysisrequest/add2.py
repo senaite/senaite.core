@@ -1028,6 +1028,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sampletype_uid": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             },
+            # Display Analysis Profiles that have this sample type assigned
+            # in addition to those that do not have a sample profile assigned
+            "Profiles": {
+                "sampletype_uid": [sample_type_uid, ""],
+                "getClientUID": [client_uid, ""],
+            },
             # Display Specifications that have this sample type assigned only
             "Specification": {
                 "sampletype_uid": sample_type_uid,
@@ -1187,6 +1193,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ],
             "SampleType": [
                 "SamplePoint",
+                "Profiles",
                 "Specification",
                 "Template",
             ],
@@ -1364,7 +1371,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for uid, obj_info in profiles.items():
             obj = self.get_object_by_uid(uid)
             # get all services of this profile
-            services = obj.getService()
+            services = obj.getServices()
             # get all UIDs of the profile services
             service_uids = map(api.get_uid, services)
             # remember all services of this profile
@@ -1531,11 +1538,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 profile_price = float(profile.getAnalysisProfilePrice())
                 arprofiles_price += profile_price
                 arprofiles_vat_amount += profile.getVATAmount()
-                profile_services = profile.getService()
+                profile_services = profile.getServices()
                 services_from_priced_profile.extend(profile_services)
 
             # ANALYSIS SERVICES PRICE
             for service in services:
+                # skip services that are part of a priced profile
                 if service in services_from_priced_profile:
                     continue
                 service_price = float(service.getPrice())

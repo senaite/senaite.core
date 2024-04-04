@@ -215,11 +215,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the user ids of the users that verified this analysis
         """
         verifiers = list()
-        actions = ["verify", "multi_verify"]
-        for event in api.get_review_history(self):
-            if event['action'] in actions:
-                verifiers.append(event['actor'])
-        sorted(verifiers, reverse=True)
+        actions = ["retest", "verify", "multi_verify"]
+        for event in api.get_review_history(self, rev=False):
+            if event.get("review_state") == "verified":
+                # include all transitions their end state is 'verified'
+                verifiers.append(event["actor"])
+            elif event.get("action") in actions:
+                # include some transitions their end state is not 'verified'
+                verifiers.append(event["actor"])
         return verifiers
 
     @security.public
@@ -553,6 +556,28 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Convert to floatable if necessary
             if api.is_floatable(interim_value):
                 interim_value = float(interim_value)
+            else:
+                # If the interim value is a string, since the formula is also a string,
+                # it is needed to wrap the string interim values in between inverted commas.
+                #
+                # E.g. formula = '"ok" if %(var)s == "example_value" else "not ok"'
+                #
+                # if interim_value = "example_value" after
+                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
+                # print(formula)
+                # > '"ok" if example_value == "example_value" else "not ok"' -> Error
+                #
+                # else if interim_value ='"example_value"' after
+                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
+                # print(formula)
+                # > '"ok" if "example_value" == "example_value" else "not ok"' -> Correct
+                interim_value = '"{}"'.format(interim_value)
+
+            # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
+            converter = "s" if i.get("result_type") else "f"
+            formula = formula.replace(
+                "[" + interim_keyword + "]", "%(" + interim_keyword + ")" + converter
+            )
 
             mapping[interim_keyword] = interim_value
 

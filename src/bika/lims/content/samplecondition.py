@@ -19,14 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
-from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import registerType
-from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import Schema
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -37,6 +35,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2478
 class SampleCondition(BaseFolder):
     implements(IDeactivable)
     security = ClassSecurityInfo()
@@ -49,16 +48,5 @@ class SampleCondition(BaseFolder):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+
 registerType(SampleCondition, PROJECTNAME)
-
-
-def SampleConditions(self, instance=None, allow_blank=False):
-    instance = instance or self
-    bsc = getToolByName(instance, 'senaite_catalog_setup')
-    items = []
-    for sm in bsc(portal_type='SampleCondition',
-                  is_active=True,
-                  sort_on='sortable_title'):
-        items.append((sm.UID, sm.Title))
-    items = allow_blank and [['', '']] + list(items) or list(items)
-    return DisplayList(items)

@@ -2,8 +2,6 @@
 <object name="portal_types" meta_type="Plone Types Tool">
  <property name="title">Controls the available content types in your portal</property>
  <object name="AuditLog" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisProfile" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARReport" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
@@ -30,8 +28,6 @@
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ContainerTypes" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Departments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
@@ -53,8 +49,6 @@
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Multifile" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Preservation" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Preservations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
@@ -63,10 +57,6 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleCondition" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleConditions" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>

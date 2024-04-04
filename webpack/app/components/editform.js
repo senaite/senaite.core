@@ -467,6 +467,13 @@ class EditForm {
     form_data.forEach(function(value, key) {
       data[key] = value;
     });
+    // handle DX add views
+    let view_name = this.get_view_name();
+    if (view_name.indexOf("++add++") > -1) {
+      // inject `form_adapter_name` for named multi adapter lookup
+      // see senaite.core.browser.form.ajax.FormView for lookup logic
+      data.form_adapter_name = view_name;
+    }
     return data;
   }
 
@@ -610,7 +617,7 @@ class EditForm {
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
     let payload = Object.assign({
-      "form": this.get_form_data(form)
+      form: this.get_form_data(form)
     }, data)
 
     console.debug("EditForm::ajax_send --> ", payload)
@@ -630,6 +637,9 @@ class EditForm {
 
   /**
    * send multipart/form-data to the server
+   *
+   * NOTE: This is used by the import form and hooked by the `ajax-submit="1"` attribute
+   *       Therefore, we send here the data as multipart/form-data
    */
   ajax_submit(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
@@ -676,6 +686,15 @@ class EditForm {
         console.error(error);
         this.loading(false);
       });
+  }
+
+
+  /**
+   * get the current view name from the URL
+   */
+  get_view_name() {
+    let segments = location.pathname.split("/");
+    return segments.pop();
   }
 
   /**

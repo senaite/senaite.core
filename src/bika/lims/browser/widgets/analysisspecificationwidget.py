@@ -91,18 +91,13 @@ class AnalysisSpecificationView(BikaListingView):
                 "sortable": False,
                 "type": "numeric",
             }),
-            ("min_operator", {
-                "title": _("Min operator"),
-                "type": "choices",
-                "sortable": False,
-            }),
             ("min", {
                 "title": _("Min"),
                 "sortable": False,
                 "type": "numeric",
             }),
-            ("max_operator", {
-                "title": _("Max operator"),
+            ("min_operator", {
+                "title": _("Min operator"),
                 "type": "choices",
                 "sortable": False,
             }),
@@ -115,6 +110,11 @@ class AnalysisSpecificationView(BikaListingView):
                 "title": _("Max warn"),
                 "sortable": False,
                 "type": "numeric",
+            }),
+            ("max_operator", {
+                "title": _("Max operator"),
+                "type": "choices",
+                "sortable": False,
             }),
             ("hidemin", {
                 "title": _("< Min"),
@@ -389,6 +389,14 @@ class AnalysisSpecificationWidget(TypesWidget):
         value = values[0].get(uid, default)
         if not check_floatable:
             return value
+
+        value = value.strip()
+        for operator in ["<", ">"]:
+            if value.startswith(operator):
+                # also remove any additional spaces between the operator
+                # and the value
+                value = value.lstrip(operator + " ")
+
         return api.is_floatable(value) and value or default
 
     security.declarePublic("AnalysisSpecificationResults")

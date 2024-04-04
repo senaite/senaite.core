@@ -59,6 +59,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
+from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
 from DateTime import DateTime
@@ -410,11 +411,7 @@ schema = BikaSchema.copy() + Schema((
                 "add": "edit",
             },
             catalog_name=SETUP_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending"
-            },
+            query="get_profiles_query",
             columns=[
                 {"name": "Title", "label": _("Profile Name")},
                 {"name": "getProfileKey", "label": _("Profile Key")},
@@ -577,7 +574,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "Preservation",
         required=0,
-        allowed_types=("Preservation",),
+        allowed_types=("SamplePreservation",),
         mode="rw",
         read_permission=View,
         write_permission=FieldEditPreservation,
@@ -1558,12 +1555,15 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # determine all the services to add
             services_to_add = set(services)
             for profile in profiles:
-                services_to_add.update(profile.getService())
+                services_to_add.update(profile.getServices())
             # set all analyses
             self.setAnalyses(list(services_to_add))
 
         # set the profiles value
         self.getField("Profiles").set(self, value)
+
+        # apply hidden services *after* the profiles have been set
+        apply_hidden_services(self)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
@@ -1812,7 +1812,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
         # All services contained in the billable profiles
         billable_profile_services = functools.reduce(lambda a, b: a+b, map(
-            lambda profile: profile.getService(), billable_profiles), [])
+            lambda profile: profile.getServices(), billable_profiles), [])
         # Keywords of the contained services
         billable_service_keys = map(
             lambda s: s.getKeyword(), set(billable_profile_services))
@@ -2140,21 +2140,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
            returns a one entry dictionary with only the key 'uid'
         """
         sets = [s for s in self.getAnalysisServicesSettings()
-                if s.get('uid', '') == uid]
+                if s.get("uid", "") == uid]
 
         # Created by using an ARTemplate?
         if not sets and self.getTemplate():
             adv = self.getTemplate().getAnalysisServiceSettings(uid)
-            sets = [adv] if 'hidden' in adv else []
+            sets = [adv] if "hidden" in adv else []
 
         # Created by using an AR Profile?
         profiles = self.getProfiles()
         if not sets and profiles:
             adv = [profile.getAnalysisServiceSettings(uid) for profile in
                    profiles]
-            sets = adv if 'hidden' in adv[0] else []
+            sets = adv if adv[0].get("hidden") else []
 
-        return sets[0] if sets else {'uid': uid}
+        return sets[0] if sets else {"uid": uid}
 
     # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):
@@ -2176,17 +2176,23 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Raise a ValueError if there is no hidden assignment in this request or
         no analysis service found for this uid.
         """
-        if not uid:
-            raise TypeError('None type or empty uid')
-        sets = self.getAnalysisServiceSettings(uid)
-        if 'hidden' not in sets:
-            uc = getToolByName(self, 'uid_catalog')
-            serv = uc(UID=uid)
+        if not api.is_uid(uid):
+            raise TypeError("Expected a UID, got '%s'" % type(uid))
+
+        # get the local (analysis/template/profile) service settings
+        settings = self.getAnalysisServiceSettings(uid)
+
+        # TODO: Rethink this logic and remove it afterwards!
+        # NOTE: profiles provide always the "hidden" key now!
+        if not settings or "hidden" not in settings.keys():
+            # lookup the service
+            serv = api.search({"UID": uid}, catalog="uid_catalog")
             if serv and len(serv) == 1:
                 return serv[0].getObject().getRawHidden()
             else:
-                raise ValueError('{} is not valid'.format(uid))
-        return sets.get('hidden', False)
+                raise ValueError("{} is not valid".format(uid))
+
+        return settings.get("hidden", False)
 
     def getRejecter(self):
         """If the Analysis Request has been rejected, returns the user who did the
@@ -2602,6 +2608,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # no future, has to be collected before registration
             return api.get_creation_date(self)
         return datetime.max
+
+    def get_profiles_query(self):
+        """Returns the query for the Profiles field, so only profiles without
+        any sample type set and those that support the sample's sample type are
+        considered
+        """
+        sample_type_uid = self.getRawSampleType()
+        query = {
+            "portal_type": "AnalysisProfile",
+            "sampletype_uid": [sample_type_uid, ""],
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        }
+        return query
 
 
 registerType(AnalysisRequest, PROJECTNAME)

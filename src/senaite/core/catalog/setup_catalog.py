@@ -30,25 +30,26 @@ CATALOG_TITLE = "Senaite Setup Catalog"
 
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
+    ("Description", "", "ZCTextIndex"),
+    ("Title", "", "ZCTextIndex"),
+    ("Type", "", "FieldIndex"),
     ("category_uid", "", "KeywordIndex"),
     ("department_id", "", "KeywordIndex"),
     ("department_title", "", "KeywordIndex"),
     ("department_uid", "", "KeywordIndex"),
-    ("Description", "", "ZCTextIndex"),
     ("getClientUID", "", "FieldIndex"),
     ("getKeyword", "", "FieldIndex"),
-    ("instrumenttype_title", "", "KeywordIndex"),
     ("instrument_title", "", "KeywordIndex"),
+    ("instrumenttype_title", "", "KeywordIndex"),
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("method_available_uid", "", "KeywordIndex"),
     ("point_of_capture", "", "FieldIndex"),
     ("price", "", "FieldIndex"),
     ("price_total", "", "FieldIndex"),
+    ("profile_key", "getProfileKey", "FieldIndex"),
     ("sampletype_title", "", "KeywordIndex"),
     ("sampletype_uid", "", "KeywordIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("Title", "", "ZCTextIndex"),
-    ("Type", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

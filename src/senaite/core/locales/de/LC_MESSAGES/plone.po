@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-12-21 09:59+0000\n"
+"POT-Creation-Date: 2024-04-03 07:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -239,9 +239,18 @@ msgstr "Sie sind auf dem Laufenden. Gib fünf."
 #. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
-#, fuzzy
 msgid "action_convert_legacy_portlets"
 msgstr "Hier sind Legacy-Portlets definiert. Klicken Sie auf die Schaltfläche, um sie in Portlets neuen Stils zu konvertieren."
+
+#. Default: "Next ${number} items"
+#: senaite/core/browser/batching/templates/batchnavigation.pt:85
+msgid "batch_next_x_items"
+msgstr ""
+
+#. Default: "Previous ${number} items"
+#: senaite/core/browser/batching/templates/batchnavigation.pt:19
+msgid "batch_previous_x_items"
+msgstr ""
 
 #. Default: "Add action"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:183
@@ -272,7 +281,6 @@ msgstr "Geben Sie eine kurze Beschreibung der Regel und ihres Zwecks ein."
 #. actions and conditions using the buttons below."
 #. Default: "Rules execute when a triggering event occurs. Rule actions will only be invoked if all the rule's conditions are met. You can add new actions and conditions using the buttons below."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:23
-#, fuzzy
 msgid "contentrules_description_execution"
 msgstr "Regeln werden ausgeführt, wenn ein auslösendes Ereignis eintritt. Regelaktionen werden nur aufgerufen, wenn alle Bedingungen der Regel erfüllt sind. Mit den Schaltflächen unten können Sie neue Aktionen und Bedingungen hinzufügen."
 
@@ -296,7 +304,7 @@ msgid "continue with the upgrade"
 msgstr "mit Aktualisierung fortfahren"
 
 #. Default: "There is no group or user attached to this group."
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:164
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:171
 msgid "decription_no_members_assigned"
 msgstr "Dieser Gruppe ist keine Gruppe oder kein Benutzer zugeordnet."
 
@@ -305,7 +313,6 @@ msgstr "Dieser Gruppe ist keine Gruppe oder kein Benutzer zugeordnet."
 #. them, using the \"rules\" item in the actions menu."
 #. Default: "Use the form below to define, change or remove content rules. Rules will automatically perform actions on content when certain triggers take place. After defining rules, you may want to go to a folder to assign them, using the \"rules\" item in the actions menu."
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:24
-#, fuzzy
 msgid "description-contentrules-controlpanel"
 msgstr "Verwenden Sie das folgende Formular, um Inhaltsregeln zu definieren, zu ändern oder zu entfernen. Regeln führen automatisch Aktionen für Inhalte aus, wenn bestimmte Auslöser stattfinden. Nachdem Sie Regeln definiert haben, möchten Sie vielleicht zu einem Ordner gehen, um sie zuzuweisen, indem Sie das Element \\\"Regeln\\\" im Aktionsmenü verwenden."
 
@@ -340,7 +347,6 @@ msgstr "Notwendig für die Sprachauswahl."
 #. re-run bin/buildout and then restart the server process."
 #. Default: "You are running in \"debug mode\". This mode is intended for sites that are under development. This allows many configuration changes to be immediately visible, but will make your site run more slowly. To turn off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
-#, fuzzy
 msgid "description_debug_mode"
 msgstr "Der \\\"debug mode\\\" ist aktiviert. Dieser Modus ist für Systeme vorgesehen, an denen noch entwickelt wird. Er ermöglicht es, Konfigurationsänderungen sofort zu sehen, aber verlangsamt die Seite insgesamt. Um den Modus zu deaktivieren, stoppen Sie den Server, setzen Sie 'debug-mode=off' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
 
@@ -348,7 +354,6 @@ msgstr "Der \\\"debug mode\\\" ist aktiviert. Dieser Modus ist für Systeme vorg
 #. removed from this group."
 #. Default: "You can add or remove groups and users from this particular group here. Note that this doesn't actually delete the group or user, it is only removed from this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:78
-#, fuzzy
 msgid "description_group_members_of"
 msgstr "Sie können hier Gruppen und Benutzer zu dieser bestimmten Gruppe hinzufügen oder daraus entfernen. Beachten Sie, dass dies die Gruppe oder den Benutzer nicht wirklich löscht, sondern nur aus dieser Gruppe entfernt wird."
 
@@ -357,14 +362,12 @@ msgstr "Sie können hier Gruppen und Benutzer zu dieser bestimmten Gruppe hinzuf
 #. particular role."
 #. Default: "Groups are logical collections of users, such as departments and business units. Groups are not directly related to permissions on a global level, you normally use Roles for that - and let certain Groups have a particular role."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:55
-#, fuzzy
 msgid "description_groups_management"
 msgstr "Gruppen sind logische Sammlungen von Benutzern, z. B. Abteilungen und Geschäftseinheiten. Gruppen sind nicht direkt mit Berechtigungen auf globaler Ebene verbunden, normalerweise verwenden Sie dafür Rollen - und lassen bestimmte Gruppen eine bestimmte Rolle haben."
 
 #. membership in another group."
 #. Default: "The symbol ${image_link_icon} indicates a role inherited from membership in another group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:66
-#, fuzzy
 msgid "description_groups_management2"
 msgstr "Das Symbol ${image_link_icon} weist auf eine Rolle hin, die von der Mitgliedschaft in einer anderen Gruppe geerbt wurde."
 
@@ -373,7 +376,6 @@ msgstr "Das Symbol ${image_link_icon} weist auf eine Rolle hin, die von der Mitg
 #. at the top of the column."
 #. Default: "The portlet columns will first display portlets explicitly assigned in this context. Use the buttons on each portlet to move them up or down, delete or edit them. To add a new portlet, use the drop-down list at the top of the column."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:52
-#, fuzzy
 msgid "description_manage_contextual_portlets"
 msgstr "Die Portlet-Spalten zeigen zunächst Portlets an, die explizit in diesem Kontext zugewiesen wurden. Verwenden Sie die Schaltflächen auf jedem Portlet, um sie nach oben oder unten zu verschieben, zu löschen oder zu bearbeiten. Um ein neues Portlet hinzuzufügen, verwenden Sie die Dropdown-Liste oben in der Spalte."
 
@@ -381,14 +383,13 @@ msgstr "Die Portlet-Spalten zeigen zunächst Portlets an, die explizit in diesem
 #. unless doing a specific search."
 #. Default: "Note: Some or all of your PAS groups source plugins do not allow listing of groups, so you may not see the groups defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:72
-#, fuzzy
 msgid "description_pas_group_listing"
 msgstr "Hinweis: Einige oder alle Ihrer PAS-Gruppen-Quell-Plugins erlauben keine Auflistung von Gruppen, sodass Sie die von diesen Plugins definierten Gruppen möglicherweise nicht sehen, es sei denn, Sie führen eine spezifische Suche durch."
 
 #. Default: "Show all search results"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:322
-#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:243
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:184
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:332
+#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:250
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:189
 msgid "description_pas_show_all_search_results"
 msgstr "Alle Suchergebnisse anzeigen"
 
@@ -396,7 +397,6 @@ msgstr "Alle Suchergebnisse anzeigen"
 #. doing a specific search."
 #. Default: "Some or all of your PAS user source plugins do not allow listing of users, so you may not see the users defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:57
-#, fuzzy
 msgid "description_pas_users_listing"
 msgstr "Einige oder alle Ihrer PAS-Benutzerquellen-Plug-ins erlauben keine Auflistung von Benutzern, sodass Sie die von diesen Plug-ins definierten Benutzer möglicherweise nicht sehen, es sei denn, Sie führen eine spezifische Suche durch."
 
@@ -404,7 +404,6 @@ msgstr "Einige oder alle Ihrer PAS-Benutzerquellen-Plug-ins erlauben keine Aufli
 #. these categories are shown below the selection box."
 #. Default: "If you wish to block or unblock certain categories of portlets, you can do so using the drop-down boxes. Portlets that are included by these categories are shown below the selection box."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:59
-#, fuzzy
 msgid "description_portlets_block_unblock"
 msgstr "Wenn Sie bestimmte Kategorien von Portlets sperren oder entsperren möchten, können Sie dies über die Dropdown-Felder tun. Portlets, die in diesen Kategorien enthalten sind, werden unter dem Auswahlfeld angezeigt."
 
@@ -415,7 +414,6 @@ msgstr "Wenn Sie bestimmte Kategorien von Portlets sperren oder entsperren möch
 #. bin/buildout and then restart the server process."
 #. Default: "You are running in \"production mode\". This is the preferred mode of operation for a live Plone site, but means that some configuration changes will not take effect until your server is restarted or a product refreshed. If this is a development instance, and you want to enable debug mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
-#, fuzzy
 msgid "description_production_mode"
 msgstr "Der \\\"production mode\\\" ist aktiviert. Dies ist der bevorzugte Modus für einen öffentlichen Server, aber einige Konfigurationsänderungen werden erst nach Serverneustart aktiv. Falls dies eine Entwicklungsinstanz ist und Sie den  \\\"debug mode\\\" aktivieren wollen, stoppen Sie den Server, setzen Sie 'debug-mode=on' in der buildout.cfg, lassen Sie bin/buildout laufen und starten Sie den Server neu."
 
@@ -426,24 +424,22 @@ msgstr "Der \\\"production mode\\\" ist aktiviert. Dies ist der bevorzugte Modus
 #. contents. </div>"
 #. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:43
-#, fuzzy
 msgid "description_sharing_control"
 msgstr "Zugriff für Benutzer oder Gruppen gewähren <div class=\\\"font-italic\\\"> Der Zugriff sollte nur der unten aufgeführten Kundengruppe gewährt werden. <br /> Kundenkontakte, die mit einem Benutzerkonto verknüpft sind, werden automatisch zu dieser Gruppe hinzugefügt und erhalten daher sofort die gleichen Rollen. <br /> Andere gewährte Zugriffsrechte für Benutzer oder Gruppen wirken sich nur auf neu erstellte Inhalte aus. </div>"
 
 #. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
 #: senaite/core/browser/login/templates/login.pt:20
-#, fuzzy
 msgid "enable_cookies_message_before_login"
 msgstr "Cookies sind nicht aktiviert. Sie müssen Cookies aktivieren, um sich einzuloggen."
 
 #. Default: "Get help"
-#: senaite/core/browser/login/templates/login.pt:99
+#: senaite/core/browser/login/templates/login.pt:105
 msgid "footer_login_link_get_help"
 msgstr "Hilfe"
 
 #. Default: "Sign up here"
-#: senaite/core/browser/login/templates/login.pt:104
+#: senaite/core/browser/login/templates/login.pt:110
 msgid "footer_login_link_signup"
 msgstr "Hier anmelden"
 
@@ -458,7 +454,7 @@ msgid "heading_add_item"
 msgstr "${itemtype} hinzufügen"
 
 #. Default: "Assign to groups"
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:110
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:111
 msgid "heading_assign_to_groups"
 msgstr "Gruppen zuweisen"
 
@@ -518,12 +514,12 @@ msgid "heading_portlets_assigned_here"
 msgstr "Hier zugeordnete Portlets"
 
 #. Default: "Search for groups"
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:109
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:110
 msgid "heading_search_groups"
 msgstr "Suchen Sie nach Gruppen"
 
 #. Default: "Search for new group members"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:177
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:184
 msgid "heading_search_newmembers"
 msgstr "Suchen Sie nach neuen Gruppenmitgliedern"
 
@@ -535,14 +531,12 @@ msgstr "Versionsübersicht"
 #. and type the document as you usually do."
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
-#, fuzzy
 msgid "help_format_wysiwyg"
 msgstr "Wenn Sie sich nicht sicher sind, welches Format Sie verwenden sollen, wählen Sie einfach Nur-Text und geben Sie das Dokument wie gewohnt ein."
 
 #. creation."
 #. Default: "A unique identifier for the group. Can not be changed after creation."
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:34
-#, fuzzy
 msgid "help_groupname"
 msgstr "Ein eindeutiger Bezeichner für die Gruppe. Kann nach der Erstellung nicht geändert werden."
 
@@ -553,7 +547,6 @@ msgstr "Ein eindeutiger Bezeichner für die Gruppe. Kann nach der Erstellung nic
 #. administrator."
 #. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:191
-#, fuzzy
 msgid "help_inherit_local_roles"
 msgstr "Standardmäßig werden Berechtigungen vom Container dieses Elements geerbt. Wenn Sie dies deaktivieren, sind nur die explizit definierten Freigabeberechtigungen gültig. In der Übersicht weist das Symbol ${image_confirm_icon} auf einen geerbten Wert hin. Ebenso weist das Symbol ${image_link_icon} auf eine globale Rolle hin, die vom Site-Administrator verwaltet wird."
 
@@ -565,7 +558,6 @@ msgstr "Gehe hier hin"
 #. container. To adjust them for the entire container, ${go_here}."
 #. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
-#, fuzzy
 msgid "help_sharing_page_default_page"
 msgstr "Sie passen die Freigabeberechtigungen für eine Standardansicht in einem Container an. Um sie für den gesamten Container anzupassen, ${go_here}."
 
@@ -609,12 +601,12 @@ msgid "label_add_portlet_ellipsis"
 msgstr "Portlet hinzufügen…"
 
 #. Default: "Add user to selected groups"
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:198
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:204
 msgid "label_add_user_to_group"
 msgstr "Benutzer zu ausgewählten Gruppen hinzufügen"
 
 #. Default: "Add selected groups and users to this group"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:329
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:339
 msgid "label_add_users_to_group"
 msgstr "Fügen Sie dieser Gruppe ausgewählte Gruppen und Benutzer hinzu"
 
@@ -677,7 +669,6 @@ msgstr "Bearbeiten"
 #. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/edit_macros.pt:49
-#, fuzzy
 msgid "label_edit_default_view_container"
 msgstr "Sie bearbeiten die Standardansicht eines Containers. Falls sie stattdessen den Container bearbeiten möchten, ${go_here}."
 
@@ -743,7 +734,6 @@ msgstr "Berechtigungen von höheren Ebenen erben"
 #. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
-#, fuzzy
 msgid "label_manage_portlets_default_view_container"
 msgstr "Sie verwalten die Portlets der Standardansicht eines Containers. Wenn Sie die Portlets des Containers selbst verwalten möchten, ${go_here}."
 
@@ -799,8 +789,8 @@ msgid "label_product_upgrade_old_version"
 msgstr "Alte Version war ${version}."
 
 #. Default: "Quick search"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:190
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:116
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:200
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:120
 msgid "label_quick_search"
 msgstr "Schnelle Suche"
 
@@ -810,12 +800,12 @@ msgid "label_remove"
 msgstr "Entfernen"
 
 #. Default: "Remove from selected groups"
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:102
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:103
 msgid "label_remove_selected_groups"
 msgstr "Aus ausgewählten Gruppen entfernen"
 
 #. Default: "Remove selected groups / users"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:168
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:175
 msgid "label_remove_selected_users"
 msgstr "Ausgewählte Gruppen / Benutzer entfernen"
 
@@ -831,21 +821,15 @@ msgstr "Ereignisquelle: ${trigger}"
 
 #. Default: "Search"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:78
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:204
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:214
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:120
 msgid "label_search"
 msgstr "Suche"
 
 #. Default: "Show all"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:209
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:219
 msgid "label_search_large"
 msgstr "Alle anzeigen"
-
-#. Default: "Select all items"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:99
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:135
-msgid "label_select_all_items"
-msgstr "Wählen Sie alle Artikel aus"
 
 #. Default: "Show"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:91
@@ -887,28 +871,27 @@ msgid "legend-contentrules"
 msgstr "Inhaltsregeln"
 
 #. Default: "E-mail Address"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:111
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:114
 msgid "listingheader_email_address"
 msgstr "E-Mail Adresse"
 
 #. Default: "Group Name"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:146
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:75
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:79
 msgid "listingheader_group_name"
 msgstr "Gruppenname"
 
-#. Default: "Remove"
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:76
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:78
 msgid "listingheader_group_remove"
 msgstr "Gruppe entfernen"
 
 #. Default: "Group/User name"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:232
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:242
 msgid "listingheader_group_user_name"
 msgstr "Gruppen-/Benutzername"
 
 #. Default: "Remove"
-#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:158
+#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
 msgid "listingheader_remove"
 msgstr "Entfernen"
 
@@ -918,13 +901,13 @@ msgid "listingheader_reset_password"
 msgstr "Passwort zurücksetzen"
 
 #. Default: "User name"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:110
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:113
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:120
 msgid "listingheader_user_name"
 msgstr "Benutzername"
 
 #. Default: "Need an account?"
-#: senaite/core/browser/login/templates/login.pt:103
+#: senaite/core/browser/login/templates/login.pt:109
 msgid "need_an_account"
 msgstr "Brauchen Sie einen Account?"
 
@@ -958,7 +941,6 @@ msgstr "Wählen Sie Rollen für jede Gruppe aus"
 #. this."
 #. Default: "You have not configured a mail host or a site 'From' address, various features including contact forms, email notification and password reset will not work. Go to the ${label_mail_control_panel_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:53
-#, fuzzy
 msgid "text_no_mailhost_configured"
 msgstr "Sie haben keinen Mailserver oder keine 'From'-Adresse konfiguriert, diverse Funktionen inklusive Kontaktformular, E-Mail-Benachrichtigungen und Passwort zurücksetzen sind daher nicht nutzbar. Gehen Sie zum ${label_mail_control_panel_link} um dies zu beheben."
 
@@ -973,12 +955,12 @@ msgid "text_no_pil_installed"
 msgstr "PIL wurde nicht korrekt installiert, Skalieren von Bildern funktioniert daher nicht."
 
 #. Default: "Enter a group or user name to search for or click 'Show All'."
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:294
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:308
 msgid "text_no_searchstring"
 msgstr "Geben Sie einen Gruppen- oder Benutzernamen ein, nach dem gesucht werden soll, oder klicken Sie auf „Alle anzeigen“."
 
 #. Default: "Enter a group or user name to search for."
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:288
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:302
 msgid "text_no_searchstring_large"
 msgstr "Geben Sie einen Gruppen- oder Benutzernamen ein, nach dem gesucht werden soll."
 
@@ -986,7 +968,6 @@ msgstr "Geben Sie einen Gruppen- oder Benutzernamen ein, nach dem gesucht werden
 #. ${label_mail_event_settings_link} to fix this."
 #. Default: "You have not set the portal timezone. Date/Time handling will not work properly for timezone aware date/time values. Go to the ${label_mail_event_settings_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:74
-#, fuzzy
 msgid "text_no_timezone_configured"
 msgstr "Sie haben keine Zeitzone eingestellt. Datum/Uhrzeit werden für zeitzonenspezifische Angaben nicht korrekt dargestellt. Unter ${label_mail_event_settings_link} können Sie dies beheben."
 
@@ -996,24 +977,24 @@ msgid "text_no_timezone_configured_control_panel_link"
 msgstr "Einstellungen für Datum und Uhrzeit"
 
 #. Default: "Enter a username to search for"
-#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:192
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:195
 msgid "text_no_user_searchstring"
 msgstr "Geben Sie einen Benutzernamen ein, nach dem gesucht werden soll"
 
 #. Default: "Enter a username to search for, or click 'Show All'"
-#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:198
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:201
 msgid "text_no_user_searchstring_largesite"
 msgstr "Geben Sie einen Benutzernamen ein, nach dem gesucht werden soll, oder klicken Sie auf „Alle anzeigen“."
 
 #. Default: "No matches"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:283
-#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:224
-#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:188
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:297
+#: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:231
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:191
 msgid "text_nomatches"
 msgstr "Keine Treffer"
 
 #. Default: "This user does not belong to any group."
-#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:101
+#: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:102
 msgid "text_user_not_in_any_group"
 msgstr "Dieser Benutzer gehört keiner Gruppe an."
 
@@ -1044,12 +1025,12 @@ msgid "title_personal_information_form"
 msgstr "Persönliche Informationen"
 
 #. Default: "Send a mail to this user"
-#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:151
+#: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:158
 msgid "title_send_mail_to_user"
 msgstr "Senden Sie eine E-Mail an diesen Benutzer"
 
 #. Default: "Trouble logging in?"
-#: senaite/core/browser/login/templates/login.pt:98
+#: senaite/core/browser/login/templates/login.pt:104
 msgid "trouble_logging_in"
 msgstr "Probleme beim Login?"
 
@@ -1060,6 +1041,5 @@ msgstr "nicht zugewiesen"
 #. ${image_link_icon} indicates a role inherited from membership in a group."
 #. Default: "Note that roles set here apply directly to a user. The symbol ${image_link_icon} indicates a role inherited from membership in a group."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:52
-#, fuzzy
 msgid "user_roles_note"
 msgstr "Beachten Sie, dass hier festgelegte Rollen direkt für einen Benutzer gelten. Das Symbol ${image_link_icon} zeigt eine Rolle an, die von der Mitgliedschaft in einer Gruppe geerbt wurde."

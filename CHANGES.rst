@@ -5,6 +5,37 @@ Changelog
 ------------------
 
 - #2475 Add field Lab Account Number on a Supplier
+- #2522 Fix user who retest is not considered a verifier
+- #2520 Fix Slot Header titile of QC samples in Worksheet view
+- #2517 Add sorting to the Supported Services list of RefernceSample Multichoice field
+- #2516 Allow to configure the types to be skipped on content structure export
+- #2514 Added functions for easy update of workflows
+- #2512 Skip rendering of empty record fiels
+- #2510 Fix Add action of the Client located Analysis Profiles Listing
+- #2508 Fix specification values for hide min/max not stored on save
+- #2509 Allow analysis profiles to be filtered by sample type
+- #2501 Migrate Sample Matrices to Dexterity
+- #2505 Fix UnicodeDecodeError when migrating Analysis Profiles
+- #2504 Fix subfield_sizes have no effect when rendering RecordField
+- #2503 Fix traceback on upgrade step 2610 while cleaning up uid_catalog
+- #2476 Fix format type to include strings in calculation formulas
+- #2498 Fix services widget not found when creating new profiles
+- #2496 Fix non existing department ID is rendered as link in listing
+- #2495 Fix dynamic analysisspecs are not linked to keywords containing only numbers
+- #2494 Cleanup UID catalog and remove orphan temporary objects
+- #2493 Add listing widget for Dexterity records field
+- #2492 Migrate Analysis Profiles to Dexterity
+- #2483 Migrate Preservations to Dexterity
+- #2491 Add setting to show/hide the laboratory name in login page
+- #2490 Fix TypeError when creating a DX object that once was from AT type
+- #2485 More informative progress of the sample analyses states
+- #2487 Fix ValueError when creating new Dexterity contents
+- #2486 Fix Traceback on "Manage analyses" when dynamic specs assigned
+- #2484 Disable CSRF protection in SENAITE
+- #2482 Added DurationField and DurationWidget for Dexterity types
+- #2481 Disable snapshots for container on content add
+- #2478 Migrate Sample Conditions to Dexterity
+- #2471 Migrate Lab Departments to Dexterity
 - #2469 Rename permission "Reject" to "senaite.core: Transition: Reject Analysis"
 - #2468 Make the prepublish guard to rely on interfaces instead of statuses
 - #2470 Fix min/max shifted on negative result and % error

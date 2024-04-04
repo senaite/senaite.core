@@ -146,11 +146,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
         result ranges set in analyses. This guarantees that result ranges for
         already present analyses are not overriden after form submission
         """
-        # Extract the result ranges from Sample analyses
-        analyses = self.analyses.values()
-        analyses_rrs = map(lambda an: an.getResultsRange(), analyses)
-        analyses_rrs = filter(None, analyses_rrs)
-        rrs = dicts_to_dict(analyses_rrs, "keyword")
+        # Extract the result ranges from Sample analyses grouped by keyword
+        rrs = {}
+        for analysis in self.analyses.values():
+            results_range = analysis.getResultsRange()
+            if not results_range:
+                continue
+            keyword = analysis.getKeyword()
+            rrs[keyword] = results_range
 
         # Bail out ranges from Sample that are already present in analyses
         sample_rrs = self.context.getResultsRange()

@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from Products.CMFPlone.browser.login.login import LoginForm as BaseLoginForm
 
 
@@ -37,3 +38,13 @@ class LoginForm(BaseLoginForm):
     def updateActions(self):
         super(LoginForm, self).updateActions()
         self.actions["login"].addClass("btn btn-primary btn-sm")
+
+    @property
+    def show_lab_name(self):
+        setup = api.get_senaite_setup()
+        return setup.getShowLabNameInLogin()
+
+    @property
+    def lab_name(self):
+        lab = api.get_setup().laboratory
+        return api.get_title(lab)

@@ -19,14 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.z3cform.interfaces import IPloneFormLayer
-from senaite.core.interfaces.catalog import *
-from senaite.core.interfaces.datamanager import IDataManager
-from senaite.core.interfaces.widget import *
+from plone.protect.interfaces import IDisableCSRFProtection
+from senaite.core.interfaces.catalog import *  # noqa:F401,F403
+from senaite.core.interfaces.datamanager import IDataManager  # noqa:F401
+from senaite.core.interfaces.widget import *  # noqa:F401,F403
 from zope.interface import Interface
 
 
-class ISenaiteCore(Interface):
+class ISenaiteCore(IDisableCSRFProtection):
     """Marker interface that defines a Zope 3 browser layer.
+
+    NOTE: We disable CSRF protection site-wide.
     """
 
 
@@ -160,6 +163,16 @@ class IHaveUIDReferences(Interface):
     """
 
 
+class IAnalysisProfile(Interface):
+    """Marker interface for analysis profiles
+    """
+
+
+class IAnalysisProfiles(Interface):
+    """Marker interface for analysis profiles setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
@@ -167,6 +180,46 @@ class ISampleContainers(Interface):
 
 class ISampleContainer(Interface):
     """Marker interface for sample containers
+    """
+
+
+class IDepartments(Interface):
+    """Marker interface for departments setup folder
+    """
+
+
+class IDepartment(Interface):
+    """Marker interface for departments
+    """
+
+
+class ISampleConditions(Interface):
+    """Marker interface for sample conditions setup folder
+    """
+
+
+class ISampleCondition(Interface):
+    """Marker interface for sample conditions
+    """
+
+
+class ISamplePreservations(Interface):
+    """Marker interface for preservations setup folder
+    """
+
+
+class ISamplePreservation(Interface):
+    """Marker interface for preservations
+    """
+
+
+class ISampleMatrices(Interface):
+    """Marker interface for sample matrices setup folder
+    """
+
+
+class ISampleMatrix(Interface):
+    """Marker interface for sample matrices
     """
 
 
@@ -219,4 +272,19 @@ class IASTMImporter(Interface):
 
     def import_data(data):
         """Import the processed JSON data from the wrapper
+        """
+
+
+class IClientAwareMixin(Interface):
+    """Marker interface for objects that can be bound to a Client, either
+    because they can be added inside a Client folder or because it can be
+    assigned through a Reference field
+    """
+
+    def getClient(self):
+        """Returns the client this object is bound to, if any
+        """
+
+    def getClientUID(self):
+        """Returns the client UID this object is bound to, if any
         """

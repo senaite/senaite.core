@@ -15,6 +15,7 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.api.snapshot import *
+    >>> from bika.lims.interfaces import IAuditable
     >>> from senaite.core.permissions import FieldEditAnalysisHidden
     >>> from senaite.core.permissions import FieldEditAnalysisResult
     >>> from senaite.core.permissions import FieldEditAnalysisRemarks
@@ -70,7 +71,8 @@ Setup the testing environment:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
@@ -82,13 +84,13 @@ LIMS Setup
 
 Setup the Lab for testing:
 
-    >>> setup.setSelfVerificationEnabled(True)
-    >>> analysisservices = setup.bika_analysisservices
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> analysisservices = bikasetup.bika_analysisservices
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
 
 
 Content Setup
@@ -165,7 +167,7 @@ To check if an object has snapshots, we can call `has_snapshots`:
     >>> has_snapshots(au)
     True
 
-    >>> has_snapshots(setup)
+    >>> has_snapshots(bikasetup)
     False
 
 
@@ -178,7 +180,7 @@ To check the number of snapshots (versions) an object has, we can call
     >>> get_snapshot_count(sample)
     1
 
-    >>> get_snapshot_count(setup)
+    >>> get_snapshot_count(bikasetup)
     0
 
 
@@ -368,3 +370,36 @@ Object modification events create new snapshots again:
 Unregister event subscribers:
 
     >>> unregister_event_subscribers()
+
+
+Disable and remove snapshots
+............................
+
+`IAuditLog` is an interface that is automatically added the first time a
+snapshot is created and is used to make the action "Audit Log" visible in the
+content view.
+
+    >>> IAuditable.providedBy(sample)
+    True
+
+Disable and remove all snapshots from an object in a single shot:
+
+    >>> supports_snapshots(sample)
+    True
+
+    >>> get_snapshot_count(sample)
+    5
+
+    >>> disable_snapshots(sample)
+
+    >>> supports_snapshots(sample)
+    False
+
+    >>> get_snapshot_count(sample)
+    0
+
+The sample is not flagged with IAuditable anymore, so the action "Audit Log"
+is also not displayed:
+
+    >>> IAuditable.providedBy(sample)
+    False

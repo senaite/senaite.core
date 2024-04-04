@@ -5,14 +5,14 @@
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
 # ELvira Aylon <elvira@icb.csic.es>, 2021
 # Mathias Hochkofler, 2023
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2023
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2024
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-12-21 09:58+0000\n"
+"POT-Creation-Date: 2024-04-03 07:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2023\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -49,7 +49,7 @@ msgstr "${items} han sido creados satisfactoriamente."
 msgid "${item} was successfully created."
 msgstr "${item} fue creado satisfactoriamente."
 
-#: bika/lims/utils/analysisrequest.py:639
+#: bika/lims/utils/analysisrequest.py:644
 msgid "%s has been rejected"
 msgstr "%s Ha sido rechazada"
 
@@ -70,31 +70,31 @@ msgstr "&larr; Volver a ${back_link}"
 msgid "&larr; Go back to see all samples"
 msgstr "&larr;Atrás para ver todas las muestras"
 
-#: bika/lims/validators.py:870
+#: bika/lims/validators.py:876
 msgid "'Max' value must be above 'Min' value"
 msgstr "El valor de 'Max' tiene que ser superior al valor de 'Min'"
 
-#: bika/lims/validators.py:865
+#: bika/lims/validators.py:871
 msgid "'Max' value must be numeric"
 msgstr "El valor de 'Max' tiene que ser numérico"
 
-#: bika/lims/validators.py:863
+#: bika/lims/validators.py:869
 msgid "'Min' value must be numeric"
 msgstr "El valor de 'Min' tiene que ser numérico"
 
-#: bika/lims/validators.py:884
+#: bika/lims/validators.py:890
 msgid "'Warn Max' value must be above 'Max' value"
 msgstr "El valor de 'Warn Max' tiene que ser superior al valor de 'Max'"
 
-#: bika/lims/validators.py:881
+#: bika/lims/validators.py:887
 msgid "'Warn Max' value must be numeric or empty"
 msgstr "El valor de 'Warn Max' tiene que ser numérico o vacío"
 
-#: bika/lims/validators.py:877
+#: bika/lims/validators.py:883
 msgid "'Warn Min' value must be below 'Min' value"
 msgstr "El valor de 'Warn Min' tiene que ser inferior al valor de 'Min'"
 
-#: bika/lims/validators.py:874
+#: bika/lims/validators.py:880
 msgid "'Warn Min' value must be numeric or empty"
 msgstr "El valor de 'Warn Min' tiene que ser numérico o vacío"
 
@@ -178,6 +178,10 @@ msgstr "Número de cuenta"
 msgid "Account Type"
 msgstr "Tipo de cuenta"
 
+#: senaite/core/content/analysisprofile.py:64
+msgid "Accounting"
+msgstr ""
+
 #: bika/lims/browser/accreditation.py:41
 #: bika/lims/content/laboratory.py:141
 msgid "Accreditation"
@@ -203,13 +207,11 @@ msgstr "Referencia de la acreditación"
 msgid "Accreditation page header"
 msgstr "Cabecera de la página de acreditación"
 
-#: bika/lims/browser/analyses/view.py:1547
-#: bika/lims/browser/analysisrequest/manage_analyses.py:259
-#: bika/lims/browser/referencesample.py:358
+#: senaite/core/browser/widgets/analysisprofileswidget.py:263
 msgid "Accredited"
 msgstr "Acreditado"
 
-#: bika/lims/browser/auditlog.py:91
+#: bika/lims/browser/auditlog.py:92
 #: bika/lims/controlpanel/auditlog.py:95
 msgid "Action"
 msgstr "Acción"
@@ -220,20 +222,20 @@ msgstr "Acción"
 msgid "Activate"
 msgstr "Activar"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:74
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:72
-#: senaite/core/browser/controlpanel/labels.py:71
+#: senaite/core/browser/controlpanel/departments/view.py:88
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:73
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:71
 msgid "Active"
 msgstr "Activo/a"
 
-#: bika/lims/browser/auditlog.py:83
+#: bika/lims/browser/auditlog.py:84
 #: bika/lims/controlpanel/auditlog.py:80
 msgid "Actor"
 msgstr "Actor"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:46
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:47
-#: senaite/core/browser/controlpanel/labels.py:45
+#: senaite/core/browser/controlpanel/departments/view.py:51
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:46
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:47
 msgid "Add"
 msgstr "Nuevo..."
 
@@ -274,7 +276,7 @@ msgstr "Añadir un campo de comentarios a todos los análisis"
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
 msgstr "Añadir reglas de estilo CSS personalizadas para el logo (e.g. height:15px;width;150px;)"
 
-#: senaite/core/browser/controlpanel/labels.py:52
+#: senaite/core/browser/controlpanel/labels/view.py:52
 msgid "Add default selectable labels"
 msgstr "Añadir etiquetas seleccionables por defecto"
 
@@ -283,7 +285,7 @@ msgstr "Añadir etiquetas seleccionables por defecto"
 msgid "Add new Attachment"
 msgstr "Añadir nuevo fichero adjunto"
 
-#: bika/lims/content/analysisrequest.py:1018
+#: bika/lims/content/analysisrequest.py:1015
 msgid "Add one or more attachments to describe the sample in this sample, or to specify your request."
 msgstr "Añadir uno o más archivos adjuntos con información adicional sobre la muestra."
 
@@ -299,11 +301,11 @@ msgstr "Extensiones"
 msgid "Additional Python Libraries"
 msgstr "Módulos Python adicionales"
 
-#: bika/lims/content/analysisrequest.py:221
+#: bika/lims/content/analysisrequest.py:222
 msgid "Additional email addresses to be notified"
 msgstr "Direcciones de correo electrónico adicionales para notificaciones"
 
-#: bika/lims/content/analysisservice.py:120
+#: bika/lims/content/analysisservice.py:118
 msgid "Additional result values"
 msgstr "Campos de resultado adicionales"
 
@@ -336,9 +338,9 @@ msgstr "Avanzado"
 msgid "Agency"
 msgstr "Agencia"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:84
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:84
-#: senaite/core/browser/controlpanel/labels.py:81
+#: senaite/core/browser/controlpanel/departments/view.py:98
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:83
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:83
 msgid "All"
 msgstr "Todos"
 
@@ -350,7 +352,7 @@ msgstr "Se muestran todos los análisis acreditados"
 msgid "All Analyses of Service"
 msgstr "Todas las analíticas del Servicio de Análisis"
 
-#: senaite/core/browser/samples/view.py:544
+#: senaite/core/browser/samples/view.py:576
 msgid "All analyses assigned"
 msgstr "Todos los análisis asignados"
 
@@ -405,6 +407,7 @@ msgstr "Analizado por"
 
 #: senaite/core/browser/dashboard/dashboard.py:585
 #: senaite/core/browser/viewlets/sampleanalyses.py:33
+#: senaite/core/content/analysisprofile.py:56
 msgid "Analyses"
 msgstr "Análisis"
 
@@ -430,13 +433,8 @@ msgstr "Categoría del análisis"
 msgid "Analysis Keyword"
 msgstr "Código de análisis"
 
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-msgid "Analysis Profile"
-msgstr "Perfil de análisis"
-
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:93
-#: bika/lims/browser/client/views/analysisprofiles.py:50
-#: bika/lims/controlpanel/bika_analysisprofiles.py:63
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Perfiles de análisis"
 
@@ -481,11 +479,11 @@ msgstr "Especificaciones de análisis"
 msgid "Analysis Type"
 msgstr "Tipo de análisis"
 
-#: senaite/core/registry/schema.py:101
+#: senaite/core/registry/schema.py:118
 msgid "Analysis columns order"
 msgstr "Orden de columnas para listados de análisis"
 
-#: bika/lims/content/analysisservice.py:266
+#: bika/lims/content/analysisservice.py:264
 msgid "Analysis conditions"
 msgstr "Condiciones de análisis"
 
@@ -501,6 +499,14 @@ msgstr "Marque la casilla si desea que se puedan modificar los rangos de validez
 msgid "Analysis templates"
 msgstr "Plantillas de muestra"
 
+#: senaite/core/profiles/default/types/AnalysisProfile.xml
+msgid "AnalysisProfile"
+msgstr ""
+
+#: senaite/core/profiles/default/types/AnalysisProfiles.xml
+msgid "AnalysisProfiles"
+msgstr ""
+
 #: bika/lims/browser/analyses/view.py:176
 #: bika/lims/browser/worksheet/templates/results.pt:35
 #: bika/lims/browser/worksheet/views/folder.py:101
@@ -511,11 +517,11 @@ msgstr "Analista"
 msgid "Analyst must be specified."
 msgstr "Debe indicar un analista."
 
-#: bika/lims/browser/fields/partitionsetupfield.py:55
+#: bika/lims/browser/fields/partitionsetupfield.py:57
 msgid "Any"
 msgstr "Sin definir"
 
-#: senaite/core/content/senaitesetup.py:191
+#: senaite/core/content/senaitesetup.py:202
 msgid "Appearance"
 msgstr "Apariencia"
 
@@ -539,7 +545,7 @@ msgstr "Número de lote"
 msgid "Assign"
 msgstr "Asignar"
 
-#: senaite/core/browser/samples/view.py:388
+#: senaite/core/browser/samples/view.py:418
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_duplicateanalysis_workflow/definition.xml
 msgid "Assigned"
@@ -553,7 +559,7 @@ msgstr "Asignado a: ${worksheet_id}"
 msgid "Assignment pending"
 msgstr "Pendientes de asignar"
 
-#: bika/lims/validators.py:456
+#: bika/lims/validators.py:462
 msgid "At least, two options for choices field are required"
 msgstr "Debe seleccionar dos opciones como mínimo"
 
@@ -565,7 +571,7 @@ msgstr "Adjuntar a la muestra"
 msgid "Attached labels"
 msgstr "Etiquetas asignadas a este contenido"
 
-#: bika/lims/content/analysisrequest.py:1017
+#: bika/lims/content/analysisrequest.py:1014
 #: bika/lims/content/attachment.py:52
 #: bika/lims/content/samplepoint.py:128
 msgid "Attachment"
@@ -598,9 +604,7 @@ msgstr "El fichero se ha adjuntado al análisis '{}'"
 msgid "Attachment added to the current sample"
 msgstr "El fichero se ha adjuntado a la muestra directamente"
 
-#: bika/lims/browser/analyses/view.py:1294
-#: bika/lims/browser/analysisrequest/manage_analyses.py:262
-#: bika/lims/browser/referencesample.py:361
+#: senaite/core/browser/widgets/analysisprofileswidget.py:266
 msgid "Attachment required"
 msgstr "Adjunciones obligatorias"
 
@@ -669,11 +673,11 @@ msgstr "Impresión automática de etiqueta"
 msgid "Automatic verification of samples"
 msgstr "Verificación automática de muestras"
 
-#: senaite/core/registry/schema.py:47
+#: senaite/core/registry/schema.py:48
 msgid "Automatically Create Client Group"
 msgstr "Crear grupos de usuario especíifcos de cliente de forma automática"
 
-#: senaite/core/registry/schema.py:48
+#: senaite/core/registry/schema.py:49
 msgid "Automatically create a new global client group when a new client is created. If this is disabled, a client group is still created when a client contact is linked to a user account. Therefore, disabling this option makes only sense if you do not plan to link client contacts to user accounts and you want to keep your groups clean."
 msgstr "Crea automáticamente grupos de usuario específicos de cliente al crear nuevos clientes. Si la opción está desmarcada, el grupo  de usuarios específico de cliente solo se creará cuando se vincule un contacto de cliente a una cuenta de usuario. "
 
@@ -681,11 +685,11 @@ msgstr "Crea automáticamente grupos de usuario específicos de cliente al crear
 msgid "Automatically redirect the user to the partitions creation view when Sample is received."
 msgstr "Redirigir automáticamente al usuario a la vista de registro de particiones cuando se recibe la Muestra."
 
-#: bika/lims/content/analysisservice.py:79
+#: bika/lims/content/analysisservice.py:77
 msgid "Available instruments based on the selected methods."
 msgstr "Instrumental analítico disponible para los métodos seleccionados"
 
-#: bika/lims/content/analysisservice.py:64
+#: bika/lims/content/analysisservice.py:62
 msgid "Available methods to perform the test"
 msgstr "Métodos disponibles para la realización del análisis"
 
@@ -724,7 +728,7 @@ msgstr "Lote"
 msgid "Batch Book"
 msgstr "Libro de lotes"
 
-#: senaite/core/browser/samples/view.py:134
+#: senaite/core/browser/samples/view.py:163
 msgid "Batch ID"
 msgstr "ID Lote"
 
@@ -778,7 +782,7 @@ msgstr "Análisis de muestras blanco de QC"
 msgid "Brand"
 msgstr "Marca"
 
-#: bika/lims/browser/clientfolder.py:95
+#: bika/lims/browser/clientfolder.py:90
 msgid "Bulk Discount"
 msgstr "Descuento por volumen"
 
@@ -798,7 +802,7 @@ msgstr "Teléfono del negocio"
 
 #: senaite/core/z3cform/widgets/address.py:123
 msgid "Business address"
-msgstr "Dirección del negocio"
+msgstr "Dirección profesional"
 
 #: bika/lims/content/abstractbaseanalysis.py:640
 msgid "By 'Display Value' ascending"
@@ -816,15 +820,11 @@ msgstr "Por valor, ascendente"
 msgid "By 'Result Value' descending"
 msgstr "Por valor, descendente"
 
-#: bika/lims/browser/department/labcontacts.py:39
-msgid "By selecting/unselecting the checboxes, the user will be able to assign \"Lab Contacts\" to the department."
-msgstr "Asignación de contactos al departamento"
-
-#: bika/lims/content/analysisrequest.py:332
+#: bika/lims/content/analysisrequest.py:333
 msgid "CBID"
 msgstr "CBID"
 
-#: bika/lims/content/analysisrequest.py:220
+#: bika/lims/content/analysisrequest.py:221
 #: bika/lims/content/client.py:89
 msgid "CC Emails"
 msgstr "Correos electrónicos en copia"
@@ -852,7 +852,7 @@ msgstr "Fórmula de cálculo"
 msgid "Calculation Interim Fields"
 msgstr "Campos de cálculo provisionales"
 
-#: bika/lims/content/analysisservice.py:109
+#: bika/lims/content/analysisservice.py:107
 msgid "Calculation to be assigned to this content."
 msgstr "Cálculo a ser utilizado para este análisis."
 
@@ -894,13 +894,13 @@ msgid "Can verify, but was already verified by current user"
 msgstr "Puede verificar a pesar que ya lo verificó anteriormente"
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:83
-#: senaite/core/browser/samples/templates/partition_magic.pt:251
+#: senaite/core/browser/samples/templates/partition_magic.pt:262
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Cancel"
 msgstr "Cancelar"
 
 #: senaite/core/browser/samples/dispatch_samples.py:70
-#: senaite/core/browser/samples/view.py:348
+#: senaite/core/browser/samples/view.py:378
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Cancelled"
 msgstr "Cancelados"
@@ -929,8 +929,8 @@ msgstr "No se puede verificar, los resultados fueron enviados por el usuario act
 msgid "Cannot verify, was verified by current user"
 msgstr "No se puede verificar, ya fue verificado por el usuario actual"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:70
-#: senaite/core/content/samplecontainer.py:72
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:69
+#: senaite/core/content/samplecontainer.py:78
 msgid "Capacity"
 msgstr "Capacidad"
 
@@ -975,7 +975,7 @@ msgstr "Núm. Cert."
 msgid "Certificate Code"
 msgstr "Código de certificado"
 
-#: bika/lims/browser/auditlog.py:95
+#: bika/lims/browser/auditlog.py:96
 #: bika/lims/controlpanel/auditlog.py:103
 msgid "Changes"
 msgstr "Cambios"
@@ -1005,7 +1005,7 @@ msgstr "Marque esta casilla si el servicio de análisis está en proceso de acre
 msgid "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
 msgstr "Marque esta casilla si las muestras recogidas en este punto de muestreo deben ser consideradas en conjunto (composición). Por ejemplo, las muestras recogidas en puntos de muestreo distintos de la orilla de un lago suelen mezclarse para que sean una muestra representativa de la totalidad del lago."
 
-#: senaite/core/content/samplecontainer.py:80
+#: senaite/core/content/samplecontainer.py:86
 msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
 msgstr "Marque la casilla de verificación si el recipiente ya incluye un método que garantize la conservación de la muestra. En ese caso, el sistema omitirá el circuito de conservación para todas aquellas muestras en las que se utilice este recipiente."
 
@@ -1013,16 +1013,16 @@ msgstr "Marque la casilla de verificación si el recipiente ya incluye un métod
 msgid "Check this box if your laboratory is accredited"
 msgstr "Marque la casilla si el laboratorio está acreditado"
 
-#: bika/lims/content/analysisservice.py:133
+#: bika/lims/content/analysisservice.py:131
 msgid "Check this box to ensure a separate sample container is used for this analysis service"
 msgstr "El servicio de análisis requiere de un recipiente distinto para la muestra"
 
-#: bika/lims/content/analysisservice.py:260
+#: bika/lims/content/analysisservice.py:258
 msgid "Checkbox"
 msgstr "Casilla de verificación"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:58
-#: bika/lims/content/analysisservice.py:225
+#: bika/lims/content/analysisservice.py:223
 msgid "Choices"
 msgstr "Opciones para selección"
 
@@ -1044,13 +1044,13 @@ msgstr "Limpiar selección"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:479
 msgid "Click to expand this category"
-msgstr "Clic para desplegar esta categoría"
+msgstr "Haga clic para desplegar esta categoría"
 
 # senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Haga clic para alternar la visibilidad o arrastre y suelte para cambiar el orden"
 
-#: senaite/core/browser/samples/view.py:139
+#: senaite/core/browser/samples/view.py:168
 msgid "Client"
 msgstr "Cliente"
 
@@ -1060,7 +1060,7 @@ msgid "Client Batch ID"
 msgstr "ID Lote de cliente"
 
 #: senaite/core/behaviors/clientshareable.py:90
-#: senaite/core/browser/samples/view.py:145
+#: senaite/core/browser/samples/view.py:174
 msgid "Client ID"
 msgstr "ID del cliente"
 
@@ -1072,30 +1072,30 @@ msgstr "Página de inicio del cliente"
 msgid "Client Name"
 msgstr "Nombre del cliente"
 
-#: senaite/core/browser/samples/view.py:92
+#: senaite/core/browser/samples/view.py:121
 msgid "Client Order"
 msgstr "Pedido de cliente"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:115
 #: bika/lims/browser/batch/batchbook.py:81
-#: bika/lims/content/analysisrequest.py:809
+#: bika/lims/content/analysisrequest.py:806
 msgid "Client Order Number"
 msgstr "Número de pedido de cliente"
 
-#: senaite/core/browser/samples/view.py:163
+#: senaite/core/browser/samples/view.py:192
 msgid "Client Ref"
 msgstr "Ref. del cliente"
 
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:66
-#: bika/lims/content/analysisrequest.py:826
+#: bika/lims/content/analysisrequest.py:823
 msgid "Client Reference"
 msgstr "Referencia del cliente"
 
-#: senaite/core/browser/samples/view.py:168
+#: senaite/core/browser/samples/view.py:197
 msgid "Client SID"
 msgstr "ID de muestra del cliente"
 
-#: bika/lims/content/analysisrequest.py:843
+#: bika/lims/content/analysisrequest.py:840
 msgid "Client Sample ID"
 msgstr "Identificador de la muestra asignado por el cliente"
 
@@ -1135,31 +1135,31 @@ msgstr "Código del sitio"
 msgid "Code the the shelf"
 msgstr "Código del estante"
 
-#: senaite/core/registry/schema.py:140
+#: senaite/core/registry/schema.py:157
 msgid "Collapse field analysis table"
 msgstr "Ocultar la tabla con los análisis de campo"
 
-#: senaite/core/registry/schema.py:141
+#: senaite/core/registry/schema.py:158
 msgid "Collapse field analysis table in sample view"
 msgstr "Ocultar la tabla con los análisis de campo en la vista de muestra"
 
-#: senaite/core/registry/schema.py:147
+#: senaite/core/registry/schema.py:164
 msgid "Collapse lab analysis table"
 msgstr "Ocultar la tabla con análisis de laboratorio"
 
-#: senaite/core/registry/schema.py:148
+#: senaite/core/registry/schema.py:165
 msgid "Collapse lab analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de laboratorio en la vista de muestra"
 
-#: senaite/core/registry/schema.py:154
+#: senaite/core/registry/schema.py:171
 msgid "Collapse qc analysis table"
 msgstr "Ocultar la tabla con análisis de control de calidad QC"
 
-#: senaite/core/registry/schema.py:155
+#: senaite/core/registry/schema.py:172
 msgid "Collapse qc analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de conrol de calidad QC en la vista de muestra"
 
-#: bika/lims/content/dynamic_analysisspec.py:76
+#: bika/lims/content/dynamic_analysisspec.py:77
 msgid "Column '{}' is missing"
 msgstr "Falta la columna '{}'"
 
@@ -1171,7 +1171,7 @@ msgstr "Coma (,)"
 msgid "Comments"
 msgstr "Comentarios"
 
-#: bika/lims/content/analysisrequest.py:1354
+#: bika/lims/content/analysisrequest.py:1351
 msgid "Comments or results interpretation"
 msgstr "Comentarios o interpretación de resultados"
 
@@ -1180,7 +1180,7 @@ msgstr "Comentarios o interpretación de resultados"
 msgid "Commercial ID"
 msgstr "ID comercial"
 
-#: bika/lims/content/analysisrequest.py:949
+#: bika/lims/content/analysisrequest.py:946
 #: bika/lims/content/samplepoint.py:116
 #: bika/lims/controlpanel/bika_samplepoints.py:83
 msgid "Composite"
@@ -1190,7 +1190,7 @@ msgstr "Compuesta"
 msgid "Composite sample"
 msgstr "Muestra compuesta"
 
-#: bika/lims/content/analysisservice.py:267
+#: bika/lims/content/analysisservice.py:265
 msgid "Conditions to ask for this analysis on sample registration. For instance, laboratory may want the user to input the temperature, the ramp and flow when a thermogravimetric (TGA) analysis is selected on sample registration. The information provided will be later considered by the laboratory personnel when performing the test."
 msgstr "Condiciones de análisis a ser rellenadas durante el registro de muestras. Por ejemplo, el laboratorio desea que el usuario solicitante introduzca el valor de temperatura, rampa y flujo cuando un análisis termogravimétrico (TGA) es seleccionado durante el registro de muestra. La información proporcionada será tenida en cuenta luego, al realizar el test, por el personal del laboratorio."
 
@@ -1202,7 +1202,11 @@ msgstr "% Nivel de confianza"
 msgid "Configuration"
 msgstr "Configuración"
 
-#: senaite/core/registry/schema.py:198
+#: senaite/core/registry/schema.py:281
+msgid "Configuration for Generic Setup"
+msgstr ""
+
+#: senaite/core/registry/schema.py:215
 msgid "Configuration for the sample header information"
 msgstr "Configuración de la sección de cabecera de muestra"
 
@@ -1228,11 +1232,11 @@ msgstr "Confirme la contraseña"
 msgid "Considerations"
 msgstr "Consideraciones"
 
-#: senaite/core/browser/samples/view.py:171
+#: senaite/core/browser/samples/view.py:200
 msgid "Contact"
 msgstr "Contacto"
 
-#: bika/lims/browser/analysisrequest/add2.py:1684
+#: bika/lims/browser/analysisrequest/add2.py:1692
 msgid "Contact does not belong to the selected client"
 msgstr "El contacto seleccionado no pertenece al cliente indicado"
 
@@ -1250,13 +1254,13 @@ msgstr "Contactos"
 msgid "Contained Samples"
 msgstr "Muestras incluídas"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:59
-#: senaite/core/browser/samples/templates/partition_magic.pt:165
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:59
+#: senaite/core/browser/samples/templates/partition_magic.pt:175
 msgid "Container"
 msgstr "Recipiente"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:67
-#: senaite/core/content/samplecontainer.py:64
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:66
+#: senaite/core/content/samplecontainer.py:70
 msgid "Container Type"
 msgstr "Tipo de recipiente"
 
@@ -1288,11 +1292,11 @@ msgstr "Análisis de muestras control de QC"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:59
 #: bika/lims/content/abstractbaseanalysis.py:627
-#: bika/lims/content/analysisservice.py:224
+#: bika/lims/content/analysisservice.py:222
 msgid "Control type"
 msgstr "Elemento de entrada"
 
-#: bika/lims/validators.py:432
+#: bika/lims/validators.py:438
 msgid "Control type is not supported for empty choices"
 msgstr "El tipo de control no está soportado para campos de seleccion vacíos"
 
@@ -1308,7 +1312,7 @@ msgstr "Copiar servicio de análisis"
 msgid "Copy from"
 msgstr "Copiar desde"
 
-#: senaite/core/browser/samples/view.py:697
+#: senaite/core/browser/samples/view.py:729
 msgid "Copy to new"
 msgstr "Copiar a nuevo"
 
@@ -1336,7 +1340,7 @@ msgstr "País"
 msgid "Create Invoice PDF"
 msgstr "Crear factura en PDF"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:245
+#: senaite/core/browser/samples/templates/partition_magic.pt:256
 msgid "Create Partitions"
 msgstr "Crear particiones"
 
@@ -1344,7 +1348,7 @@ msgstr "Crear particiones"
 msgid "Create SENAITE Site"
 msgstr "Crear un sitio SENAITE"
 
-#: senaite/core/browser/samples/view.py:671
+#: senaite/core/browser/samples/view.py:703
 msgid "Create Worksheet"
 msgstr "Crear hoja de trabajo"
 
@@ -1356,7 +1360,7 @@ msgstr "Crear un nuevo sitio SENAITE"
 msgid "Create a new User"
 msgstr "Crear un nuevo usuario"
 
-#: senaite/core/browser/samples/view.py:675
+#: senaite/core/browser/samples/view.py:707
 msgid "Create a new worksheet for the selected samples"
 msgstr "Crear una hoja de trabajo con las muestras selecionadas"
 
@@ -1391,7 +1395,7 @@ msgstr "Se ha creado la hoja de trabajo %s"
 msgid "Created {} partitions: {}"
 msgstr "Creadas {} particiones: {}"
 
-#: senaite/core/browser/samples/view.py:96
+#: senaite/core/browser/samples/view.py:125
 msgid "Creator"
 msgstr "Creado por"
 
@@ -1456,7 +1460,7 @@ msgstr "Fecha de caducidad"
 msgid "Date Loaded"
 msgstr "Fecha de carga"
 
-#: bika/lims/browser/auditlog.py:81
+#: bika/lims/browser/auditlog.py:82
 #: bika/lims/controlpanel/auditlog.py:76
 msgid "Date Modified"
 msgstr "Fecha de modificación"
@@ -1467,7 +1471,7 @@ msgstr "Fecha de modificación"
 msgid "Date Opened"
 msgstr "Fecha de apertura"
 
-#: senaite/core/browser/samples/view.py:115
+#: senaite/core/browser/samples/view.py:144
 msgid "Date Preserved"
 msgstr "Fecha de conservación"
 
@@ -1475,15 +1479,15 @@ msgstr "Fecha de conservación"
 msgid "Date Printed"
 msgstr "Fecha de impresión"
 
-#: senaite/core/browser/samples/view.py:131
+#: senaite/core/browser/samples/view.py:160
 msgid "Date Published"
 msgstr "Fecha de publicación"
 
-#: senaite/core/browser/samples/view.py:121
+#: senaite/core/browser/samples/view.py:150
 msgid "Date Received"
 msgstr "Fecha de recepción"
 
-#: senaite/core/browser/samples/view.py:101
+#: senaite/core/browser/samples/view.py:130
 msgid "Date Registered"
 msgstr "Fecha de registro"
 
@@ -1491,15 +1495,15 @@ msgstr "Fecha de registro"
 msgid "Date Requested"
 msgstr "Fecha de petición"
 
-#: bika/lims/content/analysisrequest.py:1067
+#: bika/lims/content/analysisrequest.py:1064
 msgid "Date Sample Received"
 msgstr "Fecha de recepción"
 
-#: senaite/core/browser/samples/view.py:109
+#: senaite/core/browser/samples/view.py:138
 msgid "Date Sampled"
 msgstr "Fecha de muestreo"
 
-#: senaite/core/browser/samples/view.py:127
+#: senaite/core/browser/samples/view.py:156
 msgid "Date Verified"
 msgstr "Fecha de verificación"
 
@@ -1546,6 +1550,10 @@ msgstr "Fecha del certificado de calibración"
 msgid "Date when the certificate is valid"
 msgstr "Fecha de inicio de validez del certificado de calibración"
 
+#: bika/lims/browser/fields/interimfieldsfield.py:103
+msgid "Datetime"
+msgstr ""
+
 #: bika/lims/browser/fields/durationfield.py:36
 msgid "Days"
 msgstr "Días"
@@ -1564,7 +1572,7 @@ msgstr "Desactivar"
 msgid "Decimal mark to use in the reports from this Client."
 msgstr "Separador decimal a utilizar en los informes de este Cliente."
 
-#: bika/lims/content/analysisservice.py:168
+#: bika/lims/content/analysisservice.py:166
 #: bika/lims/controlpanel/bika_sampletypes.py:100
 msgid "Default Container"
 msgstr "Recipiente por defecto"
@@ -1585,15 +1593,15 @@ msgstr "Instrumento analítico predeterminado"
 msgid "Default Method"
 msgstr "Método predeterminado"
 
-#: bika/lims/content/analysisservice.py:148
+#: bika/lims/content/analysisservice.py:146
 msgid "Default Preservation"
 msgstr "Método de conservación predeterminado"
 
-#: senaite/core/registry/schema.py:162
+#: senaite/core/registry/schema.py:179
 msgid "Default column order for sample analysis listings"
 msgstr "Orden predeterminado de las columns para listado de análisis de muestra"
 
-#: senaite/core/registry/schema.py:102
+#: senaite/core/registry/schema.py:119
 msgid "Default column order for worksheet analysis listings"
 msgstr "Orden predeterminado de las columnas para listado de análisis de hojas de trabajo"
 
@@ -1622,19 +1630,19 @@ msgstr "Orientación predeterminada en la vista de hojas de trabajo"
 msgid "Default method used for analyses of this type"
 msgstr "Método utilizado por defecto en analíticas de este tipo"
 
-#: bika/lims/content/analysisservice.py:198
+#: bika/lims/content/analysisservice.py:196
 msgid "Default result"
 msgstr "Resultado predeterminado"
 
-#: bika/lims/validators.py:1371
+#: bika/lims/validators.py:1377
 msgid "Default result is not numeric"
 msgstr "El resulto predeterminado no es numérico"
 
-#: bika/lims/validators.py:1364
+#: bika/lims/validators.py:1370
 msgid "Default result must be one of the following result options: {}"
 msgstr "El resultado predeterminado tiene que ser una de las opciones de resultado siguientes: {}"
 
-#: bika/lims/content/analysisservice.py:199
+#: bika/lims/content/analysisservice.py:197
 msgid "Default result to display on result entry"
 msgstr "Resultado a mostrar por defecto en la vista de entrada de resultados"
 
@@ -1663,7 +1671,7 @@ msgid "Default turnaround time for analyses."
 msgstr "Tiempo requerido predeterminado para el procesado de análisis."
 
 #: bika/lims/browser/fields/interimfieldsfield.py:57
-#: bika/lims/content/analysisservice.py:226
+#: bika/lims/content/analysisservice.py:224
 msgid "Default value"
 msgstr "Valor predeterminado"
 
@@ -1687,7 +1695,7 @@ msgstr "Número de decimales para este resultado."
 msgid "Define the precision when converting values to exponent notation.  The default is 7."
 msgstr "Precisión al convertir el resultado a notación exponencial. Valor predeterminado: 7."
 
-#: bika/lims/content/analysisrequest.py:482
+#: bika/lims/content/analysisrequest.py:479
 msgid "Define the sampler supposed to do the sample in the scheduled date"
 msgstr "Persona que realizará el muestreo en la fecha programada"
 
@@ -1699,25 +1707,25 @@ msgstr "Etiquetas de código de barras predeterminadas para éste tipo de muestr
 msgid "Degrees"
 msgstr "Grados"
 
-#: bika/lims/browser/department/labcontacts.py:51
-#: bika/lims/content/analysisrequest.py:1370
-#: bika/lims/content/person.py:148
+#: senaite/core/browser/controlpanel/departments/view.py:65
+#: senaite/core/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "Departamento"
 
-#: bika/lims/content/abstractbaseanalysis.py:497
-#: bika/lims/content/analysiscategory.py:73
-#: bika/lims/content/department.py:44
+#: senaite/core/browser/controlpanel/departments/view.py:68
 msgid "Department ID"
 msgstr "ID del departamento"
+
+#: senaite/core/content/department.py:122
+msgid "Department ID must be unique"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:496
 #: bika/lims/content/analysiscategory.py:72
 msgid "Department Name"
 msgstr "Departamento"
 
-#: bika/lims/controlpanel/bika_labcontacts.py:81
-#: bika/lims/profiles/default/types/Departments.xml
+#: senaite/core/profiles/default/types/Departments.xml
 msgid "Departments"
 msgstr "Departamentos"
 
@@ -1726,8 +1734,8 @@ msgid "Dependent Analyses"
 msgstr "Análisis dependientes"
 
 #: senaite/core/behaviors/label.py:111
-#: senaite/core/browser/controlpanel/instrumentlocations.py:65
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:59
+#: senaite/core/browser/controlpanel/departments/view.py:72
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:65
 msgid "Description"
 msgstr "Descripción"
 
@@ -1788,7 +1796,7 @@ msgstr "Enviar"
 msgid "Dispatch samples"
 msgstr "Envío de muestras"
 
-#: senaite/core/browser/samples/view.py:336
+#: senaite/core/browser/samples/view.py:366
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Dispatched"
 msgstr "Enviado"
@@ -1801,11 +1809,11 @@ msgstr "Mostrar columnas"
 msgid "Display Value"
 msgstr "Valor a mostrar"
 
-#: bika/lims/validators.py:661
+#: bika/lims/validators.py:667
 msgid "Display Value is required"
 msgstr "El valor a mostrar es obligatorio"
 
-#: bika/lims/validators.py:673
+#: bika/lims/validators.py:679
 msgid "Display Value must be unique"
 msgstr "El valor a mostrar tiene que ser único"
 
@@ -1825,7 +1833,7 @@ msgstr "Eliminar"
 msgid "Disposed"
 msgstr "Eliminados"
 
-#: senaite/core/browser/samples/view.py:157
+#: senaite/core/browser/samples/view.py:186
 #: senaite/core/z3cform/widgets/address.py:224
 msgid "District"
 msgstr "Región"
@@ -1887,11 +1895,11 @@ msgstr "Descargar PDF"
 msgid "Download selected reports"
 msgstr "Descargar los informes seleccionados"
 
-#: senaite/core/browser/samples/view.py:284
+#: senaite/core/browser/samples/view.py:314
 msgid "Due"
 msgstr "Pendientes"
 
-#: senaite/core/browser/samples/view.py:124
+#: senaite/core/browser/samples/view.py:153
 msgid "Due Date"
 msgstr "Fecha de vencimiento"
 
@@ -1921,7 +1929,7 @@ msgstr "Análisis de muestras duplicadas de QC"
 msgid "Duplicate Variation %"
 msgstr "Porcentaje de variación permitido entre el resultado del análisis y el duplicado"
 
-#: bika/lims/validators.py:452
+#: bika/lims/validators.py:458
 msgid "Duplicate keys in choices field"
 msgstr "Claves duplicadas en el campo de opciones"
 
@@ -1951,7 +1959,7 @@ msgstr "Para cada interfaz de importación se puede indicar un directorio donde 
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
+#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Edit"
 msgstr "Editar"
 
@@ -1963,15 +1971,13 @@ msgstr "Edición múltiple de resultados"
 msgid "Elevation"
 msgstr "Elevación"
 
-#: bika/lims/browser/publish/reports_listing.py:135
-#: bika/lims/browser/templates/login_details.pt:87
-#: bika/lims/content/analysisrequest.py:174
+#: senaite/core/config/widgets.py:37
 msgid "Email"
 msgstr "Correo electrónico"
 
 #: bika/lims/browser/client/views/contacts.py:72
-#: bika/lims/browser/clientfolder.py:71
-#: bika/lims/browser/department/labcontacts.py:54
+#: bika/lims/browser/clientfolder.py:66
+#: bika/lims/browser/supplier.py:118
 msgid "Email Address"
 msgstr "Dirección de correo electrónico"
 
@@ -2007,7 +2013,7 @@ msgstr "Notificar por correo electrónico el rechazo de muestras"
 msgid "Email sent"
 msgstr "El correo electrónico se ha enviado"
 
-#: bika/lims/validators.py:447
+#: bika/lims/validators.py:453
 msgid "Empty keys are not supported"
 msgstr "Las claves no pueden ser vacías"
 
@@ -2089,7 +2095,7 @@ msgstr "Introducir un porcentaje, p.ej. 14.0. Este porcentaje solo se aplicará 
 msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
 msgstr "Introducir un porcentaje, p.ej. 14.0. Este porcentaje se aplicará a todo el sistema, pero podrá ser sobrescrito individualmente para cada elemento."
 
-#: bika/lims/content/analysisrequest.py:1112
+#: bika/lims/content/analysisrequest.py:1109
 msgid "Enter percentage value eg. 33.0"
 msgstr "Introducir un porcentaje, p.ej. 33.0"
 
@@ -2113,7 +2119,7 @@ msgstr "Introducir los detalles sobre las acreditaciones del laboratorio. Los ca
 msgid "Enter the result either in decimal or scientific notation, e.g. 0.00005 or 1e-5, 10000 or 1e5"
 msgstr "Introducir el resultado en formato decimal o notación científica, por ejemplo 0.00005 o 1e-5, 10000 o 1e5"
 
-#: bika/lims/content/analysisrequest.py:931
+#: bika/lims/content/analysisrequest.py:928
 msgid "Environmental conditions"
 msgstr "Condiciones ambientales"
 
@@ -2141,7 +2147,7 @@ msgstr "Ejemplo de cronjob para ejecutar la importación automática de resultad
 msgid "Example content"
 msgstr "Contenido de ejemplo"
 
-#: senaite/core/browser/samples/view.py:560
+#: senaite/core/browser/samples/view.py:592
 msgid "Exclude from invoice"
 msgstr "Excluir de la factura"
 
@@ -2151,7 +2157,7 @@ msgstr "Excluir de la factura"
 msgid "Expected Result"
 msgstr "Resultado esperado"
 
-#: senaite/core/browser/samples/view.py:105
+#: senaite/core/browser/samples/view.py:134
 msgid "Expected Sampling Date"
 msgstr "Fecha esperada de muestreo"
 
@@ -2197,7 +2203,7 @@ msgstr "No se han podido enviar los correos electrónicos"
 msgid "Failed to update registry records. Please check the server log for details."
 msgstr "Error al actualizar los valores del registro. Por favor compruebe el registro de errores en el servidor para más detalles."
 
-#: bika/lims/browser/clientfolder.py:91
+#: bika/lims/browser/clientfolder.py:86
 #: bika/lims/browser/supplier.py:124
 #: bika/lims/content/organisation.py:66
 msgid "Fax"
@@ -2221,7 +2227,7 @@ msgstr "Consultar transiciones disponibles"
 msgid "Field"
 msgstr "Campo"
 
-#: bika/lims/browser/analysisrequest/add2.py:1731
+#: bika/lims/browser/analysisrequest/add2.py:1739
 msgid "Field '{}' is required"
 msgstr "El campo '{}' es obligatorio"
 
@@ -2230,7 +2236,7 @@ msgstr "El campo '{}' es obligatorio"
 msgid "Field Analyses"
 msgstr "Análisis de campo"
 
-#: senaite/core/registry/schema.py:251
+#: senaite/core/registry/schema.py:268
 msgid "Field Name"
 msgstr "Nombre del campo"
 
@@ -2242,7 +2248,7 @@ msgstr "Conservación fuera del laboratorio"
 msgid "Field Title"
 msgstr "Título del campo"
 
-#: senaite/core/registry/schema.py:249
+#: senaite/core/registry/schema.py:266
 msgid "Field visibility"
 msgstr "Visibilidad del campo"
 
@@ -2255,7 +2261,7 @@ msgstr "Fichero"
 msgid "File Deleted"
 msgstr "Fichero borrado"
 
-#: bika/lims/content/analysisservice.py:262
+#: bika/lims/content/analysisservice.py:260
 msgid "File upload"
 msgstr "Subir fichero"
 
@@ -2275,7 +2281,7 @@ msgstr "Filtro por método de plantilla"
 msgid "Filter by template services"
 msgstr "Filtro por servicios de plantilla"
 
-#: bika/lims/content/dynamic_analysisspec.py:73
+#: bika/lims/content/dynamic_analysisspec.py:74
 msgid "First sheet does not contain a valid column definition"
 msgstr "La primera hoja no contiene una definición de columna válida"
 
@@ -2328,7 +2334,7 @@ msgstr "Nombre completo"
 msgid "FullName"
 msgstr "Nombre completo"
 
-#: bika/lims/browser/auditlog.py:85
+#: bika/lims/browser/auditlog.py:86
 #: bika/lims/controlpanel/auditlog.py:84
 msgid "Fullname"
 msgstr "Nombre completo"
@@ -2337,7 +2343,7 @@ msgstr "Nombre completo"
 msgid "Function"
 msgstr "Función"
 
-#: senaite/core/browser/samples/view.py:557
+#: senaite/core/browser/samples/view.py:589
 msgid "Future dated sample"
 msgstr "Muestra con fecha de asignación futura"
 
@@ -2348,6 +2354,10 @@ msgstr "General"
 #: senaite/core/behaviors/configure.zcml:13
 msgid "Generates an ID with the IDServer"
 msgstr "Genera una ID con el IDServer"
+
+#: senaite/core/registry/schema.py:280
+msgid "Generic Setup"
+msgstr ""
 
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:11
 msgid "Global Audit Log is disabled"
@@ -2369,7 +2379,7 @@ msgstr "Agrupar los servicios de análisis por categorías. Esto es útil cuando
 msgid "HTML"
 msgstr "HTML"
 
-#: senaite/core/browser/samples/view.py:563
+#: senaite/core/browser/samples/view.py:595
 msgid "Hazardous"
 msgstr "Peligroso"
 
@@ -2517,9 +2527,9 @@ msgstr "Fichero importado"
 msgid "In-lab calibration procedure"
 msgstr "Procedimiento de calibración en el laboratorio"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:79
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:78
-#: senaite/core/browser/controlpanel/labels.py:76
+#: senaite/core/browser/controlpanel/departments/view.py:93
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:78
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:77
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -2531,15 +2541,15 @@ msgstr "Incluir y mostrar información de precios"
 msgid "Include descriptions"
 msgstr "Incluir descripciones"
 
-#: bika/lims/validators.py:1131
+#: bika/lims/validators.py:1137
 msgid "Incorrect IBAN number: %s"
 msgstr "El número IBAN no es correcto: %s"
 
-#: bika/lims/validators.py:1090
+#: bika/lims/validators.py:1096
 msgid "Incorrect NIB number: %s"
 msgstr "El número NIB no es correcto: %s"
 
-#: bika/lims/content/analysisrequest.py:1390
+#: bika/lims/content/analysisrequest.py:1387
 msgid "Indicates if the last SampleReport is printed,"
 msgstr "Indica si el último Reporte de Muestras ha sido impreso,"
 
@@ -2607,7 +2617,7 @@ msgstr "Importación desde instrumento analítico"
 msgid "Instrument Location"
 msgstr "Localización del instrumento analítico"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:53
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:53
 #: senaite/core/profiles/default/types/InstrumentLocations.xml
 msgid "Instrument Locations"
 msgstr "Localizaciones para instrumental analítico"
@@ -2674,7 +2684,7 @@ msgid "Instrument's calibration certificate expired:"
 msgstr "Certificado de calibración del instrumento caducado:"
 
 #: bika/lims/browser/methodfolder.py:67
-#: bika/lims/content/analysisservice.py:78
+#: bika/lims/content/analysisservice.py:76
 #: bika/lims/content/method.py:102
 msgid "Instruments"
 msgstr "Instrumental analítico"
@@ -2705,7 +2715,7 @@ msgstr "Instrumental analítico que soporta este método"
 
 #: bika/lims/browser/viewlets/templates/instrument_qc_failures_viewlet.pt:20
 msgid "Instruments' calibration certificates expired:"
-msgstr "Los certificados de calibración de los instrumentos expiraron:"
+msgstr "instrumentos con certificado de calibración caducado:"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:55
 msgid "Interface"
@@ -2723,8 +2733,8 @@ msgstr "Tests internos de calibrado"
 msgid "Internal Certificate"
 msgstr "Certificado de calibración interno"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:135
-#: senaite/core/browser/samples/view.py:566
+#: senaite/core/browser/samples/templates/partition_magic.pt:145
+#: senaite/core/browser/samples/view.py:598
 msgid "Internal use"
 msgstr "Uso interno"
 
@@ -2746,20 +2756,20 @@ msgid "Interval"
 msgstr "Intervalo"
 
 #: senaite/core/browser/dashboard/dashboard.py:603
-#: senaite/core/browser/samples/view.py:358
+#: senaite/core/browser/samples/view.py:388
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Invalid"
 msgstr "Invalidadas"
 
-#: bika/lims/content/dynamic_analysisspec.py:63
+#: bika/lims/content/dynamic_analysisspec.py:64
 msgid "Invalid specifications file detected. Please upload an Excel spreadsheet with at least the following columns defined: '{}', "
 msgstr "Archivo de especificaciones no válido detectado. Por favor, cargue una hoja de cálculo de Excel con al menos las siguientes columnas definidas: '{}', "
 
-#: bika/lims/validators.py:1310
+#: bika/lims/validators.py:1316
 msgid "Invalid value: Please enter a value without spaces."
 msgstr "Valor incorrecto: introduzca un valor sin espacios."
 
-#: bika/lims/validators.py:514
+#: bika/lims/validators.py:520
 msgid "Invalid wildcards found: ${wildcards}"
 msgstr "Se encontraron comodines inválidos: ${comodines}"
 
@@ -2777,7 +2787,7 @@ msgstr "Factura"
 msgid "Invoice Date"
 msgstr "Fecha de factura"
 
-#: bika/lims/content/analysisrequest.py:965
+#: bika/lims/content/analysisrequest.py:962
 msgid "Invoice Exclude"
 msgstr "Excluido de facturación"
 
@@ -2797,21 +2807,19 @@ msgstr "Facturar a"
 msgid "Invoice {} created"
 msgstr "Factura {} creada"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2315
+#: senaite/core/exportimport/setupdata/__init__.py:2316
 msgid "InvoiceBatch has no End Date"
 msgstr "No se ha especificado fecha de fin para el lote de facturación"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2312
+#: senaite/core/exportimport/setupdata/__init__.py:2313
 msgid "InvoiceBatch has no Start Date"
 msgstr "No se ha especificado fecha de inicio para el lote de facturación"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2309
+#: senaite/core/exportimport/setupdata/__init__.py:2310
 msgid "InvoiceBatch has no Title"
 msgstr "Lote de facturación sin título"
 
-#: bika/lims/content/department.py:72
-#: bika/lims/content/instrumentcalibration.py:142
-#: bika/lims/content/instrumentcertification.py:161
+#: senaite/core/config/widgets.py:42
 msgid "Job Title"
 msgstr "Cargo"
 
@@ -2861,12 +2869,11 @@ msgid "Lab Contact"
 msgstr "Contacto del laboratorio"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:63
-#: bika/lims/profiles/default/types/Department.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr "Contactos del laboratorio"
 
-#: bika/lims/controlpanel/bika_departments.py:62
+#: senaite/core/browser/controlpanel/departments/view.py:57
 msgid "Lab Departments"
 msgstr "Departamentos del laboratorio"
 
@@ -2890,11 +2897,11 @@ msgstr "URL del laboratorio"
 msgid "Label"
 msgstr "Etiqueta"
 
-#: senaite/core/registry/schema.py:67
+#: senaite/core/registry/schema.py:84
 msgid "Label configuration"
 msgstr "Configuración de etiquetas"
 
-#: senaite/core/content/label.py:59
+#: senaite/core/content/label.py:65
 msgid "Label names must be unique"
 msgstr "Nombres de etiquetas deben ser unicos"
 
@@ -2906,7 +2913,7 @@ msgstr "Etiquetado de contenido"
 msgid "Labeled Objects"
 msgstr "Contenidos etiquetados"
 
-#: senaite/core/browser/controlpanel/labels.py:51
+#: senaite/core/browser/controlpanel/labels/view.py:51
 #: senaite/core/browser/label/labeled_objects.py:65
 #: senaite/core/extender/label.py:57
 msgid "Labels"
@@ -2945,16 +2952,16 @@ msgstr "Últimos registros de importación automática"
 msgid "Last Login Time"
 msgstr "Último registro de inicio de sesión"
 
-#: senaite/core/browser/samples/view.py:414
+#: senaite/core/browser/samples/view.py:444
 msgid "Late"
 msgstr "Con retraso"
 
-#: senaite/core/browser/samples/view.py:552
+#: senaite/core/browser/samples/view.py:584
 msgid "Late Analyses"
 msgstr "Análisis con retraso"
 
 #: bika/lims/browser/analyses/view.py:924
-#: bika/lims/browser/worksheet/views/add_analyses.py:263
+#: bika/lims/browser/worksheet/views/add_analyses.py:264
 msgid "Late Analysis"
 msgstr "Análisis con retraso"
 
@@ -2982,7 +2989,7 @@ msgstr "Lineal"
 
 #: bika/lims/browser/templates/login_details.pt:203
 msgid "Link User"
-msgstr "Linkar usuario"
+msgstr "Vincular usuario"
 
 #: bika/lims/browser/templates/login_details.pt:144
 msgid "Link an existing User"
@@ -3012,7 +3019,7 @@ msgstr "Cargar desde archivo"
 msgid "Load the certificate document here"
 msgstr "Documento de la certificación"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:62
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:62
 msgid "Location"
 msgstr "Localización"
 
@@ -3072,7 +3079,7 @@ msgstr "Muy baja"
 
 #: bika/lims/config.py:82
 msgid "Mailing address"
-msgstr "Dirección de correo electrónico"
+msgstr "Dirección postal"
 
 #: bika/lims/browser/instrument.py:88
 #: bika/lims/content/instrumentmaintenancetask.py:82
@@ -3137,15 +3144,15 @@ msgstr "Administra el orden y la visibilidad de los campos que se muestran en fo
 msgid "Manage the order and visibility of the sample fields."
 msgstr "Modificar el orden y visibilidad de los campos de muestra"
 
-#: bika/lims/controlpanel/bika_departments.py:85
+#: senaite/core/browser/controlpanel/departments/view.py:75
 msgid "Manager"
 msgstr "Responsable"
 
-#: bika/lims/controlpanel/bika_departments.py:91
+#: senaite/core/browser/controlpanel/departments/view.py:81
 msgid "Manager Email"
 msgstr "Correo del responsable"
 
-#: bika/lims/controlpanel/bika_departments.py:88
+#: senaite/core/browser/controlpanel/departments/view.py:78
 msgid "Manager Phone"
 msgstr "Teléfono del responsable"
 
@@ -3177,7 +3184,7 @@ msgstr "Fabricante"
 msgid "Manufacturers"
 msgstr "Fabricantes"
 
-#: bika/lims/content/analysisrequest.py:1403
+#: bika/lims/content/analysisrequest.py:1400
 msgid "Mark the sample for internal use only. This means it is only accessible to lab personnel and not to clients."
 msgstr "Marque la muestra solo para uso interno. Esto significa que solo es accesible para el personal del laboratorio y no para los clientes."
 
@@ -3192,17 +3199,17 @@ msgid "Max Time"
 msgstr "Tiempo máximo"
 
 #: bika/lims/browser/fields/resultrangefield.py:35
-#: bika/lims/browser/widgets/analysisspecificationwidget.py:105
+#: bika/lims/browser/widgets/analysisspecificationwidget.py:115
 msgid "Max operator"
 msgstr "Operador max"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:92
 #: bika/lims/browser/fields/resultrangefield.py:38
-#: bika/lims/browser/widgets/analysisspecificationwidget.py:115
+#: bika/lims/browser/widgets/analysisspecificationwidget.py:110
 msgid "Max warn"
 msgstr "Advertencia de valor máximo"
 
-#: senaite/core/content/samplecontainer.py:73
+#: senaite/core/content/samplecontainer.py:79
 msgid "Maximum possible size or volume of samples"
 msgstr "Tamaño o volumen máximo admitidos por muestra"
 
@@ -3226,11 +3233,11 @@ msgstr "Normal"
 msgid "Meet the community, browse the code and get support on"
 msgstr "Conoce la comunidad, explora el código fuente y consgue soporte"
 
-#: bika/lims/browser/clientfolder.py:99
+#: bika/lims/browser/clientfolder.py:94
 msgid "Member Discount"
 msgstr "Descuento para miembros"
 
-#: bika/lims/content/analysisrequest.py:1111
+#: bika/lims/content/analysisrequest.py:1108
 #: bika/lims/content/bikasetup.py:254
 msgid "Member discount %"
 msgstr "% de descuento para clientes habituales"
@@ -3269,7 +3276,7 @@ msgstr "Métodos"
 
 #: bika/lims/content/person.py:59
 msgid "Middle initial"
-msgstr "Inicial de Segundo Nombre"
+msgstr "Inicial de segundo nombre"
 
 #: bika/lims/content/person.py:67
 msgid "Middle name"
@@ -3282,7 +3289,7 @@ msgid "Min"
 msgstr "Min"
 
 #: bika/lims/browser/fields/resultrangefield.py:33
-#: bika/lims/browser/widgets/analysisspecificationwidget.py:95
+#: bika/lims/browser/widgets/analysisspecificationwidget.py:100
 msgid "Min operator"
 msgstr "Operador min"
 
@@ -3314,7 +3321,6 @@ msgstr "Número mínimo de resultados para los cálculos estadísticos de QC"
 msgid "Minutes"
 msgstr "Minutos"
 
-#: bika/lims/browser/department/labcontacts.py:53
 #: bika/lims/browser/supplier.py:122
 #: bika/lims/controlpanel/bika_labcontacts.py:90
 msgid "Mobile Phone"
@@ -3362,25 +3368,26 @@ msgstr "Tipo de verificación múltiple"
 msgid "Multi-verification required"
 msgstr "Se requiere verificación múltiple"
 
-#: bika/lims/browser/fields/interimfieldsfield.py:104
+#: bika/lims/browser/fields/interimfieldsfield.py:109
 #: bika/lims/content/abstractbaseanalysis.py:618
 msgid "Multiple choices"
 msgstr "Selección múltiple con casillas de verificación"
 
-#: bika/lims/browser/fields/interimfieldsfield.py:103
+#: bika/lims/browser/fields/interimfieldsfield.py:105
 #: bika/lims/content/abstractbaseanalysis.py:616
 msgid "Multiple selection"
 msgstr "Lista de selección múltiple"
 
+#: bika/lims/browser/fields/interimfieldsfield.py:106
 #: bika/lims/content/abstractbaseanalysis.py:617
 msgid "Multiple selection (with duplicates)"
 msgstr "Lista de selección múltiple con duplicados"
 
-#: bika/lims/browser/fields/interimfieldsfield.py:105
+#: bika/lims/browser/fields/interimfieldsfield.py:110
 msgid "Multiple values"
 msgstr "Valores múltiples"
 
-#: bika/lims/validators.py:460
+#: bika/lims/validators.py:466
 msgid "Multiple values control type is not supported for choices"
 msgstr "El tipo de control de valores múltiples no soporta campos de selección"
 
@@ -3393,6 +3400,7 @@ msgid "NIB"
 msgstr "Código Cuenta Cliente (IBAN/CCC/BIC)"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:63
+#: senaite/core/config/widgets.py:32
 msgid "Name"
 msgstr "Nombre"
 
@@ -3400,7 +3408,8 @@ msgstr "Nombre"
 msgid "New ranges won't be applied to neither new nor current analyses. Re-assign the Specification if you want to apply latest changes."
 msgstr "Los nuevos rangos no se aplicarán ni a los análisis nuevos ni a los actuales. Vuelva a asignar la especificación si desea aplicar los últimos cambios."
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:131
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:130
+#: senaite/core/browser/widgets/analysisprofileswidget.py:239
 msgid "No"
 msgstr "No"
 
@@ -3410,7 +3419,7 @@ msgstr "No se han definido servicios de análisis"
 
 #: bika/lims/browser/publish/templates/email.pt:70
 msgid "No Email Address"
-msgstr "Falta la dirección de correo electrónico"
+msgstr "Sin dirección de correo electrónico"
 
 #: senaite/core/browser/form/adapters/worksheettemplate.py:49
 msgid "No Instrument"
@@ -3432,7 +3441,7 @@ msgstr "No hay definiciones de referencia disponibles para muestras control. <br
 msgid "No ReferenceDefinitions for Controls nor Blanks available. <br /> To add a Control or Blank in this Worksheet Template, create a Reference Definition first."
 msgstr "No hay definiciones de referencia disponibles para muestras control ni tampoco para muestras blanco. <br /> Para añadir un control o un blanco a la plantilla de hoja de trabajo, cree primero la definición de referencia correspondiente."
 
-#: bika/lims/browser/analysisrequest/add2.py:1795
+#: bika/lims/browser/analysisrequest/add2.py:1803
 msgid "No Samples could be created."
 msgstr "No se ha podido crear ninguna muestra"
 
@@ -3542,11 +3551,11 @@ msgstr "No hay datos de acceso registrados para el contacto ${contact_fullname},
 msgid "No user profile could be found for the linked user. Please contact the lab administrator to get further support or try to relink the user."
 msgstr "No se pudo encontrar ningún perfil de usuario para el usuario vinculado. Póngase en contacto con el administrador del laboratorio para obtener más asistencia o intente volver a vincular el usuario."
 
-#: bika/lims/browser/analysisrequest/add2.py:1680
+#: bika/lims/browser/analysisrequest/add2.py:1688
 msgid "No valid contact"
 msgstr "El contacto no es válido"
 
-#: bika/lims/validators.py:439
+#: bika/lims/validators.py:445
 msgid "No valid format in choices field. Supported format is: <value-0>:<text>|<value-1>:<text>|<value-n>:<text>"
 msgstr "Formato de opciones de selección no válido. El formato soportado es: <value-0>\\:<text>|<value-1>\\:<text>|<value-n>\\:<text>"
 
@@ -3570,11 +3579,11 @@ msgstr "No se pueden actualizar las condiciones de análisis: {}"
 msgid "Not defined"
 msgstr "Sin definir"
 
-#: senaite/core/browser/samples/view.py:528
+#: senaite/core/browser/samples/view.py:560
 msgid "Not printed yet"
 msgstr "No impreso aún"
 
-#: bika/lims/api/snapshot.py:409
+#: bika/lims/api/snapshot.py:414
 #: bika/lims/content/instrumentcertification.py:249
 msgid "Not set"
 msgstr "No establecido"
@@ -3595,7 +3604,7 @@ msgstr "Nota: esta confguración es global y afecta a las vistas de todas las mu
 msgid "Note: You can also drag and drop the attachment rows to change the order they appear in the report."
 msgstr "Nota: También puede arrastrar y soltar las filas de archivos adjuntos para cambiar el orden en que aparecen en el informe."
 
-#: senaite/core/content/senaitesetup.py:182
+#: senaite/core/content/senaitesetup.py:193
 msgid "Notifications"
 msgstr "Notificaciones"
 
@@ -3603,11 +3612,11 @@ msgstr "Notificaciones"
 msgid "Num columns"
 msgstr "Número de columnas"
 
-#: bika/lims/content/analysisservice.py:259
+#: bika/lims/content/analysisservice.py:257
 msgid "Number"
 msgstr "Número"
 
-#: senaite/core/browser/samples/view.py:206
+#: senaite/core/browser/samples/view.py:235
 msgid "Number of Analyses"
 msgstr "Número de análisis"
 
@@ -3624,7 +3633,7 @@ msgstr "Número de Posiciones"
 msgid "Number of copies"
 msgstr "Número de copias"
 
-#: senaite/core/registry/schema.py:217
+#: senaite/core/registry/schema.py:234
 msgid "Number of prominent columns"
 msgstr "Número de columnas prominentes"
 
@@ -3641,15 +3650,19 @@ msgstr "Número de verificaciones requeridas antes de que un resultado determina
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Número de verificaciones necesarias de diferentes usuarios antes de que un resultado determinado para este análisis se considere como 'verificado'. La opción establecida aquí tiene prioridad sobre la opción establecida en la Configuración general."
 
-#: senaite/core/registry/schema.py:226
+#: senaite/core/registry/schema.py:243
 msgid "Number of standard columns"
 msgstr "Número de columnas estándar"
 
-#: bika/lims/content/preservation.py:50
+#: bika/lims/browser/fields/interimfieldsfield.py:101
+msgid "Numeric"
+msgstr ""
+
+#: bika/lims/content/preservation.py:52
 msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
 msgstr "La muestra será descartada durante el periodo de tiempo indicado cuando se le asigne el estado de conservación. Si no se indica nada, se utilizará el periodo de retención por tipo de muestra."
 
-#: bika/lims/content/dynamic_analysisspec.py:49
+#: bika/lims/content/dynamic_analysisspec.py:50
 msgid "Only Excel files supported"
 msgstr "Solamente archivos en formato Excel soportado"
 
@@ -3669,10 +3682,15 @@ msgstr "Solo se consideran los días laborables de laboratorio para el cálculo 
 msgid "Only to empty or zero fields"
 msgstr "Solo campos sin valor o con valor cero"
 
+#: senaite/core/browser/samples/view.py:524
 #: senaite/core/profiles/default/workflows/senaite_batch_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_worksheet_workflow/definition.xml
 msgid "Open"
 msgstr "Abierto"
+
+#: senaite/core/browser/samples/view.py:236
+msgid "Open / To be verified / Verified / Total"
+msgstr ""
 
 #: bika/lims/profiles.zcml:15
 msgid "Open Source Web based Laboratory Information Management System"
@@ -3728,7 +3746,7 @@ msgstr "Propietario"
 msgid "Paperformat"
 msgstr "Formato de papel"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:125
+#: senaite/core/browser/samples/templates/partition_magic.pt:130
 msgid "Partition"
 msgstr "Partición"
 
@@ -3750,9 +3768,9 @@ msgstr "Identificador de ruta"
 msgid "Permitted Error %"
 msgstr "% de error permitido"
 
-#: bika/lims/browser/clientfolder.py:86
-#: bika/lims/browser/department/labcontacts.py:52
+#: bika/lims/browser/clientfolder.py:81
 #: bika/lims/browser/templates/batch_publish.pt:68
+#: bika/lims/content/organisation.py:59
 msgid "Phone"
 msgstr "Teléfono"
 
@@ -3778,15 +3796,15 @@ msgstr "Foto del instrumento"
 
 #: senaite/core/z3cform/widgets/address.py:120
 msgid "Physical address"
-msgstr "Dirección postal"
+msgstr "Dirección física"
 
 #: bika/lims/browser/publish/emailview.py:170
 msgid "Please add an email subject"
-msgstr "Por favor agrega un asunto de correo electrónico"
+msgstr "Indique el asunto del correo electrónico"
 
 #: bika/lims/browser/publish/emailview.py:173
 msgid "Please add an email text"
-msgstr "Por favor añade un texto en el correo electrónico"
+msgstr "Rellene el texto del correo electrónico"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:162
 msgid "Please click the update button after your changes."
@@ -3812,7 +3830,7 @@ msgstr "Por favor seleccione el número de particiones a crear y pulse el botón
 msgid "Please specify a reason"
 msgstr "Por favor, indique el motivo del envío"
 
-#: bika/lims/content/analysisservice.py:186
+#: bika/lims/content/analysisservice.py:184
 msgid "Please specify preservations that differ from the analysis service's default preservation per sample type here."
 msgstr "Especifique un tipo de conservación que difiera de la predeterminada para el servicio de análisis por el tipo de muestra."
 
@@ -3820,7 +3838,7 @@ msgstr "Especifique un tipo de conservación que difiera de la predeterminada pa
 msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
 msgstr "Por favor, añada el logotipo autorizado para emplear en su sitio web y en los informes de resultados de su entorno acreditativo. El tamaño máximo es de 175 x 175 píxeles."
 
-#: bika/lims/content/analysisservice.py:230
+#: bika/lims/content/analysisservice.py:228
 msgid "Please use the following format for select options: key1:value1|key2:value2|...|keyN:valueN"
 msgstr "Por favor utilice el formato siguiente para las opciones de selección: clave1:valor1|clave2:valor2|...|claveN:valorN"
 
@@ -3849,12 +3867,12 @@ msgstr "Dirección postal"
 msgid "Postal code"
 msgstr "Código postal"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:73
-#: senaite/core/content/samplecontainer.py:79
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:72
+#: senaite/core/content/samplecontainer.py:85
 msgid "Pre-preserved"
 msgstr "Pre-conservación"
 
-#: senaite/core/content/samplecontainer.py:94
+#: senaite/core/content/samplecontainer.py:100
 msgid "Pre-preserved containers must have a preservation selected"
 msgstr "Debe indicar el método de conservación"
 
@@ -3906,8 +3924,8 @@ msgstr "Los prefijos no pueden contener espacios."
 msgid "Prepublish"
 msgstr "Prepublicar"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:185
-#: senaite/core/content/samplecontainer.py:108
+#: senaite/core/browser/samples/templates/partition_magic.pt:195
+#: senaite/core/content/samplecontainer.py:114
 msgid "Preservation"
 msgstr "Conservación"
 
@@ -3915,24 +3933,19 @@ msgstr "Conservación"
 msgid "Preservation Category"
 msgstr "Categoría de método de conservación"
 
-#: senaite/core/content/samplecontainer.py:111
+#: senaite/core/content/samplecontainer.py:117
 msgid "Preservation method of this container"
 msgstr "Método de conservación para este contenedor"
 
-#: bika/lims/content/analysisservice.py:185
+#: bika/lims/content/analysisservice.py:183
 msgid "Preservation per sample type"
 msgstr "Método de conservación por tipo de muestra"
-
-#: bika/lims/controlpanel/bika_preservations.py:57
-#: bika/lims/profiles/default/types/Preservations.xml
-msgid "Preservations"
-msgstr "Conservaciones"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Preserve"
 msgstr "Conservar"
 
-#: senaite/core/browser/samples/view.py:198
+#: senaite/core/browser/samples/view.py:227
 msgid "Preserver"
 msgstr "Conservador"
 
@@ -3949,7 +3962,7 @@ msgstr "Preventivo"
 msgid "Preventive maintenance procedure"
 msgstr "Procedimiento de mantenimiento preventivo"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:239
+#: senaite/core/browser/samples/templates/partition_magic.pt:250
 msgid "Preview"
 msgstr "Previsualizar"
 
@@ -3986,7 +3999,7 @@ msgstr "Listas de precios"
 msgid "Primary Sample"
 msgstr "Muestra Primaria"
 
-#: senaite/core/browser/samples/view.py:658
+#: senaite/core/browser/samples/view.py:690
 msgid "Print"
 msgstr "Imprimir"
 
@@ -4006,11 +4019,11 @@ msgstr "Fecha de impresión:"
 msgid "Print pricelist"
 msgstr "Imprimir la lista de precios"
 
-#: senaite/core/browser/samples/view.py:229
+#: senaite/core/browser/samples/view.py:259
 msgid "Print stickers"
 msgstr "Imprimir pegatinas"
 
-#: senaite/core/browser/samples/view.py:216
+#: senaite/core/browser/samples/view.py:246
 msgid "Printed"
 msgstr "Impreso"
 
@@ -4019,11 +4032,11 @@ msgstr "Impreso"
 msgid "Printed on"
 msgstr "Impreso en"
 
-#: bika/lims/content/analysisrequest.py:917
+#: bika/lims/content/analysisrequest.py:914
 msgid "Priority"
 msgstr "Prioridad"
 
-#: senaite/core/browser/samples/view.py:202
+#: senaite/core/browser/samples/view.py:231
 msgid "Profile"
 msgstr "Perfil de análisis"
 
@@ -4031,9 +4044,7 @@ msgstr "Perfil de análisis"
 msgid "Profile Analyses"
 msgstr "Perfiles de análisis"
 
-#: bika/lims/browser/client/views/analysisprofiles.py:59
-#: bika/lims/content/analysisrequest.py:420
-#: bika/lims/controlpanel/bika_analysisprofiles.py:83
+#: bika/lims/content/analysisrequest.py:417
 msgid "Profile Key"
 msgstr "Identificador del perfil"
 
@@ -4041,9 +4052,13 @@ msgstr "Identificador del perfil"
 msgid "Profile Keyword"
 msgstr "Clave identificativa del perfil"
 
-#: bika/lims/content/analysisrequest.py:419
+#: bika/lims/content/analysisrequest.py:416
 msgid "Profile Name"
 msgstr "Nombre del perfil"
+
+#: senaite/core/content/analysisprofile.py:216
+msgid "Profile keyword must be unique"
+msgstr ""
 
 #: bika/lims/browser/batchfolder.py:62
 #: bika/lims/browser/worksheet/views/folder.py:96
@@ -4051,7 +4066,7 @@ msgid "Progress"
 msgstr "Progreso"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:103
-#: senaite/core/registry/schema.py:235
+#: senaite/core/registry/schema.py:252
 msgid "Prominent fields"
 msgstr "Campos destacados"
 
@@ -4059,7 +4074,7 @@ msgstr "Campos destacados"
 msgid "Protocol ID"
 msgstr "ID de protocolo"
 
-#: senaite/core/browser/samples/view.py:151
+#: senaite/core/browser/samples/view.py:180
 msgid "Province"
 msgstr "Provincia"
 
@@ -4069,7 +4084,7 @@ msgid "Publish"
 msgstr "Publicar"
 
 #: senaite/core/browser/dashboard/dashboard.py:452
-#: senaite/core/browser/samples/view.py:326
+#: senaite/core/browser/samples/view.py:356
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Published"
 msgstr "Publicadas"
@@ -4144,7 +4159,7 @@ msgstr "Disponible"
 msgid "Receive"
 msgstr "Recibir"
 
-#: senaite/core/browser/samples/view.py:296
+#: senaite/core/browser/samples/view.py:326
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Received"
 msgstr "Recepcionadas"
@@ -4233,7 +4248,7 @@ msgid "Reject samples"
 msgstr "Rechazar muestras"
 
 #: senaite/core/browser/dashboard/dashboard.py:593
-#: senaite/core/browser/samples/view.py:377
+#: senaite/core/browser/samples/view.py:407
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Rejected"
 msgstr "Rechazado"
@@ -4270,7 +4285,7 @@ msgstr "Volver a cargar"
 msgid "Remarks"
 msgstr "Comentarios"
 
-#: bika/lims/content/analysisrequest.py:1095
+#: bika/lims/content/analysisrequest.py:1092
 msgid "Remarks and comments for this request"
 msgstr "Comentarios y observaciones para esta solicitud"
 
@@ -4294,7 +4309,7 @@ msgstr "Observaciones a tener en cuenta antes de la validación"
 msgid "Remarks to take into account for maintenance process"
 msgstr "Observaciones a tener en cuenta para proceso de mantenimiento"
 
-#: bika/lims/browser/auditlog.py:89
+#: bika/lims/browser/auditlog.py:90
 #: bika/lims/controlpanel/auditlog.py:92
 msgid "Remote IP"
 msgstr "IP Remoto"
@@ -4353,7 +4368,7 @@ msgstr "Cargar informe"
 msgid "Republish"
 msgstr "Volver a publicar"
 
-#: senaite/core/browser/samples/view.py:535
+#: senaite/core/browser/samples/view.py:567
 msgid "Republished after last print"
 msgstr "Republicado después de la última impresión"
 
@@ -4368,11 +4383,11 @@ msgid "Request new analyses"
 msgstr "Solicitar nuevos análisis"
 
 #: bika/lims/browser/templates/login_details.pt:227
-#: bika/lims/content/analysisservice.py:227
+#: bika/lims/content/analysisservice.py:225
 msgid "Required"
 msgstr "Campo obligatorio"
 
-#: bika/lims/browser/fields/partitionsetupfield.py:117
+#: bika/lims/browser/fields/partitionsetupfield.py:118
 msgid "Required Volume"
 msgstr "Volumen necesario"
 
@@ -4403,11 +4418,11 @@ msgstr "Resultado"
 msgid "Result Value"
 msgstr "Valor de los resultados"
 
-#: bika/lims/validators.py:628
+#: bika/lims/validators.py:634
 msgid "Result Value must be a number"
 msgstr "El valor del resultado tiene que ser numérico"
 
-#: bika/lims/validators.py:643
+#: bika/lims/validators.py:649
 msgid "Result Value must be unique"
 msgstr "El valor del resultado tiene que ser único"
 
@@ -4431,7 +4446,7 @@ msgstr "El rango de resultados es diferente de la especificación: {}"
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
 msgstr "Los resultados con al menos este número de dígitos significativos se muestran en notación científica con la letra 'e' para indicar el exponente. La precisión se puede configurar en los servicios de análisis individuales."
 
-#: bika/lims/content/analysisservice.py:119
+#: bika/lims/content/analysisservice.py:117
 msgid "Result variables"
 msgstr "Variables de resultado"
 
@@ -4439,11 +4454,11 @@ msgstr "Variables de resultado"
 msgid "Results"
 msgstr "Resultados"
 
-#: bika/lims/content/analysisrequest.py:1355
+#: bika/lims/content/analysisrequest.py:1352
 msgid "Results Interpretation"
 msgstr "Interpretación de resultados"
 
-#: senaite/core/browser/samples/view.py:547
+#: senaite/core/browser/samples/view.py:579
 msgid "Results have been withdrawn"
 msgstr "Los resultados han sido descartados"
 
@@ -4455,8 +4470,8 @@ msgstr "Interpretación de resultados"
 msgid "Results pending"
 msgstr "Resultados pendientes"
 
-#: bika/lims/content/analysisrequest.py:648
-#: bika/lims/content/preservation.py:49
+#: bika/lims/content/analysisrequest.py:645
+#: bika/lims/content/preservation.py:51
 #: bika/lims/content/sampletype.py:116
 msgid "Retention Period"
 msgstr "Período de retención"
@@ -4499,7 +4514,7 @@ msgstr "Estado"
 msgid "Reviewed by"
 msgstr "Revisado por"
 
-#: bika/lims/browser/auditlog.py:87
+#: bika/lims/browser/auditlog.py:88
 #: bika/lims/controlpanel/auditlog.py:88
 msgid "Roles"
 msgstr "Roles"
@@ -4513,11 +4528,11 @@ msgstr "Restablecer"
 msgid "Routine Analyses"
 msgstr "Análisis rutinarios"
 
-#: senaite/core/configure.zcml:52
+#: senaite/core/configure.zcml:53
 msgid "SENAITE CORE"
 msgstr "SENAITE CORE"
 
-#: senaite/core/configure.zcml:52
+#: senaite/core/configure.zcml:53
 msgid "SENAITE CORE Add-on"
 msgstr "SENAITE CORE Add-on"
 
@@ -4558,17 +4573,15 @@ msgstr "Tratamiento"
 msgid "Sample"
 msgstr "Muestra"
 
-#: bika/lims/browser/analysisrequest/add2.py:1801
+#: bika/lims/browser/analysisrequest/add2.py:1809
 msgid "Sample ${AR} was successfully created."
 msgstr "Se ha creado la muestra ${AR}."
 
-#: bika/lims/controlpanel/bika_sampleconditions.py:72
-#: bika/lims/profiles/default/types/SampleCondition.xml
+#: senaite/core/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
 msgstr "Condiciones de muestra"
 
-#: bika/lims/controlpanel/bika_sampleconditions.py:60
-#: bika/lims/profiles/default/types/SampleConditions.xml
+#: senaite/core/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Condiciones de muestra"
 
@@ -4576,26 +4589,24 @@ msgstr "Condiciones de muestra"
 msgid "Sample Container"
 msgstr "Contenedor de muestra"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:51
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:51
 #: senaite/core/profiles/default/types/SampleContainers.xml
 msgid "Sample Containers"
 msgstr "Contenedores de muestras"
 
-#: senaite/core/registry/schema.py:197
+#: senaite/core/registry/schema.py:214
 msgid "Sample Header"
 msgstr "Cabecera de muestra"
 
-#: senaite/core/browser/samples/view.py:87
+#: senaite/core/browser/samples/view.py:116
 msgid "Sample ID"
 msgstr "ID de muestra"
 
-#: bika/lims/controlpanel/bika_samplematrices.py:55
-#: bika/lims/profiles/default/types/SampleMatrices.xml
+#: senaite/core/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
 msgstr "Soportes de las muestras"
 
-#: bika/lims/controlpanel/bika_samplematrices.py:68
-#: bika/lims/profiles/default/types/SampleMatrix.xml
+#: senaite/core/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "Soporte de la muestra"
 
@@ -4603,7 +4614,7 @@ msgstr "Soporte de la muestra"
 msgid "Sample Partitions"
 msgstr "Particiones de muestras"
 
-#: senaite/core/browser/samples/view.py:180
+#: senaite/core/browser/samples/view.py:209
 msgid "Sample Point"
 msgstr "Punto de muestreo"
 
@@ -4613,7 +4624,15 @@ msgstr "Punto de muestreo"
 msgid "Sample Points"
 msgstr "Puntos de muestreo"
 
-#: bika/lims/content/analysisrequest.py:659
+#: senaite/core/profiles/default/types/SamplePreservation.xml
+msgid "Sample Preservation"
+msgstr ""
+
+#: senaite/core/profiles/default/types/SamplePreservations.xml
+msgid "Sample Preservations"
+msgstr ""
+
+#: bika/lims/content/analysisrequest.py:656
 msgid "Sample Rejection"
 msgstr "Rechazo de muestra"
 
@@ -4623,8 +4642,8 @@ msgstr "Rechazo de muestra"
 msgid "Sample Templates"
 msgstr "Plantillas de muestras"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:145
-#: senaite/core/browser/samples/view.py:176
+#: senaite/core/browser/samples/templates/partition_magic.pt:155
+#: senaite/core/browser/samples/view.py:205
 msgid "Sample Type"
 msgstr "Tipo de muestra"
 
@@ -4632,11 +4651,11 @@ msgstr "Tipo de muestra"
 msgid "Sample Type Prefix"
 msgstr "Prefijo del tipo de muestra"
 
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:62
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:61
 msgid "Sample Types"
 msgstr "Tipos de muestras"
 
-#: senaite/core/registry/schema.py:130
+#: senaite/core/registry/schema.py:147
 msgid "Sample View"
 msgstr "Vista de muestra"
 
@@ -4644,7 +4663,7 @@ msgstr "Vista de muestra"
 msgid "Sample collected by the laboratory"
 msgstr "Muestra recogida por el laboratorio"
 
-#: bika/lims/browser/analysisrequest/add2.py:1615
+#: bika/lims/browser/analysisrequest/add2.py:1623
 msgid "Sample creation cancelled"
 msgstr "Se ha cancelado el registro de muestra"
 
@@ -4668,7 +4687,7 @@ msgstr "Tipo de muestra"
 msgid "Sample types"
 msgstr "Tipos de muestra"
 
-#: senaite/core/registry/schema.py:131
+#: senaite/core/registry/schema.py:148
 msgid "Sample view configuration"
 msgstr "Configuración de la vista de muestra"
 
@@ -4684,11 +4703,11 @@ msgstr "MuestraMatrix"
 msgid "SampleType"
 msgstr "Tipo de muestra"
 
-#: senaite/core/browser/samples/view.py:195
+#: senaite/core/browser/samples/view.py:224
 msgid "Sampler"
 msgstr "Muestreado por"
 
-#: bika/lims/content/analysisrequest.py:485
+#: bika/lims/content/analysisrequest.py:482
 msgid "Sampler for scheduled sampling"
 msgstr "Muestreador para el muestreo programado"
 
@@ -4697,12 +4716,12 @@ msgid "Sampler required for sample %s"
 msgstr "Muestrador requerido para muestra %s"
 
 #: senaite/core/browser/dashboard/dashboard.py:478
-#: senaite/core/browser/samples/view.py:60
+#: senaite/core/browser/samples/view.py:89
 #: senaite/core/profiles/default/types/Samples.xml
 msgid "Samples"
 msgstr "Muestras"
 
-#: bika/lims/browser/analysisrequest/add2.py:1798
+#: bika/lims/browser/analysisrequest/add2.py:1806
 msgid "Samples ${ARs} were successfully created."
 msgstr "Se han creado las muestras ${ARs}."
 
@@ -4755,7 +4774,7 @@ msgstr "Muestras con resultados pendientes"
 msgid "Sampling Date"
 msgstr "Fecha prevista de muestreo"
 
-#: senaite/core/browser/samples/view.py:190
+#: senaite/core/browser/samples/view.py:219
 msgid "Sampling Deviation"
 msgstr "Anomalías en el muestreo"
 
@@ -4797,7 +4816,7 @@ msgstr "Tarea programada"
 msgid "Schedule sampling"
 msgstr "Programar el muestreo"
 
-#: senaite/core/browser/samples/view.py:274
+#: senaite/core/browser/samples/view.py:304
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Scheduled sampling"
 msgstr "Muestreo programado"
@@ -4822,8 +4841,8 @@ msgstr "Segundos"
 msgid "Security Seal Intact Y/N"
 msgstr "Sello de seguridad íntegro Sí/No"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:76
-#: senaite/core/content/samplecontainer.py:116
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:75
+#: senaite/core/content/samplecontainer.py:122
 msgid "Security seal intact"
 msgstr "Sello de seguridad íntegro"
 
@@ -4835,7 +4854,7 @@ msgstr "Semilla"
 msgid "Seeding key {} to {}"
 msgstr "Clave de siembra {} a {}"
 
-#: bika/lims/content/analysisservice.py:261
+#: bika/lims/content/analysisservice.py:259
 msgid "Select"
 msgstr "Lista de selección"
 
@@ -4843,11 +4862,11 @@ msgstr "Lista de selección"
 msgid "Select 'Register' if you want stickers to be automatically printed when new Samples or sample records are created. Select 'Receive' to print stickers when Samples or Samples are received. Select 'None' to disable automatic printing"
 msgstr "Seleccione 'Registrar' si desea que las etiquetas se impriman automáticamente al registrar nuevas muestras. Seleccione 'Recibir' para imprimir etiquetas al recibir las muestras. Seleccione 'Ninguno' para desactivar la impresión automática de etiquetas."
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:205
+#: senaite/core/browser/samples/templates/partition_magic.pt:215
 msgid "Select Partition Analyses"
 msgstr "Análisis de la partición"
 
-#: bika/lims/content/analysisservice.py:149
+#: bika/lims/content/analysisservice.py:147
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
 msgstr "Seleccione un método de conservación para el servicio de análisis. Si el método depende de la combinación de tipos de muestra, especifique un método de conservación por tipo de muestra de la tabla siguiente."
 
@@ -4883,7 +4902,7 @@ msgstr "Seleccione un archivo existente"
 msgid "Select if is an in-house calibration certificate"
 msgstr "Certificado interno de calibración"
 
-#: bika/lims/content/analysisservice.py:91
+#: bika/lims/content/analysisservice.py:89
 msgid "Select if the calculation to be used is the calculation set by default in the default method. If unselected, the calculation can be selected manually"
 msgstr "Utilizar el cálculo asociado por defecto al método seleccionado. Desmarque la casilla si desea seleccionar el cálculo manualmente"
 
@@ -4911,7 +4930,7 @@ msgstr "País a mostrar por defecto"
 msgid "Select the currency the site will use to display prices."
 msgstr "Seleccione la moneda que se debe utilizar al mostrar los importes."
 
-#: bika/lims/content/analysisservice.py:169
+#: bika/lims/content/analysisservice.py:167
 msgid "Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below"
 msgstr "Seleccionar el recipiente por defecto que debe ser utilizado para este servicio de análisis. Si el recipiente depende de la combinación del tipo de muestra y del método de conservación, deberá especificar el recipiente para cada tipo de de muestra."
 
@@ -4948,8 +4967,8 @@ msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This 
 msgstr "Seleccione para permitir que un Coordinador de Muestreo programe un muestreo. Esta funcionalidad solo tiene efecto cuando el 'Flujo de trabajo de muestreo' está activo."
 
 #: bika/lims/content/bikasetup.py:537
-msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests tha have been Published. Disabled by default."
-msgstr "Añadir una transición 'Imprimir' adicional solo aplicable a muestras publicadas. Desactivado por defecto."
+msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
+msgstr ""
 
 #: bika/lims/content/bikasetup.py:570
 msgid "Select to receive the samples automatically when created by lab personnel and sampling workflow is disabled. Samples created by client contacts won't be received automatically"
@@ -4975,7 +4994,7 @@ msgstr "Seleccione la etiqueta que se debe utilizar como pegatina 'pequeña' por
 msgid "Select which sticker to print when automatic sticker printing is enabled"
 msgstr "Seleccione qué etiqueta imprimir cuando la impresión automática de etiquetas esté habilitada."
 
-#: bika/lims/browser/fields/interimfieldsfield.py:102
+#: bika/lims/browser/fields/interimfieldsfield.py:104
 #: bika/lims/content/abstractbaseanalysis.py:615
 msgid "Selection list"
 msgstr "Lista de selección simple"
@@ -5004,8 +5023,8 @@ msgstr "Transmisor"
 msgid "Sent to"
 msgstr "Destinatarios"
 
-#: bika/lims/browser/fields/partitionsetupfield.py:114
-#: bika/lims/content/analysisservice.py:132
+#: bika/lims/browser/fields/partitionsetupfield.py:115
+#: bika/lims/content/analysisservice.py:130
 msgid "Separate Container"
 msgstr "Recipiente por separado"
 
@@ -5039,7 +5058,7 @@ msgstr "Guardar comentarios"
 msgid "Set remarks for selected analyses"
 msgstr "Guardar los comentarios para los análisis seleccionados"
 
-#: bika/lims/content/analysisrequest.py:660
+#: bika/lims/content/analysisrequest.py:657
 msgid "Set the Sample Rejection workflow and the reasons"
 msgstr "Establezca el flujo de trabajo de rechazo de muestra y las razones"
 
@@ -5097,7 +5116,7 @@ msgstr "Descripción corta del método"
 msgid "Short title"
 msgstr "Nombre corto"
 
-#: bika/lims/content/analysisrequest.py:966
+#: bika/lims/content/analysisrequest.py:963
 msgid "Should the analyses be excluded from the invoice?"
 msgstr "¿Deben excluirse los análisis de la factura?"
 
@@ -5113,7 +5132,7 @@ msgstr "Mostrar los últimos registros de importación automática"
 msgid "Show more"
 msgstr "Más"
 
-#: senaite/core/registry/schema.py:210
+#: senaite/core/registry/schema.py:227
 msgid "Show standard fields"
 msgstr "Mostrar los campos estándar"
 
@@ -5178,11 +5197,11 @@ msgstr "Fuente"
 msgid "Specification"
 msgstr "Especificación"
 
-#: bika/lims/content/dynamic_analysisspec.py:48
+#: bika/lims/content/dynamic_analysisspec.py:49
 msgid "Specification File"
 msgstr "Archivo de Especificación"
 
-#: bika/lims/content/analysisrequest.py:695
+#: bika/lims/content/analysisrequest.py:692
 msgid "Specification Name"
 msgstr "Especificación"
 
@@ -5199,7 +5218,7 @@ msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instr
 msgstr "Especifique el tamaño de la hoja de trabajo, por ejemplo, correspondiente al tamaño de la bandeja de un instrumento específico. Luego seleccione un 'tipo' de Análisis por posición de la Hoja de trabajo. Cuando se seleccionen muestras de QC, seleccione también qué Muestra de Referencia se debe usar. Si se selecciona un análisis duplicado, indique en qué posición de la muestra debería ser un duplicado de"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
-#: senaite/core/registry/schema.py:242
+#: senaite/core/registry/schema.py:259
 msgid "Standard fields"
 msgstr "Campos estándar"
 
@@ -5211,7 +5230,7 @@ msgstr "Fecha de inicio"
 msgid "Start date must be before End Date"
 msgstr "La fecha de inicio debe ser anterior a la fecha de finalización"
 
-#: senaite/core/browser/samples/view.py:221
+#: senaite/core/browser/samples/view.py:251
 #: senaite/core/z3cform/widgets/address.py:223
 msgid "State"
 msgstr "Estado"
@@ -5236,7 +5255,7 @@ msgstr "Plantillas de etiquetas"
 msgid "Stickers preview"
 msgstr "Previsualización de etiquetas"
 
-#: senaite/core/browser/samples/view.py:185
+#: senaite/core/browser/samples/view.py:214
 msgid "Storage Location"
 msgstr "Ubicación de almacenamiento"
 
@@ -5244,6 +5263,10 @@ msgstr "Ubicación de almacenamiento"
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
 msgstr "Ubicaciones de almacenamiento"
+
+#: bika/lims/browser/fields/interimfieldsfield.py:102
+msgid "String"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:671
 msgid "String result"
@@ -5367,7 +5390,7 @@ msgstr "Impuestos"
 msgid "Technical description and instructions intended for analysts"
 msgstr "Descripción técnica e instrucciones para los analistas"
 
-#: senaite/core/browser/samples/view.py:211
+#: senaite/core/browser/samples/view.py:241
 #: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:68
 msgid "Template"
 msgstr "Plantilla"
@@ -5380,7 +5403,7 @@ msgstr "Parámetros para realizar la prueba"
 msgid "Test Result"
 msgstr "Resultado esperado de la prueba"
 
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:65
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:64
 msgid "Text"
 msgstr "Texto"
 
@@ -5428,15 +5451,15 @@ msgstr "Analista responsable de la validación"
 msgid "The batch book allows to introduce analysis results for all samples in this batch. Please note that submitting the results for verification is only possible within samples or worksheets, because additional information like e.g. the instrument or the method need to be set additionally."
 msgstr "El libro de lote permite introducir los resultados de los análisis de todas las muestras de este lote. Tenga en cuenta que la la captura de resultados para su verificación sólo es posible dentro de las muestras o de las hojas de trabajo, ya que la información adicional como, por ejemplo, el instrumento analítico o el método debe establecerse a parte."
 
-#: bika/lims/content/analysisrequest.py:844
+#: bika/lims/content/analysisrequest.py:841
 msgid "The client side identifier of the sample"
 msgstr "El identificador que usa el cliente para la muestra"
 
-#: bika/lims/content/analysisrequest.py:810
+#: bika/lims/content/analysisrequest.py:807
 msgid "The client side order number for this request"
 msgstr "El identificador de la petición que usa el cliente para la solicitud"
 
-#: bika/lims/content/analysisrequest.py:827
+#: bika/lims/content/analysisrequest.py:824
 msgid "The client side reference for this request"
 msgstr "La referencia que usa el cliente para la solicitud"
 
@@ -5444,11 +5467,11 @@ msgstr "La referencia que usa el cliente para la solicitud"
 msgid "The date the instrument was installed"
 msgstr "La fecha en que se instaló el instrumento analítico"
 
-#: bika/lims/content/analysisrequest.py:611
+#: bika/lims/content/analysisrequest.py:608
 msgid "The date when the sample was preserved"
 msgstr "La fecha en que se preservó la muestra"
 
-#: bika/lims/content/analysisrequest.py:1069
+#: bika/lims/content/analysisrequest.py:1066
 msgid "The date when the sample was received"
 msgstr "La fecha en que se recibió la muestra"
 
@@ -5464,7 +5487,7 @@ msgstr "La zona horaria por defecto del sitio. Los usuarios podrán establecer s
 msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
 msgstr "El porcentaje de descuento solo se aplicará a clientes que estén etiquetados como 'clientes habituales'. Normalmente, se trata de miembros que forman parte de una cooperativa, asociados o clientes con contrato de mantenimiento."
 
-#: bika/lims/content/analysisrequest.py:932
+#: bika/lims/content/analysisrequest.py:929
 msgid "The environmental condition during sampling"
 msgstr "La condición ambiental durante el muestreo"
 
@@ -5529,15 +5552,15 @@ msgstr "Duración en minutos de la sesión de usuario en el sistema. Si desea de
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
 msgstr "Periodo de tiempo durante el que se pueden mantener las muestras en un estado de no conservación antes que caduquen y no puedan ser analizadas."
 
-#: bika/lims/content/analysisrequest.py:632
+#: bika/lims/content/analysisrequest.py:629
 msgid "The person who preserved the sample"
 msgstr "La persona que preservó la muestra"
 
-#: bika/lims/content/analysisrequest.py:465
+#: bika/lims/content/analysisrequest.py:462
 msgid "The person who took the sample"
 msgstr "La persona que recogió la muestra"
 
-#: senaite/core/browser/controlpanel/instrumentlocations.py:54
+#: senaite/core/browser/controlpanel/instrumentlocations/view.py:54
 msgid "The place where the instrument is located in the laboratory"
 msgstr "Ubicación en el laboratorio del instrumento analítico"
 
@@ -5685,8 +5708,8 @@ msgstr "Fecha"
 msgid "Tip. Attached documents will not be loaded unless they are present in the instance."
 msgstr "Consejo. Los documentos adjuntos no se cargarán a menos que estén presentes en la instancia."
 
-#: senaite/core/browser/controlpanel/interpretationtemplates.py:56
-#: senaite/core/browser/controlpanel/labels.py:59
+#: senaite/core/browser/controlpanel/interpretationtemplates/view.py:56
+#: senaite/core/browser/controlpanel/labels/view.py:59
 #: senaite/core/browser/label/labeled_objects.py:58
 msgid "Title"
 msgstr "Título"
@@ -5695,7 +5718,7 @@ msgstr "Título"
 msgid "Title of location"
 msgstr "Nombre de la ubicación"
 
-#: bika/lims/controlpanel/dynamic_analysisspecs.py:41
+#: bika/lims/controlpanel/dynamic_analysisspecs.py:42
 msgid "Title of the Folder"
 msgstr "Título de la carpeta"
 
@@ -5713,11 +5736,11 @@ msgstr "Nombre del lugar"
 msgid "To"
 msgstr "A"
 
-#: senaite/core/browser/samples/view.py:264
+#: senaite/core/browser/samples/view.py:294
 msgid "To Be Preserved"
 msgstr "Por conservar"
 
-#: senaite/core/browser/samples/view.py:255
+#: senaite/core/browser/samples/view.py:285
 msgid "To Be Sampled"
 msgstr "Por muestrear"
 
@@ -5740,7 +5763,7 @@ msgid "To be sampled"
 msgstr "Por muestrear"
 
 #: senaite/core/browser/dashboard/dashboard.py:438
-#: senaite/core/browser/samples/view.py:306
+#: senaite/core/browser/samples/view.py:336
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "To be verified"
 msgstr "Pendientes de verificar"
@@ -5749,12 +5772,11 @@ msgstr "Pendientes de verificar"
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
 msgstr "Para probar el cálculo, puedes introducir valores aquí para todos los parámetros del cálculo. Esto incluye los campos provisionales definidos anteriormente, así como los servicios de los que depende este cálculo para calcular los resultados."
 
-#: senaite/core/registry/schema.py:211
+#: senaite/core/registry/schema.py:228
 msgid "Toggle visibility of standard sample header fields"
 msgstr "Alternar la visibilidad de los campos estándar de la cabecera de muestra"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:632
-#: bika/lims/browser/analysisrequest/templates/invoice_content.pt:226
+#: senaite/core/browser/samples/view.py:522
 msgid "Total"
 msgstr "Total"
 
@@ -5801,7 +5823,7 @@ msgstr "Tipo de documento (por ejemplo, manual de usuario, especificaciones del 
 msgid "Type of location"
 msgstr "Tipo de ubicación"
 
-#: senaite/core/content/samplecontainer.py:67
+#: senaite/core/content/samplecontainer.py:73
 msgid "Type of the container"
 msgstr "Tipo de contenedor"
 
@@ -5809,11 +5831,11 @@ msgstr "Tipo de contenedor"
 msgid "Type to filter ..."
 msgstr "Escriba para filtrar ..."
 
-#: senaite/core/registry/schema.py:76
+#: senaite/core/registry/schema.py:93
 msgid "Types that support labels directly.<br/>NOTE: In cluster setups, other instances need to be restarted manually for the changes to take place!"
 msgstr "Tipos de contenido que soportan etiquetado.<br/>Importante: para instalaciones en modo clúster, recuerde que debe reiniciar las otras instancias para que los cambios tengan efecto!."
 
-#: senaite/core/registry/schema.py:75
+#: senaite/core/registry/schema.py:92
 msgid "Types with labels"
 msgstr "Tipos etiquetables"
 
@@ -5848,7 +5870,7 @@ msgstr "Identificador único del departamento"
 msgid "Unit"
 msgstr "Unidades"
 
-#: bika/lims/validators.py:1118
+#: bika/lims/validators.py:1124
 msgid "Unknown IBAN country %s"
 msgstr "IBAN del país desconocido %s"
 
@@ -5874,7 +5896,7 @@ msgstr "Formato de fichero no válido: ${fileformat}"
 msgid "Unrecognized file format ${format}"
 msgstr "Formato de fichero no válido: ${format}"
 
-#: senaite/core/browser/samples/view.py:400
+#: senaite/core/browser/samples/view.py:430
 msgid "Unsassigned"
 msgstr "Sin asignar"
 
@@ -5906,7 +5928,7 @@ msgstr "Use el tablero de control como página inicial predeterminada."
 msgid "Use Template"
 msgstr "Utilizar plantilla"
 
-#: bika/lims/content/analysisservice.py:90
+#: bika/lims/content/analysisservice.py:88
 msgid "Use the Default Calculation of Method"
 msgstr "Utilizar el cálculo por defecto asignado al método"
 
@@ -5993,67 +6015,67 @@ msgstr "Error de validación: '${title}': título duplicado"
 msgid "Validation failed: '${value}' is not unique"
 msgstr "Error de validación: '${value}' no es único"
 
-#: bika/lims/validators.py:1447
+#: bika/lims/validators.py:1453
 msgid "Validation failed: '{}' is not numeric"
 msgstr "Error de validación: '{}' no es numérico"
 
-#: bika/lims/validators.py:610
+#: bika/lims/validators.py:616
 msgid "Validation failed: Bearing must be E/W"
 msgstr "Error de validación: la orientación debe ser E/W (Este/Oeste)"
 
-#: bika/lims/validators.py:591
+#: bika/lims/validators.py:597
 msgid "Validation failed: Bearing must be N/S"
 msgstr "Error de validación: la orientación debe ser N/S"
 
-#: bika/lims/validators.py:1336
+#: bika/lims/validators.py:1342
 msgid "Validation failed: Could not import module '%s'"
 msgstr "Error de validación: no se ha podido importar el módulo '%s'"
 
-#: bika/lims/validators.py:952
+#: bika/lims/validators.py:958
 msgid "Validation failed: Error percentage must be between 0 and 100"
 msgstr "Error de validación: el porcentaje de error debe tener un valor entre 0 y 100"
 
-#: bika/lims/validators.py:968
+#: bika/lims/validators.py:974
 msgid "Validation failed: Error value must be 0 or greater"
 msgstr "Error de validación: el error debe ser 0 o mayor"
 
-#: bika/lims/validators.py:945
+#: bika/lims/validators.py:951
 msgid "Validation failed: Error values must be numeric"
 msgstr "Error de validación: el valor del error debe ser numérico"
 
-#: bika/lims/validators.py:490
+#: bika/lims/validators.py:496
 msgid "Validation failed: Keyword '${keyword}' is invalid"
 msgstr "Error de validación: la palabra clave '$ {palabra clave}' no es válida"
 
-#: bika/lims/validators.py:960
+#: bika/lims/validators.py:966
 msgid "Validation failed: Max values must be greater than Min values"
 msgstr "Error de validación: los valores máximos (Max) tienen que ser mayores que los valores mínimos (Min)"
 
-#: bika/lims/validators.py:930
+#: bika/lims/validators.py:936
 msgid "Validation failed: Max values must be numeric"
 msgstr "Error de validación: los valores máximos (Max) tienen que ser de tipo numérico"
 
-#: bika/lims/validators.py:923
+#: bika/lims/validators.py:929
 msgid "Validation failed: Min values must be numeric"
 msgstr "Error de validación: los valores mínimos (Min) tienen que ser de tipo numérico"
 
-#: bika/lims/validators.py:1433
+#: bika/lims/validators.py:1439
 msgid "Validation failed: Please set a default value when defining a required checkbox condition."
 msgstr "Error de validación: Por favor indique un valor por defecto cuando defina una condición con casilla de verificación como requerida"
 
-#: bika/lims/validators.py:1427
+#: bika/lims/validators.py:1433
 msgid "Validation failed: Please use the character '|' to separate the available options in 'Choices' subfield"
 msgstr "Error de validación: Por favor utilice el carácter '|' para separar las opciones disponibles en el sub-campo 'Opciones para selección'"
 
-#: bika/lims/validators.py:756
+#: bika/lims/validators.py:762
 msgid "Validation failed: PrePreserved containers must have a preservation selected."
 msgstr "Error de validación: debe indicar el método de conservación."
 
-#: bika/lims/validators.py:714
+#: bika/lims/validators.py:720
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
 msgstr "Error de validación: imprescindible seleccionar una de las categorías siguientes: ${categories}"
 
-#: bika/lims/validators.py:1000
+#: bika/lims/validators.py:1006
 msgid "Validation failed: Values must be numbers"
 msgstr "Error de validación: los valores deben ser números"
 
@@ -6061,31 +6083,31 @@ msgstr "Error de validación: los valores deben ser números"
 msgid "Validation failed: column title '${title}' must have keyword '${keyword}'"
 msgstr "Error de validación: el título de columna '${title}' tiene que tener la palabra clave '${keyword}'"
 
-#: bika/lims/validators.py:601
+#: bika/lims/validators.py:607
 msgid "Validation failed: degrees is 180; minutes must be zero"
 msgstr "Error de validación: los grados son 180; el valor para minutos debe ser cero"
 
-#: bika/lims/validators.py:606
+#: bika/lims/validators.py:612
 msgid "Validation failed: degrees is 180; seconds must be zero"
 msgstr "Error de validación: los grados son 180; el valor para los segundos debe ser cero"
 
-#: bika/lims/validators.py:582
+#: bika/lims/validators.py:588
 msgid "Validation failed: degrees is 90; minutes must be zero"
 msgstr "Error de validación: los grados son 90; el valor de minutos debe ser cero"
 
-#: bika/lims/validators.py:587
+#: bika/lims/validators.py:593
 msgid "Validation failed: degrees is 90; seconds must be zero"
 msgstr "Error de validación: los grados son 90; el valor de segundos debe ser cero"
 
-#: bika/lims/validators.py:596
+#: bika/lims/validators.py:602
 msgid "Validation failed: degrees must be 0 - 180"
 msgstr "Error de validación: los grados el valor de los grados admitido es entre 0  y 180"
 
-#: bika/lims/validators.py:577
+#: bika/lims/validators.py:583
 msgid "Validation failed: degrees must be 0 - 90"
 msgstr "Error de validación: el valor para los grados tiene que ser entre 0 y 90"
 
-#: bika/lims/validators.py:550
+#: bika/lims/validators.py:556
 msgid "Validation failed: degrees must be numeric"
 msgstr "Error de validación: el valor para los grados tienen que ser de tipo numérico"
 
@@ -6111,27 +6133,27 @@ msgstr "Error de validación: la palabre clave ya está en uso por el cálculo '
 msgid "Validation failed: keyword is required"
 msgstr "Error de validación: palabra clave requerida"
 
-#: bika/lims/validators.py:566
+#: bika/lims/validators.py:572
 msgid "Validation failed: minutes must be 0 - 59"
 msgstr "Error de validación: los minutos tienen que estar entre 0 y 59"
 
-#: bika/lims/validators.py:556
+#: bika/lims/validators.py:562
 msgid "Validation failed: minutes must be numeric"
 msgstr "Error de validación: los minutos tienen que ser de tipo numérico"
 
-#: bika/lims/validators.py:1028
+#: bika/lims/validators.py:1034
 msgid "Validation failed: percent values must be between 0 and 100"
 msgstr "Error de validación: el valor del porcentaje debe ser entre 0 y 100"
 
-#: bika/lims/validators.py:1024
+#: bika/lims/validators.py:1030
 msgid "Validation failed: percent values must be numbers"
 msgstr "Error de validación: el valor del porcentaje debe ser un número"
 
-#: bika/lims/validators.py:570
+#: bika/lims/validators.py:576
 msgid "Validation failed: seconds must be 0 - 59"
 msgstr "Error de validación: los segundos tienen que estar entre 0 y 59"
 
-#: bika/lims/validators.py:562
+#: bika/lims/validators.py:568
 msgid "Validation failed: seconds must be numeric"
 msgstr "Error de validación: los segundos tienen que ser de tipo numérico"
 
@@ -6140,19 +6162,19 @@ msgstr "Error de validación: los segundos tienen que ser de tipo numérico"
 msgid "Validation failed: title is required"
 msgstr "Error de validación: título requerido"
 
-#: bika/lims/validators.py:1438
+#: bika/lims/validators.py:1444
 msgid "Validation failed: value for Choices subfield is only required for when the control type of choice is 'Select'"
 msgstr "Error de validación: el valor para el sub-campo \"Opciones de selección\" solo es necesario cuando el tipo de control es \"Lista de selección\""
 
-#: bika/lims/validators.py:1420
+#: bika/lims/validators.py:1426
 msgid "Validation failed: value for Choices subfield is required when the control type of choice is 'Select'"
 msgstr "Error de validación: el valor para el sub-campo \"Opciones de selección\" es necesario cuando el tipo de control es \"Lista de selección\""
 
-#: bika/lims/validators.py:1254
+#: bika/lims/validators.py:1260
 msgid "Validation failed: value must be between 0 and 1000"
 msgstr "Error de validación: el valor debe estar entre 0 y 1000"
 
-#: bika/lims/validators.py:1250
+#: bika/lims/validators.py:1256
 msgid "Validation failed: value must be float"
 msgstr "Error de validación: el valor tiene que ser numérico"
 
@@ -6180,7 +6202,7 @@ msgid "Values can be entered here which will override the defaults specified in 
 msgstr "Los valores ingresados aquí anularan los establecidos en los campos de la sección de Cálculo Provisional"
 
 #: senaite/core/browser/dashboard/dashboard.py:445
-#: senaite/core/browser/samples/view.py:316
+#: senaite/core/browser/samples/view.py:346
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Verified"
 msgstr "Verificadas"
@@ -6195,7 +6217,7 @@ msgstr "Verificado por"
 msgid "Verify"
 msgstr "Verificar"
 
-#: bika/lims/browser/auditlog.py:79
+#: bika/lims/browser/auditlog.py:80
 #: bika/lims/browser/templates/analysisservice_info.pt:174
 #: bika/lims/controlpanel/auditlog.py:72
 msgid "Version"
@@ -6215,7 +6237,7 @@ msgstr "Ver el sitio de SENAITE"
 msgid "Visibility"
 msgstr "Visibilidad"
 
-#: senaite/core/registry/schema.py:250
+#: senaite/core/registry/schema.py:267
 msgid "Visible fields"
 msgstr "Campos visibles"
 
@@ -6239,7 +6261,7 @@ msgstr "Atención"
 
 #: bika/lims/content/laboratory.py:132
 msgid "Web address for the accreditation body"
-msgstr "Dirección de correo electrónico de la entidad acreditadora"
+msgstr "Dirección web de la entidad acreditadora"
 
 #: bika/lims/content/supplier.py:52
 msgid "Website."
@@ -6277,7 +6299,7 @@ msgstr "Cuando está establecido, el sistema utiliza el precio del perfil de an�
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
 msgstr "Si la diferencia porcentual entre los resultados de una réplica de análisis en la hoja de trabajo para la misma muestra y análisis es mayor que este valor, el sistema lo notificará con una alerta."
 
-#: bika/lims/validators.py:504
+#: bika/lims/validators.py:510
 msgid "Wildcards for interims are not allowed: ${wildcards}"
 msgstr "El uso de códigos reservados en variables de entrada no está permitido: ${wildcards}"
 
@@ -6291,7 +6313,7 @@ msgstr "Atentamente"
 msgid "Work Performed"
 msgstr "Trabajo Realizado"
 
-#: bika/lims/browser/auditlog.py:93
+#: bika/lims/browser/auditlog.py:94
 #: bika/lims/controlpanel/auditlog.py:99
 msgid "Workflow State"
 msgstr "Estado de Flujo de trabajo"
@@ -6315,11 +6337,11 @@ msgstr "Plantilla para hoja de trabajo"
 msgid "Worksheet Templates"
 msgstr "Plantillas para hojas de trabajo"
 
-#: senaite/core/registry/schema.py:93
+#: senaite/core/registry/schema.py:110
 msgid "Worksheet View"
 msgstr "Vista de hoja de trabajo"
 
-#: senaite/core/registry/schema.py:94
+#: senaite/core/registry/schema.py:111
 msgid "Worksheet view configuration"
 msgstr "Configuración de la vista de hoja de trabajo"
 
@@ -6327,7 +6349,7 @@ msgstr "Configuración de la vista de hoja de trabajo"
 msgid "Worksheets"
 msgstr "Hojas de trabajo"
 
-#: bika/lims/validators.py:1125
+#: bika/lims/validators.py:1131
 msgid "Wrong IBAN length by %s: %sshort by %i"
 msgstr "Longitud de IBAN incorrecta por%s: %s corto por %i"
 
@@ -6335,7 +6357,8 @@ msgstr "Longitud de IBAN incorrecta por%s: %s corto por %i"
 msgid "Yearly"
 msgstr "Anual"
 
-#: senaite/core/browser/controlpanel/samplecontainers.py:129
+#: senaite/core/browser/controlpanel/samplecontainers/view.py:128
+#: senaite/core/browser/widgets/analysisprofileswidget.py:239
 msgid "Yes"
 msgstr "Si"
 
@@ -6421,7 +6444,6 @@ msgstr "${d}/${m}/${Y}"
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
 #. Default: "mm/dd/yy"
-#, fuzzy
 msgid "date_format_short_datepicker"
 msgstr "${dd}/${mm}/${yy}"
 
@@ -6453,7 +6475,6 @@ msgstr "Departamento responsable del servicio de análisis."
 #. results are displayed after being submitted"
 #. Default: "Criteria to use when result options are displayed for selection in results entry listings. Note this only applies to the options displayed in the selection list. It does not have any effect to the order in which results are displayed after being submitted"
 #: bika/lims/content/abstractbaseanalysis.py:654
-#, fuzzy
 msgid "description_analysis_results_options_sorting"
 msgstr "Criterio a utilizar para la ordenación de las opciones de resultados. Esta configuración solo aplica a las opciones que se muestran en la lista de selección, no tiene ningún efecto sobre el orden de los resultados tras su captura y tramitación."
 
@@ -6469,26 +6490,63 @@ msgstr "Criterio a utilizar para la ordenación de las opciones de resultados. E
 #. 20.00, 20.01 - 30.00 etc."
 #. Default: "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2%, a result of 100 will be reported as 100 ± 2.<br/>If you don't want uncertainty to be displayed for a given range, set 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00 etc."
 #: bika/lims/content/abstractbaseanalysis.py:525
-#, fuzzy
 msgid "description_analysis_uncertainty"
 msgstr "Especifique el valor de incertidumbre para un rango dado, por ejemplo, para resultados en un rango con un mínimo de 0 y un máximo de 10, donde el valor de incertidumbre es 0.5 - un resultado de 6.67 se informará como 6.67 ± 0.5.<br/>También puede especificar el valor de incertidumbre como un porcentaje del valor del resultado, agregando un '%' al valor ingresado en la columna 'Valor de incertidumbre', por ejemplo, para resultados en un rango con un mínimo de 10.01 y un máximo de 100, donde el valor de incertidumbre es del 2% - un resultado de 100 se informará como 100 ± 2.<br/>Si no desea que se muestre incertidumbre para un determinado rango, introduzca 0 (a cualquier valor inferior a 0) en el campo de incertidumbre.<br/>Por favor, asegúrese de que los rangos sucesivos sean continuos, por ejemplo, 0.00 - 10.00 es seguido por 10.01 - 20.00, 20.01 - 30.00 etc."
 
 #. mg/l, ppm, dB, mV, etc."
 #. Default: "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
 #: bika/lims/content/abstractbaseanalysis.py:109
-#, fuzzy
 msgid "description_analysis_unit"
 msgstr "Unidades de medida para los resultados de este servicio de análisis, p.ej. mg/l, ppm, dB, mV, etc."
 
 #. Ensure to include the default unit in this list"
 #. Default: "Provide a list of units that are suitable for the analysis. Ensure to include the default unit in this list"
 #: bika/lims/content/abstractbaseanalysis.py:142
-#, fuzzy
 msgid "description_analysis_unitchoices"
 msgstr "Lista de unidades de medida soportados por este análisis. Asegúrese de incluir la unidad de medida por defecto en esta lista."
 
+#. Default: "Commercial ID used for accounting"
+#: senaite/core/content/analysisprofile.py:125
+msgid "description_analysisprofile_commercial_id"
+msgstr ""
+
+#. Default: "Please provide a unique profile keyword"
+#: senaite/core/content/analysisprofile.py:94
+msgid "description_analysisprofile_profile_key"
+msgstr ""
+
+#. Default: "Please provide the price excluding VAT"
+#: senaite/core/content/analysisprofile.py:149
+msgid "description_analysisprofile_profile_price"
+msgstr ""
+
+#. price"
+#. Default: "Please provide the VAT in percent that is added to the profile price"
+#: senaite/core/content/analysisprofile.py:161
+msgid "description_analysisprofile_profile_vat"
+msgstr ""
+
+#. profile won't be available for selection in sample creation and edit forms
+#. unless the selected sample type is one of these. If no sample type is set
+#. here, this profile will always be available for selection, regardless of
+#. the sample type of the sample."
+#. Default: "Sample types for which this analysis profile is supported. This profile won't be available for selection in sample creation and edit forms unless the selected sample type is one of these. If no sample type is set here, this profile will always be available for selection, regardless of the sample type of the sample."
+#: senaite/core/content/analysisprofile.py:184
+msgid "description_analysisprofile_sampletypes"
+msgstr ""
+
+#. Default: "Select the included analyses for this profile"
+#: senaite/core/content/analysisprofile.py:110
+msgid "description_analysisprofile_services"
+msgstr ""
+
+#. Default: "Use profile price instead of single analyses prices"
+#: senaite/core/content/analysisprofile.py:137
+msgid "description_analysisprofile_use_profile_price"
+msgstr ""
+
 #. Default: "Number of samples to create with the information provided"
-#: bika/lims/content/analysisrequest.py:1427
+#: bika/lims/content/analysisrequest.py:1424
 msgid "description_analysisrequest_numsamples"
 msgstr "Número de muestras a crear automáticamente con la información proporcionada."
 
@@ -6506,7 +6564,6 @@ msgstr "Las especificaciones dinámicas de análisis permiten establecer rangos 
 #. results report as well"
 #. Default: "'Min' and 'Max' values indicate a valid results range. Any result outside this results range will raise an alert.<br/>'Min warn' and 'Max warn' values indicate a shoulder range. Any result outside the results range but within the shoulder range will raise a less severe alert.<br/>If the result is out of range, the value set for '&lt; Min' or '&gt; Max' will be displayed in lists and results reports instead of the real result. In such case, the value set for 'Out of range comment' will be displayed in results report as well"
 #: bika/lims/content/analysisspec.py:91
-#, fuzzy
 msgid "description_analysisspec_resultsrange"
 msgstr "Los valores 'Mínimo' y 'Máximo' indican un rango de resultados válido. Cualquier resultado fuera de este rango generará una alerta.<br/>Los valores 'Advertencia de valor mínimo' y 'Advertencia de valor máximo' indican el umbral de error. Cualquier resultado fuera del rango pero dentro del umbral de error generará una alerta menor.<br/>Si el resultado está fuera del rango, el valor establecido para '<Min' o '<Max' se mostrará en listas e informes de resultados en lugar del resultado real. En dicho caso también se mostrará el valor establecido para \"Comentario fuera de rango\" en el informe de resultados."
 
@@ -6568,7 +6625,6 @@ msgstr "Cliente al que pertenece este lote. Cuando el usuario indique un cliente
 #. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
 #: bika/lims/content/bikasetup.py:674
-#, fuzzy
 msgid "description_bikasetup_always_cc_responsibles_in_report_emails"
 msgstr "Marque esta casilla si desea que los responsables de todos los departamentos involucrados también reciban correos electrónicos en copia al publicar informes de resultados."
 
@@ -6581,7 +6637,6 @@ msgstr "Marque esta casilla si desea que las listas de análisis dentro de la vi
 #. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
 #: bika/lims/content/bikasetup.py:653
-#, fuzzy
 msgid "description_bikasetup_email_body_sample_publication"
 msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse por defecto al enviar informes de resultados a los destinatarios seleccionados. Puede utilizar las palabras reservadas siguientes: $client_name (nombre de cliente), $recipients (lista de recipientes), $lab_name (nombre del laboratorio), $lab_address (dirección física del laboratorio)."
 
@@ -6589,7 +6644,6 @@ msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse
 #. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: bika/lims/content/bikasetup.py:370
-#, fuzzy
 msgid "description_bikasetup_immediateresultsentry"
 msgstr "Marque esta casilla si desea que el usuario pueda efectuar el registro directo de resultados justo después de crear la muestra, ya sean para análisis de campo o para análisis de laboratorio. Esta funcionalidad es útil por ejemplo para la captura de resultados durante el muestreo."
 
@@ -6626,7 +6680,6 @@ msgstr "Contactos en copia para nuevas muestras."
 #. could be selected here."
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: bika/lims/content/container.py:99
-#, fuzzy
 msgid "description_container_preservation"
 msgstr "Método de conservación aplicable por defecto cuando se utiliza este recipiente."
 
@@ -6640,11 +6693,15 @@ msgstr "Seleccionar el tipo de recipiente."
 msgid "description_copyright"
 msgstr "${copyright} 2017-${current_year} ${senaitelims}"
 
+#. Default: "Please provide a unique department identifier"
+#: senaite/core/content/department.py:67
+msgid "description_department_id"
+msgstr ""
+
 #. the 'lab contacts' setup item. Departmental managers are referenced on
 #. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
-#: bika/lims/content/department.py:57
-#, fuzzy
+#: senaite/core/content/department.py:93
 msgid "description_department_manager"
 msgstr "Seleccione alguno de los responsables que están registrados en el apartado 'Contactos del laboratorio'. El sistema incluye los nombres de los responsables de departamento en todos los informes de análisis que le pertenecen."
 
@@ -6691,7 +6748,6 @@ msgstr "La persona que realizó la tarea."
 #. selected departments."
 #. Default: "Select a default department for this contact from one of the selected departments."
 #: bika/lims/content/labcontact.py:89
-#, fuzzy
 msgid "description_labcontact_default_department"
 msgstr "Seleccione el departamento por defecto del contacto."
 
@@ -6723,7 +6779,6 @@ msgstr "Las muestras de este tipo deben ser tratadas como peligrosas"
 #. alert."
 #. Default: "Click on Analysis Categories to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 #: bika/lims/content/referencedefinition.py:48
-#, fuzzy
 msgid "description_referencedefinition_referencevalues"
 msgstr "Haga clic sobre las cabeceras de categorías de análisis (con fondo gris) para ver los servicios de análisis que contienen cada una de ellas. Introduzca los valores mínimo y máximo para indicar el rango válido de los resultados. Si el resultado se encuentra fuera de este rango, el sistema mostará una alerta. El campo '% Error' le permite indicar el porcentaje de incertidumbre que tiene que tener en cuenta el sistema al evaluar los resultados en relación al rango indicado."
 
@@ -6737,120 +6792,131 @@ msgstr "Seleccione el fabricante de esta muestra de referencia."
 msgid "description_referencesample_referencedefinition"
 msgstr "Seleccione la definición de referencia para la muestra."
 
+#. logs into the system, or when a client is selected from the client folder
+#. listing"
+#. Default: "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing"
+#: senaite/core/registry/schema.py:66
+msgid "description_registry_client_landing_page"
+msgstr ""
+
+#. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
+#: senaite/core/registry/schema.py:292
+msgid "description_registry_generic_setup_skip_export_types"
+msgstr ""
+
 #. Default: "Assign sample to a batch"
-#: bika/lims/content/analysisrequest.py:315
+#: bika/lims/content/analysisrequest.py:316
 msgid "description_sample_batch"
 msgstr "Seleccione el lote de muestras al que pertenece la muestra."
 
 #. Default: "The contacts used in CC for email notifications"
-#: bika/lims/content/analysisrequest.py:190
+#: bika/lims/content/analysisrequest.py:191
 msgid "description_sample_cccontact"
 msgstr "Seleccione los contactos en CC para las notificaciones por correo electrónico."
 
 #. Default: "Select the client for this sample"
-#: bika/lims/content/analysisrequest.py:242
+#: bika/lims/content/analysisrequest.py:243
 msgid "description_sample_client"
 msgstr "Seleccione el cliente al que pertenece la muestra."
 
 #. Default: "Select the primary contact for this sample"
-#: bika/lims/content/analysisrequest.py:155
+#: bika/lims/content/analysisrequest.py:156
 msgid "description_sample_contact"
 msgstr "Seleccione el contacto de cliente principal para la muestra."
 
 #. Default: "Select a container for this sample"
-#: bika/lims/content/analysisrequest.py:557
+#: bika/lims/content/analysisrequest.py:554
 msgid "description_sample_container"
 msgstr "Seleccione el recipiente de la muestra."
 
 #. Default: "The date when the sample was taken"
-#: bika/lims/content/analysisrequest.py:441
+#: bika/lims/content/analysisrequest.py:438
 msgid "description_sample_datesampled"
 msgstr "Indique la fecha cuando se tomó la muestra."
 
 #. Default: "Reference to detached sample"
-#: bika/lims/content/analysisrequest.py:1297
+#: bika/lims/content/analysisrequest.py:1294
 msgid "description_sample_detached_from"
 msgstr "Referencia a la muestra de la que se desvinculó esta partición."
 
 #. Default: "Generated invoice for this sample"
-#: bika/lims/content/analysisrequest.py:1041
+#: bika/lims/content/analysisrequest.py:1038
 msgid "description_sample_invoice"
 msgstr "Factura de la muestra."
 
 #. Default: "Reference to parent sample"
-#: bika/lims/content/analysisrequest.py:1271
+#: bika/lims/content/analysisrequest.py:1268
 msgid "description_sample_parent_sample"
 msgstr "Referencia a la muestra padre."
 
 #. Default: "Select the needed preservation for this sample"
-#: bika/lims/content/analysisrequest.py:588
+#: bika/lims/content/analysisrequest.py:585
 msgid "description_sample_preservation"
 msgstr "Seleccione el protocolo de conservación que requiere la muestra."
 
 #. Default: "Select a sample to create a secondary Sample"
-#: bika/lims/content/analysisrequest.py:279
+#: bika/lims/content/analysisrequest.py:280
 msgid "description_sample_primary"
 msgstr "Seleccione la muestra a partir de la cual se creará una muestra secundaria."
 
 #. Default: "Select an analysis profile for this sample"
-#: bika/lims/content/analysisrequest.py:405
+#: bika/lims/content/analysisrequest.py:406
 msgid "description_sample_profiles"
 msgstr "Seleccione el perfil de análisis de la muestra."
 
 #. sample publication report"
 #. Default: "Select an analysis specification that should be used in the sample publication report"
-#: bika/lims/content/analysisrequest.py:725
-#, fuzzy
+#: bika/lims/content/analysisrequest.py:722
 msgid "description_sample_publicationspecification"
 msgstr "Seleccione las especificaciones de aresultados a ser utilizadas en el informe de resultados."
 
 #. Default: "Reference to retracted sample"
-#: bika/lims/content/analysisrequest.py:1325
+#: bika/lims/content/analysisrequest.py:1322
 msgid "description_sample_retracted"
 msgstr "Referencia a la muestra retirada."
 
 #. Default: "The condition of the sample"
-#: bika/lims/content/analysisrequest.py:892
+#: bika/lims/content/analysisrequest.py:889
 msgid "description_sample_samplecondition"
 msgstr "Indique las condiciones de la muestra."
 
 #. Default: "Location where the sample was taken"
-#: bika/lims/content/analysisrequest.py:758
+#: bika/lims/content/analysisrequest.py:755
 msgid "description_sample_samplepoint"
 msgstr "Ubicación o localización de donde se tomó la muestra."
 
 #. Default: "Select the sample type of this sample"
-#: bika/lims/content/analysisrequest.py:529
+#: bika/lims/content/analysisrequest.py:526
 msgid "description_sample_sampletype"
 msgstr "Seleccione el tipo de la muestra."
 
 #. Default: "The date when the sample will be taken"
-#: bika/lims/content/analysisrequest.py:504
+#: bika/lims/content/analysisrequest.py:501
 msgid "description_sample_samplingdate"
 msgstr "Indique la fecha estimada de la toma de muestra"
 
 #. Default: "Deviation between the sample and how it was sampled"
-#: bika/lims/content/analysisrequest.py:864
+#: bika/lims/content/analysisrequest.py:861
 msgid "description_sample_samplingdeviation"
 msgstr "Indique si se produjo alguna anomalía o alteración durante la toma de muestra."
 
 #. Default: "Select an analysis specification for this sample"
-#: bika/lims/content/analysisrequest.py:681
+#: bika/lims/content/analysisrequest.py:678
 msgid "description_sample_specification"
 msgstr "Seleccione las espeficaciones de análisis con los rangos de validez a utilizar para las analíticas de la muestra."
 
 #. Default: "Location where the sample is kept"
-#: bika/lims/content/analysisrequest.py:786
+#: bika/lims/content/analysisrequest.py:783
 msgid "description_sample_storagelocation"
 msgstr "Ubicación o localización donde está almacenada la muestra."
 
 #. Default: "The assigned batch sub group of this request"
-#: bika/lims/content/analysisrequest.py:350
+#: bika/lims/content/analysisrequest.py:351
 msgid "description_sample_subgroup"
 msgstr "El subgrupo de lote asignado a esta muestra y lote."
 
 #. Default: "Select an analysis template for this sample"
-#: bika/lims/content/analysisrequest.py:377
+#: bika/lims/content/analysisrequest.py:378
 msgid "description_sample_template"
 msgstr "Seleccione la plantilla de muestra."
 
@@ -6858,7 +6924,6 @@ msgstr "Seleccione la plantilla de muestra."
 #. available."
 #. Default: "The list of sample types that can be collected at this sample point.  If no sample types are selected, then all sample types are available."
 #: bika/lims/content/samplepoint.py:98
-#, fuzzy
 msgid "description_samplepoint_sampletypes"
 msgstr "Lista de tipos de muestra que pueden ser recogidos de estea localización o punto de muestreo. Al seleccionar un tipo de muestra en el formulario de registro o de edición de muestra, solo se mostrarán los puntos de muestreo de los que se pueda recoger dicho tipo."
 
@@ -6866,7 +6931,6 @@ msgstr "Lista de tipos de muestra que pueden ser recogidos de estea localizació
 #. specified in more details per analysis service"
 #. Default: "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 #: bika/lims/content/sampletype.py:180
-#, fuzzy
 msgid "description_sampletype_containertype"
 msgstr "El tipo de recipiente por defecto. Este tipo de recipiente se asignará automáticamente a nuevas particiones de muestra a menos que ya se haya indicado un tipo de recipiente específico para el servicio de análisis relacionado."
 
@@ -6878,7 +6942,6 @@ msgstr "Seleccione la base o matriz del tipo de muestra."
 #. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
 #: senaite/core/content/senaitesetup.py:77
-#, fuzzy
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
 msgstr "Marque esta casilla si desea que los responsables de departamentos involucrados también reciban correos electrónicos en copia al publicar informes de resultados."
 
@@ -6891,7 +6954,6 @@ msgstr "Agrupar los análisis por categorías dentro de la vista de muestras."
 #. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: senaite/core/content/senaitesetup.py:118
-#, fuzzy
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr "Permite que el usuario pueda efectuar la introducción directa de resultados justo después de crear la muestra. Esta funcionalidad es útil para por ejemplo la captura de resultados durante el muestreo."
 
@@ -6899,7 +6961,6 @@ msgstr "Permite que el usuario pueda efectuar la introducción directa de result
 #. form"
 #. Default: "Maximum number of samples that can be created in accordance with the value set for the field 'Number of samples' on the sample registration form"
 #: senaite/core/content/senaitesetup.py:151
-#, fuzzy
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr "Número máximo de muestras que se pueden crear de acuerdo con el valor establecido para el campo 'Número de muestras' en el formulario de registro."
 
@@ -6907,7 +6968,6 @@ msgstr "Número máximo de muestras que se pueden crear de acuerdo con el valor 
 #. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
 #: senaite/core/content/senaitesetup.py:63
-#, fuzzy
 msgid "description_senaitesetup_publication_email_text"
 msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse por defecto cuando al enviar informes de resultados a los destinatarios seleccionados. Puede utilizar las palabras reservadas siguientes: $client_name (nombre de cliente), $recipients (lista de recipientes), $lab_name (nombre del laboratorio), $lab_address (dirección física del laboratorio)."
 
@@ -6916,11 +6976,16 @@ msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr "Marque esta casilla si desea que sea obligatorio seleccionar como mínimo un análisis durante el registro de muestra."
 
+#. page, above the access credentials."
+#. Default: "When selected, the laboratory name will be displayedin the login page, above the access credentials."
+#: senaite/core/content/senaitesetup.py:163
+msgid "description_senaitesetup_show_lab_name_in_login"
+msgstr ""
+
 #. Dashboard is not selected as the default front page. If no landing page is
 #. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
 #: bika/lims/content/bikasetup.py:513
-#, fuzzy
 msgid "description_setup_landingpage"
 msgstr "Página por defecto para usuarios anónimos o para usuarios autentificados cuando la vista principal con indicadores está desactivada. Si no selecciona ninguna página de inicio, el sistema mostrará la página de de bienvenida por defecto."
 
@@ -6933,14 +6998,12 @@ msgstr "Instrumento analítico que se asignará por defecto a las hojas de traba
 #. services list, you should save the change first."
 #. Default: "Restrict the available analysis services and instruments to those with the selected method. <br/>In order to apply this change to the services list, you should save the change first."
 #: bika/lims/content/worksheettemplate.py:95
-#, fuzzy
 msgid "description_worksheettemplate_restrict_to_method"
 msgstr "Si está seleccionado, solo será posible asignar analíticas y instrumentos analíticos que estén admitidos o soportados por el método seleccionado.<br/>Para que el cambio tenga efecto en la lista actual de servicios de análisis disponibles, primero debe guardar la plantilla."
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
-#: bika/lims/browser/analysisrequest/add2.py:1690
-#, fuzzy
+#: bika/lims/browser/analysisrequest/add2.py:1698
 msgid "error_analyssirequest_numsamples_above_max"
 msgstr "El número de muestras a crear para el registro 'Sample ${record_index}' (${num_samples}) es superior a ${max_num_samples}"
 
@@ -7001,8 +7064,13 @@ msgstr "Unidad por defecto"
 msgid "label_analysis_unitchoices"
 msgstr "Unidades para selección"
 
+#. Default: "Sample types"
+#: senaite/core/content/analysisprofile.py:180
+msgid "label_analysisprofile_sampletypes"
+msgstr ""
+
 #. Default: "Number of samples"
-#: bika/lims/content/analysisrequest.py:1423
+#: bika/lims/content/analysisrequest.py:1420
 msgid "label_analysisrequest_numsamples"
 msgstr "Número de muestras"
 
@@ -7127,7 +7195,7 @@ msgid "label_container_type"
 msgstr "Tipo de recipiente"
 
 #. Default: "Manager"
-#: bika/lims/content/department.py:55
+#: senaite/core/content/department.py:89
 msgid "label_department_manager"
 msgstr "Encargado del departamento"
 
@@ -7221,118 +7289,128 @@ msgstr "Fabricante"
 msgid "label_referencesample_referencedefinition"
 msgstr "Definición de referencia"
 
+#. Default: "Client landing page"
+#: senaite/core/registry/schema.py:62
+msgid "label_registry_client_landing_page"
+msgstr ""
+
+#. Default: "Portal types to skip on content structure export"
+#: senaite/core/registry/schema.py:288
+msgid "label_registry_generic_setup_skip_export_types"
+msgstr ""
+
 #. Default: "Batch"
-#: bika/lims/content/analysisrequest.py:312
+#: bika/lims/content/analysisrequest.py:313
 msgid "label_sample_batch"
 msgstr "Lote"
 
 #. Default: "CC Contact"
-#: bika/lims/content/analysisrequest.py:187
+#: bika/lims/content/analysisrequest.py:188
 msgid "label_sample_cccontact"
 msgstr "Contactos en copia"
 
 #. Default: "Client"
-#: bika/lims/content/analysisrequest.py:239
+#: bika/lims/content/analysisrequest.py:240
 msgid "label_sample_client"
 msgstr "Cliente"
 
 #. Default: "Contact"
-#: bika/lims/content/analysisrequest.py:152
+#: bika/lims/content/analysisrequest.py:153
 msgid "label_sample_contact"
 msgstr "Contacto"
 
 #. Default: "Container"
-#: bika/lims/content/analysisrequest.py:554
+#: bika/lims/content/analysisrequest.py:551
 msgid "label_sample_container"
 msgstr "Recipiente"
 
 #. Default: "Date Sampled"
-#: bika/lims/content/analysisrequest.py:437
+#: bika/lims/content/analysisrequest.py:434
 msgid "label_sample_datesampled"
 msgstr "Fecha de muestreo"
 
 #. Default: "Detached from sample"
-#: bika/lims/content/analysisrequest.py:1294
+#: bika/lims/content/analysisrequest.py:1291
 msgid "label_sample_detached_from"
 msgstr "Muestra original"
 
 #. Default: "Invoice"
-#: bika/lims/content/analysisrequest.py:1038
+#: bika/lims/content/analysisrequest.py:1035
 msgid "label_sample_invoice"
 msgstr "Factura"
 
 #. Default: "Parent sample"
-#: bika/lims/content/analysisrequest.py:1268
+#: bika/lims/content/analysisrequest.py:1265
 msgid "label_sample_parent_sample"
 msgstr "Muestra padre"
 
 #. Default: "Preservation"
-#: bika/lims/content/analysisrequest.py:585
+#: bika/lims/content/analysisrequest.py:582
 msgid "label_sample_preservation"
 msgstr "Conservación"
 
 #. Default: "Primary Sample"
-#: bika/lims/content/analysisrequest.py:276
+#: bika/lims/content/analysisrequest.py:277
 msgid "label_sample_primary"
 msgstr "Muestra primaria"
 
 #. Default: "Analysis Profiles"
-#: bika/lims/content/analysisrequest.py:402
+#: bika/lims/content/analysisrequest.py:403
 msgid "label_sample_profiles"
 msgstr "Perfiles de análisis"
 
 #. Default: "Publication Specification"
-#: bika/lims/content/analysisrequest.py:722
+#: bika/lims/content/analysisrequest.py:719
 msgid "label_sample_publicationspecification"
 msgstr "Especificaciones para publicación"
 
 #. Default: "Retest from sample"
-#: bika/lims/content/analysisrequest.py:1322
+#: bika/lims/content/analysisrequest.py:1319
 msgid "label_sample_retracted"
 msgstr "Muestra original invalidada"
 
 #. Default: "Sample Condition"
-#: bika/lims/content/analysisrequest.py:889
+#: bika/lims/content/analysisrequest.py:886
 msgid "label_sample_samplecondition"
 msgstr "Condiciones de muestra"
 
 #. Default: "Sample Point"
-#: bika/lims/content/analysisrequest.py:755
+#: bika/lims/content/analysisrequest.py:752
 msgid "label_sample_samplepoint"
 msgstr "Punto de muestreo"
 
 #. Default: "Sample Type"
-#: bika/lims/content/analysisrequest.py:526
+#: bika/lims/content/analysisrequest.py:523
 msgid "label_sample_sampletype"
 msgstr "Tipo de muestra"
 
 #. Default: "Expected Sampling Date"
-#: bika/lims/content/analysisrequest.py:500
+#: bika/lims/content/analysisrequest.py:497
 msgid "label_sample_samplingdate"
 msgstr "Fecha estimada de muestreo"
 
 #. Default: "Sampling Deviation"
-#: bika/lims/content/analysisrequest.py:861
+#: bika/lims/content/analysisrequest.py:858
 msgid "label_sample_samplingdeviation"
 msgstr "Anomalías de muestreo"
 
 #. Default: "Analysis Specification"
-#: bika/lims/content/analysisrequest.py:678
+#: bika/lims/content/analysisrequest.py:675
 msgid "label_sample_specification"
 msgstr "Especificaciones de análisis"
 
 #. Default: "Storage Location"
-#: bika/lims/content/analysisrequest.py:783
+#: bika/lims/content/analysisrequest.py:780
 msgid "label_sample_storagelocation"
 msgstr "Ubicación o localización"
 
 #. Default: "Batch Sub-group"
-#: bika/lims/content/analysisrequest.py:347
+#: bika/lims/content/analysisrequest.py:348
 msgid "label_sample_subgroup"
 msgstr "Subgrupo de lote"
 
 #. Default: "Sample Template"
-#: bika/lims/content/analysisrequest.py:374
+#: bika/lims/content/analysisrequest.py:375
 msgid "label_sample_template"
 msgstr "Plantilla de muestra"
 
@@ -7340,6 +7418,11 @@ msgstr "Plantilla de muestra"
 #: bika/lims/content/samplepoint.py:95
 msgid "label_samplepoint_sampletypes"
 msgstr "Tipos de muestra"
+
+#. Default: "Category"
+#: senaite/core/content/samplepreservation.py:55
+msgid "label_samplepreservation_category"
+msgstr ""
 
 #. Default: "Default Container Type"
 #: bika/lims/content/sampletype.py:176
@@ -7362,12 +7445,12 @@ msgid "label_senaite"
 msgstr "SENAITE LIMS"
 
 #. Default: "Analyses"
-#: senaite/core/content/senaitesetup.py:172
+#: senaite/core/content/senaitesetup.py:183
 msgid "label_senaitesetup_fieldset_analyses"
 msgstr "Análisis"
 
 #. Default: "Samples"
-#: senaite/core/content/senaitesetup.py:165
+#: senaite/core/content/senaitesetup.py:176
 msgid "label_senaitesetup_fieldset_samples"
 msgstr "Muestras"
 
@@ -7417,6 +7500,191 @@ msgstr "Instrumento analítico"
 msgid "label_worksheettemplate_restrict_to_method"
 msgstr "Método"
 
+#. Default: "Add"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:49
+msgid "listing_analysisprofiles_action_add"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:71
+msgid "listing_analysisprofiles_column_description"
+msgstr ""
+
+#. Default: "Profile Key"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:78
+msgid "listing_analysisprofiles_column_profilekey"
+msgstr ""
+
+#. Default: "Sample Types"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:86
+msgid "listing_analysisprofiles_column_sampletypes"
+msgstr ""
+
+#. Default: "Profile"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:64
+msgid "listing_analysisprofiles_column_title"
+msgstr ""
+
+#. Default: "Active"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:98
+msgid "listing_analysisprofiles_state_active"
+msgstr ""
+
+#. Default: "All"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:114
+msgid "listing_analysisprofiles_state_all"
+msgstr ""
+
+#. Default: "Inactive"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:106
+msgid "listing_analysisprofiles_state_inactive"
+msgstr ""
+
+#. Default: "Analysis Profiles"
+#: senaite/core/browser/controlpanel/analysisprofiles/view.py:56
+msgid "listing_analysisprofiles_title"
+msgstr ""
+
+#. Default: "Hidden"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:94
+msgid "listing_analysisprofileswidget_column_hidden"
+msgstr ""
+
+#. Default: "Keyword"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:66
+msgid "listing_analysisprofileswidget_column_keyword"
+msgstr ""
+
+#. Default: "Methods"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:73
+msgid "listing_analysisprofileswidget_column_methods"
+msgstr ""
+
+#. Default: "Price"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:87
+msgid "listing_analysisprofileswidget_column_price"
+msgstr ""
+
+#. Default: "Service"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:58
+msgid "listing_analysisprofileswidget_column_title"
+msgstr ""
+
+#. Default: "Unit"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:80
+msgid "listing_analysisprofileswidget_column_unit"
+msgstr ""
+
+#. Default: "All"
+#: senaite/core/browser/widgets/analysisprofileswidget.py:109
+msgid "listing_analysisprofileswidget_state_all"
+msgstr ""
+
+#. Default: "Add"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:47
+msgid "listing_sampleconditions_action_add"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:68
+msgid "listing_sampleconditions_column_description"
+msgstr ""
+
+#. Default: "Sample Condition"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:62
+msgid "listing_sampleconditions_column_title"
+msgstr ""
+
+#. Default: "Active"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:78
+msgid "listing_sampleconditions_state_active"
+msgstr ""
+
+#. Default: "All"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:96
+msgid "listing_sampleconditions_state_all"
+msgstr ""
+
+#. Default: "Inactive"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:87
+msgid "listing_sampleconditions_state_inactive"
+msgstr ""
+
+#. Default: "Sample Conditions"
+#: senaite/core/browser/controlpanel/sampleconditions/view.py:54
+msgid "listing_sampleconditions_title"
+msgstr ""
+
+#. Default: "Add"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:47
+msgid "listing_samplematrices_action_add"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:68
+msgid "listing_samplematrices_column_description"
+msgstr ""
+
+#. Default: "Sample Matrix"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:62
+msgid "listing_samplematrices_column_title"
+msgstr ""
+
+#. Default: "Active"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:78
+msgid "listing_samplematrices_state_active"
+msgstr ""
+
+#. Default: "All"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:94
+msgid "listing_samplematrices_state_all"
+msgstr ""
+
+#. Default: "Inactive"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:86
+msgid "listing_samplematrices_state_inactive"
+msgstr ""
+
+#. Default: "Sample Matrices"
+#: senaite/core/browser/controlpanel/samplematrices/view.py:54
+msgid "listing_samplematrices_title"
+msgstr ""
+
+#. Default: "Add"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:47
+msgid "listing_samplepreservations_action_add"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:68
+msgid "listing_samplepreservations_column_description"
+msgstr ""
+
+#. Default: "Sample Preservation"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:62
+msgid "listing_samplepreservations_column_title"
+msgstr ""
+
+#. Default: "Active"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:78
+msgid "listing_samplepreservations_state_active"
+msgstr ""
+
+#. Default: "All"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:96
+msgid "listing_samplepreservations_state_all"
+msgstr ""
+
+#. Default: "Inactive"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:87
+msgid "listing_samplepreservations_state_inactive"
+msgstr ""
+
+#. Default: "Sample Preservations"
+#: senaite/core/browser/controlpanel/samplepreservations/view.py:54
+msgid "listing_samplepreservations_title"
+msgstr ""
+
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "minutes"
 msgstr "minutos"
@@ -7445,6 +7713,16 @@ msgstr "repitiendo cada"
 msgid "repeatperiod"
 msgstr "período de repetición"
 
+#. Default: "Field Preservation"
+#: senaite/core/config/vocabularies.py:24
+msgid "sample_preservation_category_vocab_field"
+msgstr ""
+
+#. Default: "Lab Preservation"
+#: senaite/core/config/vocabularies.py:28
+msgid "sample_preservation_category_vocab_lab"
+msgstr ""
+
 #. Default: "This sample has been dispatched by ${actor} on ${date}"
 #: senaite/core/browser/viewlets/templates/sample_dispatched_viewlet.pt:14
 msgid "this_sample_has_been_dispatched_by"
@@ -7461,6 +7739,46 @@ msgstr "Esta muestra ha sido enviada el ${date} por ${actor} "
 msgid "time_format"
 msgstr "${H}:${M}"
 
+#. Default: "Commercial ID"
+#: senaite/core/content/analysisprofile.py:121
+msgid "title_analysisprofile_commercial_id"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/content/analysisprofile.py:82
+msgid "title_analysisprofile_description"
+msgstr ""
+
+#. Default: "Profile Keyword"
+#: senaite/core/content/analysisprofile.py:90
+msgid "title_analysisprofile_profile_key"
+msgstr ""
+
+#. Default: "Price (excluding VAT)"
+#: senaite/core/content/analysisprofile.py:145
+msgid "title_analysisprofile_profile_price"
+msgstr ""
+
+#. Default: "VAT %"
+#: senaite/core/content/analysisprofile.py:157
+msgid "title_analysisprofile_profile_vat"
+msgstr ""
+
+#. Default: "Profile Analyses"
+#: senaite/core/content/analysisprofile.py:106
+msgid "title_analysisprofile_services"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/analysisprofile.py:74
+msgid "title_analysisprofile_title"
+msgstr ""
+
+#. Default: "Use analysis profile price"
+#: senaite/core/content/analysisprofile.py:133
+msgid "title_analysisprofile_use_profile_price"
+msgstr ""
+
 #. Default: "Analyst"
 #: senaite/core/permissions/localroles.py:30
 msgid "title_analyst_role"
@@ -7476,6 +7794,21 @@ msgstr "Este sitio fue construido usando el CMS/WCM de código abierto Plone."
 msgid "title_copyright"
 msgstr "Derechos de autor"
 
+#. Default: "Description"
+#: senaite/core/content/department.py:54
+msgid "title_department_description"
+msgstr ""
+
+#. Default: "Department ID"
+#: senaite/core/content/department.py:63
+msgid "title_department_id"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/department.py:46
+msgid "title_department_title"
+msgstr ""
+
 #. Default: "Lab Clerk"
 #: senaite/core/permissions/localroles.py:44
 msgid "title_lab_clerk_role"
@@ -7485,6 +7818,16 @@ msgstr "Recepcionista"
 #: senaite/core/permissions/localroles.py:79
 msgid "title_lab_manager_role"
 msgstr "Responsable"
+
+#. Default: "Description"
+#: senaite/core/content/label.py:46
+msgid "title_label_description"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/label.py:38
+msgid "title_label_title"
+msgstr ""
 
 #. Default: "Manager"
 #: senaite/core/permissions/localroles.py:86
@@ -7513,6 +7856,46 @@ msgstr "Publicador"
 msgid "title_required"
 msgstr "Campo obligatorio"
 
+#. Default: "Description"
+#: senaite/core/content/samplecondition.py:44
+msgid "title_samplecondition_description"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/samplecondition.py:36
+msgid "title_samplecondition_title"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/content/samplecontainer.py:52
+msgid "title_samplecontainer_description"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/samplecontainer.py:44
+msgid "title_samplecontainer_title"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/content/samplematrix.py:44
+msgid "title_samplematrix_description"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/samplematrix.py:36
+msgid "title_samplematrix_title"
+msgstr ""
+
+#. Default: "Description"
+#: senaite/core/content/samplepreservation.py:47
+msgid "title_samplepreservation_description"
+msgstr ""
+
+#. Default: "Name"
+#: senaite/core/content/samplepreservation.py:39
+msgid "title_samplepreservation_title"
+msgstr ""
+
 #. Default: "Sampler"
 #: senaite/core/permissions/localroles.py:65
 msgid "title_sampler_role"
@@ -7537,6 +7920,11 @@ msgstr "Cuerpo del correo electrónico para notificaciones de publicación de mu
 #: senaite/core/content/senaitesetup.py:137
 msgid "title_senaitesetup_sampleanalysesrequired"
 msgstr "No permitir el registro de muestras sin análisis"
+
+#. Default: "Display laboratory name in the login page"
+#: senaite/core/content/senaitesetup.py:160
+msgid "title_senaitesetup_show_lab_name_in_login"
+msgstr ""
 
 #. Default: "Verifier"
 #: senaite/core/permissions/localroles.py:72

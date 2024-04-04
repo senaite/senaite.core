@@ -1,0 +1,11 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div tal:replace="structure python:view.contents_table(editable=False)"/>
+    </div>
+  </div>
+
+</html>

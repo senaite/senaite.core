@@ -28,6 +28,7 @@ from OFS.interfaces import IOrderedContainer
 from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.interfaces import IDexterityItem
 from plone.dexterity.utils import addContentToContainer
+from plone.memoize.request import cache
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
@@ -38,6 +39,7 @@ from Products.GenericSetup.utils import I18NURI
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from senaite.core.p3compat import cmp
+from senaite.core.registry import get_registry_record
 from xml.dom.minidom import parseString
 from zope.component import adapts
 from zope.component import getUtility
@@ -46,18 +48,6 @@ from zope.component.interfaces import IFactory
 from zope.interface import alsoProvides
 
 from .config import SITE_ID
-
-# Skip user created contents
-SKIP_EXPORT_TYPES = [
-    "ARReport",
-    "AnalysisRequest",
-    "Attachment",
-    "AutoImportLog",
-    "Batch",
-    "Invoice",
-    "ReferenceSample",
-    "Worksheet",
-]
 
 ID_MAP = {}
 
@@ -435,7 +425,9 @@ def create_or_get(parent, id, uid, portal_type):
     # return first level objects directly
     if api.is_portal(parent):
         return parent.get(id)
-    elif api.get_setup() == parent:
+    elif api.get_bika_setup() == parent:
+        return parent.get(id)
+    elif api.get_senaite_setup() == parent:
         return parent.get(id)
 
     # query object by UID
@@ -481,14 +473,23 @@ def create_or_get(parent, id, uid, portal_type):
     return obj
 
 
+@cache(get_key=lambda *args: 'can-export-%s' % args[1])
+def can_export_type(portal_type, request):
+    """Returns whether objects from this type can be exported
+    """
+    name = "generic_setup_skip_export_types"
+    skip = get_registry_record(name, default=[])
+    return portal_type not in skip
+
+
 def can_export(obj):
     """Decides if the object can be exported or not
     """
     if not api.is_object(obj):
         return False
-    if api.get_portal_type(obj) in SKIP_EXPORT_TYPES:
-        return False
-    return True
+    portal_type = api.get_portal_type(obj)
+    request = api.get_request()
+    return can_export_type(portal_type, request)
 
 
 def can_import(obj):

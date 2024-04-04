@@ -31,7 +31,6 @@
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
-  <include package=".department"/>
   <include package=".fields"/>
   <include package=".publish"/>
   <include package=".resultsimport"/>

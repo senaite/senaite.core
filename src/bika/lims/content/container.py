@@ -91,7 +91,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "Preservation",
         required=0,
-        allowed_types=("Preservation",),
+        allowed_types=("SamplePreservation",),
         widget=ReferenceWidget(
             label=_(
                 "label_container_preservation",

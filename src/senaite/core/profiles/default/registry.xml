@@ -19,6 +19,9 @@
   <!-- Registry for sample header configuration -->
   <records interface="senaite.core.registry.schema.ISampleHeaderRegistry" />
 
+  <!-- Registry for generic setup configuration -->
+  <records interface="senaite.core.registry.schema.IGenericSetupRegistry" />
+
   <!-- Site Title -->
   <record name="plone.site_title" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="site_title">
     <field type="plone.registry.field.TextLine">
@@ -101,11 +104,11 @@
       <element>LabProducts</element>
       <element>Laboratory</element>
       <element>Manufacturers</element>
-      <element>Preservations</element>
       <element>ReferenceDefinitions</element>
       <element>SampleConditions</element>
       <element>SampleMatrices</element>
       <element>SamplePoints</element>
+      <element>SamplePreservations</element>
       <element>SampleTypes</element>
       <element>SamplingDeviations</element>
       <element>StorageLocations</element>

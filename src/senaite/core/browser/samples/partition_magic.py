@@ -200,7 +200,7 @@ class PartitionMagicView(BrowserView):
     def get_preservations(self):
         """Returns the available Preservations of the system
         """
-        query = dict(portal_type="Preservation",
+        query = dict(portal_type="SamplePreservation",
                      sort_on="sortable_title",
                      sort_order="ascending",
                      is_active=True)

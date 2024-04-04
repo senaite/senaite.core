@@ -52,7 +52,8 @@ Some Variables:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = api.get_setup()
+    >>> setup = portal.setup
+    >>> bikasetup = api.get_bika_setup()
 
 Functional Helpers:
 
@@ -100,7 +101,7 @@ Then we create the data according to the example given above:
 
 Now we can create a Dynamic Analysis Specification Object:
 
-    >>> ds = api.create(setup.dynamic_analysisspecs, "DynamicAnalysisSpec")
+    >>> ds = api.create(bikasetup.dynamic_analysisspecs, "DynamicAnalysisSpec")
     >>> ds.specs_file = to_excel(data)
 
 We can get now directly the parsed header:
@@ -131,22 +132,22 @@ First we build some basic setup structure:
 
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
 
     >>> method_a = api.create(portal.methods, "Method", title="Method A")
     >>> method_b = api.create(portal.methods, "Method", title="Method B")
 
-    >>> Ca = api.create(setup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Category=category, Method=method_a)
-    >>> Mg = api.create(setup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Category=category, Method=method_a)
+    >>> Ca = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Category=category, Method=method_a)
+    >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Category=category, Method=method_a)
 
 Then we create a default Analysis Specification:
 
     >>> rr1 = {"keyword": "Ca", "min": 10, "max": 20, "warn_min": 9, "warn_max": 21}
     >>> rr2 = {"keyword": "Mg", "min": 10, "max": 20, "warn_min": 9, "warn_max": 21}
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="H2O")
-    >>> specification = api.create(setup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype.UID(), ResultsRange=[rr1, rr2])
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="H2O")
+    >>> specification = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype.UID(), ResultsRange=[rr1, rr2])
 
 And create a new sample with the given Analyses and the Specification:
 
