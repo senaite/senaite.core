@@ -198,7 +198,7 @@ class ReferenceSamplesView(BikaListingView):
                 "ResultText": title,
                 "selected": selected,
             })
-        return choices
+        return sorted(choices, key=lambda d: d['ResultText'])
 
     @view.memoize
     def make_position_choices(self):
