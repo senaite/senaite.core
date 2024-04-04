@@ -309,6 +309,7 @@ schema["title"].validators = ("uniquefieldvalidator",)
 schema["title"]._validationLayer()
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2521
 class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
     implements(IARTemplate, IDeactivable)
 
