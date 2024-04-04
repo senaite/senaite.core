@@ -124,9 +124,9 @@
           action_id="templates"
           category="object"
           condition_expr=""
-          icon_expr="string:${portal_url}/images/artemplate.png"
+          icon_expr=""
           link_target=""
-          url_expr="string:${object_url}/artemplates"
+          url_expr="string:${object_url}/@@sampletemplates"
           i18n:attributes="title"
           visible="True">
     <permission value="View"/>

@@ -291,6 +291,17 @@ def temporary_allow_type(obj, allowed_type):
     fti.allowed_content_types = allowed_types
 
 
+def permanently_allow_type_for(portal_type, allowed_type):
+    """Permanently allow to the type to be created below the obj
+    """
+    pt = api.get_tool("portal_types")
+    fti = pt.get(portal_type)
+    # get the current allowed types for the object
+    allowed_types = fti.allowed_content_types
+    # append the allowed type
+    fti.allowed_content_types = allowed_types + (allowed_type, )
+
+
 def set_uid(obj, uid):
     """Set uid on dexterity object
     """

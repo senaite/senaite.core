@@ -16,6 +16,7 @@
   <include package=".attachment"/>
   <include package=".batching"/>
   <include package=".bootstrap"/>
+  <include package=".clients"/>
   <include package=".contentmenu"/>
   <include package=".contentrules"/>
   <include package=".controlpanel"/>

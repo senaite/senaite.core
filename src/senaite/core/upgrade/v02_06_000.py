@@ -25,6 +25,7 @@ from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from Products.Archetypes.utils import getRelURL
+from Products.CMFCore.permissions import View
 from senaite.core import logger
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -38,6 +39,7 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.component import getMultiAdapter
@@ -58,6 +60,22 @@ REMOVE_AT_TYPES = [
     "SamplePreservations",
     "SampleTemplate",
     "SampleTemplates",
+]
+
+CONTENT_ACTIONS = [
+    # portal_type, action
+    ("Client", {
+        "id": "templates",
+        "name": "Sample Templates",
+        "action": "string:${object_url}/@@sampletemplates",
+        "permission": View,
+        "category": "object",
+        "visible": True,
+        "icon_expr": "",
+        "link_target": "",
+        "condition": "",
+        "insert_after": "profiles",
+    }),
 ]
 
 
@@ -725,6 +743,12 @@ def migrate_sampletemplates_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
     tool.runImportStepFromProfile(profile, "rolemap")
 
+    # update content actions
+    update_content_actions(tool)
+
+    # allow to create the new DX based sample templates below clients
+    permanently_allow_type_for("Client", "SampleTemplate")
+
     # NOTE: Sample templates can be created in setup and client context!
     query = {"portal_type": "ARTemplate"}
     # search all AT based sample templates
@@ -755,11 +779,13 @@ def migrate_sampletemplates_to_dx(tool):
             num, total, api.get_path(old_obj), api.get_path(new_obj)))
 
     # remove old AT folder
-    if len(old_parent) == 0:
-        delete_object(old_parent)
-    else:
-        logger.warn("Old parent folder {} has contents -> skipping deletion"
-                    .format(old_parent))
+    if old_parent:
+        if len(old_parent) == 0:
+            delete_object(old_parent)
+        else:
+            logger.warn(
+                "Old parent folder {} has contents -> skipping deletion"
+                .format(old_parent))
 
     logger.info("Convert SampleTemplates to Dexterity [DONE]")
 
@@ -865,3 +891,46 @@ def migrate_template_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     return target
+
+
+def update_content_actions(tool):
+    logger.info("Update content actions ...")
+    portal_types = api.get_tool("portal_types")
+    for record in CONTENT_ACTIONS:
+        portal_type, action = record
+        type_info = portal_types.getTypeInfo(portal_type)
+        action_id = action.get("id")
+        # remove any previous added actions with the same ID
+        _remove_action(type_info, action_id)
+        # only remove the content action
+        if action.get("remove", False):
+            logger.info("Removed action '%s'", action_id)
+            continue
+        # pop out the position info
+        insert_after = action.pop("insert_after", None)
+        # add the action
+        type_info.addAction(**action)
+        # sort the action to the right position
+        actions = type_info._cloneActions()
+        action_ids = map(lambda a: a.id, actions)
+        if insert_after in action_ids:
+            ref_index = action_ids.index(insert_after)
+            index = action_ids.index(action_id)
+            action = actions.pop(index)
+            actions.insert(ref_index + 1, action)
+            type_info._actions = tuple(actions)
+
+        logger.info("Added action id '%s' to '%s'",
+                    action_id, portal_type)
+    logger.info("Update content actions [DONE]")
+
+
+def _remove_action(type_info, action_id):
+    """Removes the action id from the type passed in
+    """
+    actions = map(lambda action: action.id, type_info._actions)
+    if action_id not in actions:
+        return True
+    index = actions.index(action_id)
+    type_info.deleteActions([index])
+    return _remove_action(type_info, action_id)
