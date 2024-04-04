@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-03-06 22:27+0000\n"
+"POT-Creation-Date: 2024-04-03 07:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: erikking, 2023\n"
 "Language-Team: Chinese (https://app.transifex.com/senaite/teams/87045/zh/)\n"
@@ -1201,6 +1201,10 @@ msgstr "混合物等级%"
 msgid "Configuration"
 msgstr "配置"
 
+#: senaite/core/registry/schema.py:281
+msgid "Configuration for Generic Setup"
+msgstr ""
+
 #: senaite/core/registry/schema.py:215
 msgid "Configuration for the sample header information"
 msgstr "样本信息字段配置"
@@ -2349,6 +2353,10 @@ msgstr "通用"
 #: senaite/core/behaviors/configure.zcml:13
 msgid "Generates an ID with the IDServer"
 msgstr "使用ID服务器生成ID"
+
+#: senaite/core/registry/schema.py:280
+msgid "Generic Setup"
+msgstr ""
 
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:11
 msgid "Global Audit Log is disabled"
@@ -6790,6 +6798,11 @@ msgstr ""
 msgid "description_registry_client_landing_page"
 msgstr ""
 
+#. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
+#: senaite/core/registry/schema.py:292
+msgid "description_registry_generic_setup_skip_export_types"
+msgstr ""
+
 #. Default: "Assign sample to a batch"
 #: bika/lims/content/analysisrequest.py:316
 msgid "description_sample_batch"
@@ -7278,6 +7291,11 @@ msgstr ""
 #. Default: "Client landing page"
 #: senaite/core/registry/schema.py:62
 msgid "label_registry_client_landing_page"
+msgstr ""
+
+#. Default: "Portal types to skip on content structure export"
+#: senaite/core/registry/schema.py:288
+msgid "label_registry_generic_setup_skip_export_types"
 msgstr ""
 
 #. Default: "Batch"

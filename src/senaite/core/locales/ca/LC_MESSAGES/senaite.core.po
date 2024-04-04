@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-03-06 22:27+0000\n"
+"POT-Creation-Date: 2024-04-03 07:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Catalan (https://app.transifex.com/senaite/teams/87045/ca/)\n"
@@ -650,7 +650,7 @@ msgstr "Registre d'importacions automàtiques"
 
 #: bika/lims/content/artemplate.py:241
 msgid "Auto-partition on receive"
-msgstr "Particionament automàtic en recepcionar"
+msgstr "En recepcionar la mostra, genera les alíquotes automàticament"
 
 #: bika/lims/content/bikasetup.py:569
 msgid "Auto-receive samples"
@@ -682,7 +682,7 @@ msgstr "Crea automàticament grups d'usuari específics de client en crear nous 
 
 #: bika/lims/content/artemplate.py:242
 msgid "Automatically redirect the user to the partitions creation view when Sample is received."
-msgstr "Redirigeix l'usuari a la vista de creació de particions en el moment de rebre la mostra."
+msgstr "Marqueu la casella si voleu que el sistema redirigeixi l'usuari a la vista de creació d'alíquotes immediatament després de recepcionar de la mostra."
 
 #: bika/lims/content/analysisservice.py:77
 msgid "Available instruments based on the selected methods."
@@ -990,7 +990,7 @@ msgstr "Canvis guardats."
 
 #: senaite/core/browser/viewlets/templates/sampleheader.pt:83
 msgid "Changes will be propagated to partitions"
-msgstr "Es propagaran els canvis a les particions"
+msgstr "Els canvis es propagaran a les alíquotes"
 
 #: bika/lims/content/method.py:67
 msgid "Check if the method has been accredited"
@@ -1006,7 +1006,7 @@ msgstr "Marqueu aquesta casella si les mostres recollides en aquest punt de most
 
 #: senaite/core/content/samplecontainer.py:86
 msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
-msgstr "Marqueu aquesta casella si la conservació de la mostra ja va implícita amb el contenidor i el sistema ha d'ometre el flux de treball associat a la conservació"
+msgstr "Marqueu aquesta casella si la preservació de la mostra ja va implícita amb el contenidor i, per tant, cal que el sistema ometi el flux de treball associat al procès de preservació."
 
 #: bika/lims/content/laboratory.py:112
 msgid "Check this box if your laboratory is accredited"
@@ -1039,7 +1039,7 @@ msgstr "Clàssic"
 
 # senaite.app.listing: ButtonBar
 msgid "Clear selection"
-msgstr "Netejar la selecció"
+msgstr "Neteja la selecció"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:479
 msgid "Click to expand this category"
@@ -1201,6 +1201,10 @@ msgstr "% Nivell de confiança"
 msgid "Configuration"
 msgstr "Configuració"
 
+#: senaite/core/registry/schema.py:281
+msgid "Configuration for Generic Setup"
+msgstr ""
+
 #: senaite/core/registry/schema.py:215
 msgid "Configuration for the sample header information"
 msgstr "Configuració de la secció de l'encapçalament de mostra"
@@ -1215,7 +1219,7 @@ msgstr "Configuració de les columnes de la taula"
 
 #: bika/lims/content/artemplate.py:173
 msgid "Configure the sample partitions and preservations for this template. Assign analyses to the different partitions on the template's Analyses tab"
-msgstr "Configuració de les particions de mostres i mètodes de conservació assignats a la plantilla. Podeu assignar anàlisis a diferents particions des de la pestanya de plantilla d'anàlisis."
+msgstr "Configureu les alíquotes i mètodes de preservació per aquesta plantilla d'anàlisis. Des de la pestanya \"Anàlisis\" podeu assignar anàlisis concretes a cada una de les alíquotes."
 
 #: bika/lims/browser/templates/login_details.pt:253
 msgid "Confirm password"
@@ -1337,7 +1341,7 @@ msgstr "Crea factura en PDF"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:256
 msgid "Create Partitions"
-msgstr "Crea particions"
+msgstr "Crea les alíquotes"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:214
 msgid "Create SENAITE Site"
@@ -1365,7 +1369,7 @@ msgstr "Crea una fulla de treball"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Create partitions"
-msgstr "Crea particions"
+msgstr "Crea les alíquotes"
 
 #: bika/lims/browser/batchfolder.py:90
 #: bika/lims/browser/instrument.py:404
@@ -1388,7 +1392,7 @@ msgstr "S'ha creat la fulla de treball %s"
 
 #: senaite/core/browser/samples/partition_magic.py:113
 msgid "Created {} partitions: {}"
-msgstr "S'han creat {} particions: {}"
+msgstr "S'han creat {} alíquotes: {}"
 
 #: senaite/core/browser/samples/view.py:125
 msgid "Creator"
@@ -1468,7 +1472,7 @@ msgstr "Data d'obertura"
 
 #: senaite/core/browser/samples/view.py:144
 msgid "Date Preserved"
-msgstr "Data de conservació"
+msgstr "Data de preservació"
 
 #: bika/lims/content/arreport.py:159
 msgid "Date Printed"
@@ -1590,7 +1594,7 @@ msgstr "Mètode predeterminat"
 
 #: bika/lims/content/analysisservice.py:146
 msgid "Default Preservation"
-msgstr "Mètode de conservació predeterminat"
+msgstr "Mètode de preservació predeterminat"
 
 #: senaite/core/registry/schema.py:179
 msgid "Default column order for sample analysis listings"
@@ -1759,7 +1763,7 @@ msgid "Description of the site"
 msgstr "Descripció del lloc"
 
 msgid "Deselect all"
-msgstr "Netejar la selecció"
+msgstr "Desselecciona-ho tot"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Detach"
@@ -1818,7 +1822,7 @@ msgstr "Mostra un selector per al límit de detecció"
 
 #: bika/lims/content/bikasetup.py:582
 msgid "Display sample partitions to clients"
-msgstr "Mostra les particions de mostres als clients"
+msgstr "Mostra les alíquotes als clients"
 
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
 msgid "Dispose"
@@ -2018,7 +2022,7 @@ msgstr "Activa el suport per a múltiples instruments en fulles de treball"
 
 #: bika/lims/content/bikasetup.py:595
 msgid "Enable Sample Preservation"
-msgstr "Activa la funcionalitat de conservació de mostres"
+msgstr "Activa la funcionalitat de preservació de mostres"
 
 #: bika/lims/content/bikasetup.py:343
 msgid "Enable Sample Specifications"
@@ -2026,19 +2030,19 @@ msgstr "Activa la funcionalitat de rangs de validesa específics de mostra"
 
 #: bika/lims/content/bikasetup.py:548
 msgid "Enable Sampling"
-msgstr "Activa la funcionalitat de recol·lecció de mostres"
+msgstr "Habilita la funcionalitat de recol·lecció de mostres"
 
 #: bika/lims/content/bikasetup.py:557
 msgid "Enable Sampling Scheduling"
-msgstr "Activa la funcionalitat de planificació periòdica de recol·lecció de mostres"
+msgstr "Habilita la funcionalitat de planificació periòdica de recol·lecció de mostres"
 
 #: bika/lims/content/bikasetup.py:208
 msgid "Enable global Audit Log"
-msgstr "Activa el registre global d'auditoria"
+msgstr "Habilita el registre general d'auditoria"
 
 #: senaite/core/content/senaitesetup.py:86
 msgid "Enable global Auditlog"
-msgstr "Activa el registre global d'auditoria"
+msgstr "Habilita el registre general d'auditoria"
 
 #: bika/lims/content/artemplate.py:119
 msgid "Enable sampling workflow for the created sample"
@@ -2050,7 +2054,7 @@ msgstr "Activa la funcionalitat de seguiment i impressió d'informes de resultat
 
 #: bika/lims/content/bikasetup.py:944
 msgid "Enable the rejection workflow"
-msgstr "Activa la funcionalitat de rebuig de mostres i sol·licituds"
+msgstr "Permet rebutjar mostres"
 
 #: bika/lims/content/abstractbaseanalysis.py:672
 msgid "Enable this option to allow the capture of text as result"
@@ -2237,7 +2241,7 @@ msgstr "Nom del camp"
 
 #: bika/lims/config.py:56
 msgid "Field Preservation"
-msgstr "Conservació fora del laboratori"
+msgstr "La preservació es fa en recol·lectar la mostra"
 
 #: bika/lims/browser/fields/interimfieldsfield.py:56
 msgid "Field Title"
@@ -2350,9 +2354,13 @@ msgstr "General"
 msgid "Generates an ID with the IDServer"
 msgstr "Genera el identificador ID mitjançant l'IDServer"
 
+#: senaite/core/registry/schema.py:280
+msgid "Generic Setup"
+msgstr ""
+
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:11
 msgid "Global Audit Log is disabled"
-msgstr "El registre global d'auditoria està desactivat"
+msgstr "El registre general d'auditoria no està habilitat."
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:44
 msgid "Go to your instance"
@@ -2447,27 +2455,27 @@ msgstr "Marqueu aquesta casella si voleu que aquesta anàlisi no es mostri als i
 
 #: bika/lims/content/batch.py:138
 msgid "If no Title value is entered, the Batch ID will be used."
-msgstr ""
+msgstr "Deixeu el camp en blanc si voleu que com a títol del lot s'utilitzi l'identificador generat automàticament"
 
 #: bika/lims/content/batch.py:134
 msgid "If no value is entered, the Batch ID will be auto-generated."
-msgstr ""
+msgstr "Deixeu el camp en blanc si voleu que es l'identificador del lot es generi automàticament"
 
 #: bika/lims/content/method.py:128
 msgid "If required, select a calculation for the The analysis services linked to this method. Calculations can be configured under the calculations item in the LIMS set-up"
-msgstr "Si és necessari, seleccioneu el càlcul associat a l'anàlisi. Podeu configurar els càlculs des de l'apartat 'Càlculs'"
+msgstr "Si és necessari, seleccioneu el càlcul associat a l'anàlisi. Podeu configurar els càlculs des de l'apartat 'Càlculs'."
 
 #: senaite/core/content/interpretationtemplate.py:55
 msgid "If set, this interpretation template will only be available for selection on samples from these types"
-msgstr ""
+msgstr "Indiqueu els tipus de mostra per als quals voleu que aquesta plantilla d'interpretació estigui disponible. Si no n'indiqueu cap, podreu utilitzar aquesta plantilla d'interpretació independentment del tipus de mostra."
 
 #: senaite/core/content/interpretationtemplate.py:43
 msgid "If set, this interpretation template will only be available for selection on samples that have assigned any of these analysis templates"
-msgstr ""
+msgstr "Indiqueu les plantilles d'anàlisi per a les que voleu que aquesta plantilla d'interpretació estigui disponible. Si no n'indiqueu cap, podreu utilitzar aquesta plantilla d'interpretació independentment dels perfils d'anàlisi que tingui assignats la mostra."
 
 #: bika/lims/content/abstractbaseanalysis.py:66
 msgid "If text is entered here, it is used instead of the title when the service is listed in column headings. HTML formatting is allowed."
-msgstr ""
+msgstr "Introduïu el text que voleu que es mostri en comptes del nom del servei d'anàlisi en les capçaleres de columnes. Admet format HTML."
 
 #: senaite/core/exportimport/import.pt:85
 msgid "If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br /> If no instrument selected, no Calibration Test will be created for orphan IDs."
@@ -2491,7 +2499,7 @@ msgstr "Marqueu aquesta casella si voleu que els usuaris que pertanyen al grup d
 
 #: bika/lims/content/calculation.py:111
 msgid "If your formula needs a special function from an external Python library, you can import it here. E.g. if you want to use the 'floor' function from the Python 'math' module, you add 'math' to the Module field and 'floor' to the function field. The equivalent in Python would be 'from math import floor'. In your calculation you could use then 'floor([Ca] + [Mg])'. "
-msgstr ""
+msgstr "Afegiu els mòduls Python externs addicionals que vulgueu utilitzar en la fórmula. Per exemple, si voleu utilitzar la funció 'floor' del mòdul 'math' de Python, afegiu el mòdul 'math' al camp \"Mòdul\" i 'floor' al camp \"Funció\". (l'equivalent en Python seria 'from math import floor'). D'aquesta manera podreu utilitzar, per exemple, l'expressió 'floor([Ca] + [Mg])'."
 
 #: senaite/core/content/senaitesetup.py:117
 msgid "Immediate results entry"
@@ -2656,7 +2664,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/views/export.py:40
 msgid "Instrument has no data interface selected"
-msgstr "No ha seleccionat cap interfície de connexió de dades per a l'equip"
+msgstr "No heu seleccionat cap interfície de connexió de dades per a l'instrument"
 
 #: senaite/core/browser/form/adapters/data_import.py:95
 msgid "Instrument import finished"
@@ -2820,7 +2828,7 @@ msgstr "Càrrec"
 
 #: bika/lims/content/abstractbaseanalysis.py:637
 msgid "Keep order above"
-msgstr ""
+msgstr "Manté el mateix ordre de dalt"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:35
 msgid "Key"
@@ -2834,7 +2842,7 @@ msgstr "Identificador"
 
 #: senaite/core/browser/form/adapters/analysisservice.py:51
 msgid "Keyword is used in active analyses and can not be changed anymore"
-msgstr ""
+msgstr "No podeu canviar la paraula clau perquè ja s'està utilitzant en anàlisis actives."
 
 #: senaite/core/browser/form/adapters/analysisservice.py:180
 msgid "Keyword required"
@@ -2870,7 +2878,7 @@ msgstr "Departaments del laboratori"
 
 #: bika/lims/config.py:57
 msgid "Lab Preservation"
-msgstr "Preservació en el Laboratori"
+msgstr "La preservació de la mostra es fa al laboratori"
 
 #: bika/lims/config.py:62
 #: bika/lims/controlpanel/bika_labproducts.py:57
@@ -2890,7 +2898,7 @@ msgstr "Etiqueta"
 
 #: senaite/core/registry/schema.py:84
 msgid "Label configuration"
-msgstr ""
+msgstr "Gestió d'etiquetes"
 
 #: senaite/core/content/label.py:65
 msgid "Label names must be unique"
@@ -2902,13 +2910,13 @@ msgstr ""
 
 #: senaite/core/browser/label/labeled_objects.py:50
 msgid "Labeled Objects"
-msgstr ""
+msgstr "Continguts etiquetats"
 
 #: senaite/core/browser/controlpanel/labels/view.py:51
 #: senaite/core/browser/label/labeled_objects.py:65
 #: senaite/core/extender/label.py:57
 msgid "Labels"
-msgstr ""
+msgstr "Etiquetes"
 
 #: bika/lims/content/laboratory.py:206
 #: bika/lims/profiles/default/types/Laboratory.xml
@@ -2921,7 +2929,7 @@ msgstr "Laboratori acreditat"
 
 #: bika/lims/content/bikasetup.py:607
 msgid "Laboratory Workdays"
-msgstr ""
+msgstr "Dies laborables"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:74
 msgid "Language"
@@ -2933,15 +2941,15 @@ msgstr "Etiqueta gran"
 
 #: bika/lims/content/bikasetup.py:798
 msgid "Large sticker"
-msgstr ""
+msgstr "Etiqueta gran"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:42
 msgid "Last Auto-Import Logs"
-msgstr ""
+msgstr "Últim registre d'importacions automàtiques"
 
 #: bika/lims/browser/templates/login_details.pt:97
 msgid "Last Login Time"
-msgstr ""
+msgstr "Data i hora d'últim accés"
 
 #: senaite/core/browser/samples/view.py:444
 msgid "Late"
@@ -2962,7 +2970,7 @@ msgstr "Latitud"
 
 #: bika/lims/browser/worksheet/templates/results.pt:104
 msgid "Layout"
-msgstr ""
+msgstr "Disposició"
 
 #: bika/lims/browser/worksheet/views/results.py:68
 msgid "Layout view '{}' not found. Set '{}' as layout view."
@@ -3113,7 +3121,7 @@ msgstr "Gestor del generador d'identificadors"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:21
 msgid "Manage Partitions"
-msgstr ""
+msgstr "Gestió d'alíquotes"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
@@ -3149,16 +3157,16 @@ msgstr "Telèfon del responsable"
 
 #: bika/lims/browser/analyses/view.py:1057
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #: bika/lims/content/abstractbaseanalysis.py:297
 #: bika/lims/content/method.py:148
 msgid "Manual entry of results"
-msgstr ""
+msgstr "Entrada manual de resultats"
 
 #: bika/lims/browser/publish/reports_listing.py:161
 msgid "Manually publish all contained samples of the selected reports."
-msgstr ""
+msgstr "Fes una publicació manual de totes les mostres referenciades en els informes de resultats seleccionats."
 
 #: senaite/core/exportimport/import.pt:186
 msgid "Manually trigger auto import"
@@ -3418,7 +3426,7 @@ msgstr ""
 
 #: senaite/core/browser/form/adapters/analysisservice.py:43
 msgid "No Method selected for this Service"
-msgstr ""
+msgstr "No heu seleccionat cap mètodes per aquest servei d'anàlisi"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:33
 msgid "No Reference Definitions for Blanks available. <br /> To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first."
@@ -3486,7 +3494,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:167
 msgid "No email recipients selected"
-msgstr ""
+msgstr "No heu indicat cap destinatari del correu electrònic"
 
 #: senaite/core/exportimport/instruments/abaxis/vetscan/vs2.py:47
 #: senaite/core/exportimport/instruments/abbott/m2000rt/m2000rt.py:60
@@ -3504,23 +3512,23 @@ msgstr ""
 
 #: bika/lims/browser/workflow/client.py:120
 msgid "No items published"
-msgstr ""
+msgstr "No s'ha publicat cap mostra."
 
 #: senaite/core/browser/samples/partition_magic.py:64
 msgid "No items selected"
-msgstr ""
+msgstr "No heu seleccionat cap element"
 
 #: bika/lims/browser/workflow/__init__.py:130
 msgid "No items selected."
-msgstr ""
+msgstr "No heu seleccionat cap element."
 
 #: bika/lims/controlpanel/bika_analysisservices.py:114
 msgid "No new items were created."
-msgstr ""
+msgstr "No s'ha creat cap servei d'anàlisi."
 
 #: senaite/core/browser/samples/partition_magic.py:111
 msgid "No partitions were created"
-msgstr ""
+msgstr "No s'ha creat cap alíquota"
 
 #: bika/lims/browser/publish/emailview.py:176
 msgid "No reports found"
@@ -3528,7 +3536,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:112
 msgid "No samples were rejected"
-msgstr ""
+msgstr "No s'ha rebutjat cap mostra"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "No sampling workflow"
@@ -3560,7 +3568,7 @@ msgstr "Cap"
 
 #: bika/lims/browser/publish/emailview.py:208
 msgid "Not all contacts are equal for the selected Reports. Please manually select recipients for this email."
-msgstr ""
+msgstr "Els contactes associats als informes que heu seleccionat són diferents. Per a resoldre aquest problema, seleccioneu manualment els destinataris del correu electrònic."
 
 #: senaite/core/browser/modals/analysis.py:117
 msgid "Not allowed to update conditions: {}"
@@ -3585,7 +3593,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:42
 msgid "Note: The settings apply to all Sample Add forms; Required fields can not be deselected."
-msgstr ""
+msgstr "Tingueu en compte que aquests paràmetres de configuració s'aplicaran a tots els formularis de registre de mostres. D'altra banda, els camps obligatoris no es poden desseleccionar."
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:19
 msgid "Note: The settings are global and apply to all sample views."
@@ -3613,7 +3621,7 @@ msgstr "Nombre d'anàlisis"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:82
 msgid "Number of Partitions to create"
-msgstr ""
+msgstr "Número d'alíquotes"
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:52
 msgid "Number of Positions"
@@ -3635,11 +3643,11 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:428
 msgid "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
-msgstr ""
+msgstr "Indiqueu el número de verificacions necessàries per a que un resultat d'anàlisi pugui ser considerat com a 'verificat'. Podeu sobreescriure aquest paràmetre de configuració a nivell de servei d'anàlisi. El valor per defecte és 1."
 
 #: bika/lims/content/abstractbaseanalysis.py:724
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
-msgstr ""
+msgstr "Indiqueu el número de verificacions de diferents usuaris amb privilegis adients que seran necessàries abans que el resultat de l'anàlisi es pugui considerar com a 'verificat'. Aquest paràmetre de configuració té prioritat sobre els valor que hagueu configurat a la vista de configuració general."
 
 #: senaite/core/registry/schema.py:243
 msgid "Number of standard columns"
@@ -3651,7 +3659,7 @@ msgstr ""
 
 #: bika/lims/content/preservation.py:52
 msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
-msgstr "La mostra es descartarà durant el període de temps indicat tan bon punt s'estableixi en estat de conservació. Si no s'especifica res, s'utilitzarà el període de retenció per tipus de mostra."
+msgstr "La mostra es mantindrà apartada durant el període de temps indicat tan bon punt s'estableixi en estat de preservació. Si no s'especifica res, s'utilitzarà el període de retenció per tipus de mostra."
 
 #: bika/lims/content/dynamic_analysisspec.py:50
 msgid "Only Excel files supported"
@@ -3689,7 +3697,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:128
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
-msgstr ""
+msgstr "Obre el formulari per enviar els informes de resultats seleccionats per correu electrònic. Aquesta acció també farà que, una vegada s'hagin enviat els correus electrònics, el sistema també canviï l'estat de les mostres corresponents a l'estat \"publicada\"."
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:99
 msgid "Order"
@@ -3739,11 +3747,11 @@ msgstr ""
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:130
 msgid "Partition"
-msgstr "Partició"
+msgstr "Alíquota"
 
 #: senaite/core/browser/samples/partition_magic.py:120
 msgid "Partitioning canceled"
-msgstr ""
+msgstr "S'ha cancel·lat la creació d'alíquotes"
 
 #: bika/lims/browser/templates/login_details.pt:242
 msgid "Password"
@@ -3807,15 +3815,15 @@ msgstr ""
 
 #: bika/lims/browser/contact.py:208
 msgid "Please select a User from the list"
-msgstr ""
+msgstr "Seleccioneu un usuari de la llista"
 
 #: senaite/core/browser/attachment/attachment.py:224
 msgid "Please select an analysis or service for the attachment"
-msgstr ""
+msgstr "Seleccioneu una anàlisi o servei d'anàlisi al qual vincular el fitxer adjunt"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:111
 msgid "Please select number of partitions to create and press the preview button"
-msgstr ""
+msgstr "Seleccioneu el número d'alíquotes que voleu crear i premeu el botó \"Previsualitza\""
 
 #: senaite/core/browser/samples/dispatch_samples.py:61
 msgid "Please specify a reason"
@@ -3823,7 +3831,7 @@ msgstr ""
 
 #: bika/lims/content/analysisservice.py:184
 msgid "Please specify preservations that differ from the analysis service's default preservation per sample type here."
-msgstr ""
+msgstr "Seleccioneu els mètodes de preservació addicionals que cal tenir en compte i que són diferents del mètode de preservació per defecte establert pel servei d'anàlisi i tipus de mostra."
 
 #: bika/lims/content/laboratory.py:163
 msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
@@ -3831,7 +3839,7 @@ msgstr "Pengeu el logotip que la entitat acreditadora us ha autoritzat a utilitz
 
 #: bika/lims/content/analysisservice.py:228
 msgid "Please use the following format for select options: key1:value1|key2:value2|...|keyN:valueN"
-msgstr ""
+msgstr "Utilitzeu el format següent per a les opcions de selecció: clau1:valor1|clau2:valor2|...|clauN:valorN"
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:71
 msgid "Please write a comment where the listed sample(s) are dispatched"
@@ -3861,11 +3869,11 @@ msgstr "Codi postal"
 #: senaite/core/browser/controlpanel/samplecontainers/view.py:72
 #: senaite/core/content/samplecontainer.py:85
 msgid "Pre-preserved"
-msgstr "En pre-conservació"
+msgstr "Preservació implícita"
 
 #: senaite/core/content/samplecontainer.py:100
 msgid "Pre-preserved containers must have a preservation selected"
-msgstr ""
+msgstr "Heu de seleccionar un mètode de preservació"
 
 #: bika/lims/content/abstractbaseanalysis.py:156
 msgid "Precision as number of decimals"
@@ -3873,11 +3881,11 @@ msgstr "Precisió en número de decimals"
 
 #: bika/lims/content/abstractbaseanalysis.py:559
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que la precisió com a número de dígits significants es calculi automàticament d'acord amb el valor de la incertesa. La posició decimal es calcularà com el primer dígit diferent de zero del valor de la incertesa, que indicarà la posició a la qual s'efectuarà l'arrodoniment de tan la incertesa com del resultat. Per exemple, per a un resultat de 5.243 i una incertesa de 0.22, el sistema mostrarà 5.2 ± 0.2. El sistema utilitzarà el valor del paràmetre de configuració de precisió fixa si el resultat de l'anàlisi no cau dins de cap dels rangs d'incertesa definits."
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:32
 msgid "Predefined reasons of rejection"
-msgstr ""
+msgstr "Motius predeterminats per al rebuig del mostres"
 
 #: bika/lims/content/abstractbaseanalysis.py:606
 msgid "Predefined results"
@@ -3918,27 +3926,27 @@ msgstr "Publica provisionalment"
 #: senaite/core/browser/samples/templates/partition_magic.pt:195
 #: senaite/core/content/samplecontainer.py:114
 msgid "Preservation"
-msgstr "Conservació"
+msgstr "Mètode de preservació"
 
 #: bika/lims/content/preservation.py:44
 msgid "Preservation Category"
-msgstr "Categoria de conservació"
+msgstr "Tipus de preservació"
 
 #: senaite/core/content/samplecontainer.py:117
 msgid "Preservation method of this container"
-msgstr ""
+msgstr "Indiqueu el mètode de preservació associat al contenidor"
 
 #: bika/lims/content/analysisservice.py:183
 msgid "Preservation per sample type"
-msgstr ""
+msgstr "Preservació per tipus de mostra"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Preserve"
-msgstr "Conserva"
+msgstr "Preserva"
 
 #: senaite/core/browser/samples/view.py:227
 msgid "Preserver"
-msgstr "Conservant"
+msgstr "Preservador"
 
 #: senaite/core/browser/viewlets/templates/toolbar.pt:44
 msgid "Press Ctrl+Space to trigger the Spotlight search"
@@ -3955,7 +3963,7 @@ msgstr "Procediment de manteniment preventiu"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:250
 msgid "Preview"
-msgstr ""
+msgstr "Previsualitza"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:85
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:168
@@ -4136,7 +4144,7 @@ msgstr "Torneu a introduir la contrasenya i asseguri's que ambdues contrasenyes 
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:126
 msgid "Reasons for rejection"
-msgstr ""
+msgstr "Motius per al rebuig de mostres"
 
 #: bika/lims/browser/worksheet/views/folder.py:283
 msgid "Reassign"
@@ -4232,11 +4240,11 @@ msgstr "Rebutja"
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Anàlisis rebutjat"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:13
 msgid "Reject samples"
-msgstr ""
+msgstr "Rebuig de mostres"
 
 #: senaite/core/browser/dashboard/dashboard.py:593
 #: senaite/core/browser/samples/view.py:407
@@ -4246,27 +4254,27 @@ msgstr "Rebutjada"
 
 #: bika/lims/browser/workflow/analysisrequest.py:107
 msgid "Rejected items: {}"
-msgstr ""
+msgstr "S'han rebutjat les mostres següents: {}"
 
 #: bika/lims/browser/viewlets/templates/rejected_ar_viewlet.pt:13
 msgid "Rejected sample"
-msgstr ""
+msgstr "Mostra rebutjada"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:114
 msgid "Rejected {} samples: {}"
-msgstr ""
+msgstr "S'han rebutjat {} mostres: {}"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:121
 msgid "Rejection cancelled"
-msgstr ""
+msgstr "S'ha cancel·lat el rebuig de mostres"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:77
 msgid "Rejection reasons"
-msgstr ""
+msgstr "Indiqueu els motius pels quals voleu rebutjar la mostra"
 
 #: bika/lims/browser/analysisrequest/reject_samples.py:70
 msgid "Rejection workflow is not enabled"
-msgstr ""
+msgstr "La funcionalitat de rebuig de mostres no està habilitada."
 
 # senaite.app.listing: Reload
 msgid "Reload"
@@ -4617,11 +4625,11 @@ msgstr "Punts de mostreig"
 
 #: senaite/core/profiles/default/types/SamplePreservation.xml
 msgid "Sample Preservation"
-msgstr ""
+msgstr "Mètode de preservació de mostres"
 
 #: senaite/core/profiles/default/types/SamplePreservations.xml
 msgid "Sample Preservations"
-msgstr ""
+msgstr "Mètodes de preservació de mostres"
 
 #: bika/lims/content/analysisrequest.py:656
 msgid "Sample Rejection"
@@ -4676,15 +4684,15 @@ msgstr "Tipus de mostra"
 
 #: senaite/core/content/interpretationtemplate.py:54
 msgid "Sample types"
-msgstr ""
+msgstr "Tipus de mostres"
 
 #: senaite/core/registry/schema.py:148
 msgid "Sample view configuration"
-msgstr ""
+msgstr "Configuració de la vista de mostra"
 
 #: bika/lims/browser/viewlets/templates/primary_ar_viewlet.pt:15
 msgid "Sample with partitions"
-msgstr ""
+msgstr "Alíquotes"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:97
 msgid "SampleMatrix"
@@ -4735,7 +4743,7 @@ msgstr "Mostreig planificat"
 
 #: senaite/core/browser/dashboard/dashboard.py:409
 msgid "Samples to be preserved"
-msgstr ""
+msgstr "Mostres per preservar"
 
 #: senaite/core/browser/dashboard/dashboard.py:459
 msgid "Samples to be printed"
@@ -4797,7 +4805,7 @@ msgstr ""
 
 #: bika/lims/browser/workflow/__init__.py:209
 msgid "Saved items: {}"
-msgstr ""
+msgstr "S'han desat els els elements següents: {}"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
@@ -4847,7 +4855,7 @@ msgstr "Sembrant clau {} amb {}"
 
 #: bika/lims/content/analysisservice.py:259
 msgid "Select"
-msgstr ""
+msgstr "Llista de selecció"
 
 #: bika/lims/content/bikasetup.py:764
 msgid "Select 'Register' if you want stickers to be automatically printed when new Samples or sample records are created. Select 'Receive' to print stickers when Samples or Samples are received. Select 'None' to disable automatic printing"
@@ -4855,7 +4863,7 @@ msgstr ""
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:215
 msgid "Select Partition Analyses"
-msgstr ""
+msgstr "Seleccioneu les anàlisis a efectuar en aquesta l'alíquota"
 
 #: bika/lims/content/analysisservice.py:147
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
@@ -4863,15 +4871,15 @@ msgstr "Seleccioneu un mètode de preservació per defecte pel servei d'anàlisi
 
 # senaite.core.browser.modals.templates.create_worksheet.pt
 msgid "Select all"
-msgstr ""
+msgstr "Selecciona-ho tot"
 
 #: bika/lims/content/instrument.py:216
 msgid "Select an Export interface for this instrument."
-msgstr ""
+msgstr "Seleccioneu una interfície per a l'exportació de mostres i les anàlisis a ser efectuades a un fitxer que pugui ser importat a l'instrument."
 
 #: bika/lims/content/instrument.py:229
 msgid "Select an Import interface for this instrument."
-msgstr ""
+msgstr "Seleccioneu una interfície d'importació de fitxers amb resultats generats per aquest instrument."
 
 #: bika/lims/content/artemplate.py:288
 msgid "Select analyses to include in this template"
@@ -4879,11 +4887,11 @@ msgstr "Seleccioneu les anàlisis que voleu incloure en aquesta plantilla"
 
 #: bika/lims/browser/worksheet/templates/worksheets.pt:41
 msgid "Select analyst"
-msgstr "Selecciona l'analista"
+msgstr "Seleccioneu l'analista"
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:203
 msgid "Select any add-ons you want to activate immediately. You can also activate add-ons after the site has been created using the Add-ons control panel."
-msgstr ""
+msgstr "Seleccioneu els complements que vulgueu habilitar immediatament. Tanmateix, recordeu que també ho podreu fer després d'haver creat el lloc, des de l'apartat \"Complements\" del panell de control."
 
 #: senaite/core/exportimport/import.pt:129
 msgid "Select existing file"
@@ -4891,23 +4899,23 @@ msgstr "Seleccioneu un fitxer"
 
 #: bika/lims/content/instrumentcertification.py:85
 msgid "Select if is an in-house calibration certificate"
-msgstr ""
+msgstr "Marqueu aquesta casella si es tracta d'un certificat de calibratge intern, efectuat pel propi laboratori."
 
 #: bika/lims/content/analysisservice.py:89
 msgid "Select if the calculation to be used is the calculation set by default in the default method. If unselected, the calculation can be selected manually"
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu utilitzar el càlcul assignat al mètode seleccionat per defecte. Si no marqueu la casella, l'usuari podrà indicar el càlcul manualment a la vista d'entrada de resultats."
 
 #: bika/lims/content/pricelist.py:76
 msgid "Select if the descriptions should be included"
-msgstr "Indiqueu si cal incloure les descripcions"
+msgstr "Marqueu aquesta casella si voleu incloure les descripcions."
 
 #: bika/lims/content/abstractbaseanalysis.py:312
 msgid "Select if the results for tests of this type of analysis can be set by using an instrument. If disabled, no instruments will be available for tests of this type of analysis in manage results view, even though the method selected for the test has instruments assigned."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que els resultats d'aquesta anàlisi  puguin ser capturats des d'un instrument. Si no la marqueu, el sistema no permetrà seleccionar cap instrument per anàlisis d'aquest tipus a la vista d'entrada de resultats, fins i tot encara que el mètode seleccionat tingui instruments assignats."
 
 #: bika/lims/browser/worksheet/templates/worksheets.pt:71
 msgid "Select instrument"
-msgstr "Selecciona l'equip"
+msgstr "Seleccioneu l'instrument"
 
 #: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:75
 msgid "Select template"
@@ -4915,80 +4923,80 @@ msgstr "Seleccioneu una plantilla"
 
 #: bika/lims/content/bikasetup.py:245
 msgid "Select the country the site will show by default"
-msgstr ""
+msgstr "Seleccioneu el país que voleu que es mostri per defecte"
 
 #: bika/lims/content/bikasetup.py:233
 msgid "Select the currency the site will use to display prices."
-msgstr "Seleccioneu la moneda que s'ha de mostrar en els imports."
+msgstr "Seleccioneu la moneda que s'ha de mostrar en els preus."
 
 #: bika/lims/content/analysisservice.py:167
 msgid "Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below"
-msgstr "Seleccioneu el contenidor per defecte que cal utilitzar per aquest servei d'anàlisi. Si el contenidor depèn de la combinació de tipus de mostra i del mètode de conservació, especifiqueu el contenidor específic pel tipus de mostra."
+msgstr "Seleccioneu el contenidor per defecte que cal utilitzar per aquest servei d'anàlisi. Si el contenidor depèn de la combinació de tipus de mostra i del mètode de preservació, especifiqueu el contenidor específic pel tipus de mostra."
 
 #: bika/lims/profiles/default/registry.xml
 msgid "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing."
-msgstr ""
+msgstr "Seleccioneu la pàgina de destinació principal per als contactes de client."
 
 #: bika/lims/content/identifiertype.py:40
 msgid "Select the types that this ID is used to identify."
-msgstr ""
+msgstr "Seleccioneu els tipus de contingut per als quals voleu que s'utilitzi aquest identificador."
 
 #: bika/lims/content/bikasetup.py:721
 msgid "Select this to activate automatic notifications via email to the Client and Lab Managers when a Sample is invalidated."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que en invalidar una mostra, el sistema enviï automàticament una notificació per correu electrònic al contacte del client i als responsables del laboratori."
 
 #: bika/lims/content/bikasetup.py:686
 msgid "Select this to activate automatic notifications via email to the Client when a Sample is rejected."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que en rebutjar una mostra, el sistema enviï automàticament una notificació per correu electrònic al contacte del client."
 
 #: bika/lims/content/bikasetup.py:492
 msgid "Select this to activate the dashboard as a default front page."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que la pàgina de destinació principal sigui el tauler."
 
 #: bika/lims/content/bikasetup.py:945
 msgid "Select this to activate the rejection workflow for Samples. A 'Reject' option will be displayed in the actions menu."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu habilitar la funcionalitat de rebuig de mostres."
 
 #: bika/lims/content/bikasetup.py:549
 msgid "Select this to activate the sample collection workflow steps."
-msgstr "Marqueu la casella per activa el flux de treball per a la recol·lecció de mostres"
+msgstr "Marqueu la casella si voleu habilitar la funcionalitat de recol·lecció de mostres."
 
 #: bika/lims/content/bikasetup.py:558
 msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This functionality only takes effect when 'Sampling workflow' is active"
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que els usuaris amb el rol \"Responsable de mostreig\" puguin planificar la recol·lecció de mostres."
 
 #: bika/lims/content/bikasetup.py:537
 msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que l'usuari pugui marcar les mostres com a impreses després d'haver estat publicades."
 
 #: bika/lims/content/bikasetup.py:570
 msgid "Select to receive the samples automatically when created by lab personnel and sampling workflow is disabled. Samples created by client contacts won't be received automatically"
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que el sistema recepcioni automàticament les mostres creades per personal intern del laboratori si la funcionalitat de \"Recol·lecció de mostres\" no està activada. Tingueu en compte que encara que aquesta casella estigui marcada, les mostres que hagin estat registrades per usuaris vinculats a client mai seran recepcionades automàticament."
 
 #: bika/lims/content/bikasetup.py:583
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu que es mostrin les alíquotes als usuaris vinculats a clients. En cas contrari, no se'ls hi mostraran ni les alíquotes ni tampoc els vincles a mostres primàries."
 
 #: bika/lims/content/worksheettemplate.py:82
 msgid "Select which Analyses should be included on the Worksheet"
-msgstr "Seleccioneu quines anàlisis voleu incloure a la fulla de treball."
+msgstr "Seleccioneu quines anàlisis voleu que s'afegeixin automàticament a la fulla de treball quan s'utilitzi aquesta plantilla."
 
 #: bika/lims/content/bikasetup.py:799
 msgid "Select which sticker should be used as the 'large' sticker by default"
-msgstr ""
+msgstr "Seleccioneu l'etiqueta de codi de barres que voleu que s'utilitzi per a contenidors de mostra grans."
 
 #: bika/lims/content/bikasetup.py:788
 msgid "Select which sticker should be used as the 'small' sticker by default"
-msgstr ""
+msgstr "Seleccioneu l'etiqueta de codi de barres que voleu que s'utilitzi per a contenidors de mostra petits."
 
 #: bika/lims/content/bikasetup.py:777
 msgid "Select which sticker to print when automatic sticker printing is enabled"
-msgstr ""
+msgstr "Seleccioneu l'etiqueta de codi de barres que cal imprimir per defecte quan la funcionalitat d'impressió automàtica d'etiquetes estigui activada."
 
 #: bika/lims/browser/fields/interimfieldsfield.py:104
 #: bika/lims/content/abstractbaseanalysis.py:615
 msgid "Selection list"
-msgstr ""
+msgstr "Llista de selecció"
 
 #: bika/lims/content/abstractbaseanalysis.py:704
 msgid "Self-verification of results"
@@ -5031,7 +5039,7 @@ msgstr "Servei"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:534
 msgid "Service cannot be deselected. Please click the info button for further details"
-msgstr ""
+msgstr "No es pot desseleccionar el servei d'anàlisi. Premeu el botó d'informació per a més detalls."
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:61
 msgid "Set"
@@ -5047,7 +5055,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/views/analyses.py:165
 msgid "Set remarks for selected analyses"
-msgstr ""
+msgstr "Premeu el botó \"Afegir comentaris\" per a escriure un comentari per a totes les anàlisis seleccionades d'un sol cop."
 
 #: bika/lims/content/analysisrequest.py:657
 msgid "Set the Sample Rejection workflow and the reasons"
@@ -5244,7 +5252,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
-msgstr ""
+msgstr "Previsualitza les etiquetes"
 
 #: senaite/core/browser/samples/view.py:214
 msgid "Storage Location"
@@ -5460,7 +5468,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:608
 msgid "The date when the sample was preserved"
-msgstr ""
+msgstr "Indiqueu la data quan es va preservar de la mostra."
 
 #: bika/lims/content/analysisrequest.py:1066
 msgid "The date when the sample was received"
@@ -5468,11 +5476,11 @@ msgstr ""
 
 #: bika/lims/content/client.py:153
 msgid "The decimal mark selected in Bika Setup will be used."
-msgstr ""
+msgstr "Marqueu aquesta casella si voleu utilitzar el símbol de separació decimal de la configuració general."
 
 #: senaite/core/browser/install/templates/senaite-addsite.pt:113
 msgid "The default timezone setting of the portal. Users will be able to set their own timezone, if available timezones are defined in the date and time settings."
-msgstr ""
+msgstr "La configuració del fus horari per defecte del portal. Els usuaris poden configurar un fus horari propi si definiu altres fusos horaris a la configuració de data i hora."
 
 #: bika/lims/content/bikasetup.py:255
 msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
@@ -5492,7 +5500,7 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/primary_ar_viewlet.pt:20
 msgid "The following partitions have been created from this Sample:"
-msgstr ""
+msgstr "D'aquesta mostra s'han creat les alíquotes següents:"
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:47
 msgid "The following sample(s) will be dispatched"
@@ -5500,7 +5508,7 @@ msgstr "Les mostres següents seran enviades"
 
 #: senaite/core/content/senaitesetup.py:87
 msgid "The global Auditlog shows all modifications of the system. When enabled, all entities will be indexed in a separate catalog. This will increase the time when objects are created or modified."
-msgstr "Marqueu aquesta casella si voleu activar el registre general d'auditoria i així poder visualitzar les modificacions efectuades en qualsevol contingut des de una única vista general. Tingueu en compte que l'activació d'aquest paràmetre de configuració farà que tots els continguts s'hagin d'indexar en un catàleg addicional, de manera que el sistema serà més lent en crear continguts o modificar-ne d'existents."
+msgstr "Marqueu aquesta casella si voleu habilitar el registre general d'auditoria i així poder visualitzar les modificacions efectuades en qualsevol contingut des d'una única vista general. Tingueu en compte que l'activació d'aquest paràmetre de configuració farà que tots els continguts s'hagin d'indexar en un catàleg addicional, de manera que el sistema serà més lent en crear continguts o modificar-ne d'existents."
 
 #: bika/lims/content/samplepoint.py:75
 msgid "The height or depth at which the sample has to be taken"
@@ -5541,11 +5549,11 @@ msgstr "El número de minuts de durada de la sessió d'usuari abans que el siste
 
 #: bika/lims/content/sampletype.py:117
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
-msgstr "Període de temps durant el qual es poden mantenir les mostres en un estat de no conservació abans que no caduquin i no puguin ser analitzades."
+msgstr "Indiqueu el període de temps durant el qual es poden mantenir les mostres sense preservar abans que no caduquin i no puguin ser analitzades."
 
 #: bika/lims/content/analysisrequest.py:629
 msgid "The person who preserved the sample"
-msgstr ""
+msgstr "Seleccioneu la persona encarregada de preservar la mostra."
 
 #: bika/lims/content/analysisrequest.py:462
 msgid "The person who took the sample"
@@ -5613,7 +5621,7 @@ msgstr "Paraula clau que identifica unívocament el servei d'anàlisi en importa
 
 #: bika/lims/browser/publish/templates/email.pt:126
 msgid "The variable ${recipients} will be automatically replaced with the names and emails of the final selected recipients."
-msgstr ""
+msgstr "El sistema substituirà, de forma automàtica, la variable ${recipients} pels noms dels destinataris del correu electrònic seleccionats."
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:84
 msgid "There are no pre-defined conditions set"
@@ -5625,7 +5633,7 @@ msgstr "No hi ha dades pel període seleccionat"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "These reasons will be displayed for its selection during the rejection process."
-msgstr ""
+msgstr "L'usuari podrà seleccionar qualsevol dels motius següents en rebutjar una mostra."
 
 #: bika/lims/browser/viewlets/templates/invalid_ar_viewlet.pt:15
 msgid "These results have been withdrawn and are listed here for trace-ability purposes. Please follow the link to the retest"
@@ -5645,7 +5653,7 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/partition_ar_viewlet.pt:14
 msgid "This is a Partition from Sample"
-msgstr ""
+msgstr "Aquesta mostra és una alíquota de la mostra primària"
 
 #: bika/lims/browser/viewlets/templates/secondary_ar_viewlet.pt:15
 msgid "This is a Secondary Sample of"
@@ -5653,7 +5661,7 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/detached_partition_viewlet.pt:15
 msgid "This is a detached partition from Sample"
-msgstr ""
+msgstr "Aquesta mostra és una alíquota que s'ha desvinculat de la mostra primària"
 
 #: bika/lims/content/bikasetup.py:620
 msgid "This is the default maximum time allowed for performing analyses.  It is only used for analyses where the analysis service does not specify a turnaround time. Only laboratory workdays are considered."
@@ -5661,7 +5669,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/views/analyses.py:127
 msgid "This operation can not be undone. Are you sure you want to reject the selected analyses?"
-msgstr ""
+msgstr "Esteu segur que voleu rebutjar les anàlisis seleccionades? Aquesta operació no es pot desfer."
 
 #: senaite/core/browser/setup/templates/email_body_sample_publication.pt:14
 msgid "This report was sent to the following contacts:"
@@ -5729,7 +5737,7 @@ msgstr "Fins"
 
 #: senaite/core/browser/samples/view.py:294
 msgid "To Be Preserved"
-msgstr "Per conservar"
+msgstr "Per preservar"
 
 #: senaite/core/browser/samples/view.py:285
 msgid "To Be Sampled"
@@ -5742,7 +5750,7 @@ msgstr ""
 #: senaite/core/browser/dashboard/dashboard.py:410
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "To be preserved"
-msgstr "Per conservar"
+msgstr "Per preservar"
 
 #: senaite/core/browser/dashboard/dashboard.py:460
 msgid "To be printed"
@@ -6060,11 +6068,11 @@ msgstr ""
 
 #: bika/lims/validators.py:762
 msgid "Validation failed: PrePreserved containers must have a preservation selected."
-msgstr "Error de validació: els contenidors per a la pre-conservació han de tenir un mètode de conservació associat."
+msgstr "Heu de seleccionar un mètode de preservació."
 
 #: bika/lims/validators.py:720
 msgid "Validation failed: The selection requires the following categories to be selected: ${categories}"
-msgstr "Error de validació: és imprescindible que seleccioneu les categories següents: ${categories}"
+msgstr "Heu de seleccionar les categories següents: ${categories}"
 
 #: bika/lims/validators.py:1006
 msgid "Validation failed: Values must be numbers"
@@ -6155,11 +6163,11 @@ msgstr "Error de validació: no heu indicat el títol"
 
 #: bika/lims/validators.py:1444
 msgid "Validation failed: value for Choices subfield is only required for when the control type of choice is 'Select'"
-msgstr ""
+msgstr "Heu de buidar el camp \"Opcions\" dels elements per als que no heu seleccionat \"Llista de selecció\" com a tipus de control."
 
 #: bika/lims/validators.py:1426
 msgid "Validation failed: value for Choices subfield is required when the control type of choice is 'Select'"
-msgstr ""
+msgstr "Heu de omplir el camp \"Opcions\" dels elements per als que heu seleccionat \"Llista de selecció\" com a tipus de control."
 
 #: bika/lims/validators.py:1260
 msgid "Validation failed: value must be between 0 and 1000"
@@ -6359,15 +6367,15 @@ msgstr ""
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:109
 msgid "You can change the visibility of a field by selecting or unselecting the checkbox."
-msgstr ""
+msgstr "Marqueu  o desmarqueu les caselles per a canviar la visibilitat dels camps corresponents."
 
 #: senaite/core/browser/viewlets/templates/auditlog_disabled.pt:17
 msgid "You can enable the global Audit Log again in the <a href=\"${DYNAMIC_CONTENT}\">Setup</a>"
-msgstr ""
+msgstr "Podeu tornar a habilitar el registre general d'auditoria a la <a href=\"${DYNAMIC_CONTENT}\">pàgina de configuració del sistema</a>."
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:291
 msgid "You can use the browse button to select and upload a new attachment."
-msgstr ""
+msgstr "Utilitzeu el botó corresponent per a carregar fitxers adjunts."
 
 #: bika/lims/browser/worksheet/tools.py:42
 msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
@@ -6672,7 +6680,7 @@ msgstr ""
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: bika/lims/content/container.py:99
 msgid "description_container_preservation"
-msgstr ""
+msgstr "Si s'escau, seleccioneu el mètode de preservació que va implícit amb el contenidor."
 
 #. Default: "Select the type of this container"
 #: bika/lims/content/container.py:56
@@ -6790,6 +6798,11 @@ msgstr ""
 msgid "description_registry_client_landing_page"
 msgstr ""
 
+#. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
+#: senaite/core/registry/schema.py:292
+msgid "description_registry_generic_setup_skip_export_types"
+msgstr ""
+
 #. Default: "Assign sample to a batch"
 #: bika/lims/content/analysisrequest.py:316
 msgid "description_sample_batch"
@@ -6823,7 +6836,7 @@ msgstr ""
 #. Default: "Reference to detached sample"
 #: bika/lims/content/analysisrequest.py:1294
 msgid "description_sample_detached_from"
-msgstr ""
+msgstr "La mostra primària de la qual s'ha desvinculat aquesta alíquota"
 
 #. Default: "Generated invoice for this sample"
 #: bika/lims/content/analysisrequest.py:1038
@@ -6838,7 +6851,7 @@ msgstr ""
 #. Default: "Select the needed preservation for this sample"
 #: bika/lims/content/analysisrequest.py:585
 msgid "description_sample_preservation"
-msgstr ""
+msgstr "Seleccioneu el mètode de preservació per aquesta mostra."
 
 #. Default: "Select a sample to create a secondary Sample"
 #: bika/lims/content/analysisrequest.py:280
@@ -7005,11 +7018,11 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "hours"
-msgstr ""
+msgstr "hores"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:144
 msgid "hours: {} minutes: {} days: {}"
-msgstr ""
+msgstr "hores: {} minuts: {} dies: {}"
 
 #: bika/lims/browser/publish/templates/email.pt:185
 msgid "in"
@@ -7018,7 +7031,7 @@ msgstr ""
 #. Default: "Labels"
 #: senaite/core/behaviors/label.py:117
 msgid "label_Labels"
-msgstr ""
+msgstr "Etiquetes"
 
 #. Default: "Add to the following groups:"
 #: bika/lims/browser/templates/login_details.pt:276
@@ -7028,37 +7041,37 @@ msgstr "Afegeix als grups següents:"
 #. Default: "Analysis Category"
 #: bika/lims/content/abstractbaseanalysis.py:425
 msgid "label_analysis_category"
-msgstr ""
+msgstr "Categoria d'anàlisis"
 
 #. Default: "Department"
 #: bika/lims/content/abstractbaseanalysis.py:483
 msgid "label_analysis_department"
-msgstr ""
+msgstr "Departament"
 
 #. Default: "Sorting criteria"
 #: bika/lims/content/abstractbaseanalysis.py:650
 msgid "label_analysis_results_options_sorting"
-msgstr ""
+msgstr "Criteri d'ordenació"
 
 #. Default: "Default Unit"
 #: bika/lims/content/abstractbaseanalysis.py:105
 msgid "label_analysis_unit"
-msgstr ""
+msgstr "Unitats de mesura per defecte"
 
 #. Default: "Units for Selection"
 #: bika/lims/content/abstractbaseanalysis.py:138
 msgid "label_analysis_unitchoices"
-msgstr ""
+msgstr "Unitats de mesura disponibles"
 
 #. Default: "Sample types"
 #: senaite/core/content/analysisprofile.py:180
 msgid "label_analysisprofile_sampletypes"
-msgstr ""
+msgstr "Tipus de mostra"
 
 #. Default: "Number of samples"
 #: bika/lims/content/analysisrequest.py:1420
 msgid "label_analysisrequest_numsamples"
-msgstr ""
+msgstr "Número de mostres"
 
 #. Default: "Dynamic Analysis Specification"
 #: bika/lims/content/analysisspec.py:69
@@ -7173,7 +7186,7 @@ msgstr ""
 #. Default: "Preservation"
 #: bika/lims/content/container.py:96
 msgid "label_container_preservation"
-msgstr ""
+msgstr "Preservació"
 
 #. Default: "Container Type"
 #: bika/lims/content/container.py:53
@@ -7280,6 +7293,11 @@ msgstr ""
 msgid "label_registry_client_landing_page"
 msgstr ""
 
+#. Default: "Portal types to skip on content structure export"
+#: senaite/core/registry/schema.py:288
+msgid "label_registry_generic_setup_skip_export_types"
+msgstr ""
+
 #. Default: "Batch"
 #: bika/lims/content/analysisrequest.py:313
 msgid "label_sample_batch"
@@ -7313,7 +7331,7 @@ msgstr ""
 #. Default: "Detached from sample"
 #: bika/lims/content/analysisrequest.py:1291
 msgid "label_sample_detached_from"
-msgstr ""
+msgstr "Alíquota desvinculada de"
 
 #. Default: "Invoice"
 #: bika/lims/content/analysisrequest.py:1035
@@ -7328,7 +7346,7 @@ msgstr ""
 #. Default: "Preservation"
 #: bika/lims/content/analysisrequest.py:582
 msgid "label_sample_preservation"
-msgstr ""
+msgstr "Preservació"
 
 #. Default: "Primary Sample"
 #: bika/lims/content/analysisrequest.py:277
@@ -7403,7 +7421,7 @@ msgstr ""
 #. Default: "Category"
 #: senaite/core/content/samplepreservation.py:55
 msgid "label_samplepreservation_category"
-msgstr ""
+msgstr "Tipus de preservació"
 
 #. Default: "Default Container Type"
 #: bika/lims/content/sampletype.py:176
@@ -7453,7 +7471,7 @@ msgstr ""
 #. Default: "Items"
 #: senaite/core/browser/controlpanel/templates/setupview.pt:81
 msgid "label_setupview_items"
-msgstr ""
+msgstr "Elements"
 
 #. Default: "Out of range comment"
 #: bika/lims/browser/fields/resultrangefield.py:41
@@ -7519,7 +7537,7 @@ msgstr ""
 #. Default: "Inactive"
 #: senaite/core/browser/controlpanel/analysisprofiles/view.py:106
 msgid "listing_analysisprofiles_state_inactive"
-msgstr ""
+msgstr "Inactius"
 
 #. Default: "Analysis Profiles"
 #: senaite/core/browser/controlpanel/analysisprofiles/view.py:56
@@ -7589,7 +7607,7 @@ msgstr ""
 #. Default: "Inactive"
 #: senaite/core/browser/controlpanel/sampleconditions/view.py:87
 msgid "listing_sampleconditions_state_inactive"
-msgstr ""
+msgstr "Inactives"
 
 #. Default: "Sample Conditions"
 #: senaite/core/browser/controlpanel/sampleconditions/view.py:54
@@ -7634,37 +7652,37 @@ msgstr ""
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:47
 msgid "listing_samplepreservations_action_add"
-msgstr ""
+msgstr "Afegeix"
 
 #. Default: "Description"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:68
 msgid "listing_samplepreservations_column_description"
-msgstr ""
+msgstr "Descripció"
 
 #. Default: "Sample Preservation"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:62
 msgid "listing_samplepreservations_column_title"
-msgstr ""
+msgstr "Nom"
 
 #. Default: "Active"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:78
 msgid "listing_samplepreservations_state_active"
-msgstr ""
+msgstr "Actius"
 
 #. Default: "All"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:96
 msgid "listing_samplepreservations_state_all"
-msgstr ""
+msgstr "Tots"
 
 #. Default: "Inactive"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:87
 msgid "listing_samplepreservations_state_inactive"
-msgstr ""
+msgstr "Inactius"
 
 #. Default: "Sample Preservations"
 #: senaite/core/browser/controlpanel/samplepreservations/view.py:54
 msgid "listing_samplepreservations_title"
-msgstr ""
+msgstr "Mètodes de preservació"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:286
 msgid "minutes"
@@ -7697,12 +7715,12 @@ msgstr "període de repetició"
 #. Default: "Field Preservation"
 #: senaite/core/config/vocabularies.py:24
 msgid "sample_preservation_category_vocab_field"
-msgstr ""
+msgstr "La preservació es fa en recol·lectar la mostra"
 
 #. Default: "Lab Preservation"
 #: senaite/core/config/vocabularies.py:28
 msgid "sample_preservation_category_vocab_lab"
-msgstr ""
+msgstr "La preservació de la mostra es fa al laboratori"
 
 #. Default: "This sample has been dispatched by ${actor} on ${date}"
 #: senaite/core/browser/viewlets/templates/sample_dispatched_viewlet.pt:14
@@ -7823,7 +7841,7 @@ msgstr ""
 #. Default: "Preserver"
 #: senaite/core/permissions/localroles.py:51
 msgid "title_preserver_role"
-msgstr ""
+msgstr "Preservador"
 
 #. Default: "Publisher"
 #: senaite/core/permissions/localroles.py:58
@@ -7870,12 +7888,12 @@ msgstr ""
 #. Default: "Description"
 #: senaite/core/content/samplepreservation.py:47
 msgid "title_samplepreservation_description"
-msgstr ""
+msgstr "Descripció"
 
 #. Default: "Name"
 #: senaite/core/content/samplepreservation.py:39
 msgid "title_samplepreservation_title"
-msgstr ""
+msgstr "Nom"
 
 #. Default: "Sampler"
 #: senaite/core/permissions/localroles.py:65
