@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2521 Migrate Sample Templates to Dexterity
 - #2517 Add sorting to the Supported Services list of RefernceSample Multichoice field
 - #2516 Allow to configure the types to be skipped on content structure export
 - #2514 Added functions for easy update of workflows
