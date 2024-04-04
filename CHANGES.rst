@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2522 Fix user who retest is not considered a verifier
+- #2520 Fix Slot Header titile of QC samples in Worksheet view
 - #2517 Add sorting to the Supported Services list of RefernceSample Multichoice field
 - #2516 Allow to configure the types to be skipped on content structure export
 - #2514 Added functions for easy update of workflows
