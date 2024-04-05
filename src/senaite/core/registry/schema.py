@@ -111,6 +111,7 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
         description=_("Worksheet view configuration"),
         fields=[
             "worksheetview_analysis_columns_order",
+            "worksheet_print_templates_order",
         ],
     )
 
@@ -136,6 +137,16 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
             "DueDate",
             "state_title",
         ]
+    )
+
+    worksheet_print_templates_order = schema.List(
+        title=_(u"Worksheet printing templates order"),
+        description=_(
+            u"Default printing templates order for worksheet"
+        ),
+        value_type=schema.ASCIILine(title=u"Column"),
+        required=False,
+        default=[],
     )
 
 

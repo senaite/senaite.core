@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
@@ -130,5 +131,11 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
+
+  <plone:static
+      directory="templates/print"
+      type="worksheets"
+      name="Worksheet Print Templates"
+  />
 
 </configure>

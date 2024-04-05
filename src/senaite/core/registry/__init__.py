@@ -21,7 +21,9 @@
 from plone.registry.interfaces import IRegistry
 from senaite.core import logger
 from senaite.core.registry.schema import ISenaiteRegistry
+from senaite.core.interfaces import ISenaiteRegistryFactory
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.dottedname.resolve import resolve
 from zope.schema._bootstrapinterfaces import WrongType
 
@@ -63,8 +65,11 @@ def get_registry_record(name, default=None):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
+        factory = queryUtility(ISenaiteRegistryFactory,
+                               name=interface.__identifier__,
+                               default=None)
         try:
-            proxy = registry.forInterface(interface)
+            proxy = registry.forInterface(interface, factory=factory)
             return getattr(proxy, name)
         except (AttributeError, KeyError):
             pass
@@ -82,7 +87,10 @@ def set_registry_record(name, value):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
-        proxy = registry.forInterface(interface)
+        factory = queryUtility(ISenaiteRegistryFactory,
+                               name=interface.__identifier__,
+                               default=None)
+        proxy = registry.forInterface(interface, factory=factory)
         try:
             getattr(proxy, name)
         except AttributeError:
