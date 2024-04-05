@@ -33,22 +33,30 @@ class WSTemplatesPrintFactory(RecordsProxy):
     """ Proxy for IWorksheetViewRegistry
     """
 
-    def __init__(self, registry, schema, omitted=(), prefix=None):
-        """ Init method
-        """
-        super(WSTemplatesPrintFactory, self).__init__(registry, schema, omitted, prefix)
-
     @property
     def worksheet_print_templates_order(self):
+        """ Computing getter for this registry field.
+            Updating the list of templates based on data from the registry
+            and new templates founded in configured directories
+            and not saved in the registry.
+
+        :returns: The ordered list of templates
+        """
+
         all_templates = []
-        directories = sorted(iterDirectoriesOfType(WS_TEMPLATES_ADDON_DIR), key=lambda d: d.__name__)
-        for templates_resource in directories:
-            prefix = templates_resource.__name__
-            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith(".pt")]
+        directory_iterator = iterDirectoriesOfType(WS_TEMPLATES_ADDON_DIR)
+        directories = sorted(directory_iterator, key=lambda d: d.__name__)
+        for resource in directories:
+            prefix = resource.__name__
+            templates = [tpl for tpl in resource.listDirectory() if tpl.endswith(".pt")]
             for template in sorted(templates):
                 all_templates.append("{0}:{1}".format(prefix, template))
 
-        order = super(WSTemplatesPrintFactory, self).__getattr__("worksheet_print_templates_order") or []
-        templates = sorted(all_templates, key=lambda item: order.index(item) if item in order else len(order))
-        ordered_templates = filter(lambda item: item, templates)
-        return list(ordered_templates)
+        # Get the ordered list of templates from the parent class
+        order = self.__getattr__("worksheet_print_templates_order") or []
+
+        def sort_templates(item):
+            return order.index(item) if item in order else len(order)
+
+        templates = sorted(all_templates, key=sort_templates)
+        return list(filter(None, templates))

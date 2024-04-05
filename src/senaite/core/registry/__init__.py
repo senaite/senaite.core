@@ -65,7 +65,9 @@ def get_registry_record(name, default=None):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
-        factory = queryUtility(ISenaiteRegistryFactory, name=interface.__identifier__, default=None)
+        factory = queryUtility(ISenaiteRegistryFactory,
+                               name=interface.__identifier__,
+                               default=None)
         try:
             proxy = registry.forInterface(interface, factory=factory)
             return getattr(proxy, name)
@@ -85,7 +87,9 @@ def set_registry_record(name, value):
     """
     registry = get_registry()
     for interface in get_registry_interfaces():
-        factory = queryUtility(ISenaiteRegistryFactory, name=interface.__identifier__, default=None)
+        factory = queryUtility(ISenaiteRegistryFactory,
+                               name=interface.__identifier__,
+                               default=None)
         proxy = registry.forInterface(interface, factory=factory)
         try:
             getattr(proxy, name)

@@ -41,7 +41,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.p3compat import cmp
 from senaite.core.registry import get_registry_record
-from senaite.core.config.registry import WS_TEMPLATES_PRINT_REGISTRY_NAME
+from senaite.core.config.registry import WS_PRINT_TMPL_RECORD
 
 
 class PrintView(BrowserView):
@@ -61,7 +61,7 @@ class PrintView(BrowserView):
     def __init__(self, context, request):
         super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
-        self._TEMPLATES_LIST = get_registry_record(WS_TEMPLATES_PRINT_REGISTRY_NAME)
+        self._TEMPLATES_LIST = get_registry_record(WS_PRINT_TMPL_RECORD)
 
     def __call__(self):
         """ Entry point of PrintView.

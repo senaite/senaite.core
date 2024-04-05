@@ -47,7 +47,9 @@ class ContextProxy(object):
 
         registry = getUtility(IRegistry)
         for interface in self.__interfaces:
-            factory = queryUtility(ISenaiteRegistryFactory, name=interface.__identifier__, default=None)
+            factory = queryUtility(ISenaiteRegistryFactory,
+                                   name=interface.__identifier__,
+                                   default=None)
             proxy = registry.forInterface(interface, factory=factory)
             try:
                 getattr(proxy, name)
@@ -63,7 +65,9 @@ class ContextProxy(object):
 
         registry = getUtility(IRegistry)
         for interface in self.__interfaces:
-            factory = queryUtility(ISenaiteRegistryFactory, name=interface.__identifier__, default=None)
+            factory = queryUtility(ISenaiteRegistryFactory,
+                                   name=interface.__identifier__,
+                                   default=None)
             proxy = registry.forInterface(interface, factory=factory)
             try:
                 return getattr(proxy, name)
