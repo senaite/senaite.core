@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2523 Fix getting ResultsRange field exception
 - #2515 Worksheet print templates sorting feature
 - #2475 Add field Lab Account Number on a Supplier
 - #2522 Fix user who retest is not considered a verifier

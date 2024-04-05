@@ -48,7 +48,8 @@ class DynamicResultsRange(object):
         self.analysis = analysis
         self.analysisrequest = analysis.getRequest()
         self.specification = None
-        if self.analysisrequest and hasattr(self.analysisrequest, "getSpecification"):
+        has_specification = hasattr(self.analysisrequest, "getSpecification")
+        if self.analysisrequest and has_specification:
             self.specification = self.analysisrequest.getSpecification()
         self.dynamicspec = None
         if self.specification:
