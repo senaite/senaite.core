@@ -40,6 +40,11 @@ class ISenaiteFormLayer(IPloneFormLayer):
     """
 
 
+class ISenaiteRegistryFactory(Interface):
+    """Marker interface for factory registry records
+    """
+
+
 class IShowDisplayMenu(Interface):
     """Marker interface that can be applied for contents that should display
     the "Display" menu

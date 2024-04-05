@@ -49,7 +49,7 @@ schema = Organisation.schema.copy() + ManagedSchema((
         required=0,
         widget=StringWidget(
             visible={"view": "visible", "edit": "visible"},
-            label=_("Website."),
+            label=_("Website"),
         ),
     ),
 
@@ -84,10 +84,23 @@ schema = Organisation.schema.copy() + ManagedSchema((
         schemata="Bank details",
         widget=StringWidget(
             visible={"view": "visible", "edit": "visible"},
-            label=_("SWIFT code."),
+            label=_("SWIFT code"),
+        ),
+    ),
+
+    StringField(
+        "LabAccountNumber",
+        searchable=1,
+        required=0,
+        schemata="default",
+        widget=StringWidget(
+            visible={"view": "visible", "edit": "visible"},
+            label=_("Lab Account Number"),
         ),
     ),
 ))
+
+schema.moveField('LabAccountNumber', before='TaxNumber')
 
 
 class Supplier(Organisation):

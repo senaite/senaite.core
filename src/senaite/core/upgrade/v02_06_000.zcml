@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Sample Templates to DX"
       description="Migrate Sample Templates to Dexterity"
+      source="2615"
+      destination="2616"
+      handler=".v02_06_000.migrate_sampletemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Update registry settings"
+      description="Import worksheet printing templates registry"
       source="2614"
       destination="2615"
-      handler=".v02_06_000.migrate_sampletemplates_to_dx"
+      handler=".v02_06_000.import_registry"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

@@ -39,9 +39,9 @@ def checkUserAccess(worksheet, request, redirect=True):
     # Deny access to foreign analysts
     allowed = worksheet.checkUserAccess()
     if not allowed and redirect:
-        msg =  _('You do not have sufficient privileges to view '
-                 'the worksheet ${worksheet_title}.',
-                 mapping={"worksheet_title": worksheet.Title()})
+        msg = _('You do not have sufficient privileges to view '
+                'the worksheet ${worksheet_title}.',
+                mapping={"worksheet_title": worksheet.Title()})
         worksheet.plone_utils.addPortalMessage(msg, 'warning')
         # Redirect to WS list
         portal = getToolByName(worksheet, 'portal_url').getPortalObject()
@@ -49,6 +49,7 @@ def checkUserAccess(worksheet, request, redirect=True):
         request.response.redirect(destination_url)
 
     return allowed
+
 
 def checkUserManage(worksheet, request, redirect=True):
     """ Checks if the current user has granted access to the worksheet
@@ -62,6 +63,7 @@ def checkUserManage(worksheet, request, redirect=True):
         destination_url = worksheet.absolute_url() + "/manage_results"
         request.response.redirect(destination_url)
 
+
 def showRejectionMessage(worksheet):
     """ Adds a portalMessage if
         a) the worksheet has been rejected and replaced by another or
@@ -73,7 +75,7 @@ def showRejectionMessage(worksheet):
         uid = getattr(worksheet, 'replaced_by')
         _ws = uc(UID=uid)[0].getObject()
         msg = _("This worksheet has been rejected.  The replacement worksheet is ${ws_id}",
-                mapping={'ws_id':_ws.getId()})
+                mapping={'ws_id': _ws.getId()})
         worksheet.plone_utils.addPortalMessage(msg)
     if hasattr(worksheet, 'replaces_rejected_worksheet'):
         uc = getToolByName(worksheet, 'uid_catalog')
@@ -81,7 +83,7 @@ def showRejectionMessage(worksheet):
         _ws = uc(UID=uid)[0].getObject()
         msg = _("This worksheet has been created to replace the rejected "
                 "worksheet at ${ws_id}",
-                mapping={'ws_id':_ws.getId()})
+                mapping={'ws_id': _ws.getId()})
         worksheet.plone_utils.addPortalMessage(msg)
 
 
