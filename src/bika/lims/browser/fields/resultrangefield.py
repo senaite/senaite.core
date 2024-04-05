@@ -96,7 +96,7 @@ class DefaultResultsRangeProvider(object):
         # Get the AnalysisRequest to look at
         analysis = self.context
         sample = analysis.getRequest()
-        if not sample:
+        if not sample or not hasattr(sample, "ResultsRange"):
             return {}
 
         # Search by keyword
