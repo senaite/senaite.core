@@ -37,14 +37,6 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from senaite.core.permissions import EditFieldResults
-from senaite.core.permissions import EditResults
-from senaite.core.permissions import FieldEditAnalysisConditions
-from senaite.core.permissions import FieldEditAnalysisHidden
-from senaite.core.permissions import FieldEditAnalysisResult
-from senaite.core.permissions import TransitionVerify
-from senaite.core.permissions import ViewResults
-from senaite.core.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
@@ -57,9 +49,18 @@ from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
+from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate as t
+from senaite.core.permissions import EditFieldResults
+from senaite.core.permissions import EditResults
+from senaite.core.permissions import FieldEditAnalysisConditions
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import TransitionVerify
+from senaite.core.permissions import ViewResults
+from senaite.core.permissions import ViewRetractedAnalyses
 from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
