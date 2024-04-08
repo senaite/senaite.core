@@ -49,7 +49,7 @@ from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
 from DateTime import DateTime
-from Products.Archetypes.Field import DateTimeField
+from senaite.core.browser.fields.datetime import DateTimeField
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.references import HoldingReference
@@ -84,7 +84,10 @@ Result = StringField(
 # populate catalog values, however the workflow review_history can be
 # used to get all dates of result capture
 ResultCaptureDate = DateTimeField(
-    'ResultCaptureDate'
+    'ResultCaptureDate',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
+    max="current",
 )
 
 # Returns the retracted analysis this analysis is a retest of
