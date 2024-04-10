@@ -142,6 +142,17 @@ class ISetupSchema(model.Schema):
         ),
         default=True,
     )
+
+    # Allow Manual Analysis Result Capture Date
+    allow_manual_result_capture_date = schema.Bool(
+        title=_("title_senaitesetup_allow_manual_result_capture_date",
+                default=u"Allow to set the result capture date"),
+        description=_(
+            "description_senaitesetup_allow_manual_result_capture_date",
+            default=u"If this option is activated, the result capture date "
+                    u"can be entered manually for the analysis"),
+        default=False)
+
     max_number_of_samples_add = schema.Int(
         title=_(
             u"label_senaitesetup_maxnumberofsamplesadd",
@@ -185,6 +196,7 @@ class ISetupSchema(model.Schema):
             "immediate_results_entry",
             "categorize_sample_analyses",
             "sample_analyses_required",
+            "allow_manual_result_capture_date",
         ]
     )
 
@@ -335,6 +347,20 @@ class Setup(Container):
         """Allow/Disallow to create samples without analyses
         """
         mutator = self.mutator("sample_analyses_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getAllowManualResultCaptureDate(self):
+        """Returns if analyses are required in sample add form
+        """
+        accessor = self.accessor("allow_manual_result_capture_date")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAllowManualResultCaptureDate(self, value):
+        """Allow/Disallow to create samples without analyses
+        """
+        mutator = self.mutator("allow_manual_result_capture_date")
         return mutator(self, value)
 
     @security.protected(permissions.View)

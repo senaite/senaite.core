@@ -449,6 +449,13 @@ class AnalysesView(ListingView):
 
         return True
 
+    @viewcache.memoize
+    def is_manual_result_capture_date_allowed(self):
+        """Returns whether it is allowed to set the result capture date manually
+        """
+        setup = api.get_senaite_setup()
+        return setup.getAllowManualResultCaptureDate()
+
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
@@ -967,9 +974,11 @@ class AnalysesView(ListingView):
         if self.is_analysis_edition_allowed(analysis_brain):
             # Allow to set Remarks
             item["allow_edit"].append("Remarks")
-            # Allow to edit the capture date, e.g. when the result was captured
-            # manually after the instrument measurement.
-            item["allow_edit"].append("ResultCaptureDate")
+
+            if self.is_manual_result_capture_date_allowed():
+                # Allow to edit the capture date, e.g. when the result was
+                # captured manually after the instrument measurement.
+                item["allow_edit"].append("ResultCaptureDate")
 
             # Set the results field editable
             if self.is_result_edition_allowed(analysis_brain):

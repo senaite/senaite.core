@@ -465,8 +465,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         account the Detection Limits.
         :param value: is expected to be a string.
         """
-        prev_result = self.getField("Result").get(self) or ""
-
         # Convert to list ff the analysis has result options set with multi
         if self.getResultOptions() and "multi" in self.getResultOptionsType():
             if not isinstance(value, (list, tuple)):
@@ -511,12 +509,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # If so, reset the detection limit operand, cause the previous
             # entered result might be an DL, but current doesn't
             self.setDetectionLimitOperand("")
-
-        # Update ResultCapture date if necessary
-        if not val:
-            self.setResultCaptureDate(None)
-        elif prev_result != val:
-            self.setResultCaptureDate(DateTime())
 
         # Set the result field
         self.getField("Result").set(self, val)
