@@ -95,13 +95,9 @@ class ContactLoginDetailsView(BrowserView):
         gtool = api.get_tool("portal_groups")
         groups = gtool.listGroupIds()
 
-        # exclude hidden groups (Administrators, etc.)
-        groups = filter(lambda group: group not in HIDDEN_GROUPS, groups)
-
-        # exclude client-specific groups
-        c_groups = self.get_clients_groups()
-        c_groups = dict.fromkeys(c_groups, True)
-        groups = filter(lambda group: not c_groups.get(group, False), groups)
+        # exclude hidden (Administrators, etc.) and client-specific groups
+        to_skip = HIDDEN_GROUPS + self.get_clients_groups()
+        groups = filter(lambda group: group not in to_skip, groups)
 
         # sort them
         return sorted(groups)
