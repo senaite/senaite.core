@@ -36,6 +36,7 @@ from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
+from zope.deprecation import deprecate
 from zope.interface import Interface
 from zope.interface import implementer
 
@@ -75,8 +76,7 @@ class IPartitionRecord(Interface):
             "sort_order": "ascending",
         },
         display_template="<a href='${url}'>${Title}</a>",
-        columns=get_default_columns,
-        limit=5)
+        columns=get_default_columns)
     container = UIDReferenceField(
         title=_(
             u"label_sampletemplate_partition_container",
@@ -98,8 +98,7 @@ class IPartitionRecord(Interface):
             "sort_order": "ascending",
         },
         display_template="<a href='${url}'>${Title}</a>",
-        columns=get_default_columns,
-        limit=5)
+        columns=get_default_columns)
     preservation = UIDReferenceField(
         title=_(
             u"label_sampletemplate_partition_preservation",
@@ -121,8 +120,7 @@ class IPartitionRecord(Interface):
             "sort_order": "ascending",
         },
         display_template="<a href='${url}'>${Title}</a>",
-        columns=get_default_columns,
-        limit=5)
+        columns=get_default_columns)
     sampletype = UIDReferenceField(
         title=_(
             u"label_sampletemplate_partition_sampletype",
@@ -182,8 +180,7 @@ class ISampleTemplateSchema(model.Schema):
             "sort_order": "ascending",
         },
         display_template="<a href='${url}'>${Title}</a>",
-        columns=get_default_columns,
-        limit=5)
+        columns=get_default_columns)
     samplepoint = UIDReferenceField(
         title=_(u"label_sampletemplate_samplepoint",
                 default=u"Sample Point"),
@@ -205,8 +202,7 @@ class ISampleTemplateSchema(model.Schema):
             "sort_order": "ascending",
         },
         display_template="<a href='${url}'>${Title}</a>",
-        columns=get_default_columns,
-        limit=5)
+        columns=get_default_columns)
     sampletype = UIDReferenceField(
         title=_(u"label_sampletemplate_sampletype",
                 default=u"Sample Type"),
@@ -310,6 +306,7 @@ class SampleTemplate(Container, ClientAwareMixin):
         mutator = self.mutator("samplepoint")
         mutator(self, value)
 
+    @deprecate("deprecated since SENAITE 2.6: Use getRawSamplePoint() instead")
     @security.protected(permissions.View)
     def getSamplePointUID(self):
         return self.getRawSamplePoint()
@@ -499,6 +496,7 @@ class SampleTemplate(Container, ClientAwareMixin):
     # BBB: AT schema field property
     Services = property(getServices, setServices)
 
+    @deprecate("deprecated since SENAITE 2.6: Use getRawServices() instead")
     @security.protected(permissions.View)
     def getAnalysisServicesSettings(self):
         """BBB: Return the settings for all assigned services
@@ -609,7 +607,7 @@ class SampleTemplate(Container, ClientAwareMixin):
 
         NOTE: This method is used when an Analysis Service was deactivated.
 
-        :param service: The service to be removed from this profile
+        :param service: The service to be removed from this template
         :type service: AnalysisService
         :return: True if the AnalysisService has been removed successfully
         """

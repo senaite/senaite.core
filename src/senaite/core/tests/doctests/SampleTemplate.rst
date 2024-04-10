@@ -1,5 +1,5 @@
-Analysis Profile
-----------------
+Sample Template
+---------------
 
 Running this test from the buildout directory::
 

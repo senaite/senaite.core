@@ -28,7 +28,7 @@ from zope.publisher.interfaces import IPublishTraverse
 
 @implementer(IPublishTraverse)
 class TemporaryContext(BrowserView):
-    """Browser view that provides a temporary Dexterity context
+    """Browser view that provides a temporary AT/Dexterity context
     """
 
     def __init__(self, context, request):
