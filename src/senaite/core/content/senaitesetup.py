@@ -150,7 +150,7 @@ class ISetupSchema(model.Schema):
         description=_(
             "description_senaitesetup_allow_manual_result_capture_date",
             default=u"If this option is activated, the result capture date "
-                    u"can be entered manually for the analysis"),
+                    u"can be entered manually for analyses"),
         default=False)
 
     max_number_of_samples_add = schema.Int(

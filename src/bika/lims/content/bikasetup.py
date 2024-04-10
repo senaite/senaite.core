@@ -345,7 +345,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "description_bikasetup_allow_manual_result_capture_date",
                 default="If this option is activated, the result capture date "
-                        "can be entered manually for the analysis"),
+                        "can be entered manually for analyses"),
         ),
     ),
     BooleanField(
