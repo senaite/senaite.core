@@ -97,7 +97,9 @@
         <div tal:replace="structure provider:archetypes.edit.beforefieldsets" />
 
         <metal:block define-slot="widgets">
-          <tal:tabbed tal:condition="allow_tabbing | nothing">
+          <tal:tabbed tal:condition="allow_tabbing | nothing"
+                      tal:define="errors options/state/getErrors;
+                                  error_fieldsets python:[context.getField(field).schemata for field in errors.keys()]">
             <!-- Bootstrapped schema tabs -->
             <ul class="nav nav-tabs" role="tablist">
               <tal:fieldsets repeat="fieldset fieldsets">
@@ -106,11 +108,13 @@
                      data-toggle="tab"
                      class="nav-link"
                      role="tab"
-                     tal:define="id python:view.normalizeString(fieldset)"
+                     tal:define="id python:view.normalizeString(fieldset);
+                                 css_class python:repeat['fieldset'].start and 'nav-link active' or 'nav-link';
+                                 error_css_class python:'text-danger' if  fieldset in error_fieldsets else ''"
                      tal:content="python:view.getTranslatedSchemaLabel(fieldset)"
                      tal:attributes="id string:${id}-tab;
                                      href string:#${id};
-                                     class python:repeat['fieldset'].start and 'nav-link active' or 'nav-link'"
+                                     class string:${css_class} ${error_css_class}"
                      i18n:translate="">
                   </a>
                 </li>
