@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2526 Highlight edit tabs with errors in red
 - #2525 Fix UnicodeDecodeError during Department DX Migration
 - #2515 Worksheet print templates sorting feature
 - #2475 Add field Lab Account Number on a Supplier
