@@ -1,7 +1,8 @@
 <div class="analysis-listing-table"
      tal:condition="python:view.available()"
      tal:define="id string:table-${view/capture|other}-analyses;
-                 collapsed python:view.is_collapsed()"
+                 collapsed python:view.is_collapsed();
+                 portal context/@@plone_portal_state/portal"
      i18n:domain="senaite.core">
   <div class="row mb-4">
     <div class="col-sm-12">
@@ -11,7 +12,8 @@
                       title view/title|nothing"
           class="d-inline-block"
           tal:condition="title">
-        <img tal:condition="icon|nothing" tal:attributes="src string:senaite_theme/icon/${icon}"/>
+        <img tal:condition="icon|nothing"
+             tal:attributes="src string:${portal/absolute_url}/senaite_theme/icon/${icon}"/>
         <span class="align-middle" i18n:translate="" tal:content="title"/>
       </h3>
 
