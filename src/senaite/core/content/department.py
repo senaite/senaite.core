@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IHaveDepartment
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -122,7 +123,7 @@ class IDepartmentSchema(model.Schema):
             raise Invalid(_("Department ID must be unique"))
 
 
-@implementer(IDepartment, IDepartmentSchema, IDeactivable)
+@implementer(IDepartment, IDepartmentSchema, IHaveDepartment, IDeactivable)
 class Department(Container):
     """Department
     """

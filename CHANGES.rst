@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2521 Migrate Sample Templates to Dexterity
+- #2525 Fix UnicodeDecodeError during Department DX Migration
 - #2515 Worksheet print templates sorting feature
 - #2475 Add field Lab Account Number on a Supplier
 - #2522 Fix user who retest is not considered a verifier
