@@ -78,6 +78,17 @@ class ContactLoginDetailsView(BrowserView):
         users_view = UsersOverviewControlPanel(self.context, self.request)
         return users_view.doSearch("")
 
+    @view.memoize
+    def get_clients_groups(self):
+        """Returns the client-specific groups
+        """
+        groups = []
+        uc = api.get_tool("uid_catalog")
+        for brain in uc(portal_type="Client"):
+            client = api.get_object(brain)
+            groups.append(client.group_id)
+        return groups
+
     def get_laboratory_groups(self):
         """Return the groups available for laboratory users
         """
@@ -86,6 +97,11 @@ class ContactLoginDetailsView(BrowserView):
 
         # exclude hidden groups (Administrators, etc.)
         groups = filter(lambda group: group not in HIDDEN_GROUPS, groups)
+
+        # exclude client-specific groups
+        c_groups = self.get_clients_groups()
+        c_groups = dict.fromkeys(c_groups, True)
+        groups = filter(lambda group: not c_groups.get(group, False), groups)
 
         # sort them
         return sorted(groups)
