@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-04-03 07:25+0000\n"
+"POT-Creation-Date: 2024-04-11 04:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
@@ -372,11 +372,11 @@ msgstr "Permitir valor vacío"
 msgid "Allow manual uncertainty value input"
 msgstr "Permitir la introducción manual de incertidumbre"
 
-#: bika/lims/config.py:130
+#: bika/lims/config.py:134
 msgid "Allow same user to verify multiple times"
 msgstr "Permitir que un mismo usuario pueda verificar múltiples veces"
 
-#: bika/lims/config.py:131
+#: bika/lims/config.py:135
 msgid "Allow same user to verify multiple times, but not consecutively"
 msgstr "Permitir que un mismo usuario pueda verificar múltiples veces, pero no consecutivamente"
 
@@ -400,8 +400,8 @@ msgstr "Permitir la introducción manual de resultados"
 msgid "Allow to submit results for unassigned analyses or for analyses assigned to others"
 msgstr "Permitir el envío de resultados para analíticas no asignadas o para analíticas asignadas a otros"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:60
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:60
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:60
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:60
 msgid "Analysed by"
 msgstr "Analizado por"
 
@@ -479,7 +479,7 @@ msgstr "Especificaciones de análisis"
 msgid "Analysis Type"
 msgstr "Tipo de análisis"
 
-#: senaite/core/registry/schema.py:118
+#: senaite/core/registry/schema.py:119
 msgid "Analysis columns order"
 msgstr "Orden de columnas para listados de análisis"
 
@@ -1135,27 +1135,27 @@ msgstr "Código del sitio"
 msgid "Code the the shelf"
 msgstr "Código del estante"
 
-#: senaite/core/registry/schema.py:157
+#: senaite/core/registry/schema.py:168
 msgid "Collapse field analysis table"
 msgstr "Ocultar la tabla con los análisis de campo"
 
-#: senaite/core/registry/schema.py:158
+#: senaite/core/registry/schema.py:169
 msgid "Collapse field analysis table in sample view"
 msgstr "Ocultar la tabla con los análisis de campo en la vista de muestra"
 
-#: senaite/core/registry/schema.py:164
+#: senaite/core/registry/schema.py:175
 msgid "Collapse lab analysis table"
 msgstr "Ocultar la tabla con análisis de laboratorio"
 
-#: senaite/core/registry/schema.py:165
+#: senaite/core/registry/schema.py:176
 msgid "Collapse lab analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de laboratorio en la vista de muestra"
 
-#: senaite/core/registry/schema.py:171
+#: senaite/core/registry/schema.py:182
 msgid "Collapse qc analysis table"
 msgstr "Ocultar la tabla con análisis de control de calidad QC"
 
-#: senaite/core/registry/schema.py:172
+#: senaite/core/registry/schema.py:183
 msgid "Collapse qc analysis table in sample view"
 msgstr "Ocultar la tabla con análisis de conrol de calidad QC en la vista de muestra"
 
@@ -1202,11 +1202,11 @@ msgstr "% Nivel de confianza"
 msgid "Configuration"
 msgstr "Configuración"
 
-#: senaite/core/registry/schema.py:281
+#: senaite/core/registry/schema.py:292
 msgid "Configuration for Generic Setup"
 msgstr ""
 
-#: senaite/core/registry/schema.py:215
+#: senaite/core/registry/schema.py:226
 msgid "Configuration for the sample header information"
 msgstr "Configuración de la sección de cabecera de muestra"
 
@@ -1382,8 +1382,8 @@ msgstr "Creado"
 msgid "Created by"
 msgstr "Creado por:"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:46
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:46
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:46
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:46
 msgid "Created on"
 msgstr "Creado:"
 
@@ -1528,7 +1528,7 @@ msgid "Date granted"
 msgstr "Fecha de otorgamiento"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:104
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:112
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:112
 msgid "Date received"
 msgstr "Fecha de recepción"
 
@@ -1597,11 +1597,11 @@ msgstr "Método predeterminado"
 msgid "Default Preservation"
 msgstr "Método de conservación predeterminado"
 
-#: senaite/core/registry/schema.py:179
+#: senaite/core/registry/schema.py:190
 msgid "Default column order for sample analysis listings"
 msgstr "Orden predeterminado de las columns para listado de análisis de muestra"
 
-#: senaite/core/registry/schema.py:119
+#: senaite/core/registry/schema.py:120
 msgid "Default column order for worksheet analysis listings"
 msgstr "Orden predeterminado de las columnas para listado de análisis de hojas de trabajo"
 
@@ -1629,6 +1629,10 @@ msgstr "Orientación predeterminada en la vista de hojas de trabajo"
 #: bika/lims/content/abstractbaseanalysis.py:350
 msgid "Default method used for analyses of this type"
 msgstr "Método utilizado por defecto en analíticas de este tipo"
+
+#: senaite/core/registry/schema.py:144
+msgid "Default printing templates order for worksheet"
+msgstr ""
 
 #: bika/lims/content/analysisservice.py:196
 msgid "Default result"
@@ -1716,7 +1720,7 @@ msgstr "Departamento"
 msgid "Department ID"
 msgstr "ID del departamento"
 
-#: senaite/core/content/department.py:122
+#: senaite/core/content/department.py:123
 msgid "Department ID must be unique"
 msgstr ""
 
@@ -1774,7 +1778,7 @@ msgstr "Desvincular"
 msgid "Disable auto fetch transitions"
 msgstr "Desactivar la consulta automática de transiciones"
 
-#: bika/lims/config.py:132
+#: bika/lims/config.py:136
 msgid "Disable multi-verification for the same user"
 msgstr "No permitir la verificación múltiple por un mismo usuario"
 
@@ -2236,7 +2240,7 @@ msgstr "El campo '{}' es obligatorio"
 msgid "Field Analyses"
 msgstr "Análisis de campo"
 
-#: senaite/core/registry/schema.py:268
+#: senaite/core/registry/schema.py:279
 msgid "Field Name"
 msgstr "Nombre del campo"
 
@@ -2248,7 +2252,7 @@ msgstr "Conservación fuera del laboratorio"
 msgid "Field Title"
 msgstr "Título del campo"
 
-#: senaite/core/registry/schema.py:266
+#: senaite/core/registry/schema.py:277
 msgid "Field visibility"
 msgstr "Visibilidad del campo"
 
@@ -2347,7 +2351,7 @@ msgstr "Función"
 msgid "Future dated sample"
 msgstr "Muestra con fecha de asignación futura"
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:26
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:27
 msgid "General"
 msgstr "General"
 
@@ -2355,7 +2359,7 @@ msgstr "General"
 msgid "Generates an ID with the IDServer"
 msgstr "Genera una ID con el IDServer"
 
-#: senaite/core/registry/schema.py:280
+#: senaite/core/registry/schema.py:291
 msgid "Generic Setup"
 msgstr ""
 
@@ -2393,11 +2397,11 @@ msgstr "Oculto"
 msgid "Hidden Field"
 msgstr "Campo Oculto"
 
-#: bika/lims/config.py:136
+#: bika/lims/config.py:140
 msgid "High"
 msgstr "Alta"
 
-#: bika/lims/config.py:135
+#: bika/lims/config.py:139
 msgid "Highest"
 msgstr "Muy alta"
 
@@ -2860,6 +2864,10 @@ msgstr "Palabras clave"
 msgid "Lab"
 msgstr "Laboratorio"
 
+#: bika/lims/content/supplier.py:98
+msgid "Lab Account Number"
+msgstr ""
+
 #: senaite/core/browser/samples/templates/multi_results.pt:134
 msgid "Lab Analyses"
 msgstr "Análisis del laboratorio"
@@ -2977,8 +2985,8 @@ msgstr "Disposición"
 msgid "Layout view '{}' not found. Set '{}' as layout view."
 msgstr "Formato de vista '{}' no encontrado. Formato de vista restablecido a '{}'"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:153
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:120
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:153
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:120
 msgid "Legend: Results in <em>italic</em> font are pending, results in <strong>bold</strong> font are verified."
 msgstr "Leyenda: los resultados en <em>cursiva</em> están pendientes, los resultados en <strong> negrita</strong> están verificados."
 
@@ -3065,7 +3073,7 @@ msgstr "Longitud"
 msgid "Lot Number"
 msgstr "Número de lote"
 
-#: bika/lims/config.py:138
+#: bika/lims/config.py:142
 msgid "Low"
 msgstr "Baja"
 
@@ -3073,7 +3081,7 @@ msgstr "Baja"
 msgid "Lower Detection Limit (LDL)"
 msgstr "Límite inferior de detección (LDL)"
 
-#: bika/lims/config.py:139
+#: bika/lims/config.py:143
 msgid "Lowest"
 msgstr "Muy baja"
 
@@ -3225,7 +3233,7 @@ msgstr "Tiempo máximo permitido para la consecución de un análisis. El sistem
 msgid "Maximum turn-around time"
 msgstr "Tiempo máximo de respuesta"
 
-#: bika/lims/config.py:137
+#: bika/lims/config.py:141
 msgid "Medium"
 msgstr "Normal"
 
@@ -3633,7 +3641,7 @@ msgstr "Número de Posiciones"
 msgid "Number of copies"
 msgstr "Número de copias"
 
-#: senaite/core/registry/schema.py:234
+#: senaite/core/registry/schema.py:245
 msgid "Number of prominent columns"
 msgstr "Número de columnas prominentes"
 
@@ -3650,7 +3658,7 @@ msgstr "Número de verificaciones requeridas antes de que un resultado determina
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Número de verificaciones necesarias de diferentes usuarios antes de que un resultado determinado para este análisis se considere como 'verificado'. La opción establecida aquí tiene prioridad sobre la opción establecida en la Configuración general."
 
-#: senaite/core/registry/schema.py:243
+#: senaite/core/registry/schema.py:254
 msgid "Number of standard columns"
 msgstr "Número de columnas estándar"
 
@@ -4027,8 +4035,8 @@ msgstr "Imprimir pegatinas"
 msgid "Printed"
 msgstr "Impreso"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:53
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:53
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:53
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:53
 msgid "Printed on"
 msgstr "Impreso en"
 
@@ -4066,7 +4074,7 @@ msgid "Progress"
 msgstr "Progreso"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:103
-#: senaite/core/registry/schema.py:252
+#: senaite/core/registry/schema.py:263
 msgid "Prominent fields"
 msgstr "Campos destacados"
 
@@ -4373,8 +4381,8 @@ msgid "Republished after last print"
 msgstr "Republicado después de la última impresión"
 
 #: bika/lims/browser/client/views/attachments.py:49
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:71
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:70
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:71
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:70
 msgid "Request ID"
 msgstr "ID de la solicitud"
 
@@ -4545,7 +4553,7 @@ msgid "SENAITE LIMS front-page"
 msgstr "SENAITE LIMS front-page"
 
 #: senaite/core/profiles/default/controlpanel.xml
-#: senaite/core/registry/controlpanel.py:73
+#: senaite/core/registry/controlpanel.py:81
 msgid "SENAITE Registry"
 msgstr "SENAITE Registry"
 
@@ -4562,8 +4570,8 @@ msgid "SMTP server disconnected. User creation aborted."
 msgstr "Servidor SMTP desconectado. No se ha creado el usuario."
 
 #: bika/lims/content/supplier.py:87
-msgid "SWIFT code."
-msgstr "Código SWIFT."
+msgid "SWIFT code"
+msgstr ""
 
 #: bika/lims/content/person.py:42
 msgid "Salutation"
@@ -4594,7 +4602,7 @@ msgstr "Contenedor de muestra"
 msgid "Sample Containers"
 msgstr "Contenedores de muestras"
 
-#: senaite/core/registry/schema.py:214
+#: senaite/core/registry/schema.py:225
 msgid "Sample Header"
 msgstr "Cabecera de muestra"
 
@@ -4655,7 +4663,7 @@ msgstr "Prefijo del tipo de muestra"
 msgid "Sample Types"
 msgstr "Tipos de muestras"
 
-#: senaite/core/registry/schema.py:147
+#: senaite/core/registry/schema.py:158
 msgid "Sample View"
 msgstr "Vista de muestra"
 
@@ -4687,7 +4695,7 @@ msgstr "Tipo de muestra"
 msgid "Sample types"
 msgstr "Tipos de muestra"
 
-#: senaite/core/registry/schema.py:148
+#: senaite/core/registry/schema.py:159
 msgid "Sample view configuration"
 msgstr "Configuración de la vista de muestra"
 
@@ -4770,7 +4778,7 @@ msgstr "Muestras verificadas"
 msgid "Samples with results pending"
 msgstr "Muestras con resultados pendientes"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:106
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:106
 msgid "Sampling Date"
 msgstr "Fecha prevista de muestreo"
 
@@ -4796,7 +4804,7 @@ msgid "Saturday"
 msgstr "Sábado"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:191
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:154
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:155
 msgid "Save"
 msgstr "Guardar"
 
@@ -4918,7 +4926,7 @@ msgstr "Seleccione si los resultados para las pruebas de este tipo de análisis 
 msgid "Select instrument"
 msgstr "Seleccionar el instrumento analítico"
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:75
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:76
 msgid "Select template"
 msgstr "Seleccionar la plantilla"
 
@@ -5132,7 +5140,7 @@ msgstr "Mostrar los últimos registros de importación automática"
 msgid "Show more"
 msgstr "Más"
 
-#: senaite/core/registry/schema.py:227
+#: senaite/core/registry/schema.py:238
 msgid "Show standard fields"
 msgstr "Mostrar los campos estándar"
 
@@ -5218,7 +5226,7 @@ msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instr
 msgstr "Especifique el tamaño de la hoja de trabajo, por ejemplo, correspondiente al tamaño de la bandeja de un instrumento específico. Luego seleccione un 'tipo' de Análisis por posición de la Hoja de trabajo. Cuando se seleccionen muestras de QC, seleccione también qué Muestra de Referencia se debe usar. Si se selecciona un análisis duplicado, indique en qué posición de la muestra debería ser un duplicado de"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
-#: senaite/core/registry/schema.py:259
+#: senaite/core/registry/schema.py:270
 msgid "Standard fields"
 msgstr "Campos estándar"
 
@@ -5391,7 +5399,7 @@ msgid "Technical description and instructions intended for analysts"
 msgstr "Descripción técnica e instrucciones para los analistas"
 
 #: senaite/core/browser/samples/view.py:241
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:68
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:69
 msgid "Template"
 msgstr "Plantilla"
 
@@ -5688,11 +5696,11 @@ msgstr "La configuración de este sitio está obsoleta y tiene que ser actualiza
 msgid "This value is reported at the bottom of all published results"
 msgstr "El valor se indica debajo de todos los resultados publicados"
 
-#: bika/lims/browser/worksheet/tools.py:82
+#: bika/lims/browser/worksheet/tools.py:84
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
 msgstr "Esta hoja de trabajo ha sido generada automáticamente para reemplazar la hoja de trabajo rechazada ${ws_id}"
 
-#: bika/lims/browser/worksheet/tools.py:75
+#: bika/lims/browser/worksheet/tools.py:77
 msgid "This worksheet has been rejected.  The replacement worksheet is ${ws_id}"
 msgstr "Esta hoja de trabajo ha sido rechazada. La hoja de trabajo de reemplazo es la ${ws_id}"
 
@@ -5772,7 +5780,7 @@ msgstr "Pendientes de verificar"
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
 msgstr "Para probar el cálculo, puedes introducir valores aquí para todos los parámetros del cálculo. Esto incluye los campos provisionales definidos anteriormente, así como los servicios de los que depende este cálculo para calcular los resultados."
 
-#: senaite/core/registry/schema.py:228
+#: senaite/core/registry/schema.py:239
 msgid "Toggle visibility of standard sample header fields"
 msgstr "Alternar la visibilidad de los campos estándar de la cabecera de muestra"
 
@@ -5839,7 +5847,7 @@ msgstr "Tipos de contenido que soportan etiquetado.<br/>Importante: para instala
 msgid "Types with labels"
 msgstr "Tipos etiquetables"
 
-#: bika/lims/browser/worksheet/views/printview.py:149
+#: bika/lims/browser/worksheet/views/printview.py:142
 msgid "Unable to load the template"
 msgstr "No se puede cargar la plantilla"
 
@@ -5924,7 +5932,7 @@ msgstr "Utilizar el precio del perfil de análisis"
 msgid "Use Dashboard as default front page"
 msgstr "Use el tablero de control como página inicial predeterminada."
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:83
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:84
 msgid "Use Template"
 msgstr "Utilizar plantilla"
 
@@ -6237,7 +6245,7 @@ msgstr "Ver el sitio de SENAITE"
 msgid "Visibility"
 msgstr "Visibilidad"
 
-#: senaite/core/registry/schema.py:267
+#: senaite/core/registry/schema.py:278
 msgid "Visible fields"
 msgstr "Campos visibles"
 
@@ -6264,8 +6272,8 @@ msgid "Web address for the accreditation body"
 msgstr "Dirección web de la entidad acreditadora"
 
 #: bika/lims/content/supplier.py:52
-msgid "Website."
-msgstr "Dirección web."
+msgid "Website"
+msgstr ""
 
 #: bika/lims/config.py:96
 msgid "Wednesday"
@@ -6341,6 +6349,10 @@ msgstr "Plantillas para hojas de trabajo"
 msgid "Worksheet View"
 msgstr "Vista de hoja de trabajo"
 
+#: senaite/core/registry/schema.py:143
+msgid "Worksheet printing templates order"
+msgstr ""
+
 #: senaite/core/registry/schema.py:111
 msgid "Worksheet view configuration"
 msgstr "Configuración de la vista de hoja de trabajo"
@@ -6410,8 +6422,8 @@ msgstr "activar"
 msgid "biannually"
 msgstr "semestral"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:48
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:48
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:48
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:48
 msgid "by"
 msgstr "por"
 
@@ -6694,14 +6706,14 @@ msgid "description_copyright"
 msgstr "${copyright} 2017-${current_year} ${senaitelims}"
 
 #. Default: "Please provide a unique department identifier"
-#: senaite/core/content/department.py:67
+#: senaite/core/content/department.py:68
 msgid "description_department_id"
 msgstr ""
 
 #. the 'lab contacts' setup item. Departmental managers are referenced on
 #. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
-#: senaite/core/content/department.py:93
+#: senaite/core/content/department.py:94
 msgid "description_department_manager"
 msgstr "Seleccione alguno de los responsables que están registrados en el apartado 'Contactos del laboratorio'. El sistema incluye los nombres de los responsables de departamento en todos los informes de análisis que le pertenecen."
 
@@ -6799,8 +6811,9 @@ msgstr "Seleccione la definición de referencia para la muestra."
 msgid "description_registry_client_landing_page"
 msgstr ""
 
+#. structure of the site via Generic Setup"
 #. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
-#: senaite/core/registry/schema.py:292
+#: senaite/core/registry/schema.py:303
 msgid "description_registry_generic_setup_skip_export_types"
 msgstr ""
 
@@ -7195,7 +7208,7 @@ msgid "label_container_type"
 msgstr "Tipo de recipiente"
 
 #. Default: "Manager"
-#: senaite/core/content/department.py:89
+#: senaite/core/content/department.py:90
 msgid "label_department_manager"
 msgstr "Encargado del departamento"
 
@@ -7295,7 +7308,7 @@ msgid "label_registry_client_landing_page"
 msgstr ""
 
 #. Default: "Portal types to skip on content structure export"
-#: senaite/core/registry/schema.py:288
+#: senaite/core/registry/schema.py:299
 msgid "label_registry_generic_setup_skip_export_types"
 msgstr ""
 
@@ -7795,17 +7808,17 @@ msgid "title_copyright"
 msgstr "Derechos de autor"
 
 #. Default: "Description"
-#: senaite/core/content/department.py:54
+#: senaite/core/content/department.py:55
 msgid "title_department_description"
 msgstr ""
 
 #. Default: "Department ID"
-#: senaite/core/content/department.py:63
+#: senaite/core/content/department.py:64
 msgid "title_department_id"
 msgstr ""
 
 #. Default: "Name"
-#: senaite/core/content/department.py:46
+#: senaite/core/content/department.py:47
 msgid "title_department_title"
 msgstr ""
 

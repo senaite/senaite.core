@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-04-03 07:25+0000\n"
+"POT-Creation-Date: 2024-04-11 04:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -614,7 +614,7 @@ msgstr " 标签 将用户添加到组"
 
 #. Default: "Cancel"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:198
-#: senaite/core/skins/senaite_templates/edit_macros.pt:258
+#: senaite/core/skins/senaite_templates/edit_macros.pt:262
 msgid "label_cancel"
 msgstr "标签 取消"
 
@@ -751,7 +751,7 @@ msgid "label_name"
 msgstr "标签 名称"
 
 #. Default: "Next"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:243
+#: senaite/core/skins/senaite_templates/edit_macros.pt:247
 msgid "label_next"
 msgstr "下一个标签"
 
@@ -766,7 +766,7 @@ msgid "label_no_prefs_panels_available"
 msgstr "没有可用的控制台面板"
 
 #. Default: "Previous"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:235
+#: senaite/core/skins/senaite_templates/edit_macros.pt:239
 msgid "label_previous"
 msgstr "上一个标签"
 

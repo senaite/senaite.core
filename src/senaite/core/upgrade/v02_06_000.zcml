@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Sample Templates to DX"
       description="Migrate Sample Templates to Dexterity"
+      source="2616"
+      destination="2617"
+      handler=".v02_06_000.migrate_sampletemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Add getGroupId metadata in client_catalog"
+      description="Add getGroupId metadata column in client_catalog"
       source="2615"
       destination="2616"
-      handler=".v02_06_000.migrate_sampletemplates_to_dx"
+      handler=".v02_06_000.setup_client_catalog"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
