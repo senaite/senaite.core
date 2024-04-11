@@ -315,6 +315,12 @@ class Client(Organisation):
         return api.user.del_group(group, user)
 
     @security.public
+    def getGroupId(self):
+        """Returns the id of the Plone's client-speficic group for this client
+        """
+        return self.group_id
+
+    @security.public
     def getContactFromUsername(self, username):
         for contact in self.objectValues("Contact"):
             if contact.getUsername() == username:

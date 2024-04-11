@@ -85,7 +85,7 @@ class ContactLoginDetailsView(BrowserView):
         """
         cat = api.get_tool(CLIENT_CATALOG)
         brains = cat(portal_type="Client")
-        groups = map(lambda brain: brain.group_id, brains)
+        groups = map(lambda brain: brain.getGroupId, brains)
         return filter(None, groups)
 
     def get_laboratory_groups(self):
