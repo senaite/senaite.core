@@ -97,25 +97,22 @@ class DefaultResultsRangeProvider(object):
         # Get the AnalysisRequest to look at
         analysis = self.context
         sample = analysis.getRequest()
-        results_range = self.get_results_range(sample)
-        if not results_range:
-            return {}
 
         # Search by keyword
-        keyword = analysis.getKeyword()
-        rr = results_range.get(sample, search_by=keyword)
-        if rr:
-            return rr
+        # or service uid for backwards compatibility
+        search_by = analysis.getKeyword() or analysis.getServiceUID()
+        if not search_by:
+            return {}
 
-        # Try with uid (this shouldn't be necessary)
-        service_uid = analysis.getServiceUID()
-        return results_range.get(sample, search_by=service_uid) or {}
+        return self.get_results_range_by(sample, search_by)
 
-    def get_results_range(self, sample):
-        results_range = None
+    def get_results_range_by(self, sample, search_by):
+        rr = {}
         try:
-            results_range = sample.ResultsRange
+            field = sample.getField("ResultRange", {})
+            rr = field.get(sample, search_by=search_by)
         except AttributeError as e:
-            logger.error("Object '{}' has no attribute 'ResultsRange': "
-                         "{}".format(sample, str(e)))
-        return results_range
+            logger.error("Failed to get results range for sample "
+                         "'{}' by '{}': "
+                         "{}".format(sample.getId(), search_by, str(e)))
+        return rr
