@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.interfaces import IDynamicResultsRange
 from plone.memoize.instance import memoize
 from senaite.core.p3compat import cmp
@@ -47,13 +48,23 @@ class DynamicResultsRange(object):
     def __init__(self, analysis):
         self.analysis = analysis
         self.analysisrequest = analysis.getRequest()
-        self.specification = None
-        has_specification = hasattr(self.analysisrequest, "getSpecification")
-        if self.analysisrequest and has_specification:
-            self.specification = self.analysisrequest.getSpecification()
-        self.dynamicspec = None
+
+    @property
+    def specification(self):
+        spec = None
+        try:
+            spec = self.analysisrequest.getSpecification()
+        except AttributeError as e:
+            logger.error("Object '{}' has no attribute 'getSpecification': "
+                         "{}".format(self.analysisrequest, str(e)))
+        return spec
+
+    @property
+    def dynamicspec(self):
+        dspec = None
         if self.specification:
-            self.dynamicspec = self.specification.getDynamicAnalysisSpec()
+            dspec = self.specification.getDynamicAnalysisSpec()
+        return dspec
 
     @property
     def keyword(self):

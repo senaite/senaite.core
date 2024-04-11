@@ -20,6 +20,7 @@
 
 from operator import itemgetter
 
+from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from Products.Archetypes.interfaces import IFieldDefaultProvider
@@ -96,16 +97,25 @@ class DefaultResultsRangeProvider(object):
         # Get the AnalysisRequest to look at
         analysis = self.context
         sample = analysis.getRequest()
-        if not sample or not hasattr(sample, "ResultsRange"):
+        results_range = self.get_results_range(sample)
+        if not results_range:
             return {}
 
         # Search by keyword
-        field = sample.getField("ResultsRange")
         keyword = analysis.getKeyword()
-        rr = field.get(sample, search_by=keyword)
+        rr = results_range.get(sample, search_by=keyword)
         if rr:
             return rr
 
         # Try with uid (this shouldn't be necessary)
         service_uid = analysis.getServiceUID()
-        return field.get(sample, search_by=service_uid) or {}
+        return results_range.get(sample, search_by=service_uid) or {}
+
+    def get_results_range(self, sample):
+        results_range = None
+        try:
+            results_range = sample.ResultsRange()
+        except AttributeError as e:
+            logger.error("Object '{}' has no attribute 'ResultsRange': "
+                         "{}".format(sample, str(e)))
+        return results_range
