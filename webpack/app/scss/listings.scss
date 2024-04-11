@@ -1,0 +1,11 @@
+/* Listing Table Styles  */
+
+div.listing-container {
+
+    input[type=date] {
+        min-width: 125px;
+    }
+    input[type=time] {
+        min-width: 75px;
+    }
+}

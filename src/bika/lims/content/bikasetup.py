@@ -336,6 +336,19 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "AllowManualResultCaptureDate",
+        schemata="Analyses",
+        default=True,
+        widget=BooleanWidget(
+            label=_("label_bikasetup_allow_manual_result_capture_date",
+                    default="Allow to set the result capture date"),
+            description=_(
+                "description_bikasetup_allow_manual_result_capture_date",
+                default="If this option is activated, the result capture date "
+                        "can be entered manually for analyses"),
+        ),
+    ),
+    BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
         default=False,
@@ -1202,6 +1215,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setSampleAnalysesRequired(value)
+
+    def getAllowManualResultCaptureDate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAllowManualResultCaptureDate()
+        return False
+
+    def setAllowManualResultCaptureDate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAllowManualResultCaptureDate(value)
 
     def getMaxNumberOfSamplesAdd(self):
         """Get the value from the senaite setup

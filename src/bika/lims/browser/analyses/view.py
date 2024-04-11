@@ -22,6 +22,7 @@ import json
 from collections import OrderedDict
 from copy import copy
 from copy import deepcopy
+from datetime import datetime
 from operator import itemgetter
 
 from bika.lims import api
@@ -37,14 +38,6 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
-from senaite.core.permissions import EditFieldResults
-from senaite.core.permissions import EditResults
-from senaite.core.permissions import FieldEditAnalysisConditions
-from senaite.core.permissions import FieldEditAnalysisHidden
-from senaite.core.permissions import FieldEditAnalysisResult
-from senaite.core.permissions import TransitionVerify
-from senaite.core.permissions import ViewResults
-from senaite.core.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
@@ -57,9 +50,18 @@ from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
 from senaite.app.listing import ListingView
+from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate as t
+from senaite.core.permissions import EditFieldResults
+from senaite.core.permissions import EditResults
+from senaite.core.permissions import FieldEditAnalysisConditions
+from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import TransitionVerify
+from senaite.core.permissions import ViewResults
+from senaite.core.permissions import ViewRetractedAnalyses
 from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
@@ -105,6 +107,7 @@ class AnalysesView(ListingView):
         self.scinot = context.bika_setup.getScientificNotationResults()
         self.categories = []
         self.expand_all_categories = True
+        self.now = datetime.now()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -177,9 +180,12 @@ class AnalysesView(ListingView):
                 "sortable": False,
                 "ajax": True,
                 "toggle": True}),
-            ("CaptureDate", {
+            ("ResultCaptureDate", {
                 "title": _("Captured"),
                 "index": "getResultCaptureDate",
+                "type": "datetime",
+                "max": self.now.strftime("%Y-%m-%d"),
+                "ajax": True,
                 "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
@@ -442,6 +448,13 @@ class AnalysesView(ListingView):
             return False
 
         return True
+
+    @viewcache.memoize
+    def is_manual_result_capture_date_allowed(self):
+        """Returns whether it is allowed to set the result capture date manually
+        """
+        setup = api.get_senaite_setup()
+        return setup.getAllowManualResultCaptureDate()
 
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
@@ -940,26 +953,32 @@ class AnalysesView(ListingView):
             item["before"]["Result"] = img
             return
 
-        result = analysis_brain.getResult
-        capture_date = analysis_brain.getResultCaptureDate
-        capture_date_str = self.ulocalized_time(capture_date, long_format=0)
+        # Get the analysis object
+        obj = self.get_object(analysis_brain)
+
+        result = obj.getResult()
+        capture_date = obj.getResultCaptureDate()
+        localized_capture_date = dtime.to_localized_time(
+            capture_date, long_format=1)
 
         item["Result"] = result
-        item["CaptureDate"] = capture_date_str
-        item["result_captured"] = capture_date_str
+        item["ResultCaptureDate"] = dtime.to_iso_format(capture_date)
+        item["replace"]["ResultCaptureDate"] = localized_capture_date
 
         # Add the unit after the result
         unit = item.get("Unit")
         if unit:
             item["after"]["Result"] = self.render_unit(unit)
 
-        # Get the analysis object
-        obj = self.get_object(analysis_brain)
-
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
             # Allow to set Remarks
             item["allow_edit"].append("Remarks")
+
+            if self.is_manual_result_capture_date_allowed():
+                # Allow to edit the capture date, e.g. when the result was
+                # captured manually after the instrument measurement.
+                item["allow_edit"].append("ResultCaptureDate")
 
             # Set the results field editable
             if self.is_result_edition_allowed(analysis_brain):
