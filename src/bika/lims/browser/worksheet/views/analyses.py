@@ -108,6 +108,13 @@ class AnalysesView(BaseView):
             ("Attachments", {
                 "sortable": False,
                 "title": _("Attachments")}),
+            ("ResultCaptureDate", {
+                "title": _("Captured"),
+                "index": "getResultCaptureDate",
+                "type": "datetime",
+                "ajax": True,
+                "max": self.now.strftime("%Y-%m-%d"),
+                "sortable": False}),
             ("DueDate", {
                 "sortable": False,
                 "title": _("Due Date")}),
