@@ -1878,6 +1878,24 @@ def is_string(thing):
     return isinstance(thing, six.string_types)
 
 
+def is_list(thing):
+    """Checks if the passed in object is a list type
+
+    :param thing: object to test
+    :returns: True if the object is a list
+    """
+    return isinstance(thing, list)
+
+
+def is_list_iterable(thing):
+    """Checks if the passed in object can be iterated like a list
+
+    :param thing: object to test
+    :returns: True if the object is a list, tuple or set
+    """
+    return isinstance(thing, (list, tuple, set))
+
+
 def parse_json(thing, default=""):
     """Parse from JSON
 

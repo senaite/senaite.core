@@ -29,5 +29,6 @@
   <include package=".samplecontainers" />
   <include package=".samplematrices" />
   <include package=".samplepreservations" />
+  <include package=".sampletemplates" />
 
 </configure>

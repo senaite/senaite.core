@@ -22,8 +22,6 @@ from bika.lims import api
 from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from z3c.form.interfaces import ISubForm
 from z3c.form.widget import Widget
-from zope.component import getUtility
-from zope.component.interfaces import IFactory
 
 
 class BaseWidget(Widget):
@@ -43,39 +41,39 @@ class BaseWidget(Widget):
             form = form.parentForm
         return form
 
+    def get_portal_type(self, default=None):
+        """Extract the portal type from the form or the query
+        """
+        form = self.get_form()
+        portal_type = getattr(form, "portal_type", None)
+        if not portal_type:
+            query = getattr(self, "query", {})
+            portal_type = query.get("portal_type")
+            if api.is_list(portal_type):
+                portal_type = portal_type[0]
+        return portal_type or default
+
     def get_context(self):
         """Get the current context
 
         NOTE: If we are in the ++add++ form, `self.context` is the container!
               Therefore, we create one here to have access to the methods.
         """
+        # We are in the edit view. Return the context directly
         schema_iface = self.field.interface if self.field else None
         if schema_iface and schema_iface.providedBy(self.context):
             return self.context
-
-        # we might be in a subform, so try first to retrieve the object from
-        # the base form itself first
+        # We might be in a subform or in a datagrid widget.
+        # Therefore, `self.context` is not set or set to `<NO_VALUE>`
         form = self.get_form()
-        portal_type = getattr(form, "portal_type", None)
+        portal_type = self.get_portal_type()
         context = getattr(form, "context", None)
-        if api.is_object(context):
-            if api.get_portal_type(context) == portal_type:
-                return context
-
-        if not self.context:
+        # no context found, return
+        # happens e.g. in the `datetimewidget.txt` doctest
+        if context is None:
             return None
-
         # Hack alert!
         # we are in ++add++ form and have no context!
         # Create a temporary object to be able to access class methods
-        if not portal_type:
-            portal_type = api.get_portal_type(self.context)
-        portal_types = api.get_tool("portal_types")
-        fti = portal_types[portal_type]
-        factory = getUtility(IFactory, fti.factory)
-        context = factory("temporary")
-        # mark the context as temporary
-        context._temporary_ = True
-        # hook into acquisition chain
-        context = context.__of__(self.context)
-        return context
+        view = api.get_view("temporary_context", context=context)
+        return view.create_temporary_context(portal_type)

@@ -562,18 +562,6 @@ class window.AnalysisRequestAdd
       uid = template.sample_point_uid
       @set_reference_field field, uid
 
-    # set the analysis profile
-    field = $("#Profiles-#{arnum}")
-    value = @get_reference_field_value(field)
-    if not value
-      uid = template.analysis_profile_uid
-      @set_reference_field field, uid
-
-    # set the remarks
-    field = $("#Remarks-#{arnum}")
-    if not field.val()
-      field.text template.remarks
-
     # set the composite checkbox
     field = $("#Composite-#{arnum}")
     field.prop "checked", template.composite

@@ -21,7 +21,6 @@
 from views.batches import ClientBatchesView
 from views.analysisrequests import ClientAnalysisRequestsView
 from views.analysisprofiles import ClientAnalysisProfilesView
-from views.artemplates import ClientARTemplatesView
 from views.samplepoints import ClientSamplePointsView
 from views.analysisspecs import ClientAnalysisSpecsView
 from views.attachments import ClientAttachmentsView

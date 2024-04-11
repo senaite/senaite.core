@@ -53,7 +53,7 @@
     <type type_id="ARReport">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="ARTemplates">
+    <type type_id="SampleTemplates">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="Attachment">
@@ -178,7 +178,7 @@
     <type type_id="AnalysisSpec">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
-    <type type_id="ARTemplate">
+    <type type_id="SampleTemplate">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="AttachmentType">

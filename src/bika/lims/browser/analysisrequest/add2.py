@@ -940,10 +940,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         client = self.get_client()
         client_uid = api.get_uid(client) if client else ""
 
-        profile = obj.getAnalysisProfile()
-        profile_uid = api.get_uid(profile) if profile else ""
-        profile_title = profile.Title() if profile else ""
-
         sample_type = obj.getSampleType()
         sample_type_uid = api.get_uid(sample_type) if sample_type else ""
         sample_type_title = sample_type.Title() if sample_type else ""
@@ -954,22 +950,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         service_uids = []
         analyses_partitions = {}
-        analyses = obj.getAnalyses()
+        services = obj.getRawServices()
 
-        for record in analyses:
-            service_uid = record.get("service_uid")
+        for record in services:
+            service_uid = record.get("uid")
             service_uids.append(service_uid)
-            analyses_partitions[service_uid] = record.get("partition")
+            analyses_partitions[service_uid] = record.get("part_id")
 
         info = self.get_base_info(obj)
         info.update({
             "analyses_partitions": analyses_partitions,
-            "analysis_profile_title": profile_title,
-            "analysis_profile_uid": profile_uid,
             "client_uid": client_uid,
             "composite": obj.getComposite(),
             "partitions": obj.getPartitions(),
-            "remarks": obj.getRemarks(),
             "sample_point_title": sample_point_title,
             "sample_point_uid": sample_point_uid,
             "sample_type_title": sample_type_title,
@@ -1039,10 +1032,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sampletype_uid": sample_type_uid,
                 "getClientUID": [client_uid, ""],
             },
-            # Display AR Templates that have this sample type assigned plus
+            # Display Sample Templates that have this sample type assigned plus
             # those that do not have a sample type assigned
             "Template": {
-                "sampletype_uid": [sample_type_uid, None],
+                "sampletype_uid": [sample_type_uid, ""],
                 "getClientUID": [client_uid, ""],
             }
         }
@@ -1320,27 +1313,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         template_to_services = {}
         service_to_templates = {}
         service_metadata = metadata.get("service_metadata", {})
-        profiles_metadata = metadata.get("profiles_metadata", {})
         template = metadata.get("template_metadata", {})
         # We don't expect more than one template, but who knows about future?
         for uid, obj_info in template.items():
             obj = self.get_object_by_uid(uid)
-            # profile from the template
-            profile = obj.getAnalysisProfile()
-            # add the profile to the other profiles
-            if profile is not None:
-                profile_uid = api.get_uid(profile)
-                if profile_uid not in profiles_metadata:
-                    profile = self.get_object_by_uid(profile_uid)
-                    profile_info = self.get_profile_info(profile)
-                    profiles_metadata[profile_uid] = profile_info
-
-            # get the template analyses
-            # [{'partition': 'part-1', 'service_uid': '...'},
-            # {'partition': 'part-1', 'service_uid': '...'}]
-            analyses = obj.getAnalyses() or []
+            # get the template services
+            # [{'part_id': 'part-1', 'uid': '...'},
+            # {'part_id': 'part-1', 'uid': '...'}]
+            services = obj.getRawServices() or []
             # get all UIDs of the template records
-            service_uids = map(lambda rec: rec.get("service_uid"), analyses)
+            service_uids = map(lambda rec: rec.get("uid"), services)
             # remember a mapping of template uid -> service
             template_to_services[uid] = service_uids
             # remember a mapping of service uid -> templates
@@ -1360,7 +1342,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "service_to_templates": service_to_templates,
             "template_to_services": template_to_services,
             "service_metadata": service_metadata,
-            "profiles_metadata": profiles_metadata,
         }
 
     def get_profiles_additional_info(self, metadata):

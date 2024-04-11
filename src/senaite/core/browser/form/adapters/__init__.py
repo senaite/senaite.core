@@ -41,6 +41,7 @@ class EditFormAdapterBase(object):
             "updates": [],
             "html": [],
             "attributes": [],
+            "callbacks": [],
         }
 
     @property
@@ -48,10 +49,16 @@ class EditFormAdapterBase(object):
         return self._data
 
     def initialized(self, data):
-        return NotImplementedError("Must be implemented by subclass")
+        pass
+
+    def added(self, data):
+        pass
 
     def modified(self, data):
-        return NotImplementedError("Must be implemented by subclass")
+        pass
+
+    def callback(self, data):
+        pass
 
     def add_record_to(self, key, record):
         """Add a record to the dictionary
@@ -122,3 +129,9 @@ class EditFormAdapterBase(object):
         """
         record = dict(selector=selector, name=name, value=value, **kw)
         self.add_record_to("attributes", record)
+
+    def add_callback(self, selector, event, name, **kw):
+        """Register a callback
+        """
+        record = dict(selector=selector, event=event, name=name, **kw)
+        self.add_record_to("callbacks", record)

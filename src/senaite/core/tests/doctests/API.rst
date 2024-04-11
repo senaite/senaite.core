@@ -924,7 +924,7 @@ Reactivate the client::
 
 
 Getting the previous Workflow Status of an Object
-........................................
+.................................................
 
 
 This function gives the last worflow state of an object:
@@ -1958,6 +1958,50 @@ This function checks if the given object is a string type.
     False
 
     >>> api.is_string(object)
+    False
+
+Check if an object is a list
+..............................
+
+This function checks if the given object is a list type.
+
+    >>> api.is_list([])
+    True
+
+    >>> api.is_list([1,2,3])
+    True
+
+    >>> api.is_list(set())
+    False
+
+    >>> api.is_list(tuple())
+    False
+
+    >>> api.is_list("[]")
+    False
+
+
+Check if an object is list iterable
+...................................
+
+This function checks if the given object can be handled like a list:
+
+    >>> api.is_list_iterable([])
+    True
+
+    >>> api.is_list_iterable([1,2,3])
+    True
+
+    >>> api.is_list_iterable(set())
+    True
+
+    >>> api.is_list_iterable(tuple())
+    True
+
+    >>> api.is_list_iterable(dict())
+    False
+
+    >>> api.is_list_iterable("[]")
     False
 
 

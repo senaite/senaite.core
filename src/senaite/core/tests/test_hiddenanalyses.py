@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
+from bika.lims import api
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
@@ -33,6 +34,7 @@ class TestHiddenAnalyses(DataTestCase):
         super(TestHiddenAnalyses, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ["Member", "LabManager"])
         login(self.portal, TEST_USER_NAME)
+        setup = api.get_senaite_setup()
 
         servs = self.portal.bika_setup.bika_analysisservices
 
@@ -49,13 +51,16 @@ class TestHiddenAnalyses(DataTestCase):
         # Iron    - Hidden set to True
         self.services[2].setHidden(True)
 
-        profs = self.portal.setup.analysisprofiles
+        profs = setup.analysisprofiles
         # analysisprofile-1: Trace Metals
         self.analysisprofile = profs["analysisprofile-1"]
 
-        artemp = self.portal.bika_setup.bika_artemplates
-        # artemplate-2: Bruma Metals
-        self.artemplate = artemp["artemplate-2"]
+        sampletemplates = setup.sampletemplates
+
+        # sampletemplate-2: Bruma Metals
+        self.sampletemplate = sampletemplates["sampletemplate-2"]
+        # reset the services
+        self.sampletemplate.setServices(self.services)
 
     def tearDown(self):
         # Restore
@@ -63,7 +68,7 @@ class TestHiddenAnalyses(DataTestCase):
             s.setHidden(False)
 
         self.analysisprofile.setAnalysisServicesSettings([])
-        self.artemplate.setAnalysisServicesSettings([])
+        self.sampletemplate.setAnalysisServicesSettings([])
 
         super(TestHiddenAnalyses, self).tearDown()
 
@@ -180,7 +185,7 @@ class TestHiddenAnalyses(DataTestCase):
         # Restore
         self.analysisprofile.setAnalysisServicesSettings([])
 
-    def test_service_hidden_artemplate(self):
+    def test_service_hidden_sample_template(self):
         # Template
         # For Calcium (unset)
         uid = self.services[0].UID()
@@ -189,97 +194,98 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertFalse(
             self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # For Copper (False)
         uid = self.services[1].UID()
         self.assertFalse(
             self.services[1].getHidden())
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # For Iron (True)
         uid = self.services[2].UID()
         self.assertTrue(
             self.services[2].getHidden())
         self.assertTrue(
-            self.artemplate.isAnalysisServiceHidden(uid))
-        self.assertFalse(
-            "hidden" in self.artemplate.getAnalysisServiceSettings(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
+        self.assertTrue(
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # Modify visibility for Calcium in template
         uid = self.services[0].UID()
         sets = [{"uid": uid}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": False}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertTrue(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertTrue(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # Modify visibility for Cooper in template
         uid = self.services[1].UID()
         sets = [{"uid": uid}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": False}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertTrue(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertTrue(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # Modify visibility for Iron in template
         uid = self.services[2].UID()
-        sets = [{"uid": uid}]
-        self.artemplate.setAnalysisServicesSettings(sets)
-        self.assertTrue(
-            self.artemplate.isAnalysisServiceHidden(uid))
+        sets = [{"uid": uid, "hidden": False}]
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
+
+        self.assertFalse(
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": False}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertFalse(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertFalse(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         sets = [{"uid": uid, "hidden": True}]
-        self.artemplate.setAnalysisServicesSettings(sets)
+        self.sampletemplate.setAnalysisServicesSettings(sets)
         self.assertTrue(
-            self.artemplate.isAnalysisServiceHidden(uid))
+            self.sampletemplate.isAnalysisServiceHidden(uid))
         self.assertTrue(
-            self.artemplate.getAnalysisServiceSettings(uid).get("hidden"))
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # Restore
-        self.artemplate.setAnalysisServicesSettings([])
+        self.sampletemplate.setAnalysisServicesSettings([])
 
     def test_service_hidden_analysisrequest(self):
         # Input results
@@ -312,7 +318,8 @@ class TestHiddenAnalyses(DataTestCase):
         uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
-        self.assertFalse("hidden" in self.artemplate.getAnalysisServiceSettings(uid))
+        self.assertFalse(
+            self.sampletemplate.getAnalysisServiceSettings(uid).get("hidden"))
 
         # For Copper (False)
         uid = self.services[1].UID()
@@ -368,30 +375,32 @@ class TestHiddenAnalyses(DataTestCase):
         self.assertFalse(ar.getAnalysisServiceSettings(uid).get("hidden"))
 
         # AR with template with no changes
-        values["Template"] = self.artemplate.UID()
+        values["Template"] = self.sampletemplate.UID()
         del values["Profiles"]
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse(
             ar.getAnalysisServiceSettings(services[0]).get("hidden"))
         self.assertFalse(
             ar.getAnalysisServiceSettings(services[1]).get("hidden"))
-        self.assertFalse(
+        # Iron (True)
+        self.assertTrue(
             ar.getAnalysisServiceSettings(services[2]).get("hidden"))
 
         uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
-        self.assertFalse("hidden" in ar.getAnalysisServiceSettings(uid))
+        self.assertFalse(
+            ar.getAnalysisServiceSettings(uid).get("hidden"))
 
         uid = self.services[1].UID()
         self.assertFalse(self.services[1].getHidden())
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
-        self.assertFalse("hidden" in ar.getAnalysisServiceSettings(uid))
+        self.assertFalse(ar.getAnalysisServiceSettings(uid).get("hidden"))
 
         uid = self.services[2].UID()
         self.assertTrue(self.services[2].getHidden())
         self.assertTrue(ar.isAnalysisServiceHidden(uid))
-        self.assertFalse("hidden" in ar.getAnalysisServiceSettings(uid))
+        self.assertTrue(ar.getAnalysisServiceSettings(uid).get("hidden"))
 
         # AR with profile, with changes
         values["Profiles"] = self.analysisprofile.UID()
@@ -428,7 +437,7 @@ class TestHiddenAnalyses(DataTestCase):
         self.analysisprofile.setAnalysisServicesSettings([])
 
         # AR with template, with changes
-        values["Template"] = self.artemplate.UID()
+        values["Template"] = self.sampletemplate.UID()
         del values["Profiles"]
         matrix = [[2, 1, -2],  # AS = Not set
                   [2, 1, -2],  # AS = False
@@ -443,22 +452,16 @@ class TestHiddenAnalyses(DataTestCase):
                     sets["hidden"] = True
                 else:
                     del sets["hidden"]
-                self.artemplate.setAnalysisServicesSettings(sets)
+                self.sampletemplate.setAnalysisServicesSettings(sets)
                 ar = create_analysisrequest(client, request, values, services)
                 res = matrix[i][j]
-                if res < 0:
-                    self.assertFalse(ar.getAnalysisServiceSettings(
-                        services[i]).get("hidden"))
-                else:
-                    # testing tests
-                    self.assertTrue("hidden" in ar.getAnalysisServiceSettings(services[i]))
                 if abs(res) == 1:
                     self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
                 elif abs(res) == 2:
                     self.assertFalse(ar.isAnalysisServiceHidden(services[i]))
 
         # Restore
-        self.artemplate.setAnalysisServicesSettings([])
+        self.sampletemplate.setAnalysisServicesSettings([])
 
 
 def test_suite():

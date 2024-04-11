@@ -143,7 +143,7 @@ class UIDReferenceWidget(QuerySelectWidget):
         data = {
             "uid": api.get_uid(obj),
             "url": api.get_url(obj),
-            "Title": api.get_title(obj),
+            "Title": api.get_title(obj) or api.get_id(obj),
             "Description": api.get_description(obj),
         }
         for name in names:

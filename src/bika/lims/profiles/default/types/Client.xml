@@ -16,8 +16,6 @@
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="ARTemplate"/>
-    <element value="AnalysisProfile"/>
     <element value="AnalysisRequest"/>
     <element value="AnalysisSpec"/>
     <element value="Attachment"/>
@@ -27,6 +25,9 @@
     <element value="SamplePoint"/>
     <element value="Folder"/>
     <element value="Invoice"/>
+    <!-- DX based contents -->
+    <element value="SampleTemplate"/>
+    <element value="AnalysisProfile"/>
   </property>
   <property name="allow_discussion">False</property>
   <property name="immediate_view">base_edit</property>
@@ -123,9 +124,9 @@
           action_id="templates"
           category="object"
           condition_expr=""
-          icon_expr="string:${portal_url}/images/artemplate.png"
+          icon_expr=""
           link_target=""
-          url_expr="string:${object_url}/artemplates"
+          url_expr="string:${object_url}/@@sampletemplates"
           i18n:attributes="title"
           visible="True">
     <permission value="View"/>

@@ -588,16 +588,6 @@
         uid = template.sample_point_uid;
         this.set_reference_field(field, uid);
       }
-      field = $("#Profiles-" + arnum);
-      value = this.get_reference_field_value(field);
-      if (!value) {
-        uid = template.analysis_profile_uid;
-        this.set_reference_field(field, uid);
-      }
-      field = $("#Remarks-" + arnum);
-      if (!field.val()) {
-        field.text(template.remarks);
-      }
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
       $.each(template.service_uids, function(index, uid) {

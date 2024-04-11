@@ -228,6 +228,16 @@ class ISampleMatrix(Interface):
     """
 
 
+class ISampleTemplates(Interface):
+    """Marker interface for sample templates setup folder
+    """
+
+
+class ISampleTemplate(Interface):
+    """Marker interface for sample template
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """

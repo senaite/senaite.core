@@ -2,7 +2,6 @@ auditlog,AuditLog
 bika_analysiscategories,AnalysisCategories
 bika_analysisservices,AnalysisServices
 bika_analysisspecs,AnalysisSpecs
-bika_artemplates,ARTemplates
 bika_attachmenttypes,AttachmentTypes
 bika_batchlabels,BatchLabels
 bika_calculations,Calculations

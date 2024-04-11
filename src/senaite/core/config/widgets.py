@@ -21,6 +21,24 @@
 from bika.lims import senaiteMessageFactory as _
 
 
+def get_default_columns():
+    """Returns the default columns title/description
+    """
+    return [
+        {
+            "name": "Title",
+            "width": "50",
+            "align": "left",
+            "label": _(u"Name"),
+        }, {
+            "name": "Description",
+            "width": "50",
+            "align": "left",
+            "label": _(u"Description"),
+        }
+    ]
+
+
 def get_labcontact_columns():
     """Returns the default columns for the reference dropdown
     """

@@ -11,7 +11,7 @@
       for="*"
       permission="zope2.View"
       class=".ajax.FormView"
-      allowed_attributes="initialized modified submit"
+      allowed_attributes="initialized added modified submit callback"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 

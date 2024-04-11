@@ -25,6 +25,7 @@ from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from Products.Archetypes.utils import getRelURL
+from Products.CMFCore.permissions import View
 from senaite.core import logger
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -39,6 +40,7 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.component import getMultiAdapter
@@ -47,16 +49,34 @@ version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
-    "AnalysisProfiles",
     "AnalysisProfile",
+    "AnalysisProfiles",
     "Department",
     "Departments",
     "SampleCondition",
     "SampleConditions",
-    "SampleMatrix",
     "SampleMatrices",
+    "SampleMatrix",
     "SamplePreservation",
     "SamplePreservations",
+    "SampleTemplate",
+    "SampleTemplates",
+]
+
+CONTENT_ACTIONS = [
+    # portal_type, action
+    ("Client", {
+        "id": "templates",
+        "name": "Sample Templates",
+        "action": "string:${object_url}/@@sampletemplates",
+        "permission": View,
+        "category": "object",
+        "visible": True,
+        "icon_expr": "",
+        "link_target": "",
+        "condition": "",
+        "insert_after": "profiles",
+    }),
 ]
 
 
@@ -704,6 +724,217 @@ def import_registry(tool):
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
+@upgradestep(product, version)
+def migrate_sampletemplates_to_dx(tool):
+    """Converts existing sample templates to Dexterity
+    """
+    logger.info("Convert SampleTemplates to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "rolemap")
+
+    # update content actions
+    update_content_actions(tool)
+
+    # allow to create the new DX based sample templates below clients
+    permanently_allow_type_for("Client", "SampleTemplate")
+
+    # NOTE: Sample templates can be created in setup and client context!
+    query = {"portal_type": "ARTemplate"}
+    # search all AT based sample templates
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+
+    # get the old setup folder
+    old_parent = api.get_setup().get("bika_artemplates")
+    # get the new setup folder
+    new_parent = get_setup_folder("sampletemplates")
+
+    for num, brain in enumerate(brains):
+        # NOTE: we have a different portal type for new DX based templates and
+        # don't need any further type checks here.
+        old_obj = api.get_object(brain)
+
+        # get the current parent of the object
+        current_parent = api.get_parent(old_obj)
+
+        if current_parent == old_parent:
+            # parent is the old setup folder -> migrate to the new setup folder
+            new_obj = migrate_template_to_dx(old_obj, new_parent)
+        else:
+            # parent is a subfolder -> migrate within the same folder
+            new_obj = migrate_template_to_dx(old_obj)
+
+        logger.info("Migrated sample template {0}/{1}: {2} -> {3}".format(
+            num, total, api.get_path(old_obj), api.get_path(new_obj)))
+
+    # remove old AT folder
+    if old_parent:
+        if len(old_parent) == 0:
+            delete_object(old_parent)
+        else:
+            logger.warn(
+                "Old parent folder {} has contents -> skipping deletion"
+                .format(old_parent))
+
+    logger.info("Convert SampleTemplates to Dexterity [DONE]")
+
+
+def migrate_template_to_dx(src, destination=None):
+    """Migrate an AT template to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    old_portal_type = "ARTemplate"
+    new_portal_type = "SampleTemplate"
+
+    if api.get_portal_type(src) != old_portal_type:
+        logger.error("Not a '{}' object: {}".format(old_portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent(new_portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    # we set the fields with our custom setters
+    target.setSamplePoint(src.getSamplePoint())
+    target.setSampleType(src.getSampleType())
+    target.setComposite(src.getComposite())
+    target.setSamplingRequired(src.getSamplingRequired())
+    target.setPartitions(src.getPartitions())
+    target.setAutoPartition(src.getAutoPartition())
+
+    # NOTE: Analyses -> Services
+    #
+    # services is now a records field containing the selected service, the
+    # part_id and the hidden setting
+    services = []
+    for setting in src.getAnalyses():
+        uid = setting.get("service_uid")
+        if not api.is_uid(uid):
+            logger.error("Invalid UID in analysis setting: %s", setting)
+            continue
+        part_id = setting.get("partition", "")
+        # get the hidden settings
+        service_setting = src.getAnalysisServiceSettings(uid)
+        hidden = service_setting.get("hidden", False)
+        services.append({
+            "uid": uid,
+            "part_id": part_id,
+            "hidden": hidden,
+        })
+    target.setServices(services)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    return target
+
+
+def update_content_actions(tool):
+    logger.info("Update content actions ...")
+    portal_types = api.get_tool("portal_types")
+    for record in CONTENT_ACTIONS:
+        portal_type, action = record
+        type_info = portal_types.getTypeInfo(portal_type)
+        action_id = action.get("id")
+        # remove any previous added actions with the same ID
+        _remove_action(type_info, action_id)
+        # only remove the content action
+        if action.get("remove", False):
+            logger.info("Removed action '%s'", action_id)
+            continue
+        # pop out the position info
+        insert_after = action.pop("insert_after", None)
+        # add the action
+        type_info.addAction(**action)
+        # sort the action to the right position
+        actions = type_info._cloneActions()
+        action_ids = map(lambda a: a.id, actions)
+        if insert_after in action_ids:
+            ref_index = action_ids.index(insert_after)
+            index = action_ids.index(action_id)
+            action = actions.pop(index)
+            actions.insert(ref_index + 1, action)
+            type_info._actions = tuple(actions)
+
+        logger.info("Added action id '%s' to '%s'",
+                    action_id, portal_type)
+    logger.info("Update content actions [DONE]")
+
+
+def _remove_action(type_info, action_id):
+    """Removes the action id from the type passed in
+    """
+    actions = map(lambda action: action.id, type_info._actions)
+    if action_id not in actions:
+        return True
+    index = actions.index(action_id)
+    type_info.deleteActions([index])
+    return _remove_action(type_info, action_id)
 
 
 def setup_client_catalog(tool):

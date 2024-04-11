@@ -65,8 +65,14 @@ class QuerySelectDataConverter(TextLinesConverter):
     def toFieldValue(self, value):
         """Converts a unicode string to a list of UIDs
         """
-        # remove any blank lines at the end
-        value = value.rstrip("\r\n")
+        if api.is_list(value):
+            value = "\r\n".join(value)
+        elif api.is_string(value):
+            # remove any blank lines at the end
+            value = value.rstrip("\r\n")
+        else:
+            value = ""
+
         return super(QuerySelectDataConverter, self).toFieldValue(value)
 
 
@@ -194,14 +200,13 @@ class QuerySelectWidget(widget.HTMLInputWidget, BaseWidget):
         # ensure we have an absolute url for the current context
         url = api.get_url(context)
 
-        # NOTE: The temporary context created by `self.get_context` when if we
-        #       are in the ++add++ creation form for Dexterity contents exists
-        #       only for the current request and will be gone after response.
+        # NOTE: The temporary context created by `self.get_context` if we are
+        #       in the ++add++ creation form for Dexterity contents exists only
+        #       for the current request and will be gone after response!
         #       Therefore, the search view called later will result in a 404!
-        if getattr(context, "_temporary_", False):
-            form = self.get_form()
-            portal_type = getattr(form, "portal_type", "")
-            parent_url = api.get_url(self.context)
+        if api.is_temporary(context):
+            portal_type = self.get_portal_type()
+            parent_url = api.get_url(api.get_parent(context))
             # provide a dynamically created context for the search view to call
             # the right search adapters.
             url = "{}/@@temporary_context/{}".format(parent_url, portal_type)

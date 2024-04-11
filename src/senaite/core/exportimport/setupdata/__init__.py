@@ -1558,7 +1558,7 @@ class Analysis_Services(WorksheetImporter):
             }
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
-            container = self.get_object(bsc, 'Container', row.get('Container_title'))
+            container = self.get_object(bsc, 'SampleContainer', row.get('Container_title'))
             preservation = self.get_object(bsc, 'SamplePreservation', row.get('Preservation_title'))
 
             # Analysis Service - Method considerations:
@@ -1778,89 +1778,88 @@ class Analysis_Profiles(WorksheetImporter):
                 obj.setServices(self.profile_services[row["title"]])
 
 
-class AR_Templates(WorksheetImporter):
+class Sample_Templates(WorksheetImporter):
 
-    def load_artemplate_analyses(self):
-        sheetname = 'AR Template Analyses'
+    def load_sampletemplate_services(self):
+        sheetname = "Sample Template Services"
         worksheet = self.workbook[sheetname]
-        self.artemplate_analyses = {}
         if not worksheet:
             return
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        sc = api.get_tool(SETUP_CATALOG)
+        self.services = {}
         for row in self.get_rows(3, worksheet=worksheet):
-            # XXX service_uid is not a uid
-            service = self.get_object(bsc, 'AnalysisService',
-                                      row.get('service_uid'))
-            if row['ARTemplate'] not in self.artemplate_analyses.keys():
-                self.artemplate_analyses[row['ARTemplate']] = []
-            self.artemplate_analyses[row['ARTemplate']].append(
-                {'service_uid': service.UID(),
-                 'partition': row['partition']
-                 }
-            )
+            keyword = row.get("keyword")
+            service = self.get_object(sc, "AnalysisService", keyword)
+            part_id = row.get("part_id", "")
+            title = row.get("SampleTemplate")
+            if title not in self.services:
+                self.services[title] = []
+            self.services[title].append({
+                "uid": api.get_uid(service),
+                "part_id": part_id,
+            })
 
-    def load_artemplate_partitions(self):
-        sheetname = 'AR Template Partitions'
+    def load_sampletemplate_partitions(self):
+        sheetname = "Sample Template Partitions"
         worksheet = self.workbook[sheetname]
-        self.artemplate_partitions = {}
-        bsc = getToolByName(self.context, SETUP_CATALOG)
         if not worksheet:
             return
+
+        sc = api.get_tool(SETUP_CATALOG)
+        self.partitions = {}
         for row in self.get_rows(3, worksheet=worksheet):
-            if row['ARTemplate'] not in self.artemplate_partitions.keys():
-                self.artemplate_partitions[row['ARTemplate']] = []
-            container = self.get_object(bsc, 'Container',
-                                        row.get('container'))
-            preservation = self.get_object(bsc, 'SamplePreservation',
-                                           row.get('preservation'))
-            self.artemplate_partitions[row['ARTemplate']].append({
-                'part_id': row['part_id'],
-                'Container': container.Title(),
-                'container_uid': container.UID(),
-                'Preservation': preservation.Title(),
-                'preservation_uid': preservation.UID()})
+            title = row.get("SampleTemplate")
+            container = row.get("container")
+            preservation = row.get("preservation")
+            sampletype = row.get("sampletype")
+            part_id = row.get("part_id")
+            if title not in self.partitions:
+                self.partitions[title] = []
+            container = self.get_object(sc, "SampleContainer", container)
+            preservation = self.get_object(sc, "SamplePreservation", preservation)
+            sampletype = self.get_object(sc, "SampleType", sampletype)
+            self.partitions[title].append({
+                "part_id": part_id,
+                "container": api.get_uid(container) if container else "",
+                "preservation": api.get_uid(preservation) if preservation else "",
+                "sampletype": api.get_uid(sampletype) if sampletype else "",
+            })
 
     def Import(self):
-        self.load_artemplate_analyses()
-        self.load_artemplate_partitions()
-        folder = self.context.bika_setup.bika_artemplates
-        bsc = getToolByName(self.context, SETUP_CATALOG)
-        cc = getToolByName(self.context, CLIENT_CATALOG)
+        self.load_sampletemplate_services()
+        self.load_sampletemplate_partitions()
+
+        setup = api.get_senaite_setup()
+        folder = setup.sampletemplates
+        sc = api.get_tool(SETUP_CATALOG)
+
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            analyses = self.artemplate_analyses[row['title']]
-            client_title = row['Client_title'] or 'lab'
-            if row['title'] in self.artemplate_partitions:
-                partitions = self.artemplate_partitions[row['title']]
+            services = self.services.get(title)
+            client_title = row.get("Client_title") or "lab"
+            partitions = self.partitions.get(title, [])
+            if client_title == "lab":
+                folder = setup.sampletemplates
             else:
-                partitions = [{'part_id': 'part-1',
-                               'container': '',
-                               'preservation': ''}]
+                client = api.search({
+                    "portal_type": "Client",
+                    "getName": client_title
+                }, CLIENT_CATALOG)
+                if len(client) == 1:
+                    folder = api.get_object(client[0])
 
-            if client_title == 'lab':
-                folder = self.context.bika_setup.bika_artemplates
-            else:
-                folder = cc(portal_type='Client',
-                            getName=client_title)[0].getObject()
+            sampletype = self.get_object(
+                sc, 'SampleType', row.get('SampleType_title'))
+            samplepoint = self.get_object(
+                sc, 'SamplePoint', row.get('SamplePoint_title'))
 
-            sampletype = self.get_object(bsc, 'SampleType',
-                                         row.get('SampleType_title'))
-            samplepoint = self.get_object(bsc, 'SamplePoint',
-                                         row.get('SamplePoint_title'))
-
-            obj = _createObjectByType("ARTemplate", folder, tmpID())
-            obj.edit(
-                title=str(row['title']),
-                description=row.get('description', ''),
-                Remarks=row.get('Remarks', ''),)
+            obj = api.create(folder, "SampleTemplate", title=title)
             obj.setSampleType(sampletype)
             obj.setSamplePoint(samplepoint)
             obj.setPartitions(partitions)
-            obj.setAnalyses(analyses)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            obj.setServices(services)
 
 
 class Reference_Definitions(WorksheetImporter):
