@@ -55,9 +55,8 @@ class DynamicResultsRange(object):
         try:
             spec = self.analysisrequest.getSpecification()
         except AttributeError as e:
-            ex = str(e)
-            logger.error("Failed to get specification value for '{}': "
-                         "{}".format(self.analysisrequest.getId(), ex))
+            # specification is only possible for AnalysisRequest's
+            pass
         return spec
 
     @property
