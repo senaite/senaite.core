@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.interfaces import IDynamicResultsRange
 from plone.memoize.instance import memoize
 from senaite.core.p3compat import cmp
