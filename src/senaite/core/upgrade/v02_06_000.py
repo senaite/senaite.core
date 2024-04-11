@@ -28,6 +28,7 @@ from Products.Archetypes.utils import getRelURL
 from senaite.core import logger
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -703,3 +704,16 @@ def import_registry(tool):
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
+def setup_client_catalog(tool):
+    """Setup client catalog
+    """
+    logger.info("Setup Client Catalog ...")
+    portal = api.get_portal()
+
+    setup_core_catalogs(portal)
+    client_catalog = api.get_tool(CLIENT_CATALOG)
+    client_catalog.clearFindAndRebuild()
+
+    logger.info("Setup Client Catalog [DONE]")

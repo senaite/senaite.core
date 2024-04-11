@@ -42,6 +42,7 @@ COLUMNS = BASE_COLUMNS + [
     "getClientID",
     "getName",
     "getEmailAddress",  # used in reference widget columns
+    "group_id",
 ]
 
 TYPES = [

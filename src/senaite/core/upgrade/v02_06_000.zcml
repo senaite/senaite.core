@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Add group_id metadata in client_catalog"
+      description="Add group_id metadata column in client_catalog"
+      source="2615"
+      destination="2616"
+      handler=".v02_06_000.setup_client_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Update registry settings"
       description="Import worksheet printing templates registry"
       source="2614"
