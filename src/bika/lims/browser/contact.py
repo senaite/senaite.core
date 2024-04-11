@@ -83,10 +83,12 @@ class ContactLoginDetailsView(BrowserView):
     def get_clients_groups(self):
         """Returns the client-specific groups
         """
+        groups = []
         cat = api.get_tool(CLIENT_CATALOG)
-        brains = cat(portal_type="Client")
-        groups = map(lambda brain: brain.getGroupId, brains)
-        return filter(None, groups)
+        for brain in cat(portal_type="Client"):
+            if brain.getGroupId:
+                groups.append(brain.getGroupId)
+        return groups
 
     def get_laboratory_groups(self):
         """Return the groups available for laboratory users
