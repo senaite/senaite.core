@@ -36,6 +36,7 @@ from Products.CMFPlone.controlpanel.browser.usergroups_usersoverview import \
     UsersOverviewControlPanel
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.config.groups import HIDDEN_GROUPS
 from senaite.core.p3compat import cmp
 
@@ -82,12 +83,10 @@ class ContactLoginDetailsView(BrowserView):
     def get_clients_groups(self):
         """Returns the client-specific groups
         """
-        groups = []
-        uc = api.get_tool("uid_catalog")
-        for brain in uc(portal_type="Client"):
-            client = api.get_object(brain)
-            groups.append(client.group_id)
-        return groups
+        cat = api.get_tool(CLIENT_CATALOG)
+        brains = cat(portal_type="Client")
+        groups = map(lambda brain: brain.group_id, brains)
+        return filter(None, groups)
 
     def get_laboratory_groups(self):
         """Return the groups available for laboratory users
