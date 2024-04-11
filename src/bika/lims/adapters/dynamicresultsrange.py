@@ -54,7 +54,7 @@ class DynamicResultsRange(object):
         spec = None
         try:
             spec = self.analysisrequest.getSpecification()
-        except AttributeError as e:
+        except AttributeError:
             # specification is only possible for AnalysisRequest's
             pass
         return spec
