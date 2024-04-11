@@ -114,7 +114,7 @@ class DefaultResultsRangeProvider(object):
     def get_results_range(self, sample):
         results_range = None
         try:
-            results_range = sample.ResultsRange()
+            results_range = sample.ResultsRange
         except AttributeError as e:
             logger.error("Object '{}' has no attribute 'ResultsRange': "
                          "{}".format(sample, str(e)))
