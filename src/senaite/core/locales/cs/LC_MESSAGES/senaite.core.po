@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-04-03 07:25+0000\n"
+"POT-Creation-Date: 2024-04-11 04:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jiří Podhorecký, 2024\n"
 "Language-Team: Czech (https://app.transifex.com/senaite/teams/87045/cs/)\n"
@@ -369,11 +369,11 @@ msgstr "Povolit prázdné"
 msgid "Allow manual uncertainty value input"
 msgstr "Povolit ruční zadání hodnoty nejistoty"
 
-#: bika/lims/config.py:130
+#: bika/lims/config.py:134
 msgid "Allow same user to verify multiple times"
 msgstr "Umožnit stejnému uživateli několikrát ověřit"
 
-#: bika/lims/config.py:131
+#: bika/lims/config.py:135
 msgid "Allow same user to verify multiple times, but not consecutively"
 msgstr "Umožněte stejnému uživateli, aby ověřoval vícekrát, ale ne postupně"
 
@@ -397,8 +397,8 @@ msgstr "Umožňuje zavést výsledky analýzy ručně"
 msgid "Allow to submit results for unassigned analyses or for analyses assigned to others"
 msgstr "Umožňují předkládat výsledky pro nepřiřazené analýzy nebo pro analýzy přiřazené jiným"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:60
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:60
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:60
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:60
 msgid "Analysed by"
 msgstr "Analyzováno"
 
@@ -476,7 +476,7 @@ msgstr "Specifikace analýz"
 msgid "Analysis Type"
 msgstr "Typ analýze"
 
-#: senaite/core/registry/schema.py:118
+#: senaite/core/registry/schema.py:119
 msgid "Analysis columns order"
 msgstr "Pořadí sloupců analýzy"
 
@@ -1132,27 +1132,27 @@ msgstr "Kód pro web"
 msgid "Code the the shelf"
 msgstr "Kód police"
 
-#: senaite/core/registry/schema.py:157
+#: senaite/core/registry/schema.py:168
 msgid "Collapse field analysis table"
 msgstr "Sbalení tabulky analýzy polí"
 
-#: senaite/core/registry/schema.py:158
+#: senaite/core/registry/schema.py:169
 msgid "Collapse field analysis table in sample view"
 msgstr "Sbalení tabulky analýzy polí v zobrazení vzorku"
 
-#: senaite/core/registry/schema.py:164
+#: senaite/core/registry/schema.py:175
 msgid "Collapse lab analysis table"
 msgstr "Sbalení tabulky laboratorní analýzy"
 
-#: senaite/core/registry/schema.py:165
+#: senaite/core/registry/schema.py:176
 msgid "Collapse lab analysis table in sample view"
 msgstr "Sbalení tabulky laboratorních analýz v zobrazení vzorku"
 
-#: senaite/core/registry/schema.py:171
+#: senaite/core/registry/schema.py:182
 msgid "Collapse qc analysis table"
 msgstr "Sbalení tabulky analýzy qc"
 
-#: senaite/core/registry/schema.py:172
+#: senaite/core/registry/schema.py:183
 msgid "Collapse qc analysis table in sample view"
 msgstr "Sbalení tabulky analýzy qc v zobrazení vzorku"
 
@@ -1199,11 +1199,11 @@ msgstr "Konfidenční interval %"
 msgid "Configuration"
 msgstr "Konfigurace"
 
-#: senaite/core/registry/schema.py:281
+#: senaite/core/registry/schema.py:292
 msgid "Configuration for Generic Setup"
 msgstr ""
 
-#: senaite/core/registry/schema.py:215
+#: senaite/core/registry/schema.py:226
 msgid "Configuration for the sample header information"
 msgstr "Konfigurace informací v záhlaví vzorku"
 
@@ -1379,8 +1379,8 @@ msgstr "Vytvořeno"
 msgid "Created by"
 msgstr "Vytvořil"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:46
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:46
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:46
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:46
 msgid "Created on"
 msgstr "Vytvořeno dne"
 
@@ -1525,7 +1525,7 @@ msgid "Date granted"
 msgstr "Datum přidělení"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:104
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:112
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:112
 msgid "Date received"
 msgstr "Datum přijetí"
 
@@ -1594,11 +1594,11 @@ msgstr "Výchozí metoda"
 msgid "Default Preservation"
 msgstr "Výchozí uchování"
 
-#: senaite/core/registry/schema.py:179
+#: senaite/core/registry/schema.py:190
 msgid "Default column order for sample analysis listings"
 msgstr "Výchozí pořadí sloupců pro výpisy analýzy vzorků"
 
-#: senaite/core/registry/schema.py:119
+#: senaite/core/registry/schema.py:120
 msgid "Default column order for worksheet analysis listings"
 msgstr "Výchozí pořadí sloupců pro výpisy analýzy pracovního listu"
 
@@ -1626,6 +1626,10 @@ msgstr "Výchozí rozvržení v zobrazení pracovního listu"
 #: bika/lims/content/abstractbaseanalysis.py:350
 msgid "Default method used for analyses of this type"
 msgstr "Výchozí metoda používaná pro analýzy tohoto typu"
+
+#: senaite/core/registry/schema.py:144
+msgid "Default printing templates order for worksheet"
+msgstr ""
 
 #: bika/lims/content/analysisservice.py:196
 msgid "Default result"
@@ -1713,7 +1717,7 @@ msgstr "Oddělení"
 msgid "Department ID"
 msgstr "Department ID"
 
-#: senaite/core/content/department.py:122
+#: senaite/core/content/department.py:123
 msgid "Department ID must be unique"
 msgstr ""
 
@@ -1771,7 +1775,7 @@ msgstr "Odpojit"
 msgid "Disable auto fetch transitions"
 msgstr ""
 
-#: bika/lims/config.py:132
+#: bika/lims/config.py:136
 msgid "Disable multi-verification for the same user"
 msgstr "Zakázat vícenásobné ověření stejného uživatele"
 
@@ -2233,7 +2237,7 @@ msgstr "Pole  '{}'  je vyžadováno"
 msgid "Field Analyses"
 msgstr "Analýzy v terénu"
 
-#: senaite/core/registry/schema.py:268
+#: senaite/core/registry/schema.py:279
 msgid "Field Name"
 msgstr "Název pole"
 
@@ -2245,7 +2249,7 @@ msgstr "Pole Uchování"
 msgid "Field Title"
 msgstr "Pole Název"
 
-#: senaite/core/registry/schema.py:266
+#: senaite/core/registry/schema.py:277
 msgid "Field visibility"
 msgstr "Viditelnost pole"
 
@@ -2344,7 +2348,7 @@ msgstr "Funkce"
 msgid "Future dated sample"
 msgstr "Vzorek datovaný v budoucnosti"
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:26
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:27
 msgid "General"
 msgstr "Obecné"
 
@@ -2352,7 +2356,7 @@ msgstr "Obecné"
 msgid "Generates an ID with the IDServer"
 msgstr "Generuje ID pomocí IDServeru"
 
-#: senaite/core/registry/schema.py:280
+#: senaite/core/registry/schema.py:291
 msgid "Generic Setup"
 msgstr ""
 
@@ -2390,11 +2394,11 @@ msgstr "skryto"
 msgid "Hidden Field"
 msgstr "Skryté pole"
 
-#: bika/lims/config.py:136
+#: bika/lims/config.py:140
 msgid "High"
 msgstr "Vysoký"
 
-#: bika/lims/config.py:135
+#: bika/lims/config.py:139
 msgid "Highest"
 msgstr "Nejvyšší"
 
@@ -2857,6 +2861,10 @@ msgstr "Klíčová slova"
 msgid "Lab"
 msgstr "Laboratoř"
 
+#: bika/lims/content/supplier.py:98
+msgid "Lab Account Number"
+msgstr ""
+
 #: senaite/core/browser/samples/templates/multi_results.pt:134
 msgid "Lab Analyses"
 msgstr "Laboratorní analýzy"
@@ -2974,8 +2982,8 @@ msgstr "Rozvrh strany"
 msgid "Layout view '{}' not found. Set '{}' as layout view."
 msgstr "Zobrazení rozvržení '{}' nebylo nalezeno. Nastavte '{}' jako zobrazení rozvržení."
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:153
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:120
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:153
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:120
 msgid "Legend: Results in <em>italic</em> font are pending, results in <strong>bold</strong> font are verified."
 msgstr "Legenda: Výsledky <em>kurzívou</em> jsou vyřízeny, výsledky <strong>tučně</strong> jsou ověřeny."
 
@@ -3062,7 +3070,7 @@ msgstr "Zeměpisná délka"
 msgid "Lot Number"
 msgstr "Číslo šarže"
 
-#: bika/lims/config.py:138
+#: bika/lims/config.py:142
 msgid "Low"
 msgstr "Nízko"
 
@@ -3070,7 +3078,7 @@ msgstr "Nízko"
 msgid "Lower Detection Limit (LDL)"
 msgstr "Dolní detekční limit (LDL)"
 
-#: bika/lims/config.py:139
+#: bika/lims/config.py:143
 msgid "Lowest"
 msgstr "Nejnižší"
 
@@ -3222,7 +3230,7 @@ msgstr "Maximální doba potřebná k dokončení analýzy. Po uplynutí této d
 msgid "Maximum turn-around time"
 msgstr "Maximální doba cyklu"
 
-#: bika/lims/config.py:137
+#: bika/lims/config.py:141
 msgid "Medium"
 msgstr "Střední"
 
@@ -3630,7 +3638,7 @@ msgstr "Počet pozic"
 msgid "Number of copies"
 msgstr "Počet kopií"
 
-#: senaite/core/registry/schema.py:234
+#: senaite/core/registry/schema.py:245
 msgid "Number of prominent columns"
 msgstr "Počet významných sloupců"
 
@@ -3647,7 +3655,7 @@ msgstr "Počet požadovaných ověření před tím, než je daný výsledek pov
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Počet požadovaných ověření od různých uživatelů s dostatečnými oprávněními před tím, než je daný výsledek považován za „ověřený“. Zde nastavená možnost má přednost před možností nastavenou v nastavení Bika"
 
-#: senaite/core/registry/schema.py:243
+#: senaite/core/registry/schema.py:254
 msgid "Number of standard columns"
 msgstr "Počet standardních sloupců"
 
@@ -4024,8 +4032,8 @@ msgstr "Tisk štítků"
 msgid "Printed"
 msgstr "Tištěno"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:53
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:53
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:53
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:53
 msgid "Printed on"
 msgstr "Vytištěno na"
 
@@ -4063,7 +4071,7 @@ msgid "Progress"
 msgstr "Postup"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:103
-#: senaite/core/registry/schema.py:252
+#: senaite/core/registry/schema.py:263
 msgid "Prominent fields"
 msgstr "Významná pole"
 
@@ -4370,8 +4378,8 @@ msgid "Republished after last print"
 msgstr "Znovu publikováno po posledním tisku"
 
 #: bika/lims/browser/client/views/attachments.py:49
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:71
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:70
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:71
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:70
 msgid "Request ID"
 msgstr "ID požadavku"
 
@@ -4542,7 +4550,7 @@ msgid "SENAITE LIMS front-page"
 msgstr "SENAITE LIMS Úvodní strana "
 
 #: senaite/core/profiles/default/controlpanel.xml
-#: senaite/core/registry/controlpanel.py:73
+#: senaite/core/registry/controlpanel.py:81
 msgid "SENAITE Registry"
 msgstr "Registr SENAITE"
 
@@ -4559,8 +4567,8 @@ msgid "SMTP server disconnected. User creation aborted."
 msgstr "Server SMTP byl odpojen. Vytvoření uživatele bylo přerušeno."
 
 #: bika/lims/content/supplier.py:87
-msgid "SWIFT code."
-msgstr "SWIFT kód."
+msgid "SWIFT code"
+msgstr ""
 
 #: bika/lims/content/person.py:42
 msgid "Salutation"
@@ -4591,7 +4599,7 @@ msgstr "Kontejner na vzorky"
 msgid "Sample Containers"
 msgstr "Kontejnery na vzorky"
 
-#: senaite/core/registry/schema.py:214
+#: senaite/core/registry/schema.py:225
 msgid "Sample Header"
 msgstr "Záhlaví vzorku"
 
@@ -4652,7 +4660,7 @@ msgstr "Předpona typu vzorku"
 msgid "Sample Types"
 msgstr "Typy vzorků"
 
-#: senaite/core/registry/schema.py:147
+#: senaite/core/registry/schema.py:158
 msgid "Sample View"
 msgstr "Zobrazení vzorku"
 
@@ -4684,7 +4692,7 @@ msgstr "typ vzorku"
 msgid "Sample types"
 msgstr "Typy vzorků"
 
-#: senaite/core/registry/schema.py:148
+#: senaite/core/registry/schema.py:159
 msgid "Sample view configuration"
 msgstr "Konfigurace zobrazení vzorku"
 
@@ -4767,7 +4775,7 @@ msgstr "Vzorky ověřeny"
 msgid "Samples with results pending"
 msgstr "Vzorky s nevyřízenými výsledky"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:106
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:106
 msgid "Sampling Date"
 msgstr "Datum vzorkování"
 
@@ -4793,7 +4801,7 @@ msgid "Saturday"
 msgstr "Sobota"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:191
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:154
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:155
 msgid "Save"
 msgstr "Uložit"
 
@@ -4915,7 +4923,7 @@ msgstr "Vyberte, zda lze výsledky testů tohoto typu analýzy nastavit pomocí 
 msgid "Select instrument"
 msgstr "Vybrat přístroj"
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:75
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:76
 msgid "Select template"
 msgstr "Vyberte šablonu"
 
@@ -5129,7 +5137,7 @@ msgstr "Zobrazit poslední protokoly automatického importu"
 msgid "Show more"
 msgstr "Zobrazit více"
 
-#: senaite/core/registry/schema.py:227
+#: senaite/core/registry/schema.py:238
 msgid "Show standard fields"
 msgstr "Zobrazit standardní pole"
 
@@ -5215,7 +5223,7 @@ msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instr
 msgstr "Určete velikost pracovního listu, např. odpovídající velikosti zásobníku pro konkrétní přístroj. Poté vyberte „typ“ analýzy pro každou pozici pracovního listu. Pokud jsou vybrány vzorky QC, také vyberte, který referenční vzorek by měl být použit. Pokud je vybrána duplicitní analýza, uveďte, která pozice vzorku by měla být duplikátem"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
-#: senaite/core/registry/schema.py:259
+#: senaite/core/registry/schema.py:270
 msgid "Standard fields"
 msgstr "Standardní pole"
 
@@ -5388,7 +5396,7 @@ msgid "Technical description and instructions intended for analysts"
 msgstr "Technický popis a pokyny určené analytikům"
 
 #: senaite/core/browser/samples/view.py:241
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:68
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:69
 msgid "Template"
 msgstr "Šablona"
 
@@ -5685,11 +5693,11 @@ msgstr "Tato konfigurace webu je zastaralá a je třeba ji aktualizovat:"
 msgid "This value is reported at the bottom of all published results"
 msgstr "Tato hodnota je uvedena v dolní části všech publikovaných výsledků"
 
-#: bika/lims/browser/worksheet/tools.py:82
+#: bika/lims/browser/worksheet/tools.py:84
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
 msgstr "Tento list byl vytvořen, aby nahradil odmítnutý list na ${ws_id}"
 
-#: bika/lims/browser/worksheet/tools.py:75
+#: bika/lims/browser/worksheet/tools.py:77
 msgid "This worksheet has been rejected.  The replacement worksheet is ${ws_id}"
 msgstr "Tento pracovní list byl odmítnut. Náhradní pracovní list je ${ws_id}"
 
@@ -5769,7 +5777,7 @@ msgstr "Bude ověřeno"
 msgid "To test the calculation, enter values here for all calculation parameters.  This includes Interim fields defined above, as well as any services that this calculation depends on to calculate results."
 msgstr "Chcete-li provést výpočet, zadejte zde hodnoty pro všechny parametry výpočtu. To zahrnuje výše uvedená dočasná pole, jakož i veškeré služby, na kterých závisí tento výpočet výsledků."
 
-#: senaite/core/registry/schema.py:228
+#: senaite/core/registry/schema.py:239
 msgid "Toggle visibility of standard sample header fields"
 msgstr "Přepínání viditelnosti standardních polí záhlaví vzorku"
 
@@ -5836,7 +5844,7 @@ msgstr "Typy, které přímo podporují štítky.<br/>POZNÁMKA: V nastaveních 
 msgid "Types with labels"
 msgstr "Typy se štítky"
 
-#: bika/lims/browser/worksheet/views/printview.py:149
+#: bika/lims/browser/worksheet/views/printview.py:142
 msgid "Unable to load the template"
 msgstr "Šablonu nelze načíst"
 
@@ -5921,7 +5929,7 @@ msgstr "Použít cenu analýzy profilu"
 msgid "Use Dashboard as default front page"
 msgstr "Jako výchozí vstupní stránku použijte Ovládací panel"
 
-#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:83
+#: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:84
 msgid "Use Template"
 msgstr "Použít šablonu"
 
@@ -6234,7 +6242,7 @@ msgstr "Zobrazit stránky SENAITE"
 msgid "Visibility"
 msgstr "Viditelnost"
 
-#: senaite/core/registry/schema.py:267
+#: senaite/core/registry/schema.py:278
 msgid "Visible fields"
 msgstr "Viditelná pole"
 
@@ -6261,8 +6269,8 @@ msgid "Web address for the accreditation body"
 msgstr "Webová adresa akreditačního orgánu"
 
 #: bika/lims/content/supplier.py:52
-msgid "Website."
-msgstr "Web"
+msgid "Website"
+msgstr ""
 
 #: bika/lims/config.py:96
 msgid "Wednesday"
@@ -6338,6 +6346,10 @@ msgstr "Šablony pracovního listu"
 msgid "Worksheet View"
 msgstr "Zobrazení pracovního listu"
 
+#: senaite/core/registry/schema.py:143
+msgid "Worksheet printing templates order"
+msgstr ""
+
 #: senaite/core/registry/schema.py:111
 msgid "Worksheet view configuration"
 msgstr "Konfigurace zobrazení pracovního listu"
@@ -6407,8 +6419,8 @@ msgstr "aktivovat"
 msgid "biannually"
 msgstr "jednou za dva roky"
 
-#: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:48
-#: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:48
+#: bika/lims/browser/worksheet/templates/print/sample_by_column.pt:48
+#: bika/lims/browser/worksheet/templates/print/sample_by_row.pt:48
 msgid "by"
 msgstr "od"
 
@@ -6691,14 +6703,14 @@ msgid "description_copyright"
 msgstr "description_copyright"
 
 #. Default: "Please provide a unique department identifier"
-#: senaite/core/content/department.py:67
+#: senaite/core/content/department.py:68
 msgid "description_department_id"
 msgstr ""
 
 #. the 'lab contacts' setup item. Departmental managers are referenced on
 #. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
-#: senaite/core/content/department.py:93
+#: senaite/core/content/department.py:94
 msgid "description_department_manager"
 msgstr ""
 
@@ -6796,8 +6808,9 @@ msgstr ""
 msgid "description_registry_client_landing_page"
 msgstr ""
 
+#. structure of the site via Generic Setup"
 #. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
-#: senaite/core/registry/schema.py:292
+#: senaite/core/registry/schema.py:303
 msgid "description_registry_generic_setup_skip_export_types"
 msgstr ""
 
@@ -7192,7 +7205,7 @@ msgid "label_container_type"
 msgstr ""
 
 #. Default: "Manager"
-#: senaite/core/content/department.py:89
+#: senaite/core/content/department.py:90
 msgid "label_department_manager"
 msgstr ""
 
@@ -7292,7 +7305,7 @@ msgid "label_registry_client_landing_page"
 msgstr ""
 
 #. Default: "Portal types to skip on content structure export"
-#: senaite/core/registry/schema.py:288
+#: senaite/core/registry/schema.py:299
 msgid "label_registry_generic_setup_skip_export_types"
 msgstr ""
 
@@ -7792,17 +7805,17 @@ msgid "title_copyright"
 msgstr "title_copyright"
 
 #. Default: "Description"
-#: senaite/core/content/department.py:54
+#: senaite/core/content/department.py:55
 msgid "title_department_description"
 msgstr ""
 
 #. Default: "Department ID"
-#: senaite/core/content/department.py:63
+#: senaite/core/content/department.py:64
 msgid "title_department_id"
 msgstr ""
 
 #. Default: "Name"
-#: senaite/core/content/department.py:46
+#: senaite/core/content/department.py:47
 msgid "title_department_title"
 msgstr ""
 

@@ -47,12 +47,23 @@ class DynamicResultsRange(object):
     def __init__(self, analysis):
         self.analysis = analysis
         self.analysisrequest = analysis.getRequest()
-        self.specification = None
-        if self.analysisrequest:
-            self.specification = self.analysisrequest.getSpecification()
-        self.dynamicspec = None
+
+    @property
+    def specification(self):
+        spec = None
+        try:
+            spec = self.analysisrequest.getSpecification()
+        except AttributeError:
+            # specification is only possible for AnalysisRequest's
+            pass
+        return spec
+
+    @property
+    def dynamicspec(self):
+        dspec = None
         if self.specification:
-            self.dynamicspec = self.specification.getDynamicAnalysisSpec()
+            dspec = self.specification.getDynamicAnalysisSpec()
+        return dspec
 
     @property
     def keyword(self):

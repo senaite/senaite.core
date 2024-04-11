@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-04-03 07:25+0000\n"
+"POT-Creation-Date: 2024-04-11 04:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English (Spain) (https://www.transifex.com/senaite/teams/87045/en_ES/)\n"
@@ -597,7 +597,7 @@ msgstr ""
 
 #. Default: "Cancel"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:198
-#: senaite/core/skins/senaite_templates/edit_macros.pt:258
+#: senaite/core/skins/senaite_templates/edit_macros.pt:262
 msgid "label_cancel"
 msgstr ""
 
@@ -734,7 +734,7 @@ msgid "label_name"
 msgstr ""
 
 #. Default: "Next"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:243
+#: senaite/core/skins/senaite_templates/edit_macros.pt:247
 msgid "label_next"
 msgstr ""
 
@@ -749,7 +749,7 @@ msgid "label_no_prefs_panels_available"
 msgstr ""
 
 #. Default: "Previous"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:235
+#: senaite/core/skins/senaite_templates/edit_macros.pt:239
 msgid "label_previous"
 msgstr ""
 
