@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2527 Fix clients groups are displayed on labcontact's user creation form
+- #2523 Fix getting ResultsRange field exception
 - #2526 Highlight edit tabs with errors in red
 - #2528 Fix relative paths of section icons in sample view
 - #2525 Fix UnicodeDecodeError during Department DX Migration
