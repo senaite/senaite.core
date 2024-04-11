@@ -4,9 +4,11 @@
 
   <!-- title and icon -->
   <h3 tal:define="icon view/icon_name|nothing;
-                  title view/title|nothing"
+                  title view/title|nothing;
+                  portal context/@@plone_portal_state/portal"
       tal:condition="title">
-    <img tal:condition="icon|nothing" tal:attributes="src string:senaite_theme/icon/${icon}"/>
+    <img tal:condition="icon|nothing"
+         tal:attributes="src string:${portal/absolute_url}/senaite_theme/icon/${icon}"/>
     <span i18n:translate="" tal:content="title"/>
   </h3>
 

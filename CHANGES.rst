@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2527 Fix clients groups are displayed on labcontact's user creation form
+- #2526 Highlight edit tabs with errors in red
+- #2528 Fix relative paths of section icons in sample view
 - #2525 Fix UnicodeDecodeError during Department DX Migration
 - #2515 Worksheet print templates sorting feature
 - #2475 Add field Lab Account Number on a Supplier
