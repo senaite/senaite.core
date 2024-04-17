@@ -250,6 +250,11 @@ class ReferenceSamplesView(BikaListingView):
         # Supported Services
         supported_services_choices = self.make_supported_services_choices(obj)
         item["choices"]["SupportedServices"] = supported_services_choices
+        selected = []
+        for choice in supported_services_choices:
+            if choice.get("selected", False):
+                selected.append(choice)
+        item["SupportedServices"] = selected
 
         # Position
         item["Position"] = "new"
