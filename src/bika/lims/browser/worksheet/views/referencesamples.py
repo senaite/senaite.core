@@ -248,16 +248,16 @@ class ReferenceSamplesView(BikaListingView):
         item["allow_edit"] = self.get_editable_columns()
 
         # Supported Services
-        supported_services_choices = self.make_supported_services_choices(obj)
-        item["choices"]["SupportedServices"] = supported_services_choices
-        selected = []
-        for choice in supported_services_choices:
-            if choice.get("selected", False):
-                selected.append(choice)
-        item["SupportedServices"] = selected
+        supported_services = self.make_supported_services_choices(obj)
+        item["choices"]["SupportedServices"] = supported_services
+        item["SupportedServices"] = self.get_selected_items(supported_services)
 
         # Position
         item["Position"] = "new"
         item["choices"]["Position"] = self.make_position_choices()
 
         return item
+
+    def get_selected_items(self, supported_services_choices):
+        return [item.get("ResultValue") for item in supported_services_choices
+                if item.get("selected", False)]
