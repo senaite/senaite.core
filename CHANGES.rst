@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2530 Fix ReferenceSample Listing Table Multi choice field
 - #2521 Migrate Sample Templates to Dexterity
 - #2524 Allow to edit the result capture date
 - #2527 Fix clients groups are displayed on labcontact's user creation form
