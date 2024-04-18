@@ -74,4 +74,7 @@
   <!-- SampleTemplate Indexer -->
   <adapter name="sampletype_uid" factory=".sampletemplate.sampletype_uid"/>
 
+  <!-- SamplePoint Indexer -->
+  <adapter name="sampletype_uid" factory=".samplepoint.sampletype_uid"/>
+
 </configure>
