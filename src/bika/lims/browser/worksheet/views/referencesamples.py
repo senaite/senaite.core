@@ -248,9 +248,10 @@ class ReferenceSamplesView(BikaListingView):
         item["allow_edit"] = self.get_editable_columns()
 
         # Supported Services
-        supported_services = self.make_supported_services_choices(obj)
-        item["choices"]["SupportedServices"] = supported_services
-        item["SupportedServices"] = self.get_selected_values(supported_services)
+        supported_services_choices = self.make_supported_services_choices(obj)
+        item["choices"]["SupportedServices"] = supported_services_choices
+        item["SupportedServices"] = \
+            self.get_selected_values(supported_services_choices)
 
         # Position
         item["Position"] = "new"
