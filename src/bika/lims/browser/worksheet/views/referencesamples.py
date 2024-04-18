@@ -258,6 +258,6 @@ class ReferenceSamplesView(BikaListingView):
 
         return item
 
-    def get_selected_items(self, choices):
+    def get_selected_values(self, choices):
         return [item.get("ResultValue") for item in choices
                 if item.get("selected", False)]
