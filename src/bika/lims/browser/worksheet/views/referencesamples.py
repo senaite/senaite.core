@@ -250,7 +250,7 @@ class ReferenceSamplesView(BikaListingView):
         # Supported Services
         supported_services = self.make_supported_services_choices(obj)
         item["choices"]["SupportedServices"] = supported_services
-        item["SupportedServices"] = self.get_selected_items(supported_services)
+        item["SupportedServices"] = self.get_selected_values(supported_services)
 
         # Position
         item["Position"] = "new"
@@ -258,6 +258,6 @@ class ReferenceSamplesView(BikaListingView):
 
         return item
 
-    def get_selected_items(self, supported_services_choices):
-        return [item.get("ResultValue") for item in supported_services_choices
+    def get_selected_items(self, choices):
+        return [item.get("ResultValue") for item in choices
                 if item.get("selected", False)]
