@@ -1018,7 +1018,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Display Sample Points that have this sample type assigned plus
             # those that do not have a sample type assigned
             "SamplePoint": {
-                "sampletype_uid": [sample_type_uid, None],
+                "sampletype_uid": [sample_type_uid, ""],
                 "getClientUID": [client_uid, ""],
             },
             # Display Analysis Profiles that have this sample type assigned

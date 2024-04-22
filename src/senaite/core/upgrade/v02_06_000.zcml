@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix sample points not filtered by sample type"
+      description="Sample points are not filtered by sample type in add sample"
+      source="2617"
+      destination="2618"
+      handler=".v02_06_000.reindex_sampletype_uid"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Sample Templates to DX"
       description="Migrate Sample Templates to Dexterity"
       source="2616"

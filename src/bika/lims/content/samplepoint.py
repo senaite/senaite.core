@@ -98,8 +98,13 @@ schema = BikaSchema.copy() + Schema((
             description=_(
                 "description_samplepoint_sampletypes",
                 default="The list of sample types that can be collected "
-                "at this sample point.  If no sample types are "
-                "selected, then all sample types are available."),
+                        "at this sample point. The field for the selection of "
+                        "a sample point in sample creation and edit forms "
+                        "will be filtered in accordance. Still, sample points "
+                        "that do not have any sample type assigned will "
+                        "always be available for selection, regardless of the "
+                        "type."
+            ),
             catalog=SETUP_CATALOG,
             query={
                 "is_active": True,

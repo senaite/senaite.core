@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2531 Fix sample points are not filtered by type on sample creation or edition
 - #2530 Fix no selected services when adding a reference sample in a Worksheet
 - #2521 Migrate Sample Templates to Dexterity
 - #2524 Allow to edit the result capture date
