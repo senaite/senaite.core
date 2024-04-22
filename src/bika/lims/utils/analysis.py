@@ -65,7 +65,6 @@ def create_analysis(context, source, **kwargs):
 
     # do not copy these fields from source
     skip_fields = [
-        "Hidden",
         "Attachment",
         "Result",
         "ResultCaptureDate",
@@ -364,11 +363,6 @@ def create_retest(analysis, **kwargs):
     })
     retest = create_analysis(parent, analysis, **kwargs)
 
-    # Add Hidden mark if it was enabled on the source analysis
-    hidden = analysis.getHidden()
-    if hidden:
-        retest.setHidden(True)
-        
     # Add the retest to the same worksheet, if any
     worksheet = analysis.getWorksheet()
     if worksheet:
