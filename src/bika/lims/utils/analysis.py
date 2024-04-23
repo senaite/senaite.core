@@ -65,7 +65,6 @@ def create_analysis(context, source, **kwargs):
 
     # do not copy these fields from source
     skip_fields = [
-        "Hidden",
         "Attachment",
         "Result",
         "ResultCaptureDate",
