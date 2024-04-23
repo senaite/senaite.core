@@ -761,11 +761,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "disabled",
             },
             catalog_name=SETUP_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending"
-            },
+            query="get_sample_points_query",
         )
     ),
 
@@ -2620,6 +2616,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             "sampletype_uid": [sample_type_uid, ""],
             "is_active": True,
             "sort_on": "title",
+            "sort_order": "ascending",
+        }
+        return query
+
+    def get_sample_points_query(self):
+        """Returns the query for the Sample Point field, so only active sample
+        points without any sample type set and those that support the sample's
+        sample type are returned
+        """
+        sample_type_uid = self.getRawSampleType()
+        query = {
+            "portal_type": "SamplePoint",
+            "sampletype_uid": [sample_type_uid, ""],
+            "is_active": True,
+            "sort_on": "sortable_title",
             "sort_order": "ascending",
         }
         return query
