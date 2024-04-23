@@ -208,6 +208,16 @@ class ISampleCondition(Interface):
     """
 
 
+class ISamplePoint(Interface):
+    """Marker interface for sample points
+    """
+
+
+class ISamplePoints(Interface):
+    """Marker interface for sample points setup folder
+    """
+
+
 class ISamplePreservations(Interface):
     """Marker interface for preservations setup folder
     """
