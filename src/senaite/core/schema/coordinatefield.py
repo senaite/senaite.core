@@ -18,6 +18,9 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
+from senaite.core.i18n import translate as t
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import ICoordinateField
 from zope.interface import implementer
@@ -41,14 +44,48 @@ class CoordinateField(Dict, BaseField):
     def _validate(self, value):
         super(CoordinateField, self)._validate(value)
 
+        # check minutes are within 0 and 59
+        minutes = value.get("minutes", 0)
+        minutes = api.to_int(minutes, default=0)
+        if minutes < 0 or minutes > 59:
+            msg = t(_("Value for minutes must be within 0 and 59"))
+            raise ValueError(msg)
+
+        # check seconds are within 0 and 59
+        seconds = value.get("seconds", 0)
+        seconds = api.to_int(seconds, default=0)
+        if seconds < 0 or seconds > 59:
+            msg = t(_("Value for seconds must be within 0 and 59"))
+            raise ValueError(msg)
+
 
 class LatitudeCoordinateField(CoordinateField):
     """A field that handles latitude coordinates (deg, min, sec, bearing)
     """
     bearing = list("NS")
 
+    def _validate(self, value):
+        super(LatitudeCoordinateField, self)._validate(value)
+
+        # check degrees are within 0 and 90
+        degrees = value.get("degrees")
+        degrees = api.to_int(degrees, default=0)
+        if degrees < 0 or degrees > 90:
+            msg = t(_("Value for degrees must be within 0 and 90"))
+            raise ValueError(msg)
+
 
 class LongitudeCoordinateField(CoordinateField):
     """A field that handles longitude coordinates (deg, min, sec, bearing)
     """
     bearing = list("WE")
+
+    def _validate(self, value):
+        super(LongitudeCoordinateField, self)._validate(value)
+
+        # check degrees are within 0 and 180
+        degrees = value.get("degrees")
+        degrees = api.to_int(degrees, default=0)
+        if degrees < 0 or degrees > 180:
+            msg = t(_("Value for degrees must be within 0 and 180"))
+            raise ValueError(msg)
