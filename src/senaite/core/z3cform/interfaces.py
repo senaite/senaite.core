@@ -63,6 +63,11 @@ class IQuerySelectWidget(IWidget):
     """
 
 
+class ICoordinateWidget(IWidget):
+    """Allows to set a coordinate in degrees, minutes, seconds and bearing
+    """
+
+
 class IDurationWidget(IWidget):
     """Allows to set a duration period in days, hours and minutes
     """

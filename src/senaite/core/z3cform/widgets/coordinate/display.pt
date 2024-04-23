@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   value      python:view.value;
+                   degrees    python:value.get('degrees');
+                   minutes    python:value.get('minutes');
+                   seconds    python:value.get('seconds');
+                   bearing    python:value.get('bearing');
+                   klass      python:view.klass;
+                   mode_klass python:'{}-display'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+     tal:attributes="class klass">
+
+    <span i18n:translate="coordinate_widget_display">DMS
+      <tal:i18n i18n:name="degrees" tal:replace="degrees"/>°
+      <tal:i18n i18n:name="minutes" tal:replace="minutes"/>′
+      <tal:i18n i18n:name="seconds" tal:replace="seconds"/>″
+      <tal:i18n i18n:name="bearing" tal:replace="bearing"/>
+    </span>
+  </div>
+
+</html>
