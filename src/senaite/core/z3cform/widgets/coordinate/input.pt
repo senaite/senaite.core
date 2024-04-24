@@ -45,10 +45,10 @@
         <tal:bearing repeat="option view/bearing_options">
           <input type="radio"
                  tal:attributes="name  id;
-                                 id    string:bearing-${option};
+                                 id    string:${name}.bearing-${option};
                                  value option;
                                  checked python:'checked' if bearing==option else None;"/>
-          <label tal:attributes="for    string:bearing-${option};"
+          <label tal:attributes="for    string:${name}.bearing-${option};"
                  tal:content="option"/>
         </tal:bearing>
 
