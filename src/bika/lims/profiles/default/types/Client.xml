@@ -22,10 +22,10 @@
     <element value="Batch"/>
     <element value="Contact"/>
     <element value="Sample"/>
-    <element value="SamplePoint"/>
     <element value="Folder"/>
     <element value="Invoice"/>
     <!-- DX based contents -->
+    <element value="SamplePoint"/>
     <element value="SampleTemplate"/>
     <element value="AnalysisProfile"/>
   </property>
