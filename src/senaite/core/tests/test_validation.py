@@ -20,7 +20,6 @@
 
 import unittest
 
-from bika.lims import api
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
