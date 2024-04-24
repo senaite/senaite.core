@@ -57,7 +57,6 @@ Variables:
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.setup
-    >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
@@ -68,7 +67,7 @@ We need to create some basic objects for the test:
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
-    >>> samplepoint = api.create(bikasetup.bika_samplepoints, "SamplePoint", title="Happy Lake")
+    >>> samplepoint = api.create(setup.samplepoints, "SamplePoint", title="Happy Lake")
     >>> container = api.create(bikasetup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
     >>> preservation = api.create(setup.samplepreservations, "SamplePreservation", title=u"Chill at 4°C")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
@@ -108,7 +107,7 @@ Test get/set methods:
 
     >>> template1.setSamplePoint(samplepoint)
     >>> template1.getSamplePoint()
-    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+    <SamplePoint at /plone/setup/samplepoints/samplepoint-1>
 
 Test `getRaw` method:
 
