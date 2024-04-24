@@ -958,9 +958,6 @@ def migrate_samplepoints_to_dx(tool):
             num, total, api.get_path(obj), api.get_path(obj)))
 
     if old_setup:
-        # copy snapshots for the container
-        copy_snapshots(old_setup, new_setup)
-
         # remove old AT folder
         if len(old_setup) == 0:
             delete_object(old_setup)
