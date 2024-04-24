@@ -41,11 +41,6 @@
     />
 
   <utility
-    component="bika.lims.vocabularies.SamplePointVocabularyFactory"
-    name="bika.lims.vocabularies.SamplePoints"
-    />
-
-  <utility
     component="bika.lims.vocabularies.StorageLocationVocabularyFactory"
     name="bika.lims.vocabularies.StorageLocations"
     />
