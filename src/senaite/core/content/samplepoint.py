@@ -76,7 +76,7 @@ class ISamplePointSchema(model.Schema):
         description=_(
             u"description_samplepoint_latitude",
             default=u"Enter the Sample Point's latitude in degrees 0-90, "
-                    u"minutes 0-59, seconds 0-59 and N/S indicator"
+                    u"minutes 0-59, seconds 0-59.9999 and N/S indicator"
         ),
         required=False,
     )
@@ -89,7 +89,7 @@ class ISamplePointSchema(model.Schema):
         description=_(
             u"description_samplepoint_longitude",
             default=u"Enter the Sample Point's longitude in degrees 0-180, "
-                    u"minutes 0-59, seconds 0-59 and E/W indicator"
+                    u"minutes 0-59, seconds 0-59.9999 and E/W indicator"
         ),
         required=False,
     )
