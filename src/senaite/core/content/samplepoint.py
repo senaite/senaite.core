@@ -27,6 +27,7 @@ from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
+from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISamplePoint
 from senaite.core.schema import DurationField
 from senaite.core.schema import UIDReferenceField
@@ -174,7 +175,7 @@ class ISamplePointSchema(model.Schema):
 
 
 @implementer(ISamplePoint, ISamplePointSchema, IDeactivable)
-class SamplePoint(Container):
+class SamplePoint(Container, ClientAwareMixin):
     """Sample point
     """
     # Catalogs where this type will be catalogued
