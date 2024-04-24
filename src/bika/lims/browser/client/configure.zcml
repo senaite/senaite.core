@@ -29,14 +29,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="analysisprofiles"
-      class="bika.lims.browser.client.ClientAnalysisProfilesView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
       name="samplepoints"
       class="bika.lims.browser.client.ClientSamplePointsView"
       permission="zope2.View"

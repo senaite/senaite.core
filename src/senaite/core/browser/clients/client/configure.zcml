@@ -3,6 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <!-- Package includes -->
+  <include package=".analysisprofiles"/>
   <include package=".sampletemplates"/>
 
 </configure>
