@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2536 Fix counts from control-panel includes client-specific items
 - #2532 Fix hidden mark is not kept in retests
 - #2531 Fix sample points are not filtered by type on sample creation or edition
 - #2530 Fix no selected services when adding a reference sample in a Worksheet
