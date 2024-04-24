@@ -250,6 +250,7 @@ def add_senaite_setup_items(portal):
         ("analysisprofiles", "Analysis Profiles", "AnalysisProfiles"),
         ("samplepreservations", "Sample Preservations", "SamplePreservations"),
         ("samplematrices", "Sample Matrices", "SampleMatrices"),
+        ("samplepoints", "Sample Points", "SamplePoints"),
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
     ]
     setup = api.get_senaite_setup()

@@ -26,7 +26,7 @@
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="SampleMatrix" />
+    <element value="SamplePoint" />
   </property>
 
   <property name="allow_discussion">False</property>

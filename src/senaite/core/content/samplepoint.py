@@ -116,7 +116,7 @@ class ISamplePointSchema(model.Schema):
                     u"enter frequency here, e.g. weekly"
         ),
         required=False,
-    ),
+    )
 
     directives.widget(
         "sample_types",
@@ -222,6 +222,19 @@ class SamplePoint(Container):
     Elevation = property(getElevation, setElevation)
 
     @security.protected(permissions.View)
+    def getSamplingFrequency(self):
+        accessor = self.accessor("sampling_frequency")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSamplingFrequency(self, value):
+        mutator = self.mutator("sampling_frequency")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    SamplingFrequency = property(getSamplingFrequency, setSamplingFrequency)
+
+    @security.protected(permissions.View)
     def getRawSampleTypes(self):
         accessor = self.accessor("sample_types", raw=True)
         return accessor(self) or []
@@ -234,4 +247,27 @@ class SamplePoint(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setSampleTypes(self, value):
         mutator = self.mutator("sample_types")
+        mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getComposite(self):
+        accessor = self.accessor("composite")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setComposite(self, value):
+        mutator = self.mutator("composite")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Composite = property(getComposite, setComposite)
+
+    @security.protected(permissions.View)
+    def getAttachmentFile(self):
+        accessor = self.accessor("attachment_file")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAttachmentFile(self, value):
+        mutator = self.mutator("attachment_file")
         mutator(self, value)
