@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from datetime import timedelta
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IDurationField
 from zope.interface import implementer
@@ -28,3 +29,8 @@ from zope.schema import Timedelta
 class DurationField(Timedelta, BaseField):
     """A field that handles days, hours, minutes and seconds
     """
+
+    def __init__(self, **kwargs):
+        default = kwargs.get("default")
+        kwargs["default"] = default or timedelta()
+        super(DurationField, self).__init__(**kwargs)

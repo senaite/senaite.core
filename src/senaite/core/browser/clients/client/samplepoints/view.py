@@ -18,16 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.controlpanel.bika_samplepoints import SamplePointsView
+from senaite.core.browser.controlpanel.samplepoints.view import \
+    SamplePointsView
 
 
 class ClientSamplePointsView(SamplePointsView):
-    """This is displayed in the "Sample Points" tab on each client
+    """Client based sample points view
     """
-
-    def before_render(self):
-        """Before template render hook
-        """
-        # Display the Client's tab bar at the top
-        if "disable_border" in self.request:
-            del(self.request["disable_border"])

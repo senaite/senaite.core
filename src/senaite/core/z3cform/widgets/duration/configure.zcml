@@ -4,7 +4,9 @@
     i18n_domain="z3c.form">
 
   <!-- Duration Widget -->
-  <adapter factory=".widget.DurationWidgetFactory" />
+  <adapter factory=".widget.DurationWidgetFactory"
+           for="senaite.core.schema.interfaces.IDurationField
+                senaite.core.interfaces.ISenaiteFormLayer" />
 
   <!-- Duration data converter -->
   <adapter factory=".widget.DurationDataConverter" />

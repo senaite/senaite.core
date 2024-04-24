@@ -53,14 +53,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISamplePoints"
-      name="folder_view"
-      class=".bika_samplepoints.SamplePointsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISampleTypes"
       name="folder_view"
       class=".bika_sampletypes.SampleTypesView"

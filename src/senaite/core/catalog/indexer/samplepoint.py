@@ -18,9 +18,20 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from plone.indexer import indexer
-from bika.lims.interfaces import ISamplePoint
+from senaite.core.interfaces import ISamplePoint
 from senaite.core.interfaces import ISetupCatalog
+
+
+@indexer(ISamplePoint, ISetupCatalog)
+def sampletype_title(instance):
+    """Returns a list of titles from SampleType the instance is assigned to
+    If the instance has no sample type assigned, it returns a tuple with an
+    empty value. This allows searches for `MissingValue` entries too.
+    """
+    sample_type = instance.getSampleTypes()
+    return map(api.get_title, sample_type) or [""]
 
 
 @indexer(ISamplePoint, ISetupCatalog)
