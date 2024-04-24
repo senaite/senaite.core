@@ -289,8 +289,8 @@ class Tests(DataTestCase):
     def test_CoordinateValidator(self):
         login(self.portal, TEST_USER_NAME)
 
-        setup = api.get_setup()
-        samplepoints = setup.bika_samplepoints
+        setup = api.get_senaite_setup()
+        samplepoints = setup.samplepoints
         sp = samplepoints.objectValues()[0]
 
         latitude = {
