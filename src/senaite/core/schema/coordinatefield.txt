@@ -1,0 +1,68 @@
+Coordinate field
+================
+
+The coordinate field stores a coordinate in DMS (degrees, minutes and seconds)
+
+Running this test from the buildout directory:
+
+bin/test test_schema_fields -t coordinatefield
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from collections import OrderedDict
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+
+Using the field
+---------------
+
+Create a content schema that uses the field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import LatitudeCoordinateField
+    >>> from senaite.core.schema import LongitudeCoordinateField
+
+    >>> class IContent(Interface):
+    ...     latitude = LatitudeCoordinateField(title=u"Latitude")
+    ...     longitude = LongitudeCoordinateField(title=u"Longitude")
+
+
+Get the field from the schema interface:
+
+    >>> lat_field = IContent["latitude"]
+    >>> lat_field
+    <senaite.core.schema.coordinatefield.LatitudeCoordinateField object at ...>
+    >>> lon_field = IContent["longitude"]
+    >>> lon_field
+    <senaite.core.schema.coordinatefield.LongitudeCoordinateField object at ...>
+
+
+Construct the content:
+
+    >>> from persistent import Persistent
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     pass
+
+
+Set a coordinate value through the fields:
+
+    >>> lat = {"degrees": 41, "minutes": 23, "seconds": 1.752, "bearing": "N"}
+    >>> content = Content()
+    >>> lat_field.set(content, lat)
+    >>> coordinate = lat_field.get(content)
+    >>> [coordinate.get(key) for key in sorted(coordinate.keys())]
+    ['N', '41', '23', '1.752']
+
+    >>> lon = {"degrees": 2, "minutes": 10, "seconds": 55.2756, "bearing": "E"}
+    >>> lon_field.set(content, lon)
+    >>> coordinate = lon_field.get(content)
+    >>> [coordinate.get(key) for key in sorted(coordinate.keys())]
+    ['E', '2', '10', '55.2756']

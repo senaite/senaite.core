@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.i18n import translate as t
@@ -41,6 +42,22 @@ class CoordinateField(Dict, BaseField):
         kwargs["default"] = default or dict.fromkeys(SUBFIELDS, "")
         super(CoordinateField, self).__init__(**kwargs)
 
+    def set(self, object, value):
+        """Set the coordinate field value
+        """
+        # ensure the value is a valid dict
+        coordinate = copy.deepcopy(self.default)
+        if value:
+            coordinate.update(value)
+
+        # convert values to strings preserving the whole fraction, if any
+        for key in coordinate.keys():
+            val = coordinate[key]
+            coordinate[key] = api.float_to_string(val, default=val)
+
+        # store the value
+        super(CoordinateField, self).set(object, coordinate)
+
     def _validate(self, value):
         super(CoordinateField, self)._validate(value)
 
@@ -51,11 +68,13 @@ class CoordinateField(Dict, BaseField):
             msg = t(_("Value for minutes must be within 0 and 59"))
             raise ValueError(msg)
 
-        # check seconds are within 0 and 59
+        # check seconds are within 0 and 59.9999. With 4 decimal places, the
+        # max precision is ~100mm (individual humans can be unambiguously
+        # recognized at this scale)
         seconds = value.get("seconds", 0)
-        seconds = api.to_int(seconds, default=0)
-        if seconds < 0 or seconds > 59:
-            msg = t(_("Value for seconds must be within 0 and 59"))
+        seconds = api.to_float(seconds, default=0)
+        if seconds < 0 or seconds >= 60:
+            msg = t(_("Value for seconds must be within 0 and 59.9999"))
             raise ValueError(msg)
 
 

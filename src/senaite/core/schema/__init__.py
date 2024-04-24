@@ -23,6 +23,8 @@ from zope.interface import classImplementsFirst
 from .addressfield import AddressField
 from .addressfield import IAddressField
 from .coordinatefield import CoordinateField
+from .coordinatefield import LatitudeCoordinateField
+from .coordinatefield import LongitudeCoordinateField
 from .datetimefield import DatetimeField
 from .durationfield import DurationField
 from .fields import IntField

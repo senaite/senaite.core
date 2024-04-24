@@ -4,16 +4,16 @@
 
   <tal:widget define="name       python:view.name;
                       value      python:view.value;
-                      degrees    python:value.get('degrees');
-                      minutes    python:value.get('minutes');
-                      seconds    python:value.get('seconds');
-                      bearing    python:value.get('bearing');">
+                      degrees    python:value.get('degrees', '');
+                      minutes    python:value.get('minutes', '');
+                      seconds    python:value.get('seconds', '');
+                      bearing    python:value.get('bearing', '');">
 
     <input type="hidden"
-           tal:attributes="name string:${name}.degrees:record:float:ignore_empty;
+           tal:attributes="name string:${name}.degrees:record:int:ignore_empty;
                            value degrees;"/>
     <input type="hidden"
-           tal:attributes="name string:${name}.minutes:record:float:ignore_empty;
+           tal:attributes="name string:${name}.minutes:record:int:ignore_empty;
                            value minutes;"/>
     <input type="hidden"
            tal:attributes="name string:${name}.seconds:record:float:ignore_empty;

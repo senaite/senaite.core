@@ -30,8 +30,6 @@ from z3c.form.widget import FieldWidget
 from zope.component import adapter
 from zope.interface import implementer
 
-SUBFIELDS = ("degrees", "minutes", "seconds", "bearing")
-
 
 @adapter(ICoordinateField, ICoordinateWidget)
 class CoordinateDataConverter(BaseDataConverter):
@@ -41,21 +39,16 @@ class CoordinateDataConverter(BaseDataConverter):
     def toWidgetValue(self, value):
         """Converts from field value to widget
         """
-        val = dict.fromkeys(SUBFIELDS, "")
-        if isinstance(value, dict):
-            val.update(value)
-        return val
+        if not isinstance(value, dict):
+            return {}
+        return value
 
     def toFieldValue(self, value):
         """Converts from widget to field value
         """
-        val = dict.fromkeys(SUBFIELDS, "")
-        if isinstance(value, dict):
-            val.update(value)
-        # convert values to strings
-        for key in val.keys():
-            val[key] = str(val[key])
-        return val
+        if not isinstance(value, dict):
+            return {}
+        return value
 
 
 @implementer(ICoordinateWidget)

@@ -4,10 +4,10 @@
 
   <div tal:define="name       python:view.name;
                    value      python:view.value;
-                   degrees    python:value.get('degrees');
-                   minutes    python:value.get('minutes');
-                   seconds    python:value.get('seconds');
-                   bearing    python:value.get('bearing');
+                   degrees    python:value.get('degrees', '');
+                   minutes    python:value.get('minutes', '');
+                   seconds    python:value.get('seconds', '');
+                   bearing    python:value.get('bearing', '');
                    klass      python:view.klass;
                    mode_klass python:'{}-display'.format(klass);
                    klass      python:' '.join([klass, mode_klass]);"
