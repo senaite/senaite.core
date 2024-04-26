@@ -50,6 +50,9 @@ class EditForm(EditFormAdapterBase):
                 self.add_readonly_field(
                     "Keyword", _("Keyword is used in active analyses "
                                  "and can not be changed anymore"))
+        # Show/hide predefined options
+        result_type = form.get("ResultType")
+        self.toggle_result_type(result_type)
 
         return self.data
 
@@ -114,6 +117,10 @@ class EditForm(EditFormAdapterBase):
                 title=api.get_title(o), value=api.get_uid(o)), instruments)
             self.add_update_field("Instrument", {
                 "options": empty + i_opts})
+
+        # Show/hide predefined options
+        elif name == "ResultType":
+            self.toggle_result_type(value)
 
         return self.data
 
@@ -185,3 +192,18 @@ class EditForm(EditFormAdapterBase):
         if isinstance(check, string_types):
             return _(check)
         return None
+
+    def toggle_result_type(self, result_type):
+        """Hides/Show result options depending on the resulty type
+        """
+        if result_type and api.is_list(result_type):
+            return self.toggle_result_type(result_type[0])
+
+        if result_type in ["numeric", "string", "text"]:
+            self.add_hide_field("ResultOptions")
+            self.add_hide_field("ResultOptionsSorting")
+            self.add_show_field("DefaultResult")
+        else:
+            self.add_show_field("ResultOptions")
+            self.add_show_field("ResultOptionsSorting")
+            self.add_hide_field("DefaultResult")

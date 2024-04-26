@@ -20,6 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
@@ -584,6 +585,28 @@ AllowManualUncertainty = BooleanField(
     )
 )
 
+RESULT_TYPES = (
+    ("numeric", _("Numeric")),
+    ("string", _("String")),
+    ("text", _("Text")),
+    ("select", _("Selection list")),
+    ("multiselect", _("Multiple selection")),
+    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
+    ("multichoice", _("Multiple choices")),
+)
+
+# Type of control to be rendered on results entry
+ResultType = StringField(
+    "ResultType",
+    schemata="Result Options",
+    default="numeric",
+    vocabulary=DisplayList(RESULT_TYPES),
+    widget=SelectionWidget(
+        label=_("Result type"),
+        format="select",
+    )
+)
+
 # Results can be selected from a dropdown list.  This prevents the analyst
 # from entering arbitrary values.  Each result must have a ResultValue, which
 # must be a number - it is this number which is interpreted as the actual
@@ -611,18 +634,13 @@ ResultOptions = RecordsField(
     )
 )
 
-RESULT_OPTIONS_TYPES = (
-    ("select", _("Selection list")),
-    ("multiselect", _("Multiple selection")),
-    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
-    ("multichoice", _("Multiple choices")),
-)
-
+# XXX: HIDDEN -> TO BE REMOVED
+# Replaced by ResultType
 ResultOptionsType = StringField(
     "ResultOptionsType",
     schemata="Result Options",
     default="select",
-    vocabulary=DisplayList(RESULT_OPTIONS_TYPES),
+    vocabulary=DisplayList(RESULT_TYPES),
     widget=SelectionWidget(
         label=_("Control type"),
         description=_(
@@ -630,6 +648,7 @@ ResultOptionsType = StringField(
             "results are set"
         ),
         format="select",
+        visible=False,
     )
 )
 
@@ -663,11 +682,14 @@ ResultOptionsSorting = StringField(
 )
 
 # Allow/disallow the capture of text as the result of the analysis
+# XXX: HIDDEN -> TO BE REMOVED
+# Replaced by ResultType
 StringResult = BooleanField(
     "StringResult",
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
+        visible=False,
         label=_("String result"),
         description=_(
             "Enable this option to allow the capture of text as result"
@@ -794,6 +816,7 @@ schema = BikaSchema.copy() + Schema((
     Uncertainties,
     PrecisionFromUncertainty,
     AllowManualUncertainty,
+    ResultType,
     ResultOptions,
     ResultOptionsType,
     ResultOptionsSorting,
@@ -1071,3 +1094,20 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
         return tat or self.bika_setup.getDefaultTurnaroundTime()
+
+    @deprecated("Use self.getResultType() instead")
+    def getResultOptionsType(self):
+        return self.getResultType()
+
+    @deprecated("Use self.getResultType() instead")
+    def setResultOptionsType(self, value):
+        self.setResultOptionsType(self, value)
+
+    @deprecated("Use self.getResultType() == 'string' instead")
+    def getStringResult(self):
+        result_type = self.getResultType()
+        return result_type == "string"
+
+    @deprecated("Use self.setResultType('string') instead")
+    def setStringResult(self, value):
+        self.setResultType("string")

@@ -993,6 +993,9 @@ class AnalysesView(ListingView):
                 item["Result"] = "{} {}".format(operand, result).strip()
 
             # Prepare result options
+            result_type = obj.getResultType()
+            item["result_type"] = result_type
+
             choices = self.get_result_options(obj)
             if choices:
                 choices_type = obj.getResultOptionsType()
@@ -1000,13 +1003,8 @@ class AnalysesView(ListingView):
                     # By default set empty as the default selected choice
                     choices.insert(0, dict(ResultValue="", ResultText=""))
                 item["choices"]["Result"] = choices
-                item["result_type"] = choices_type
 
-            elif obj.getStringResult():
-                item["result_type"] = "string"
-
-            else:
-                item["result_type"] = "numeric"
+            if result_type == "numeric":
                 item["help"]["Result"] = _(
                     "Enter the result either in decimal or scientific "
                     "notation, e.g. 0.00005 or 1e-5, 10000 or 1e5")

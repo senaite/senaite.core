@@ -190,7 +190,7 @@ PartitionSetup = PartitionSetupField(
 # Allow/disallow the capture of text as the result of the analysis
 DefaultResult = StringField(
     "DefaultResult",
-    schemata="Analysis",
+    schemata="Result Options",
     validators=('service_defaultresult_validator',),
     widget=StringWidget(
         label=_("Default result"),
@@ -292,8 +292,8 @@ schema = schema.copy() + Schema((
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
 schema.moveField("Instrument", after="Instruments")
-# Move default result field after String result
-schema.moveField("DefaultResult", after="StringResult")
+# Move default result field after Result Type
+schema.moveField("DefaultResult", after="ResultType")
 
 
 class AnalysisService(AbstractBaseAnalysis):
