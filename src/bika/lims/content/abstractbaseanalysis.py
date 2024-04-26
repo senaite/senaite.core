@@ -636,8 +636,7 @@ ResultOptions = RecordsField(
 # TODO Remove ResultOptionsType field. It was Replaced by ResultType
 ResultOptionsType = StringField(
     "ResultOptionsType",
-    schemata="Result Options",
-    default="select",
+    readonly=True,
     widget=StringWidget(
         visible=False,
     )
@@ -676,8 +675,7 @@ ResultOptionsSorting = StringField(
 # TODO Remove StringResult field. It was Replaced by ResultType
 StringResult = BooleanField(
     "StringResult",
-    schemata="Analysis",
-    default=False,
+    readonly=True,
     widget=BooleanWidget(
         visible=False,
     )
