@@ -43,6 +43,11 @@ class AnalysisProfilesView(ListingView):
             "portal_type": "AnalysisProfile",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            # restrict the search to the current folder only
+            "path": {
+                "query": api.get_path(context),
+                "level": 0,
+            }
         }
 
         self.context_actions = {
