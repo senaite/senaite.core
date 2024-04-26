@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2535 Fix client-specific analysis profiles are displayed under setup
 - #2534 Fix client-specific sample templates are displayed under setup
 - #2532 Fix hidden mark is not kept in retests
 - #2531 Fix sample points are not filtered by type on sample creation or edition
