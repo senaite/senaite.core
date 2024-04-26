@@ -202,8 +202,6 @@ class EditForm(EditFormAdapterBase):
         if result_type in ["numeric", "string", "text"]:
             self.add_hide_field("ResultOptions")
             self.add_hide_field("ResultOptionsSorting")
-            self.add_show_field("DefaultResult")
         else:
             self.add_show_field("ResultOptions")
             self.add_show_field("ResultOptionsSorting")
-            self.add_hide_field("DefaultResult")

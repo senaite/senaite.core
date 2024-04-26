@@ -1355,27 +1355,27 @@ class DefaultResultValidator(object):
     name = "service_defaultresult_validator"
 
     def __call__(self, value, **kwargs):
-        instance = kwargs['instance']
         request = kwargs.get('REQUEST', {})
         field_name = kwargs['field'].getName()
-        translate = getToolByName(instance, 'translation_service').translate
 
         default_result = request.get(field_name, None)
-        if default_result:
-            # Default result must be one of the available result options
-            options = request.get("ResultOptions", None)
-            if options:
-                values = map(lambda ro: ro.get("ResultValue"), options)
-                if default_result not in values:
-                    msg = _("Default result must be one of the following "
-                            "result options: {}").format(", ".join(values))
-                    return to_utf8(translate(msg))
+        if not default_result:
+            return True
 
-            elif not request.get("StringResult"):
-                # Default result must be numeric
-                if not api.is_floatable(default_result):
-                    msg = _("Default result is not numeric")
-                    return to_utf8(translate(msg))
+        result_type = request.get("ResultType")
+        if result_type in ["string", "text"]:
+            return True
+
+        elif result_type == "numeric":
+            if not api.is_floatable(default_result):
+                return _t(_("Default result is not numeric"))
+
+        else:
+            options = request.get("ResultOptions", [])
+            values = map(lambda ro: ro.get("ResultValue"), options)
+            if default_result not in values:
+                return _t(_("Default result must be one of the following "
+                            "result options: {}").format(", ".join(values)))
 
         return True
 

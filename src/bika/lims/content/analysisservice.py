@@ -292,8 +292,8 @@ schema = schema.copy() + Schema((
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
 schema.moveField("Instrument", after="Instruments")
-# Move default result field after Result Type
-schema.moveField("DefaultResult", after="ResultType")
+# Move default result field after Result Options
+schema.moveField("DefaultResult", after="ResultOptions")
 
 
 class AnalysisService(AbstractBaseAnalysis):
