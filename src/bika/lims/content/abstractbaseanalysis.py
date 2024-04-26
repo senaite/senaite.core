@@ -639,7 +639,6 @@ ResultOptions = RecordsField(
 ResultOptionsType = StringField(
     "ResultOptionsType",
     schemata="Result Options",
-    default="select",
     vocabulary=DisplayList(RESULT_TYPES),
     widget=SelectionWidget(
         label=_("Control type"),
