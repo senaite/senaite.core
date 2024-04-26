@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
@@ -634,19 +633,12 @@ ResultOptions = RecordsField(
     )
 )
 
-# XXX: HIDDEN -> TO BE REMOVED
-# Replaced by ResultType
+# TODO Remove ResultOptionsType field. It was Replaced by ResultType
 ResultOptionsType = StringField(
     "ResultOptionsType",
     schemata="Result Options",
-    vocabulary=DisplayList(RESULT_TYPES),
-    widget=SelectionWidget(
-        label=_("Control type"),
-        description=_(
-            "Type of control to be displayed on result entry when predefined "
-            "results are set"
-        ),
-        format="select",
+    default="select",
+    widget=StringWidget(
         visible=False,
     )
 )
@@ -681,18 +673,13 @@ ResultOptionsSorting = StringField(
 )
 
 # Allow/disallow the capture of text as the result of the analysis
-# XXX: HIDDEN -> TO BE REMOVED
-# Replaced by ResultType
+# TODO Remove StringResult field. It was Replaced by ResultType
 StringResult = BooleanField(
     "StringResult",
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
         visible=False,
-        label=_("String result"),
-        description=_(
-            "Enable this option to allow the capture of text as result"
-        )
     )
 )
 
@@ -1094,19 +1081,19 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
         return tat or self.bika_setup.getDefaultTurnaroundTime()
 
-    @deprecated("Use self.getResultType() instead")
+    # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):
         return self.getResultType()
 
-    @deprecated("Use self.getResultType() instead")
+    # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def setResultOptionsType(self, value):
-        self.setResultOptionsType(self, value)
+        self.setResultType(value)
 
-    @deprecated("Use self.getResultType() == 'string' instead")
+    # TODO Remove. StringResults field was replaced by ResulType field
     def getStringResult(self):
         result_type = self.getResultType()
         return result_type == "string"
 
-    @deprecated("Use self.setResultType('string') instead")
+    # TODO Remove. StringResults field was replaced by ResulType field
     def setStringResult(self, value):
         self.setResultType("string")
