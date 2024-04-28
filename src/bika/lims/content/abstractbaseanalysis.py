@@ -1096,6 +1096,5 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     # TODO Remove. StringResults field was replaced by ResulType field
     def setStringResult(self, value):
-        if bool(value):
-            self.setResultType("string")
-        self.setResultType("numeric")
+        result_type = "string" if bool(value) else "numeric"
+        self.setResultType(result_type)
