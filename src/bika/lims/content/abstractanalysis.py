@@ -70,9 +70,7 @@ Attachment = UIDReferenceField(
     relationship='AnalysisAttachment'
 )
 
-# The final result of the analysis is stored here.  The field contains a
-# String value, but the result itself is required to be numeric.  If
-# a non-numeric result is needed, ResultOptions can be used.
+# The final result of the analysis is stored here
 Result = StringField(
     'Result',
     read_permission=ViewResults,

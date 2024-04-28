@@ -1081,6 +1081,8 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):
+        if self.getStringResult():
+            return "select"
         return self.getResultType()
 
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
@@ -1090,8 +1092,10 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     # TODO Remove. StringResults field was replaced by ResulType field
     def getStringResult(self):
         result_type = self.getResultType()
-        return result_type == "string"
+        return result_type in ["string", "text"]
 
     # TODO Remove. StringResults field was replaced by ResulType field
     def setStringResult(self, value):
-        self.setResultType("string")
+        if bool(value):
+            self.setResultType("string")
+        self.setResultType("numeric")
