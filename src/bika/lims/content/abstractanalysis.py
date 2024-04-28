@@ -464,7 +464,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :param value: is expected to be a string.
         """
         # Convert to list ff the analysis has result options set with multi
-        if self.getResultOptions() and "multi" in self.getResultOptionsType():
+        if self.getResultOptions() and "multi" in self.getResultType():
             if not isinstance(value, (list, tuple)):
                 value = filter(None, [value])
 

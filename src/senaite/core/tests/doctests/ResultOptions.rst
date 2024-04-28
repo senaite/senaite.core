@@ -91,10 +91,10 @@ Apply result options to the services:
 
 And a different control type for each service
 
-    >>> Cu.setResultOptionsType("select")
-    >>> Fe.setResultOptionsType("multiselect")
-    >>> Au.setResultOptionsType("multiselect_duplicates")
-    >>> Zn.setResultOptionsType("multichoice")
+    >>> Cu.setResultType("select")
+    >>> Fe.setResultType("multiselect")
+    >>> Au.setResultType("multiselect_duplicates")
+    >>> Zn.setResultType("multichoice")
 
 Test formatted result
 .....................

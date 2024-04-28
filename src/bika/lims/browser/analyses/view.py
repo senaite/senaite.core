@@ -998,7 +998,7 @@ class AnalysesView(ListingView):
 
             choices = self.get_result_options(obj)
             if choices:
-                choices_type = obj.getResultOptionsType()
+                choices_type = obj.getResultType()
                 if choices_type == "select":
                     # By default set empty as the default selected choice
                     choices.insert(0, dict(ResultValue="", ResultText=""))
