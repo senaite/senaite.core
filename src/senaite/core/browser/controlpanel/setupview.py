@@ -96,6 +96,10 @@ class SetupView(BrowserView):
         query = {
             "portal_type": contained_types,
             "is_active": True,
+            "path": {
+                "query": api.get_path(obj),
+                "level": 0,
+            }
         }
         brains = api.search(query)
         return len(brains)
