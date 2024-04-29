@@ -70,9 +70,7 @@ Attachment = UIDReferenceField(
     relationship='AnalysisAttachment'
 )
 
-# The final result of the analysis is stored here.  The field contains a
-# String value, but the result itself is required to be numeric.  If
-# a non-numeric result is needed, ResultOptions can be used.
+# The final result of the analysis is stored here
 Result = StringField(
     'Result',
     read_permission=ViewResults,
@@ -466,7 +464,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :param value: is expected to be a string.
         """
         # Convert to list ff the analysis has result options set with multi
-        if self.getResultOptions() and "multi" in self.getResultOptionsType():
+        if self.getResultOptions() and "multi" in self.getResultType():
             if not isinstance(value, (list, tuple)):
                 value = filter(None, [value])
 

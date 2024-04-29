@@ -1,12 +1,11 @@
-Result Options
---------------
+Text Result
+-----------
 
-An analysis can be configured so a selection list with options are displayed
-for selection rather than an input text for manual introduction of a value.
+An analysis can be configured so the captured value is treated as text.
 
 Running this test from the buildout directory::
 
-    bin/test test_textual_doctests -t ResultOptions
+    bin/test test_textual_doctests -t TextResult
 
 
 Test Setup
@@ -72,76 +71,51 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
-    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
-    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> Zn = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Zinc", Keyword="Zn", Price="20", Category=category.UID())
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID())
+    >>> Cu.setResultType("text")
 
-Apply result options to the services:
+Test text result
+................
 
-    >>> options = [
-    ...     {"ResultValue": "0", "ResultText": "Zero"},
-    ...     {"ResultValue": "1", "ResultText": "One"},
-    ...     {"ResultValue": "2", "ResultText": "Two"},
-    ...     {"ResultValue": "3", "ResultText": "Three"},
-    ... ]
-    >>> services = [Cu, Fe, Au, Zn]
-    >>> for service in services:
-    ...     service.setResultOptions(options)
+When a result is captured and the analysis has the value 'text' as ResultType,
+the system returns the string value "as-is" without any processing:
 
-And a different control type for each service
-
-    >>> Cu.setResultType("select")
-    >>> Fe.setResultType("multiselect")
-    >>> Au.setResultType("multiselect_duplicates")
-    >>> Zn.setResultType("multichoice")
-
-Test formatted result
-.....................
-
-The system returns the option text as the formatted result:
-
-    >>> sample = new_sample([Cu, Fe, Au, Zn])
+    >>> sample = new_sample([Cu])
 
     >>> cu = get_analysis(sample, Cu)
+    >>> cu.setResult(1.23456789)
+    >>> cu.getResult()
+    '1.23456789'
+    >>> cu.getFormattedResult()
+    '1.23456789'
     >>> cu.setResult('0')
     >>> cu.getResult()
     '0'
     >>> cu.getFormattedResult()
-    'Zero'
+    '0'
 
-    >>> fe = get_analysis(sample, Fe)
-    >>> fe.setResult(['0', '1'])
-    >>> fe.getResult()
-    '["0", "1"]'
-    >>> fe.getFormattedResult()
-    'Zero<br/>One'
-
-    >>> au = get_analysis(sample, Au)
-    >>> au.setResult(['0', '1', '1'])
-    >>> au.getResult()
-    '["0", "1", "1"]'
-    >>> au.getFormattedResult()
-    'Zero<br/>One<br/>One'
-
-    >>> zn = get_analysis(sample, Zn)
-    >>> zn.setResult(['0', '1'])
-    >>> zn.getResult()
-    '["0", "1"]'
-    >>> zn.getFormattedResult()
-    'Zero<br/>One'
-
-Even if the analysis has the "String result" setting enabled:
-
-    >>> analyses = [cu, fe, au, zn]
-    >>> for analysis in analyses:
-    ...     analysis.setStringResult(True)
-
+    >>> cu.setResult('This is a text result')
+    >>> cu.getResult()
+    'This is a text result'
     >>> cu.getFormattedResult()
-    'Zero'
-    >>> fe.getFormattedResult()
-    'Zero<br/>One'
-    >>> au.getFormattedResult()
-    'Zero<br/>One<br/>One'
-    >>> zn.getFormattedResult()
-    'Zero<br/>One'
+    'This is a text result'
+
+The result supports multiple lines as well:
+
+    >>> cu.setResult("This is a text result with\r\nof multiple\nlines")
+    >>> cu.getResult()
+    'This is a text result with\r\nof multiple\nlines'
+
+If the result contains html characters, `getFormattedResult` escape them
+by default:
+
+    >>> cu.setResult('< Detection Limit')
+    >>> cu.getResult()
+    '< Detection Limit'
+    >>> cu.getFormattedResult()
+    '&lt; Detection Limit'
+
+Unless the parameter `html` is set to False:
+
+    >>> cu.getFormattedResult(html=False)
+    '< Detection Limit'

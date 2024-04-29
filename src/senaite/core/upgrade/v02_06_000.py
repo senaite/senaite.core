@@ -20,6 +20,7 @@
 
 from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import UID_CATALOG
 from bika.lims.api.snapshot import disable_snapshots
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
@@ -948,3 +949,43 @@ def setup_client_catalog(tool):
     client_catalog.clearFindAndRebuild()
 
     logger.info("Setup Client Catalog [DONE]")
+
+
+def setup_result_types(tool):
+    """Setup analysis/service result types
+    """
+    portal_types = ["AnalysisService", "Analysis", "RejectAnalysis",
+                    "DuplicateAnalysis", "ReferenceAnalysis"]
+    cat = api.get_tool(UID_CATALOG)
+    brains = cat(portal_type=portal_types)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+
+        if num and num % 1000 == 0:
+            logger.info("Setup result types %s/%s" % (num, total))
+
+        obj = api.get_object(brain)
+        if not obj:
+            continue
+
+        # check if it was set as a string result
+        string_result = obj.getField("StringResult").get(obj)
+
+        # get the results options type
+        options_field = obj.getField("ResultOptionsType")
+        options_type = options_field.get(obj)
+        if not options_type:
+            # processed already
+            obj._p_deactivate()
+            continue
+
+        if obj.getResultOptions():
+            obj.setResultType(options_type)
+        elif string_result:
+            obj.setResultType("string")
+        else:
+            obj.setResultType("numeric")
+
+        # empty the value from the old result options field
+        options_field.set(obj, None)
+        obj._p_deactivate()
