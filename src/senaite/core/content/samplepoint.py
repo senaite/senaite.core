@@ -163,6 +163,7 @@ class ISamplePointSchema(model.Schema):
                     u"together to be a representative sample for the dam. The "
                     u"default, unchecked, indicates 'grab' samples"
         ),
+        required=False,
     )
 
     attachment_file = NamedBlobFile(
