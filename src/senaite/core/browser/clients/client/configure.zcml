@@ -4,6 +4,7 @@
 
   <!-- Package includes -->
   <include package=".analysisprofiles"/>
+  <include package=".samplepoints"/>
   <include package=".sampletemplates"/>
 
 </configure>

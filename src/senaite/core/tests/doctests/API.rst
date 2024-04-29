@@ -2133,10 +2133,10 @@ We can override source values on copy as well::
 
 We can create a copy in a container other than source's::
 
-    >>> sample_points = self.portal.bika_setup.bika_samplepoints
+    >>> sample_points = self.portal.setup.samplepoints
     >>> sample_point = api.create(sample_points, "SamplePoint", title="Test")
     >>> sample_point
-    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+    <SamplePoint at /plone/setup/samplepoints/samplepoint-1>
 
     >>> sample_point_copy = api.copy_object(sample_point, container=client3)
     >>> sample_point_copy

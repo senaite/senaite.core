@@ -3,6 +3,7 @@
     i18n_domain="senaite.core">
 
   <!-- package includes -->
+  <include package=".coordinate" />
   <include package=".duration" />
   <include package=".listing" />
   <include package=".uidreference" />

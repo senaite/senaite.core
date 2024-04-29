@@ -21,6 +21,7 @@
 from collective.z3cform.datagridfield.interfaces import IRow
 from plone.app.textfield.interfaces import IRichText
 from zope.schema.interfaces import IDatetime
+from zope.schema.interfaces import IDict
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
@@ -50,6 +51,11 @@ class IDataGridRow(IRow):
 
 class IUIDReferenceField(IList):
     """Senaite UID reference field
+    """
+
+
+class ICoordinateField(IDict):
+    """Senaite Coordinate field
     """
 
 

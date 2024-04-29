@@ -28,6 +28,7 @@
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
   <include package=".samplematrices" />
+  <include package=".samplepoints" />
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
 

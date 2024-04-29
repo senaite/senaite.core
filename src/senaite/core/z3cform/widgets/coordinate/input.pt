@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   value      python:view.value;
+                   degrees    python:value.get('degrees', '');
+                   minutes    python:value.get('minutes', '');
+                   seconds    python:value.get('seconds', '');
+                   bearing    python:value.get('bearing', '');
+                   klass      python:view.klass;
+                   mode_klass python:'{}-input'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+       tal:attributes="class klass">
+
+    <div class="form-row">
+      <div class='col-auto' tal:define="id string:${name}.degrees:record:int:ignore_empty;">
+        <label i18n:translate="coordinate_widget_label_degrees"
+               tal:attributes="for id">Degrees</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value degrees;"/>
+      </div>
+      <div class='col-auto' tal:define="id string:${name}.minutes:record:int:ignore_empty;">
+        <label i18n:translate="coordinate_widget_label_minutes"
+               tal:attributes="for id">Minutes</label>
+        <input type="number" size="5"
+               tal:attributes="id id;
+                               name id;
+                               value minutes;"/>
+      </div>
+      <div class='col-auto' tal:define="id string:${name}.seconds:record:float:ignore_empty;">
+        <label i18n:translate="coordinate_widget_label_seconds"
+               tal:attributes="for id">Seconds</label>
+        <input type="number" size="10" step="0.0001"
+               tal:attributes="id id;
+                               name id;
+                               value seconds;"/>
+      </div>
+      <div class='col-auto' tal:define="id string:${name}.bearing:record:string:ignore_empty;">
+        <label i18n:translate="coordinate_widget_label_bearing"
+               tal:attributes="for id">Bearing</label>
+
+        <tal:bearing repeat="option view/bearing_options">
+          <input type="radio"
+                 tal:attributes="name  id;
+                                 id    string:${name}.bearing-${option};
+                                 value option;
+                                 checked python:'checked' if bearing==option else None;"/>
+          <label tal:attributes="for    string:${name}.bearing-${option};"
+                 tal:content="option"/>
+        </tal:bearing>
+
+      </div>
+
+    </div>
+  </div>
+
+</html>

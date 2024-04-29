@@ -36,9 +36,9 @@ Variables:
     >>> browser = self.getBrowser()
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = portal.setup
     >>> bika_setup = portal.bika_setup
     >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_samplepoints = bika_setup.bika_samplepoints
     >>> bika_analysiscategories = bika_setup.bika_analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_labcontacts = bika_setup.bika_labcontacts
@@ -82,9 +82,9 @@ needed, if it is hazardous or not, the point where the sample was taken etc.:
 
 A `SamplePoint` defines the location, where a `Sample` was taken:
 
-    >>> samplepoint = api.create(bika_samplepoints, "SamplePoint", title="Lake of Constance")
+    >>> samplepoint = api.create(setup.samplepoints, "SamplePoint", title="Lake of Constance")
     >>> samplepoint
-    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+    <SamplePoint at /plone/setup/samplepoints/samplepoint-1>
 
 An `AnalysisCategory` categorizes different `AnalysisServices`:
 

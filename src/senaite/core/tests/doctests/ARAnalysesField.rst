@@ -56,7 +56,7 @@ Variables::
     >>> setup = portal.bika_setup
     >>> calculations = setup.bika_calculations
     >>> sampletypes = setup.bika_sampletypes
-    >>> samplepoints = setup.bika_samplepoints
+    >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = setup.bika_analysiscategories
     >>> analysisspecs = setup.bika_analysisspecs
     >>> analysisservices = setup.bika_analysisservices
@@ -104,7 +104,7 @@ Create a Sample Point:
 
     >>> samplepoint = api.create(samplepoints, "SamplePoint", title="Lake Python")
     >>> samplepoint
-    <SamplePoint at /plone/bika_setup/bika_samplepoints/samplepoint-1>
+    <SamplePoint at /plone/setup/samplepoints/samplepoint-1>
 
 Create an Analysis Category:
 

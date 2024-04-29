@@ -1161,7 +1161,7 @@ class Sample_Types(WorksheetImporter):
 class Sample_Points(WorksheetImporter):
 
     def Import(self):
-        setup_folder = self.context.bika_setup.bika_samplepoints
+        setup_folder = self.context.setup.samplepoints
         bsc = getToolByName(self.context, SETUP_CATALOG)
         cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
@@ -1183,20 +1183,15 @@ class Sample_Points(WorksheetImporter):
             if row['Longitude']:
                 logger.log("Ignored SamplePoint Longitude", 'error')
 
-            obj = _createObjectByType("SamplePoint", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''),
-                Composite=self.to_bool(row['Composite']),
-                Elevation=row['Elevation'],
-            )
+            obj = api.create(folder, "SamplePoint", title=row['title'],
+                             description=row.get('description', ''))
+            obj.setComposite(self.to_bool(row["Composite"]))
+            obj.setElevation(row["Elevation"])
             sampletype = self.get_object(bsc, 'SampleType',
                                          row.get('SampleType_title'))
             if sampletype:
                 obj.setSampleTypes([sampletype, ])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+                obj.reindexObject()
 
 
 class Sample_Point_Sample_Types(WorksheetImporter):

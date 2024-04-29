@@ -66,7 +66,7 @@ Variables:
     >>> request = self.request
     >>> setup = portal.bika_setup
     >>> bika_sampletypes = setup.bika_sampletypes
-    >>> bika_samplepoints = setup.bika_samplepoints
+    >>> samplepoints = portal.setup.samplepoints
     >>> bika_analysiscategories = setup.bika_analysiscategories
     >>> bika_analysisservices = setup.bika_analysisservices
     >>> bika_labcontacts = setup.bika_labcontacts
@@ -112,7 +112,7 @@ needed, if it is hazardous or not, the point where the sample was taken etc.:
 
 A `SamplePoint` defines the location, where a `Sample` was taken:
 
-    >>> samplepoint = api.create(bika_samplepoints, "SamplePoint", title="Lake of Constance")
+    >>> samplepoint = api.create(samplepoints, "SamplePoint", title="Lake of Constance")
     >>> samplepoint
     <...samplepoint-1>
 

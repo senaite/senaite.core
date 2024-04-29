@@ -22,9 +22,13 @@ from zope.interface import classImplementsFirst
 
 from .addressfield import AddressField
 from .addressfield import IAddressField
+from .coordinatefield import CoordinateField
+from .coordinatefield import LatitudeCoordinateField
+from .coordinatefield import LongitudeCoordinateField
 from .datetimefield import DatetimeField
 from .durationfield import DurationField
 from .fields import IntField
+from .interfaces import ICoordinateField
 from .interfaces import IDatetimeField
 from .interfaces import IDurationField
 from .interfaces import IIntField
@@ -36,6 +40,7 @@ from .uidreferencefield import IUIDReferenceField
 from .uidreferencefield import UIDReferenceField
 
 classImplementsFirst(AddressField, IAddressField)
+classImplementsFirst(CoordinateField, ICoordinateField)
 classImplementsFirst(DatetimeField, IDatetimeField)
 classImplementsFirst(DurationField, IDurationField)
 classImplementsFirst(IntField, IIntField)

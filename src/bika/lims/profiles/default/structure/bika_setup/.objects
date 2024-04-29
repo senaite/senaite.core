@@ -12,7 +12,6 @@ bika_labcontacts,LabContacts
 bika_labproducts,LabProducts
 bika_manufacturers,Manufacturers
 bika_referencedefinitions,ReferenceDefinitions
-bika_samplepoints,SamplePoints
 bika_sampletypes,SampleTypes
 bika_samplingdeviations,SamplingDeviations
 bika_storagelocations,StorageLocations

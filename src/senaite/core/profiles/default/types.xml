@@ -36,6 +36,10 @@
   <object name="SampleMatrix" meta_type="Dexterity FTI" />
   <object name="SampleMatrices" meta_type="Dexterity FTI" />
 
+  <!-- Sample Points -->
+  <object name="SamplePoint" meta_type="Dexterity FTI" />
+  <object name="SamplePoints" meta_type="Dexterity FTI" />
+
   <!-- Sample Preservations -->
   <object name="SamplePreservation" meta_type="Dexterity FTI" />
   <object name="SamplePreservations" meta_type="Dexterity FTI" />

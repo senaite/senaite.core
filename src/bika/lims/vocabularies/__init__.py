@@ -200,16 +200,6 @@ class StorageLocationVocabulary(BikaContentVocabulary):
 StorageLocationVocabularyFactory = StorageLocationVocabulary()
 
 
-class SamplePointVocabulary(BikaContentVocabulary):
-    def __init__(self):
-        BikaContentVocabulary.__init__(self,
-                                       ['bika_setup/bika_samplepoints', ],
-                                       ['SamplePoint', ])
-
-
-SamplePointVocabularyFactory = SamplePointVocabulary()
-
-
 class AnalysisServiceVocabulary(BikaContentVocabulary):
     def __init__(self):
         BikaContentVocabulary.__init__(self,

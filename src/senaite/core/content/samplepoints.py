@@ -18,16 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.controlpanel.bika_samplepoints import SamplePointsView
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import ISamplePoints
+from zope.interface import implementer
 
 
-class ClientSamplePointsView(SamplePointsView):
-    """This is displayed in the "Sample Points" tab on each client
+class ISamplePointsSchema(model.Schema):
+    """Schema interface
     """
 
-    def before_render(self):
-        """Before template render hook
-        """
-        # Display the Client's tab bar at the top
-        if "disable_border" in self.request:
-            del(self.request["disable_border"])
+
+@implementer(ISamplePoints, ISamplePointsSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class SamplePoints(Container):
+    """A container for sample points
+    """
