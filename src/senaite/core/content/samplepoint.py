@@ -44,7 +44,7 @@ class ISamplePointSchema(model.Schema):
 
     model.fieldset(
         "location",
-        label=_(u"Location"),
+        label=_(u"fieldset_samplepoint_location", default=u"Location"),
         fields=[
             "latitude",
             "longitude",
@@ -70,7 +70,7 @@ class ISamplePointSchema(model.Schema):
 
     latitude = LatitudeCoordinateField(
         title=_(
-            u'title_samplepoint_latitude',
+            u"title_samplepoint_latitude",
             default=u"Latitude"
         ),
         description=_(
@@ -108,7 +108,7 @@ class ISamplePointSchema(model.Schema):
 
     sampling_frequency = DurationField(
         title=_(
-            u'title_samplepoint_sampling_frequency',
+            u"title_samplepoint_sampling_frequency",
             default=u"Sampling Frequency"
         ),
         description=_(
@@ -131,7 +131,7 @@ class ISamplePointSchema(model.Schema):
     )
     sample_types = UIDReferenceField(
         title=_(
-            u'title_samplepoint_sampling_sample_types',
+            u"title_samplepoint_sampling_sample_types",
             default=u"Sample Types"
         ),
         description=_(
@@ -152,7 +152,7 @@ class ISamplePointSchema(model.Schema):
 
     composite = schema.Bool(
         title=_(
-            u'title_samplepoint_composite',
+            u"title_samplepoint_composite",
             default=u"Composite"
         ),
         description=_(
@@ -167,7 +167,7 @@ class ISamplePointSchema(model.Schema):
 
     attachment_file = NamedBlobFile(
         title=_(
-            u'title_samplepoint_attachment_file',
+            u"title_samplepoint_attachment_file",
             default=u"Attachment"
         ),
         required=False,
