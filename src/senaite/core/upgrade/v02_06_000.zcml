@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SampleMatrices to DX"
       description="Migrate SampleMatrices to Dexterity"
+      source="2619"
+      destination="2620"
+      handler=".v02_06_000.migrate_samplepoints_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Text (multi-lines) support for results"
+      description="Updates the value for ResultType from all analyses"
       source="2618"
       destination="2619"
-      handler=".v02_06_000.migrate_samplepoints_to_dx"
+      handler=".v02_06_000.setup_result_types"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

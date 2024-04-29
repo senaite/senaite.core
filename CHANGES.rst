@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2533 Migrate Sample Points to Dexterity
+- #2537 Support multi-line text on result entry
 - #2536 Fix counts from control-panel includes client-specific items
 - #2535 Fix client-specific analysis profiles are displayed under setup
 - #2534 Fix client-specific sample templates are displayed under setup
