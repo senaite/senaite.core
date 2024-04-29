@@ -272,3 +272,6 @@ class SamplePoint(Container, ClientAwareMixin):
     def setAttachmentFile(self, value):
         mutator = self.mutator("attachment_file")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    AttachmentFile = property(getAttachmentFile, setAttachmentFile)
