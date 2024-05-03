@@ -264,7 +264,7 @@ class EmailView(BrowserView):
         """
         lab_email = self.laboratory.getEmailAddress()
         portal_email = api.get_registry_record("plone.email_from_address")
-        return lab_email or portal_email or ""
+        return portal_email or lab_email or ""
 
     @property
     def email_sender_name(self):
