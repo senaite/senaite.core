@@ -732,6 +732,24 @@ def import_registry(tool):
 
 
 @upgradestep(product, version)
+def import_actions(tool):
+    """Import actions step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "actions")
+
+
+@upgradestep(product, version)
+def import_usersschema(tool):
+    """Import usersschema step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "usersschema")
+
+
+@upgradestep(product, version)
 def migrate_sampletemplates_to_dx(tool):
     """Converts existing sample templates to Dexterity
     """
@@ -1153,3 +1171,12 @@ def setup_result_types(tool):
         # empty the value from the old result options field
         options_field.set(obj, None)
         obj._p_deactivate()
+
+
+def setup_user_profile(tool):
+    """Setup user profile
+    """
+    logger.info("Setup User Profile ...")
+    import_actions(tool)
+    import_usersschema(tool)
+    logger.info("Setup User Profile [DONE]")
