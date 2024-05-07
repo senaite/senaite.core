@@ -750,6 +750,15 @@ def import_usersschema(tool):
 
 
 @upgradestep(product, version)
+def import_controlpanel(tool):
+    """Import usersschema step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "controlpanel")
+
+
+@upgradestep(product, version)
 def migrate_sampletemplates_to_dx(tool):
     """Converts existing sample templates to Dexterity
     """
@@ -1179,4 +1188,5 @@ def setup_user_profile(tool):
     logger.info("Setup User Profile ...")
     import_actions(tool)
     import_usersschema(tool)
+    import_controlpanel(tool)
     logger.info("Setup User Profile [DONE]")
