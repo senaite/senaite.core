@@ -3,6 +3,47 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Personal Preferences -->
+  <browser:page
+      name="personal-preferences"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".personalpreferences.PersonalPreferencesPanel"
+      permission="cmf.SetOwnProperties"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Personal Information -->
+  <browser:page
+      name="personal-information"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".userdatapanel.UserDataPanel"
+      permission="cmf.SetOwnProperties"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Password -->
+  <browser:page
+      name="change-password"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".passwordpanel.PasswordPanel"
+      permission="cmf.SetOwnPassword"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Data Manager for Personal Preferences -->
+  <adapter
+      provides=".personalpreferences.IPersonalPreferences"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      factory=".personalpreferences.PersonalPreferencesPanelAdapter"
+      />
+
+  <!-- Data Manager for User Password -->
+  <adapter
+      provides=".passwordpanel.IPasswordSchema"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      factory=".passwordpanel.PasswordPanelAdapter"
+      />
+
   <browser:page
       name="new-user"
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
