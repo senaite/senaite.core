@@ -49,6 +49,19 @@
      </property>
      <property name="visible">True</property>
    </object>
+   <!-- User Preferences -->
+   <object name="user-profile" meta_type="CMF Action" i18n:domain="senaite.core">
+     <property name="title" i18n:translate="">My Profile</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+         name="url_expr">string:${globals_view/navigationRootUrl}/@@personal-information</property>
+     <property name="icon_expr"></property>
+     <property name="available_expr">python:member is not None</property>
+     <property name="permissions">
+       <element value="View"/>
+     </property>
+     <property name="visible">True</property>
+   </object>
    <!-- Log in -->
    <object name="login" meta_type="CMF Action" i18n:domain="plone">
      <property name="title" i18n:translate="">Log in</property>
@@ -79,7 +92,6 @@
      </property>
      <property name="visible">True</property>
    </object>
-
    <!-- Join -->
    <object name="join" meta_type="CMF Action" i18n:domain="plone">
      <property name="title" i18n:translate="">Register</property>
