@@ -33,6 +33,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
 class ContainerType(BaseContent):
     implements(IContainerType, IDeactivable)
     security = ClassSecurityInfo()

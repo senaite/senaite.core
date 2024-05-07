@@ -313,3 +313,13 @@ class IClientAwareMixin(Interface):
     def getClientUID(self):
         """Returns the client UID this object is bound to, if any
         """
+
+
+class IContainerTypes(Interface):
+    """Marker interface for container types setup folder
+    """
+
+
+class IContainerType(Interface):
+    """Marker interface for container type
+    """
