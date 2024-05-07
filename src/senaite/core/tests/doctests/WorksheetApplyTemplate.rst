@@ -655,7 +655,7 @@ performed with that same instrument are added in the worksheet.
 Create a new Instrument:
 
     >>> instr_type = api.create(bikasetup.bika_instrumenttypes, "InstrumentType", title="Temp instrument type")
-    >>> manufacturer = api.create(bikasetup.bika_manufacturers, "Manufacturer", title="Temp manufacturer")
+    >>> manufacturer = api.create(setup.manufacturers, "Manufacturer", title="Temp manufacturer")
     >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", title="Temp supplier")
     >>> instrument = api.create(bikasetup.bika_instruments,
     ...                         "Instrument",

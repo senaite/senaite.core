@@ -19,10 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IManufacturer, IDeactivable
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IManufacturer
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import BaseContent
 from zope.interface import implements
 
 schema = BikaSchema.copy()
@@ -30,15 +32,18 @@ schema = BikaSchema.copy()
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
+
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
 class Manufacturer(BaseContent):
     implements(IManufacturer, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 registerType(Manufacturer, PROJECTNAME)
