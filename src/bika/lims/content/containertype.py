@@ -33,14 +33,14 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2540
 class ContainerType(BaseContent):
     implements(IContainerType, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -54,5 +54,6 @@ class ContainerType(BaseContent):
             if containertype and containertype.UID() == self.UID():
                 _containers.append(container)
         return _containers
+
 
 registerType(ContainerType, PROJECTNAME)
