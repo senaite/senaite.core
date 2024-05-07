@@ -82,6 +82,9 @@
               <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
                 <i class="fas fa-sign-out-alt"></i>
               </tal:islogout>
+              <tal:isuserprofile condition="python:action['id'] == 'personaltools-user-profile'">
+                <i class="fas fa-user-cog"></i>
+              </tal:isuserprofile>
               <tal:actionname tal:content="action/title">
                 action title
               </tal:actionname>
