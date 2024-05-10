@@ -253,7 +253,7 @@ class Setup(Container):
 
     @security.protected(permissions.View)
     def getEmailFromSamplePublication(self):
-        """Returns the transformed email body text for publication emails
+        """Returns the 'From' address for publication emails
         """
         accessor = self.accessor("email_from_sample_publication")
         email = accessor(self)
@@ -263,7 +263,7 @@ class Setup(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmailFromSamplePublication(self, value):
-        """Set email body text for publication emails
+        """Set the 'From' address for publication emails
         """
         mutator = self.mutator("email_from_sample_publication")
         return mutator(self, value)
