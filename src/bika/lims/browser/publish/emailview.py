@@ -262,9 +262,8 @@ class EmailView(BrowserView):
     def email_sender_address(self):
         """Sender email is either the lab email or portal email "from" address
         """
-        lab_email = self.laboratory.getEmailAddress()
-        portal_email = api.get_registry_record("plone.email_from_address")
-        return portal_email or lab_email or ""
+        setup = api.get_senaite_setup()
+        return setup.getEmailFromSamplePublication()
 
     @property
     def email_sender_name(self):
