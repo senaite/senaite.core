@@ -25,7 +25,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from Products.Archetypes.Widget import StringWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
@@ -653,26 +652,6 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
-    StringField(
-        "EmailFromSamplePublication",
-        default_method='getEmailFromSamplePublication',
-        schemata="Notifications",
-        widget=StringWidget(
-            label=_(
-                "label_bikasetup_email_from_sample_publication",
-                default="Publication 'From' address"
-            ),
-            description=_(
-                "description_bikasetup_email_from_sample_publication",
-                default="E-mail to use as the 'From' address for outgoing "
-                        "e-mails when publishing results reports. This "
-                        "address overrides the value set at portal's 'Mail "
-                        "settings'."
-            ),
-        ),
-        validators=("isEmail", )
-    ),
-    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
     TextField(
         "EmailBodySamplePublication",
         default_content_type="text/html",
@@ -1136,22 +1115,6 @@ class BikaSetup(folder.ATFolder):
         for i in range(len(keys)):
             results.append('%s: %s' % (keys[i], values[i]))
         return "\n".join(results)
-
-    def getEmailFromSamplePublication(self):
-        """Get the value from the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            return setup.getEmailFromSamplePublication()
-
-    def setEmailFromSamplePublication(self, value):
-        """Set the value in the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            setup.setEmailFromSamplePublication(value)
 
     def getEmailBodySamplePublication(self):
         """Get the value from the senaite setup

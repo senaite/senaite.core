@@ -71,7 +71,7 @@ class ISetupSchema(model.Schema):
             default="Publication 'From' address"
         ),
         description=_(
-            "description_senaitesetup_email_from_sample_publication",
+            "description_email_from_sample_publication",
             default="E-mail to use as the 'From' address for outgoing e-mails "
                     "when publishing results reports. This address overrides "
                     "the value set at portal's 'Mail settings'."
@@ -250,23 +250,6 @@ class Setup(Container):
     """SENAITE Setup Folder
     """
     security = ClassSecurityInfo()
-
-    @security.protected(permissions.View)
-    def getEmailFromSamplePublication(self):
-        """Returns the transformed email body text for publication emails
-        """
-        accessor = self.accessor("email_from_sample_publication")
-        email = accessor(self)
-        if not email:
-            email = default_email_from_sample_publication(self)
-        return email
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setEmailFromSamplePublication(self, value):
-        """Set email body text for publication emails
-        """
-        mutator = self.mutator("email_from_sample_publication")
-        return mutator(self, value)
 
     @security.protected(permissions.View)
     def getEmailBodySamplePublication(self):
