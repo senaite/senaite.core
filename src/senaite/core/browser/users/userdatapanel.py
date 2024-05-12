@@ -59,9 +59,7 @@ class UserDataPanel(Base):
         super(UserDataPanel, self).updateWidgets()
 
     def __call__(self):
-        userid = self.request.form.get("userid")
-        user = api.get_user(userid) or api.get_current_user()
-        contact = api.get_user_contact(user)
+        contact = api.get_user_contact(self.member)
         if IContact.providedBy(contact):
             self.add_status_message(
                 _("User is linked to the client contact '%s' (%s)" %
