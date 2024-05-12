@@ -50,15 +50,36 @@ def getUserDataSchema():
 class UserDataPanel(Base):
     template = ViewPageTemplateFile("templates/account-panel.pt")
 
+    def __init__(self, context, request):
+        super(UserDataPanel, self).__init__(context, request)
+
     @property
     def schema(self):
         schema = getUserDataSchema()
         return schema
 
-    def updateWidgets(self):
-        super(UserDataPanel, self).updateWidgets()
-
     def __call__(self):
+        submitted = self.request.form.get("Save", False)
+        if not submitted:
+            self.notify_linked_user()
+        return super(UserDataPanel, self).__call__()
+
+    def _on_save(self, data=None):
+        contact = api.get_user_contact(self.member)
+        if not contact:
+            return
+
+        # update the fullname
+        fullname = data.get("fullname")
+        contact.setFullname(fullname)
+
+        # update the email
+        email = data.get("email")
+        contact.setEmailAddress(email)
+
+    def notify_linked_user(self):
+        """Add notification message if user is linked to a contact
+        """
         contact = api.get_user_contact(self.member)
         if IContact.providedBy(contact):
             self.add_status_message(
@@ -68,7 +89,6 @@ class UserDataPanel(Base):
             self.add_status_message(
                 _("User is linked to lab contact '%s'" %
                   contact.getFullname()))
-        return super(UserDataPanel, self).__call__()
 
     def add_status_message(self, message, level="info"):
         """Add a portal status message
