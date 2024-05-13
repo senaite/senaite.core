@@ -41,6 +41,9 @@ from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
+LINKED_CONTACT_KEY = "linked_contact_uid"
+
+
 schema = Person.schema.copy() + atapi.Schema((
     UIDReferenceField(
         "CCContact",
@@ -212,8 +215,6 @@ class Contact(Person):
         """Set the UID of the current Contact in the User properties and update
         all relevant own properties.
         """
-        KEY = "linked_contact_uid"
-
         username = user.getId()
         contact = self.getContactByUsername(username)
 
@@ -228,18 +229,18 @@ class Contact(Person):
                              .format(username, ",".join(
                                  map(lambda x: x.Title(), contact))))
 
-        # XXX: Does it make sense to "remember" the UID as a User property?
+        # Linked Contact UID is used in member profile as backreference
         try:
-            user.getProperty(KEY)
+            user.getProperty(LINKED_CONTACT_KEY)
         except ValueError:
-            logger.info("Adding User property {}".format(KEY))
-            user._tool.manage_addProperty(KEY, "", "string")
+            logger.info("Adding User property {}".format(LINKED_CONTACT_KEY))
+            user._tool.manage_addProperty(LINKED_CONTACT_KEY, "", "string")
 
         # Set the UID as a User Property
         uid = self.UID()
-        user.setMemberProperties({KEY: uid})
+        user.setMemberProperties({LINKED_CONTACT_KEY: uid})
         logger.info("Linked Contact UID {} to User {}".format(
-            user.getProperty(KEY), username))
+            user.getProperty(LINKED_CONTACT_KEY), username))
 
         # Set the Username
         self.setUsername(user.getId())
@@ -266,8 +267,6 @@ class Contact(Person):
         """Remove the UID of the current Contact in the User properties and
         update all relevant own properties.
         """
-        KEY = "linked_contact_uid"
-
         # Nothing to do if no user is linked
         if not self.hasUser():
             return False
@@ -276,9 +275,9 @@ class Contact(Person):
         username = user.getId()
 
         # Unset the UID from the User Property
-        user.setMemberProperties({KEY: ""})
+        user.setMemberProperties({LINKED_CONTACT_KEY: ""})
         logger.info("Unlinked Contact UID from User {}"
-                    .format(user.getProperty(KEY, "")))
+                    .format(user.getProperty(LINKED_CONTACT_KEY, "")))
 
         # Unset the Username
         self.setUsername("")
