@@ -43,7 +43,10 @@ class IUserDataSchema(Interface):
     directives.mode(contact=DISPLAY_MODE)
     directives.widget("contact", UIDReferenceWidgetFactory)
     contact = TextLine(
-        title=_(u"label_user_contact", default=u"Linked User Contact"),
+        title=_(u"label_user_contact", default=u"Contact"),
+        description=_(u"description_user_contact",
+                      default=u"User is linked to a contact. "
+                      u"Please change your settings in the contact profile."),
         required=False,
     )
 
@@ -75,18 +78,36 @@ class UserDataPanel(Base):
 
     def updateWidgets(self, prefix=None):
         super(UserDataPanel, self).updateWidgets(prefix=prefix)
-        # show/hide the linked contact widget
+        self.update_linked_contact()
+
+    def update_linked_contact(self):
+        """Check and update the form if a contact is linked
+        """
+        # check if a contact is linked to the current user
         contact_uid = self.member.getProperty(CONTACT_UID_KEY)
-        widget = self.widgets.get("contact")
-        if widget and not contact_uid:
-            # remove the widget
-            del self.widgets["contact"]
-            return
+        if not contact_uid:
+            # remove the widget and return
+            return self.remove_widgets("contact")
+        # check if we have a valid contact object
         contact = api.get_object(contact_uid)
         if not contact:
             logger.error("Linked contact not found for UID %s" % contact_uid)
             return
-        widget.value = api.safe_unicode(contact_uid)
+        # update the contact widget and remove the email/fullname widgets
+        widget = self.widgets.get("contact")
+        if widget:
+            widget.value = api.safe_unicode(contact_uid)
+            # remove the email/fullname widgets
+            self.remove_widgets("email", "fullname")
+
+    def remove_widgets(self, *names):
+        """Removes the widgets from the form
+        """
+        for name in names:
+            widget = self.widgets.get(name)
+            if not widget:
+                continue
+            del self.widgets[name]
 
     def __call__(self):
         submitted = self.request.form.get("Save", False)
