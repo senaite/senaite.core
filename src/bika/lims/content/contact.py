@@ -247,6 +247,9 @@ class Contact(Person):
         # Update the Email address from the user
         self.setEmailAddress(user.getProperty("email"))
 
+        # set the Fullname of the User
+        user.setProperties(fullname=self.Title())
+
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
