@@ -33,7 +33,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2542
 class Manufacturer(BaseContent):
     implements(IManufacturer, IDeactivable)
     security = ClassSecurityInfo()
