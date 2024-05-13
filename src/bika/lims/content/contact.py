@@ -41,7 +41,7 @@ from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
-LINKED_CONTACT_KEY = "linked_contact_uid"
+CONTACT_UID_KEY = "linked_contact_uid"
 
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -231,16 +231,16 @@ class Contact(Person):
 
         # Linked Contact UID is used in member profile as backreference
         try:
-            user.getProperty(LINKED_CONTACT_KEY)
+            user.getProperty(CONTACT_UID_KEY)
         except ValueError:
-            logger.info("Adding User property {}".format(LINKED_CONTACT_KEY))
-            user._tool.manage_addProperty(LINKED_CONTACT_KEY, "", "string")
+            logger.info("Adding User property {}".format(CONTACT_UID_KEY))
+            user._tool.manage_addProperty(CONTACT_UID_KEY, "", "string")
 
         # Set the UID as a User Property
         uid = self.UID()
-        user.setMemberProperties({LINKED_CONTACT_KEY: uid})
+        user.setMemberProperties({CONTACT_UID_KEY: uid})
         logger.info("Linked Contact UID {} to User {}".format(
-            user.getProperty(LINKED_CONTACT_KEY), username))
+            user.getProperty(CONTACT_UID_KEY), username))
 
         # Set the Username
         self.setUsername(user.getId())
@@ -275,9 +275,9 @@ class Contact(Person):
         username = user.getId()
 
         # Unset the UID from the User Property
-        user.setMemberProperties({LINKED_CONTACT_KEY: ""})
+        user.setMemberProperties({CONTACT_UID_KEY: ""})
         logger.info("Unlinked Contact UID from User {}"
-                    .format(user.getProperty(LINKED_CONTACT_KEY, "")))
+                    .format(user.getProperty(CONTACT_UID_KEY, "")))
 
         # Unset the Username
         self.setUsername("")

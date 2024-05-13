@@ -2,6 +2,7 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.content.contact import CONTACT_UID_KEY
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from plone.app.users.browser.account import getSchema
@@ -18,8 +19,6 @@ from senaite.core.z3cform.widgets.uidreference.widget import \
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.interface import Interface
 from zope.schema import TextLine
-
-CONTACT_UID_KEY = "linked_contact_uid"
 
 
 class IUserDataSchema(Interface):
