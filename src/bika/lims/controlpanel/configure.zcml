@@ -101,14 +101,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAttachmentTypes"
-      name="folder_view"
-      class=".bika_attachmenttypes.AttachmentTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
       name="folder_view"
       class=".bika_analysisservices.AnalysisServicesView"

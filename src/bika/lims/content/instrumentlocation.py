@@ -35,6 +35,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/####
 class InstrumentLocation(BaseContent):
     """A physical place, where an Instrument is located
     """
@@ -48,5 +49,6 @@ class InstrumentLocation(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 atapi.registerType(InstrumentLocation, PROJECTNAME)
