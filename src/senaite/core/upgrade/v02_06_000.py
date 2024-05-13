@@ -984,7 +984,7 @@ def migrate_manufacturers_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
-    origin = api.get_setup().get("manufacturers")
+    origin = api.get_setup().get("bika_manufacturers")
     if not origin:
         # old container is already gone
         return
