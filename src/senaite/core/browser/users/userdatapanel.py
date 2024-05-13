@@ -132,14 +132,14 @@ class UserDataPanel(Base):
         """Add notification message if user is linked to a contact
         """
         contact = api.get_user_contact(self.member)
-        if IContact.providedBy(contact):
-            self.add_status_message(
-                _("User is linked to the client contact '%s' (%s)" %
-                  (contact.getFullname(), contact.aq_parent.getName())))
-        elif ILabContact.providedBy(contact):
+        if ILabContact.providedBy(contact):
             self.add_status_message(
                 _("User is linked to lab contact '%s'" %
                   contact.getFullname()))
+        elif IContact.providedBy(contact):
+            self.add_status_message(
+                _("User is linked to the client contact '%s' (%s)" %
+                  (contact.getFullname(), contact.aq_parent.getName())))
 
     def add_status_message(self, message, level="info"):
         """Add a portal status message
