@@ -119,14 +119,14 @@ class UserDataPanel(Base):
         contact = api.get_user_contact(self.member)
         if not contact:
             return
-
         # update the fullname
         fullname = data.get("fullname")
-        contact.setFullname(fullname)
-
+        if fullname:
+            contact.setFullname(fullname)
         # update the email
         email = data.get("email")
-        contact.setEmailAddress(email)
+        if email:
+            contact.setEmailAddress(email)
 
     def notify_linked_user(self):
         """Add notification message if user is linked to a contact
