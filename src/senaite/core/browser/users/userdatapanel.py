@@ -10,8 +10,16 @@ from plone.app.users.browser.userdatapanel import UserDataPanelAdapter
 from plone.app.users.schema import ProtectedEmail
 from plone.app.users.schema import ProtectedTextLine
 from plone.app.users.schema import checkEmailAddress
+from plone.autoform import directives
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
+from senaite.core.z3cform.widgets.uidreference.widget import \
+    UIDReferenceWidgetFactory
+from z3c.form.interfaces import DISPLAY_MODE
 from zope.interface import Interface
+from zope.schema import TextLine
+
+CONTACT_UID_KEY = "linked_contact_uid"
 
 
 class IUserDataSchema(Interface):
@@ -19,17 +27,25 @@ class IUserDataSchema(Interface):
     """
 
     fullname = ProtectedTextLine(
-        title=_(u"label_full_name", default=u"Full Name"),
+        title=_(u"label_user_full_name", default=u"Full Name"),
         description=_(u"help_full_name_creation",
                       default=u"Enter full name, e.g. John Smith."),
         required=False)
 
     email = ProtectedEmail(
-        title=_(u"label_email", default=u"Email"),
+        title=_(u"label_user_email", default=u"Email"),
         description=u"We will use this address if you need to recover your "
                     u"password",
         required=True,
         constraint=checkEmailAddress,
+    )
+
+    # Field behaves like a readonly field
+    directives.mode(contact=DISPLAY_MODE)
+    directives.widget("contact", UIDReferenceWidgetFactory)
+    contact = TextLine(
+        title=_(u"label_user_contact", default=u"Linked User Contact"),
+        required=False,
     )
 
 
@@ -57,6 +73,21 @@ class UserDataPanel(Base):
     def schema(self):
         schema = getUserDataSchema()
         return schema
+
+    def updateWidgets(self, prefix=None):
+        super(UserDataPanel, self).updateWidgets(prefix=prefix)
+        # show/hide the linked contact widget
+        contact_uid = self.member.getProperty(CONTACT_UID_KEY)
+        widget = self.widgets.get("contact")
+        if widget and not contact_uid:
+            # remove the widget
+            del self.widgets["contact"]
+            return
+        contact = api.get_object(contact_uid)
+        if not contact:
+            logger.error("Linked contact not found for UID %s" % contact_uid)
+            return
+        widget.value = api.safe_unicode(contact_uid)
 
     def __call__(self):
         submitted = self.request.form.get("Save", False)
