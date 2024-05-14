@@ -61,6 +61,11 @@
       <!-- dynamically applied when a user is linked to a contact -->
       <permission-role>Owner</permission-role>
     </permission-map>
+    <permission-map name="senaite.core: Transition: Deactivate" acquired="False">
+      <!-- Only allow Lab Managers to deactivate a labcontact -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
   </state>
 
   <!-- State: inactive -->
@@ -87,6 +92,11 @@
       <!-- We don't want users other than lab personnel to be able to access to
       personal information from lab contacts (address, phone, etc.) -->
       <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Activate" acquired="False">
+      <!-- only allow Lab Managers to activate a lab contact -->
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>

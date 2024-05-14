@@ -767,7 +767,7 @@ def import_workflow(tool):
     """
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
-    setup.runImportStepFromProfile(profile, "controlpanel")
+    setup.runImportStepFromProfile(profile, "workflow")
 
 
 @upgradestep(product, version)
