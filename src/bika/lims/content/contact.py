@@ -289,6 +289,9 @@ class Contact(Person):
         # Unset the Email
         self.setEmailAddress("")
 
+        # revoke the owner role
+        sec_api.revoke_local_roles_for(self, roles=["Owner"], user=user)
+
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
