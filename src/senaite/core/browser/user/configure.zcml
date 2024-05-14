@@ -53,6 +53,7 @@
       factory=".passwordpanel.PasswordPanelAdapter"
       />
 
+  <!-- New user form -->
   <browser:page
       name="new-user"
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
