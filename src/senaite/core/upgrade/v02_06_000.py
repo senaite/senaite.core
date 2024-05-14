@@ -33,6 +33,7 @@ from senaite.core import logger
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -1152,4 +1153,31 @@ def setup_result_types(tool):
 
         # empty the value from the old result options field
         options_field.set(obj, None)
+        obj._p_deactivate()
+
+
+def update_creator_fullname_metadata(tool):
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(portal_type="AnalysisRequest")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+
+        if num and num % 100 == 0:
+            logger.info("Update getCreatorFullName %s/%s" % (num, total))
+
+        creator = brain.Creator
+        fullname = brain.getCreatorFullName or creator
+        if creator != fullname:
+            continue
+
+        obj = api.get_object(brain)
+        if not obj:
+            continue
+
+        # Update metadata for the given catalog and object. Note the empty
+        # tuple for idxs to update metadata only
+        obj = api.get_object(obj)
+        obj_url = api.get_path(obj)
+        cat.catalog_object(obj, obj_url, idxs=(), update_metadata=1)
+
         obj._p_deactivate()
