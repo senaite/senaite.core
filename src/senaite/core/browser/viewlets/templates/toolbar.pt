@@ -79,6 +79,12 @@
             <a href=""
                tal:define="selected python:action['href'] == url"
                tal:attributes="action; class python:selected and 'active nav-link' or 'nav-link'">
+              <tal:setup condition="python:action['id'] == 'personaltools-site-setup'">
+                <i class="fas fa-wrench"></i>
+              </tal:setup>
+              <tal:isorganization condition="python:action['id'] == 'personaltools-my-organization'">
+                <i class="fas fa-building"></i>
+              </tal:isorganization>
               <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
                 <i class="fas fa-sign-out-alt"></i>
               </tal:islogout>
