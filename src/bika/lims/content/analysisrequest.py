@@ -2248,12 +2248,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
 
-    def getCreatorFullName(self):
-        """
-        Returns the full name of this analysis request's creator.
-        """
-        return api.get_user_fullname(self.Creator())
-
     def _getCreatorEmail(self):
         """
         Returns the email of this analysis request's creator.
