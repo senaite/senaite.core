@@ -30,6 +30,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- User Information (Controlpanel Configlet) -->
+  <browser:page
+      name="user-information"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".userdatapanel.UserDataConfiglet"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Data Manager for Personal Preferences -->
   <adapter
       provides=".personalpreferences.IPersonalPreferences"

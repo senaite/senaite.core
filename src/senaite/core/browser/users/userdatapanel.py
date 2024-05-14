@@ -66,57 +66,12 @@ def getUserDataSchema():
 
 
 class UserDataPanel(Base):
+    """Provides user properties in the profile
+    """
     template = ViewPageTemplateFile("templates/account-panel.pt")
 
     def __init__(self, context, request):
         super(UserDataPanel, self).__init__(context, request)
-
-    @property
-    def label(self):
-        fullname = self.member.getProperty("fullname")
-        username = self.member.getUserName()
-        if fullname:
-            # username/fullname are already encoded in UTF8
-            return "%s (%s)" % (fullname, username)
-        return username
-
-    @property
-    def schema(self):
-        schema = getUserDataSchema()
-        return schema
-
-    def updateWidgets(self, prefix=None):
-        super(UserDataPanel, self).updateWidgets(prefix=prefix)
-        self.update_linked_contact()
-
-    def update_linked_contact(self):
-        """Check and update the form if a contact is linked
-        """
-        # check if a contact is linked to the current user
-        contact_uid = self.member.getProperty(CONTACT_UID_KEY)
-        if not contact_uid:
-            # remove the widget and return
-            return self.remove_widgets("contact")
-        # check if we have a valid contact object
-        contact = api.get_object(contact_uid)
-        if not contact:
-            logger.error("Linked contact not found for UID %s" % contact_uid)
-            return
-        # update the contact widget and remove the email/fullname widgets
-        widget = self.widgets.get("contact")
-        if widget:
-            widget.value = api.safe_unicode(contact_uid)
-            # remove the email/fullname widgets
-            self.remove_widgets("email", "fullname")
-
-    def remove_widgets(self, *names):
-        """Removes the widgets from the form
-        """
-        for name in names:
-            widget = self.widgets.get(name)
-            if not widget:
-                continue
-            del self.widgets[name]
 
     def __call__(self):
         submitted = self.request.form.get("Save", False)
@@ -137,10 +92,60 @@ class UserDataPanel(Base):
         if email:
             contact.setEmailAddress(email)
 
+    @property
+    def label(self):
+        fullname = self.member.getProperty("fullname")
+        username = self.member.getUserName()
+        if fullname:
+            # username/fullname are already encoded in UTF8
+            return "%s (%s)" % (fullname, username)
+        return username
+
+    @property
+    def schema(self):
+        schema = getUserDataSchema()
+        return schema
+
+    def updateWidgets(self, prefix=None):
+        super(UserDataPanel, self).updateWidgets(prefix=prefix)
+        # check if we are linked to a contact
+        contact = self.get_linked_contact()
+        if not contact:
+            # remove the widget and return
+            return self.remove_widgets("contact")
+        # update the contact widget and remove the email/fullname widgets
+        widget = self.widgets.get("contact")
+        if widget:
+            widget.value = api.safe_unicode(api.get_uid(contact))
+            # remove the email/fullname widgets
+            self.remove_widgets("email", "fullname")
+
+    def remove_widgets(self, *names):
+        """Removes the widgets from the form
+        """
+        for name in names:
+            widget = self.widgets.get(name)
+            if not widget:
+                continue
+            del self.widgets[name]
+
+    def get_linked_contact(self):
+        """Returns the linked contact object
+        """
+        # see contact._linkUser
+        contact_uid = self.member.getProperty(CONTACT_UID_KEY)
+        if not contact_uid:
+            return None
+        contact = api.get_object(contact_uid, default=None)
+        if not contact:
+            logger.warn("No Contact found for UID %s" % contact_uid)
+            return None
+        return contact
+
     def notify_linked_user(self):
         """Add notification message if user is linked to a contact
         """
-        contact = api.get_user_contact(self.member)
+        contact = self.get_linked_contact()
         if ILabContact.providedBy(contact):
             self.add_status_message(
                 _("User is linked to lab contact '%s'" %
@@ -155,3 +160,9 @@ class UserDataPanel(Base):
         """
         plone_utils = api.get_tool("plone_utils")
         return plone_utils.addPortalMessage(message, level)
+
+
+class UserDataConfiglet(UserDataPanel):
+    """Control panel version of the userdata panel
+    """
+    template = ViewPageTemplateFile("templates/account-configlet.pt")

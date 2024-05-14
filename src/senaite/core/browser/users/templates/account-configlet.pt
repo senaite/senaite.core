@@ -1,0 +1,52 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+<div metal:fill-slot="prefs_configlet_content">
+
+  <article id="content">
+
+    <a
+      id="setup-link"
+      href=""
+      class="link-parent"
+      tal:attributes="href string:$portal_url/@@usergroup-userprefs"
+      i18n:translate="label_up_to_usersoverview">
+      Up to Users Overview
+    </a>
+
+    <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+
+    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      Portal status message
+    </div>
+
+    <div id="content-core">
+      <div class="autotabs">
+        <div class="autotoc-nav"
+             tal:define="view_name view/__name__;
+                         userquery python:view.makeQuery()">
+          <a href="${portal_url}/@@user-information${userquery}"
+             tal:define="selected python:view_name=='user-information'"
+             tal:attributes="class python:'autotoc-level-1' + (' active' if selected else '')"
+             i18n:translate="title_personal_information_form">Personal Information</a>
+          <!-- <a href="${portal_url}/@@user-preferences${userquery}"
+               tal:define="selected python:view_name=='user-preferences'"
+               tal:attributes="class python:'autotoc-level-1' + (' active' if selected else '')"
+               i18n:translate="">Personal Preferences</a> -->
+          <a href="${portal_url}/@@usergroup-usermembership${userquery}"
+             i18n:translate="label_group_memberships">Group Memberships</a>
+        </div>
+        <metal:b use-macro="context/@@ploneform-macros/titlelessform" />
+      </div>
+    </div>
+
+  </article>
+
+</div>
+
+</html>
