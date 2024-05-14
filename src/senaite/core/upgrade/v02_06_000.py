@@ -1203,8 +1203,9 @@ def setup_user_profile(tool):
     import_controlpanel(tool)
     import_workflow(tool)
 
-    # Update rolemappings for labcontacts to allow the Owner role to view/edit
-    query = {"portal_type": "LabContact"}
+    # Update rolemappings for contacts/labcontacts to grant the Owner role
+    # view/edit permissions
+    query = {"portal_type": ["LabContact", "Contact"]}
     brains = api.search(query, CONTACT_CATALOG)
     update_workflow_role_mappings(LABCONTACT_WORKFLOW, brains)
 
