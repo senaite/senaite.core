@@ -123,7 +123,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("Creator", {
                 "title": _("Creator"),
-                "index": "getCreatorFullName",
+                "index": "Creator",
                 "sortable": True,
                 "toggle": True}),
             ("Created", {
