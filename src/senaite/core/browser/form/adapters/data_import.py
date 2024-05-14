@@ -193,7 +193,7 @@ class EditForm(EditFormAdapterBase):
             klass = getattr(exim, "__class__", None)
             fpath = inspect.getfile(klass) if klass else None
         if fpath is None:
-            return
+            return None
         exim_path = os.path.dirname(fpath)
         exim_file = os.path.basename(fpath)
         exim_name = os.path.splitext(exim_file)[0]
