@@ -30,9 +30,11 @@ from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
@@ -42,6 +44,7 @@ from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import del_metadata
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
@@ -1156,28 +1159,13 @@ def setup_result_types(tool):
         obj._p_deactivate()
 
 
-def update_creator_fullname_metadata(tool):
-    cat = api.get_tool(SAMPLE_CATALOG)
-    brains = cat(portal_type="AnalysisRequest")
-    total = len(brains)
-    for num, brain in enumerate(brains):
+def remove_creator_fullname(tool):
+    """Remove getCreatorFullName from catalogs
+    """
+    logger.info("Removing getCreatorFullName from catalogs ...")
 
-        if num and num % 100 == 0:
-            logger.info("Update getCreatorFullName %s/%s" % (num, total))
+    del_index(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(REPORT_CATALOG, "getCreatorFullName")
 
-        creator = brain.Creator
-        fullname = brain.getCreatorFullName or creator
-        if creator != fullname:
-            continue
-
-        obj = api.get_object(brain)
-        if not obj:
-            continue
-
-        # Update metadata for the given catalog and object. Note the empty
-        # tuple for idxs to update metadata only
-        obj = api.get_object(obj)
-        obj_url = api.get_path(obj)
-        cat.catalog_object(obj, obj_url, idxs=(), update_metadata=1)
-
-        obj._p_deactivate()
+    logger.info("Removing getCreatorFullName from catalogs [DONE]")
