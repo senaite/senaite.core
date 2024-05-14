@@ -72,6 +72,15 @@ class UserDataPanel(Base):
         super(UserDataPanel, self).__init__(context, request)
 
     @property
+    def label(self):
+        fullname = self.member.getProperty("fullname")
+        username = self.member.getUserName()
+        if fullname:
+            # username/fullname are already encoded in UTF8
+            return "%s (%s)" % (fullname, username)
+        return username
+
+    @property
     def schema(self):
         schema = getUserDataSchema()
         return schema
