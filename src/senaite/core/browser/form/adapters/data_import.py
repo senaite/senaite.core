@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import inspect
 import json
 import os
 import traceback
@@ -184,8 +185,17 @@ class EditForm(EditFormAdapterBase):
     def get_instrument_import_template(self, exim):
         """Returns the import template path
         """
-        exim_path = os.path.dirname(exim.__file__)
-        exim_file = os.path.basename(exim.__file__)
+        try:
+            fpath = exim.__file__
+        except AttributeError:
+            # There is no `__file__` for dynamically created objects, e.g.
+            # like instrument adapters.
+            klass = getattr(exim, "__class__", None)
+            fpath = inspect.getfile(klass) if klass else None
+        if fpath is None:
+            return
+        exim_path = os.path.dirname(fpath)
+        exim_file = os.path.basename(fpath)
         exim_name = os.path.splitext(exim_file)[0]
         template = "{}_import.pt".format(exim_name)
         return os.path.join(exim_path, template)
