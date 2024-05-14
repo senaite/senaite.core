@@ -602,11 +602,13 @@ def user_fullname(obj, userid):
     member = obj.portal_membership.getMemberById(userid)
     if member is None:
         return userid
-    member_fullname = member.getProperty("fullname")
-    catalog = api.get_tool(CONTACT_CATALOG)
-    res = catalog(portal_type="Contact", getUsername=userid)
-    contact_fullname = res[0].getObject().getFullname() if res else None
-    return contact_fullname or member_fullname or userid
+
+    member_fullname = member.getProperty("fullname") or userid
+    contact = api.get_user_contact(member)
+    if not contact:
+        return member_fullname
+
+    return contact.getFullname() or member_fullname
 
 
 def user_email(obj, userid):

@@ -1153,12 +1153,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'CreatorFullName',
-        expression="here._getCreatorFullName()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
         'CreatorEmail',
         expression="here._getCreatorEmail()",
         widget=ComputedWidget(visible=False),
@@ -2255,7 +2249,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
 
-    def _getCreatorFullName(self):
+    def getCreatorFullName(self):
         """
         Returns the full name of this analysis request's creator.
         """

@@ -495,7 +495,7 @@ class SamplesView(ListingView):
         if not item:
             return None
 
-        item["Creator"] = self.user_fullname(obj.Creator)
+        item["Creator"] = obj.getCreatorFullName
         # If we redirect from the folderitems view we should check if the
         # user has permissions to medify the element or not.
         priority_sort_key = obj.getPrioritySortkey
