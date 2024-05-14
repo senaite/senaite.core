@@ -49,8 +49,8 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <!-- dynamically applied when a user is linked to a contact -->
       <permission-role>Owner</permission-role>
-      <permission-role>Publisher</permission-role>
     </permission-map>
   </state>
 

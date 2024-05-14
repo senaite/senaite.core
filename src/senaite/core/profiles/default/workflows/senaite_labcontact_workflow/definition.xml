@@ -48,6 +48,8 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <!-- dynamically applied when a user is linked to a contact -->
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
       <!-- We don't want users other than lab personnel to be able to access to
@@ -56,6 +58,8 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
+      <!-- dynamically applied when a user is linked to a contact -->
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 

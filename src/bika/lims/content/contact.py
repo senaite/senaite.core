@@ -25,8 +25,9 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.api import is_active
 from bika.lims.api import get_path
+from bika.lims.api import is_active
+from bika.lims.api import security as sec_api
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
@@ -250,6 +251,9 @@ class Contact(Person):
 
         # set the Fullname of the User
         user.setProperties(fullname=self.Title())
+
+        # grant the owner role
+        sec_api.grant_local_roles_for(self, roles=["Owner"], user=user)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
