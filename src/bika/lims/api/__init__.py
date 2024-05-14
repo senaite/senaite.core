@@ -1457,6 +1457,31 @@ def get_user_client(user_or_contact):
     return None
 
 
+def get_user_fullname(user_or_contact):
+    """Returns the fullname of the contact or Plone user.
+
+    If the user has a linked contact, the fullname of the contact has priority
+    over the value of the fullname property from the user
+
+    :param: Plone user or contact
+    :returns: Fullname of the contact or user
+    """
+    if IContact.providedBy(user_or_contact):
+        return user_or_contact.getFullname()
+
+    user = get_user(user_or_contact)
+    if not user:
+        return ""
+
+    # contact's fullname has priority over user's
+    fullname = user.getProperty("fullname")
+    contact = get_user_contact(user)
+    if not contact:
+        return fullname
+
+    return contact.getFullname() or fullname
+
+
 def get_current_client():
     """Returns the current client the current logged in user belongs to, if any
 
