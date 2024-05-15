@@ -103,11 +103,11 @@
     <permission>Plone Site Setup: Markup</permission>
   </configlet>
 
-  <!-- Password -->
+  <!-- Password (hidden) -->
   <configlet title="Change Password" action_id="MemberPassword" appId="Plone"
              category="plone-general" condition_expr=""
              icon_expr="string:$portal_url/lock_icon.png"
-             url_expr="string:${portal_url}/password_form" visible="True">
+             url_expr="string:${portal_url}/password_form" visible="False">
     <permission>Set own password</permission>
   </configlet>
 

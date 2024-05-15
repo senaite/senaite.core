@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<model xmlns="http://namespaces.plone.org/supermodel/schema"
+       xmlns:form="http://namespaces.plone.org/supermodel/form"
+       xmlns:users="http://namespaces.plone.org/supermodel/users"
+       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+       i18n:domain="senaite.core">
+  <schema name="member-fields" purge="True">
+    <!-- Only Fullname and Email -->
+  </schema>
+</model>

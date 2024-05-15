@@ -1194,11 +1194,13 @@ This means that they are not on the user object. This function retrieves these
 properties for you::
 
     >>> properties = api.get_user_properties(TEST_USER_ID)
-    >>> sorted(properties.items())
-    [('description', ''), ('email', ''), ('error_log_update', 0.0), ('ext_editor', False), ...]
+    >>> props = dict(properties.items())
+    >>> "email" in props
+    True
 
-    >>> sorted(api.get_user_properties(user).items())
-    [('description', ''), ('email', ''), ('error_log_update', 0.0), ('ext_editor', False), ...]
+    >>> props = dict(api.get_user_properties(user).items())
+    >>> "email" in props
+    True
 
 An empty property dict is returned if no user could be found::
 
@@ -2342,3 +2344,76 @@ Unless we explicitly tell the system to bypass security check:
     >>> obj = api.get_object_by_path(path)
     >>> api.is_object(obj)
     False
+
+
+Move an object
+..............
+
+This function moves an object from its container to another.
+
+Create the source and destination clients:
+
+    >>> orig = api.create(portal.clients, "Client", title="Source Client")
+    >>> dest = api.create(portal.clients, "Client", title="Destination Client")
+
+Create a new contact in the source client:
+
+    >>> contact = api.create(orig, "Contact", Firstname="John", Lastname="Wrong")
+
+Move the contact to the destination client:
+
+    >>> id = api.get_id(contact)
+    >>> orig.hasObject(id)
+    True
+    >>> dest.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
+    >>> contact = api.move_object(contact, dest, check_constraints=False)
+    >>> api.get_parent(contact) == dest
+    True
+    >>> dest.hasObject(id)
+    True
+    >>> orig.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-6/contact-2>
+
+It does nothing if destination is the same as the origin:
+
+    >>> contact = api.move_object(contact, dest)
+    >>> dest.hasObject(id)
+    True
+
+Trying to move the object into itself is not possible:
+
+    >>> api.move_object(contact, contact)
+    Traceback (most recent call last):
+    [...]
+    ValueError: Cannot move object into itself: <Contact at contact-2>
+
+Trying to move an object to another folder without permissions is not possible:
+
+    >>> contact = api.move_object(contact, orig)
+    Traceback (most recent call last):
+    [...]
+    Unauthorized: Do not have permissions to remove this object
+
+Unless we grant enough permissions to remove the object from origin:
+
+    >>> from bika.lims.api.security import grant_permission_for
+    >>> grant_permission_for(contact, "Delete objects", ["Authenticated"])
+    >>> contact = api.move_object(contact, orig)
+    >>> orig.hasObject(id)
+    True
+    >>> dest.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
+
+Still, destination container must allow the object's type:
+
+    >>> contact = api.move_object(contact, setup)
+    Traceback (most recent call last):
+    [...]
+    ValueError: Disallowed subobject type: Contact

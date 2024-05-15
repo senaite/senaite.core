@@ -49,8 +49,15 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
       <permission-role>Publisher</permission-role>
+      <!-- dynamically applied when a user is linked to a contact -->
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Deactivate" acquired="False">
+      <!-- Only allow Lab Managers and Lab Clerks to deactivate a client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
   </state>
 
@@ -74,7 +81,14 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <!-- dynamically applied when a user is linked to a contact -->
       <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Activate" acquired="False">
+      <!-- Only allow Lab Managers and Lab Clerks to activate a client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
   </state>
 

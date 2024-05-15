@@ -29,6 +29,7 @@ from itertools import groupby
 import Missing
 import six
 from AccessControl.PermissionRole import rolesForPermissionOn
+from AccessControl.Permissions import copy_or_move as CopyOrMove
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -37,6 +38,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
+from OFS.event import ObjectWillBeMovedEvent
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
@@ -71,10 +73,12 @@ from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
+from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
+from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
@@ -302,6 +306,82 @@ def edit(obj, check_permissions=True, **kwargs):
             mapply(mutator, value)
         else:
             field.set(obj, value)
+
+
+def move_object(obj, destination, check_constraints=True):
+    """Moves the object to the destination folder
+
+    This function has the same effect as:
+
+        id = obj.getId()
+        cp = origin.manage_cutObjects(id)
+        destination.manage_pasteObjects(cp)
+
+    but with slightly better performance. The code is mostly grabbed from
+    OFS.CopySupport.CopyContainer_pasteObjects
+
+    :param obj: object to move to destination
+    :type obj: ATContentType/DexterityContentType/CatalogBrain/UID
+    :param destination: destination container
+    :type destination: ATContentType/DexterityContentType/CatalogBrain/UID
+    :param check_constraints: constraints and permissions must be checked
+    :type check_constraints: bool
+    :returns: The moved object
+    """
+    # prevent circular dependencies
+    from bika.lims.api.security import check_permission
+
+    obj = get_object(obj)
+    destination = get_object(destination)
+
+    # make sure the object is not moved into itself
+    if obj == destination:
+        raise ValueError("Cannot move object into itself: {}".format(obj))
+
+    # do nothing if destination is the same as origin
+    origin = get_parent(obj)
+    if origin == destination:
+        return obj
+
+    if check_constraints:
+
+        # check origin object has CopyOrMove permission
+        if not check_permission(CopyOrMove, obj):
+            raise Unauthorized("Cannot move {}".format(obj))
+
+        # check if portal type is allowed in destination object
+        portal_type = get_portal_type(obj)
+        pt = get_tool("portal_types")
+        ti = pt.getTypeInfo(destination)
+        if not ti.allowType(portal_type):
+            raise ValueError("Disallowed subobject type: %s" % portal_type)
+
+    id = get_id(obj)
+
+    # notify that the object will be copied to destination
+    obj._notifyOfCopyTo(destination, op=1)  # noqa
+
+    # notify that the object will be moved to destination
+    notify(ObjectWillBeMovedEvent(obj, origin, id, destination, id))
+
+    # effectively move the object from origin to destination
+    delete(obj, check_permissions=check_constraints, suppress_events=True)
+    obj = aq_base(obj)
+    destination._setObject(id, obj, set_owner=0, suppress_events=True)  # noqa
+    obj = destination._getOb(id)  # noqa
+
+    # since we used "suppress_events=True", we need to manually notify that the
+    # object was moved and containers modified. This also makes the objects to
+    # be re-catalogued
+    notify(ObjectMovedEvent(obj, origin, id, destination, id))
+    notifyContainerModified(origin)
+    notifyContainerModified(destination)
+
+    # make ownership implicit if possible, so it acquires the permissions from
+    # the container
+    obj.manage_changeOwnershipType(explicit=0)
+
+    return obj
 
 
 def uncatalog_object(obj):
@@ -1415,7 +1495,7 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
-    query = {"portal_type": contact_types, "getUsername": user.id}
+    query = {"portal_type": contact_types, "getUsername": user.getId()}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
@@ -1424,7 +1504,7 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         # Oops, the user has multiple contacts assigned, return None
         contacts = map(lambda c: c.Title, brains)
         err_msg = "User '{}' is bound to multiple Contacts '{}'"
-        err_msg = err_msg.format(user.id, ','.join(contacts))
+        err_msg = err_msg.format(user.getId(), ','.join(contacts))
         logger.error(err_msg)
         return None
 
