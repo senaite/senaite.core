@@ -51,10 +51,7 @@ class StorageLocationsView(ListingView):
         t = self.context.translate
         self.title = t(_("Storage Locations"))
         self.description = ""
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/storagelocation_big.png"
-        )
+        self.icon = api.get_icon("StorageLocations", html_tag=False)
 
         self.show_select_row = False
         self.show_select_column = True
