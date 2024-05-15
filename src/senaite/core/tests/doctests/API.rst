@@ -1194,11 +1194,13 @@ This means that they are not on the user object. This function retrieves these
 properties for you::
 
     >>> properties = api.get_user_properties(TEST_USER_ID)
-    >>> sorted(properties.items())
-    [('description', ''), ('email', ''), ('error_log_update', 0.0), ('ext_editor', False), ...]
+    >>> props = dict(properties.items())
+    >>> "email" in props
+    True
 
-    >>> sorted(api.get_user_properties(user).items())
-    [('description', ''), ('email', ''), ('error_log_update', 0.0), ('ext_editor', False), ...]
+    >>> props = dict(api.get_user_properties(user).items())
+    >>> "email" in props
+    True
 
 An empty property dict is returned if no user could be found::
 

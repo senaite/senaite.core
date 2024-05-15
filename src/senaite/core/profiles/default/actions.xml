@@ -36,7 +36,7 @@
  <!-- User actions -->
  <object name="user" meta_type="CMF Action Category" purge="True">
    <!-- Site Setup -->
-   <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone">
+   <object name="site-setup" meta_type="CMF Action" i18n:domain="plone">
      <property name="title" i18n:translate="">Site Setup</property>
      <property name="description" i18n:translate=""></property>
      <property
@@ -46,6 +46,19 @@
      <property name="available_expr"></property>
      <property name="permissions">
        <element value="Plone Site Setup: Overview"/>
+     </property>
+     <property name="visible">True</property>
+   </object>
+   <!-- User Preferences -->
+   <object name="user-profile" meta_type="CMF Action" i18n:domain="senaite.core">
+     <property name="title" i18n:translate="">My Profile</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+         name="url_expr">string:${globals_view/navigationRootUrl}/@@personal-information</property>
+     <property name="icon_expr"></property>
+     <property name="available_expr">python:member is not None</property>
+     <property name="permissions">
+       <element value="View"/>
      </property>
      <property name="visible">True</property>
    </object>
@@ -79,7 +92,6 @@
      </property>
      <property name="visible">True</property>
    </object>
-
    <!-- Join -->
    <object name="join" meta_type="CMF Action" i18n:domain="plone">
      <property name="title" i18n:translate="">Register</property>
@@ -96,10 +108,10 @@
      <property name="modal"
                type="text">{&quot;prependContent&quot;: &quot;.portalMessage&quot;}</property>
    </object>
-   <!-- My Organization link -->
-   <object name="my_organization" meta_type="CMF Action" i18n:domain="senaite.core"
+   <!-- My Organization -->
+   <object name="my-organization" meta_type="CMF Action" i18n:domain="senaite.core"
            insert-before="logout">
-     <property name="title" i18n:translate="">My organization</property>
+     <property name="title" i18n:translate="">My Organization</property>
      <property name="description"/>
      <property name="url_expr">string:${portal_url}/my_organization</property>
      <property name="link_target"/>
@@ -150,6 +162,6 @@
         <element value="senaite.core: View Log Tab"/>
       </property>
       <property name="visible">True</property>
-		</object>
-	</object>
+    </object>
+  </object>
 </object>
