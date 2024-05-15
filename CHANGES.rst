@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2541 Allow to change the "From" address for sample report outgoing emails
+- #2539 Add User Profile / Password Reset
 - #2543 Fix AttributeError for Instrument Adapters
 - #2533 Migrate Sample Points to Dexterity
 - #2537 Support multi-line text on result entry

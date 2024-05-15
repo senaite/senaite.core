@@ -3,6 +3,14 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Contact/LabContact *modified* event handler
+       This subscriber updates the properties of the linked user.
+  -->
+  <subscriber
+    for="bika.lims.interfaces.IContact
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler=".contact.on_contact_modified" />
+
   <!-- Client *created* event handler -->
   <subscriber
       for="bika.lims.interfaces.IClient

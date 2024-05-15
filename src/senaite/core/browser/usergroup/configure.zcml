@@ -43,15 +43,6 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- User Configlet -->
-  <browser:page
-      name="user-information"
-      for="plone.app.layout.navigation.interfaces.INavigationRoot"
-      class=".userdatapanel.UserDataConfiglet"
-      permission="plone.app.controlpanel.UsersAndGroups"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
   <!-- User Group Membership -->
   <browser:page
       name="usergroup-usermembership"
