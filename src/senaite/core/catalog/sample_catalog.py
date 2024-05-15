@@ -71,7 +71,6 @@ COLUMNS = BASE_COLUMNS + [
     "getClientUID",
     "getClientURL",
     "getContactEmail",
-    "getContactFullName",
     "getContactUID",
     "getContactURL",
     "getContactUsername",
