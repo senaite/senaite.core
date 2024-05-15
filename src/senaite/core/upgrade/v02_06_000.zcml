@@ -4,11 +4,11 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.6.0: Remove getContactFullName from catalogs"
-      description="Remove getContactFullName from catalogs"
+      title="SENAITE.CORE 2.6.0: Remove contact metadata from sample catalog"
+      description="Remove contact metadata from sample catalog"
       source="2622"
       destination="2623"
-      handler=".v02_06_000.remove_contact_fullname"
+      handler=".v02_06_000.remove_contact_metadata"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
