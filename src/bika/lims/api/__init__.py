@@ -366,6 +366,7 @@ def move_object(obj, destination, check_constraints=True):
 
     # effectively move the object from origin to destination
     delete(obj, check_permissions=check_constraints, suppress_events=True)
+    obj = aq_base(obj)
     destination._setObject(id, obj, set_owner=0, suppress_events=True)  # noqa
     obj = destination._getOb(id)  # noqa
 

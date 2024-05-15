@@ -2332,6 +2332,8 @@ Move the contact to the destination client:
     True
     >>> dest.hasObject(id)
     False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
     >>> contact = api.move_object(contact, dest, check_constraints=False)
     >>> api.get_parent(contact) == dest
     True
@@ -2339,6 +2341,8 @@ Move the contact to the destination client:
     True
     >>> orig.hasObject(id)
     False
+    >>> contact
+    <Contact at /plone/clients/client-6/contact-2>
 
 It does nothing if destination is the same as the origin:
 
@@ -2369,6 +2373,8 @@ Unless we grant enough permissions to remove the object from origin:
     True
     >>> dest.hasObject(id)
     False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
 
 Still, destination container must allow the object's type:
 
