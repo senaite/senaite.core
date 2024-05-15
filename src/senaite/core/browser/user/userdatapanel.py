@@ -2,7 +2,6 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.content.contact import CONTACT_UID_KEY
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from plone.app.users.browser.account import getSchema
@@ -13,7 +12,7 @@ from plone.app.users.schema import ProtectedTextLine
 from plone.app.users.schema import checkEmailAddress
 from plone.autoform import directives
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core import logger
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.z3cform.widgets.uidreference.widget import \
     UIDReferenceWidgetFactory
 from z3c.form.interfaces import DISPLAY_MODE
@@ -132,15 +131,11 @@ class UserDataPanel(Base):
     def get_linked_contact(self):
         """Returns the linked contact object
         """
-        # see contact._linkUser
-        contact_uid = self.member.getProperty(CONTACT_UID_KEY)
-        if not contact_uid:
+        query = {"getUsername": self.member.getId()}
+        brains = api.search(query, CONTACT_CATALOG)
+        if len(brains) == 0:
             return None
-        contact = api.get_object(contact_uid, default=None)
-        if not contact:
-            logger.warn("No Contact found for UID %s" % contact_uid)
-            return None
-        return contact
+        return api.get_object(brains[0])
 
     def notify_linked_user(self):
         """Add notification message if user is linked to a contact
