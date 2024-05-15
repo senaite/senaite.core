@@ -39,6 +39,10 @@ class ManufacturersView(ListingView):
         self.contentFilter = {
             "portal_type": "Manufacturer",
             "sort_on": "sortable_title",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            },
         }
 
         self.context_actions = {

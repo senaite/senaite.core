@@ -35,7 +35,7 @@ class IManufacturerSchema(model.Schema):
     title = schema.TextLine(
         title=_(
             u"title_manufacturer_title",
-            default=u"Title"
+            default=u"Name"
         ),
         required=True,
     )
