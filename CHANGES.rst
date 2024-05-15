@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2543 Fix AttributeError for Instrument Adapters
 - #2533 Migrate Sample Points to Dexterity
 - #2537 Support multi-line text on result entry
 - #2536 Fix counts from control-panel includes client-specific items
