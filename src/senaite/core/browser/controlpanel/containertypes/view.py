@@ -41,6 +41,10 @@ class ContainerTypesView(ListingView):
             "portal_type": "ContainerType",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(context),
+                "level": 1,
+            }
         }
 
         self.context_actions = {
