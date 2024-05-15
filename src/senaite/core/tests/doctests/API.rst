@@ -1290,6 +1290,39 @@ But fails if we specify only `Contact` type:
     True
 
 
+Getting the email of the user and/or contact
+............................................
+
+Getting the email of the contact::
+
+    >>> labcontact.setEmailAddress("labman@example.com")
+    >>> api.get_user_email(labcontact)
+    'labman@example.com'
+
+Getting the email of the user::
+
+    >>> api.get_user_email(user)
+    'labman@example.com'
+
+Note that contact's email has priority over user's::
+
+    >>> user.setProperties(email="labbyman@example.com")
+    >>> api.get_user_email(user)
+    'labman@example.com'
+
+But returns the user's email when not linked to any contact::
+
+    >>> labcontact.unlinkUser()
+    True
+    >>> api.get_user_email(user)
+    'labbyman@example.com'
+
+Relink the user again
+
+    >>> labcontact.setUser(user)
+    True
+
+
 Getting the Contact Client
 ..........................
 
