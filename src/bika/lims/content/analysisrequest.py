@@ -1164,12 +1164,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'SamplerEmail',
-        expression="here._getSamplerEmail()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
         'BatchID',
         expression="here.getBatch().getId() if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
@@ -2259,12 +2253,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Returns the full name's defined sampler.
         """
         return user_fullname(self, self.getSampler())
-
-    def _getSamplerEmail(self):
-        """
-        Returns the email of this analysis request's sampler.
-        """
-        return api.get_user_email(self.getSampler())
 
     def getPriorityText(self):
         """
