@@ -88,17 +88,4 @@
     <permission value="Modify portal content"/>
   </action>
 
-  <!-- Labeled objects -->
-  <action title="Labeled Objects"
-          action_id="labeled_objects"
-          category="object"
-          condition_expr=""
-          description=""
-          icon_expr=""
-          link_target=""
-          url_expr="string:${object_url}/labeled_objects"
-          visible="True">
-    <permission value="View"/>
-  </action>
-
 </object>
