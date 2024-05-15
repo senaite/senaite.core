@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Add user profile"
+      description="Add profile link to the user dropdown menu"
+      source="2620"
+      destination="2621"
+      handler=".v02_06_000.setup_user_profile"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SamplePoints to DX"
       description="Migrate SamplePoints to Dexterity"
       source="2619"

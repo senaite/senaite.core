@@ -258,7 +258,7 @@ Exactly these roles have should have a `View` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("View", labcontact)
-    ['LabClerk', 'LabManager', 'Manager', 'Publisher']
+    ['LabClerk', 'LabManager', 'Manager', 'Owner', 'Publisher']
 
 Exactly these roles have should have the `Access contents information` permission::
 
@@ -282,7 +282,7 @@ Exactly these roles have should have the `Modify portal content` permission::
     ['LabClerk', 'LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", labcontact)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Delete objects` permission::
 

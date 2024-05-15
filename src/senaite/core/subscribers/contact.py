@@ -18,11 +18,15 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.app.users.browser.userdatapanel import UserDataConfiglet as Base
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
-
-class UserDataConfiglet(Base):
-    """Control panel version of the userdata panel
+def on_contact_modified(contact, event):
+    """Event handler when a Contact was modified
     """
-    template = ViewPageTemplateFile("templates/account-configlet.pt")
+    user = contact.getUser()
+    if not user:
+        # no user linked, nothing to do
+        return
+    # always update the email and fullname
+    email = contact.getEmailAddress()
+    fullname = contact.getFullname()
+    user.setProperties(email=email, fullname=fullname)
