@@ -48,7 +48,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.DCWorkflow.events import AfterTransitionEvent
-from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.p3compat import cmp
 from six.moves.urllib.request import urlopen
 from weasyprint import CSS
@@ -594,19 +593,6 @@ def getFromString(obj, string, default=None):
         if not attr_obj:
             break
     return attr_obj or default
-
-
-def user_email(obj, userid):
-    """This function returns the user email as string.
-    """
-    member = obj.portal_membership.getMemberById(userid)
-    if member is None:
-        return userid
-    member_email = member.getProperty("email")
-    catalog = api.get_tool(CONTACT_CATALOG)
-    res = catalog(portal_type="Contact", getUsername=userid)
-    contact_email = res[0].getObject().getEmailAddress() if res else None
-    return contact_email or member_email or ""
 
 
 def measure_time(func_to_measure):

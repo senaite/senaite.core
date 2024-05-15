@@ -57,7 +57,6 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
-from bika.lims.utils import user_email
 from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
@@ -1152,20 +1151,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'CreatorEmail',
-        expression="here._getCreatorEmail()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
-        'SamplerEmail',
-        expression="here._getSamplerEmail()",
         widget=ComputedWidget(visible=False),
     ),
 
@@ -2248,23 +2235,11 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
 
-    def _getCreatorEmail(self):
-        """
-        Returns the email of this analysis request's creator.
-        """
-        return user_email(self, self.Creator())
-
     def _getSamplerFullName(self):
         """
         Returns the full name's defined sampler.
         """
         return api.get_user_fullname(self.getSampler())
-
-    def _getSamplerEmail(self):
-        """
-        Returns the email of this analysis request's sampler.
-        """
-        return user_email(self, self.getSampler())
 
     def getPriorityText(self):
         """

@@ -1561,6 +1561,28 @@ def get_user_fullname(user_or_contact):
     return contact.getFullname()
 
 
+def get_user_email(user_or_contact):
+    """Returns the email of the contact or Plone user.
+    If the user has a linked contact, the email of the contact has priority
+    over the value of the email property from the user
+    :param: Plone user or contact
+    :returns: Fullname of the contact or user
+    """
+    if IContact.providedBy(user_or_contact):
+        return user_or_contact.getEmailAddress()
+
+    user = get_user(user_or_contact)
+    if not user:
+        return ""
+
+    # contact's email has priority over user's
+    contact = get_user_contact(user)
+    if not contact:
+        return user.getProperty("email", default="")
+
+    return contact.getEmailAddress()
+
+
 def get_current_client():
     """Returns the current client the current logged in user belongs to, if any
 
