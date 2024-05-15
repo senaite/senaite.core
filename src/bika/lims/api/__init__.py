@@ -1554,12 +1554,11 @@ def get_user_fullname(user_or_contact):
         return ""
 
     # contact's fullname has priority over user's
-    fullname = user.getProperty("fullname")
     contact = get_user_contact(user)
     if not contact:
-        return fullname
+        return user.getProperty("fullname")
 
-    return contact.getFullname() or fullname
+    return contact.getFullname()
 
 
 def get_current_client():
