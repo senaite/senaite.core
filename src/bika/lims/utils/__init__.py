@@ -608,20 +608,6 @@ def user_fullname(obj, userid):
     contact_fullname = res[0].getObject().getFullname() if res else None
     return contact_fullname or member_fullname or userid
 
-
-def user_email(obj, userid):
-    """This function returns the user email as string.
-    """
-    member = obj.portal_membership.getMemberById(userid)
-    if member is None:
-        return userid
-    member_email = member.getProperty("email")
-    catalog = api.get_tool(CONTACT_CATALOG)
-    res = catalog(portal_type="Contact", getUsername=userid)
-    contact_email = res[0].getObject().getEmailAddress() if res else None
-    return contact_email or member_email or ""
-
-
 def measure_time(func_to_measure):
     """
     This decorator allows to measure the execution time

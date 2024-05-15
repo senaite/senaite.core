@@ -57,7 +57,6 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
-from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
@@ -2265,7 +2264,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         Returns the email of this analysis request's creator.
         """
-        return user_email(self, self.Creator())
+        return api.get_user_email(self.Creator())
 
     def _getSamplerFullName(self):
         """
@@ -2277,7 +2276,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         Returns the email of this analysis request's sampler.
         """
-        return user_email(self, self.getSampler())
+        return api.get_user_email(self.getSampler())
 
     def getPriorityText(self):
         """
