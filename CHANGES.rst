@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2542 Migrate Manufacturers to Dexterity
 - #2547 Add get_user_email function in the api
 - #2544 Display creator fullname in samples listing
 - #2546 Add move_object function in the API
