@@ -31,10 +31,13 @@ from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -44,6 +47,7 @@ from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import del_metadata
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
@@ -1210,3 +1214,15 @@ def setup_user_profile(tool):
     update_workflow_role_mappings(LABCONTACT_WORKFLOW, brains)
 
     logger.info("Setup User Profile [DONE]")
+
+
+def remove_creator_fullname(tool):
+    """Remove getCreatorFullName from catalogs
+    """
+    logger.info("Removing getCreatorFullName from catalogs ...")
+
+    del_index(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(REPORT_CATALOG, "getCreatorFullName")
+
+    logger.info("Removing getCreatorFullName from catalogs [DONE]")
