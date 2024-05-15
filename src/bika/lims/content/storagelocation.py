@@ -88,7 +88,7 @@ schema['title'].widget.label = _('Address')
 schema['description'].widget.visible = True
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2550
 class StorageLocation(BaseContent, HistoryAwareMixin):
     implements(IDeactivable)
     security = ClassSecurityInfo()
