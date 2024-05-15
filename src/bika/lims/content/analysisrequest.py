@@ -1158,12 +1158,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'CreatorEmail',
-        expression="here._getCreatorEmail()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
         widget=ComputedWidget(visible=False),
@@ -2259,12 +2253,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         Returns the full name of this analysis request's creator.
         """
         return user_fullname(self, self.Creator())
-
-    def _getCreatorEmail(self):
-        """
-        Returns the email of this analysis request's creator.
-        """
-        return api.get_user_email(self.Creator())
 
     def _getSamplerFullName(self):
         """
