@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2541 Allow to change the "From" address for sample report outgoing emails
+- #2542 Migrate Manufacturers to Dexterity
+- #2547 Add get_user_email function in the api
+- #2544 Display creator fullname in samples listing
+- #2546 Add move_object function in the API
 - #2539 Add User Profile / Password Reset
 - #2543 Fix AttributeError for Instrument Adapters
 - #2533 Migrate Sample Points to Dexterity

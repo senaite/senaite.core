@@ -1271,7 +1271,7 @@ Getting a Plone user previously registered with no contact assigned:
 Assign a new contact to this user:
 
     >>> labcontacts = bika_setup.bika_labcontacts
-    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Surname="Manager")
     >>> labcontact.setUser(user)
     True
 
@@ -1289,6 +1289,71 @@ But fails if we specify only `Contact` type:
 
     >>> nuser = api.get_user_contact(user, ['Contact'])
     >>> nuser is None
+    True
+
+
+Getting the fullname of the user and/or contact
+..............................................
+
+Getting the fullname of the contact::
+
+    >>> api.get_user_fullname(labcontact)
+    'Lab Manager'
+
+Getting the fullname of the user::
+
+    >>> api.get_user_fullname(user)
+    'Lab Manager'
+
+Note that if contact's fullname has priority over user's::
+
+    >>> user.setProperties(fullname="Labby Man")
+    >>> api.get_user_fullname(user)
+    'Lab Manager'
+
+But returns the user's fullname when not linked to any contact::
+
+    >>> labcontact.unlinkUser()
+    True
+    >>> api.get_user_fullname(user)
+    'Labby Man'
+
+Relink the user again
+
+    >>> labcontact.setUser(user)
+    True
+
+
+Getting the email of the user and/or contact
+............................................
+
+Getting the email of the contact::
+
+    >>> labcontact.setEmailAddress("labman@example.com")
+    >>> api.get_user_email(labcontact)
+    'labman@example.com'
+
+Getting the email of the user::
+
+    >>> api.get_user_email(user)
+    'labman@example.com'
+
+Note that contact's email has priority over user's::
+
+    >>> user.setProperties(email="labbyman@example.com")
+    >>> api.get_user_email(user)
+    'labman@example.com'
+
+But returns the user's email when not linked to any contact::
+
+    >>> labcontact.unlinkUser()
+    True
+    >>> api.get_user_email(user)
+    'labbyman@example.com'
+
+Relink the user again
+
+    >>> labcontact.setUser(user)
     True
 
 
@@ -2311,3 +2376,76 @@ Unless we explicitly tell the system to bypass security check:
     >>> obj = api.get_object_by_path(path)
     >>> api.is_object(obj)
     False
+
+
+Move an object
+..............
+
+This function moves an object from its container to another.
+
+Create the source and destination clients:
+
+    >>> orig = api.create(portal.clients, "Client", title="Source Client")
+    >>> dest = api.create(portal.clients, "Client", title="Destination Client")
+
+Create a new contact in the source client:
+
+    >>> contact = api.create(orig, "Contact", Firstname="John", Lastname="Wrong")
+
+Move the contact to the destination client:
+
+    >>> id = api.get_id(contact)
+    >>> orig.hasObject(id)
+    True
+    >>> dest.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
+    >>> contact = api.move_object(contact, dest, check_constraints=False)
+    >>> api.get_parent(contact) == dest
+    True
+    >>> dest.hasObject(id)
+    True
+    >>> orig.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-6/contact-2>
+
+It does nothing if destination is the same as the origin:
+
+    >>> contact = api.move_object(contact, dest)
+    >>> dest.hasObject(id)
+    True
+
+Trying to move the object into itself is not possible:
+
+    >>> api.move_object(contact, contact)
+    Traceback (most recent call last):
+    [...]
+    ValueError: Cannot move object into itself: <Contact at contact-2>
+
+Trying to move an object to another folder without permissions is not possible:
+
+    >>> contact = api.move_object(contact, orig)
+    Traceback (most recent call last):
+    [...]
+    Unauthorized: Do not have permissions to remove this object
+
+Unless we grant enough permissions to remove the object from origin:
+
+    >>> from bika.lims.api.security import grant_permission_for
+    >>> grant_permission_for(contact, "Delete objects", ["Authenticated"])
+    >>> contact = api.move_object(contact, orig)
+    >>> orig.hasObject(id)
+    True
+    >>> dest.hasObject(id)
+    False
+    >>> contact
+    <Contact at /plone/clients/client-5/contact-2>
+
+Still, destination container must allow the object's type:
+
+    >>> contact = api.move_object(contact, setup)
+    Traceback (most recent call last):
+    [...]
+    ValueError: Disallowed subobject type: Contact
