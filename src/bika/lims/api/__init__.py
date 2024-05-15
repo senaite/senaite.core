@@ -308,7 +308,7 @@ def edit(obj, check_permissions=True, **kwargs):
             field.set(obj, value)
 
 
-def move_object(obj, destination, check_permissions=False):
+def move_object(obj, destination, check_constraints=True):
     """Moves the object to the destination folder
 
     This function has the same effect as:
@@ -324,22 +324,37 @@ def move_object(obj, destination, check_permissions=False):
     :type obj: ATContentType/DexterityContentType/CatalogBrain/UID
     :param destination: destination container
     :type destination: ATContentType/DexterityContentType/CatalogBrain/UID
-    :param check_permissions: wheter if permissions must be checked
-    :type check_permissions: Bool
+    :param check_constraints: constraints and permissions must be checked
+    :type check_constraints: bool
     :returns: The moved object
     """
+    # prevent circular dependencies
+    from security import check_permission
 
     obj = get_object(obj)
     destination = get_object(destination)
 
-    # prevent circular dependencies
-    from security import check_permission
-    if check_permissions and not check_permission(CopyOrMove, obj):
-        raise Unauthorized("Cannot move {}".format(obj))
-
     # make sure the object is not moved into itself
     if obj == destination:
         raise ValueError("Cannot move object into itself: {}".format(obj))
+
+    # do nothing if destination is the same as origin
+    origin = get_parent(obj)
+    if origin == destination:
+        return obj
+
+    if check_constraints:
+
+        # check origin object has CopyOrMove permission
+        if not check_permission(CopyOrMove, obj):
+            raise Unauthorized("Cannot move {}".format(obj))
+
+        # check if portal type is allowed in destination object
+        portal_type = get_portal_type(obj)
+        pt = get_tool("portal_types")
+        ti = pt.getTypeInfo(destination)
+        if not ti.allowType(portal_type):
+            raise ValueError("Disallowed subobject type: %s" % portal_type)
 
     id = get_id(obj)
 
@@ -347,11 +362,10 @@ def move_object(obj, destination, check_permissions=False):
     obj._notifyOfCopyTo(destination, op=1)  # noqa
 
     # notify that the object will be moved to destination
-    origin = get_parent(obj)
     notify(ObjectWillBeMovedEvent(obj, origin, id, destination, id))
 
     # effectively move the object from origin to destination
-    delete(obj, check_permissions=check_permissions, suppress_events=True)
+    delete(obj, check_permissions=check_constraints, suppress_events=True)
     destination._setObject(id, obj, set_owner=0, suppress_events=True)  # noqa
     obj = destination._getOb(id)  # noqa
 
