@@ -23,8 +23,10 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
+from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.permissions import AddManufacturer
 
 
 class ManufacturersView(ListingView):
@@ -46,13 +48,17 @@ class ManufacturersView(ListingView):
         }
 
         self.context_actions = {
-            _("Add"): {
+            _(u"listing_manufacturers_action_add", default=u"Add"): {
                 "url": "++add++Manufacturer",
-                "icon": "++resource++bika.lims.images/add.png",
-            }}
+                "permission": AddManufacturer,
+                "icon": "senaite_theme/icon/plus"
+            }
+        }
 
-        t = self.context.translate
-        self.title = t(_("Manufacturers"))
+        self.title = translate(_(
+            u"listing_manufacturers_title",
+            default=u"Manufacturers")
+        )
         self.description = ""
         self.icon = "{}/{}".format(
             self.portal_url,
@@ -65,10 +71,16 @@ class ManufacturersView(ListingView):
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Title"),
+                "title": _(
+                    u"listing_manufacturers_column_title",
+                    default=u"Title",
+                ),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
+                "title": _(
+                    u"listing_manufacturers_column_description",
+                    default=u"Description"
+                ),
                 "toggle": True,
             }),
         ))
@@ -76,17 +88,26 @@ class ManufacturersView(ListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_manufacturers_state_active",
+                    default=u"Active",
+                ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    u"listing_manufacturers_state_inactive",
+                    default=u"Inactive",
+                ),
                 "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_manufacturers_state_all",
+                    default=u"All",
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },

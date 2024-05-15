@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IManufacturer
-from senaite.core.interfaces import IHideActionsMenu
 from plone.supermodel import model
 from zope import schema
 from zope.interface import implementer
@@ -49,7 +49,7 @@ class IManufacturerSchema(model.Schema):
     )
 
 
-@implementer(IManufacturer, IManufacturerSchema, IHideActionsMenu)
+@implementer(IManufacturer, IManufacturerSchema, IDeactivable)
 class Manufacturer(Container):
     """A container for manufacturer
     """
