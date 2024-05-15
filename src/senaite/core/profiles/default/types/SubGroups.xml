@@ -8,7 +8,7 @@
   <property name="description" i18n:translate=""/>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/subgroups</property>
+  <property name="icon_expr">senaite_theme/icon/batch</property>
 
   <!-- factory name; usually the same as type name -->
   <property name="factory">SubGroups</property>
