@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
 from bika.lims.interfaces import IClient
+from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddStorageLocation
@@ -39,17 +40,23 @@ class StorageLocationsView(ListingView):
         self.contentFilter = {
             "portal_type": "StorageLocation",
             "sort_on": "sortable_title",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            }
         }
 
         self.context_actions = {
-            _("Add"): {
+            _(u"listing_storagelocations_action_add", default=u"Add"): {
                 "url": "++add++StorageLocation",
                 "permission": AddStorageLocation,
-                "icon": "++resource++bika.lims.images/add.png"
+                "icon": "senaite_theme/icon/plus"
             }}
 
-        t = self.context.translate
-        self.title = t(_("Storage Locations"))
+        self.title = translate(_(
+            u"listing_storagelocations_title",
+            default=u"Storage Locations")
+        )
         self.description = ""
         self.icon = api.get_icon("StorageLocations", html_tag=False)
 
@@ -59,51 +66,96 @@ class StorageLocationsView(ListingView):
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Storage Location"),
-                "index": "sortable_title"}),
+                "title": _(
+                    u"listing_storagelocations_column_title",
+                    default=u"Storage Location",
+                ),
+                "index": "sortable_title",
+            }),
             ("Description", {
-                "title": _("Description"),
+                "title": _(
+                    u"listing_storagelocations_column_description",
+                    default=u"Description",
+                ),
                 "index": "description",
-                "toggle": True}),
+                "toggle": True,
+            }),
             ("SiteTitle", {
-                "title": _("Site Title"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_site_title",
+                    default=u"Site Title",
+                ),
+                "toggle": True,
+            }),
             ("SiteCode", {
-                "title": _("Site Code"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_site_code",
+                    default=u"Site Code",
+                ),
+                "toggle": True,
+            }),
             ("LocationTitle", {
-                "title": _("Location Title"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_location_title",
+                    default=u"Location Title",
+                ),
+                "toggle": True,
+            }),
             ("LocationCode", {
-                "title": _("Location Code"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_location_code",
+                    default=u"Location Code",
+                ),
+                "toggle": True,
+            }),
             ("ShelfTitle", {
-                "title": _("Shelf Title"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_shelf_title",
+                    default=u"Shelf Title",
+                ),
+                "toggle": True,
+            }),
             ("ShelfCode", {
-                "title": _("Shelf Code"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_shelf_code",
+                    default=u"Shelf Code",
+                ),
+                "toggle": True,
+            }),
             ("Owner", {
-                "title": _("Owner"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_storagelocations_column_owner",
+                    default=u"Owner",
+                ),
+                "toggle": True,
+            }),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_storagelocations_state_active",
+                    default=u"Active",
+                ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    u"listing_storagelocations_state_inactive",
+                    default=u"Inactive",
+                ),
                 "contentFilter": {"is_active": False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_storagelocations_state_all",
+                    default=u"All",
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
