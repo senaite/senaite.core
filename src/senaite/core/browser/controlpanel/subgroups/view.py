@@ -54,7 +54,10 @@ class SubGroupsView(ListingView):
             default=u"Sub-Groups")
         )
         self.description = ""
-        self.icon = api.get_icon("SubGroups", html_tag=False)
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "/++resource++bika.lims.images/batch_big.png"
+        )
 
         self.columns = collections.OrderedDict((
             ("Title", {
