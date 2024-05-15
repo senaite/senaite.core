@@ -54,7 +54,7 @@ class SubGroupsView(ListingView):
             default=u"Sub-Groups")
         )
         self.description = ""
-        api.get_icon("SubGroups", html_tag=False)
+        self.icon = api.get_icon("SubGroups", html_tag=False)
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -70,7 +70,7 @@ class SubGroupsView(ListingView):
                 ),
                 "toggle": True,
             }),
-            ("sort_key", {
+            ("SortKey", {
                 "title":  _(
                     u"listing_subgroups_column_sortkey",
                     default=u"Sort Key"

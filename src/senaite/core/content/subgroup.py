@@ -80,4 +80,4 @@ class SubGroup(Container):
         mutator(self, value)
 
     # BBB: AT schema field property
-    Elevation = property(getSortKey, setSortKey)
+    SortKey = property(getSortKey, setSortKey)
