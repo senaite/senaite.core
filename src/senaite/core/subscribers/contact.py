@@ -28,5 +28,5 @@ def on_contact_modified(contact, event):
         return
     # always update the email and fullname
     email = contact.getEmailAddress()
-    fullname = contact.Title()
+    fullname = contact.getFullname()
     user.setProperties(email=email, fullname=fullname)
