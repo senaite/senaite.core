@@ -215,6 +215,25 @@ class Person(BaseFolder):
     def getPossibleAddresses(self):
         return ["PhysicalAddress", "PostalAddress"]
 
+    @security.protected(CMFCorePermissions.ModifyPortalContent)
+    def setFullname(self, value):
+        parts = value.split(" ")
+        length = len(parts)
+        if length == 2:
+            self.setFirstname(parts[0])
+            self.setSurname(parts[1])
+        elif length == 3:
+            self.setFirstname(parts[0])
+            self.setMiddlename(parts[1])
+            self.setSurname(parts[2])
+        elif length == 4:
+            self.setFirstname(parts[0])
+            self.setMiddleinitial(parts[1])
+            self.setMiddlename(parts[2])
+            self.setSurname(parts[3])
+        else:
+            self.setSurname(value)
+
     def getFullname(self):
         """Person's Fullname
         """

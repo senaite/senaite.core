@@ -1415,7 +1415,7 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
-    query = {"portal_type": contact_types, "getUsername": user.id}
+    query = {"portal_type": contact_types, "getUsername": user.getId()}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
         return None
@@ -1424,7 +1424,7 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         # Oops, the user has multiple contacts assigned, return None
         contacts = map(lambda c: c.Title, brains)
         err_msg = "User '{}' is bound to multiple Contacts '{}'"
-        err_msg = err_msg.format(user.id, ','.join(contacts))
+        err_msg = err_msg.format(user.getId(), ','.join(contacts))
         logger.error(err_msg)
         return None
 
