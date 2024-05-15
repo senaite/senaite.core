@@ -6,9 +6,33 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate StorageLocations to DX"
       description="Migrate SamplePoints to Dexterity"
+      source="2623"
+      destination="2624"
+      handler=".v02_06_000.migrate_storagelocations_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Manufacturers to DX"
+      description="Migrate Manufacturers to Dexterity"
+      source="2622"
+      destination="2623"
+      handler=".v02_06_000.migrate_manufacturers_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getCreatorFullName from catalogs"
+      description="Remove getCreatorFullName from catalogs"
+      source="2621"
+      destination="2622"
+      handler=".v02_06_000.remove_creator_fullname"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Add user profile"
+      description="Add profile link to the user dropdown menu"
       source="2620"
       destination="2621"
-      handler=".v02_06_000.migrate_storagelocations_to_dx"
+      handler=".v02_06_000.setup_user_profile"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

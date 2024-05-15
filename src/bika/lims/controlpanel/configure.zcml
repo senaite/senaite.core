@@ -125,14 +125,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IManufacturers"
-      name="folder_view"
-      class=".bika_manufacturers.ManufacturersView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"

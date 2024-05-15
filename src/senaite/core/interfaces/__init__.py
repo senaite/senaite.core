@@ -291,6 +291,16 @@ class IHaveLabels(ICanHaveLabels):
     """
 
 
+class IManufacturers(Interface):
+    """Marker interface for manufacturers container
+    """
+
+
+class IManufacturer(Interface):
+    """Marker interface for manufacturers
+    """
+
+
 class IStorageLocations(Interface):
     """Marker interface for storage locations setup folder
     """
