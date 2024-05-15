@@ -35,7 +35,6 @@
   <type portal_type="StorageLocation"/>
   <type portal_type="SampleType"/>
   <type portal_type="SamplingDeviation"/>
-  <type portal_type="SubGroup"/>
   <type portal_type="Supplier"/>
   <type portal_type="SupplierContact"/>
   <type portal_type="WorksheetTemplate"/>

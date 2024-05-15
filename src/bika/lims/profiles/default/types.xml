@@ -63,8 +63,6 @@
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SubGroups" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SubGroup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Supplier" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Suppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>

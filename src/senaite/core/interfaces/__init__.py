@@ -248,6 +248,16 @@ class ISampleTemplate(Interface):
     """
 
 
+class ISubGroup(Interface):
+    """Marker interface for subgroup
+    """
+
+
+class ISubGroups(Interface):
+    """Marker interface for subgroups setup folder
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """
