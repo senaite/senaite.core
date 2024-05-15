@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2547 Add get_user_email function in the api
 - #2543 Fix AttributeError for Instrument Adapters
 - #2533 Migrate Sample Points to Dexterity
 - #2537 Support multi-line text on result entry
