@@ -198,8 +198,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("ClientContact", {
                 "title": _("Contact"),
-                "sortable": True,
-                "index": "getContactFullName",
+                "sortable": False,
                 "toggle": False}),
             ("getSampleTypeTitle", {
                 "title": _("Sample Type"),
