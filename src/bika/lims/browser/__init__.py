@@ -22,6 +22,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import logger
+from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView as BaseBrowserView
 from senaite.core.api.dtime import to_localized_time as ulocalized_time
@@ -104,19 +105,9 @@ class BrowserView(BaseBrowserView):
         contact_fullname = c[0].getObject().getFullname() if c else None
         return contact_fullname or member_fullname or userid
 
-    # TODO: user_fullname is deprecated and will be removed in Bika LIMS 3.3.
-    # Use bika.utils.user_fullnameinstead.
-    # I was having a problem trying to import the function from bika.lims.utils
-    # so i copied the code here.
+    @view.memoize
     def user_email(self, userid):
-        member = self.portal_membership.getMemberById(userid)
-        if member is None:
-            return userid
-        member_email = member.getProperty('email')
-        catalog = getToolByName(self, CONTACT_CATALOG)
-        c = catalog(portal_type='Contact', getUsername=userid)
-        contact_email = c[0].getObject().getEmailAddress() if c else None
-        return contact_email or member_email or ''
+        return api.get_user_email(userid)
 
     def python_date_format(self, long_format=None, time_only=False):
         """This convert bika domain date format msgstrs to Python
