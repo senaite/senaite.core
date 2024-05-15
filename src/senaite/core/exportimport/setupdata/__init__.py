@@ -1215,28 +1215,24 @@ class Sample_Point_Sample_Types(WorksheetImporter):
 class Storage_Locations(WorksheetImporter):
 
     def Import(self):
-        setup_folder = self.context.bika_setup.bika_storagelocations
+        container = self.context.setup.storagelocations
         for row in self.get_rows(3):
-            if not row['Address']:
+            address = row.get('Address')
+            if not address:
                 continue
 
-            obj = _createObjectByType("StorageLocation", setup_folder, tmpID())
-            obj.edit(
-                title=row['Address'],
-                SiteTitle=row['SiteTitle'],
-                SiteCode=row['SiteCode'],
-                SiteDescription=row['SiteDescription'],
-                LocationTitle=row['LocationTitle'],
-                LocationCode=row['LocationCode'],
-                LocationDescription=row['LocationDescription'],
-                LocationType=row['LocationType'],
-                ShelfTitle=row['ShelfTitle'],
-                ShelfCode=row['ShelfCode'],
-                ShelfDescription=row['ShelfDescription'],
-            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            api.create(container, "StorageLocation",
+                       title=address,
+                       SiteTitle=row.get('SiteTitle'),
+                       SiteCode=row.get('SiteCode'),
+                       SiteDescription=row.get('SiteDescription'),
+                       LocationTitle=row.get('LocationTitle'),
+                       LocationCode=row.get('LocationCode'),
+                       LocationDescription=row.get('LocationDescription'),
+                       LocationType=row.get('LocationType'),
+                       ShelfTitle=row.get('ShelfTitle'),
+                       ShelfCode=row.get('ShelfCode'),
+                       ShelfDescription=row.get('ShelfDescription'))
 
 
 class Sample_Conditions(WorksheetImporter):
