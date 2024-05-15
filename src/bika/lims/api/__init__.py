@@ -329,7 +329,7 @@ def move_object(obj, destination, check_constraints=True):
     :returns: The moved object
     """
     # prevent circular dependencies
-    from security import check_permission
+    from bika.lims.api.security import check_permission
 
     obj = get_object(obj)
     destination = get_object(destination)
