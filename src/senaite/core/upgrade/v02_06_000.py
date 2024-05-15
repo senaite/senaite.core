@@ -1226,3 +1226,14 @@ def remove_creator_fullname(tool):
     del_metadata(REPORT_CATALOG, "getCreatorFullName")
 
     logger.info("Removing getCreatorFullName from catalogs [DONE]")
+
+
+def remove_sampler_fullname(tool):
+    """Remove getSamplerFullName from catalogs
+    """
+    logger.info("Removing getSamplerFullName from catalogs ...")
+
+    del_index(SAMPLE_CATALOG, "getSamplerFullName")
+    del_metadata(SAMPLE_CATALOG, "getSamplerFullName")
+
+    logger.info("Removing getSamplerFullName from catalogs [DONE]")
