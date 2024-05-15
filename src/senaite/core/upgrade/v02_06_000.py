@@ -1060,6 +1060,7 @@ def migrate_samplepoint_to_dx(src, destination=None):
 
     return target
 
+
 @upgradestep(product, version)
 def migrate_subgroups_to_dx(tool):
     """Converts existing sub groups to Dexterity
