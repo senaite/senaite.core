@@ -1271,7 +1271,7 @@ Getting a Plone user previously registered with no contact assigned:
 Assign a new contact to this user:
 
     >>> labcontacts = bika_setup.bika_labcontacts
-    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Surname="Manager")
     >>> labcontact.setUser(user)
     True
 
@@ -1289,6 +1289,38 @@ But fails if we specify only `Contact` type:
 
     >>> nuser = api.get_user_contact(user, ['Contact'])
     >>> nuser is None
+    True
+
+
+Getting the fullname of the user and/or contact
+..............................................
+
+Getting the fullname of the contact::
+
+    >>> api.get_user_fullname(labcontact)
+    'Lab Manager'
+
+Getting the fullname of the user::
+
+    >>> api.get_user_fullname(user)
+    'Lab Manager'
+
+Note that if contact's fullname has priority over user's::
+
+    >>> user.setProperties(fullname="Labby Man")
+    >>> api.get_user_fullname(user)
+    'Lab Manager'
+
+But returns the user's fullname when not linked to any contact::
+
+    >>> labcontact.unlinkUser()
+    True
+    >>> api.get_user_fullname(user)
+    'Labby Man'
+
+Relink the user again
+
+    >>> labcontact.setUser(user)
     True
 
 

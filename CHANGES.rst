@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2544 Display creator fullname in samples listing
 - #2546 Add move_object function in the API
 - #2539 Add User Profile / Password Reset
 - #2543 Fix AttributeError for Instrument Adapters

@@ -596,19 +596,6 @@ def getFromString(obj, string, default=None):
     return attr_obj or default
 
 
-def user_fullname(obj, userid):
-    """Returns the user full name as string.
-    """
-    member = obj.portal_membership.getMemberById(userid)
-    if member is None:
-        return userid
-    member_fullname = member.getProperty("fullname")
-    catalog = api.get_tool(CONTACT_CATALOG)
-    res = catalog(portal_type="Contact", getUsername=userid)
-    contact_fullname = res[0].getObject().getFullname() if res else None
-    return contact_fullname or member_fullname or userid
-
-
 def user_email(obj, userid):
     """This function returns the user email as string.
     """

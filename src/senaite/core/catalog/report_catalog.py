@@ -39,7 +39,6 @@ COLUMNS = BASE_COLUMNS + [
     # attribute name
     "getClientTitle",
     "getClientURL",
-    "getCreatorFullName",
     "getFileSize",
 ]
 
