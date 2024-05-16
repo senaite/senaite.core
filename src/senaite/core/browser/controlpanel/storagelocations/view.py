@@ -47,15 +47,15 @@ class StorageLocationsView(ListingView):
         }
 
         self.context_actions = {
-            _(u"listing_storagelocations_action_add", default=u"Add"): {
+            _("listing_storagelocations_action_add", default="Add"): {
                 "url": "++add++StorageLocation",
                 "permission": AddStorageLocation,
                 "icon": "senaite_theme/icon/plus"
             }}
 
         self.title = translate(_(
-            u"listing_storagelocations_title",
-            default=u"Storage Locations")
+            "listing_storagelocations_title",
+            default="Storage Locations")
         )
         self.description = ""
         self.icon = api.get_icon("StorageLocations", html_tag=False)
@@ -67,65 +67,65 @@ class StorageLocationsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_storagelocations_column_title",
-                    default=u"Storage Location",
+                    "listing_storagelocations_column_title",
+                    default="Storage Location",
                 ),
                 "index": "sortable_title",
             }),
             ("Description", {
                 "title": _(
-                    u"listing_storagelocations_column_description",
-                    default=u"Description",
+                    "listing_storagelocations_column_description",
+                    default="Description",
                 ),
                 "index": "description",
                 "toggle": True,
             }),
             ("SiteTitle", {
                 "title": _(
-                    u"listing_storagelocations_column_site_title",
-                    default=u"Site Title",
+                    "listing_storagelocations_column_site_title",
+                    default="Site Title",
                 ),
                 "toggle": True,
             }),
             ("SiteCode", {
                 "title": _(
-                    u"listing_storagelocations_column_site_code",
-                    default=u"Site Code",
+                    "listing_storagelocations_column_site_code",
+                    default="Site Code",
                 ),
                 "toggle": True,
             }),
             ("LocationTitle", {
                 "title": _(
-                    u"listing_storagelocations_column_location_title",
-                    default=u"Location Title",
+                    "listing_storagelocations_column_location_title",
+                    default="Location Title",
                 ),
                 "toggle": True,
             }),
             ("LocationCode", {
                 "title": _(
-                    u"listing_storagelocations_column_location_code",
-                    default=u"Location Code",
+                    "listing_storagelocations_column_location_code",
+                    default="Location Code",
                 ),
                 "toggle": True,
             }),
             ("ShelfTitle", {
                 "title": _(
-                    u"listing_storagelocations_column_shelf_title",
-                    default=u"Shelf Title",
+                    "listing_storagelocations_column_shelf_title",
+                    default="Shelf Title",
                 ),
                 "toggle": True,
             }),
             ("ShelfCode", {
                 "title": _(
-                    u"listing_storagelocations_column_shelf_code",
-                    default=u"Shelf Code",
+                    "listing_storagelocations_column_shelf_code",
+                    default="Shelf Code",
                 ),
                 "toggle": True,
             }),
             ("Owner", {
                 "title": _(
-                    u"listing_storagelocations_column_owner",
-                    default=u"Owner",
+                    "listing_storagelocations_column_owner",
+                    default="Owner",
                 ),
                 "toggle": True,
             }),
@@ -135,8 +135,8 @@ class StorageLocationsView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_storagelocations_state_active",
-                    default=u"Active",
+                    "listing_storagelocations_state_active",
+                    default="Active",
                 ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
@@ -144,8 +144,8 @@ class StorageLocationsView(ListingView):
             }, {
                 "id": "inactive",
                 "title": _(
-                    u"listing_storagelocations_state_inactive",
-                    default=u"Inactive",
+                    "listing_storagelocations_state_inactive",
+                    default="Inactive",
                 ),
                 "contentFilter": {"is_active": False},
                 "transitions": [{"id": "activate"}, ],
@@ -153,8 +153,8 @@ class StorageLocationsView(ListingView):
             }, {
                 "id": "all",
                 "title": _(
-                    u"listing_storagelocations_state_all",
-                    default=u"All",
+                    "listing_storagelocations_state_all",
+                    default="All",
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),

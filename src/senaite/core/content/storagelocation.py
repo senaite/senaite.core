@@ -36,136 +36,136 @@ class IStorageLocationSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            u"title_storagelocation_title",
-            default=u"Address",
+            "title_storagelocation_title",
+            default="Address",
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            u"title_storagelocation_description",
-            default=u"Description",
+            "title_storagelocation_description",
+            default="Description",
         ),
         required=False,
     )
 
     site_title = schema.TextLine(
         title=_(
-            u"title_storagelocation_site_title",
-            default=u"Site Title"
+            "title_storagelocation_site_title",
+            default="Site Title"
         ),
         description=_(
-            u"description_storagelocation_site_title",
-            default=u"Title of the site",
+            "description_storagelocation_site_title",
+            default="Title of the site",
         ),
         required=False,
     )
 
     site_code = schema.TextLine(
         title=_(
-            u"title_storagelocation_site_code",
-            default=u"Site Code",
+            "title_storagelocation_site_code",
+            default="Site Code",
         ),
         description=_(
-            u"description_storagelocation_site_code",
-            default=u"Code for the site",
+            "description_storagelocation_site_code",
+            default="Code for the site",
         ),
         required=False,
     )
 
     site_description = schema.TextLine(
         title=_(
-            u"title_storagelocation_site_description",
-            default=u"Site Description",
+            "title_storagelocation_site_description",
+            default="Site Description",
         ),
         description=_(
-            u"description_storagelocation_site_description",
-            default=u"Description of the site",
+            "description_storagelocation_site_description",
+            default="Description of the site",
         ),
         required=False,
     )
 
     location_title = schema.TextLine(
         title=_(
-            u"title_storagelocation_location_title",
-            default=u"Location Title",
+            "title_storagelocation_location_title",
+            default="Location Title",
         ),
         description=_(
-            u"description_storagelocation_location_title",
-            default=u"Title of location",
+            "description_storagelocation_location_title",
+            default="Title of location",
         ),
         required=False,
     )
 
     location_code = schema.TextLine(
         title=_(
-            u"title_storagelocation_location_code",
-            default=u"Location Code",
+            "title_storagelocation_location_code",
+            default="Location Code",
         ),
         description=_(
-            u"description_storagelocation_location_code",
-            default=u"Code for the location",
+            "description_storagelocation_location_code",
+            default="Code for the location",
         ),
         required=False,
     )
 
     location_description = schema.TextLine(
         title=_(
-            u"title_storagelocation_location_description",
-            default=u"Location Description",
+            "title_storagelocation_location_description",
+            default="Location Description",
         ),
         description=_(
-            u"description_storagelocation_location_description",
-            default=u"Description of the location",
+            "description_storagelocation_location_description",
+            default="Description of the location",
         ),
         required=False,
     )
 
     location_type = schema.TextLine(
         title=_(
-            u"title_storagelocation_location_type",
-            default=u"Location Type",
+            "title_storagelocation_location_type",
+            default="Location Type",
         ),
         description=_(
-            u"description_storagelocation_location_type",
-            default=u"Type of location",
+            "description_storagelocation_location_type",
+            default="Type of location",
         ),
         required=False,
     )
 
     shelf_title = schema.TextLine(
         title=_(
-            u"title_storagelocation_shelf_title",
-            default=u"Shelf Title",
+            "title_storagelocation_shelf_title",
+            default="Shelf Title",
         ),
         description=_(
-            u"description_storagelocation_shelf_title",
-            default=u"Title of the shelf",
+            "description_storagelocation_shelf_title",
+            default="Title of the shelf",
         ),
         required=False,
     )
 
     shelf_code = schema.TextLine(
         title=_(
-            u"title_storagelocation_shelf_code",
-            default=u"Shelf Code",
+            "title_storagelocation_shelf_code",
+            default="Shelf Code",
         ),
         description=_(
-            u"description_storagelocation_shelf_code",
-            default=u"Code the the shelf",
+            "description_storagelocation_shelf_code",
+            default="Code the the shelf",
         ),
         required=False,
     )
 
     shelf_description = schema.TextLine(
         title=_(
-            u"title_storagelocation_shelf_description",
-            default=u"Shelf Description",
+            "title_storagelocation_shelf_description",
+            default="Shelf Description",
         ),
         description=_(
-            u"description_storagelocation_shelf_description",
-            default=u"Description of the shelf",
+            "description_storagelocation_shelf_description",
+            default="Description of the shelf",
         ),
         required=False,
     )
