@@ -58,7 +58,7 @@ class AnalysisResultsImporter(Logger):
 
     def __init__(self, parser, context,
                  override=None,
-                 allowed_ar_states=None,
+                 allowed_sample_states=None,
                  allowed_analysis_states=None,
                  instrument_uid=None):
 
@@ -73,9 +73,10 @@ class AnalysisResultsImporter(Logger):
             self.override = [False, False]
 
         # allowed sample states
-        self.allowed_ar_states = allowed_ar_states
-        if not allowed_ar_states:
-            self.allowed_ar_states = ALLOWED_SAMPLE_STATES
+        self.allowed_sample_states = allowed_sample_states
+        if not allowed_sample_states:
+            self.allowed_sample_states = ALLOWED_SAMPLE_STATES
+        self.allowed_ar_states = self.allowed_sample_states
 
         # allowed analyses states
         self.allowed_analysis_states = allowed_analysis_states
@@ -143,13 +144,14 @@ class AnalysisResultsImporter(Logger):
         """
         return self.parser
 
+    @deprecate("Please use self.allowed_sample_states instead")
     def getAllowedARStates(self):
-        """ The allowed Analysis Request states
-            The results import will only take into account the analyses
-            contained inside an Analysis Request which current state is one
-            from these.
+        """Return allowed sample states
+
+        The results import will only take into account the analyses contained
+        inside an Samples which current state is one from these.
         """
-        return self.allowed_ar_states
+        return self.allowed_sample_states
 
     def getAllowedAnalysisStates(self):
         """ The allowed Analysis states
