@@ -164,7 +164,7 @@ class StorageLocationsView(ListingView):
     def folderitem(self, obj, item, index):
         obj = api.get_object(obj)
         item["Description"] = api.get_description(obj)
-        item["replace"]["Title"] = get_link_for(item["url"])
+        item["replace"]["Title"] = get_link_for(obj)
 
         item["SiteTitle"] = obj.getSiteTitle()
         item["SiteCode"] = obj.getSiteCode()
