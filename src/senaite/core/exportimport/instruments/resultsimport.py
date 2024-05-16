@@ -227,9 +227,8 @@ class AnalysisResultsImporter(Logger):
                 continue
             # check if keyword is valid
             if not self.is_valid_keyword(keyword):
-                msg = _("Service keyword ${analysis_keyword} not found",
-                        mapping={"analysis_keyword": keyword})
-                self.warn(msg)
+                self.warn(_("Service keyword ${analysis_keyword} not found",
+                            mapping={"analysis_keyword": keyword}))
                 continue
             # remember the valid service keyword
             keywords.append(keyword)
