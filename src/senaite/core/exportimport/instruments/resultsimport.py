@@ -59,7 +59,9 @@ class AnalysisResultsImporter(Logger):
                  allowed_ar_states=None,
                  allowed_analysis_states=None,
                  instrument_uid=None):
-        Logger.__init__(self)
+
+        super(AnalysisResultsImporter, self).__init__()
+
         self._parser = parser
         self.context = context
         self._allowed_ar_states = allowed_ar_states

@@ -18,11 +18,14 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from Products.CMFPlone.utils import safe_unicode
 from senaite.core.i18n import translate as t
 
-class Logger:
+
+class Logger(object):
+    """Base class which provides a logging facility
+    """
 
     def __init__(self):
         self._errors = []
