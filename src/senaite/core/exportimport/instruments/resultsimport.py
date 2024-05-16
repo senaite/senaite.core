@@ -24,9 +24,7 @@ import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from senaite.core.idserver import renameAfterCreation
 from bika.lims.interfaces import IRoutineAnalysis
-from senaite.core.i18n import translate as t
 from Products.CMFCore.utils import getToolByName
 from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -34,6 +32,8 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
+from senaite.core.i18n import translate as t
+from senaite.core.idserver import renameAfterCreation
 
 
 class InstrumentResultsFileParser(Logger):
