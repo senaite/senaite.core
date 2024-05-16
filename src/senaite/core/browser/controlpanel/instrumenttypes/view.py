@@ -46,7 +46,7 @@ class InstrumentTypesView(ListingView):
         }
 
         self.context_actions = {
-            _(u"listing_instrumenttypes_action_add", default=u"Add"): {
+            _("listing_instrumenttypes_action_add", default="Add"): {
                 "url": "++add++InstrumentType",
                 "permission": AddInstrumentType,
                 "icon": "senaite_theme/icon/plus"
@@ -54,8 +54,8 @@ class InstrumentTypesView(ListingView):
         }
 
         self.title = translate(_(
-            u"listing_instrumenttypes_title",
-            default=u"Instrument Types")
+            "listing_instrumenttypes_title",
+            default="Instrument Types")
         )
         self.description = ""
         self.icon = "{}/{}".format(
@@ -70,15 +70,15 @@ class InstrumentTypesView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_instrumenttypes_column_title",
-                    default=u"Title",
+                    "listing_instrumenttypes_column_title",
+                    default="Title",
                 ),
                 "index": "sortable_title",
             }),
             ("Description", {
                 "title": _(
-                    u"listing_instrumenttypes_column_description",
-                    default=u"Description"
+                    "listing_instrumenttypes_column_description",
+                    default="Description"
                 ),
                 "toggle": True,
             }),
@@ -88,8 +88,8 @@ class InstrumentTypesView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_instrumenttypes_state_active",
-                    default=u"Active",
+                    "listing_instrumenttypes_state_active",
+                    default="Active",
                 ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
@@ -97,8 +97,8 @@ class InstrumentTypesView(ListingView):
             }, {
                 "id": "inactive",
                 "title": _(
-                    u"listing_instrumenttypes_state_inactive",
-                    default=u"Inactive",
+                    "listing_instrumenttypes_state_inactive",
+                    default="Inactive",
                 ),
                 "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
@@ -106,8 +106,8 @@ class InstrumentTypesView(ListingView):
             }, {
                 "id": "all",
                 "title": _(
-                    u"listing_instrumenttypes_state_all",
-                    default=u"All",
+                    "listing_instrumenttypes_state_all",
+                    default="All",
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),

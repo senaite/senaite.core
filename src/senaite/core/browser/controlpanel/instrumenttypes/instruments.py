@@ -32,7 +32,7 @@ class InstrumentTypeInstrumentsView(InstrumentsView):
         url += "/bika_setup/bika_instruments/"
 
         self.context_actions = {
-            _(u"listing_instruments_action_add", default=u"Add"): {
+            _("listing_instruments_action_add", default="Add"): {
                 "url": url+"createObject?type_name=Instrument",
                 "permission": AddInstrumentType,
                 "icon": "senaite_theme/icon/plus",

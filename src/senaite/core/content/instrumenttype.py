@@ -34,16 +34,16 @@ class IInstrumentTypeSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            u"title_instrumenttype_title",
-            default=u"Name"
+            "title_instrumenttype_title",
+            default="Name"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            u"title_instrumenttype_description",
-            default=u"Description"
+            "title_instrumenttype_description",
+            default="Description"
         ),
         required=False,
     )
