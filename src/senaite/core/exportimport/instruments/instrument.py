@@ -89,21 +89,7 @@ def GenericImport(context, request, parser, importer=None):
     return json.dumps(results)
 
 
-def format_keyword(keyword):
-    """
-    Removing special character from a keyword. Analysis Services must have
-    this kind of keywords. E.g. if assay name from the Instrument is
-    'HIV-1 2.0', an AS must be created on Bika with the keyword 'HIV120'
-    """
-    import re
-    result = ''
-    if keyword:
-        result = re.sub(r"\W", "", keyword)
-        result = re.sub("_", "", result)
-    return result
-
-
-# BBB: remove in senaite.core 3.0
+# BBB: Functions that will be remove in senaite.core 3.0
 @deprecate("This function will be removed in SENAITE 3.0")
 def getFileFormat(request):
     return get_instrument_results_file_format(request)
@@ -112,3 +98,9 @@ def getFileFormat(request):
 @deprecate("This function will be removed in SENAITE 3.0")
 def getResultsInputFile(request):
     return get_instrument_results_file(request)
+
+
+@deprecate("This function will be removed in SENAITE 3.0")
+def format_keyword(keyword):
+    from senaite.core.exportimport.instruments.utils import format_keyword
+    return format_keyword(keyword)

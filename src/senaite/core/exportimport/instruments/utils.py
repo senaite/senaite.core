@@ -18,7 +18,23 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 from bika.lims import api
+
+
+def format_keyword(keyword):
+    """Removes special characters from a keyword.
+
+    Analysis Services must have this kind of keywords. E.g. if assay name from
+    the Instrument is 'HIV-1 2.0', an AS must be created on Bika with the
+    keyword 'HIV120'
+    """
+    result = ""
+    if keyword:
+        result = re.sub(r"\W", "", keyword)
+        result = re.sub("_", "", result)
+    return result
 
 
 def get_instrument_import_override(override):
