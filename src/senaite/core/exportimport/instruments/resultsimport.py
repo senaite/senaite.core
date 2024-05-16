@@ -76,12 +76,18 @@ class AnalysisResultsImporter(Logger):
         self.allowed_sample_states = allowed_sample_states
         if not allowed_sample_states:
             self.allowed_sample_states = ALLOWED_SAMPLE_STATES
+        # translated states
+        self.allowed_sample_states_msg = [
+            t(_(s)) for s in self.allowed_sample_states]
+        # BBB
         self.allowed_ar_states = self.allowed_sample_states
 
         # allowed analyses states
         self.allowed_analysis_states = allowed_analysis_states
         if not allowed_analysis_states:
             self.allowed_analysis_states = ALLOWED_ANALYSIS_STATES
+        self.allowed_analysis_states_msg = [
+            t(_(s)) for s in self.allowed_analysis_states]
 
         # instrument UID
         self.instrument_uid = instrument_uid
@@ -179,46 +185,63 @@ class AnalysisResultsImporter(Logger):
         """
         return []
 
-    def process(self):
+    def parse_results(self):
         self.parser.parse()
         parsed = self.parser.resume()
-        self._errors = self.parser.errors
-        self._warns = self.parser.warns
-        self._logs = self.parser.logs
-        self.priorizedsearchcriteria = ""
 
+        self.errors = self.parser.errors
+        self.warns = self.parser.warns
+        self.logs = self.parser.logs
+
+        return parsed
+
+    def is_valid_keyword(self, keyword):
+        """Check if the keyword is valid
+        """
+        results = self.setup_catalog(getKeyword=keyword)
+        if not results:
+            return False
+        return True
+
+    def process(self):
+        parsed = self.parse_results()
+
+        # no parsed results, return
         if parsed is False:
             return False
 
-        # Allowed analysis states
-        allowed_ar_states_msg = [t(_(s)) for s in self.getAllowedARStates()]
-        allowed_an_states_msg = [
-                t(_(s)) for s in self.getAllowedAnalysisStates()]
-        self.log("Allowed Sample states: ${allowed_states}",
-                 mapping={'allowed_states': ', '.join(allowed_ar_states_msg)})
-        self.log("Allowed analysis states: ${allowed_states}",
-                 mapping={'allowed_states': ', '.join(allowed_an_states_msg)})
+        # Log allowed sample and analyses states
+        self.log(_("Allowed sample states: ${allowed_states}", mapping={
+            "allowed_states": ", ".join(self.allowed_sample_states_msg)
+        }))
+        self.log(_("Allowed analysis states: ${allowed_states}", mapping={
+            "allowed_states": ", ".join(self.allowed_analysis_states_msg)
+        }))
 
-        # Exclude non existing ACODEs
-        acodes = []
+        # Check parsed keywords
+        keywords = []
+        for keyword in self.parser.getAnalysisKeywords():
+            if not keyword:
+                continue
+            if keyword in self.getKeywordsToBeExcluded():
+                continue
+            # check if keyword is valid
+            if not self.is_valid_keyword(keyword):
+                msg = _("Service keyword ${analysis_keyword} not found",
+                        mapping={"analysis_keyword": keyword})
+                self.warn(msg)
+                continue
+            # remember the valid service keyword
+            keywords.append(keyword)
+
+        if len(keywords) == 0:
+            self.warn(_("No services could be found for parsed keywords"))
+
         ancount = 0
         instprocessed = []
         importedars = {}
         importedinsts = {}
-        rawacodes = self.parser.getAnalysisKeywords()
-        exclude = self.getKeywordsToBeExcluded()
         updated_analyses = []
-        for acode in rawacodes:
-            if acode in exclude or not acode:
-                continue
-            analysis_service = self.bsc(getKeyword=acode)
-            if not analysis_service:
-                self.warn('Service keyword ${analysis_keyword} not found',
-                          mapping={"analysis_keyword": acode})
-            else:
-                acodes.append(acode)
-        if len(acodes) == 0:
-            self.warn("Service keywords: no matches found")
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
@@ -243,7 +266,7 @@ class AnalysisResultsImporter(Logger):
                                   "states found, And no QC"
                                   "analyses found for ${object_id}",
                                   mapping={"allowed_ar_states": ', '.join(
-                                      allowed_ar_states_msg),
+                                      self.allowed_sample_states_msg),
                                           "object_id": objid})
                         self.warn("Instrument not found")
                         continue
@@ -289,7 +312,7 @@ class AnalysisResultsImporter(Logger):
                               "for ${object_id}",
                               mapping={
                                  "allowed_ar_states": ', '.join(
-                                     allowed_ar_states_msg),
+                                     self.allowed_sample_states_msg),
                                  "object_id": objid})
                     continue
 
@@ -298,7 +321,7 @@ class AnalysisResultsImporter(Logger):
                 if capturedate:
                     del result['DateTime']
                 for acode, values in six.iteritems(result):
-                    if acode not in acodes:
+                    if acode not in keywords:
                         # Analysis keyword doesn't exist
                         continue
 
