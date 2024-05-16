@@ -642,16 +642,14 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_containertypes
+        container = self.context.setup.contenttypes
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("ContainerType", folder, tmpID())
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+
+            api.create(container, "ContainerType",
+                       title=title, description=row.get("description"))
 
 
 class Preservations(WorksheetImporter):
