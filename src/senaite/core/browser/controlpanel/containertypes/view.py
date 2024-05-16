@@ -43,7 +43,7 @@ class ContainerTypesView(ListingView):
             "sort_order": "ascending",
             "path": {
                 "query": api.get_path(context),
-                "level": 1,
+                "depth": 1,
             }
         }
 
