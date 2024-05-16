@@ -119,3 +119,5 @@ class InstrumentTypesView(ListingView):
 
         item["replace"]["Title"] = get_link_for(obj)
         item["Description"] = api.get_description(obj)
+
+        return item
