@@ -23,20 +23,21 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.interfaces import IRoutineAnalysis
-from Products.CMFCore.utils import getToolByName
 from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
-# BBB
 from senaite.core.exportimport.instruments.parser import *  # noqa
 from senaite.core.i18n import translate as t
-from zope.deprecation import deprecate
 from senaite.core.idserver import renameAfterCreation
 from zope import deprecation
 from zope.cachedescriptors.property import Lazy as lazy_property
+from zope.deprecation import deprecate
+
+ALLOWED_SAMPLE_STATES = ["sample_received", "to_be_verified"]
+ALLOWED_ANALYSIS_STATES = ["unassigned", "assigned", "to_be_verified"]
 
 deprecation.deprecated(
     "InstrumentResultsFileParser",
@@ -68,16 +69,13 @@ class AnalysisResultsImporter(Logger):
         self._allowed_ar_states = allowed_ar_states
         self._allowed_analysis_states = allowed_analysis_states
         self._override = override
-        self._idsearch = ["getId", "getClientSampleID"]
         self._priorizedsearchcriteria = ""
+
         if not self._allowed_ar_states:
-            self._allowed_ar_states = ["sample_received",
-                                       "to_be_verified"]
+            self._allowed_ar_states = ALLOWED_SAMPLE_STATES
         if not self._allowed_analysis_states:
             self._allowed_analysis_states = [
-                "unassigned", "assigned", "to_be_verified"
-        if not self._idsearch:
-            self._idsearch = ["getId"]
+                "unassigned", "assigned", "to_be_verified"]
         self.instrument_uid = instrument_uid
 
     @property
