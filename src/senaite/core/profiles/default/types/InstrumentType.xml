@@ -44,7 +44,7 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.instrumentttype.IInstrumentTypeSchema</property>
+  <property name="schema">senaite.core.content.instrumenttype.IInstrumentTypeSchema</property>
   <property name="klass">senaite.core.content.instrumenttype.InstrumentType</property>
 
   <!-- Dexterity behaviours for this type -->
