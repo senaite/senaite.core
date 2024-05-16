@@ -53,22 +53,33 @@ class SamplingDeviationsView(ListingView):
             }
         }
 
-        self.title = translate(_("Sampling Deviations"))
+        self.title = translate(_(
+            "listing_samplingdeviations_title",
+            default="Sampling Deviations")
+        )
+        self.description = ""
         self.icon = "{}/{}".format(
             self.portal_url,
             "/++resource++bika.lims.images/samplingdeviation_big.png"
         )
 
         self.show_select_row = False
-        self.pagesize = 25
         self.show_select_column = True
+        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Sampling Deviation"),
-                "index": "sortable_title"}),
+                "title": _(
+                    "listing_samplingdeviations_column_title",
+                    default="Sampling Deviation",
+                ),
+                "index": "sortable_title",
+            }),
             ("Description", {
-                "title": _("Description"),
+                "title": _(
+                    "listing_samplingdeviations_column_description",
+                    default="Description",
+                ),
                 "index": "Description",
                 "toggle": True,
             }),
@@ -77,19 +88,28 @@ class SamplingDeviationsView(ListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("All"),
+                "title": _(
+                    "listing_samplingdeviations_state_all",
+                    default="All",
+                ),
                 "contentFilter": {},
                 "transitions": [{"id": "empty"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "active",
-                "title": _("Active"),
+                "title": _(
+                    "listing_samplingdeviations_state_active",
+                    default="Active",
+                ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    "listing_samplingdeviations_state_inactive",
+                    default="Inactive",
+                ),
                 "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),

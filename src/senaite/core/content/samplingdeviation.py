@@ -34,16 +34,16 @@ class ISamplingDeviationSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            u"title_samplingdeviation_title",
-            default=u"Name"
+            "title_samplingdeviation_title",
+            default="Name"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            u"title_samplingdeviation_description",
-            default=u"Description"
+            "title_samplingdeviation_description",
+            default="Description"
         ),
         required=False,
     )
