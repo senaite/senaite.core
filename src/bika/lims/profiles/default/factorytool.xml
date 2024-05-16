@@ -16,7 +16,6 @@
   <type portal_type="Calculation"/>
   <type portal_type="Client"/>
   <type portal_type="Contact"/>
-  <type portal_type="ContainerType"/>
   <type portal_type="IdentifierType"/>
   <type portal_type="Instrument"/>
   <type portal_type="InstrumentCalibration"/>

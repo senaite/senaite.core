@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove getSamplerFullName from catalogs"
       description="Remove getSamplerFullName from catalogs"
+      source="2624"
+      destination="2625"
+      handler=".v02_06_000.remove_sampler_fullname"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate ContainerTypes to DX"
+      description="Migrate ContainerTypes to Dexterity"
       source="2623"
       destination="2624"
-      handler=".v02_06_000.remove_sampler_fullname"
+      handler=".v02_06_000.migrate_containertypes_to_dx"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
