@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import BaseFolder
 from bika.lims.config import PROJECTNAME
