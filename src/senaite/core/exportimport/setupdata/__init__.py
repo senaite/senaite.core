@@ -1105,14 +1105,12 @@ class Sample_Matrices(WorksheetImporter):
 class Batch_Labels(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_batchlabels
+        container = self.context.setup.batchlabels
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("BatchLabel", folder, tmpID())
-                obj.edit(title=row['title'])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "BatchLabel", title=title)
 
 
 class Sample_Types(WorksheetImporter):

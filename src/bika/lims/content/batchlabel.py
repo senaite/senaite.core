@@ -30,6 +30,8 @@ schema = BikaSchema.copy()
 schema['description'].widget.visible = False
 schema['description'].schemata = 'default'
 
+
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/XXXX
 class BatchLabel(BaseContent):
     implements(IDeactivable)
     security = ClassSecurityInfo()
@@ -37,9 +39,10 @@ class BatchLabel(BaseContent):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-registerType(BatchLabel, PROJECTNAME)
 
+registerType(BatchLabel, PROJECTNAME)

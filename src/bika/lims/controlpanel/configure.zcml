@@ -156,14 +156,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IBatchLabels"
-      name="folder_view"
-      class=".bika_batchlabels.BatchLabelsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <!-- Dynamic Analysis Specifications -->
     <browser:page
       for="bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs"

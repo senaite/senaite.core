@@ -18,25 +18,32 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IBatchLabels
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IDeactivable
+from plone.supermodel import model
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IBatchLabel
+from zope import schema
+from zope.interface import implementer
 
 
-schema = ATFolderSchema.copy()
+class IBatchLabelSchema(model.Schema):
+    """Schema interface
+    """
+
+    title = schema.TextLine(
+        title=_(
+            "title_batchlabel_title",
+            default="Name"
+        ),
+        required=True,
+    )
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/XXXX
-class BatchLabels(ATFolder):
-    implements(IBatchLabels, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(BatchLabels, PROJECTNAME)
+@implementer(IBatchLabel, IBatchLabelSchema, IDeactivable)
+class BatchLabel(Container):
+    """Batch label
+    """
+    # Catalogs where this type will be catalogued
+    _catalogs = [SETUP_CATALOG]

@@ -60,4 +60,8 @@
   <object name="ContainerType" meta_type="Dexterity FTI" />
   <object name="ContainerTypes" meta_type="Dexterity FTI" />
 
+  <!-- Batch Labels -->
+  <object name="BatchLabel" meta_type="Dexterity FTI" />
+  <object name="BatchLabels" meta_type="Dexterity FTI" />
+
 </object>
