@@ -54,6 +54,16 @@ class InstrumentResultsFileParser(Logger):
         """
         raise NotImplementedError
 
+    def resume(self):
+        """Resumes the parse process
+
+        Called by the Results Importer after parse() call
+        """
+        if len(self.getRawResults()) == 0:
+            self.warn("No results found")
+            return False
+        return True
+
     def getAttachmentFileType(self):
         """ Returns the file type name that will be used when creating the
             AttachmentType used by the importer for saving the results file as
@@ -132,7 +142,7 @@ class InstrumentResultsFileParser(Logger):
         return len(self.getAnalysisKeywords())
 
     def getAnalysisKeywords(self):
-        """ The analysis service keywords found
+        """Return found analysis service keywords
         """
         analyses = []
         for rows in self.getRawResults().values():
@@ -141,36 +151,39 @@ class InstrumentResultsFileParser(Logger):
         return analyses
 
     def getRawResults(self):
-        """ Returns a dictionary containing the parsed results data
-            Each dict key is the results row ID (usually AR ID or Worksheet's
-            Reference Sample ID). Each item is another dictionary, in which the
-            key is a the AS Keyword.
-            Inside the AS dict, the column 'DefaultResult' must be
-            provided, that maps to the column from which the default
-            result must be retrieved.
-            If 'Remarks' column is found, it value will be set in Analysis
-            Remarks field when using the deault Importer.
+        """Returns a dictionary containing the parsed results data
 
-            Example:
+        Each dict key is the results row ID (usually AR ID or Worksheet's
+        Reference Sample ID). Each item is another dictionary, in which the key
+        is a the AS Keyword.
+
+        Inside the AS dict, the column 'DefaultResult' must be provided, that
+        maps to the column from which the default result must be retrieved.
+
+        If 'Remarks' column is found, it value will be set in Analysis Remarks
+        field when using the deault Importer.
+
+        Example:
+
             raw_results['DU13162-001-R1'] = [{
 
                 'D2': {'DefaultResult': 'Final Conc',
-                       'Remarks':       '',
-                       'Resp':          '5816',
-                       'ISTD Resp':     '274638',
-                       'Resp Ratio':    '0.0212',
-                       'Final Conc':    '0.9145',
-                       'Exp Conc':      '1.9531',
-                       'Accuracy':      '98.19' },
+                        'Remarks':       '',
+                        'Resp':          '5816',
+                        'ISTD Resp':     '274638',
+                        'Resp Ratio':    '0.0212',
+                        'Final Conc':    '0.9145',
+                        'Exp Conc':      '1.9531',
+                        'Accuracy':      '98.19' },
 
                 'D3': {'DefaultResult': 'Final Conc',
-                       'Remarks':       '',
-                       'Resp':          '5816',
-                       'ISTD Resp':     '274638',
-                       'Resp Ratio':    '0.0212',
-                       'Final Conc':    '0.9145',
-                       'Exp Conc':      '1.9531',
-                       'Accuracy':      '98.19' }]
+                        'Remarks':       '',
+                        'Resp':          '5816',
+                        'ISTD Resp':     '274638',
+                        'Resp Ratio':    '0.0212',
+                        'Final Conc':    '0.9145',
+                        'Exp Conc':      '1.9531',
+                        'Accuracy':      '98.19' }]
 
             in which:
             - 'DU13162-001-R1' is the Analysis Request ID,
@@ -190,15 +203,6 @@ class InstrumentResultsFileParser(Logger):
 
         """
         return self._rawresults
-
-    def resume(self):
-        """ Resumes the parse process
-            Called by the Results Importer after parse() call
-        """
-        if len(self.getRawResults()) == 0:
-            self.warn("No results found")
-            return False
-        return True
 
 
 class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
