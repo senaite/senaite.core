@@ -18,61 +18,67 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
 import inspect
+import sys
 
-# from generic import xml
+from abaxis.vetscan import vs2
 from abbott.m2000rt import m2000rt
+from alere.pima import beads
+from alere.pima import cd4
+from beckmancoulter.access import model2
+from bika.lims import api
+from biodrop.ulite import ulite
+from cobasintegra.model_400_plus import model_400_plus
+from eltra.cs import cs2000
+from facscalibur.calibur import model_e9750
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
 from generic import two_dimension
-from thermoscientific.gallery import Ts9861x
-from thermoscientific.arena import xt20
-from thermoscientific.multiskan import go
-from panalytical.omnia import axios_xrf
-from alere.pima import beads, cd4
+from genexpert import genexpert
+from horiba.jobinyvon import icp
 from lachat import quickchem
 from lifetechnologies.qubit import qubit
 from metler.toledo import dl55
-from biodrop.ulite import ulite
-from tescan.tima import tima
-from sysmex.xs import i500, i1000
-from sysmex.xt import i1800, i4000
-from beckmancoulter.access import model2
+from nuclisens import easyq
+from panalytical.omnia import axios_xrf
+from rigaku.supermini import wxrf
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
-from sealanalytical.aq2 import aq2
-from shimadzu.gcms import qp2010se, tq8030
-from shimadzu.icpe import multitype
-from shimadzu.nexera import LC2040C, LCMS8050
-from horiba.jobinyvon import icp
-from abaxis.vetscan import vs2
 from scilvet.abc import plus
-from eltra.cs import cs2000
-from rigaku.supermini import wxrf
-from myself import myinstrument
-from nuclisens import easyq
-from genexpert import genexpert
+from sealanalytical.aq2 import aq2
+from shimadzu.gcms import qp2010se
+from shimadzu.gcms import tq8030
+from shimadzu.icpe import multitype
+from shimadzu.nexera import LC2040C
+from shimadzu.nexera import LCMS8050
+from sysmex.xs import i500
+from sysmex.xs import i1000
+from sysmex.xt import i1800
+from sysmex.xt import i4000
+from tescan.tima import tima
+from thermoscientific.arena import xt20
+from thermoscientific.gallery import Ts9861x
+from thermoscientific.multiskan import go
 from varian.vistapro import icp as icp_2
-from cobasintegra.model_400_plus import model_400_plus
-from facscalibur.calibur import model_e9750
-
-from bika.lims import api
 from zope.component import getAdapters
 from zope.interface import Interface
+
 
 class IInstrumentInterface(Interface):
     """Marker interface for instrument results import/export interfaces
     """
 
+
 class IInstrumentExportInterface(IInstrumentInterface):
     """Marker interface for instrument results export interfaces
     """
 
+
 class IInstrumentImportInterface(IInstrumentInterface):
     """Marker interface for instrument results import interfaces
     """
+
 
 class IInstrumentAutoImportInterface(IInstrumentInterface):
     """Marker interface for instrument results import interfaces that are
@@ -98,7 +104,6 @@ __all__ = ['abaxis.vetscan.vs2',
            'lachat.quickchem',
            'lifetechnologies.qubit.qubit',
            'metler.toledo.dl55',
-           'myself.myinstrument',
            'nuclisens.easyq',
            'panalytical.omnia.axios_xrf',
            'rigaku.supermini.wxrf',
@@ -139,7 +144,6 @@ PARSERS = [
            ['foss.winescan.auto', 'WinescanAutoCSVParser'],
            ['foss.winescan.ft120', 'WinescanFT120CSVParser'],
            ['generic.two_dimension', 'TwoDimensionCSVParser'],
-           # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
            ['metler.toledo.dl55', 'MetlerToledoDL55Parser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
@@ -163,11 +167,10 @@ PARSERS = [
            ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
            ['tescan.tima.tima', 'TimaCSVParser'],
            ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
-           ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
-           ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
+           ['cobasintegra.model_400_plus.model_400_plus', 'CobasIntegra400plus2CSVParser'],
            ['facscalibur.calibur.model_e9750', 'FacsCalibur2CSVParser'],
            ]
 
@@ -237,10 +240,11 @@ def get_instrument_export_interfaces():
     return filter(lambda i: is_export_interface(i[1]),
                   get_instrument_interfaces())
 
+
 def getExim(exim_id):
     """Returns the instrument interface for the exim_id passed in
     """
-    interfaces = filter(lambda i: i[0]==exim_id, get_instrument_interfaces())
+    interfaces = filter(lambda i: i[0] == exim_id, get_instrument_interfaces())
     return interfaces and interfaces[0][1] or None
 
 
@@ -259,4 +263,3 @@ def get_automatic_parser(exim_id, infile):
         return None
     parser_func = getattr(adapter, parser_func)
     return parser_func(infile)
-  
