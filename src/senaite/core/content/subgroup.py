@@ -36,27 +36,27 @@ class ISubGroupSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            u"title_subgroup_title",
-            default=u"Name"
+            "title_subgroup_title",
+            default="Name"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            u"title_subgroup_description",
-            default=u"Description"
+            "title_subgroup_description",
+            default="Description"
         ),
         required=False,
     )
 
     sort_key = schema.TextLine(
         title=_(
-            u"title_subgroup_sortkey",
-            default=u"Sort Key"
+            "title_subgroup_sortkey",
+            default="Sort Key"
         ),
         required=False,
-        default=u""
+        default=""
     )
 
 

@@ -48,7 +48,7 @@ class SubGroupsView(ListingView):
         }
 
         self.context_actions = {
-            _(u"listing_subgroup_action_add", default=u"Add"): {
+            _("listing_subgroup_action_add", default="Add"): {
                 "url": "++add++SubGroup",
                 "permission": AddSubGroup,
                 "icon": "senaite_theme/icon/plus"
@@ -56,8 +56,8 @@ class SubGroupsView(ListingView):
         }
 
         self.title = translate(_(
-            u"listing_subgroups_title",
-            default=u"Sub-Groups")
+            "listing_subgroups_title",
+            default="Sub-Groups")
         )
         self.description = ""
         self.icon = api.get_icon("SubGroups", html_tag=False)
@@ -65,21 +65,21 @@ class SubGroupsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_subgroups_column_title",
-                    default=u"Title"
+                    "listing_subgroups_column_title",
+                    default="Title"
                 ),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    u"listing_subgroups_column_description",
-                    default=u"Description"
+                    "listing_subgroups_column_description",
+                    default="Description"
                 ),
                 "toggle": True,
             }),
             ("SortKey", {
                 "title":  _(
-                    u"listing_subgroups_column_sortkey",
-                    default=u"Sort Key"
+                    "listing_subgroups_column_sortkey",
+                    default="Sort Key"
                 ),
                 "toggle": True,
             }),
@@ -89,8 +89,8 @@ class SubGroupsView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_subgroups_state_active",
-                    default=u"Active"
+                    "listing_subgroups_state_active",
+                    default="Active"
                 ),
                 "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
@@ -98,8 +98,8 @@ class SubGroupsView(ListingView):
             }, {
                 "id": "inactive",
                 "title": _(
-                    u"listing_subgroups_state_inactive",
-                    default=u"Inactive"
+                    "listing_subgroups_state_inactive",
+                    default="Inactive"
                 ),
                 "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
@@ -107,8 +107,8 @@ class SubGroupsView(ListingView):
             }, {
                 "id": "all",
                 "title": _(
-                    u"listing_subgroups_state_all",
-                    default=u"All"
+                    "listing_subgroups_state_all",
+                    default="All"
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
