@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import to_list
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.i18n import translate as t
 
@@ -32,21 +33,22 @@ class Logger(object):
         self._warns = []
         self._logs = []
 
-    def err(self, msg, numline=None, line=None, mapping={}):
+    def err(self, msg, numline=None, line=None, mapping=None):
         self.msg(self._errors, msg, numline, line, mapping)
-#        self.msg(self._logs, _("[ERROR] ") + msg, numline, line)
 
-    def warn(self, msg, numline=None, line=None, mapping={}):
+    def warn(self, msg, numline=None, line=None, mapping=None):
         self.msg(self._warns, msg, numline, line, mapping)
-#        self.msg(self._logs, _("[WARN] ") + msg, numline, line)
 
-    def log(self, msg, numline=None, line=None, mapping={}):
+    def log(self, msg, numline=None, line=None, mapping=None):
         self.msg(self._logs, msg, numline, line, mapping)
 
     def msg(self, array, msg, numline=None, line=None, mapping={}):
-        prefix = ''
-        suffix = ''
-        msg = t(_(safe_unicode(msg), mapping=mapping))
+        if mapping:
+            msg = t(_(safe_unicode(msg), mapping=mapping))
+        else:
+            msg = t(safe_unicode(msg))
+        prefix = ""
+        suffix = ""
         if numline:
             prefix = "[%s] " % numline
         if line:
@@ -54,19 +56,37 @@ class Logger(object):
         array.append(prefix + msg + suffix)
 
     @property
-    def errors(self):
-        """ Return an array with the errors thrown during the file processing
-        """
-        return self._errors
-
-    @property
     def logs(self):
-        """ Return an array with logs generated during the file processing
+        """Return an array with logs generated during the file processing
         """
         return self._logs
 
+    @logs.setter
+    def logs(self, value):
+        """Return an array with the errors thrown during the file processing
+        """
+        self._logs.append(to_list(value))
+
     @property
     def warns(self):
-        """ Return an array with warns generated during the file processing
+        """Return an array with warns generated during the file processing
         """
         return self._warns
+
+    @warns.setter
+    def warns(self, value):
+        """Return an array with the errors thrown during the file processing
+        """
+        self._warns.append(to_list(value))
+
+    @property
+    def errors(self):
+        """Return an array with the errors thrown during the file processing
+        """
+        return self._errors
+
+    @errors.setter
+    def errors(self, value):
+        """Return an array with the errors thrown during the file processing
+        """
+        self._errors.append(to_list(value))
