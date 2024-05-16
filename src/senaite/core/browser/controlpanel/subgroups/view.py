@@ -40,7 +40,13 @@ class SubGroupsView(ListingView):
         self.contentFilter = {
             "portal_type": "SubGroup",
             "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            }
         }
+
         self.context_actions = {
             _(u"listing_subgroup_action_add", default=u"Add"): {
                 "url": "++add++SubGroup",

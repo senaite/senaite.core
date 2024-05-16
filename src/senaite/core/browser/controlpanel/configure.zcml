@@ -33,5 +33,4 @@
   <include package=".sampletemplates" />
   <include package=".subgroups" />
 
-
 </configure>

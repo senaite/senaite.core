@@ -37,7 +37,7 @@ class ISubGroupSchema(model.Schema):
     title = schema.TextLine(
         title=_(
             u"title_subgroup_title",
-            default=u"Title"
+            default=u"Name"
         ),
         required=True,
     )
