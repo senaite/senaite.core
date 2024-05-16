@@ -66,21 +66,25 @@ class AnalysisResultsImporter(Logger):
 
         self.parser = parser
         self.context = context
-        self._priorizedsearchcriteria = ""
-        self.instrument_uid = instrument_uid
 
+        # results override settings
+        self.override = override
+        if override is None:
+            self.override = [False, False]
+
+        # allowed sample states
         self.allowed_ar_states = allowed_ar_states
         if not allowed_ar_states:
             self.allowed_ar_states = ALLOWED_SAMPLE_STATES
 
+        # allowed analyses states
         self.allowed_analysis_states = allowed_analysis_states
         if not allowed_analysis_states:
-            self.allowed_analysis_states = [
-                "unassigned", "assigned", "to_be_verified"]
+            self.allowed_analysis_states = ALLOWED_ANALYSIS_STATES
 
-        self.override = override
-        if override is None:
-            self.override = [False, False]
+        # instrument UID
+        self.instrument_uid = instrument_uid
+        self.priorizedsearchcriteria = ""
 
     @lazy_property
     def instrument(self):
@@ -176,7 +180,7 @@ class AnalysisResultsImporter(Logger):
         self._errors = self.parser.errors
         self._warns = self.parser.warns
         self._logs = self.parser.logs
-        self._priorizedsearchcriteria = ''
+        self.priorizedsearchcriteria = ""
 
         if parsed is False:
             return False
@@ -501,7 +505,7 @@ class AnalysisResultsImporter(Logger):
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], UID=objid)
         if obj and len(obj) > 0:
-            self._priorizedsearchcriteria = criteria
+            self.priorizedsearchcriteria = criteria
         return obj
 
     def _getZODBAnalyses(self, objid):
@@ -521,10 +525,10 @@ class AnalysisResultsImporter(Logger):
         allowed_an_states_msg = [_(s) for s in allowed_an_states]
 
         # Acceleration of searches using priorization
-        if self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
+        if self.priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(
-                    objid, self._priorizedsearchcriteria)
+                    objid, self.priorizedsearchcriteria)
         if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
