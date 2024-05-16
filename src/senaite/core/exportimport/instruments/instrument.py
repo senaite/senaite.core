@@ -22,25 +22,28 @@
 """
 import json
 import traceback
+
 from bika.lims import bikaMessageFactory as _
-from senaite.core.exportimport.instruments.resultsimport import AnalysisResultsImporter
-
-def getFileFormat(request):
-    return request.form['instrument_results_file_format']
-
-def getResultsInputFile(request):
-    return request.form['instrument_results_file']
+from senaite.core.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.utils import get_artoapply
+from senaite.core.exportimport.utils import get_instrument
+from senaite.core.exportimport.utils import get_instrument_results_file
+from senaite.core.exportimport.utils import get_instrument_results_file_format
+from senaite.core.exportimport.utils import get_results_override
+from zope.deprecation.deprecation import deprecate
 
 
 def GenericImport(context, request, parser, importer=None):
-    infile = getResultsInputFile(request)
-    artoapply = request.form['artoapply']
-    override = request.form['results_override']
+    infile = get_instrument_results_file(request)
+    artoapply = get_artoapply()
+    override = get_results_override()
+    instrument = get_instrument()
 
-    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
+
     # Load the most suitable parser according to file extension/options/etc...
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
@@ -98,3 +101,14 @@ def format_keyword(keyword):
         result = re.sub(r"\W", "", keyword)
         result = re.sub("_", "", result)
     return result
+
+
+# BBB: remove in senaite.core 3.0
+@deprecate("This function will be removed in SENAITE 3.0")
+def getFileFormat(request):
+    return get_instrument_results_file_format(request)
+
+
+@deprecate("This function will be removed in SENAITE 3.0")
+def getResultsInputFile(request):
+    return get_instrument_results_file(request)

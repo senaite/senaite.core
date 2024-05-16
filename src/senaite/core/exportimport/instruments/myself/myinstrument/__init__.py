@@ -18,10 +18,14 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser
-from senaite.core.exportimport.instruments.instrument import GenericImport, getResultsInputFile
+from senaite.core.exportimport.instruments.instrument import GenericImport
+from senaite.core.exportimport.instruments.resultsimport import \
+    InstrumentCSVResultsFileParser
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_results_file
 
 title = "My Instrument"
+
 
 class MyInstrumentCSVParser(InstrumentCSVResultsFileParser):
 
@@ -37,8 +41,9 @@ class MyInstrumentCSVParser(InstrumentCSVResultsFileParser):
             self._addRawResult(sline[0], raw)
             return 0
 
+
 def Import(context, request):
-    infile = getResultsInputFile(request)
+    infile = get_instrument_results_file(request)
     parser = MyInstrumentCSVParser(infile)
     res = GenericImport(context, request, parser)
     return res

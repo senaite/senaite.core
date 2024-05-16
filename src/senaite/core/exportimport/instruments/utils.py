@@ -18,21 +18,54 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+
+
 def get_instrument_import_override(override):
     over = [False, False]
-    if override == 'nooverride':
+    if override == "nooverride":
         over = [False, False]
-    elif override == 'override':
+    elif override == "override":
         over = [True, False]
-    elif override == 'overrideempty':
+    elif override == "overrideempty":
         over = [True, True]
     return over
 
 
-def get_instrument_import_ar_allowed_states(artoapply):
-    status = ['sample_received', 'to_be_verified']
-    if artoapply == 'received':
-        status = ['sample_received']
-    elif artoapply == 'received_tobeverified':
-        status = ['sample_received', 'to_be_verified']
+def get_instrument_import_ar_allowed_states(allowed_state):
+    status = ["sample_received", "to_be_verified"]
+    if allowed_state == "received":
+        status = ["sample_received"]
+    elif allowed_state == "received_tobeverified":
+        status = ["sample_received", "to_be_verified"]
     return status
+
+
+def get_instrument_results_file(request=None):
+    if request is None:
+        request = api.get_request()
+    return request.form.get("instrument_results_file")
+
+
+def get_instrument_results_file_format(request=None):
+    if request is None:
+        request = api.get_request()
+    return request.form.get("instrument_results_file_format")
+
+
+def get_results_override(request=None):
+    if request is None:
+        request = api.get_request()
+    return request.form.get("results_override")
+
+
+def get_artoapply(request=None):
+    if request is None:
+        request = api.get_request()
+    return request.form.get("artoapply")
+
+
+def get_instrument(request=None):
+    if request is None:
+        request = api.get_request()
+    return request.form.get("artoapply")
