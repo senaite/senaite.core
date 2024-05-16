@@ -71,7 +71,7 @@ Variables:
     >>> bika_analysisservices = setup.bika_analysisservices
     >>> bika_labcontacts = setup.bika_labcontacts
     >>> bika_storagelocations = setup.bika_storagelocations
-    >>> bika_samplingdeviations = setup.bika_samplingdeviations
+    >>> samplingdeviations = portal.setup.samplingdeviations
     >>> portal_url = portal.absolute_url()
     >>> setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()

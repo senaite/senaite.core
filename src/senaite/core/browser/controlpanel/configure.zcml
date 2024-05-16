@@ -32,5 +32,6 @@
   <include package=".samplepoints" />
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
+  <include package=".samplingdeviations" />
 
 </configure>

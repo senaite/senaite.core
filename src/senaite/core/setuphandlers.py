@@ -253,6 +253,7 @@ def add_senaite_setup_items(portal):
         ("samplepoints", "Sample Points", "SamplePoints"),
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
         ("manufacturers", "Manufacturers", "Manufacturers"),
+        ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
