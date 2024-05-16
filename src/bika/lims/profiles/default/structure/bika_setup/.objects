@@ -7,7 +7,6 @@ bika_batchlabels,BatchLabels
 bika_calculations,Calculations
 bika_containertypes,ContainerTypes
 bika_instruments,Instruments
-bika_instrumenttypes,InstrumentTypes
 bika_labcontacts,LabContacts
 bika_labproducts,LabProducts
 bika_referencedefinitions,ReferenceDefinitions

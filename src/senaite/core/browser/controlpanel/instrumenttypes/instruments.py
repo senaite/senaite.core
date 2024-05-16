@@ -21,11 +21,10 @@
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
+from senaite.core.permissions import AddInstrumentType
 
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
-    """Display instruments assigned to this instrument type
-    """
 
     def __init__(self, context, request):
         super(InstrumentTypeInstrumentsView, self).__init__(context, request)
@@ -33,9 +32,10 @@ class InstrumentTypeInstrumentsView(InstrumentsView):
         url += "/bika_setup/bika_instruments/"
 
         self.context_actions = {
-            _("Add"): {
+            _(u"listing_instruments_action_add", default=u"Add"): {
                 "url": url+"createObject?type_name=Instrument",
-                "icon": "++resource++bika.lims.images/add.png",
+                "permission": AddInstrumentType,
+                "icon": "senaite_theme/icon/plus",
             }}
 
     def isItemAllowed(self, obj):

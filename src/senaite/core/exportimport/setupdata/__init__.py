@@ -761,15 +761,13 @@ class Manufacturers(WorksheetImporter):
 class Instrument_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_instrumenttypes
+        container = self.context.setup.instrumenttypes
         for row in self.get_rows(3):
-                obj = _createObjectByType("InstrumentType", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''))
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "InstrumentType",
+                       title=title, description=row.get("description"))
 
 
 class Instruments(WorksheetImporter):

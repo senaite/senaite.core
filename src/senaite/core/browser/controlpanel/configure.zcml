@@ -23,6 +23,7 @@
   <include package=".analysisprofiles" />
   <include package=".departments" />
   <include package=".instrumentlocations" />
+  <include package=".instrumenttypes" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
   <include package=".manufacturers" />
