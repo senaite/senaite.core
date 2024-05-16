@@ -30,12 +30,13 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
-from senaite.core.i18n import translate as t
-from senaite.core.idserver import renameAfterCreation
-from zope import deprecation
-
 # BBB
 from senaite.core.exportimport.instruments.parser import *  # noqa
+from senaite.core.i18n import translate as t
+from zope.deprecation import deprecate
+from senaite.core.idserver import renameAfterCreation
+from zope import deprecation
+from zope.cachedescriptors.property import Lazy as lazy_property
 
 deprecation.deprecated(
     "InstrumentResultsFileParser",
@@ -67,30 +68,68 @@ class AnalysisResultsImporter(Logger):
         self._allowed_ar_states = allowed_ar_states
         self._allowed_analysis_states = allowed_analysis_states
         self._override = override
-        self._idsearch = ['getId', 'getClientSampleID']
-        self._priorizedsearchcriteria = ''
-
-        self.bsc = getToolByName(self.context, SETUP_CATALOG)
-        self.bac = getToolByName(self.context, ANALYSIS_CATALOG)
-        self.ar_catalog = getToolByName(self.context, SAMPLE_CATALOG)
-        self.bc = getToolByName(self.context, SENAITE_CATALOG)
-        self.wf = getToolByName(self.context, 'portal_workflow')
-
+        self._idsearch = ["getId", "getClientSampleID"]
+        self._priorizedsearchcriteria = ""
         if not self._allowed_ar_states:
-            self._allowed_ar_states = ['sample_received',
-                                       'to_be_verified']
+            self._allowed_ar_states = ["sample_received",
+                                       "to_be_verified"]
         if not self._allowed_analysis_states:
             self._allowed_analysis_states = [
-                'unassigned', 'assigned', 'to_be_verified'
-            ]
+                "unassigned", "assigned", "to_be_verified"
         if not self._idsearch:
-            self._idsearch = ['getId']
+            self._idsearch = ["getId"]
         self.instrument_uid = instrument_uid
+
+    @property
+    @deprecate("Please use self.wf_tool instead")
+    def wf(self):
+        return self.wf_tool
+
+    @property
+    @deprecate("Please use self.sample_catalog instead")
+    def ar_catalog(self):
+        return self.sample_catalog
+
+    @property
+    @deprecate("Please use self.analysis_catalog instead")
+    def bac(self):
+        return self.analysis_catalog
+
+    @property
+    @deprecate("Please use self.senaite_catalog instead")
+    def bc(self):
+        return self.senaite_catalog
+
+    @property
+    @deprecate("Please use self.setup_catalog instead")
+    def bsc(self):
+        # BBB
+        return self.setup_catalog
+
+    @lazy_property
+    def sample_catalog(self):
+        return api.get_tool(SAMPLE_CATALOG)
+
+    @lazy_property
+    def analysis_catalog(self):
+        return api.get_tool(ANALYSIS_CATALOG)
+
+    @lazy_property
+    def setup_catalog(self):
+        return api.get_tool(SETUP_CATALOG)
+
+    @lazy_property
+    def senaite_catalog(self):
+        return api.get_tool(SENAITE_CATALOG)
+
+    @lazy_property
+    def wf_tool(self):
+        return api.get_tool("portal_workflow")
 
     def getParser(self):
         """ Returns the parser that will be used for the importer
         """
-        return self._parser
+        return self.parser
 
     def getAllowedARStates(self):
         """ The allowed Analysis Request states
