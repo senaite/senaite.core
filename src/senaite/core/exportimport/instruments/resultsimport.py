@@ -146,33 +146,36 @@ class AnalysisResultsImporter(Logger):
 
     @deprecate("Please use self.allowed_sample_states instead")
     def getAllowedARStates(self):
-        """Return allowed sample states
+        """BBB: Return allowed sample states
 
         The results import will only take into account the analyses contained
         inside an Samples which current state is one from these.
         """
         return self.allowed_sample_states
 
+    @deprecate("Please use self.allowed_sample_states instead")
     def getAllowedAnalysisStates(self):
-        """ The allowed Analysis states
-            The results import will only take into account the analyses
-            if its current state is in the allowed analysis states.
+        """BBB: Return allowed analysis states
+
+        The results import will only take into account the analyses if its
+        current state is in the allowed analysis states.
         """
         return self.allowed_analysis_states
 
+    @deprecate("Please use self.override instead")
     def getOverride(self):
-        """ If the importer must override previously entered results.
-            [False, False]: The results will not be overriden
-            [True, False]: The results will be overriden only if there's no
-                           result entered yet,
-            [True, True]: The results will be always overriden, also if the
-                          parsed result is empty.
+        """BBB: Return result override flags
+
+        Flags if the importer can override previously entered results.
+
+        [False, False]: Results are not overriden (default)
+        [True, False]:  Results are overriden, but only when empty
+        [True, True]:   Results are always overriden, also with empties
         """
         return self.override
 
     def getKeywordsToBeExcluded(self):
-        """ Returns an array with the analysis codes/keywords to be excluded
-            by the importer. By default, an empty array
+        """Returns a list of analysis keywords to be excluded
         """
         return []
 
