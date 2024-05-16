@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2549 Fix contact fullname is not updated in samples listing after edition
+- #2540 Migrate Container Types to Dexterity
 - #2542 Migrate Manufacturers to Dexterity
 - #2547 Add get_user_email function in the api
 - #2544 Display creator fullname in samples listing
