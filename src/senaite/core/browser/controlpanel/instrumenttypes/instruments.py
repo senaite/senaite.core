@@ -19,24 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
-from senaite.core.permissions import AddInstrumentType
 
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
-
-    def __init__(self, context, request):
-        super(InstrumentTypeInstrumentsView, self).__init__(context, request)
-        url = self.portal.absolute_url()
-        url += "/bika_setup/bika_instruments/"
-
-        self.context_actions = {
-            _("listing_instruments_action_add", default="Add"): {
-                "url": url+"createObject?type_name=Instrument",
-                "permission": AddInstrumentType,
-                "icon": "senaite_theme/icon/plus",
-            }}
 
     def isItemAllowed(self, obj):
         obj = api.get_object(obj)

@@ -51,6 +51,6 @@ class IInstrumentTypeSchema(model.Schema):
 
 @implementer(IInstrumentType, IInstrumentTypeSchema, IDeactivable)
 class InstrumentType(Container):
-    """A container for manufacturer
+    """A container for instrument type
     """
     _catalogs = [SETUP_CATALOG]
