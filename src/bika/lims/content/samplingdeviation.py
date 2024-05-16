@@ -35,7 +35,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2552
 class SamplingDeviation(BaseFolder):
     implements(IDeactivable)
     security = ClassSecurityInfo()
