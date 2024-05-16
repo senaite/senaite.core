@@ -57,7 +57,7 @@ class AnalysisResultsImporter(Logger):
     """
 
     def __init__(self, parser, context,
-                 override=[False, False],
+                 override=None,
                  allowed_ar_states=None,
                  allowed_analysis_states=None,
                  instrument_uid=None):
@@ -66,17 +66,27 @@ class AnalysisResultsImporter(Logger):
 
         self._parser = parser
         self.context = context
-        self._allowed_ar_states = allowed_ar_states
-        self._allowed_analysis_states = allowed_analysis_states
-        self._override = override
         self._priorizedsearchcriteria = ""
-
-        if not self._allowed_ar_states:
-            self._allowed_ar_states = ALLOWED_SAMPLE_STATES
-        if not self._allowed_analysis_states:
-            self._allowed_analysis_states = [
-                "unassigned", "assigned", "to_be_verified"]
         self.instrument_uid = instrument_uid
+
+        self.allowed_ar_states = allowed_ar_states
+        if not allowed_ar_states:
+            self.allowed_ar_states = ALLOWED_SAMPLE_STATES
+
+        self.allowed_analysis_states = allowed_analysis_states
+        if not allowed_analysis_states:
+            self.allowed_analysis_states = [
+                "unassigned", "assigned", "to_be_verified"]
+
+        self.override = override
+        if override is None:
+            self.override = [False, False]
+
+    @lazy_property
+    def instrument(self):
+        if not self.instrument_uid:
+            return None
+        return api.get_object(self.instrument_uid, None)
 
     @property
     @deprecate("Please use self.wf_tool instead")
@@ -127,7 +137,7 @@ class AnalysisResultsImporter(Logger):
     def getParser(self):
         """ Returns the parser that will be used for the importer
         """
-        return self.parser
+        return self._parser
 
     def getAllowedARStates(self):
         """ The allowed Analysis Request states
@@ -135,14 +145,14 @@ class AnalysisResultsImporter(Logger):
             contained inside an Analysis Request which current state is one
             from these.
         """
-        return self._allowed_ar_states
+        return self.allowed_ar_states
 
     def getAllowedAnalysisStates(self):
         """ The allowed Analysis states
             The results import will only take into account the analyses
             if its current state is in the allowed analysis states.
         """
-        return self._allowed_analysis_states
+        return self.allowed_analysis_states
 
     def getOverride(self):
         """ If the importer must override previously entered results.
@@ -152,7 +162,7 @@ class AnalysisResultsImporter(Logger):
             [True, True]: The results will be always overriden, also if the
                           parsed result is empty.
         """
-        return self._override
+        return self.override
 
     def getKeywordsToBeExcluded(self):
         """ Returns an array with the analysis codes/keywords to be excluded
@@ -211,13 +221,13 @@ class AnalysisResultsImporter(Logger):
             # Needed for calibration tests
             for result in results:
                 analyses = self._getZODBAnalyses(objid)
-                inst = None
-                if len(analyses) == 0 and self.instrument_uid:
+
+                inst = self.instrument
+
+                if len(analyses) == 0 and inst:
                     # No registered analyses found, but maybe we need to
                     # create them first if an instruemnt id has been set in
-                    insts = self.bsc(portal_type='Instrument',
-                                     UID=self.instrument_uid)
-                    if len(insts) == 0:
+                    if not self.instrument:
                         # No instrument found
                         self.warn("No Sample with "
                                   "'${allowed_ar_states}' "
@@ -228,8 +238,6 @@ class AnalysisResultsImporter(Logger):
                                           "object_id": objid})
                         self.warn("Instrument not found")
                         continue
-
-                    inst = insts[0].getObject()
 
                     # Create a new ReferenceAnalysis and link it to
                     # the Instrument
@@ -289,7 +297,7 @@ class AnalysisResultsImporter(Logger):
                         a for a in analyses
                         if a.getKeyword() == acode
                            and api.get_workflow_status_of(a)
-                           in self._allowed_analysis_states]
+                           in self.allowed_analysis_states]
 
                     if len(ans) > 1:
                         self.warn("More than one analysis found for "
@@ -645,7 +653,7 @@ class AnalysisResultsImporter(Logger):
             if service not in dependencies:
                 continue
             # recalculate analysis result
-            success = obj.calculateResult(override=self._override[0])
+            success = obj.calculateResult(override=self.override[0])
             if success:
                 self.save_submit_analysis(obj)
                 obj.reindexObject(idxs=["Result"])
@@ -734,7 +742,7 @@ class AnalysisResultsImporter(Logger):
         # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            resultsaved = analysis.calculateResult(override=self._override[0])
+            resultsaved = analysis.calculateResult(override=self.override[0])
 
         # Set result if present.
         res = values.get(defresultkey, '')
@@ -742,7 +750,7 @@ class AnalysisResultsImporter(Logger):
 
         # don't set results on calculated analyses
         if not calc:
-            if api.is_floatable(res) or self._override[1]:
+            if api.is_floatable(res) or self.override[1]:
                 # handle non-floating values in result options
                 result_options = analysis.getResultOptions()
                 if result_options:
@@ -773,7 +781,7 @@ class AnalysisResultsImporter(Logger):
         if (resultsaved) \
            and values.get('Remarks', '') \
            and analysis.portal_type == 'Analysis' \
-           and (analysis.getRemarks() != '' or self._override[1] is True):
+           and (analysis.getRemarks() != '' or self.override[1] is True):
             analysis.setRemarks(values['Remarks'])
             fields_to_reindex.append('Remarks')
 
