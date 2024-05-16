@@ -34,16 +34,16 @@ class IContainerTypeSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            u"title_containertype_title",
-            default=u"Name"
+            "title_containertype_title",
+            default="Name"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            u"title_containertype_description",
-            default=u"Description"
+            "title_containertype_description",
+            default="Description"
         ),
         required=False,
     )

@@ -48,7 +48,7 @@ class ContainerTypesView(ListingView):
         }
 
         self.context_actions = {
-            _(u"listing_containertypes_action_add", default=u"Add"): {
+            _("listing_containertypes_action_add", default="Add"): {
                 "url": "++add++ContainerType",
                 "permission": AddContainerType,
                 "icon": "senaite_theme/icon/plus"
@@ -56,22 +56,22 @@ class ContainerTypesView(ListingView):
         }
 
         self.title = translate(_(
-            u"listing_containertypes_title",
-            default=u"Container Types")
+            "listing_containertypes_title",
+            default="Container Types")
         )
         self.icon = api.get_icon("ContainerTypes", html_tag=False)
 
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_containertypes_column_title",
-                    default=u"Title"
+                    "listing_containertypes_column_title",
+                    default="Title"
                 ),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    u"listing_containertypes_column_description",
-                    default=u"Description"
+                    "listing_containertypes_column_description",
+                    default="Description"
                 ),
                 "toggle": True}),
         ))
@@ -80,24 +80,24 @@ class ContainerTypesView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_containertypes_state_active",
-                    default=u"Active"
+                    "listing_containertypes_state_active",
+                    default="Active"
                 ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _(
-                    u"listing_containertypes_state_inactive",
-                    default=u"Inactive"
+                    "listing_containertypes_state_inactive",
+                    default="Inactive"
                 ),
                 "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _(
-                    u"listing_containertypes_state_all",
-                    default=u"All"
+                    "listing_containertypes_state_all",
+                    default="All"
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
