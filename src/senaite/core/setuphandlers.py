@@ -252,6 +252,7 @@ def add_senaite_setup_items(portal):
         ("samplematrices", "Sample Matrices", "SampleMatrices"),
         ("samplepoints", "Sample Points", "SamplePoints"),
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
+        ("manufacturers", "Manufacturers", "Manufacturers"),
         ("containertypes", "Container Types", "ContainerTypes"),
     ]
     setup = api.get_senaite_setup()

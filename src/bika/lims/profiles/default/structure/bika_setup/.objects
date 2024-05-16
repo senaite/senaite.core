@@ -9,7 +9,6 @@ bika_instruments,Instruments
 bika_instrumenttypes,InstrumentTypes
 bika_labcontacts,LabContacts
 bika_labproducts,LabProducts
-bika_manufacturers,Manufacturers
 bika_referencedefinitions,ReferenceDefinitions
 bika_sampletypes,SampleTypes
 bika_samplingdeviations,SamplingDeviations

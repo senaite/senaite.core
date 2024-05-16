@@ -18,11 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.app.users.browser.userdatapanel import UserDataConfiglet as Base
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import IManufacturers
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.supermodel import model
+from zope.interface import implementer
 
 
-class UserDataConfiglet(Base):
-    """Control panel version of the userdata panel
+class IManufacturersSchema(model.Schema):
+    """Schema interface
     """
-    template = ViewPageTemplateFile("templates/account-configlet.pt")
+
+
+@implementer(IManufacturers, IManufacturersSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class Manufacturers(Container):
+    """A container for manufacturers
+    """

@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone"
+      metal:use-macro="context/main_template/macros/master">
+
+  <metal:b fill-slot="content-title">
+    <h1 class="documentFirstHeading">${view/label}</h1>
+  </metal:b>
+
+  <metal:b fill-slot="content-core">
+    <nav class="nav nav-tabs"
+         tal:define="view_actions view/prepareObjectTabs;">
+      <li class="nav-item" tal:repeat="action view_actions">
+        <a id="contentview-${action/id}"
+           href="${action/url}"
+           tal:define="selected action/selected|nothing;"
+           tal:attributes="class python:'nav-link' + (' active' if selected else '')"
+           i18n:translate="">${action/title}</a>
+      </li>
+    </nav>
+
+    <metal:b use-macro="context/@@ploneform-macros/titlelessform" />
+  </metal:b>
+
+</html>

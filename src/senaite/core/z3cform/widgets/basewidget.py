@@ -73,7 +73,12 @@ class BaseWidget(Widget):
         if context is None:
             return None
         # Hack alert!
-        # we are in ++add++ form and have no context!
-        # Create a temporary object to be able to access class methods
-        view = api.get_view("temporary_context", context=context)
-        return view.create_temporary_context(portal_type)
+        try:
+            # we are in ++add++ form and have no context!
+            # Create a temporary object to be able to access class methods
+            view = api.get_view("temporary_context", context=context)
+            return view.create_temporary_context(portal_type)
+        except TypeError:
+            # happens when we no portal_type was found, e.g. if we are in a
+            # form and the portal object is our context
+            return None

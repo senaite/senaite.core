@@ -26,6 +26,7 @@
   <include package=".instrumentlocations" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
+  <include package=".manufacturers" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
   <include package=".samplematrices" />
