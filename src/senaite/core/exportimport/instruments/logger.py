@@ -65,7 +65,7 @@ class Logger(object):
     def logs(self, value):
         """Return an array with the errors thrown during the file processing
         """
-        self._logs.append(to_list(value))
+        self._logs = to_list(value)
 
     @property
     def warns(self):
@@ -77,7 +77,7 @@ class Logger(object):
     def warns(self, value):
         """Return an array with the errors thrown during the file processing
         """
-        self._warns.append(to_list(value))
+        self._warns = to_list(value)
 
     @property
     def errors(self):
@@ -89,4 +89,4 @@ class Logger(object):
     def errors(self, value):
         """Return an array with the errors thrown during the file processing
         """
-        self._errors.append(to_list(value))
+        self._errors = to_list(value)
