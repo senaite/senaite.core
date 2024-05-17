@@ -56,7 +56,6 @@ class ISubGroupSchema(model.Schema):
             default="Sort Key"
         ),
         required=False,
-        default=""
     )
 
 
