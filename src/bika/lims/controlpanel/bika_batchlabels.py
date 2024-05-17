@@ -31,7 +31,7 @@ from zope.interface.declarations import implements
 schema = ATFolderSchema.copy()
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/XXXX
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2553
 class BatchLabels(ATFolder):
     implements(IBatchLabels, IHideActionsMenu)
     displayContentsTab = False

@@ -31,7 +31,7 @@ schema['description'].widget.visible = False
 schema['description'].schemata = 'default'
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/XXXX
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2553
 class BatchLabel(BaseContent):
     implements(IDeactivable)
     security = ClassSecurityInfo()
