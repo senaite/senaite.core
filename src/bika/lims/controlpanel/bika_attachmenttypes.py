@@ -18,17 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import collections
-
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAttachmentTypes
-from senaite.core.permissions import AddAttachmentType
-from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from senaite.core.interfaces import IHideActionsMenu
@@ -38,7 +31,7 @@ from zope.interface.declarations import implements
 schema = ATFolderSchema.copy()
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/####
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2554
 class AttachmentTypes(ATFolder):
     implements(IAttachmentTypes, IHideActionsMenu)
     displayContentsTab = False
