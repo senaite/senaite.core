@@ -29,14 +29,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisCategories"
-      name="folder_view"
-      class=".bika_analysiscategories.AnalysisCategoriesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IStorageLocations"
       name="folder_view"
       class=".bika_storagelocations.StorageLocationsView"

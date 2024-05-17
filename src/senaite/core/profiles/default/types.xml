@@ -60,4 +60,8 @@
   <object name="ContainerType" meta_type="Dexterity FTI" />
   <object name="ContainerTypes" meta_type="Dexterity FTI" />
 
+  <!-- Analysis Categories -->
+  <object name="AnalysisCategory" meta_type="Dexterity FTI" />
+  <object name="AnalysisCategories" meta_type="Dexterity FTI" />
+
 </object>
