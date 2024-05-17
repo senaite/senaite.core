@@ -24,8 +24,6 @@
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ContainerType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ContainerTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
@@ -42,8 +40,6 @@
  <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabProducts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Manufacturer" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Manufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Multifile" meta_type="Factory-based Type Information with dynamic views"/>

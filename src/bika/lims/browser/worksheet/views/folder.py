@@ -28,7 +28,6 @@ from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
-from bika.lims.utils import user_fullname
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -354,7 +353,7 @@ class FolderView(BikaListingView):
             item["required"] = ["Analyst"]
             item["choices"] = {"Analyst": self.analyst_choices}
         else:
-            fullname = user_fullname(self.context, obj.getAnalyst)
+            fullname = self.user_fullname(obj.getAnalyst)
             item["Analyst"] = fullname
 
         return item

@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate
 from senaite.core.permissions import AddAttachmentType
 
 
@@ -39,52 +40,64 @@ class AttachmentTypesView(ListingView):
             "portal_type": "AttachmentType",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1,
+            }
         }
 
         self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=AttachmentType",
+            _("listing_attachmenttypes_action_add", default="Add"): {
+                "url": "++add++AttachmentType",
                 "permission": AddAttachmentType,
-                "icon": "++resource++bika.lims.images/add.png"}
+                "icon": "senaite_theme/icon/plus"
+            }
         }
 
-        self.title = self.context.translate(_("Attachment Types"))
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/attachment_big.png"
+        self.title = translate(_(
+            "listing_attachmenttypes_title",
+            default="Attachment Types")
         )
-
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
+        self.icon = api.get_icon("AttachmentTypes", html_tag=False)
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Attachment Type"),
+                "title": _(
+                    "listing_attachmenttypes_column_title",
+                    default="Title"
+                ),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
-                "index": "Description",
-                "toggle": True,
-            }),
+                "title": _(
+                    "listing_attachmenttypes_column_description",
+                    default="Description"
+                ),
+                "toggle": True}),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    "listing_attachmenttypes_state_active",
+                    default="Active"
+                ),
                 "contentFilter": {"is_active": True},
-                "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
-                "contentFilter": {'is_active': False},
-                "transitions": [{"id": "activate"}, ],
+                "title": _(
+                    "listing_attachmenttypes_state_inactive",
+                    default="Inactive"
+                ),
+                "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    "listing_attachmenttypes_state_all",
+                    default="All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },

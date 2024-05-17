@@ -5,12 +5,10 @@ bika_analysisspecs
 bika_artemplates
 bika_batchlabels
 bika_calculations
-bika_containertypes
 bika_instruments
 bika_instrumenttypes
 bika_labcontacts
 bika_labproducts
-bika_manufacturers
 bika_referencedefinitions
 bika_sampletypes
 bika_samplingdeviations

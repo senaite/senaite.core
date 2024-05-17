@@ -56,4 +56,12 @@
   <object name="Label" meta_type="Dexterity FTI" />
   <object name="Labels" meta_type="Dexterity FTI" />
 
+  <!-- Manufacturers -->
+  <object name="Manufacturer" meta_type="Dexterity FTI" />
+  <object name="Manufacturers" meta_type="Dexterity FTI" />
+
+  <!-- Container types -->
+  <object name="ContainerType" meta_type="Dexterity FTI" />
+  <object name="ContainerTypes" meta_type="Dexterity FTI" />
+
 </object>

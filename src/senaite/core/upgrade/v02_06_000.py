@@ -18,21 +18,26 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from datetime import timedelta
+
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.api import UID_CATALOG
 from bika.lims.api.snapshot import disable_snapshots
 from bika.lims.utils import tmpID
-from datetime import timedelta
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -40,12 +45,14 @@ from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import del_metadata
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import LABCONTACT_WORKFLOW
 from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
@@ -66,6 +73,10 @@ REMOVE_AT_TYPES = [
     "SamplePreservations",
     "SampleTemplate",
     "SampleTemplates",
+    "Manufacturer",
+    "Manufacturers",
+    "ContainerType",
+    "ContainerTypes",
     "AttachmentType",
     "AttachmentTypes",
 ]
@@ -734,6 +745,42 @@ def import_registry(tool):
 
 
 @upgradestep(product, version)
+def import_actions(tool):
+    """Import actions step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "actions")
+
+
+@upgradestep(product, version)
+def import_usersschema(tool):
+    """Import usersschema step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "usersschema")
+
+
+@upgradestep(product, version)
+def import_controlpanel(tool):
+    """Import usersschema step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "controlpanel")
+
+
+@upgradestep(product, version)
+def import_workflow(tool):
+    """Import usersschema step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
 def migrate_sampletemplates_to_dx(tool):
     """Converts existing sample templates to Dexterity
     """
@@ -970,6 +1017,53 @@ def migrate_samplepoints_to_dx(tool):
     logger.info("Convert SamplePoints to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
+def migrate_manufacturers_to_dx(tool):
+    """Converts existing manufacturers to Dexterity
+    """
+    logger.info("Convert Manufacturers to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_manufacturers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("manufacturers")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("Manufacturer", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Manufacturers to Dexterity [DONE]")
+
+
 def migrate_samplepoint_to_dx(src, destination=None):
     """Migrates a Sample Point to DX in destination folder
 
@@ -1059,6 +1153,52 @@ def migrate_samplepoint_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     return target
+
+@upgradestep(product, version)
+def migrate_containertypes_to_dx(tool):
+    """Converts existing container types to Dexterity
+    """
+    logger.info("Convert ContainerTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_containertypes")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("containertypes")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("ContainerType", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert ContainerTypes to Dexterity [DONE]")
 
 
 @upgradestep(product, version)
@@ -1202,3 +1342,33 @@ def setup_result_types(tool):
         # empty the value from the old result options field
         options_field.set(obj, None)
         obj._p_deactivate()
+
+
+def setup_user_profile(tool):
+    """Setup user profile
+    """
+    logger.info("Setup User Profile ...")
+    import_actions(tool)
+    import_usersschema(tool)
+    import_controlpanel(tool)
+    import_workflow(tool)
+
+    # Update rolemappings for contacts/labcontacts to grant the Owner role
+    # view/edit permissions
+    query = {"portal_type": ["LabContact", "Contact"]}
+    brains = api.search(query, CONTACT_CATALOG)
+    update_workflow_role_mappings(LABCONTACT_WORKFLOW, brains)
+
+    logger.info("Setup User Profile [DONE]")
+
+
+def remove_creator_fullname(tool):
+    """Remove getCreatorFullName from catalogs
+    """
+    logger.info("Removing getCreatorFullName from catalogs ...")
+
+    del_index(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(SAMPLE_CATALOG, "getCreatorFullName")
+    del_metadata(REPORT_CATALOG, "getCreatorFullName")
+
+    logger.info("Removing getCreatorFullName from catalogs [DONE]")

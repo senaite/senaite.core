@@ -642,16 +642,14 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_containertypes
+        container = self.context.setup.contenttypes
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("ContainerType", folder, tmpID())
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+
+            api.create(container, "ContainerType",
+                       title=title, description=row.get("description"))
 
 
 class Preservations(WorksheetImporter):
@@ -749,18 +747,13 @@ class Supplier_Contacts(WorksheetImporter):
 class Manufacturers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_manufacturers
+        container = self.context.setup.manufacturers
         for row in self.get_rows(3):
-            obj = _createObjectByType("Manufacturer", folder, tmpID())
-            if row['title']:
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', '')
-                )
-                self.fill_addressfields(row, obj)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "Manufacturer",
+                       title=title, description=row.get("description"))
 
 
 class Instrument_Types(WorksheetImporter):

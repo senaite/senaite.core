@@ -301,6 +301,16 @@ class IHaveLabels(ICanHaveLabels):
     """
 
 
+class IManufacturers(Interface):
+    """Marker interface for manufacturers container
+    """
+
+
+class IManufacturer(Interface):
+    """Marker interface for manufacturers
+    """
+
+
 class IASTMImporter(Interface):
     """Marker interface for ASTM Wrappers
     """
@@ -323,3 +333,13 @@ class IClientAwareMixin(Interface):
     def getClientUID(self):
         """Returns the client UID this object is bound to, if any
         """
+
+
+class IContainerTypes(Interface):
+    """Marker interface for container types setup folder
+    """
+
+
+class IContainerType(Interface):
+    """Marker interface for container type
+    """
