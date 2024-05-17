@@ -21,10 +21,12 @@
 
   <!-- Include controlpanel listing views -->
   <include package=".analysisprofiles" />
+  <include package=".containertypes" />
   <include package=".departments" />
   <include package=".instrumentlocations" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
+  <include package=".manufacturers" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
   <include package=".samplematrices" />

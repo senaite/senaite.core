@@ -20,7 +20,6 @@
   <include file="instrumentlocation.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="invoice.zcml"/>
-  <include file="manufacturer.zcml"/>
   <include file="methodfolder.zcml"/>
   <include file="pricelist.zcml"/>
   <include file="referenceanalysis.zcml"/>
