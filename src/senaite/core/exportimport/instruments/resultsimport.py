@@ -79,8 +79,6 @@ class AnalysisResultsImporter(Logger):
         # translated states
         self.allowed_sample_states_msg = [
             t(_(s)) for s in self.allowed_sample_states]
-        # BBB
-        self.allowed_ar_states = self.allowed_sample_states
 
         # allowed analyses states
         self.allowed_analysis_states = allowed_analysis_states
@@ -92,6 +90,14 @@ class AnalysisResultsImporter(Logger):
         # instrument UID
         self.instrument_uid = instrument_uid
         self.priorizedsearchcriteria = ""
+
+        # BBB
+        self._parser = parser
+        self.allowed_ar_states = self.allowed_sample_states
+        self._allowed_analysis_states = self.allowed_analysis_states
+        self._override = self.override
+        self._idsearch = ["getId", "getClientSampleID"]
+        self._priorizedsearchcriteria = self.priorizedsearchcriteria
 
     @lazy_property
     def instrument(self):
