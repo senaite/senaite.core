@@ -21,6 +21,7 @@
 import codecs
 
 from senaite.core.exportimport.instruments.logger import Logger
+from zope.deprecation import deprecate
 
 
 class InstrumentResultsFileParser(Logger):
@@ -54,6 +55,7 @@ class InstrumentResultsFileParser(Logger):
         """
         raise NotImplementedError
 
+    @deprecate("Please use getRawResults directly")
     def resume(self):
         """Resumes the parse process
 
