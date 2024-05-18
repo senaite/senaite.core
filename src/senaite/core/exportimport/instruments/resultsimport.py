@@ -272,9 +272,9 @@ class AnalysisResultsImporter(Logger):
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
         attachments = {}
-        infile = self.parser.getInputFile()
+        infile = self._parser.getInputFile()
 
-        for objid, results in six.iteritems(self.parser.getRawResults()):
+        for objid, results in six.iteritems(self._parser.getRawResults()):
             # Allowed more than one result for the same sample and analysis.
             # Needed for calibration tests
             for result in results:
@@ -292,7 +292,7 @@ class AnalysisResultsImporter(Logger):
                                   "states found, And no QC"
                                   "analyses found for ${object_id}",
                                   mapping={"allowed_ar_states": ', '.join(
-                                      self.allowed_sample_states_msg),
+                                      self.allowed_ar_states_msg),
                                           "object_id": objid})
                         self.warn("Instrument not found")
                         continue
@@ -338,7 +338,7 @@ class AnalysisResultsImporter(Logger):
                               "for ${object_id}",
                               mapping={
                                  "allowed_ar_states": ', '.join(
-                                     self.allowed_sample_states_msg),
+                                     self.allowed_ar_states_msg),
                                  "object_id": objid})
                     continue
 
@@ -355,7 +355,7 @@ class AnalysisResultsImporter(Logger):
                         a for a in analyses
                         if a.getKeyword() == acode
                            and api.get_workflow_status_of(a)
-                           in self.allowed_analysis_states]
+                           in self._allowed_analysis_states]
 
                     if len(ans) > 1:
                         self.warn("More than one analysis found for "
