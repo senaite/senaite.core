@@ -52,65 +52,11 @@ deprecation.deprecated(
     "Moved to senaite.core.exportimport.instruments.parser")
 
 
-class AnalysisResultsImporter(Logger):
-    """Results importer
+class BaseResultsImporter(Logger):
+    """Backwards compatible base results importer
     """
-
-    def __init__(self, parser, context,
-                 override=None,
-                 allowed_sample_states=None,
-                 allowed_analysis_states=None,
-                 instrument_uid=None):
-
-        super(AnalysisResultsImporter, self).__init__()
-
-        self.parser = parser
-        self.context = context
-
-        # results override settings
-        self.override = override
-        if override is None:
-            self.override = [False, False]
-
-        # allowed sample states
-        self.allowed_sample_states = allowed_sample_states
-        if not allowed_sample_states:
-            self.allowed_sample_states = ALLOWED_SAMPLE_STATES
-        # translated states
-        self.allowed_sample_states_msg = [
-            t(_(s)) for s in self.allowed_sample_states]
-
-        # allowed analyses states
-        self.allowed_analysis_states = allowed_analysis_states
-        if not allowed_analysis_states:
-            self.allowed_analysis_states = ALLOWED_ANALYSIS_STATES
-        self.allowed_analysis_states_msg = [
-            t(_(s)) for s in self.allowed_analysis_states]
-
-        # instrument UID
-        self.instrument_uid = instrument_uid
-        self.priorizedsearchcriteria = ""
-
-        # BBB
-        self._parser = parser
-        self.allowed_ar_states = self.allowed_sample_states
-        self._allowed_analysis_states = self.allowed_analysis_states
-        self._override = self.override
-        self._idsearch = ["getId", "getClientSampleID"]
-        self._priorizedsearchcriteria = self.priorizedsearchcriteria
-
-    @lazy_property
-    def instrument(self):
-        if not self.instrument_uid:
-            return None
-        return api.get_object(self.instrument_uid, None)
-
-    @lazy_property
-    def services(self):
-        """Return all services
-        """
-        services = self.setup_catalog(portal_type="AnalysisService")
-        return list(map(api.get_object, services))
+    def __init__(self):
+        super(BaseResultsImporter, self).__init__()
 
     @property
     @deprecate("Please use self.wf_tool instead")
@@ -158,10 +104,76 @@ class AnalysisResultsImporter(Logger):
     def wf_tool(self):
         return api.get_tool("portal_workflow")
 
-    def getParser(self):
-        """ Returns the parser that will be used for the importer
+
+class AnalysisResultsImporter(BaseResultsImporter):
+    """Results importer
+    """
+    def __init__(self, parser, context,
+                 override=None,
+                 allowed_sample_states=None,
+                 allowed_analysis_states=None,
+                 instrument_uid=None):
+        super(AnalysisResultsImporter, self).__init__()
+
+        self.context = context
+
+        # see lazy property below
+        self._parser = parser
+
+        # results override settings
+        self.override = override
+        if override is None:
+            self.override = [False, False]
+
+        # allowed sample states
+        self.allowed_sample_states = allowed_sample_states
+        if not allowed_sample_states:
+            self.allowed_sample_states = ALLOWED_SAMPLE_STATES
+        # translated states
+        self.allowed_sample_states_msg = [
+            t(_(s)) for s in self.allowed_sample_states]
+
+        # allowed analyses states
+        self.allowed_analysis_states = allowed_analysis_states
+        if not allowed_analysis_states:
+            self.allowed_analysis_states = ALLOWED_ANALYSIS_STATES
+        self.allowed_analysis_states_msg = [
+            t(_(s)) for s in self.allowed_analysis_states]
+
+        # instrument UID
+        self.instrument_uid = instrument_uid
+        self.priorizedsearchcriteria = ""
+
+        # BBB
+        self._parser = parser
+        self.allowed_ar_states = self.allowed_sample_states
+        self._allowed_analysis_states = self.allowed_analysis_states
+        self._override = self.override
+        self._idsearch = ["getId", "getClientSampleID"]
+        self._priorizedsearchcriteria = self.priorizedsearchcriteria
+
+    @lazy_property
+    def instrument(self):
+        if not self.instrument_uid:
+            return None
+        return api.get_object(self.instrument_uid, None)
+
+    @lazy_property
+    def services(self):
+        """Return all services
         """
-        # XXX: Maybe we can lookup an adapter here?
+        services = self.setup_catalog(portal_type="AnalysisService")
+        return list(map(api.get_object, services))
+
+    @lazy_property
+    def parser(self):
+        """Returns the parser that is used for the import
+        """
+        # Maybe we can use an adapter lookup here?
+        return self._parser
+
+    @deprecate("Please use self.parser instead")
+    def getParser(self):
         return self.parser
 
     @deprecate("Please use self.allowed_sample_states instead")
