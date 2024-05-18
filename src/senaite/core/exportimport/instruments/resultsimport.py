@@ -161,6 +161,7 @@ class AnalysisResultsImporter(Logger):
     def getParser(self):
         """ Returns the parser that will be used for the importer
         """
+        # XXX: Maybe we can lookup an adapter here?
         return self.parser
 
     @deprecate("Please use self.allowed_sample_states instead")
@@ -199,6 +200,8 @@ class AnalysisResultsImporter(Logger):
         return []
 
     def parse_results(self):
+        """Parse the results file and return the raw results
+        """
         parsed = self.parser.parse()
 
         if not parsed:
@@ -445,6 +448,165 @@ class AnalysisResultsImporter(Logger):
                        mapping={"updated_ars": str(len(importedars)),
                                 "updated_results": str(ancount)}))
 
+    def _process_analysis(self, objid, analysis, values):
+        # Check if the current analysis result can be overwritten
+        if not self.override_analysis_result(analysis):
+            keyword = analysis.getKeyword()
+            result = analysis.getResult()
+            self.log(
+                "Analysis '{keyword}' has existing result of {result}, which "
+                "is kept due to the no-override option selected".format(
+                    keyword=keyword, result=result))
+            return False
+
+        resultsaved = False
+        acode = analysis.getKeyword()
+        defresultkey = values.get("DefaultResult", "")
+        capturedate = None
+
+        if "DateTime" in values.keys():
+            ts = values.get("DateTime")
+            capturedate = dtime.to_DT(ts)
+            if capturedate is None:
+                del values["DateTime"]
+
+        fields_to_reindex = []
+        # get interims
+        interimsout = []
+        interims = hasattr(analysis, 'getInterimFields') \
+            and analysis.getInterimFields() or []
+        for interim in interims:
+            keyword = interim['keyword']
+            title = interim['title']
+            if values.get(keyword, '') or values.get(keyword, '') == 0:
+                res = values.get(keyword)
+                self.log("${request_id} result for "
+                         "'${analysis_keyword}:${interim_keyword}': "
+                         "'${result}'",
+                         mapping={"request_id": objid,
+                                  "analysis_keyword": acode,
+                                  "interim_keyword": keyword,
+                                  "result": str(res)}
+                         )
+                ninterim = interim.copy()
+                ninterim['value'] = res
+                interimsout.append(ninterim)
+                resultsaved = True
+            elif values.get(title, '') or values.get(title, '') == 0:
+                res = values.get(title)
+                self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
+                ninterim = interim.copy()
+                ninterim['value'] = res
+                interimsout.append(ninterim)
+                resultsaved = True
+            else:
+                interimsout.append(interim)
+
+        # write interims
+        if len(interimsout) > 0:
+            analysis.setInterimFields(interimsout)
+            resultsaved = analysis.calculateResult(override=self.override[0])
+
+        # Set result if present.
+        res = values.get(defresultkey, '')
+        calc = analysis.getCalculation()
+
+        # don't set results on calculated analyses
+        if not calc:
+            if api.is_floatable(res) or self.override[1]:
+                # handle non-floating values in result options
+                result_options = analysis.getResultOptions()
+                if result_options:
+                    result_values = map(
+                        lambda r: r.get("ResultValue"), result_options)
+                    if "{:.0f}".format(res) in result_values:
+                        res = int(res)
+                analysis.setResult(res)
+                if capturedate:
+                    analysis.setResultCaptureDate(capturedate)
+                resultsaved = True
+
+        if resultsaved is False:
+            self.log(
+                "${request_id} result for '${analysis_keyword}' not set",
+                mapping={"request_id": objid,
+                         "analysis_keyword": acode})
+
+        if resultsaved:
+            self.save_submit_analysis(analysis)
+            fields_to_reindex.append('Result')
+            self.log(
+                "${request_id} result for '${analysis_keyword}': '${result}'",
+                mapping={"request_id": objid,
+                         "analysis_keyword": acode,
+                         "result": res})
+
+        if (resultsaved) \
+           and values.get('Remarks', '') \
+           and analysis.portal_type == 'Analysis' \
+           and (analysis.getRemarks() != '' or self.override[1] is True):
+            analysis.setRemarks(values['Remarks'])
+            fields_to_reindex.append('Remarks')
+
+        if len(fields_to_reindex):
+            analysis.reindexObject(idxs=fields_to_reindex)
+        return resultsaved
+
+    def save_submit_analysis(self, analysis):
+        """Submit analysis and ignore errors
+        """
+        try:
+            api.do_transition_for(analysis, "submit")
+        except api.APIError:
+            pass
+
+    def override_analysis_result(self, analysis):
+        """Checks if the result shall be overwritten or not
+        """
+        result = analysis.getResult()
+        override = self.getOverride()
+        # analysis has non-empty result, but it is not allowed to override
+        if result and override[0] is False:
+            return False
+        return True
+
+    def calculateTotalResults(self, objid, analysis):
+        """ If an AR(objid) has an analysis that has a calculation
+        then check if param analysis is used on the calculations formula.
+        Here we are dealing with two types of analysis.
+        1. Calculated Analysis - Results are calculated.
+        2. Analysis - Results are captured and not calculated
+        :param objid: AR ID or Worksheet's Reference Sample IDs
+        :param analysis: Analysis Object
+        """
+        for obj in self._getZODBAnalyses(objid):
+            # skip analyses w/o calculations
+            if not obj.getCalculation():
+                continue
+            # get the calculation
+            calculation = obj.getCalculation()
+            # get the dependent services of the calculation
+            dependencies = calculation.getDependentServices()
+            # get the analysis service of the passed in analysis
+            service = analysis.getAnalysisService()
+            # skip when service is not a dependency of the calculation
+            if service not in dependencies:
+                continue
+            # recalculate analysis result
+            success = obj.calculateResult(override=self.override[0])
+            if success:
+                self.save_submit_analysis(obj)
+                obj.reindexObject(idxs=["Result"])
+                self.log(
+                    "${request_id}: calculated result for "
+                    "'${analysis_keyword}': '${analysis_result}'",
+                    mapping={"request_id": objid,
+                             "analysis_keyword": obj.getKeyword(),
+                             "analysis_result": str(obj.getResult())})
+                # recursively recalculate analyses that have this analysis as
+                # a dependent service
+                self.calculateTotalResults(objid, obj)
+
     def create_mime_attachmenttype(self):
         # Create the AttachmentType for mime type if not exists
         attachmentType = self.bsc(portal_type="AttachmentType",
@@ -670,163 +832,3 @@ class AnalysisResultsImporter(Logger):
         if obj and len(obj) > 0:
             self.priorizedsearchcriteria = criteria
         return obj
-
-
-    def calculateTotalResults(self, objid, analysis):
-        """ If an AR(objid) has an analysis that has a calculation
-        then check if param analysis is used on the calculations formula.
-        Here we are dealing with two types of analysis.
-        1. Calculated Analysis - Results are calculated.
-        2. Analysis - Results are captured and not calculated
-        :param objid: AR ID or Worksheet's Reference Sample IDs
-        :param analysis: Analysis Object
-        """
-        for obj in self._getZODBAnalyses(objid):
-            # skip analyses w/o calculations
-            if not obj.getCalculation():
-                continue
-            # get the calculation
-            calculation = obj.getCalculation()
-            # get the dependent services of the calculation
-            dependencies = calculation.getDependentServices()
-            # get the analysis service of the passed in analysis
-            service = analysis.getAnalysisService()
-            # skip when service is not a dependency of the calculation
-            if service not in dependencies:
-                continue
-            # recalculate analysis result
-            success = obj.calculateResult(override=self.override[0])
-            if success:
-                self.save_submit_analysis(obj)
-                obj.reindexObject(idxs=["Result"])
-                self.log(
-                    "${request_id}: calculated result for "
-                    "'${analysis_keyword}': '${analysis_result}'",
-                    mapping={"request_id": objid,
-                             "analysis_keyword": obj.getKeyword(),
-                             "analysis_result": str(obj.getResult())})
-                # recursively recalculate analyses that have this analysis as
-                # a dependent service
-                self.calculateTotalResults(objid, obj)
-
-    def save_submit_analysis(self, analysis):
-        """Submit analysis and ignore errors
-        """
-        try:
-            api.do_transition_for(analysis, "submit")
-        except api.APIError:
-            pass
-
-    def override_analysis_result(self, analysis):
-        """Checks if the result shall be overwritten or not
-        """
-        result = analysis.getResult()
-        override = self.getOverride()
-        # analysis has non-empty result, but it is not allowed to override
-        if result and override[0] is False:
-            return False
-        return True
-
-    def _process_analysis(self, objid, analysis, values):
-        # Check if the current analysis result can be overwritten
-        if not self.override_analysis_result(analysis):
-            keyword = analysis.getKeyword()
-            result = analysis.getResult()
-            self.log(
-                "Analysis '{keyword}' has existing result of {result}, which "
-                "is kept due to the no-override option selected".format(
-                    keyword=keyword, result=result))
-            return False
-
-        resultsaved = False
-        acode = analysis.getKeyword()
-        defresultkey = values.get("DefaultResult", "")
-        capturedate = None
-
-        if "DateTime" in values.keys():
-            ts = values.get("DateTime")
-            capturedate = dtime.to_DT(ts)
-            if capturedate is None:
-                del values["DateTime"]
-
-        fields_to_reindex = []
-        # get interims
-        interimsout = []
-        interims = hasattr(analysis, 'getInterimFields') \
-            and analysis.getInterimFields() or []
-        for interim in interims:
-            keyword = interim['keyword']
-            title = interim['title']
-            if values.get(keyword, '') or values.get(keyword, '') == 0:
-                res = values.get(keyword)
-                self.log("${request_id} result for "
-                         "'${analysis_keyword}:${interim_keyword}': "
-                         "'${result}'",
-                         mapping={"request_id": objid,
-                                  "analysis_keyword": acode,
-                                  "interim_keyword": keyword,
-                                  "result": str(res)}
-                         )
-                ninterim = interim.copy()
-                ninterim['value'] = res
-                interimsout.append(ninterim)
-                resultsaved = True
-            elif values.get(title, '') or values.get(title, '') == 0:
-                res = values.get(title)
-                self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
-                ninterim = interim.copy()
-                ninterim['value'] = res
-                interimsout.append(ninterim)
-                resultsaved = True
-            else:
-                interimsout.append(interim)
-
-        # write interims
-        if len(interimsout) > 0:
-            analysis.setInterimFields(interimsout)
-            resultsaved = analysis.calculateResult(override=self.override[0])
-
-        # Set result if present.
-        res = values.get(defresultkey, '')
-        calc = analysis.getCalculation()
-
-        # don't set results on calculated analyses
-        if not calc:
-            if api.is_floatable(res) or self.override[1]:
-                # handle non-floating values in result options
-                result_options = analysis.getResultOptions()
-                if result_options:
-                    result_values = map(
-                        lambda r: r.get("ResultValue"), result_options)
-                    if "{:.0f}".format(res) in result_values:
-                        res = int(res)
-                analysis.setResult(res)
-                if capturedate:
-                    analysis.setResultCaptureDate(capturedate)
-                resultsaved = True
-
-        if resultsaved is False:
-            self.log(
-                "${request_id} result for '${analysis_keyword}' not set",
-                mapping={"request_id": objid,
-                         "analysis_keyword": acode})
-
-        if resultsaved:
-            self.save_submit_analysis(analysis)
-            fields_to_reindex.append('Result')
-            self.log(
-                "${request_id} result for '${analysis_keyword}': '${result}'",
-                mapping={"request_id": objid,
-                         "analysis_keyword": acode,
-                         "result": res})
-
-        if (resultsaved) \
-           and values.get('Remarks', '') \
-           and analysis.portal_type == 'Analysis' \
-           and (analysis.getRemarks() != '' or self.override[1] is True):
-            analysis.setRemarks(values['Remarks'])
-            fields_to_reindex.append('Remarks')
-
-        if len(fields_to_reindex):
-            analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved
