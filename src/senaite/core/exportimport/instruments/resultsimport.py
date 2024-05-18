@@ -105,6 +105,13 @@ class AnalysisResultsImporter(Logger):
             return None
         return api.get_object(self.instrument_uid, None)
 
+    @lazy_property
+    def services(self):
+        """Return all services
+        """
+        services = self.setup_catalog(portal_type="AnalysisService")
+        return list(map(api.get_object, services))
+
     @property
     @deprecate("Please use self.wf_tool instead")
     def wf(self):
