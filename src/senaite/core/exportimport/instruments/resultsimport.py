@@ -216,6 +216,20 @@ class AnalysisResultsImporter(Logger):
             return False
         return True
 
+    def get_reference_sample_by_id(self, sid):
+        """Get a reference sample by ID
+        """
+        query = {"portal_type": "ReferenceSample", "getId": sid}
+        results = api.search(query, SENAITE_CATALOG)
+        if len(results) == 0:
+            self.warn(_("No Reference Sample found for '${sid}'",
+                        mapping={"sid": sid}))
+            return None
+        elif len(results) > 1:
+            self.warn(_("More than one Reference Sample found for '${sid}'",
+                        mapping={"sid": sid}))
+            return None
+        return api.get_object(results[0])
     def process(self):
         parsed = self.parse_results()
 
