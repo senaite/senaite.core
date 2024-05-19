@@ -11,6 +11,7 @@ Test Setups:
 - Instrument Results Import with unbalanced CSV file
 - Instrument Results Import with Worksheet assigned Analyses
 - Instrument Results Import with Worksheet assigned Analyses and QCs
+- Instrument Results Import for Reference Samples
 
 
 Running this test from the buildout directory:
@@ -526,7 +527,34 @@ The controls should be out of range:
     >>> is_out_of_range(control)
     (True, True)
 
-The instrument should be out of calibration:
+The instrument should be marked as **invalid**:
 
     >>> instrument.isQCValid()
     False
+
+
+Instrument Results Import for Reference Samples
+...............................................
+
+The instrument results interface allows to import results for reference samples
+directly for calibration purposes.
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,end
+    ... {},0,end
+    ... {},10,end
+    ... """.strip().format(blank_sample.getId(), control_sample.getId())
+
+    >>> with open(os.path.join(resultsfolder, "import8.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+The instrument should be marked as **valid**:
+
+    >>> instrument.isQCValid()
+    True
