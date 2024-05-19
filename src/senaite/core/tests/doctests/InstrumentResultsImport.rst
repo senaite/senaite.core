@@ -30,6 +30,7 @@ Imports:
     >>> from bika.lims import api
     >>> from DateTime import DateTime
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest as create_sample
+    >>> from bika.lims.api.analysis import is_out_of_range
 
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
@@ -139,16 +140,15 @@ Reference definition for a control:
 
 Reference Samples:
 
-    >>> blank = api.create(supplier, "ReferenceSample", title="Blank",
-    ...                    ReferenceDefinition=blankdef,
-    ...                    Blank=True, ExpiryDate=date_future,
-    ...                    ReferenceResults=blank_refs)
+    >>> blank_sample = api.create(supplier, "ReferenceSample", title="Blank",
+    ...                           ReferenceDefinition=blankdef,
+    ...                           Blank=True, ExpiryDate=date_future,
+    ...                           ReferenceResults=blank_refs)
 
-    >>> control = api.create(supplier, "ReferenceSample", title="Control",
-    ...                      ReferenceDefinition=controldef,
-    ...                      Blank=False, ExpiryDate=date_future,
-    ...                      ReferenceResults=control_refs)
-
+    >>> control_sample = api.create(supplier, "ReferenceSample", title="Control",
+    ...                             ReferenceDefinition=controldef,
+    ...                             Blank=False, ExpiryDate=date_future,
+    ...                             ReferenceResults=control_refs)
 
 
 Instrument Setup
@@ -184,6 +184,14 @@ The instrument knows if a certification is valid/out of date::
 
     >>> instrument.isValid()
     True
+
+
+Allow the instrument for our services and controls:
+
+    >>> Au.setInstruments([instrument])
+    >>> Cu.setInstruments([instrument])
+    >>> Fe.setInstruments([instrument])
+    >>> Int.setInstruments([instrument])
 
 
 Basic Instrument Results Import
@@ -407,10 +415,10 @@ Create a new Worksheet and add the analyses of the two samples:
 
 Add a blank and a control to the worksheet:
 
-    >>> blank = worksheet.addReferenceAnalyses(blank, [Au.UID()])[0]
-    >>> control = worksheet.addReferenceAnalyses(control, [Au.UID()])[0]
+    >>> blank = worksheet.addReferenceAnalyses(blank_sample, [Au.UID()])[0]
+    >>> control = worksheet.addReferenceAnalyses(control_sample, [Au.UID()])[0]
 
-Chekc if the reference samples are added:
+Check if the reference samples are added:
 
     >>> worksheet.getReferenceAnalyses()
     [<ReferenceAnalysis at .../supplier-1/QC-001/Au>, <ReferenceAnalysis at .../supplier-1/QC-002/Au>]
@@ -445,3 +453,80 @@ Test the results:
 
     >>> control.getResult()
     '10.0'
+
+
+Instrument Results Import with Worksheet assigned Analyses and out-of-range QCs
+...............................................................................
+
+Create new samples:
+
+    >>> sample1 = new_sample([Au], client, contact, sampletype)
+    >>> sample2 = new_sample([Au], client, contact, sampletype)
+
+Create a new Worksheet and add the analyses of the two samples:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+    >>> worksheet.addAnalyses(sample1.getAnalyses())
+    >>> worksheet.addAnalyses(sample2.getAnalyses())
+
+Add a blank and a control to the worksheet:
+
+    >>> blank = worksheet.addReferenceAnalyses(blank_sample, [Au.UID()])[0]
+    >>> control = worksheet.addReferenceAnalyses(control_sample, [Au.UID()])[0]
+
+Set the instrument on the worksheet:
+
+    >>> num_analyses_applied = worksheet.setInstrument(instrument)
+
+    >>> num_analyses_applied
+    4
+
+Check if the reference samples are added:
+
+    >>> worksheet.getReferenceAnalyses()
+    [<ReferenceAnalysis at .../supplier-1/QC-001/Au-1>, <ReferenceAnalysis at .../supplier-1/QC-002/Au-1>]
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,end
+    ... {},1,end
+    ... {},2,end
+    ... {},100,end
+    ... {},200,end
+    ... """.strip().format(sample1.getId(), sample2.getId(), blank.getReferenceAnalysesGroupID(), control.getReferenceAnalysesGroupID())
+
+    >>> with open(os.path.join(resultsfolder, "import7.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+Test the results:
+
+    >>> sample1.Au.getResult()
+    '1.0'
+
+    >>> sample2.Au.getResult()
+    '2.0'
+
+    >>> blank.getResult()
+    '100.0'
+
+    >>> control.getResult()
+    '200.0'
+
+The controls should be out of range:
+
+    >>> is_out_of_range(blank)
+    (True, True)
+
+    >>> is_out_of_range(control)
+    (True, True)
+
+The instrument should be out of calibration:
+
+    >>> instrument.isQCValid()
+    False
