@@ -170,6 +170,21 @@ Allow automatic imports from the import folder:
 
     >>> instrument.setResultFilesFolder({"InterfaceName": "generic.two_dimension", "Folder": resultsfolder})
 
+Add a calibration certificate:
+
+    >>> certificate = api.create(instrument, "InstrumentCertification", title="Instrument Certificate", ValidTo=date_future)
+
+    >>> certificate.isValid()
+    True
+
+The instrument knows if a certification is valid/out of date::
+
+    >>> instrument.isOutOfDate()
+    False
+
+    >>> instrument.isValid()
+    True
+
 
 Basic Instrument Results Import
 ...............................
