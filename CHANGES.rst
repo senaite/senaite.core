@@ -3,7 +3,7 @@ Changelog
 
 2.6.0 (unreleased)
 ------------------
-
+- #2556 Fix adding Instrument into Manufacturer view
 - #2549 Fix contact fullname is not updated in samples listing after edition
 - #2541 Allow to change the "From" address for sample report outgoing emails
 - #2548 Remove SamplerFullName from sample and metadata
