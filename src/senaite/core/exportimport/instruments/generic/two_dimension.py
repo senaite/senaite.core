@@ -213,6 +213,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                          mapping={"index": str(i + 1),
                                   "token": token},
                          numline=self._numline, line=line)
+                continue
 
             result = quantitation[quantitation['DefaultResult']]
             column_name = quantitation['DefaultResult']

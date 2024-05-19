@@ -387,12 +387,14 @@ class AnalysisResultsImporter(BaseResultsImporter):
                                     "and keyword '${keyword}'",
                                   mapping={"sid": sid,
                                            "keyword": keyword}))
+                        continue
                     elif len(ans) > 1:
                         # multiple analyses found for keyword
                         self.warn(_("More than one analysis found for "
                                     "${sid} and keyword '${keyword}'",
                                   mapping={"sid": sid,
                                            "keyword": keyword}))
+                        continue
                     else:
                         analysis = ans[0]
 
@@ -480,16 +482,8 @@ class AnalysisResultsImporter(BaseResultsImporter):
                                 "updated_results": str(ancount)}))
 
     def _process_analysis(self, objid, analysis, values):
-        # Check if the current analysis result can be overwritten
-        if not self.override_analysis_result(analysis):
-            keyword = analysis.getKeyword()
-            result = analysis.getResult()
-            self.log(
-                "Analysis '{keyword}' has existing result of {result}, which "
-                "is kept due to the no-override option selected".format(
-                    keyword=keyword, result=result))
-            return False
-
+        """Process a single analysis result
+        """
         resultsaved = False
         acode = analysis.getKeyword()
         defresultkey = values.get("DefaultResult", "")
