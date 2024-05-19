@@ -421,7 +421,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
                         updated_analyses.append(analysis)
                         ancount += 1
 
-                        if self.instrument:
+                        if refsample and self.instrument:
                             inst = self.instrument
                             # Calibration Test (import to Instrument)
                             importedinst = inst.title in importedinsts.keys() \
@@ -430,7 +430,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
                                 importedinst.append(keyword)
                             importedinsts[inst.title] = importedinst
                         else:
-                            ar = analysis.portal_type == 'Analysis' \
+                            ar = analysis.portal_type == "Analysis" \
                                 and analysis.aq_parent or None
                             if ar and ar.UID:
                                 importedar = ar.getId() in importedars.keys() \
