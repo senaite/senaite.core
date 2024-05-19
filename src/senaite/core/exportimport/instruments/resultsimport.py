@@ -597,7 +597,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
         :param objid: AR ID or Worksheet's Reference Sample IDs
         :param analysis: Analysis Object
         """
-        for obj in self.self.get_analyses_for(objid):
+        for obj in self.get_analyses_for(objid):
             # skip analyses w/o calculations
             if not obj.getCalculation():
                 continue
