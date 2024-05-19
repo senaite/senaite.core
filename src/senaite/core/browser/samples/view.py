@@ -28,9 +28,11 @@ from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
 from bika.lims.utils import get_image
+from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from DateTime import DateTime
+from plone.memoize import view
 from senaite.app.listing import ListingView
 from senaite.core.api import dtime
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -198,8 +200,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("ClientContact", {
                 "title": _("Contact"),
-                "sortable": True,
-                "index": "getContactFullName",
+                "sortable": False,
                 "toggle": False}),
             ("getSampleTypeTitle", {
                 "title": _("Sample Type"),
@@ -601,10 +602,10 @@ class SamplesView(ListingView):
             item['after']['getId'] = after_icons
 
         item['Created'] = self.ulocalized_time(obj.created, long_format=1)
-        if obj.getContactUID:
-            item['ClientContact'] = obj.getContactFullName
-            item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                                               (obj.getContactURL, obj.getContactFullName)
+        contact = self.get_object_by_uid(obj.getContactUID)
+        if contact:
+            item['ClientContact'] = contact.getFullname()
+            item['replace']['ClientContact'] = get_link_for(contact)
         else:
             item["ClientContact"] = ""
         # TODO-performance: If SamplingWorkflowEnabled, we have to get the
@@ -651,6 +652,12 @@ class SamplesView(ListingView):
             item["children"] = obj.getDescendantsUIDs or []
 
         return item
+
+    @view.memoize
+    def get_object_by_uid(self, uid):
+        """Returns the object for the given uid
+        """
+        return api.get_object_by_uid(uid, default=None)
 
     def purge_review_states(self):
         """Purges unnecessary review statuses

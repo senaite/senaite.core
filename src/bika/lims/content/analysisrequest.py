@@ -2039,16 +2039,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return False
 
     @security.public
-    def getContactURL(self):
-        """
-        It works as a metacolumn.
-        """
-        contact = self.getContact()
-        if contact:
-            return contact.absolute_url_path()
-        return ''
-
-    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel
