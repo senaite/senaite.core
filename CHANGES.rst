@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2541 Allow to change the "From" address for sample report outgoing emails
 - #2548 Remove SamplerFullName from sample and metadata
 - #2540 Migrate Container Types to Dexterity
 - #2542 Migrate Manufacturers to Dexterity
