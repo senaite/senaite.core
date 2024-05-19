@@ -90,7 +90,6 @@ COLUMNS = BASE_COLUMNS + [
     "getRawParentAnalysisRequest",
     "getSamplePointTitle",
     "getSampler",
-    "getSamplerFullName",
     "getSampleTypeTitle",
     "getSampleTypeUID",
     "getSamplingDate",

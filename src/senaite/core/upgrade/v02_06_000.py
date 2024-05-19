@@ -75,6 +75,8 @@ REMOVE_AT_TYPES = [
     "SampleTemplates",
     "Manufacturer",
     "Manufacturers",
+    "ContainerType",
+    "ContainerTypes",
 ]
 
 CONTENT_ACTIONS = [
@@ -1150,6 +1152,52 @@ def migrate_samplepoint_to_dx(src, destination=None):
 
     return target
 
+@upgradestep(product, version)
+def migrate_containertypes_to_dx(tool):
+    """Converts existing container types to Dexterity
+    """
+    logger.info("Convert ContainerTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_containertypes")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("containertypes")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("ContainerType", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert ContainerTypes to Dexterity [DONE]")
+
 
 def update_content_actions(tool):
     logger.info("Update content actions ...")
@@ -1288,3 +1336,14 @@ def remove_contact_metadata(tool):
     del_metadata(SAMPLE_CATALOG, "getContactURL")
 
     logger.info("Removing contact metadata from catalogs [DONE]")
+
+
+def remove_sampler_fullname(tool):
+    """Remove getSamplerFullName from catalogs
+    """
+    logger.info("Removing getSamplerFullName from catalogs ...")
+
+    del_index(SAMPLE_CATALOG, "getSamplerFullName")
+    del_metadata(SAMPLE_CATALOG, "getSamplerFullName")
+
+    logger.info("Removing getSamplerFullName from catalogs [DONE]")
