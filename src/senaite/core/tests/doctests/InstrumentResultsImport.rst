@@ -324,8 +324,8 @@ Instrument Results Import with Worksheet assigned Analyses
 
 Create new samples:
 
-    >>> sample1 = new_sample([Au,Cu,Fe,Int], client, contact, sampletype)
-    >>> sample2 = new_sample([Au,Cu,Fe,Int], client, contact, sampletype)
+    >>> sample1 = new_sample([Au], client, contact, sampletype)
+    >>> sample2 = new_sample([Au], client, contact, sampletype)
 
 Create a new Worksheet and add the analyses of the two samples:
 
@@ -369,3 +369,60 @@ The import CSV file should be attached to each analysis:
     ID,Au,end
     W-0007,1,end
     W-0008,2,end
+
+
+Instrument Results Import with Worksheet assigned Analyses and QCs
+..................................................................
+
+Create new samples:
+
+    >>> sample1 = new_sample([Au], client, contact, sampletype)
+    >>> sample2 = new_sample([Au], client, contact, sampletype)
+
+Create a new Worksheet and add the analyses of the two samples:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+    >>> worksheet.addAnalyses(sample1.getAnalyses())
+    >>> worksheet.addAnalyses(sample2.getAnalyses())
+
+Add a blank and a control to the worksheet:
+
+    >>> blank = worksheet.addReferenceAnalyses(blank, [Au.UID()])[0]
+    >>> control = worksheet.addReferenceAnalyses(control, [Au.UID()])[0]
+
+Chekc if the reference samples are added:
+
+    >>> worksheet.getReferenceAnalyses()
+    [<ReferenceAnalysis at .../supplier-1/QC-001/Au>, <ReferenceAnalysis at .../supplier-1/QC-002/Au>]
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,end
+    ... {},1,end
+    ... {},2,end
+    ... {},0,end
+    ... {},10,end
+    ... """.strip().format(sample1.getId(), sample2.getId(), blank.getReferenceAnalysesGroupID(), control.getReferenceAnalysesGroupID())
+
+    >>> with open(os.path.join(resultsfolder, "import6.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+Test the results:
+
+    >>> sample1.Au.getResult()
+    '1.0'
+
+    >>> sample2.Au.getResult()
+    '2.0'
+
+    >>> blank.getResult()
+    '0.0'
+
+    >>> control.getResult()
+    '10.0'
