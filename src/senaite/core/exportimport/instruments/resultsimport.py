@@ -326,11 +326,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
 
             # we have an instrument
             elif len(analyses) == 0 and self.instrument:
-                # XXX: How is this intended to work?
-                #
                 # Create a new ReferenceAnalysis and link it to the Instrument.
-                # Here we have an sid (i.e. R01200012) and a dict with results
-                # (the key is the AS keyword).
                 refsample = self.get_reference_sample_by_id(sid)
                 if not refsample:
                     self.warn(_("No Reference Sample found for ${sid}",
