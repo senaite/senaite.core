@@ -3,11 +3,15 @@ Instrument Results Import
 
 NOTE: This test shall supersede existing instrument interface tests!
 
-What is tested:
+Test Setups:
 
-- Basic results import
-- Basic results import with interim fields
-- Instrument calibration imports
+- Basic Instrument Results Import
+- Basic Instrument Results Import with Interims
+- Instrument Results Import for multiple Samples with Interims
+- Instrument Results Import with unbalanced CSV file
+- Instrument Results Import with Worksheet assigned Analyses
+- Instrument Results Import with Worksheet assigned Analyses and QCs
+
 
 Running this test from the buildout directory:
 
