@@ -274,11 +274,6 @@ class AnalysisResultsImporter(BaseResultsImporter):
             return None
         return api.get_object(results[0])
 
-    def get_analyses_for(self, sid):
-        """Get analyses for the given sample ID
-        """
-        return self._getZODBAnalyses(sid)
-
     def process(self):
         parsed_results = self.parse_results()
 
@@ -348,7 +343,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
 
             # No analyses found
             elif len(analyses) == 0:
-                self.warn(_("No Sample or Reference Sample found for ${sid} "
+                self.warn(_("No analyses found for ${sid} "
                             "in the states '${allowed_sample_states}' ",
                             mapping={
                                 "allowed_sample_states": ", ".join(
@@ -600,7 +595,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
         :param objid: AR ID or Worksheet's Reference Sample IDs
         :param analysis: Analysis Object
         """
-        for obj in self._getZODBAnalyses(objid):
+        for obj in self.self.get_analyses_for(objid):
             # skip analyses w/o calculations
             if not obj.getCalculation():
                 continue
@@ -699,49 +694,47 @@ class AnalysisResultsImporter(BaseResultsImporter):
             fn_attachments[fn].append(att)
         return fn_attachments
 
-    def _getZODBAnalyses(self, objid):
-        """ Searches for analyses from ZODB to be filled with results.
-            objid can be either AR ID or Worksheet's Reference Sample IDs.
-            Only analyses that matches with getAnallowedAnalysisStates() will
-            be returned. If not a ReferenceAnalysis, getAllowedARStates() is
-            also checked.
-            Returns empty array if no analyses found
+    def is_analysis_allowed(self, analysis):
+        """Filter analyses that match the import criteria
         """
-        # ars = []
+        portal_type = api.get_portal_type(analysis)
+        if portal_type != "Analysis":
+            # Reference Analysis / Duplicate Analysis
+            return True
+        # Routine Analyses must be in the allowed WF states
+        status = api.get_workflow_status_of(analysis)
+        if status in self.allowed_analysis_states:
+            return True
+        return False
+
+    def get_analyses_for(self, sid):
+        """Get analyses for the given sample ID
+
+        Only analyses that in the allowed analyses states are returned.
+        If not a ReferenceAnalysis, allowed sample states are also checked.
+
+        :param sid: sample ID or Worksheet Reference Sample ID
+        :returns: list of analyses / empty list if no alanyses were found
+        """
         analyses = []
-        searchcriteria = ['getId', 'getClientSampleID']
-        allowed_ar_states = self.getAllowedARStates()
-        allowed_an_states = self.getAllowedAnalysisStates()
-        # allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
-        allowed_an_states_msg = [_(s) for s in allowed_an_states]
+        searchcriteria = ["getId", "getClientSampleID"]
 
         # Acceleration of searches using priorization
-        if self.priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
+        if self.priorizedsearchcriteria in ["rgid", "rid", "ruid"]:
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(
-                    objid, self.priorizedsearchcriteria)
+                    sid, self.priorizedsearchcriteria)
+
         if len(analyses) == 0:
             # Look from ar and derived
-            analyses = self._getZODBAnalysesFromAR(objid,
-                                                   '',
-                                                   searchcriteria,
-                                                   allowed_ar_states)
+            analyses = self._getZODBAnalysesFromAR(
+                sid, "", searchcriteria, self.allowed_sample_states)
 
-        # Discard analyses that don't match with allowed_an_states
-        analyses = [analysis for analysis in analyses
-                    if analysis.portal_type != 'Analysis' or
-                    self.wf.getInfoFor(analysis, 'review_state')
-                    in allowed_an_states]
+        return list(filter(self.is_analysis_allowed, analyses))
 
-        if len(analyses) == 0:
-            self.warn(
-                "No analyses '${allowed_analysis_states}' "
-                "states found for ${object_id}",
-                mapping={"allowed_analysis_states": ', '.join(
-                    allowed_an_states_msg),
-                         "object_id": objid})
-
-        return analyses
+    @deprecate("Please use self.get_analyses_for instead")
+    def _getZODBAnalyses(self, sid):
+        return self.get_analyses_for(sid)
 
     def _getZODBAnalysesFromAR(self, objid, criteria,
                                allowedsearches, arstates):
