@@ -64,8 +64,8 @@ Variables:
     >>> portal = api.get_portal()
     >>> request = self.request
 
-    >>> setup = api.get_senaite_setup()
     >>> bikasetup = api.get_bika_setup()
+    >>> setup = api.get_senaite_setup()
 
     >>> analysiscategories = bikasetup.bika_analysiscategories
     >>> analysisservices = bikasetup.bika_analysisservices
@@ -74,12 +74,18 @@ Variables:
     >>> instruments = bikasetup.bika_instruments
     >>> labcontacts = bikasetup.bika_labcontacts
     >>> sampletypes = bikasetup.bika_sampletypes
+    >>> referencedefinitions = bikasetup.bika_referencedefinitions
+    >>> suppliers = bikasetup.bika_suppliers
+
+    >>> date_now = DateTime().strftime("%Y-%m-%d")
+    >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
+
+    >>> auto_import = api.get_view("auto_import_results")
+    >>> resultsfolder = make_tempfolder("results")
 
 LIMS Setup:
 
     >>> setRoles(portal, TEST_USER_ID, ["LabManager",])
-    >>> resultsfolder = make_tempfolder("results")
-    >>> auto_import = api.get_view("auto_import_results")
     >>> bikasetup.setAutoreceiveSamples(True)
 
 Content Setup:
@@ -90,10 +96,15 @@ Content Setup:
     >>> labcontact = api.create(labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> supplier = api.create(suppliers, "Supplier", Name="Reference Samples Inc.")
+
+Standard Analysis Services:
 
     >>> Au = api.create(analysisservices, "AnalysisService", title="Gold", Keyword="Au", Category=category)
     >>> Cu = api.create(analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Category=category)
     >>> Fe = api.create(analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Category=category)
+
+Intrim Analysis Service:
 
     >>> int1 = {'keyword': 'int1', 'title': 'Interim 1', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
     >>> int2 = {'keyword': 'int2', 'title': 'Interim 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
@@ -101,6 +112,39 @@ Content Setup:
 
     >>> Int = api.create(analysisservices, "AnalysisService", title="Interim Service", Keyword="Int", Category=category)
     >>> Int.setInterimFields([int1, int2, int3])
+
+Reference definition for a blank:
+
+    >>> blankdef = api.create(referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
+    >>> blank_refs = [
+    ...     {"uid": Au.UID(), "result": "0", "min": "0", "max": "0"},
+    ...     {"uid": Cu.UID(), "result": "0", "min": "0", "max": "0"},
+    ...     {"uid": Fe.UID(), "result": "0", "min": "0", "max": "0"},
+    ... ]
+    >>> blankdef.setReferenceResults(blank_refs)
+
+Reference definition for a control:
+
+    >>> controldef = api.create(referencedefinitions, "ReferenceDefinition", title="Control definition")
+    >>> control_refs = [
+    ...     {"uid": Au.UID(), "result": "10", "min": "9", "max": "11"},
+    ...     {"uid": Cu.UID(), "result": "10", "min": "9", "max": "11"},
+    ...     {"uid": Fe.UID(), "result": "10", "min": "9", "max": "11"},
+    ... ]
+    >>> controldef.setReferenceResults(control_refs)
+
+Reference Samples:
+
+    >>> blank = api.create(supplier, "ReferenceSample", title="Blank",
+    ...                    ReferenceDefinition=blankdef,
+    ...                    Blank=True, ExpiryDate=date_future,
+    ...                    ReferenceResults=blank_refs)
+
+    >>> control = api.create(supplier, "ReferenceSample", title="Control",
+    ...                      ReferenceDefinition=controldef,
+    ...                      Blank=False, ExpiryDate=date_future,
+    ...                      ReferenceResults=control_refs)
+
 
 
 Instrument Setup
@@ -191,8 +235,8 @@ Run the auto import:
     '30'
 
 
-Basic Instrument Results Import for multiple Samples with Interims
-..................................................................
+Instrument Results Import for multiple Samples with Interims
+............................................................
 
 Create new samples:
 
@@ -243,8 +287,8 @@ Test the results of the second sample:
     '20'
 
 
-Basic Instrument Results Import with unbalanced CSV file
-........................................................
+Instrument Results Import with unbalanced CSV file
+..................................................
 
 Create new samples:
 
@@ -273,3 +317,55 @@ Test the results:
 
     >>> sample2.Au.getResult()
     '2.0'
+
+
+Instrument Results Import with Worksheet assigned Analyses
+..........................................................
+
+Create new samples:
+
+    >>> sample1 = new_sample([Au,Cu,Fe,Int], client, contact, sampletype)
+    >>> sample2 = new_sample([Au,Cu,Fe,Int], client, contact, sampletype)
+
+Create a new Worksheet and add the analyses of the two samples:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+    >>> worksheet
+    <Worksheet at .../worksheets/WS-001>
+
+    >>> worksheet.addAnalyses(sample1.getAnalyses())
+    >>> worksheet.addAnalyses(sample2.getAnalyses())
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,end
+    ... {},1,end
+    ... {},2,end
+    ... """.strip().format(sample1.getId(), sample2.getId())
+
+    >>> with open(os.path.join(resultsfolder, "import5.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+Test the results:
+
+    >>> sample1.Au.getResult()
+    '1.0'
+
+    >>> sample2.Au.getResult()
+    '2.0'
+
+The import CSV file should be attached to each analysis:
+
+    >>> sample1.Au.getAttachment()[0].getFilename()
+    'import5.csv'
+
+    >>> print(sample1.Au.getAttachment()[0].getAttachmentFile().data)
+    ID,Au,end
+    W-0007,1,end
+    W-0008,2,end
