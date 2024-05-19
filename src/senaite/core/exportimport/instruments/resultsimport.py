@@ -263,11 +263,21 @@ class AnalysisResultsImporter(BaseResultsImporter):
         results = api.search(query, SENAITE_CATALOG)
         if len(results) == 0:
             return None
-        elif len(results) > 1:
-            self.warn(_("More than one Reference Sample found for '${sid}'",
-                        mapping={"sid": sid}))
+        return api.get_object(results[0])
+
+    def get_sample_by_id(self, sid):
+        """Get a  sample by ID
+        """
+        query = {"portal_type": "AnalysisRequest", "getId": sid}
+        results = api.search(query, SAMPLE_CATALOG)
+        if len(results) == 0:
             return None
         return api.get_object(results[0])
+
+    def get_analyses_for(self, sid):
+        """Get analyses for the given sample ID
+        """
+        return self._getZODBAnalyses(sid)
 
     def process(self):
         parsed_results = self.parse_results()
@@ -295,7 +305,12 @@ class AnalysisResultsImporter(BaseResultsImporter):
         importedars = {}
 
         for sid, results in parsed_results.items():
-            analyses = self._getZODBAnalyses(sid)
+            # get the sample
+            sample = self.get_sample_by_id(sid)
+            refsample = None
+
+            # fetch all analyses for the given sample ID
+            analyses = self.get_analyses_for(sid)
 
             # No registered analyses found, but maybe we need to
             # create them first if we have an instrument
@@ -311,6 +326,8 @@ class AnalysisResultsImporter(BaseResultsImporter):
 
             # we have an instrument
             elif len(analyses) == 0 and self.instrument:
+                # XXX: How is this intended to work?
+                #
                 # Create a new ReferenceAnalysis and link it to the Instrument.
                 # Here we have an sid (i.e. R01200012) and a dict with results
                 # (the key is the AS keyword).
@@ -322,14 +339,16 @@ class AnalysisResultsImporter(BaseResultsImporter):
 
                 # Allowed are more than one result for the same sample and
                 # analysis. Needed for calibration tests.
+                service_uids = []
                 for result in results:
                     # For each keyword, create a ReferenceAnalysis and attach
                     # it to the ReferenceSample
-                    service_uids = [
+                    service_uids.extend([
                         api.get_uid(service) for service in self.services
-                        if service.getKeyword() in result.keys()]
-                    analyses = self.instrument.addReferences(
-                        refsample, service_uids)
+                        if service.getKeyword() in result.keys()])
+
+                analyses = self.instrument.addReferences(
+                    refsample, list(set(service_uids)))
 
             # No analyses found
             elif len(analyses) == 0:
@@ -447,7 +466,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
             msg = "%s: %s %s" % (instid, acodesmsg, "imported sucessfully")
             self.log(msg)
 
-        if self.instrument:
+        if refsample and self.instrument:
             self.log(_("Import finished successfully: ${updated_ars} Samples, "
                        "${updated_instruments} Instruments and "
                        "${updated_results} results updated",
