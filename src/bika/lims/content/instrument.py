@@ -474,12 +474,21 @@ class Instrument(ATFolder):
             "getInstrumentUID": self.UID(),
             "sort_on": "getResultCaptureDate",
             "sort_order": "descending",
-            "sort_limit": 1
+            # Do not rely on DateIndex!
+            # It has a resolution of 1 second, which might give us the wrong
+            # analysis here (see woraround below)
+            # "sort_limit": 1
         }
         brains = api.search(query, ANALYSIS_CATALOG)
+
         if len(brains) == 0:
             # There are no Reference Analyses assigned to this instrument yet
             return True
+
+        # NOTE: The `DateIndex` used for sorting has a resolution of 1 second,
+        # which might return the wrong result. Therefore, we sort manually
+        brains = sorted(
+            brains, key=lambda b: b.getResultCaptureDate, reverse=1)
 
         # Look for siblings. These are the QC Analyses that were created
         # together with this last ReferenceAnalysis and for the same Reference
