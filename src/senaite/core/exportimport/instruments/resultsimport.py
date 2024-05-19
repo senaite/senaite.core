@@ -143,6 +143,8 @@ class AnalysisResultsImporter(BaseResultsImporter):
         # instrument UID
         self.instrument_uid = instrument_uid
         self.priorizedsearchcriteria = ""
+        # Search Indexes for Sample IDs
+        self.searchcriteria = ["getId", "getClientSampleID"]
 
         # BBB
         self._parser = parser
@@ -717,7 +719,6 @@ class AnalysisResultsImporter(BaseResultsImporter):
         :returns: list of analyses / empty list if no alanyses were found
         """
         analyses = []
-        searchcriteria = ["getId", "getClientSampleID"]
 
         # Acceleration of searches using priorization
         if self.priorizedsearchcriteria in ["rgid", "rid", "ruid"]:
@@ -728,9 +729,49 @@ class AnalysisResultsImporter(BaseResultsImporter):
         if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(
-                sid, "", searchcriteria, self.allowed_sample_states)
+                sid, "", self.searchcriteria, self.allowed_sample_states)
 
         return list(filter(self.is_analysis_allowed, analyses))
+
+    def find_objects(self, oid, criteria, states):
+        """Find objects
+
+        :param oid: Primary search ID
+        """
+        results = []
+
+        if criteria in ["arid"]:
+            query = {"getId": oid, "review_state": states}
+            results = self.sample_catalog(query)
+        elif criteria == "csid":
+            query = {"getClientSampleID": oid, "review_state": states}
+            results = self.sample_catalog(query)
+        elif criteria == "aruid":
+            query = {"UID": oid, "review_state": states}
+            results = self.sample_catalog(query)
+        elif criteria == "rgid":
+            query = {
+                "portal_type": ["ReferenceAnalysis", "DuplicateAnalysis"],
+                "getReferenceAnalysesGroupID": oid,
+            }
+            results = self.analysis_catalog(query)
+        elif criteria == "rid":
+            query = {
+                "portal_type": ["ReferenceAnalysis", "DuplicateAnalysis"],
+                "getId": oid,
+            }
+            results = self.analysis_catalog(query)
+        elif criteria == "ruid":
+            query = {
+                "portal_type": ["ReferenceAnalysis", "DuplicateAnalysis"],
+                "UID": oid,
+            }
+            results = self.analysis_catalog(query)
+
+        if len(results) > 0:
+            self.priorizedsearchcriteria = criteria
+
+        return results
 
     @deprecate("Please use self.get_analyses_for instead")
     def _getZODBAnalyses(self, sid):
@@ -741,18 +782,18 @@ class AnalysisResultsImporter(BaseResultsImporter):
         ars = []
         analyses = []
         if criteria:
-            ars = self._getObjects(objid, criteria, arstates)
+            ars = self.find_objects(objid, criteria, arstates)
             if not ars or len(ars) == 0:
                 return self._getZODBAnalysesFromAR(objid, None,
                                                    allowedsearches, arstates)
         else:
-            sortorder = ['arid', 'csid', 'aruid']
+            sortorder = ["arid", "csid", "aruid"]
             for crit in sortorder:
-                if (crit == 'arid' and 'getId' in allowedsearches) \
-                    or (crit == 'csid' and 'getClientSampleID'
+                if (crit == "arid" and "getId" in allowedsearches) \
+                    or (crit == "csid" and "getClientSampleID"
                                 in allowedsearches) \
-                        or (crit == 'aruid' and 'getId' in allowedsearches):
-                    ars = self._getObjects(objid, crit, arstates)
+                        or (crit == "aruid" and "getId" in allowedsearches):
+                    ars = self.find_objects(objid, crit, arstates)
                     if ars and len(ars) > 0:
                         break
 
@@ -772,7 +813,7 @@ class AnalysisResultsImporter(BaseResultsImporter):
     def _getZODBAnalysesFromReferenceAnalyses(self, objid, criteria):
         analyses = []
         if criteria:
-            refans = self._getObjects(objid, criteria, [])
+            refans = self.find_objects(objid, criteria, [])
             if len(refans) == 0:
                 return []
 
@@ -818,31 +859,6 @@ class AnalysisResultsImporter(BaseResultsImporter):
 
         return analyses
 
-    def _getObjects(self, objid, criteria, states):
-        # self.log("Criteria: %s %s") % (criteria, obji))
-        obj = []
-        if criteria in ['arid']:
-            obj = self.ar_catalog(
-                           getId=objid,
-                           review_state=states)
-        elif criteria == 'csid':
-            obj = self.ar_catalog(
-                           getClientSampleID=objid,
-                           review_state=states)
-        elif criteria == 'aruid':
-            obj = self.ar_catalog(
-                           UID=objid,
-                           review_state=states)
-        elif criteria == 'rgid':
-            obj = self.bac(portal_type=['ReferenceAnalysis',
-                                        'DuplicateAnalysis'],
-                           getReferenceAnalysesGroupID=objid)
-        elif criteria == 'rid':
-            obj = self.bac(portal_type=['ReferenceAnalysis',
-                                        'DuplicateAnalysis'], id=objid)
-        elif criteria == 'ruid':
-            obj = self.bac(portal_type=['ReferenceAnalysis',
-                                        'DuplicateAnalysis'], UID=objid)
-        if obj and len(obj) > 0:
-            self.priorizedsearchcriteria = criteria
-        return obj
+    @deprecate("Please use self.find_objects instead")
+    def _getObjects(self, oid, criteria, states):
+        return self.find_objects(oid, criteria, states)
