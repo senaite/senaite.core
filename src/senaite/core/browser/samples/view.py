@@ -614,8 +614,8 @@ class SamplesView(ListingView):
 
             sampler = obj.getSampler
             if sampler:
-                item["getSampler"] = obj.getSampler
-                item["replace"]["getSampler"] = obj.getSamplerFullName
+                item["getSampler"] = sampler
+                item["replace"]["getSampler"] = self.user_fullname(sampler)
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             if item["review_state"] == "to_be_sampled":
