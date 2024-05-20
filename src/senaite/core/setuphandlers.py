@@ -254,6 +254,8 @@ def add_senaite_setup_items(portal):
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
         ("manufacturers", "Manufacturers", "Manufacturers"),
         ("containertypes", "Container Types", "ContainerTypes"),
+        ("subgroups", "SubGroups", "SubGroups"),
+
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

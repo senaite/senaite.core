@@ -60,4 +60,8 @@
   <object name="ContainerType" meta_type="Dexterity FTI" />
   <object name="ContainerTypes" meta_type="Dexterity FTI" />
 
+  <!-- SubGroups -->
+  <object name="SubGroup" meta_type="Dexterity FTI" />
+  <object name="SubGroups" meta_type="Dexterity FTI" />
+
 </object>
