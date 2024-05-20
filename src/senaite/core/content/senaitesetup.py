@@ -24,6 +24,7 @@ from plone.app.textfield import IRichTextValue
 from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
 from plone.formwidget.namedfile.widget import NamedFileFieldWidget
+from plone.schema.email import Email
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -52,9 +53,32 @@ def default_email_body_sample_publication(context):
     return tpl(view)
 
 
+@provider(IContextAwareDefaultFactory)
+def default_email_from_sample_publication(context):
+    """Returns the default email 'From' for results reports publish
+    """
+    portal_email = api.get_registry_record("plone.email_from_address")
+    return portal_email
+
+
 class ISetupSchema(model.Schema):
     """Schema and marker interface
     """
+
+    email_from_sample_publication = Email(
+        title=_(
+            "title_senaitesetup_email_from_sample_publication",
+            default="Publication 'From' address"
+        ),
+        description=_(
+            "description_senaitesetup_email_from_sample_publication",
+            default="E-mail to use as the 'From' address for outgoing e-mails "
+                    "when publishing results reports. This address overrides "
+                    "the value set at portal's 'Mail settings'."
+        ),
+        defaultFactory=default_email_from_sample_publication,
+        required=False,
+    )
 
     directives.widget("email_body_sample_publication", RichTextFieldWidget)
     email_body_sample_publication = RichTextField(
@@ -204,6 +228,7 @@ class ISetupSchema(model.Schema):
         "notifications",
         label=_(u"Notifications"),
         fields=[
+            "email_from_sample_publication",
             "email_body_sample_publication",
             "always_cc_responsibles_in_report_emails",
         ]
@@ -225,6 +250,23 @@ class Setup(Container):
     """SENAITE Setup Folder
     """
     security = ClassSecurityInfo()
+
+    @security.protected(permissions.View)
+    def getEmailFromSamplePublication(self):
+        """Returns the 'From' address for publication emails
+        """
+        accessor = self.accessor("email_from_sample_publication")
+        email = accessor(self)
+        if not email:
+            email = default_email_from_sample_publication(self)
+        return email
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setEmailFromSamplePublication(self, value):
+        """Set the 'From' address for publication emails
+        """
+        mutator = self.mutator("email_from_sample_publication")
+        return mutator(self, value)
 
     @security.protected(permissions.View)
     def getEmailBodySamplePublication(self):

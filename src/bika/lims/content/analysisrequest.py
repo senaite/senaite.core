@@ -1151,12 +1151,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     ComputedField(
-        'SamplerFullName',
-        expression="here._getSamplerFullName()",
-        widget=ComputedWidget(visible=False),
-    ),
-
-    ComputedField(
         'BatchID',
         expression="here.getBatch().getId() if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
@@ -2045,16 +2039,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return False
 
     @security.public
-    def getContactURL(self):
-        """
-        It works as a metacolumn.
-        """
-        contact = self.getContact()
-        if contact:
-            return contact.absolute_url_path()
-        return ''
-
-    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel
@@ -2234,12 +2218,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         for analysis in analyses:
             analysis_obj = analysis.getObject()
             catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
-
-    def _getSamplerFullName(self):
-        """
-        Returns the full name's defined sampler.
-        """
-        return api.get_user_fullname(self.getSampler())
 
     def getPriorityText(self):
         """

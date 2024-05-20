@@ -3,12 +3,28 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-  <genericsetup:upgradeStep
+    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SubGroups to DX"
       description="Migrate SubGroups to Dexterity"
+      source="2626"
+      destination="2627"
+      handler=".v02_06_000.migrate_subgroups_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove contact metadata from sample catalog"
+      description="Remove contact metadata from sample catalog"
+      source="2625"
+      destination="2626"
+      handler=".v02_06_000.remove_contact_metadata"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getSamplerFullName from catalogs"
+      description="Remove getSamplerFullName from catalogs"
       source="2624"
       destination="2625"
-      handler=".v02_06_000.migrate_subgroups_to_dx"
+      handler=".v02_06_000.remove_sampler_fullname"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
