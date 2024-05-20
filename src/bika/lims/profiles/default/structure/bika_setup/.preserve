@@ -6,7 +6,6 @@ bika_artemplates
 bika_attachmenttypes
 bika_batchlabels
 bika_calculations
-bika_containertypes
 bika_instruments
 bika_instrumenttypes
 bika_labcontacts
@@ -14,7 +13,6 @@ bika_labproducts
 bika_referencedefinitions
 bika_sampletypes
 bika_samplingdeviations
-bika_subgroups
 bika_suppliers
 bika_worksheettemplates
 instrumentlocations

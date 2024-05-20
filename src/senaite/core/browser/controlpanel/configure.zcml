@@ -21,6 +21,7 @@
 
   <!-- Include controlpanel listing views -->
   <include package=".analysisprofiles" />
+  <include package=".containertypes" />
   <include package=".departments" />
   <include package=".instrumentlocations" />
   <include package=".interpretationtemplates" />
@@ -32,6 +33,7 @@
   <include package=".samplepoints" />
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
+  <include package=".subgroups" />
   <include package=".storagelocations" />
 
 </configure>

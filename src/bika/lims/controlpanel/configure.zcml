@@ -21,14 +21,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IContainerTypes"
-      name="folder_view"
-      class=".bika_containertypes.ContainerTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ILabContacts"
       name="folder_view"
       class=".bika_labcontacts.LabContactsView"
@@ -128,14 +120,6 @@
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISubGroups"
-      name="folder_view"
-      class=".bika_subgroups.SubGroupsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

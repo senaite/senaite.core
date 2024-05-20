@@ -317,16 +317,15 @@ class WorksheetImporter:
 class Sub_Groups(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_subgroups
+
+        container = self.context.setup.subgroups
         for row in self.get_rows(3):
-            if 'title' in row and row['title']:
-                obj = _createObjectByType("SubGroup", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row['description'],
-                         SortKey=row['SortKey'])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "SubGroup",
+                       title=title, description=row.get("description"),
+                       SortKey=row.get("SortKey"))
 
 
 class Lab_Information(WorksheetImporter):
@@ -642,16 +641,14 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_containertypes
+        container = self.context.setup.contenttypes
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("ContainerType", folder, tmpID())
-            obj.edit(title=row['title'],
-                     description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+
+            api.create(container, "ContainerType",
+                       title=title, description=row.get("description"))
 
 
 class Preservations(WorksheetImporter):

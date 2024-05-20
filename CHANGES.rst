@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #2550 Migrate StorageLocations to Dexterity
+- #2545 Migrate Sub Groups to Dexterity
+- #2556 Fix adding Instrument into Manufacturer view
+- #2549 Fix contact fullname is not updated in samples listing after edition
+- #2541 Allow to change the "From" address for sample report outgoing emails
+- #2548 Remove SamplerFullName from sample and metadata
+- #2540 Migrate Container Types to Dexterity
 - #2542 Migrate Manufacturers to Dexterity
 - #2547 Add get_user_email function in the api
 - #2544 Display creator fullname in samples listing
