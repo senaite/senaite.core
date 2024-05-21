@@ -487,7 +487,7 @@ class AnalysisResultsImporter(Logger):
         """
         resultsaved = False
         acode = analysis.getKeyword()
-        defresultkey = values.get("DefaultResult", "")
+        defresultkey = values.get("DefaultResult", "Result")
         capturedate = None
 
         if "DateTime" in values.keys():
@@ -534,7 +534,7 @@ class AnalysisResultsImporter(Logger):
             resultsaved = analysis.calculateResult(override=self.override[0])
 
         # Set result if present.
-        res = values.get(defresultkey, '')
+        res = values.get(defresultkey, "")
         calc = analysis.getCalculation()
 
         # don't set results on calculated analyses
