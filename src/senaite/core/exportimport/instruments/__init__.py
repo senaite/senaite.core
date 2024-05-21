@@ -172,7 +172,7 @@ PARSERS = [
     ["nuclisens.easyq", "EasyQXMLParser"],
     ["genexpert.genexpert", "GeneXpertParser"],
     ["varian.vistapro.icp", "VistaPROICPParser"],
-    ["cobasintegra.model_400_plus.model_400_plus", "CobasIntegra400plus2CSVParser"],
+    ["cobasintegra.model_400_plus.model_400_plus", "CobasIntegra400plus2CSVParser"],  # noqa: E501
     ["facscalibur.calibur.model_e9750", "FacsCalibur2CSVParser"],
 ]
 
@@ -192,7 +192,7 @@ def get_instrument_interfaces():
     # Now grab the information (the old way)
     curr_module = sys.modules[__name__]
     for name, obj in inspect.getmembers(curr_module):
-        if hasattr(obj, '__name__'):
+        if hasattr(obj, "__name__"):
             obj_name = obj.__name__.replace(__name__, "")
             obj_name = obj_name and obj_name[1:] or ""
             if obj_name in __all__:
@@ -207,7 +207,7 @@ def is_import_interface(instrument_interface):
         return True
 
     # TODO Remove this once classic instrument interface migrated
-    if hasattr(instrument_interface, '__name__'):
+    if hasattr(instrument_interface, "__name__"):
         obj_name = instrument_interface.__name__.replace(__name__, "")
         if obj_name[1:] in __all__ and hasattr(instrument_interface, "Import"):
             return True
@@ -221,7 +221,7 @@ def is_export_interface(instrument_interface):
         return True
 
     # TODO Remove this once classic instrument interface migrated
-    if hasattr(instrument_interface, '__name__'):
+    if hasattr(instrument_interface, "__name__"):
         obj_name = instrument_interface.__name__.replace(__name__, "")
         if obj_name[1:] in __all__ and hasattr(instrument_interface, "Export"):
             return True
@@ -252,7 +252,7 @@ def getExim(exim_id):
 
 
 def get_automatic_importer(exim_id, instrument, parser):
-    """Returns the importer to be used
+    """Returns the importer to be used for automatic imports
     """
     adapter = getExim(exim_id)
 
