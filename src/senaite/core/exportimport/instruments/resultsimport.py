@@ -374,6 +374,9 @@ class AnalysisResultsImporter(Logger):
                 for keyword, values in result.items():
                     if keyword not in self.keywords:
                         # Analysis keyword doesn't exist
+                        self.warn(
+                            _("No service found for keyword '${keyword}'",
+                              mapping={"keyword": keyword}))
                         continue
 
                     ans = [a for a in analyses if a.getKeyword() == keyword
