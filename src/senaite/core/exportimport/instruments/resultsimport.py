@@ -64,9 +64,6 @@ class AnalysisResultsImporter(Logger):
 
         self.context = context
 
-        # see lazy property below
-        self._parser = parser
-
         # results override settings
         self.override = override
         if override is None:
@@ -151,8 +148,6 @@ class AnalysisResultsImporter(Logger):
     def wf_tool(self):
         return api.get_tool("portal_workflow")
 
-
-
     @lazy_property
     def instrument(self):
         if not self.instrument_uid:
@@ -166,16 +161,30 @@ class AnalysisResultsImporter(Logger):
         services = self.setup_catalog(portal_type="AnalysisService")
         return list(map(api.get_object, services))
 
-    @lazy_property
+    @property
     def parser(self):
         """Returns the parser that is used for the import
         """
         # Maybe we can use an adapter lookup here?
         return self._parser
 
+    @parser.setter
+    def parser(self, value):
+        self._parser = value
+
     @deprecate("Please use self.parser instead")
     def getParser(self):
         return self.parser
+
+    def get_automatic_importer(self, instrument, parser, **kw):
+        """Return the automatic importer
+        """
+        raise NotImplementedError("Must be provided by Adapter Implementation")
+
+    def get_automatic_parser(self, infile, **kw):
+        """Return the automatic parser
+        """
+        raise NotImplementedError("Must be provided by Adapter Implementation")
 
     @deprecate("Please use self.allowed_sample_states instead")
     def getAllowedARStates(self):

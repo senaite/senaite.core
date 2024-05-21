@@ -251,13 +251,38 @@ def getExim(exim_id):
     return interfaces and interfaces[0][1] or None
 
 
+def get_automatic_importer(exim_id, instrument, parser):
+    """Returns the importer to be used
+    """
+    adapter = getExim(exim_id)
+
+    if IInstrumentAutoImportInterface.providedBy(adapter):
+        try:
+            return adapter.get_automatic_importer(
+                parser, instrument, exim_id=exim_id)
+        except (NotImplementedError, AttributeError, TypeError, ValueError):
+            # BBB: Fallback to default analysis results importer
+            pass
+
+    # return the default Analysis Results Importer
+    return AnalysisResultsImporter(
+        parser=parser,
+        context=api.get_portal(),
+        override=[False, False],
+        instrument_uid=api.get_uid(instrument))
+
+
 def get_automatic_parser(exim_id, infile):
     """Returns the parser to be used by default for the instrument id interface
     and results file passed in.
     """
     adapter = getExim(exim_id)
     if IInstrumentAutoImportInterface.providedBy(adapter):
-        return adapter.get_automatic_parser(infile)
+        try:
+            return adapter.get_automatic_parser(infile)
+        except (NotImplementedError, AttributeError, TypeError, ValueError):
+            # BBB: Fallback to default analysis results importer
+            pass
 
     # TODO Remove this once classic instrument interface migrated
     parser_func = filter(lambda i: i[0] == exim_id, PARSERS)
