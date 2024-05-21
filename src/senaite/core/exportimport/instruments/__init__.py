@@ -21,46 +21,48 @@
 import inspect
 import sys
 
-from abaxis.vetscan import vs2
-from abbott.m2000rt import m2000rt
-from alere.pima import beads
-from alere.pima import cd4
-from beckmancoulter.access import model2
+from abaxis.vetscan import vs2  # noqa: 401
+from abbott.m2000rt import m2000rt  # noqa: 401
+from alere.pima import beads  # noqa: 401
+from alere.pima import cd4  # noqa: 401
+from beckmancoulter.access import model2  # noqa: 401
 from bika.lims import api
-from biodrop.ulite import ulite
-from cobasintegra.model_400_plus import model_400_plus
-from eltra.cs import cs2000
-from facscalibur.calibur import model_e9750
-from foss.fiastar import fiastar
-from foss.winescan import auto
-from foss.winescan import ft120
-from generic import two_dimension
-from genexpert import genexpert
-from horiba.jobinyvon import icp
-from lachat import quickchem
-from lifetechnologies.qubit import qubit
-from metler.toledo import dl55
-from nuclisens import easyq
-from panalytical.omnia import axios_xrf
-from rigaku.supermini import wxrf
-from rochecobas.taqman import model48
-from rochecobas.taqman import model96
-from scilvet.abc import plus
-from sealanalytical.aq2 import aq2
-from shimadzu.gcms import qp2010se
-from shimadzu.gcms import tq8030
-from shimadzu.icpe import multitype
-from shimadzu.nexera import LC2040C
-from shimadzu.nexera import LCMS8050
-from sysmex.xs import i500
-from sysmex.xs import i1000
-from sysmex.xt import i1800
-from sysmex.xt import i4000
-from tescan.tima import tima
-from thermoscientific.arena import xt20
-from thermoscientific.gallery import Ts9861x
-from thermoscientific.multiskan import go
-from varian.vistapro import icp as icp_2
+from biodrop.ulite import ulite  # noqa: 401
+from cobasintegra.model_400_plus import model_400_plus  # noqa: 401
+from eltra.cs import cs2000  # noqa: 401
+from facscalibur.calibur import model_e9750  # noqa: 401
+from foss.fiastar import fiastar  # noqa: 401
+from foss.winescan import auto  # noqa: 401
+from foss.winescan import ft120  # noqa: 401
+from generic import two_dimension  # noqa: 401
+from genexpert import genexpert  # noqa: 401
+from horiba.jobinyvon import icp  # noqa: 401
+from lachat import quickchem  # noqa: 401
+from lifetechnologies.qubit import qubit  # noqa: 401
+from metler.toledo import dl55  # noqa: 401
+from nuclisens import easyq  # noqa: 401
+from panalytical.omnia import axios_xrf  # noqa: 401
+from rigaku.supermini import wxrf  # noqa: 401
+from rochecobas.taqman import model48  # noqa: 401
+from rochecobas.taqman import model96  # noqa: 401
+from scilvet.abc import plus  # noqa: 401
+from sealanalytical.aq2 import aq2  # noqa: 401
+from senaite.core.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter
+from shimadzu.gcms import qp2010se  # noqa: 401
+from shimadzu.gcms import tq8030  # noqa: 401
+from shimadzu.icpe import multitype  # noqa: 401
+from shimadzu.nexera import LC2040C  # noqa: 401
+from shimadzu.nexera import LCMS8050  # noqa: 401
+from sysmex.xs import i500  # noqa: 401
+from sysmex.xs import i1000  # noqa: 401
+from sysmex.xt import i1800  # noqa: 401
+from sysmex.xt import i4000  # noqa: 401
+from tescan.tima import tima  # noqa: 401
+from thermoscientific.arena import xt20  # noqa: 401
+from thermoscientific.gallery import Ts9861x  # noqa: 401
+from thermoscientific.multiskan import go  # noqa: 401
+from varian.vistapro import icp as icp_2  # noqa: 401
 from zope.component import getAdapters
 from zope.interface import Interface
 
@@ -87,92 +89,92 @@ class IInstrumentAutoImportInterface(IInstrumentInterface):
 
 
 # TODO Remove this once classic instrument interface migrated
-__all__ = ['abaxis.vetscan.vs2',
-           'abbott.m2000rt.m2000rt',
-           'alere.pima.beads',
-           'alere.pima.cd4',
-           'beckmancoulter.access.model2',
-           'biodrop.ulite.ulite',
-           'eltra.cs.cs2000',
-           'foss.fiastar.fiastar',
-           'foss.winescan.auto',
-           'foss.winescan.ft120',
-           'generic.two_dimension',
-           # 'generic.xml',
-           'genexpert.genexpert',
-           'horiba.jobinyvon.icp',
-           'lachat.quickchem',
-           'lifetechnologies.qubit.qubit',
-           'metler.toledo.dl55',
-           'nuclisens.easyq',
-           'panalytical.omnia.axios_xrf',
-           'rigaku.supermini.wxrf',
-           'rochecobas.taqman.model48',
-           'rochecobas.taqman.model96',
-           'scilvet.abc.plus',
-           'sealanalytical.aq2.aq2',
-           'shimadzu.gcms.qp2010se',
-           'shimadzu.gcms.tq8030',
-           'shimadzu.icpe.multitype',
-           'shimadzu.nexera.LC2040C',
-           'shimadzu.nexera.LCMS8050',
-           'sysmex.xs.i1000',
-           'sysmex.xs.i500',
-           'sysmex.xt.i1800',
-           'sysmex.xt.i4000',
-           'tescan.tima.tima',
-           'thermoscientific.arena.xt20',
-           'thermoscientific.gallery.Ts9861x',
-           'thermoscientific.multiskan.go',
-           'varian.vistapro.icp',
-           'cobasintegra.model_400_plus.model_400_plus',
-           'facscalibur.calibur.model_e9750'
-           ]
+__all__ = [
+    "abaxis.vetscan.vs2",
+    "abbott.m2000rt.m2000rt",
+    "alere.pima.beads",
+    "alere.pima.cd4",
+    "beckmancoulter.access.model2",
+    "biodrop.ulite.ulite",
+    "eltra.cs.cs2000",
+    "foss.fiastar.fiastar",
+    "foss.winescan.auto",
+    "foss.winescan.ft120",
+    "generic.two_dimension",
+    "genexpert.genexpert",
+    "horiba.jobinyvon.icp",
+    "lachat.quickchem",
+    "lifetechnologies.qubit.qubit",
+    "metler.toledo.dl55",
+    "nuclisens.easyq",
+    "panalytical.omnia.axios_xrf",
+    "rigaku.supermini.wxrf",
+    "rochecobas.taqman.model48",
+    "rochecobas.taqman.model96",
+    "scilvet.abc.plus",
+    "sealanalytical.aq2.aq2",
+    "shimadzu.gcms.qp2010se",
+    "shimadzu.gcms.tq8030",
+    "shimadzu.icpe.multitype",
+    "shimadzu.nexera.LC2040C",
+    "shimadzu.nexera.LCMS8050",
+    "sysmex.xs.i1000",
+    "sysmex.xs.i500",
+    "sysmex.xt.i1800",
+    "sysmex.xt.i4000",
+    "tescan.tima.tima",
+    "thermoscientific.arena.xt20",
+    "thermoscientific.gallery.Ts9861x",
+    "thermoscientific.multiskan.go",
+    "varian.vistapro.icp",
+    "cobasintegra.model_400_plus.model_400_plus",
+    "facscalibur.calibur.model_e9750",
+]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
 # interface
 # TODO Remove this once classic instrument interface migrated
 PARSERS = [
-           ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
-           ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
-           ['alere.pima.beads', 'AlerePimaSLKParser'],
-           ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
-           ['beckmancoulter.access.model2', 'BeckmancoulterAccess2CSVParser'],
-           ['biodrop.ulite.ulite', 'BioDropCSVParser'],
-           ['eltra.cs.cs2000', 'EltraCS2000CSVParser'],
-           ['foss.fiastar.fiastar', 'FOSSFIAStarCSVParser'],
-           ['foss.winescan.auto', 'WinescanAutoCSVParser'],
-           ['foss.winescan.ft120', 'WinescanFT120CSVParser'],
-           ['generic.two_dimension', 'TwoDimensionCSVParser'],
-           ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
-           ['metler.toledo.dl55', 'MetlerToledoDL55Parser'],
-           ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
-           ['rochecobas.taqman.model48', 'RocheCobasTaqmanParser'],
-           ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
-           ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
-           ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
-           ['panalytical.omnia.axios_xrf', 'AxiosXrfCSVParser'],
-           ['lachat.quickchem', 'LaChatQuickCheckFIAParser'],
-           ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
-           ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
-           ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
-           ['shimadzu.icpe.multitype', 'ICPEMultitypeCSVParser'],
-           ['shimadzu.gcms.qp2010se', 'GCMSQP2010SECSVParser'],
-           ['shimadzu.gcms.tq8030', 'GCMSTQ8030GCMSMSCSVParser'],
-           ['shimadzu.nexera.LC2040C', 'TSVParser'],
-           ['shimadzu.nexera.LCMS8050', 'TSVParser'],
-           ['sysmex.xt.i1800', 'SysmexXT1800iParser'],
-           ['sysmex.xt.i4000', 'SysmexXT1800iParser'],
-           ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
-           ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
-           ['tescan.tima.tima', 'TimaCSVParser'],
-           ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
-           ['nuclisens.easyq', 'EasyQXMLParser'],
-           ['genexpert.genexpert', 'GeneXpertParser'],
-           ['varian.vistapro.icp', 'VistaPROICPParser'],
-           ['cobasintegra.model_400_plus.model_400_plus', 'CobasIntegra400plus2CSVParser'],
-           ['facscalibur.calibur.model_e9750', 'FacsCalibur2CSVParser'],
-           ]
+    ["abaxis.vetscan.vs2", "AbaxisVetScanCSVVS2Parser"],
+    ["abbott.m2000rt.m2000rt", "Abbottm2000rtTSVParser"],
+    ["alere.pima.beads", "AlerePimaSLKParser"],
+    ["alere.pima.cd4", "AlerePimacd4SLKParser"],
+    ["beckmancoulter.access.model2", "BeckmancoulterAccess2CSVParser"],
+    ["biodrop.ulite.ulite", "BioDropCSVParser"],
+    ["eltra.cs.cs2000", "EltraCS2000CSVParser"],
+    ["foss.fiastar.fiastar", "FOSSFIAStarCSVParser"],
+    ["foss.winescan.auto", "WinescanAutoCSVParser"],
+    ["foss.winescan.ft120", "WinescanFT120CSVParser"],
+    ["generic.two_dimension", "TwoDimensionCSVParser"],
+    ["horiba.jobinyvon.icp", "HoribaJobinYvonCSVParser"],
+    ["metler.toledo.dl55", "MetlerToledoDL55Parser"],
+    ["rigaku.supermini.wxrf", "RigakuSuperminiWXRFCSVParser"],
+    ["rochecobas.taqman.model48", "RocheCobasTaqmanParser"],
+    ["rochecobas.taqman.model96", "RocheCobasTaqmanRSFParser"],
+    ["thermoscientific.arena.xt20", "ThermoArena20XTRPRCSVParser"],
+    ["thermoscientific.gallery.Ts9861x", "ThermoGallery9861xTSVParser"],
+    ["panalytical.omnia.axios_xrf", "AxiosXrfCSVParser"],
+    ["lachat.quickchem", "LaChatQuickCheckFIAParser"],
+    ["lifetechnologies.qubit.qubit", "QuBitCSVParser"],
+    ["sysmex.xs.i500", "SysmexXS500iCSVParser"],
+    ["sysmex.xs.i1000", "SysmexXS500iCSVParser"],
+    ["shimadzu.icpe.multitype", "ICPEMultitypeCSVParser"],
+    ["shimadzu.gcms.qp2010se", "GCMSQP2010SECSVParser"],
+    ["shimadzu.gcms.tq8030", "GCMSTQ8030GCMSMSCSVParser"],
+    ["shimadzu.nexera.LC2040C", "TSVParser"],
+    ["shimadzu.nexera.LCMS8050", "TSVParser"],
+    ["sysmex.xt.i1800", "SysmexXT1800iParser"],
+    ["sysmex.xt.i4000", "SysmexXT1800iParser"],
+    ["scilvet.abc.plus", "AbaxisVetScanCSVVS2Parser"],
+    ["sealanalytical.aq2.aq2", "SealAnalyticsAQ2CSVParser"],
+    ["tescan.tima.tima", "TimaCSVParser"],
+    ["thermoscientific.multiskan.go", "ThermoScientificMultiskanGOCSVParser"],
+    ["nuclisens.easyq", "EasyQXMLParser"],
+    ["genexpert.genexpert", "GeneXpertParser"],
+    ["varian.vistapro.icp", "VistaPROICPParser"],
+    ["cobasintegra.model_400_plus.model_400_plus", "CobasIntegra400plus2CSVParser"],
+    ["facscalibur.calibur.model_e9750", "FacsCalibur2CSVParser"],
+]
 
 
 def get_instrument_interfaces():
@@ -180,7 +182,8 @@ def get_instrument_interfaces():
     tuple is (id_interface, adapter)
     """
     interfaces = list()
-    for name, adapter in getAdapters((api.get_portal(),), IInstrumentInterface):
+    portal = api.get_portal()
+    for name, adapter in getAdapters((portal, ), IInstrumentInterface):
         # We need a unique identifier for this instrument interface
         id = "{}.{}".format(adapter.__module__, adapter.__class__.__name__)
         interfaces.append((id, adapter))
