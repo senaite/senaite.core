@@ -137,7 +137,7 @@ class AutoImportResultsView(BrowserView):
             tb = None
 
             # lookup automatic importer
-            importer = get_automatic_importer(instrument, parser)
+            importer = get_automatic_importer(interface, instrument, parser)
             try:
                 importer.process()
             except Exception:
