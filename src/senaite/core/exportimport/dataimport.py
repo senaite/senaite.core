@@ -20,14 +20,14 @@
 
 import json
 
-from pkg_resources import resource_listdir
-
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import ISetupDataSetList
+from pkg_resources import resource_listdir
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport import instruments
 from senaite.core.exportimport.instruments import \
     get_instrument_import_interfaces
@@ -99,16 +99,17 @@ class ImportView(BrowserView):
         return productnames[len(productnames) - 1]
 
     def __call__(self):
-        if 'submitted' in self.request:
-            if 'setupfile' in self.request.form or \
-               'setupexisting' in self.request.form:
+        if "submitted" in self.request:
+            if "setupfile" in self.request.form or \
+               "setupexisting" in self.request.form:
                 lsd = LoadSetupData(self.context, self.request)
                 return lsd()
             else:
-                exim = instruments.getExim(self.request['exim'])
+                interface = self.request.get("exim")
+                exim = instruments.getExim(interface)
                 if not exim:
-                    er_mes = "Importer not found for: %s" % self.request['exim']
-                    results = {'errors': [er_mes], 'log': '', 'warns': ''}
+                    er_mes = "Importer not found for: %s" % interface
+                    results = {"errors": [er_mes], "log": "", "warns": ""}
                     return json.dumps(results)
                 else:
                     return exim.Import(self.context, self.request)
@@ -116,9 +117,9 @@ class ImportView(BrowserView):
             return self.template()
 
     def getInstruments(self):
-        bsc = getToolByName(self, 'senaite_catalog_setup')
-        brains = bsc(portal_type='Instrument', is_active=True)
-        items = [('', '...Choose an Instrument...')]
+        setup_catalog = api.get_tool(SETUP_CATALOG)
+        brains = setup_catalog(portal_type="Instrument", is_active=True)
+        items = [("", "...Choose an Instrument...")]
         for item in brains:
             items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
