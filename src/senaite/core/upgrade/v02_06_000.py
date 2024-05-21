@@ -1261,6 +1261,15 @@ def migrate_containertypes_to_dx(tool):
 
 
 @upgradestep(product, version)
+def update_typeinfo_subgroups_fix(tool):
+    """Fix sub groups typeinfo
+    """
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+
+@upgradestep(product, version)
 def migrate_subgroups_to_dx(tool):
     """Converts existing sub groups to Dexterity
     """

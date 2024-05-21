@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
     <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Update SubGroups typeinfo (fix)"
+      description="Update SubGroups typeinfo (fix)"
+      source="2627"
+      destination="2628"
+      handler=".v02_06_000.update_typeinfo_subgroups_fix"
+      profile="senaite.core:default"/>
+
+    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SubGroups to DX"
       description="Migrate SubGroups to Dexterity"
       source="2626"
