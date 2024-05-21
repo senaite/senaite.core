@@ -258,8 +258,7 @@ def get_automatic_importer(exim_id, instrument, parser):
 
     if IInstrumentAutoImportInterface.providedBy(adapter):
         try:
-            return adapter.get_automatic_importer(
-                parser, instrument, exim_id=exim_id)
+            return adapter.get_automatic_importer(instrument, parser)
         except (NotImplementedError, AttributeError, TypeError, ValueError):
             # BBB: Fallback to default analysis results importer
             pass

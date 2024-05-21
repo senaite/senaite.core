@@ -30,8 +30,8 @@ from plone.app.blob.interfaces import IBlobbable
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from senaite.core import logger
-from senaite.core.exportimport.instruments import get_automatic_parser
 from senaite.core.exportimport.instruments import get_automatic_importer
+from senaite.core.exportimport.instruments import get_automatic_parser
 from six import string_types
 from zope.component import adapter
 from zope.interface import Interface
@@ -137,8 +137,7 @@ class AutoImportResultsView(BrowserView):
             tb = None
 
             # lookup automatic importer
-            importer = get_automatic_importer(
-                parser, instrument, exim=interface)
+            importer = get_automatic_importer(instrument, parser)
             try:
                 importer.process()
             except Exception:
