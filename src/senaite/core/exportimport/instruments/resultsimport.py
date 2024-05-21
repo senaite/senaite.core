@@ -38,6 +38,8 @@ from zope.deprecation import deprecate
 
 ALLOWED_SAMPLE_STATES = ["sample_received", "to_be_verified"]
 ALLOWED_ANALYSIS_STATES = ["unassigned", "assigned", "to_be_verified"]
+DEFAULT_RESULT = "DefaultResult"
+EMPTY_MARKER = object()
 
 deprecation.deprecated(
     "InstrumentResultsFileParser",
@@ -485,13 +487,67 @@ class AnalysisResultsImporter(Logger):
                        mapping={"updated_ars": str(len(importedars)),
                                 "updated_results": str(ancount)}))
 
+    def get_interim_fields(self, analysis):
+        """Return the interim fields of the analysis
+        """
+        interim_fields = getattr(analysis, "getInterimFields", None)
+        if not callable(interim_fields):
+            return []
+        return interim_fields()
+
+    def process_analysis_interims(self, sid, analysis, values):
+        """Proces analysis interims
+
+        :param sid: Sample ID
+        :param analysis: Analysis object
+        :param values: Dictionary of values, including the result to set
+        :returns: True if the interims has been set
+        """
+        updated = False
+        keys = values.keys()
+        interims = self.get_interim_fields(analysis)
+        interims_out = []
+
+        for interim in interims:
+            value = EMPTY_MARKER
+            keyword = interim.get("keyword")
+            title = interim.get("title")
+            interim_copy = interim.copy()
+            # Check if we have an interim value set
+            if keyword in keys:
+                value = values.get(keyword)
+            elif title in keys:
+                value = values.get(title)
+            if value is not EMPTY_MARKER:
+                # set the value
+                interim_copy["value"] = value
+                updated = True
+                # TODO: change test not to rely on this logline!
+                self.log(_("${sid} result for '${analysis_keyword}:"
+                           "${interim_keyword}': '${value}'",
+                         mapping={
+                             "sid": sid,
+                             "analysis_keyword": analysis.getKeyword(),
+                             "interim_keyword": keyword,
+                             "value": str(value),
+                         }))
+            interims_out.append(interim_copy)
+
+        # write back interims
+        if len(interims_out) > 0:
+            analysis.setInterimFields(interims_out)
+            analysis.calculateResult(override=self.override[0])
+
+        return updated
+
     def _process_analysis(self, objid, analysis, values):
         """Process a single analysis result
         """
-        resultsaved = False
         acode = analysis.getKeyword()
-        defresultkey = values.get("DefaultResult", "Result")
         capturedate = None
+        defresultkey = values.get(DEFAULT_RESULT, "Result")
+        fields_to_reindex = []
+        resultsaved = False
 
         if "DateTime" in values.keys():
             ts = values.get("DateTime")
@@ -499,42 +555,8 @@ class AnalysisResultsImporter(Logger):
             if capturedate is None:
                 del values["DateTime"]
 
-        fields_to_reindex = []
-        # get interims
-        interimsout = []
-        interims = hasattr(analysis, 'getInterimFields') \
-            and analysis.getInterimFields() or []
-        for interim in interims:
-            keyword = interim['keyword']
-            title = interim['title']
-            if values.get(keyword, '') or values.get(keyword, '') == 0:
-                res = values.get(keyword)
-                self.log("${request_id} result for "
-                         "'${analysis_keyword}:${interim_keyword}': "
-                         "'${result}'",
-                         mapping={"request_id": objid,
-                                  "analysis_keyword": acode,
-                                  "interim_keyword": keyword,
-                                  "result": str(res)}
-                         )
-                ninterim = interim.copy()
-                ninterim['value'] = res
-                interimsout.append(ninterim)
-                resultsaved = True
-            elif values.get(title, '') or values.get(title, '') == 0:
-                res = values.get(title)
-                self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
-                ninterim = interim.copy()
-                ninterim['value'] = res
-                interimsout.append(ninterim)
-                resultsaved = True
-            else:
-                interimsout.append(interim)
-
-        # write interims
-        if len(interimsout) > 0:
-            analysis.setInterimFields(interimsout)
-            resultsaved = analysis.calculateResult(override=self.override[0])
+        # update interims
+        resultsaved = self.process_analysis_interims(objid, analysis, values)
 
         # Set result if present.
         res = values.get(defresultkey, "")
