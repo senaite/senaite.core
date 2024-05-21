@@ -52,60 +52,7 @@ deprecation.deprecated(
     "Moved to senaite.core.exportimport.instruments.parser")
 
 
-class BaseResultsImporter(Logger):
-    """Backwards compatible base results importer
-    """
-    def __init__(self):
-        super(BaseResultsImporter, self).__init__()
-
-    @property
-    @deprecate("Please use self.wf_tool instead")
-    def wf(self):
-        return self.wf_tool
-
-    @property
-    @deprecate("Please use self.sample_catalog instead")
-    def ar_catalog(self):
-        return self.sample_catalog
-
-    @property
-    @deprecate("Please use self.analysis_catalog instead")
-    def bac(self):
-        return self.analysis_catalog
-
-    @property
-    @deprecate("Please use self.senaite_catalog instead")
-    def bc(self):
-        return self.senaite_catalog
-
-    @property
-    @deprecate("Please use self.setup_catalog instead")
-    def bsc(self):
-        # BBB
-        return self.setup_catalog
-
-    @lazy_property
-    def sample_catalog(self):
-        return api.get_tool(SAMPLE_CATALOG)
-
-    @lazy_property
-    def analysis_catalog(self):
-        return api.get_tool(ANALYSIS_CATALOG)
-
-    @lazy_property
-    def setup_catalog(self):
-        return api.get_tool(SETUP_CATALOG)
-
-    @lazy_property
-    def senaite_catalog(self):
-        return api.get_tool(SENAITE_CATALOG)
-
-    @lazy_property
-    def wf_tool(self):
-        return api.get_tool("portal_workflow")
-
-
-class AnalysisResultsImporter(BaseResultsImporter):
+class AnalysisResultsImporter(Logger):
     """Results importer
     """
     def __init__(self, parser, context,
@@ -153,6 +100,58 @@ class AnalysisResultsImporter(BaseResultsImporter):
         self._override = self.override
         self._idsearch = ["getId", "getClientSampleID"]
         self._priorizedsearchcriteria = self.priorizedsearchcriteria
+
+    @property
+    @deprecate("Please use self.wf_tool instead")
+    def wf(self):
+        # BBB
+        return self.wf_tool
+
+    @property
+    @deprecate("Please use self.sample_catalog instead")
+    def ar_catalog(self):
+        # BBB
+        return self.sample_catalog
+
+    @property
+    @deprecate("Please use self.analysis_catalog instead")
+    def bac(self):
+        # BBB
+        return self.analysis_catalog
+
+    @property
+    @deprecate("Please use self.senaite_catalog instead")
+    def bc(self):
+        # BBB
+        return self.senaite_catalog
+
+    @property
+    @deprecate("Please use self.setup_catalog instead")
+    def bsc(self):
+        # BBB
+        return self.setup_catalog
+
+    @lazy_property
+    def sample_catalog(self):
+        return api.get_tool(SAMPLE_CATALOG)
+
+    @lazy_property
+    def analysis_catalog(self):
+        return api.get_tool(ANALYSIS_CATALOG)
+
+    @lazy_property
+    def setup_catalog(self):
+        return api.get_tool(SETUP_CATALOG)
+
+    @lazy_property
+    def senaite_catalog(self):
+        return api.get_tool(SENAITE_CATALOG)
+
+    @lazy_property
+    def wf_tool(self):
+        return api.get_tool("portal_workflow")
+
+
 
     @lazy_property
     def instrument(self):
