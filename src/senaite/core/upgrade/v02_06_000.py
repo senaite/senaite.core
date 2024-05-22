@@ -538,6 +538,9 @@ def fix_analysis_reject_permission(tool):
     portal = api.get_portal()
     setup = portal.portal_setup
 
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     # Reimport rolemap.xml
     setup.runImportStepFromProfile(profile, "rolemap")
 
@@ -743,6 +746,10 @@ def import_registry(tool):
     """
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
