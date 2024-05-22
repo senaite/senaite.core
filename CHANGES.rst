@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2558 Fix ValueError when upgrading from <=2614 to >=2617
 - #2550 Migrate StorageLocations to Dexterity
 - #2545 Migrate Sub Groups to Dexterity
 - #2556 Fix adding Instrument into Manufacturer view
