@@ -38,7 +38,7 @@ from zope.deprecation import deprecate
 
 ALLOWED_SAMPLE_STATES = ["sample_received", "to_be_verified"]
 ALLOWED_ANALYSIS_STATES = ["unassigned", "assigned", "to_be_verified"]
-DEFAULT_RESULT = "DefaultResult"
+DEFAULT_RESULT_KEY = "DefaultResult"
 EMPTY_MARKER = object()
 
 deprecation.deprecated(
@@ -217,6 +217,16 @@ class AnalysisResultsImporter(Logger):
         [True, True]:   Results are always overriden, also with empties
         """
         return self.override
+
+    def can_set_when_empty(self):
+        """Returns if the value can be written
+        """
+        return self.override[0]
+
+    def can_set_with_empty(self):
+        """Returns if the value can be written
+        """
+        return self.override[1]
 
     def getKeywordsToBeExcluded(self):
         """Returns a list of analysis keywords to be excluded
@@ -424,7 +434,7 @@ class AnalysisResultsImporter(Logger):
                     if capturedate:
                         values["DateTime"] = capturedate
 
-                    processed = self._process_analysis(sid, analysis, values)
+                    processed = self.process_analysis(sid, analysis, values)
                     if processed:
                         updated_analyses.append(analysis)
                         ancount += 1
@@ -495,13 +505,13 @@ class AnalysisResultsImporter(Logger):
             return []
         return interim_fields()
 
-    def process_analysis_interims(self, sid, analysis, values):
-        """Proces analysis interims
+    def set_analysis_interims(self, sid, analysis, values):
+        """Set the analysis interim fields
 
         :param sid: Sample ID
         :param analysis: Analysis object
         :param values: Dictionary of values, including the result to set
-        :returns: True if the interims has been set
+        :returns: True if the interims were written
         """
         updated = False
         keys = values.keys()
@@ -540,68 +550,155 @@ class AnalysisResultsImporter(Logger):
 
         return updated
 
-    def _process_analysis(self, objid, analysis, values):
-        """Process a single analysis result
+    def set_analysis_result(self, sid, analysis, values):
+        """Set the analysis result field
+
+        :param sid: Sample ID
+        :param analysis: Analysis object
+        :param values: Dictionary of values, including the result to set
+        :returns: True if the result was written
         """
-        acode = analysis.getKeyword()
-        capturedate = None
-        defresultkey = values.get(DEFAULT_RESULT, "Result")
-        fields_to_reindex = []
-        resultsaved = False
+        keyword = analysis.getKeyword()
+        result_key = values.get(DEFAULT_RESULT_KEY, "")
+        result = values.get(result_key, "")
+        calculation = analysis.getCalculation()
 
-        if "DateTime" in values.keys():
-            ts = values.get("DateTime")
-            capturedate = dtime.to_DT(ts)
-            if capturedate is None:
-                del values["DateTime"]
+        # Can not set result on calculated analysis
+        if calculation:
+            self.log(_("Skipping result for analysis '${keyword}' of sample "
+                       "'${sid}' with calculation '${calculation}'",
+                       mapping={
+                           "keyword": keyword,
+                           "sid": sid,
+                           "calculation": calculation.Title(),
+                       }))
+            return False
 
-        # update interims
-        resultsaved = self.process_analysis_interims(objid, analysis, values)
+        # convert capture date if set
+        date_captured = values.get("DateTime")
+        if date_captured:
+            date_captured = dtime.to_DT(date_captured)
 
-        # Set result if present.
-        res = values.get(defresultkey, "")
-        calc = analysis.getCalculation()
+        if not api.is_floatable(result) and not self.can_set_with_empty():
+            # result is not floatable and it is not allowed to set empties
+            self.log(_("${sid} result for '${keyword}' not set",
+                       mapping={
+                           "sid": sid,
+                           "keyword": keyword,
+                       }))
+            return False
 
-        # don't set results on calculated analyses
-        if not calc:
-            if api.is_floatable(res) or self.override[1]:
-                # handle non-floating values in result options
-                result_options = analysis.getResultOptions()
-                if result_options:
-                    result_values = map(
-                        lambda r: r.get("ResultValue"), result_options)
-                    if "{:.0f}".format(res) in result_values:
-                        res = int(res)
-                analysis.setResult(res)
-                if capturedate:
-                    analysis.setResultCaptureDate(capturedate)
-                resultsaved = True
+        # convert result for result options
+        result_options = analysis.getResultOptions()
+        if result_options:
+            # Handle result options as integer values
+            result_values = map(
+                lambda r: r.get("ResultValue"), result_options)
+            # check if the result is in result options
+            if "{:.0f}".format(result) in result_values:
+                # convert the result to an integer
+                result = int(result)
 
-        if resultsaved is False:
-            self.log(
-                "${request_id} result for '${analysis_keyword}' not set",
-                mapping={"request_id": objid,
-                         "analysis_keyword": acode})
+        # set the analysis result
+        analysis.setResult(result)
+        # set the result capture date
+        if date_captured:
+            analysis.setResultCaptureDate(date_captured)
 
-        if resultsaved:
-            self.save_submit_analysis(analysis)
-            fields_to_reindex.append('Result')
-            self.log(
-                "${request_id} result for '${analysis_keyword}': '${result}'",
-                mapping={"request_id": objid,
-                         "analysis_keyword": acode,
-                         "result": res})
+        self.log(_("${sid} result for '${keyword}': '${result}'",
+                   mapping={
+                       "sid": sid,
+                       "keyword": keyword,
+                       "result": result,
+                   }))
 
-        if (resultsaved) \
-           and values.get('Remarks', '') \
-           and analysis.portal_type == 'Analysis' \
-           and (analysis.getRemarks() != '' or self.override[1] is True):
-            analysis.setRemarks(values['Remarks'])
-            fields_to_reindex.append('Remarks')
+        return True
 
-        if len(fields_to_reindex):
-            analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved
+    def set_analysis_fields(self, sid, analysis, values):
+        """Set additional analysis fields
+
+        This allows to set additional analysis fields like
+        Remarks, Uncertainty LDL/UDL etc.
+
+        :param sid: Sample ID
+        :param analysis: Analysis object
+        :param values: Dictionary of values, including the result to set
+        :returns: True if the result was written
+        """
+        updated = False
+
+        fields = api.get_fields(analysis)
+        interim_fields = self.get_interim_fields(analysis)
+
+        for key, value in values.items():
+            if key not in fields:
+                # skip nonexisting fields
+                continue
+            elif key == "Result":
+                # skip the result field
+                continue
+            elif key in interim_fields:
+                # skip the interim fields
+                continue
+
+            field = fields.get(key)
+            field_value = field.get(analysis)
+
+            if field_value and not self.can_set_with_empty():
+                # skip fields with existing values
+                continue
+
+            # set the new field value, preferrably with the setter
+            setter = "set{}".format(field.getName().capitalize())
+            mutator = getattr(analysis, setter, None)
+            if mutator:
+                # we have a setter
+                mutator(value)
+            else:
+                # set with the field's set method
+                field.set(analysis, value)
+
+            updated = True
+            self.log(_("${sid} Updated field '${field}' with '${value}'",
+                       mapping={
+                           "sid": sid,
+                           "field": key,
+                           "value": field_value,
+                       }))
+
+        return updated
+
+    @deprecate("Please use self.process_analysis instead")
+    def _process_analysis(self, sid, analysis, values):
+        return self.process_analysis(sid, analysis, values)
+
+    def process_analysis(self, sid, analysis, values):
+        """Process a single analysis result
+
+        :param sid: Sample ID
+        :param analysis: Analysis object
+        :param values: Dictionary of values, including the result to set
+        :returns: True if the interims has been set
+        """
+
+        # set the analysis interim fields
+        interims_updated = self.set_analysis_interims(sid, analysis, values)
+
+        # set the analysis result
+        result_updated = self.set_analysis_result(sid, analysis, values)
+
+        # set additional field values
+        fields_updated = self.set_analysis_fields(sid, analysis, values)
+
+        # Nothing updated
+        if not any([result_updated, interims_updated, fields_updated]):
+            return False
+
+        # submit the result
+        self.save_submit_analysis(analysis)
+        analysis.reindexObject()
+
+        return True
 
     def save_submit_analysis(self, analysis):
         """Submit analysis and ignore errors
