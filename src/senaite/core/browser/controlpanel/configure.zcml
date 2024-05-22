@@ -34,5 +34,6 @@
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
   <include package=".subgroups" />
+  <include package=".storagelocations" />
 
 </configure>

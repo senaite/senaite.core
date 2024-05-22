@@ -79,6 +79,8 @@ REMOVE_AT_TYPES = [
     "ContainerTypes",
     "SubGroup",
     "SubGroups",
+    "StorageLocation",
+    "StorageLocations",
 ]
 
 CONTENT_ACTIONS = [
@@ -1062,6 +1064,65 @@ def migrate_manufacturers_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert Manufacturers to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_storagelocations_to_dx(tool):
+    """Converts existing storage locations to Dexterity
+    """
+    logger.info("Convert StorageLocations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_storagelocations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("storagelocations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "SiteTitle": ("getSiteTitle", "site_title", ""),
+        "SiteCode": ("getSiteCode", "site_code", ""),
+        "SiteDescription": ("getSiteDescription", "site_description", ""),
+        "LocationTitle": ("getLocationTitle", "location_title", ""),
+        "LocationCode": ("getLocationCode", "location_code", ""),
+        "LocationDescription": ("getLocationDescription",
+                                "location_description", ""),
+        "LocationType": ("getLocationType", "location_type", ""),
+        "ShelfTitle": ("getShelfTitle", "shelf_title", ""),
+        "ShelfCode": ("getShelfCode", "shelf_code", ""),
+        "ShelfDescription": ("getShelfDescription", "shelf_description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("StorageLocation",
+                  origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert StorageLocations to Dexterity [DONE]")
 
 
 def migrate_samplepoint_to_dx(src, destination=None):

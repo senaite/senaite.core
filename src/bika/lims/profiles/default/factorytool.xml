@@ -30,7 +30,6 @@
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>
-  <type portal_type="StorageLocation"/>
   <type portal_type="SampleType"/>
   <type portal_type="SamplingDeviation"/>
   <type portal_type="Supplier"/>

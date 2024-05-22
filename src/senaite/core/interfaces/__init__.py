@@ -311,6 +311,16 @@ class IManufacturer(Interface):
     """
 
 
+class IStorageLocations(Interface):
+    """Marker interface for storage locations setup folder
+    """
+
+
+class IStorageLocation(Interface):
+    """Marker interface for storage locations
+    """
+
+
 class IASTMImporter(Interface):
     """Marker interface for ASTM Wrappers
     """
