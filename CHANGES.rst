@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2551 Migrate InstrumentTypes to Dexterity
+- #2558 Fix ValueError when upgrading from <=2614 to >=2617
 - #2550 Migrate StorageLocations to Dexterity
 - #2545 Migrate Sub Groups to Dexterity
 - #2556 Fix adding Instrument into Manufacturer view
