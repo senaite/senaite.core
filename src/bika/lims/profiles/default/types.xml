@@ -26,8 +26,6 @@
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ContainerType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ContainerTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
@@ -53,14 +51,10 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="StorageLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SubGroups" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SubGroup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Supplier" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Suppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>

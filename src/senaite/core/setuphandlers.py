@@ -253,6 +253,9 @@ def add_senaite_setup_items(portal):
         ("samplepoints", "Sample Points", "SamplePoints"),
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
         ("manufacturers", "Manufacturers", "Manufacturers"),
+        ("containertypes", "Container Types", "ContainerTypes"),
+        ("subgroups", "SubGroups", "SubGroups"),
+        ("storagelocations", "Storage Locations", "StorageLocations"),
         ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
     ]
     setup = api.get_senaite_setup()

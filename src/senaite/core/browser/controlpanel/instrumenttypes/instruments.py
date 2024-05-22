@@ -24,6 +24,10 @@ from bika.lims.controlpanel.bika_instruments import InstrumentsView
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
 
+    def __init__(self, context, request):
+        super(InstrumentTypeInstrumentsView, self).__init__(context, request)
+        self.context_actions = {}
+
     def isItemAllowed(self, obj):
         obj = api.get_object(obj)
         itype = obj.getInstrumentType() if obj else None
