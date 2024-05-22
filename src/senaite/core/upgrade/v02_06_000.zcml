@@ -5,7 +5,7 @@
 
     <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate StorageLocations to DX"
-      description="Migrate SamplePoints to Dexterity"
+      description="Migrate StorageLocations to Dexterity"
       source="2628"
       destination="2629"
       handler=".v02_06_000.migrate_storagelocations_to_dx"

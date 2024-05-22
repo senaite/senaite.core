@@ -79,6 +79,8 @@ REMOVE_AT_TYPES = [
     "ContainerTypes",
     "SubGroup",
     "SubGroups",
+    "StorageLocation",
+    "StorageLocations",
 ]
 
 CONTENT_ACTIONS = [

@@ -23,7 +23,6 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
-from bika.lims.interfaces import IClient
 from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
@@ -122,13 +121,6 @@ class StorageLocationsView(ListingView):
                 ),
                 "toggle": True,
             }),
-            ("Owner", {
-                "title": _(
-                    "listing_storagelocations_column_owner",
-                    default="Owner",
-                ),
-                "toggle": True,
-            }),
         ))
 
         self.review_states = [
@@ -172,14 +164,5 @@ class StorageLocationsView(ListingView):
         item["LocationCode"] = obj.getLocationCode()
         item["ShelfTitle"] = obj.getShelfTitle()
         item["ShelfCode"] = obj.getShelfCode()
-
-        parent = api.get_parent(obj)
-        if IClient.providedBy(parent):
-            item["Owner"] = api.get_title(parent)
-            item["replace"]["Owner"] = get_link_for(parent)
-        else:
-            lab = self.context.bika_setup.laboratory
-            item["Owner"] = lab.Title()
-            item["replace"]["Owner"] = get_link_for(lab)
 
         return item
