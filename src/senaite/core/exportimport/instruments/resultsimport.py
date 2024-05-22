@@ -860,6 +860,10 @@ class AnalysisResultsImporter(Logger):
 
         return list(filter(self.is_analysis_allowed, analyses))
 
+    @deprecate("Please use self.find_objects instead")
+    def _getObjects(self, oid, criteria, states):
+        return self.find_objects(oid, criteria, states)
+
     def find_objects(self, oid, criteria, states):
         """Find objects
 
@@ -985,7 +989,3 @@ class AnalysisResultsImporter(Logger):
                     return analyses
 
         return analyses
-
-    @deprecate("Please use self.find_objects instead")
-    def _getObjects(self, oid, criteria, states):
-        return self.find_objects(oid, criteria, states)
