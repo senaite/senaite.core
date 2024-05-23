@@ -238,6 +238,24 @@ class AnalysisResultsImporter(Logger):
             return False
         return True
 
+    def convert_analysis_result(self, analysis, result):
+        """Convert the analysis result
+
+        :returns: Converted analysis result
+        """
+        result_options = analysis.getResultOptions()
+
+        if result_options:
+            # Handle result options as integer values
+            result_values = map(
+                lambda r: r.get("ResultValue"), result_options)
+            # check if the result is in result options
+            if "{:.0f}".format(result) in result_values:
+                # convert the result to an integer
+                return int(result)
+
+        return result
+
     def getKeywordsToBeExcluded(self):
         """Returns a list of analysis keywords to be excluded
         """
@@ -577,6 +595,11 @@ class AnalysisResultsImporter(Logger):
     def set_analysis_result(self, sid, analysis, values):
         """Set the analysis result field
 
+        Results can be only set for Analyses with no calculation assigned.
+
+        If the Analysis has already a result, it is only overridden
+        when the right override option is set.
+
         :param sid: Sample ID
         :param analysis: Analysis object
         :param values: Dictionary of values, including the result to set
@@ -600,23 +623,18 @@ class AnalysisResultsImporter(Logger):
 
         # check if non-empty result can be overwritten
         if not self.can_override_analysis_result(analysis):
-            self.log(_("${sid} result for '${keyword}' not set",
+            self.log(_("Analysis '${keyword}' of sample '${sid}' has the "
+                       "result '${result}' set, which is kept due to the "
+                       "selected no-override option",
                        mapping={
                            "sid": sid,
+                           "result": result,
                            "keyword": keyword,
                        }))
             return False
 
         # convert result for result options
-        result_options = analysis.getResultOptions()
-        if result_options:
-            # Handle result options as integer values
-            result_values = map(
-                lambda r: r.get("ResultValue"), result_options)
-            # check if the result is in result options
-            if "{:.0f}".format(result) in result_values:
-                # convert the result to an integer
-                result = int(result)
+        result = self.convert_analysis_result(analysis, result)
 
         # convert capture date if set
         date_captured = values.get("DateTime")
@@ -625,6 +643,7 @@ class AnalysisResultsImporter(Logger):
 
         # set the analysis result
         analysis.setResult(result)
+
         # set the result capture date
         if date_captured:
             analysis.setResultCaptureDate(date_captured)
