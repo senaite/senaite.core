@@ -387,12 +387,6 @@ class AnalysisResultsImporter(Logger):
             # import the results
             for result in results:
 
-                # XXX: Why this nested lookup and why delete it?
-                # Look for timestamp
-                capturedate = result.get("DateTime", {}).get("DateTime", None)
-                if capturedate:
-                    del result["DateTime"]
-
                 for keyword, values in result.items():
                     if keyword not in self.keywords:
                         # Analysis keyword doesn't exist
@@ -438,10 +432,9 @@ class AnalysisResultsImporter(Logger):
                                 attachments[wsid] = self.create_attachment(
                                     ws, infile)
 
-                    if capturedate:
-                        values["DateTime"] = capturedate
-
+                    # Process the analysis
                     processed = self.process_analysis(sid, analysis, values)
+
                     if processed:
                         updated_analyses.append(analysis)
                         ancount += 1
@@ -504,13 +497,37 @@ class AnalysisResultsImporter(Logger):
                        mapping={"updated_ars": str(len(importedars)),
                                 "updated_results": str(ancount)}))
 
-    def get_interim_fields(self, analysis):
-        """Return the interim fields of the analysis
+    @deprecate("Please use self.process_analysis instead")
+    def _process_analysis(self, sid, analysis, values):
+        return self.process_analysis(sid, analysis, values)
+
+    def process_analysis(self, sid, analysis, values):
+        """Process a single analysis result
+
+        :param sid: Sample ID
+        :param analysis: Analysis object
+        :param values: Dictionary of values, including the result to set
+        :returns: True if the interims has been set
         """
-        interim_fields = getattr(analysis, "getInterimFields", None)
-        if not callable(interim_fields):
-            return []
-        return interim_fields()
+
+        # set the analysis interim fields
+        interims_updated = self.set_analysis_interims(sid, analysis, values)
+
+        # set the analysis result
+        result_updated = self.set_analysis_result(sid, analysis, values)
+
+        # set additional field values
+        fields_updated = self.set_analysis_fields(sid, analysis, values)
+
+        # Nothing updated
+        if not any([result_updated, interims_updated, fields_updated]):
+            return False
+
+        # submit the result
+        self.save_submit_analysis(analysis)
+        analysis.reindexObject()
+
+        return True
 
     def set_analysis_interims(self, sid, analysis, values):
         """Set the analysis interim fields
@@ -570,7 +587,7 @@ class AnalysisResultsImporter(Logger):
         result = values.get(result_key, "")
         calculation = analysis.getCalculation()
 
-        # Can not set result on calculated analysis
+        # check if analysis has a calculation set
         if calculation:
             self.log(_("Skipping result for analysis '${keyword}' of sample "
                        "'${sid}' with calculation '${calculation}'",
@@ -581,13 +598,6 @@ class AnalysisResultsImporter(Logger):
                        }))
             return False
 
-        # convert capture date if set
-        date_captured = values.get("DateTime")
-        if date_captured:
-            date_captured = dtime.to_DT(date_captured)
-
-        if not api.is_floatable(result) and not self.can_set_with_empty():
-            # result is not floatable and it is not allowed to set empties
         # check if non-empty result can be overwritten
         if not self.can_override_analysis_result(analysis):
             self.log(_("${sid} result for '${keyword}' not set",
@@ -607,6 +617,11 @@ class AnalysisResultsImporter(Logger):
             if "{:.0f}".format(result) in result_values:
                 # convert the result to an integer
                 result = int(result)
+
+        # convert capture date if set
+        date_captured = values.get("DateTime")
+        if date_captured:
+            date_captured = dtime.to_DT(date_captured)
 
         # set the analysis result
         analysis.setResult(result)
@@ -677,38 +692,6 @@ class AnalysisResultsImporter(Logger):
 
         return updated
 
-    @deprecate("Please use self.process_analysis instead")
-    def _process_analysis(self, sid, analysis, values):
-        return self.process_analysis(sid, analysis, values)
-
-    def process_analysis(self, sid, analysis, values):
-        """Process a single analysis result
-
-        :param sid: Sample ID
-        :param analysis: Analysis object
-        :param values: Dictionary of values, including the result to set
-        :returns: True if the interims has been set
-        """
-
-        # set the analysis interim fields
-        interims_updated = self.set_analysis_interims(sid, analysis, values)
-
-        # set the analysis result
-        result_updated = self.set_analysis_result(sid, analysis, values)
-
-        # set additional field values
-        fields_updated = self.set_analysis_fields(sid, analysis, values)
-
-        # Nothing updated
-        if not any([result_updated, interims_updated, fields_updated]):
-            return False
-
-        # submit the result
-        self.save_submit_analysis(analysis)
-        analysis.reindexObject()
-
-        return True
-
     def save_submit_analysis(self, analysis):
         """Submit analysis and ignore errors
         """
@@ -717,15 +700,13 @@ class AnalysisResultsImporter(Logger):
         except api.APIError:
             pass
 
-    def override_analysis_result(self, analysis):
-        """Checks if the result shall be overwritten or not
+    def get_interim_fields(self, analysis):
+        """Return the interim fields of the analysis
         """
-        result = analysis.getResult()
-        override = self.getOverride()
-        # analysis has non-empty result, but it is not allowed to override
-        if result and override[0] is False:
-            return False
-        return True
+        interim_fields = getattr(analysis, "getInterimFields", None)
+        if not callable(interim_fields):
+            return []
+        return interim_fields()
 
     def calculateTotalResults(self, objid, analysis):
         """ If an AR(objid) has an analysis that has a calculation
