@@ -221,13 +221,13 @@ class AnalysisResultsImporter(Logger):
 
         :returns: True if exisiting results can be overwritten
         """
-        result = analysis.getResult()
+        analysis_result = analysis.getResult()
         empty_result = False
         if not result:
             empty_result = len(str(result).strip()) == 0
-        if result and not self.override_non_empty:
+        if analysis_result and not self.override_non_empty:
             return False
-        if empty_result and not self.override_with_empty:
+        elif empty_result and not self.override_with_empty:
             return False
         return True
 
