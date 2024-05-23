@@ -74,13 +74,11 @@
             <p class="small" i18n:translate="">
               If the system doesn't find any match (Sample, Reference Analysis
               or Duplicate), it will use the record's identifier to find matches
-              with Reference Sample IDs.
+              for Reference Sample IDs.
               <br/>
               If a Reference Sample ID is found, the system will automatically
               create a Calibration Test (Reference Analysis) and will link it to
-              the instrument selected above.
-              <br/>
-              If no instrument selected, no Calibration Test will be created for orphan IDs.
+              the selected Instrument.
             </p>
 
             <!-- Active instruments -->
