@@ -24,7 +24,7 @@
     <metal:content-core fill-slot="content-core">
 
       <form name="import"
-            class="senaite-ajax-form "
+            class="senaite-ajax-form"
             ajax-submit="1"
             method="POST" enctype="multipart/form-data">
 
