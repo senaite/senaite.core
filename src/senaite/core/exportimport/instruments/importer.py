@@ -204,23 +204,30 @@ class AnalysisResultsImporter(Logger):
         """
         return self.override
 
-    def override_when_empty(self):
+    @property
+    def override_non_empty(self):
         """Returns if the value can be written
         """
         return self.override[0] is True
 
+    @property
     def override_with_empty(self):
         """Returns if the value can be written
         """
         return self.override[1] is True
 
-    def can_override_analysis_result(self, analysis):
+    def can_override_analysis_result(self, analysis, result):
         """Checks if the result can be overwritten or not
 
         :returns: True if exisiting results can be overwritten
         """
         result = analysis.getResult()
-        if result and not self.override_when_empty():
+        empty_result = False
+        if not result:
+            empty_result = len(str(result).strip()) == 0
+        if result and not self.override_non_empty:
+            return False
+        if empty_result and not self.override_with_empty:
             return False
         return True
 
@@ -324,6 +331,12 @@ class AnalysisResultsImporter(Logger):
         self.log(_("Allowed analysis states: ${allowed_states}", mapping={
             "allowed_states": ", ".join(self.allowed_analysis_states_msg)
         }))
+        if not any([self.override_non_empty, self.override_with_empty]):
+            self.log(_("Don't override analysis results"))
+        if self.override_non_empty:
+            self.log(_("Override non-empty analysis results"))
+        if self.override_with_empty:
+            self.log(_("Override non-empty analysis results, also with empty"))
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
@@ -608,10 +621,10 @@ class AnalysisResultsImporter(Logger):
             return False
 
         # check if non-empty result can be overwritten
-        if not self.can_override_analysis_result(analysis):
+        if not self.can_override_analysis_result(analysis, result):
             self.log(_("Analysis '${keyword}' of sample '${sid}' has the "
                        "result '${result}' set, which is kept due to the "
-                       "selected no-override option",
+                       "selected override option",
                        mapping={
                            "sid": sid,
                            "result": result,
@@ -673,7 +686,7 @@ class AnalysisResultsImporter(Logger):
             field = fields.get(key)
             field_value = field.get(analysis)
 
-            if field_value and not self.override_when_empty():
+            if field_value and not self.override_non_empty:
                 # skip fields with existing values
                 continue
 
