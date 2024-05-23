@@ -12,6 +12,7 @@ Test Setups:
 - Instrument Results Import with Worksheet assigned Analyses
 - Instrument Results Import with Worksheet assigned Analyses and QCs
 - Instrument Results Import for Reference Samples
+- Instrument Results Import for Samples with Calculations
 
 
 Running this test from the buildout directory:
@@ -150,6 +151,16 @@ Reference Samples:
     ...                             ReferenceDefinition=controldef,
     ...                             Blank=False, ExpiryDate=date_future,
     ...                             ReferenceResults=control_refs)
+
+Calculation:
+
+    >>> calculation = api.create(calculations, "Calculation", title="Total Metals")
+    >>> calculation.setFormula("[Au] + [Cu] + [Fe]")
+
+Calculation Analysis Service:
+
+    >>> TM = api.create(analysisservices, "AnalysisService", title="Total Metals", Keyword="TM", Category=category)
+    >>> TM.setCalculation(calculation)
 
 
 Instrument Setup
@@ -558,3 +569,83 @@ The instrument should be marked as **valid**:
 
     >>> instrument.isQCValid()
     True
+
+
+Instrument Results Import for Samples with Calculations
+.......................................................
+
+
+We have already a service with a calculation:
+
+    >>> calc = TM.getCalculation()
+    >>> calc
+    <Calculation at .../calculation-1>
+
+It sums up the results of our metals:
+
+    >>> calc.getFormula()
+    '[Au] + [Cu] + [Fe]'
+
+And therefore, has the other analyses as dependants:
+
+    >>> deps = TM.getServiceDependencies()
+    >>> sorted(map(lambda d: d.getKeyword(), deps))
+    ['Au', 'Cu', 'Fe']
+
+Create new sample with the calculated service:
+
+    >>> sample = new_sample([TM], client, contact, sampletype)
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,Cu,Fe,end
+    ... {},1,2,3,end
+    ... """.strip().format(sample.getId())
+
+    >>> with open(os.path.join(resultsfolder, "import9.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+    >>> sample.Au.getResult()
+    '1.0'
+    >>> sample.Cu.getResult()
+    '2.0'
+    >>> sample.Fe.getResult()
+    '3.0'
+
+The result for the calculated service should be automatically applied:
+
+    >>> sample.TM.getResult()
+    '6.0'
+
+
+It is not possible to set the result for calculated analyses:
+
+    >>> sample = new_sample([TM], client, contact, sampletype)
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Au,Cu,Fe,TM,end
+    ... {},1,2,3,99,end
+    ... """.strip().format(sample.getId())
+
+    >>> with open(os.path.join(resultsfolder, "import10.csv"), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+    >>> sample.Au.getResult()
+    '1.0'
+    >>> sample.Cu.getResult()
+    '2.0'
+    >>> sample.Fe.getResult()
+    '3.0'
+    >>> sample.TM.getResult()
+    '6.0'
