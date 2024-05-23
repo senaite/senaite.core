@@ -21,48 +21,48 @@
 import inspect
 import sys
 
-from abaxis.vetscan import vs2  # noqa: 401
-from abbott.m2000rt import m2000rt  # noqa: 401
-from alere.pima import beads  # noqa: 401
-from alere.pima import cd4  # noqa: 401
-from beckmancoulter.access import model2  # noqa: 401
+from abaxis.vetscan import vs2  # noqa: F401
+from abbott.m2000rt import m2000rt  # noqa: F401
+from alere.pima import beads  # noqa: F401
+from alere.pima import cd4  # noqa: F401
+from beckmancoulter.access import model2  # noqa: F401
 from bika.lims import api
-from biodrop.ulite import ulite  # noqa: 401
-from cobasintegra.model_400_plus import model_400_plus  # noqa: 401
-from eltra.cs import cs2000  # noqa: 401
-from facscalibur.calibur import model_e9750  # noqa: 401
-from foss.fiastar import fiastar  # noqa: 401
-from foss.winescan import auto  # noqa: 401
-from foss.winescan import ft120  # noqa: 401
-from generic import two_dimension  # noqa: 401
-from genexpert import genexpert  # noqa: 401
-from horiba.jobinyvon import icp  # noqa: 401
-from lachat import quickchem  # noqa: 401
-from lifetechnologies.qubit import qubit  # noqa: 401
-from metler.toledo import dl55  # noqa: 401
-from nuclisens import easyq  # noqa: 401
-from panalytical.omnia import axios_xrf  # noqa: 401
-from rigaku.supermini import wxrf  # noqa: 401
-from rochecobas.taqman import model48  # noqa: 401
-from rochecobas.taqman import model96  # noqa: 401
-from scilvet.abc import plus  # noqa: 401
-from sealanalytical.aq2 import aq2  # noqa: 401
+from biodrop.ulite import ulite  # noqa: F401
+from cobasintegra.model_400_plus import model_400_plus  # noqa: F401
+from eltra.cs import cs2000  # noqa: F401
+from facscalibur.calibur import model_e9750  # noqa: F401
+from foss.fiastar import fiastar  # noqa: F401
+from foss.winescan import auto  # noqa: F401
+from foss.winescan import ft120  # noqa: F401
+from generic import two_dimension  # noqa: F401
+from genexpert import genexpert  # noqa: F401
+from horiba.jobinyvon import icp  # noqa: F401
+from lachat import quickchem  # noqa: F401
+from lifetechnologies.qubit import qubit  # noqa: F401
+from metler.toledo import dl55  # noqa: F401
+from nuclisens import easyq  # noqa: F401
+from panalytical.omnia import axios_xrf  # noqa: F401
+from rigaku.supermini import wxrf  # noqa: F401
+from rochecobas.taqman import model48  # noqa: F401
+from rochecobas.taqman import model96  # noqa: F401
+from scilvet.abc import plus  # noqa: F401
+from sealanalytical.aq2 import aq2  # noqa: F401
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
-from shimadzu.gcms import qp2010se  # noqa: 401
-from shimadzu.gcms import tq8030  # noqa: 401
-from shimadzu.icpe import multitype  # noqa: 401
-from shimadzu.nexera import LC2040C  # noqa: 401
-from shimadzu.nexera import LCMS8050  # noqa: 401
-from sysmex.xs import i500  # noqa: 401
-from sysmex.xs import i1000  # noqa: 401
-from sysmex.xt import i1800  # noqa: 401
-from sysmex.xt import i4000  # noqa: 401
-from tescan.tima import tima  # noqa: 401
-from thermoscientific.arena import xt20  # noqa: 401
-from thermoscientific.gallery import Ts9861x  # noqa: 401
-from thermoscientific.multiskan import go  # noqa: 401
-from varian.vistapro import icp as icp_2  # noqa: 401
+from shimadzu.gcms import qp2010se  # noqa: F401
+from shimadzu.gcms import tq8030  # noqa: F401
+from shimadzu.icpe import multitype  # noqa: F401
+from shimadzu.nexera import LC2040C  # noqa: F401
+from shimadzu.nexera import LCMS8050  # noqa: F401
+from sysmex.xs import i500  # noqa: F401
+from sysmex.xs import i1000  # noqa: F401
+from sysmex.xt import i1800  # noqa: F401
+from sysmex.xt import i4000  # noqa: F401
+from tescan.tima import tima  # noqa: F401
+from thermoscientific.arena import xt20  # noqa: F401
+from thermoscientific.gallery import Ts9861x  # noqa: F401
+from thermoscientific.multiskan import go  # noqa: F401
+from varian.vistapro import icp as icp_2  # noqa: F401
 from zope.component import getAdapters
 from zope.interface import Interface
 
