@@ -218,15 +218,25 @@ class AnalysisResultsImporter(Logger):
         """
         return self.override
 
-    def can_set_when_empty(self):
+    def override_when_empty(self):
         """Returns if the value can be written
         """
-        return self.override[0]
+        return self.override[0] is True
 
-    def can_set_with_empty(self):
+    def override_with_empty(self):
         """Returns if the value can be written
         """
-        return self.override[1]
+        return self.override[1] is True
+
+    def can_override_analysis_result(self, analysis):
+        """Checks if the result can be overwritten or not
+
+        :returns: True if exisiting results can be overwritten
+        """
+        result = analysis.getResult()
+        if result and not self.override_when_empty():
+            return False
+        return True
 
     def getKeywordsToBeExcluded(self):
         """Returns a list of analysis keywords to be excluded
@@ -578,6 +588,8 @@ class AnalysisResultsImporter(Logger):
 
         if not api.is_floatable(result) and not self.can_set_with_empty():
             # result is not floatable and it is not allowed to set empties
+        # check if non-empty result can be overwritten
+        if not self.can_override_analysis_result(analysis):
             self.log(_("${sid} result for '${keyword}' not set",
                        mapping={
                            "sid": sid,
@@ -641,7 +653,7 @@ class AnalysisResultsImporter(Logger):
             field = fields.get(key)
             field_value = field.get(analysis)
 
-            if field_value and not self.can_set_with_empty():
+            if field_value and not self.override_when_empty():
                 # skip fields with existing values
                 continue
 
