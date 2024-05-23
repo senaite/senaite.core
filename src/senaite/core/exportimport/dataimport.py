@@ -21,6 +21,7 @@
 import json
 
 from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import ISetupDataSetList
 from pkg_resources import resource_listdir
@@ -117,10 +118,16 @@ class ImportView(BrowserView):
             return self.template()
 
     def getInstruments(self):
+        """Get all instruments that have at least one import interface selected
+        """
         setup_catalog = api.get_tool(SETUP_CATALOG)
         brains = setup_catalog(portal_type="Instrument", is_active=True)
-        items = [("", "...Choose an Instrument...")]
-        for item in brains:
-            items.append((item.UID, item.Title))
+        items = [("", _("... Choose an Instrument ..."))]
+        for brain in brains:
+            instrument = api.get_object(brain)
+            if not instrument.getImportDataInterface():
+                # skip instruments w/o import interface
+                continue
+            items.append((instrument.UID(), instrument.Title()))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
