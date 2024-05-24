@@ -214,7 +214,6 @@ The instrument knows if a certification is valid/out of date::
     >>> instrument.isValid()
     True
 
-
 Allow the instrument for our services and controls:
 
     >>> Au.setInstruments([instrument])
