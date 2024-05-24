@@ -4,6 +4,8 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2560 Fix no profiles in add form on sample type and/or client change
+- #2559 Fix line breaks are not displayed for text-like results
 - #2558 Fix ValueError when upgrading from <=2614 to >=2617
 - #2550 Migrate StorageLocations to Dexterity
 - #2545 Migrate Sub Groups to Dexterity
