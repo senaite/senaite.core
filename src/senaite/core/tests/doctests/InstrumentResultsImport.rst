@@ -13,6 +13,7 @@ Test Setups:
 - Instrument Results Import with Worksheet assigned Analyses and QCs
 - Instrument Results Import for Reference Samples
 - Instrument Results Import for Samples with Calculations
+- Instrument Results Import for Samples with Partitions
 
 
 Running this test from the buildout directory:
@@ -32,6 +33,7 @@ Imports:
     >>> from bika.lims import api
     >>> from DateTime import DateTime
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest as create_sample
+    >>> from bika.lims.utils.analysisrequest import create_partition
     >>> from bika.lims.api.analysis import is_out_of_range
 
     >>> from plone.app.testing import setRoles
@@ -65,6 +67,21 @@ Helpers:
     ...         shutil.rmtree(folder)
     ...     os.mkdir(folder)
     ...     return folder
+
+    >>> def sort_analyses(analyses):
+    ...     s = sorted(analyses, key=lambda a: a.getKeyword())
+    ...     return list(s)
+
+Filename Helper:
+
+    >>> def gen_import_filename():
+    ...     counter = 0
+    ...     while True:
+    ...         counter += 1
+    ...         yield "import%s.csv" % counter
+
+    >>> filename_gen = gen_import_filename()
+    >>> new_import_filename = lambda: next(filename_gen)
 
 Variables:
 
@@ -228,7 +245,7 @@ Setup the import file:
     ... {},1,2,3,end
     ... """.strip().format(sample.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import1.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -257,7 +274,7 @@ Setup the import file:
     ... {},1,10,20,30,end
     ... """.strip().format(sample.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import2.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -290,7 +307,7 @@ Setup the import file:
     ... {},2,,,2,20,20,20,end
     ... """.strip().format(sample1.getId(), sample2.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import3.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -342,7 +359,7 @@ Setup the import file:
     ... {}, 2, 3, end
     ... """.strip().format(sample1.getId(), sample2.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import4.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -384,7 +401,7 @@ Setup the import file:
     ... {},2,end
     ... """.strip().format(sample1.getId(), sample2.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import5.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -445,7 +462,7 @@ Setup the import file:
     ... {},10,end
     ... """.strip().format(sample1.getId(), sample2.getId(), blank.getReferenceAnalysesGroupID(), control.getReferenceAnalysesGroupID())
 
-    >>> with open(os.path.join(resultsfolder, "import6.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -509,7 +526,7 @@ Setup the import file:
     ... {},200,end
     ... """.strip().format(sample1.getId(), sample2.getId(), blank.getReferenceAnalysesGroupID(), control.getReferenceAnalysesGroupID())
 
-    >>> with open(os.path.join(resultsfolder, "import7.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -558,7 +575,7 @@ Setup the import file:
     ... {},10,end
     ... """.strip().format(blank_sample.getId(), control_sample.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import8.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -603,7 +620,7 @@ Setup the import file:
     ... {},1,2,3,end
     ... """.strip().format(sample.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import9.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -634,7 +651,7 @@ Setup the import file:
     ... {},1,2,3,99,end
     ... """.strip().format(sample.getId())
 
-    >>> with open(os.path.join(resultsfolder, "import10.csv"), "w") as f:
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
     ...     f.write(data)
 
 Run the auto import:
@@ -649,3 +666,71 @@ Run the auto import:
     '3.0'
     >>> sample.TM.getResult()
     '6.0'
+
+
+Instrument Results Import for Samples with Partitions
+.....................................................
+
+Create a new root sample:
+
+    >>> sample = new_sample([Au, Cu, Fe], client, contact, sampletype)
+
+Create 2 partitions:
+
+    >>> partition1 = create_partition(sample, request, [sample.Au])
+    >>> partition2 = create_partition(sample, request, [sample.Cu, sample.Fe])
+
+Check the first partition:
+
+    >>> partition1.getParentAnalysisRequest() == sample
+    True
+
+    >>> api.get_workflow_status_of(partition1)
+    'sample_received'
+
+    >>> partition1.getAnalyses(full_objects=True)
+    [<Analysis at .../Au>]
+
+    >>> api.get_workflow_status_of(partition1)
+    'sample_received'
+
+Check the second partition:
+
+    >>> partition2.getParentAnalysisRequest() == sample
+    True
+
+    >>> api.get_workflow_status_of(partition2)
+    'sample_received'
+
+    >>> partition2.getAnalyses(full_objects=True)
+    [<Analysis at .../Cu>, <Analysis at .../Fe>]
+
+    >>> api.get_workflow_status_of(partition2)
+    'sample_received'
+
+The root sample should have no further "direct" Analyses attached and list only
+the Analyses of the partitions:
+
+    >>> sort_analyses(sample.getAnalyses(full_objects=True))
+    [<Analysis at ...-P01/Au>, <Analysis at ...-P02/Cu>, <Analysis at ...-P02/Fe>]
+
+Setup the import file for the root sample:
+
+    >>> data = """
+    ... ID,Au,Cu,Fe,end
+    ... {},1,2,3,end
+    ... """.strip().format(sample.getId())
+
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+    >>> partition1.Au.getResult()
+    '1.0'
+    >>> partition2.Cu.getResult()
+    '2.0'
+    >>> partition2.Fe.getResult()
+    '3.0'
