@@ -40,5 +40,3 @@ deprecation.deprecated(
 deprecation.deprecated(
     "InstrumentTXTResultsFileParser",
     "Moved to senaite.core.exportimport.instruments.parser")
-
-
