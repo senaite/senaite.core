@@ -346,6 +346,15 @@ class IContainerTypes(Interface):
     """
 
 
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
+    """
+
 class IIdentifierTypes(Interface):
     """TODO: Remove in senaite.core 1.3.3
     """

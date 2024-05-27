@@ -68,4 +68,8 @@
   <object name="StorageLocation" meta_type="Dexterity FTI" />
   <object name="StorageLocations" meta_type="Dexterity FTI" />
 
+  <!-- Dynamic Analysis specifications -->
+  <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
+  <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
+  
 </object>
