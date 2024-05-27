@@ -256,6 +256,7 @@ def add_senaite_setup_items(portal):
         ("containertypes", "Container Types", "ContainerTypes"),
         ("subgroups", "SubGroups", "SubGroups"),
         ("storagelocations", "Storage Locations", "StorageLocations"),
+        ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

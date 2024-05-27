@@ -311,6 +311,16 @@ class IManufacturer(Interface):
     """
 
 
+class IInstrumentType(Interface):
+    """Marker interface for an instrument type
+    """
+
+
+class IInstrumentTypes(Interface):
+    """Marker interface for instrument types
+    """
+
+
 class IStorageLocations(Interface):
     """Marker interface for storage locations setup folder
     """

@@ -69,14 +69,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IInstrumentTypes"
-      name="folder_view"
-      class=".bika_instrumenttypes.InstrumentTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ICalculations"
       name="folder_view"
       class=".bika_calculations.CalculationsView"
