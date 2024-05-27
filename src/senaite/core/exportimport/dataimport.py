@@ -125,7 +125,11 @@ class ImportView(BrowserView):
         items = [("", _("... Choose an Instrument ..."))]
         for brain in brains:
             instrument = api.get_object(brain)
-            if not instrument.getImportDataInterface():
+            # XXX: ImportDataInterface is a multi values string field!
+            interfaces = instrument.getImportDataInterface()
+            # remove empties, e.g. ['']
+            interfaces = list(filter(None, interfaces))
+            if not len(interfaces) > 0:
                 # skip instruments w/o import interface
                 continue
             items.append((instrument.UID(), instrument.Title()))
