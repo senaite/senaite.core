@@ -1334,6 +1334,33 @@ def move_dynamicanalysisspecs(tool):
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
 
+    # get the old container
+    origin = api.get_setup().get("dynamicanalysisspecs")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("dynamicanalysisspecs")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "DynamicAnalysisSpec"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        obj = api.move_object(brain, destination)
+        logger.info("MOVED DYN.AN.SPEC:{}".format(obj))
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Dynamic Analysis Specs [DONE]")
+
 
 def update_content_actions(tool):
     logger.info("Update content actions ...")
