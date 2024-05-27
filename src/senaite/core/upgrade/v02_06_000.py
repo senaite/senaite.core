@@ -1335,13 +1335,13 @@ def move_dynamicanalysisspecs(tool):
     tool.runImportStepFromProfile(profile, "typeinfo")
 
     # get the old container
-    origin = api.get_setup().get("dynamicanalysisspecs")
+    origin = api.get_setup().get("dynamic_analysisspecs")
     if not origin:
         # old container is already gone
         return
 
     # get the destination container
-    destination = get_setup_folder("dynamicanalysisspecs")
+    destination = get_setup_folder("dynamic_analysisspecs")
 
     # un-catalog the old container
     uncatalog_object(origin)
