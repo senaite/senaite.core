@@ -391,7 +391,7 @@ class AnalysisResultsImporter(Logger):
                 # Create a new ReferenceAnalysis and link it to the Instrument.
                 refsample = self.get_reference_sample_by_id(sid)
                 if not refsample:
-                    self.warn(_("No Reference Sample found for ${sid}",
+                    self.warn(_("No Sample found for ${sid}",
                                 mapping={"sid": sid}))
                     continue
 
