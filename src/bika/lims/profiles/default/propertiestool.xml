@@ -54,7 +54,6 @@
     <element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
-    <element value="InstrumentType"/>
     <element value="InstrumentLocation"/>
     <element value="InstrumentValidation"/>
     <element value="Invoice"/>
@@ -68,7 +67,6 @@
     <element value="ReferenceSample"/>
     <element value="RejectAnalysis"/>
     <element value="SamplePoint"/>
-    <element value="StorageLocation"/>
     <element value="SampleType"/>
     <element value="BatchLabel"/>
     <element value="Worksheet"/>

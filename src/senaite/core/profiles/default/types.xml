@@ -60,6 +60,18 @@
   <object name="ContainerType" meta_type="Dexterity FTI" />
   <object name="ContainerTypes" meta_type="Dexterity FTI" />
 
+  <!-- SubGroups -->
+  <object name="SubGroup" meta_type="Dexterity FTI" />
+  <object name="SubGroups" meta_type="Dexterity FTI" />
+
+  <!-- Storage Locations -->
+  <object name="StorageLocation" meta_type="Dexterity FTI" />
+  <object name="StorageLocations" meta_type="Dexterity FTI" />
+
+  <!-- Instrument Types -->
+  <object name="InstrumentType" meta_type="Dexterity FTI" />
+  <object name="InstrumentTypes" meta_type="Dexterity FTI" />
+
   <!-- Analysis Categories -->
   <object name="AnalysisCategory" meta_type="Dexterity FTI" />
   <object name="AnalysisCategories" meta_type="Dexterity FTI" />

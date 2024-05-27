@@ -6,9 +6,57 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate AnalysisCategories to DX"
       description="Migrate AnalysisCategories to Dexterity"
+      source="2630"
+      destination="2631"
+      handler=".v02_06_000.migrate_analysiscategories_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Instrument Types to DX"
+      description="Migrate Instrument Types to Dexterity"
+      source="2629"
+      destination="2630"
+      handler=".v02_06_000.migrate_instrumenttypes_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate StorageLocations to DX"
+      description="Migrate StorageLocations to Dexterity"
+      source="2628"
+      destination="2629"
+      handler=".v02_06_000.migrate_storagelocations_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Update SubGroups typeinfo (fix)"
+      description="Update SubGroups typeinfo (fix)"
+      source="2627"
+      destination="2628"
+      handler=".v02_06_000.update_typeinfo_subgroups_fix"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate SubGroups to DX"
+      description="Migrate SubGroups to Dexterity"
+      source="2626"
+      destination="2627"
+      handler=".v02_06_000.migrate_subgroups_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove contact metadata from sample catalog"
+      description="Remove contact metadata from sample catalog"
+      source="2625"
+      destination="2626"
+      handler=".v02_06_000.remove_contact_metadata"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getSamplerFullName from catalogs"
+      description="Remove getSamplerFullName from catalogs"
       source="2624"
       destination="2625"
-      handler=".v02_06_000.migrate_analysiscategories_to_dx"
+      handler=".v02_06_000.remove_sampler_fullname"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

@@ -14,9 +14,9 @@
      tal:attributes="class klass">
 
     <span i18n:translate="coordinate_widget_display">DMS
-      <tal:i18n i18n:name="degrees" tal:replace="degrees"/>°
-      <tal:i18n i18n:name="minutes" tal:replace="minutes"/>′
-      <tal:i18n i18n:name="seconds" tal:replace="seconds"/>″
+      <tal:i18n i18n:name="degrees" tal:replace="degrees"/>&deg;
+      <tal:i18n i18n:name="minutes" tal:replace="minutes"/>'
+      <tal:i18n i18n:name="seconds" tal:replace="seconds"/>"
       <tal:i18n i18n:name="bearing" tal:replace="bearing"/>
     </span>
   </div>
