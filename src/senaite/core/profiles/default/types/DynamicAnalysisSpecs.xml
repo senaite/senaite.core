@@ -45,8 +45,8 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.dynamic_analysisspecs.IDynamicAnalysisSpecsSchema</property>
-  <property name="klass">senaite.core.dynamic_analysisspecs.DynamicAnalysisSpecs</property>
+  <property name="schema">senaite.core.content.dynamic_analysisspecs.IDynamicAnalysisSpecsSchema</property>
+  <property name="klass">senaite.core.content.dynamic_analysisspecs.DynamicAnalysisSpecs</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
