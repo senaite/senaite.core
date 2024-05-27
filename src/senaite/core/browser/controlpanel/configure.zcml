@@ -23,6 +23,7 @@
   <include package=".analysisprofiles" />
   <include package=".containertypes" />
   <include package=".departments" />
+  <include package=".dynamic_analysisspecs" />
   <include package=".instrumentlocations" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
