@@ -476,7 +476,7 @@ class Instrument(ATFolder):
             "sort_order": "descending",
             # Do not rely on DateIndex!
             # It has a resolution of 1 second, which might give us the wrong
-            # analysis here (see woraround below)
+            # analysis here (see workaround below)
             # "sort_limit": 1
         }
         brains = api.search(query, ANALYSIS_CATALOG)
