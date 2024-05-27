@@ -353,3 +353,13 @@ class IContainerTypes(Interface):
 class IContainerType(Interface):
     """Marker interface for container type
     """
+
+
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
+    """
