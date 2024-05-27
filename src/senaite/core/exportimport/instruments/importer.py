@@ -22,6 +22,7 @@ import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
 from plone.memoize.view import memoize_contextless
 from senaite.core.api import dtime
@@ -875,9 +876,7 @@ class AnalysisResultsImporter(Logger):
     def is_analysis_allowed(self, analysis):
         """Filter analyses that match the import criteria
         """
-        portal_type = api.get_portal_type(analysis)
-        if portal_type != "Analysis":
-            # Reference Analysis / Duplicate Analysis
+        if IReferenceAnalysis.providedBy(analysis):
             return True
         # Routine Analyses must be in the allowed WF states
         status = api.get_workflow_status_of(analysis)
