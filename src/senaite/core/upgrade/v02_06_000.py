@@ -75,6 +75,14 @@ REMOVE_AT_TYPES = [
     "SampleTemplates",
     "Manufacturer",
     "Manufacturers",
+    "ContainerType",
+    "ContainerTypes",
+    "SubGroup",
+    "SubGroups",
+    "StorageLocation",
+    "StorageLocations",
+    "InstrumentType",
+    "InstrumentTypes",
     "SamplingDeviation",
     "SamplingDeviations",
 ]
@@ -534,6 +542,9 @@ def fix_analysis_reject_permission(tool):
     portal = api.get_portal()
     setup = portal.portal_setup
 
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     # Reimport rolemap.xml
     setup.runImportStepFromProfile(profile, "rolemap")
 
@@ -739,6 +750,10 @@ def import_registry(tool):
     """
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
@@ -1063,6 +1078,113 @@ def migrate_manufacturers_to_dx(tool):
 
 
 @upgradestep(product, version)
+def migrate_instrumenttypes_to_dx(tool):
+    """Converts existing instrument types to Dexterity
+    """
+    logger.info("Convert Instrument Types to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_instrumenttypes")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("instrumenttypes")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("InstrumentType",
+                  origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Instrument Types to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_storagelocations_to_dx(tool):
+    """Converts existing storage locations to Dexterity
+    """
+    logger.info("Convert StorageLocations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_storagelocations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("storagelocations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "SiteTitle": ("getSiteTitle", "site_title", ""),
+        "SiteCode": ("getSiteCode", "site_code", ""),
+        "SiteDescription": ("getSiteDescription", "site_description", ""),
+        "LocationTitle": ("getLocationTitle", "location_title", ""),
+        "LocationCode": ("getLocationCode", "location_code", ""),
+        "LocationDescription": ("getLocationDescription",
+                                "location_description", ""),
+        "LocationType": ("getLocationType", "location_type", ""),
+        "ShelfTitle": ("getShelfTitle", "shelf_title", ""),
+        "ShelfCode": ("getShelfCode", "shelf_code", ""),
+        "ShelfDescription": ("getShelfDescription", "shelf_description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("StorageLocation",
+                  origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert StorageLocations to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
 def migrate_samplingdeviations_to_dx(tool):
     """Converts existing sampling deviations to Dexterity
     """
@@ -1201,6 +1323,110 @@ def migrate_samplepoint_to_dx(src, destination=None):
     return target
 
 
+@upgradestep(product, version)
+def migrate_containertypes_to_dx(tool):
+    """Converts existing container types to Dexterity
+    """
+    logger.info("Convert ContainerTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_containertypes")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("containertypes")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("ContainerType", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert ContainerTypes to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def update_typeinfo_subgroups_fix(tool):
+    """Fix sub groups typeinfo
+    """
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+
+@upgradestep(product, version)
+def migrate_subgroups_to_dx(tool):
+    """Converts existing sub groups to Dexterity
+    """
+    logger.info("Convert SubGroups to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_subgroups")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("subgroups")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "SortKey": ("getSortKey", "sort_key", "")
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("SubGroup", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert SubGroups to Dexterity [DONE]")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")
@@ -1325,3 +1551,27 @@ def remove_creator_fullname(tool):
     del_metadata(REPORT_CATALOG, "getCreatorFullName")
 
     logger.info("Removing getCreatorFullName from catalogs [DONE]")
+
+
+def remove_contact_metadata(tool):
+    """Remove contact metadata from sample catalog
+    """
+    logger.info("Removing contact metadata from catalogs ...")
+
+    del_metadata(SAMPLE_CATALOG, "getContactEmail")
+    del_metadata(SAMPLE_CATALOG, "getContactFullName")
+    del_metadata(SAMPLE_CATALOG, "getContactUsername")
+    del_metadata(SAMPLE_CATALOG, "getContactURL")
+
+    logger.info("Removing contact metadata from catalogs [DONE]")
+
+
+def remove_sampler_fullname(tool):
+    """Remove getSamplerFullName from catalogs
+    """
+    logger.info("Removing getSamplerFullName from catalogs ...")
+
+    del_index(SAMPLE_CATALOG, "getSamplerFullName")
+    del_metadata(SAMPLE_CATALOG, "getSamplerFullName")
+
+    logger.info("Removing getSamplerFullName from catalogs [DONE]")

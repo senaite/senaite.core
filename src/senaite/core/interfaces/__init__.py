@@ -248,6 +248,16 @@ class ISampleTemplate(Interface):
     """
 
 
+class ISubGroup(Interface):
+    """Marker interface for subgroup
+    """
+
+
+class ISubGroups(Interface):
+    """Marker interface for subgroups setup folder
+    """
+
+
 class ISamplingDeviation(Interface):
     """Sampling Deviation
     """
@@ -311,6 +321,26 @@ class IManufacturer(Interface):
     """
 
 
+class IInstrumentType(Interface):
+    """Marker interface for an instrument type
+    """
+
+
+class IInstrumentTypes(Interface):
+    """Marker interface for instrument types
+    """
+
+
+class IStorageLocations(Interface):
+    """Marker interface for storage locations setup folder
+    """
+
+
+class IStorageLocation(Interface):
+    """Marker interface for storage locations
+    """
+
+
 class IASTMImporter(Interface):
     """Marker interface for ASTM Wrappers
     """
@@ -333,3 +363,13 @@ class IClientAwareMixin(Interface):
     def getClientUID(self):
         """Returns the client UID this object is bound to, if any
         """
+
+
+class IContainerTypes(Interface):
+    """Marker interface for container types setup folder
+    """
+
+
+class IContainerType(Interface):
+    """Marker interface for container type
+    """

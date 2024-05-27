@@ -16,14 +16,12 @@
   <type portal_type="Calculation"/>
   <type portal_type="Client"/>
   <type portal_type="Contact"/>
-  <type portal_type="ContainerType"/>
   <type portal_type="IdentifierType"/>
   <type portal_type="Instrument"/>
   <type portal_type="InstrumentCalibration"/>
   <type portal_type="InstrumentCertification"/>
   <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentScheduledTask"/>
-  <type portal_type="InstrumentType"/>
   <type portal_type="InstrumentValidation"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
@@ -31,9 +29,7 @@
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>
-  <type portal_type="StorageLocation"/>
   <type portal_type="SampleType"/>
-  <type portal_type="SubGroup"/>
   <type portal_type="Supplier"/>
   <type portal_type="SupplierContact"/>
   <type portal_type="WorksheetTemplate"/>
