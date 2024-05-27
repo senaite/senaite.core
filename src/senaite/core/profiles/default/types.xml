@@ -68,4 +68,8 @@
   <object name="StorageLocation" meta_type="Dexterity FTI" />
   <object name="StorageLocations" meta_type="Dexterity FTI" />
 
+  <!-- Instrument Types -->
+  <object name="InstrumentType" meta_type="Dexterity FTI" />
+  <object name="InstrumentTypes" meta_type="Dexterity FTI" />
+
 </object>
