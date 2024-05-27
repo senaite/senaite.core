@@ -8,6 +8,7 @@ Test Setups:
 - Basic Instrument Results Import
 - Basic Instrument Results Import with Interims
 - Instrument Results Import for multiple Samples with Interims
+- Basic Instrument Results Import with Result Options
 - Instrument Results Import with unbalanced CSV file
 - Instrument Results Import with Worksheet assigned Analyses
 - Instrument Results Import with Worksheet assigned Analyses and QCs
@@ -130,12 +131,25 @@ Standard Analysis Services:
 
 Intrim Analysis Service:
 
-    >>> int1 = {'keyword': 'int1', 'title': 'Interim 1', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> int2 = {'keyword': 'int2', 'title': 'Interim 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> int3 = {'keyword': 'int3', 'title': 'Interim 3', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> int1 = {"keyword": "int1", "title": "Interim 1", "value": 0, "type": "int", "hidden": False, "unit": ""}
+    >>> int2 = {"keyword": "int2", "title": "Interim 2", "value": 0, "type": "int", "hidden": False, "unit": ""}
+    >>> int3 = {"keyword": "int3", "title": "Interim 3", "value": 0, "type": "int", "hidden": False, "unit": ""}
 
     >>> Int = api.create(analysisservices, "AnalysisService", title="Interim Service", Keyword="Int", Category=category)
     >>> Int.setInterimFields([int1, int2, int3])
+
+Analysis Service with Result Options:
+
+    >>> black  = {"ResultValue": "0.0", "ResultText": "Black"}
+    >>> red    = {"ResultValue": "1", "ResultText": "Red"}
+    >>> green  = {"ResultValue": "2", "ResultText": "Green"}
+    >>> blue   = {"ResultValue": "3", "ResultText": "Blue"}
+    >>> white  = {"ResultValue": "6.0", "ResultText": "White"}
+    >>> colors = [black, red, green, blue, white]
+
+    >>> Color = api.create(analysisservices, "AnalysisService", title="Color", Keyword="Color", Category=category)
+    >>> Color.setResultOptions(colors)
+    >>> Color.setResultType("select")
 
 Reference definition for a blank:
 
@@ -342,6 +356,47 @@ Test the results of the second sample:
     '20'
 
 
+Basic Instrument Results Import with Result Options
+...................................................
+
+Add a new sample:
+
+    >>> sample1 = new_sample([Color], client, contact, sampletype)
+    >>> sample2 = new_sample([Color], client, contact, sampletype)
+    >>> sample3 = new_sample([Color], client, contact, sampletype)
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Color,end
+    ... {},0.0,end
+    ... {},1,end
+    ... {},6.0,end
+    ... """.strip().format(sample1.getId(), sample2.getId(), sample3.getId())
+
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+    >>> sample1.Color.getResult()
+    '0.0'
+    >>> sample1.Color.getFormattedResult()
+    'Black'
+
+    >>> sample2.Color.getResult()
+    '1'
+    >>> sample2.Color.getFormattedResult()
+    'Red'
+
+    >>> sample3.Color.getResult()
+    '6.0'
+    >>> sample3.Color.getFormattedResult()
+    'White'
+
+
 Instrument Results Import with unbalanced CSV file
 ..................................................
 
@@ -418,12 +473,12 @@ Test the results:
 The import CSV file should be attached to each analysis:
 
     >>> sample1.Au.getAttachment()[0].getFilename()
-    'import5.csv'
+    'import6.csv'
 
     >>> print(sample1.Au.getAttachment()[0].getAttachmentFile().data)
     ID,Au,end
-    W-0007,1,end
-    W-0008,2,end
+    W-0010,1,end
+    W-0011,2,end
 
 
 Instrument Results Import with Worksheet assigned Analyses and QCs

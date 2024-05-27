@@ -249,16 +249,25 @@ class AnalysisResultsImporter(Logger):
 
         :returns: Converted analysis result
         """
+
         result_options = analysis.getResultOptions()
+        result_type = analysis.getResultType()
 
         if result_options:
             # Handle result options as integer values
             result_values = map(
                 lambda r: r.get("ResultValue"), result_options)
-            # check if the result is in result options
-            if "{:.0f}".format(result) in result_values:
-                # convert the result to an integer
-                return int(result)
+
+            # NOTE: The method `setResult` converts numeric result to a float.
+            # However, result options can be set as integer or float values.
+            # Even if we import the result from as an integer, e.g. `1`, the
+            # result is set as `1.0`.
+            if result_type == "select":
+                # check if an integer result value is set in the result options
+                if "{:.0f}".format(result) in result_values:
+                    # convert the result to an integer value to avoid further
+                    # processing in `setResult`
+                    return int(result)
 
         return result
 
