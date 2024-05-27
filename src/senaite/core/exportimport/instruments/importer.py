@@ -321,15 +321,6 @@ class AnalysisResultsImporter(Logger):
             return None
         return api.get_object(results[0])
 
-    def get_sample_by_id(self, sid):
-        """Get a  sample by ID
-        """
-        query = {"portal_type": "AnalysisRequest", "getId": sid}
-        results = api.search(query, SAMPLE_CATALOG)
-        if len(results) == 0:
-            return None
-        return api.get_object(results[0])
-
     def get_attachment_type_by_title(self, title):
         """Get an attachment type by title
 
@@ -378,8 +369,6 @@ class AnalysisResultsImporter(Logger):
         importedars = {}
 
         for sid, results in parsed_results.items():
-            # get the sample
-            sample = self.get_sample_by_id(sid)
             refsample = None
 
             # fetch all analyses for the given sample ID
