@@ -149,12 +149,12 @@
     />
 
     <!-- Dynamic Analysis Specifications -->
-    <browser:page
+    <!-- <browser:page
       for="bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs"
       name="view"
       class=".dynamic_analysisspecs.DynamicAnalysisSpecsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+    /> -->
 
 </configure>

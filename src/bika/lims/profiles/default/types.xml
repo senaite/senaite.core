@@ -66,7 +66,7 @@
  <object name="WorksheetTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AutoImportLog" meta_type="Factory-based Type Information with dynamic views"/>
  <!-- Dexterity -->
- <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
- <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
+ <!-- <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
+ <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" /> -->
  <!-- /Dexterity -->
 </object>
