@@ -21,7 +21,7 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
@@ -57,15 +57,8 @@ class InstrumentTypesView(ListingView):
             "listing_instrumenttypes_title",
             default="Instrument Types")
         )
-        self.description = ""
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/instrumenttype_big.png"
-        )
-
-        self.show_select_row = False
+        self.icon = api.get_icon("InstrumentTypes", html_tag=False)
         self.show_select_column = True
-        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("Title", {
