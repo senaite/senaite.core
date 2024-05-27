@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.interfaces import IRoutineAnalysis
+from plone.memoize.view import memoize_contextless
 from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -302,6 +303,7 @@ class AnalysisResultsImporter(Logger):
 
         return keywords
 
+    @memoize_contextless
     def is_valid_keyword(self, keyword):
         """Check if the keyword is valid
         """
