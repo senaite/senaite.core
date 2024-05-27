@@ -6,14 +6,14 @@
 
     <browser:page
       name="view"
-      for="senaite.core.content.dynamic_analysisspec.IDynamicAnalysisSpec"
+      for="senaite.core.interfaces.IDynamicAnalysisSpec"
       class=".dynamic_analysisspec.DynamicAnalysisSpecView"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
     <browser:page
-      for="senaite.core.content.dynamic_analysisspecs.IDynamicAnalysisSpecs"
+      for="senaite.core.interfaces.IDynamicAnalysisSpecs"
       name="view"
       class=".view.DynamicAnalysisSpecsView"
       permission="senaite.core.permissions.ManageBika"
