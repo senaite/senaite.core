@@ -1326,6 +1326,15 @@ def migrate_subgroups_to_dx(tool):
     logger.info("Convert SubGroups to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
+def move_dynamicanalysisspecs(tool):
+    """Move dynamic analysis specs to senaite package
+    """
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")

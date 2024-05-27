@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
     <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Dynamic Analysis Specs to Senaite core"
+      description="Move Dynamic Analysis Specs to Senaite core"
+      source="2629"
+      destination="2630"
+      handler=".v02_06_000.move_dynamicanalysisspecs"
+      profile="senaite.core:default"/>
+
+    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate StorageLocations to DX"
       description="Migrate StorageLocations to Dexterity"
       source="2628"
