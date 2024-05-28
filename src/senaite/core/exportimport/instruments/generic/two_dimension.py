@@ -23,7 +23,7 @@ import re
 import traceback
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
@@ -38,7 +38,7 @@ title = "2-Dimensional-CSV"
 
 
 def Import(context, request):
-    """ Read Dimensional-CSV analysis results
+    """Read Dimensional-CSV analysis results
     """
     form = request.form
     # TODO form['file'] sometimes returns a list
@@ -213,6 +213,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                          mapping={"index": str(i + 1),
                                   "token": token},
                          numline=self._numline, line=line)
+                continue
 
             result = quantitation[quantitation['DefaultResult']]
             column_name = quantitation['DefaultResult']

@@ -485,24 +485,39 @@ class Instrument(ATFolder):
         is one single Reference Analysis from the group with an out-of-range
         result, the function returns False
         """
-        query = {"portal_type": "ReferenceAnalysis",
-                 "getInstrumentUID": self.UID(),
-                 "sort_on": "getResultCaptureDate",
-                 "sort_order": "reverse",
-                 "sort_limit": 1,}
+        query = {
+            "portal_type": "ReferenceAnalysis",
+            "getInstrumentUID": self.UID(),
+            "sort_on": "getResultCaptureDate",
+            "sort_order": "descending",
+            # Do not rely on DateIndex!
+            # It has a resolution of 1 second, which might give us the wrong
+            # analysis here (see workaround below)
+            # "sort_limit": 1
+        }
         brains = api.search(query, ANALYSIS_CATALOG)
+
         if len(brains) == 0:
             # There are no Reference Analyses assigned to this instrument yet
             return True
+
+        # NOTE: The `DateIndex` used for sorting has a resolution of 1 second,
+        # which might return the wrong result. Therefore, we sort manually
+        brains = sorted(
+            brains, key=lambda b: b.getResultCaptureDate, reverse=1)
 
         # Look for siblings. These are the QC Analyses that were created
         # together with this last ReferenceAnalysis and for the same Reference
         # Sample. If they were added through "Add Reference Analyses" in a
         # Worksheet, they typically appear in the same slot.
         group_id = brains[0].getReferenceAnalysesGroupID
-        query = {"portal_type": "ReferenceAnalysis",
-                 "getInstrumentUID": self.UID(),
-                 "getReferenceAnalysesGroupID": group_id,}
+        query = {
+            "portal_type": "ReferenceAnalysis",
+            "getInstrumentUID": self.UID(),
+            "getReferenceAnalysesGroupID": group_id,
+            "sort_on": "getResultCaptureDate",
+            "sort_order": "descending",
+        }
         brains = api.search(query, ANALYSIS_CATALOG)
         for brain in brains:
             analysis = api.get_object(brain)
