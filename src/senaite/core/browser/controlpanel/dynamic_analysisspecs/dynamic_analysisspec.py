@@ -22,8 +22,8 @@ import collections
 
 import six
 
-from bika.lims import _
 from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
 from senaite.app.listing.view import ListingView
 
 
@@ -33,16 +33,18 @@ class DynamicAnalysisSpecView(ListingView):
     def __init__(self, context, request):
         super(DynamicAnalysisSpecView, self).__init__(context, request)
 
-        self.pagesize = 50
         self.context_actions = {}
-        self.title = api.get_title(self.context)
-        self.description = api.get_description(self.context)
         self.show_search = False
         self.show_column_toggles = False
+        self.title = api.get_title(self.context)
+        self.description = api.get_description(self.context)
 
         if self.context.specs_file:
-            filename = self.context.specs_file.filename
-            self.description = _("Contents of the file {}".format(filename))
+            self.description = "{} {}".format(
+                 _(
+                    "dynamic_analysisspec_description",
+                    default="Contents of the file"
+                 ), self.context.specs_file.filename)
 
         self.specs = self.context.get_specs()
         self.total = len(self.specs)
@@ -56,19 +58,16 @@ class DynamicAnalysisSpecView(ListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("All"),
+                "title": _(
+                    "listing_dynamic_analysisspec_state_all",
+                    default="All"
+                ),
                 "contentFilter": {},
                 "transitions": [],
                 "custom_transitions": [],
                 "columns": self.columns.keys()
             }
         ]
-
-    def update(self):
-        super(DynamicAnalysisSpecView, self).update()
-
-    def before_render(self):
-        super(DynamicAnalysisSpecView, self).before_render()
 
     def make_empty_item(self, record):
         """Create a new empty item

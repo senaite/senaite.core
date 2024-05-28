@@ -1333,6 +1333,7 @@ def move_dynamicanalysisspecs(tool):
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
     origin = api.get_setup().get("dynamic_analysisspecs")
@@ -1351,8 +1352,7 @@ def move_dynamicanalysisspecs(tool):
     brains = api.search(query, SETUP_CATALOG)
 
     for brain in brains:
-        obj = api.move_object(brain, destination)
-        logger.info("MOVED DYN.AN.SPEC:{}".format(obj))
+        api.move_object(brain, destination, check_constraints=False)
 
     if len(origin) == 0:
         delete_object(origin)

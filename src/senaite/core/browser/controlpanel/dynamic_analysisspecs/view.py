@@ -20,12 +20,13 @@
 
 import collections
 
-from bika.lims import _
 from bika.lims import api
-from bika.lims.catalog import SETUP_CATALOG
-from senaite.core.permissions import AddAnalysisSpec
-from bika.lims.utils import get_link
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate
+from senaite.core.permissions import AddAnalysisSpec
 
 
 class DynamicAnalysisSpecsView(ListingView):
@@ -41,60 +42,71 @@ class DynamicAnalysisSpecsView(ListingView):
             "portal_type": "DynamicAnalysisSpec",
             "sort_on": "created",
             "sort_order": "descending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            },
         }
 
         self.context_actions = {
-            _("Add"): {
+            _("listing_dynamic_analysisspec_action_add", default="Add"): {
                 "url": "++add++DynamicAnalysisSpec",
                 "permission": AddAnalysisSpec,
-                "icon": "++resource++bika.lims.images/add.png"}
+                "icon": "senaite_theme/icon/plus"
             }
+        }
 
-        self.icon = "{}/{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images",
-            "analysisspec_big.png"
+        self.icon = api.get_icon("DynamicAnalysisSpecs", html_tag=False)
+
+        self.title = translate(_(
+            "listing_dynamic_analysisspecs_title",
+            default="Dynamic Analysis Specifications")
         )
-
-        self.title = self.context.Title()
         self.description = self.context.Description()
         self.show_select_column = True
-        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Title"),
+                "title": _(
+                    "listing_dynamic_analysisspecs_column_title",
+                    default="Title"
+                ),
                 "index": "sortable_title"}),
             ("Description", {
-                "title": _("Description"),
-                "index": "Description"}),
+                "title": _(
+                    "listing_dynamic_analysisspecs_column_description",
+                    default="Description"
+                ),
+                "toggle": True}),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    "listing_dynamic_analysisspecs_state_active",
+                    default="Active"
+                ),
                 "contentFilter": {"is_active": True},
-                "transitions": [],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
-                "contentFilter": {'is_active': False},
-                "transitions": [],
+                "title": _(
+                    "listing_dynamic_analysisspecs_state_inactive",
+                    default="Inactive"
+                ),
+                "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    "listing_dynamic_analysisspecs_state_all",
+                    default="All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
         ]
-
-    def update(self):
-        """Update hook
-        """
-        super(DynamicAnalysisSpecsView, self).update()
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -104,6 +116,5 @@ class DynamicAnalysisSpecsView(ListingView):
             the template
         :index: current index of the item
         """
-        item["replace"]["Title"] = get_link(
-            api.get_url(obj), value=api.get_title(obj))
+        item["replace"]["Title"] = get_link_for(obj)
         return item
