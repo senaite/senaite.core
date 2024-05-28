@@ -235,22 +235,38 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                 ),
 
     RecordsField(
-        'ResultFilesFolder',
-        subfields=('InterfaceName', 'Folder'),
-        subfield_labels={'InterfaceName': _('Interface Code'),
-                         'Folder': _('Folder that results will be saved')},
-        subfield_readonly={'InterfaceName': True,
-                           'Folder': False},
+        "ResultFilesFolder",
+        subfields=("InterfaceName", "Folder"),
+        subfield_labels={
+            "InterfaceName": _("subfield_label_instrument_interface_name",
+                               default="Interface Code"),
+            "Folder": _("subfield_label_instrument_import_folder",
+                        default="Folder to import the instrument results from")
+        },
+        subfield_sizes={
+            "InterfaceName": 40,
+            "Folder": 80,
+        },
+        subfield_maxlength={
+            "Folder": 256,
+        },
+        subfield_readonly={
+            "InterfaceName": True,
+            "Folder": False
+        },
         widget=RecordsWidget(
-            label=_("Result files folders"),
-            description=_("For each interface of this instrument, \
-                      you can define a folder where \
-                      the system should look for the results files while \
-                      automatically importing results. Having a folder \
-                      for each Instrument and inside that folder creating \
-                      different folders for each of its Interfaces \
-                      can be a good approach. You can use Interface codes \
-                      to be sure that folder names are unique."),
+            label=_("label_instrument_result_file_folder",
+                    default="Result files folders"),
+            description=_("description_instrument_result_file_folder",
+                          default="For each interface of this instrument, "
+                                  "you can define a folder where the system "
+                                  "should look for the results files while "
+                                  "automatically importing results. Having a "
+                                  "folder for each Instrument and inside that "
+                                  "folder creating different folders for each "
+                                  "of its Interfaces can be a good approach. "
+                                  "You can use Interface codes to be sure "
+                                  "that folder names are unique."),
             visible=True,
         ),
     ),
