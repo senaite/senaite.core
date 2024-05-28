@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2555 Instrument Results Importer/Parser improvements and fixtures
 - #2551 Migrate InstrumentTypes to Dexterity
 - #2560 Fix no profiles in add form on sample type and/or client change
 - #2559 Fix line breaks are not displayed for text-like results

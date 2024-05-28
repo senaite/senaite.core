@@ -1,6 +1,8 @@
 Instruments import interface
 ----------------------------
-We are going to test all instruments import interfaces on this one doctest
+
+We are going to test all instruments import interfaces:
+
 1. These files can only be added on `tests/files/instruments/`
 2. The filenames(files to be imported) have to have the same name as their
    import data interface i.e
