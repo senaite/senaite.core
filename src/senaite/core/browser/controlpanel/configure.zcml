@@ -25,6 +25,7 @@
   <include package=".departments" />
   <include package=".dynamic_analysisspecs" />
   <include package=".instrumentlocations" />
+  <include package=".instrumenttypes" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
   <include package=".manufacturers" />

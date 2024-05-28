@@ -3,15 +3,23 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-    <genericsetup:upgradeStep
+   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Dynamic Analysis Specs to Senaite core"
       description="Move Dynamic Analysis Specs to Senaite core"
-      source="2629"
-      destination="2630"
+      source="2630"
+      destination="2631"
       handler=".v02_06_000.move_dynamicanalysisspecs"
       profile="senaite.core:default"/>
 
-    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Instrument Types to DX"
+      description="Migrate Instrument Types to Dexterity"
+      source="2629"
+      destination="2630"
+      handler=".v02_06_000.migrate_instrumenttypes_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate StorageLocations to DX"
       description="Migrate StorageLocations to Dexterity"
       source="2628"
@@ -19,7 +27,7 @@
       handler=".v02_06_000.migrate_storagelocations_to_dx"
       profile="senaite.core:default"/>
 
-    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Update SubGroups typeinfo (fix)"
       description="Update SubGroups typeinfo (fix)"
       source="2627"
@@ -27,7 +35,7 @@
       handler=".v02_06_000.update_typeinfo_subgroups_fix"
       profile="senaite.core:default"/>
 
-    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate SubGroups to DX"
       description="Migrate SubGroups to Dexterity"
       source="2626"

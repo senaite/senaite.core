@@ -252,6 +252,7 @@ def add_senaite_setup_items(portal):
         ("containertypes", "Container Types", "ContainerTypes"),
         ("subgroups", "SubGroups", "SubGroups"),
         ("storagelocations", "Storage Locations", "StorageLocations"),
+        ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
         ("dynamic_analysisspecs", "Dynamic Analysis Specifications",
          "DynamicAnalysisSpecs"),
     ]
