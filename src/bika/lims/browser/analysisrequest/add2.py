@@ -18,9 +18,11 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 from collections import OrderedDict
 from datetime import datetime
 
+import six
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -1910,3 +1912,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "success": message,
             "redirect_to": redirect_to,
         }
+
+    def get_json(self, encoding="utf8"):
+        """Extracts the JSON from the request
+        """
+        body = self.request.get("BODY", "{}")
+
+        def encode_hook(pairs):
+            """This hook is called for dicitionaries on JSON deserialization
+
+            It is used to encode unicode strings with the given encoding,
+            because ZCatalogs have sometimes issues with unicode queries.
+            """
+            new_pairs = []
+            for key, value in pairs.iteritems():
+                # Encode the key
+                if isinstance(key, six.string_types):
+                    key = key.encode(encoding)
+                # Encode the value
+                if isinstance(value, six.string_types):
+                    value = value.encode(encoding)
+                new_pairs.append((key, value))
+            return dict(new_pairs)
+
+        return json.loads(body, object_hook=encode_hook)

@@ -1184,6 +1184,52 @@ class window.AnalysisRequestAdd
       window.bika.lims.portalMessage msg
       window.scroll 0, 0
 
+  get_json: (endpoint, options) ->
+    ###
+     * Fetch Ajax API resource from the server
+     * @param {string} endpoint
+     * @param {object} options
+     * @returns {Promise}
+    ###
+    options ?= {}
+
+    method = options.method or "POST"
+    data = JSON.stringify(options.data) or "{}"
+
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+
+    # Always notify Ajax end
+    me = this
+    $(me).trigger "ajax:start"
+
+    init =
+      method: method
+      headers:
+        "Content-Type": "application/json"
+        "X-CSRF-TOKEN": @get_csrf_token()
+      body: if method is "POST" then data else null
+      credentials: "include"
+    console.info "get_json:endpoint=#{endpoint} init=",init
+    request = new Request(url, init)
+    fetch(request)
+    .then (response) ->
+      $(me).trigger "ajax:end"
+      if not response.ok
+        return Promise.reject response
+      return response
+    .then (response) ->
+      return response.json()
+    .catch (response) ->
+      return response
+
+  get_csrf_token: () ->
+    ###
+     * Get the plone.protect CSRF token
+     * Note: The fields won't save w/o that token set
+    ###
+    return document.querySelector("#protect-script").dataset.token
+
 
   on_ajax_start: =>
     ###
