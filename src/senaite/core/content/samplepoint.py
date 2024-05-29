@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
-from bika.lims import api
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
