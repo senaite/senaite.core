@@ -283,7 +283,7 @@ def to_longitude_dms(degrees, precision=4, default=_marker):
     longitude = to_float(degrees)
     if abs(longitude) > 180:
         if default is _marker:
-            raise ValueError("Latitude must be within -180 and 180 degrees")
+            raise ValueError("Longitude must be within -180 and 180 degrees")
         return default
 
     # calculate the DMS
