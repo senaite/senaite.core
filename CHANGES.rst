@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2566 Migrate SamplePoint Latitude and Longitude fields to Location
 - #2565 Added GPSCoordinates widget and field
 - #2562 Increased field size and allowed input length for instrument import folder path
 - #2555 Instrument Results Importer/Parser improvements and fixtures
