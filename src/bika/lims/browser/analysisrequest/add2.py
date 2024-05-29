@@ -1150,7 +1150,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # "SamplePoint",
                 # "Template",
                 # "Profiles",
-                "PrimaryAnalysisRequest",
+                # "PrimaryAnalysisRequest",
                 # "Specification",
                 # "Batch"
             ],
@@ -1164,27 +1164,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # "Template",
             ],
             "PrimarySample": [
-                "Batch"
-                "Client",
-                "Contact",
-                "CCContact",
-                "CCEmails",
-                "ClientOrderNumber",
-                "ClientReference",
-                "ClientSampleID",
-                "ContainerType",
-                "DateSampled",
-                "EnvironmentalConditions",
-                "Preservation",
-                "Profiles",
-                "SampleCondition",
-                "SamplePoint",
-                "SampleType",
-                "SamplingDate",
-                "SamplingDeviation",
-                "StorageLocation",
-                "Specification",
-                "Template",
+                # "Batch"
+                # "Client",
+                # "Contact",
+                # "CCContact",
+                # "CCEmails",
+                # "ClientOrderNumber",
+                # "ClientReference",
+                # "ClientSampleID",
+                # "ContainerType",
+                # "DateSampled",
+                # "EnvironmentalConditions",
+                # "Preservation",
+                # "Profiles",
+                # "SampleCondition",
+                # "SamplePoint",
+                # "SampleType",
+                # "SamplingDate",
+                # "SamplingDeviation",
+                # "StorageLocation",
+                # "Specification",
+                # "Template",
             ]
         }
 
@@ -1465,6 +1465,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "getClientUID": [uid],
             },
             "Batch": {
+                "getClientUID": [uid, ""],
+            },
+            "PrimaryAnalysisRequest": {
                 "getClientUID": [uid, ""],
             }
         }
