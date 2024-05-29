@@ -36,6 +36,9 @@
       this.get_service = bind(this.get_service, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
+      this.get_metadata_for = bind(this.get_metadata_for, this);
+      this.get_reference_field_catalog = bind(this.get_reference_field_catalog, this);
+      this.get_reference_field_base_query = bind(this.get_reference_field_base_query, this);
       this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field_records = bind(this.set_reference_field_records, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
@@ -406,19 +409,22 @@
       /*
        * Apply search filters to dependents
        */
-      var me;
+      var chain, me;
       me = this;
+      chain = Promise.resolve();
       return $.each(record.filter_queries, function(field_name, query) {
         var field;
         field = $("#" + field_name + ("-" + arnum));
-        return me.set_reference_field_query(field, query);
+        return chain = chain.then(function() {
+          return me.set_reference_field_query(field, query);
+        });
       });
     };
 
     AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
 
       /*
-       * Flush dependant fields
+       * Flush dependent fields
        */
       var field_ids, me;
       me = this;
@@ -454,8 +460,8 @@
       if (!(field.length > 0)) {
         return;
       }
-      this.reset_reference_field_query(field);
-      return this.set_reference_field(field, "");
+      this.set_reference_field(field, "");
+      return this.reset_reference_field_query(field);
     };
 
     AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
@@ -474,13 +480,41 @@
       /*
        * Set the catalog search query for the given reference field
        */
-      var search_query;
+      var data, me, search_query, target_base_query, target_catalog, target_field_name, target_query, target_value;
       if (!(field.length > 0)) {
         return;
       }
       search_query = JSON.stringify(query);
       field.attr("data-search_query", search_query);
-      return console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
+      console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
+      target_field_name = field.closest("tr[fieldname]").attr("fieldname");
+      target_value = this.get_reference_field_value(field);
+      target_base_query = this.get_reference_field_base_query(field);
+      target_query = Object.assign({}, target_base_query, query);
+      target_catalog = this.get_reference_field_catalog(field);
+      if (!target_value) {
+        return;
+      }
+      me = this;
+      data = {
+        query: target_query,
+        value: target_value,
+        catalog: target_catalog,
+        name: target_field_name
+      };
+      return this.get_json("is_reference_value_allowed", {
+        data: data
+      }).then(function(response) {
+        var message;
+        if (!response.allowed) {
+          console.info(("Reference value " + target_value + " of field " + target_field_name + " ") + "is *not* allowed by the new query ", target_query);
+          me.flush_reference_field(field);
+          message = response.message;
+          if (message) {
+            return site.add_notification(message.title, message.text);
+          }
+        }
+      });
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
@@ -558,6 +592,38 @@
         $textarea = $field.find("textarea");
       }
       return $textarea.val();
+    };
+
+    AnalysisRequestAdd.prototype.get_reference_field_base_query = function(field) {
+
+      /*
+       * Return the base query of a single/multi reference field
+       */
+      var data;
+      data = $(field).data();
+      return data.query || {};
+    };
+
+    AnalysisRequestAdd.prototype.get_reference_field_catalog = function(field) {
+
+      /*
+       * Return the catalog of a single/multi reference field
+       */
+      var catalog, data;
+      data = $(field).data();
+      catalog = data.catalog || "";
+      return JSON.parse(catalog);
+    };
+
+    AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
+
+      /*
+       * Return the metadata for the given field name
+       */
+      var metadata_key, record;
+      record = this.records_snapshot[arnum] || {};
+      metadata_key = (field_name + "_metadata").toLowerCase();
+      return record[metadata_key] || {};
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -693,17 +759,28 @@
       /*
        * Generic event handler for when a reference field value changed
        */
-      var $el, after_change, arnum, el, event_data, field_name, manually_deselected, me, select, value;
+      var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, record, ref, selected, value;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
       value = event.detail.value;
+      selected = event.type === "select" ? true : false;
+      deselected = !selected;
+      manually_deselected = this.deselected_uids[field_name] || [];
+      record = this.records_snapshot[arnum] || {};
+      metadata = this.get_metadata_for(arnum, field_name);
+      if (deselected && metadata) {
+        filter_queries = ((ref = metadata[value]) != null ? ref.filter_queries : void 0) || [];
+        $.each(filter_queries, function(target_field_name, target_field_query) {
+          var target_field;
+          target_field = $("#" + target_field_name + "-" + arnum);
+          return me.reset_reference_field_query(target_field);
+        });
+      }
       if (value) {
-        manually_deselected = this.deselected_uids[field_name] || [];
-        select = event.type === "select" ? true : false;
-        if (select) {
+        if (selected) {
           manually_deselected = manually_deselected.filter(function(item) {
             return item !== value;
           });
@@ -1232,6 +1309,57 @@
         window.bika.lims.portalMessage(msg);
         return window.scroll(0, 0);
       });
+    };
+
+    AnalysisRequestAdd.prototype.get_json = function(endpoint, options) {
+
+      /*
+       * Fetch Ajax API resource from the server
+       * @param {string} endpoint
+       * @param {object} options
+       * @returns {Promise}
+       */
+      var base_url, data, init, me, method, request, url;
+      if (options == null) {
+        options = {};
+      }
+      method = options.method || "POST";
+      data = JSON.stringify(options.data) || "{}";
+      base_url = this.get_base_url();
+      url = base_url + "/ajax_ar_add/" + endpoint;
+      me = this;
+      $(me).trigger("ajax:start");
+      init = {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": this.get_csrf_token()
+        },
+        body: method === "POST" ? data : null,
+        credentials: "include"
+      };
+      console.info("get_json:endpoint=" + endpoint + " init=", init);
+      request = new Request(url, init);
+      return fetch(request).then(function(response) {
+        $(me).trigger("ajax:end");
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response;
+      }).then(function(response) {
+        return response.json();
+      })["catch"](function(response) {
+        return response;
+      });
+    };
+
+    AnalysisRequestAdd.prototype.get_csrf_token = function() {
+
+      /*
+       * Get the plone.protect CSRF token
+       * Note: The fields won't save w/o that token set
+       */
+      return document.querySelector("#protect-script").dataset.token;
     };
 
     AnalysisRequestAdd.prototype.on_ajax_start = function() {
