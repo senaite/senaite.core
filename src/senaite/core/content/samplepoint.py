@@ -184,11 +184,6 @@ class SamplePoint(Container, ClientAwareMixin):
     @security.protected(permissions.ModifyPortalContent)
     def setLatitude(self, value):
         location = self.getLocation()
-        if isinstance(value, dict):
-            # mimic the coordinate field mutator
-            dms = dict.fromkeys(COORDINATE_FIELDS, "")
-            dms.update(value)
-            value = geo.to_decimal_degrees(dms)
         location["latitude"] = value
         self.setLocation(location)
 
@@ -206,11 +201,6 @@ class SamplePoint(Container, ClientAwareMixin):
     @security.protected(permissions.ModifyPortalContent)
     def setLongitude(self, value):
         location = self.getLocation()
-        if isinstance(value, dict):
-            # mimic the coordinate field mutator
-            dms = dict.fromkeys(COORDINATE_FIELDS, "")
-            dms.update(value)
-            value = geo.to_decimal_degrees(dms)
         location["longitude"] = value
         self.setLocation(location)
 
