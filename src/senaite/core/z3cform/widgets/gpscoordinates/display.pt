@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   dms        python:view.get_dms();
+                   klass      python:view.klass;
+                   mode_klass python:'{}-display'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+       tal:condition="dms"
+       tal:attributes="class klass">
+
+    <span>
+
+      <tal:latitude define="latitude dms/latitude">
+        <span tal:replace="latitude/degrees"/>&deg;
+        <span tal:replace="latitude/minutes"/>'
+        <span tal:replace="latitude/seconds"/>"
+        <span tal:replace="latitude/bearing"/>
+      </tal:latitude>
+
+      <tal:longitude define="longitude dms/longitude">
+        <span tal:replace="longitude/degrees"/>&deg;
+        <span tal:replace="longitude/minutes"/>'
+        <span tal:replace="longitude/seconds"/>"
+        <span tal:replace="longitude/bearing"/>
+      </tal:longitude>
+
+    </span>
+
+    <a tal:define="map_url python:view.get_map_url()"
+       tal:condition="map_url"
+       tal:attributes="href map_url"
+       target="_blank">
+      <img tal:attributes="src string:${portal_url}/senaite_theme/icon/gpslocation"/>
+    </a>
+
+  </div>
+
+</html>
