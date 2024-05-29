@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate SamplePoint coordinates"
+      description="Migrate SamplePoint coordinates to GPS coordinates"
+      source="2630"
+      destination="2631"
+      handler=".v02_06_000.migrate_samplepoints_coordinates"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Instrument Types to DX"
       description="Migrate Instrument Types to Dexterity"
       source="2629"

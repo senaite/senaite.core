@@ -290,3 +290,33 @@ def to_longitude_dms(degrees, precision=4, default=_marker):
     dms = to_dms(longitude, precision=precision)
     dms["bearing"] = "E" if longitude >= 0 else "W"
     return dms
+
+
+def to_decimal_degrees(dms, precision=7):
+    """Converts a geographical coordinate in DMS format to decimal degrees
+
+    :param dms: coordinate in DMS
+    :type dms: dict
+    :param precision: number of decimals for decimal degrees
+    :type precision: int
+    :return: a float representing a geographical coordinate in decimal degrees
+    """
+    # get the degrees, minutes and seconds
+    degrees = to_float(dms.get("degrees"), default=0)
+    minutes = to_float(dms.get("minutes"), default=0)
+    seconds = to_float(dms.get("seconds"), default=0)
+
+    # calculate the decimal degrees
+    decimal_degrees = abs(degrees + (minutes / 60) + (seconds / 3600))
+
+    # Use +/- to express N/S, W/E
+    bearing = dms.get("bearing")
+    if bearing in "SW":
+        decimal_degrees = -decimal_degrees
+
+    # apply the precision
+    template = "{:.%df}" % precision
+    decimal_degrees = template.format(decimal_degrees)
+
+    # return the float value
+    return to_float(decimal_degrees)

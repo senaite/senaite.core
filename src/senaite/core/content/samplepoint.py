@@ -20,19 +20,21 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
+from bika.lims import api
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.api import geo
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISamplePoint
 from senaite.core.schema import DurationField
+from senaite.core.schema import GPSCoordinatesField
 from senaite.core.schema import UIDReferenceField
-from senaite.core.schema.coordinatefield import LatitudeCoordinateField
-from senaite.core.schema.coordinatefield import LongitudeCoordinateField
+from senaite.core.schema.coordinatefield import SUBFIELDS as COORDINATE_FIELDS
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import implementer
@@ -46,8 +48,7 @@ class ISamplePointSchema(model.Schema):
         "location",
         label=_(u"fieldset_samplepoint_location", default=u"Location"),
         fields=[
-            "latitude",
-            "longitude",
+            "location",
             "elevation",
         ]
     )
@@ -68,28 +69,17 @@ class ISamplePointSchema(model.Schema):
         required=False,
     )
 
-    latitude = LatitudeCoordinateField(
+    location = GPSCoordinatesField(
         title=_(
-            u"title_samplepoint_latitude",
-            default=u"Latitude"
+            "title_samplepoint_location",
+            default="Location",
         ),
         description=_(
-            u"description_samplepoint_latitude",
-            default=u"Enter the Sample Point's latitude in degrees 0-90, "
-                    u"minutes 0-59, seconds 0-59.9999 and N/S indicator"
-        ),
-        required=False,
-    )
-
-    longitude = LongitudeCoordinateField(
-        title=_(
-            u'title_samplepoint_longitude',
-            default=u"Longitude"
-        ),
-        description=_(
-            u"description_samplepoint_longitude",
-            default=u"Enter the Sample Point's longitude in degrees 0-180, "
-                    u"minutes 0-59, seconds 0-59.9999 and E/W indicator"
+            "description_samplepoint_location",
+            default="The geographical point or area from which samples are "
+                    "taken for further analysis. It plays a pivotal role in "
+                    "research as it can significantly influence the results "
+                    "and conclusions drawn from the study."
         ),
         required=False,
     )
@@ -186,29 +176,60 @@ class SamplePoint(Container, ClientAwareMixin):
 
     @security.protected(permissions.View)
     def getLatitude(self):
-        accessor = self.accessor("latitude")
-        return accessor(self)
+        # mimics the coordinate field accessor
+        location = self.getLocation()
+        latitude = location.get("latitude")
+        default_dms = dict.fromkeys(COORDINATE_FIELDS, "")
+        return geo.to_latitude_dms(latitude, default=default_dms)
 
     @security.protected(permissions.ModifyPortalContent)
     def setLatitude(self, value):
-        mutator = self.mutator("latitude")
-        mutator(self, value)
+        location = self.getLocation()
+        if isinstance(value, dict):
+            # mimic the coordinate field mutator
+            dms = dict.fromkeys(COORDINATE_FIELDS, "")
+            dms.update(value)
+            value = geo.to_decimal_degrees(dms)
+        location["latitude"] = value
+        self.setLocation(location)
 
     # BBB: AT schema field property
     Latitude = property(getLatitude, setLatitude)
 
     @security.protected(permissions.View)
     def getLongitude(self):
-        accessor = self.accessor("longitude")
-        return accessor(self)
+        # mimics the coordinate field accessor
+        location = self.getLocation()
+        longitude = location.get("longitude")
+        default_dms = dict.fromkeys(COORDINATE_FIELDS, "")
+        return geo.to_longitude_dms(longitude, default=default_dms)
 
     @security.protected(permissions.ModifyPortalContent)
     def setLongitude(self, value):
-        mutator = self.mutator("longitude")
-        mutator(self, value)
+        location = self.getLocation()
+        if isinstance(value, dict):
+            # mimic the coordinate field mutator
+            dms = dict.fromkeys(COORDINATE_FIELDS, "")
+            dms.update(value)
+            value = geo.to_decimal_degrees(dms)
+        location["longitude"] = value
+        self.setLocation(location)
 
     # BBB: AT schema field property
     Longitude = property(getLongitude, setLongitude)
+
+    @security.protected(permissions.View)
+    def getLocation(self):
+        accessor = self.accessor("location")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setLocation(self, value):
+        mutator = self.mutator("location")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Location = property(getLocation, setLocation)
 
     @security.protected(permissions.View)
     def getElevation(self):

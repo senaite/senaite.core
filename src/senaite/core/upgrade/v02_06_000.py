@@ -45,12 +45,12 @@ from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import del_metadata
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import LABCONTACT_WORKFLOW
 from zope.component import getMultiAdapter
@@ -1525,3 +1525,37 @@ def remove_sampler_fullname(tool):
     del_metadata(SAMPLE_CATALOG, "getSamplerFullName")
 
     logger.info("Removing getSamplerFullName from catalogs [DONE]")
+
+
+def migrate_samplepoints_coordinates(tool):
+    """Migrates the values from SamplePoint coordinate fields to GPSCoordinates
+    """
+    logger.info("Migrating coordinates from SamplePoint ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    brains = cat(portal_type="SamplePoint")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        obj = api.get_object(brain)
+
+        # get the value from attributes (once DX fields)
+        latitude = getattr(obj, "latitude", None)
+        longitude = getattr(obj, "longitude", None)
+        if not all([latitude, longitude]):
+            # migrated already
+            continue
+
+        # set the value to the new field Location
+        obj.setLatitude(latitude)
+        obj.setLongitude(longitude)
+
+        # remove the attributes for latitude and longitude
+        delattr(obj, "latitude")
+        delattr(obj, "longitude")
+
+        obj.reindexObject()
+        obj._p_deactivate() # noqa
+
+    logger.info("Migrating coordinates from SamplePoint [DONE]")
