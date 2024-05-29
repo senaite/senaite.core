@@ -1113,19 +1113,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         catalog = payload.get("catalog", "")
         query = payload.get("query", {})
-        value = payload.get("value", "")
+        uids = payload.get("uids", [])
         name = payload.get("name", "")
         label = payload.get("label", "")
         field = label or name
 
-        if all([catalog, query, value]):
+        if all([catalog, query, uids]):
             # check if the current value is allowed for the new query
             brains = api.search(query, catalog=catalog)
-            for brain in brains:
-                # check if the current value is within the allowed search
-                if brain.UID != value:
-                    continue
-                # we found a brain with the same UID, so the value is allowed
+            allowed_uids = list(map(api.get_uid, brains))
+            if set(uids).issubset(allowed_uids):
                 return {"allowed": True}
 
         message = {

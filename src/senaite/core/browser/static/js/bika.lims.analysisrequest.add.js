@@ -499,7 +499,7 @@
       me = this;
       data = {
         query: target_query,
-        value: target_value,
+        uids: target_value.split("\n"),
         catalog: target_catalog,
         label: target_field_label,
         name: target_field_name
