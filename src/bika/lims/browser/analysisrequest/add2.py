@@ -1126,7 +1126,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         message = {
             "title": _("Field flushed"),
-            "text": _(u"The field '%s' was no longer valid and was emptied. "
+            "text": _(u"The value of field '%s' was emptied. "
                       u"Please select a new value." % api.safe_unicode(field)),
         }
 
