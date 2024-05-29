@@ -1105,28 +1105,63 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         }
         return settings
 
+    def ajax_is_reference_value_allowed(self):
+        """Checks if the current reference value is allowed for the query
+        """
+        payload = self.get_json()
+
+        catalog = payload.get("catalog", "")
+        query = payload.get("query", {})
+        value = payload.get("value", "")
+        name = payload.get("name", "?")
+
+        if all([catalog, query, value]):
+            # check if the current value is allowed for the new query
+            brains = api.search(query, catalog=catalog)
+            for brain in brains:
+                # check if the current value is within the allowed search
+                if brain.UID != value:
+                    continue
+                # we found a brain with the same UID, so the value is allowed
+                return {"allowed": True}
+
+        message = {
+            "title": _("Field flushed"),
+            "text": _("The field '%s' was flushed "
+                      "and a new value must be selected." % (name)),
+        }
+
+        return {
+            "allowed": False,
+            "message": message,
+        }
+
     def ajax_get_flush_settings(self):
         """Returns the settings for fields flush
+
+        NOTE: We automatically flush fields if the current value of a dependent
+              reference field is *not* allowed by the set new query.
+              -> see self.ajax_is_reference_value_allowed()
         """
         flush_settings = {
             "Client": [
-                "Contact",
-                "CCContact",
-                "SamplePoint",
-                "Template",
-                "Profiles",
+                # "Contact",
+                # "CCContact",
+                # "SamplePoint",
+                # "Template",
+                # "Profiles",
                 "PrimaryAnalysisRequest",
-                "Specification",
-                "Batch"
+                # "Specification",
+                # "Batch"
             ],
             "Contact": [
-                "CCContact"
+                # "CCContact"
             ],
             "SampleType": [
-                "SamplePoint",
-                "Profiles",
-                "Specification",
-                "Template",
+                # "SamplePoint",
+                # "Profiles",
+                # "Specification",
+                # "Template",
             ],
             "PrimarySample": [
                 "Batch"
