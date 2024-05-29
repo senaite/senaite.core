@@ -18,8 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import math
-from bika.lims import api
+from senaite.core.api import geo
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IGPSCoordinatesField
 from senaite.core.z3cform.interfaces import IGPSCoordinatesWidget
@@ -90,31 +89,11 @@ class GPSCoordinatesWidget(HTMLInputWidget, BaseWidget):
     def get_dms(self):
         """Returns the value as DMS
         """
-        def to_dms(decimal_degrees, bearing):
-            if not api.is_floatable(decimal_degrees):
-                # not a valid decimal degree
-                return None
-
-            # calculate the DMS
-            decimal_degrees = api.to_float(decimal_degrees)
-            degrees = math.trunc(decimal_degrees)
-            minutes = math.trunc((decimal_degrees - degrees) * 60)
-            seconds = decimal_degrees * 3600 % 60
-
-            # return the DMS with valid precisions and bearing
-            return {
-                "degrees": "{:.0f}".format(degrees),
-                "minutes": "{:.0f}".format(minutes),
-                "seconds": "{:.4f}".format(seconds),
-                "bearing": bearing[0] if degrees >= 0 else bearing[1],
-            }
-
         latitude = self.value.get("latitude")
         longitude = self.value.get("longitude")
-
         return {
-            "latitude": to_dms(latitude, "NS"),
-            "longitude": to_dms(longitude, "EW")
+            "latitude": geo.to_latitude_dms(latitude, default=None),
+            "longitude": geo.to_longitude_dms(longitude, default=None)
         }
 
     def update(self):

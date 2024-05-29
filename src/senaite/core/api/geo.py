@@ -18,10 +18,13 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from six import string_types
-
+import math
 import pycountry
+
+from bika.lims.api import is_floatable
+from bika.lims.api import to_float
 from bika.lims.api import to_utf8
+from six import string_types
 
 _marker = object()
 
@@ -199,3 +202,91 @@ def get_country_or_subdivision(thing, default=_marker):
         raise ValueError("Could not find a record for '{}'".format(
             thing.lower()))
     return default
+
+
+def to_dms(degrees, precision=4, default=_marker):
+    """Converts a geographical coordinate in decimal degrees to a dict with
+    degrees, minutes and seconds as the keys
+
+    :param degrees: coordinate in decimal degrees
+    :type degrees: string,int,float
+    :param precision: number of decimals for seconds
+    :type precision: int
+    :return: a dict with degrees, minutes and seconds as keys
+    """
+    if not is_floatable(degrees):
+        if default is _marker:
+            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+        return default
+
+    # calculate the DMS
+    decimal_degrees = to_float(degrees)
+    degrees = math.trunc(decimal_degrees)
+    minutes = math.trunc((decimal_degrees - degrees) * 60)
+    seconds = decimal_degrees * 3600 % 60
+
+    # apply the precision to seconds
+    template = "{:.%df}" % precision
+    seconds = template.format(seconds)
+
+    return {
+        "degrees": degrees,
+        "minutes": minutes,
+        "seconds": to_float(seconds),
+    }
+
+
+def to_latitude_dms(degrees, precision=4, default=_marker):
+    """Converts a geographical latitude in decimal degrees to a dict with
+    degrees, minutes, seconds and bearing as the keys
+
+    :param degrees: latitude in decimal degrees
+    :type degrees: string,int,float
+    :param precision: number of decimals for seconds
+    :type precision: int
+    :return: a dict with degrees, minutes, seconds and bearing as keys
+    """
+    if not is_floatable(degrees):
+        if default is _marker:
+            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+        return default
+
+    # check latitude is in range
+    latitude = to_float(degrees)
+    if abs(latitude) > 90:
+        if default is _marker:
+            raise ValueError("Latitude must be within -90 and 90 degrees")
+        return default
+
+    # calculate the DMS
+    dms = to_dms(latitude, precision=precision)
+    dms["bearing"] = "N" if latitude >= 0 else "S"
+    return dms
+
+
+def to_longitude_dms(degrees, precision=4, default=_marker):
+    """Converts a geographical longitude in decimal degrees to a dict with
+    degrees, minutes, seconds and bearing as the keys
+
+    :param degrees: longitude in decimal degrees
+    :type degrees: string,int,float
+    :param precision: number of decimals for seconds
+    :type precision: int
+    :return: a dict with degrees, minutes, seconds and bearing as keys
+    """
+    if not is_floatable(degrees):
+        if default is _marker:
+            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+        return default
+
+    # check longitude is in range
+    longitude = to_float(degrees)
+    if abs(longitude) > 180:
+        if default is _marker:
+            raise ValueError("Latitude must be within -180 and 180 degrees")
+        return default
+
+    # calculate the DMS
+    dms = to_dms(longitude, precision=precision)
+    dms["bearing"] = "E" if longitude >= 0 else "W"
+    return dms
