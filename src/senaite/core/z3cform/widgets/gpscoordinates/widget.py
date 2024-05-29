@@ -90,11 +90,18 @@ class GPSCoordinatesWidget(HTMLInputWidget, BaseWidget):
     def get_dms(self):
         """Returns the value as DMS
         """
-        def to_dms(full_degrees, bearing):
-            full_degrees = api.to_float(full_degrees, 0)
-            degrees = math.trunc(full_degrees)
-            minutes = math.trunc((full_degrees - degrees) * 60.0)
-            seconds = full_degrees * 3600 % 60
+        def to_dms(decimal_degrees, bearing):
+            if not api.is_floatable(decimal_degrees):
+                # not a valid decimal degree
+                return None
+
+            # calculate the DMS
+            decimal_degrees = api.to_float(decimal_degrees)
+            degrees = math.trunc(decimal_degrees)
+            minutes = math.trunc((decimal_degrees - degrees) * 60)
+            seconds = decimal_degrees * 3600 % 60
+
+            # return the DMS with valid precisions and bearing
             return {
                 "degrees": "{:.0f}".format(degrees),
                 "minutes": "{:.0f}".format(minutes),
@@ -102,8 +109,8 @@ class GPSCoordinatesWidget(HTMLInputWidget, BaseWidget):
                 "bearing": bearing[0] if degrees >= 0 else bearing[1],
             }
 
-        latitude = self.value.get("latitude", 0)
-        longitude = self.value.get("longitude", 0)
+        latitude = self.value.get("latitude")
+        longitude = self.value.get("longitude")
 
         return {
             "latitude": to_dms(latitude, "NS"),

@@ -60,7 +60,14 @@ class GPSCoordinatesField(Dict, BaseField):
         # convert values to strings with the right precision
         template = "{:.%df}" % self.precision
         for key in coordinates.keys():
-            val = api.to_float(coordinates[key], default=0)
+
+            # skip non-floatable (eg. empties)
+            val = coordinates[key]
+            if not api.is_floatable(val):
+                continue
+
+            # update to right precision
+            val = api.to_float(val)
             coordinates[key] = template.format(val)
 
         # store the value
