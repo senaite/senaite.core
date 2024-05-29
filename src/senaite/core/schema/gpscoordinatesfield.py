@@ -37,9 +37,6 @@ SUBFIELDS = ("latitude", "longitude")
 # https://xkcd.com/2170/
 DEFAULT_PRECISION = 7
 
-LATITUDE_RANGE = (-90, 90)
-LONGITUDE_RANGE = (-180, 180)
-
 
 @implementer(IGPSCoordinatesField)
 class GPSCoordinatesField(Dict, BaseField):
