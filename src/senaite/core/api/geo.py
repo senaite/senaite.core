@@ -216,7 +216,7 @@ def to_dms(degrees, precision=4, default=_marker):
     """
     if not is_floatable(degrees):
         if default is _marker:
-            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+            raise ValueError("Decimal degree is not valid")
         return default
 
     # calculate the DMS
@@ -248,7 +248,7 @@ def to_latitude_dms(degrees, precision=4, default=_marker):
     """
     if not is_floatable(degrees):
         if default is _marker:
-            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+            raise ValueError("Decimal degree is not valid")
         return default
 
     # check latitude is in range
@@ -276,7 +276,7 @@ def to_longitude_dms(degrees, precision=4, default=_marker):
     """
     if not is_floatable(degrees):
         if default is _marker:
-            raise ValueError("Non-valid decimal degree".format(repr(degrees)))
+            raise ValueError("Decimal degree is not valid")
         return default
 
     # check longitude is in range
