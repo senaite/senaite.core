@@ -27,6 +27,7 @@ import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from senaite.core.i18n import translate as _t
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
@@ -1113,7 +1114,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         catalog = payload.get("catalog", "")
         query = payload.get("query", {})
         value = payload.get("value", "")
-        name = payload.get("name", "?")
+        name = payload.get("name", "")
+        label = payload.get("label", "")
+        field = label or name
 
         if all([catalog, query, value]):
             # check if the current value is allowed for the new query
@@ -1128,7 +1131,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         message = {
             "title": _("Field flushed"),
             "text": _("The field '%s' was flushed "
-                      "and a new value must be selected." % (name)),
+                      "and a new value must be selected." % _t(field)),
         }
 
         return {

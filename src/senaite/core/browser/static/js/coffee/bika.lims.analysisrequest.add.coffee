@@ -474,6 +474,7 @@ class window.AnalysisRequestAdd
 
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"
+    target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
     target_value = @get_reference_field_value field
     target_base_query = @get_reference_field_base_query field
     target_query = Object.assign({}, target_base_query, query)
@@ -488,6 +489,7 @@ class window.AnalysisRequestAdd
       query: target_query
       value: target_value
       catalog: target_catalog
+      label: target_field_label
       name: target_field_name
 
     @get_json("is_reference_value_allowed", {data: data}).then (response) ->

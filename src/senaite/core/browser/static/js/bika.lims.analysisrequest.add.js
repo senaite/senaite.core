@@ -480,7 +480,7 @@
       /*
        * Set the catalog search query for the given reference field
        */
-      var data, me, search_query, target_base_query, target_catalog, target_field_name, target_query, target_value;
+      var data, me, search_query, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
       if (!(field.length > 0)) {
         return;
       }
@@ -488,6 +488,7 @@
       field.attr("data-search_query", search_query);
       console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
       target_field_name = field.closest("tr[fieldname]").attr("fieldname");
+      target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
       target_value = this.get_reference_field_value(field);
       target_base_query = this.get_reference_field_base_query(field);
       target_query = Object.assign({}, target_base_query, query);
@@ -500,6 +501,7 @@
         query: target_query,
         value: target_value,
         catalog: target_catalog,
+        label: target_field_label,
         name: target_field_name
       };
       return this.get_json("is_reference_value_allowed", {
