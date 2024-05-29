@@ -1142,7 +1142,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         NOTE: We automatically flush fields if the current value of a dependent
               reference field is *not* allowed by the set new query.
               -> see self.ajax_is_reference_value_allowed()
-
               Therefore, it makes only sense for non-reference fields!
         """
         flush_settings = {
