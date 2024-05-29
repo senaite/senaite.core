@@ -1142,49 +1142,18 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         NOTE: We automatically flush fields if the current value of a dependent
               reference field is *not* allowed by the set new query.
               -> see self.ajax_is_reference_value_allowed()
+
+              Therefore, it makes only sense for non-reference fields!
         """
         flush_settings = {
             "Client": [
-                # "Contact",
-                # "CCContact",
-                # "SamplePoint",
-                # "Template",
-                # "Profiles",
-                # "PrimaryAnalysisRequest",
-                # "Specification",
-                # "Batch"
             ],
             "Contact": [
-                # "CCContact"
             ],
             "SampleType": [
-                # "SamplePoint",
-                # "Profiles",
-                # "Specification",
-                # "Template",
             ],
             "PrimarySample": [
-                # "Batch"
-                # "Client",
-                # "Contact",
-                # "CCContact",
-                # "CCEmails",
-                # "ClientOrderNumber",
-                # "ClientReference",
-                # "ClientSampleID",
-                # "ContainerType",
-                # "DateSampled",
-                # "EnvironmentalConditions",
-                # "Preservation",
-                # "Profiles",
-                # "SampleCondition",
-                # "SamplePoint",
-                # "SampleType",
-                # "SamplingDate",
-                # "SamplingDeviation",
-                # "StorageLocation",
-                # "Specification",
-                # "Template",
+                "EnvironmentalConditions",
             ]
         }
 
