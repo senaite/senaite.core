@@ -300,7 +300,7 @@ def to_longitude_dms(degrees, precision=4, default=_marker):
     return dms
 
 
-def to_decimal_degrees(dms, precision=7):
+def to_decimal_degrees(dms, precision=7, default=_marker):
     """Converts a geographical coordinate in DMS format to decimal degrees
 
     :param dms: coordinate in DMS
@@ -309,6 +309,11 @@ def to_decimal_degrees(dms, precision=7):
     :type precision: int
     :return: a float representing a geographical coordinate in decimal degrees
     """
+    if not isinstance(dms, dict):
+        if default is _marker:
+            raise TypeError("Expected dms to be a dict, but got %r" % dms)
+        return default
+
     # get the degrees, minutes and seconds
     degrees = to_float(dms.get("degrees"), default=0)
     minutes = to_float(dms.get("minutes"), default=0)
@@ -319,8 +324,13 @@ def to_decimal_degrees(dms, precision=7):
 
     # Use +/- to express N/S, W/E
     bearing = dms.get("bearing")
-    if bearing in "SW":
+    if bearing and bearing in "SW":
         decimal_degrees = -decimal_degrees
+
+    # check precision type
+    if not isinstance(precision, int):
+        raise TypeError("Expected precision to be an `int`, but got %r"
+                        % type(precision))
 
     # apply the precision
     template = "{:.%df}" % precision
