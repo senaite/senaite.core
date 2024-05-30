@@ -57,6 +57,11 @@ class GPSCoordinatesField(Dict, BaseField):
         if value:
             coordinates.update(value)
 
+        # check the type of the precision
+        if not isinstance(self.precision, int):
+            raise TypeError("Expected precision to be 'int', but got %r" %
+                            type(self.precision))
+
         # convert values to strings with the right precision
         template = "{:.%df}" % self.precision
         for key in coordinates.keys():
