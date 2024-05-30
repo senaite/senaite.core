@@ -206,13 +206,11 @@ a dict with degrees, minutes and seconds (DMS):
     >>> [dms.get(key) for key in keys]
     [41, 29, 0.6144]
 
-
 We can also decrease the number of decimals of seconds by means of precision:
 
     >>> dms = geo.to_dms(latitude, precision=2)
     >>> [dms.get(key) for key in sorted(dms.keys())]
     [41, 29, 0.61]
-
 
 If the value passed in is not floatable, the system rises an error:
 
@@ -241,8 +239,8 @@ Even if we use a default as a fallback:
     TypeError: Expected precision to be an `int`, but got <type 'NoneType'>
 
 
-Converting latitude coordinate in DMS to DD
-...............................................
+Converting latitude coordinate in DD to DMS
+...........................................
 
 If we know the coordinate is a latitude, we can use a specific function that
 besides the conversion from DMS to DD, it will also take the bearing into
@@ -275,7 +273,7 @@ The system rises an error if the latitude is out of range:
     ...
     ValueError: Latitude must be within -90 and 90 degrees
 
-Converting longitude coordinate in DMS to DD
+Converting longitude coordinate in DD to DMS
 ............................................
 
 If we know the coordinate is a longitude, we can use a specific function that
