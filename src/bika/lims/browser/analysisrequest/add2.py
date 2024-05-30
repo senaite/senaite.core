@@ -1117,6 +1117,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         label = payload.get("label", "")
         field = label or name
 
+        # Skip the catalog search if we can assume to be allowed
+        white_keys = ["portal_type", "sort_on", "sort_order", "is_active"]
+        if set(query.keys()).issubset(white_keys):
+            return {"allowed": True}
+
         if all([catalog, query, uids]):
             # check if the current value is allowed for the new query
             brains = api.search(query, catalog=catalog)
