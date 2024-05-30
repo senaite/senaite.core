@@ -226,6 +226,11 @@ def to_dms(degrees, precision=4, default=_marker):
     minutes = math.trunc((decimal_degrees - degrees) * 60)
     seconds = decimal_degrees * 3600 % 60
 
+    # check precision type
+    if not isinstance(precision, int):
+        raise TypeError("Expected precision to be an `int`, but got %r"
+                        % type(precision))
+
     # apply the precision to seconds
     template = "{:.%df}" % precision
     seconds = template.format(seconds)
@@ -261,7 +266,7 @@ def to_latitude_dms(degrees, precision=4, default=_marker):
         return default
 
     # calculate the DMS
-    dms = to_dms(latitude, precision=precision)
+    dms = to_dms(abs(latitude), precision=precision)
     dms["bearing"] = "N" if latitude >= 0 else "S"
     return dms
 
@@ -290,6 +295,6 @@ def to_longitude_dms(degrees, precision=4, default=_marker):
         return default
 
     # calculate the DMS
-    dms = to_dms(longitude, precision=precision)
+    dms = to_dms(abs(longitude), precision=precision)
     dms["bearing"] = "E" if longitude >= 0 else "W"
     return dms

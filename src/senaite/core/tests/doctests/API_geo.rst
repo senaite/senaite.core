@@ -189,3 +189,122 @@ We can even specify a search term for the parent:
 
     >>> geo.get_subdivision("Barcelona", parent="Catalunya")
     Subdivision(code=u'ES-B', country_code=u'ES', name=u'Barcelona', parent=u'CT', parent_code=u'ES-CT', type=u'Province')
+
+
+Converting geographical coordinate in DD to DMS
+...............................................
+
+Is possible to convert a geographical coordinate in decimal degrees (DD) to
+a dict with degrees, minutes and seconds (DMS):
+
+    >>> latitude = 41.483504
+    >>> dms = geo.to_dms(latitude)
+    >>> keys = sorted(dms.keys())
+    >>> keys
+    ['degrees', 'minutes', 'seconds']
+
+    >>> [dms.get(key) for key in keys]
+    [41, 29, 0.6144]
+
+
+We can also decrease the number of decimals of seconds by means of precision:
+
+    >>> dms = geo.to_dms(latitude, precision=2)
+    >>> [dms.get(key) for key in sorted(dms.keys())]
+    [41, 29, 0.61]
+
+
+If the value passed in is not floatable, the system rises an error:
+
+    >>> geo.to_dms("yummi")
+    Traceback (most recent call last):
+    ...
+    ValueError: Expected decimal degrees to be a floatable, but got 'yummi'
+
+We can use a default value as a fallback though:
+
+    >>> geo.to_dms("yummi", default=None) is None
+    True
+
+The system rises an error if the precision is not valid:
+
+    >>> geo.to_dms(latitude, precision=None)
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected precision to be an `int`, but got <type 'NoneType'>
+
+Even if we use a default as a fallback:
+
+    >>> geo.to_dms(latitude, precision=None, default=None)
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected precision to be an `int`, but got <type 'NoneType'>
+
+
+Converting latitude coordinate in DMS to DD
+...............................................
+
+If we know the coordinate is a latitude, we can use a specific function that
+besides the conversion from DMS to DD, it will also take the bearing into
+account and check the degrees are within range.
+
+    >>> latitude = 41.483504
+    >>> dms = geo.to_latitude_dms(latitude)
+    >>> keys = sorted(dms.keys())
+    >>> keys
+    ['bearing', 'degrees', 'minutes', 'seconds']
+
+    >>> [dms.get(key) for key in keys]
+    ['N', 41, 29, 0.6144]
+
+System handles North and South as +/-:
+
+    >>> dms = geo.to_latitude_dms(-latitude)
+    >>> [dms.get(key) for key in keys]
+    ['S', 41, 29, 0.6144]
+
+The system rises an error if the latitude is out of range:
+
+    >>> geo.to_latitude_dms(90.0000001)
+    Traceback (most recent call last):
+    ...
+    ValueError: Latitude must be within -90 and 90 degrees
+
+    >>> geo.to_latitude_dms(-90.0000001)
+    Traceback (most recent call last):
+    ...
+    ValueError: Latitude must be within -90 and 90 degrees
+
+Converting longitude coordinate in DMS to DD
+............................................
+
+If we know the coordinate is a longitude, we can use a specific function that
+besides the conversion from DMS to DD, it will also take the bearing into
+account and check the degrees are within range.
+
+    >>> longitude = 2.051877
+    >>> dms = geo.to_longitude_dms(longitude)
+    >>> keys = sorted(dms.keys())
+    >>> keys
+    ['bearing', 'degrees', 'minutes', 'seconds']
+
+    >>> [dms.get(key) for key in keys]
+    ['E', 2, 3, 6.7572]
+
+System handles East and West as +/-:
+
+    >>> dms = geo.to_longitude_dms(-longitude)
+    >>> [dms.get(key) for key in keys]
+    ['W', 2, 3, 6.7572]
+
+The system rises an error if the longitude is out of range:
+
+    >>> geo.to_longitude_dms(180.0000001)
+    Traceback (most recent call last):
+    ...
+    ValueError: Longitude must be within -180 and 180 degrees
+
+    >>> geo.to_longitude_dms(-180.0000001)
+    Traceback (most recent call last):
+    ...
+    ValueError: Longitude must be within -180 and 180 degrees
