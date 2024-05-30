@@ -1,0 +1,35 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c">
+
+  <!-- GPSCoordinates Widget -->
+  <adapter
+      factory=".widget.GPSCoordinatesWidgetFactory"
+      for="senaite.core.schema.interfaces.IGPSCoordinatesField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- GPSCoordinates data converter -->
+  <adapter factory=".widget.GPSCoordinatesDataConverter" />
+
+  <!-- GPSCoordinates input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".widget.GPSCoordinatesWidget"
+      template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- GPSCoordinates display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".widget.GPSCoordinatesWidget"
+      template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- GPSCoordinates hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".widget.GPSCoordinatesWidget"
+      template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+</configure>
