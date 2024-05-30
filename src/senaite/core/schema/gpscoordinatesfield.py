@@ -52,10 +52,20 @@ class GPSCoordinatesField(Dict, BaseField):
     def set(self, object, value):
         """Set the GPS coordinates field value
         """
+        if not value:
+            value = {}
+
+        if not isinstance(value, dict):
+            raise TypeError("Expected value to be a 'dict', but got %r" %
+                            type(value))
+
         # ensure the value is a valid dict
         coordinates = copy.deepcopy(self.default)
-        if value:
+        if isinstance(value, dict):
             coordinates.update(value)
+
+        # call the validator
+        self._validate(coordinates)
 
         # check the type of the precision
         if not isinstance(self.precision, int):
@@ -79,8 +89,8 @@ class GPSCoordinatesField(Dict, BaseField):
         super(GPSCoordinatesField, self).set(object, coordinates)
 
     def _validate(self, value):
-        super(GPSCoordinatesField, self)._validate(value)
-
+        """Validator called on form submit
+        """
         # check latitude degrees are within range
         lat = value.get("latitude", 0)
         lat = api.to_float(lat, default=0)
