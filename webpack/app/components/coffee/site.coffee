@@ -51,4 +51,52 @@ class Site
     document.cookie = name + '=' + value + ';' + expires + ';path=/'
     return
 
+
+  ###*
+  # Add a notification message
+  # @param {title} the title of the notification
+  # @param {message} the message of the notification
+  ###
+  add_notification: (title,  message, options) ->
+    options ?= {}
+    options = Object.assign
+      animation: yes
+      autohide: yes
+      delay: 5000
+    , options
+
+    el = document.createElement("div")
+    el.innerHTML = "
+      <div class='toast bg-white' style='width:300px' role='alert'
+           data-animation='#{options.animation}'
+           data-autohide='#{options.autohide}'
+           data-delay='#{options.delay}'>
+        <div class='toast-header'>
+          <strong class='mr-auto'>#{title}</strong>
+          <button type='button' class='ml-2 mb-1 close' data-dismiss='toast' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+        </div>
+        <div class='toast-body'>
+          #{_t(message)}
+        </div>
+      </div>"
+
+    el = el.firstElementChild
+    parent = document.querySelector(".toast-container")
+    if not parent
+      parent = document.createElement("div");
+      parent.innerHTML = "
+        <div style='position: fixed; top: 0px; right: 0px; width=100%; z-index:100'>
+          <div class='toast-container' style='position: absolute; top: 10px; right: 10px;'>
+          </div>
+        </div>"
+      wrapper = document.querySelector(".container-fluid")
+      wrapper.appendChild(parent)
+      parent = parent.querySelector(".toast-container")
+
+    parent.appendChild(el)
+    return $(el).toast("show")
+
+
 export default Site

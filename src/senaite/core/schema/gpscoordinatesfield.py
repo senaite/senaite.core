@@ -76,11 +76,11 @@ class GPSCoordinatesField(Dict, BaseField):
         # convert values to strings with the right precision
         template = "{:.%df}" % self.precision
         for key in coordinates.keys():
-            val = coordinates[key]
 
-            # handle DMS like-values
-            if isinstance(val, dict):
-                val = geo.to_decimal_degrees(val, self.precision)
+            # handle DMS-like values
+            val = geo.to_decimal_degrees(coordinates[key],
+                                         precision=self.precision,
+                                         default=coordinates[key])
 
             # skip non-floatable (eg. empties)
             if not api.is_floatable(val):
