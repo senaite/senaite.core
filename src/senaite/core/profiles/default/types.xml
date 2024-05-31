@@ -72,6 +72,10 @@
   <object name="InstrumentType" meta_type="Dexterity FTI" />
   <object name="InstrumentTypes" meta_type="Dexterity FTI" />
 
+  <!-- Sampling Deviations -->
+  <object name="SamplingDeviation" meta_type="Dexterity FTI" />
+  <object name="SamplingDeviations" meta_type="Dexterity FTI" />
+
   <!-- Analysis Categories -->
   <object name="AnalysisCategory" meta_type="Dexterity FTI" />
   <object name="AnalysisCategories" meta_type="Dexterity FTI" />

@@ -411,14 +411,16 @@ class window.AnalysisRequestAdd
      * Apply search filters to dependents
     ###
     me = this
+    chain = Promise.resolve()
     $.each record.filter_queries, (field_name, query) ->
       field = $("#" + field_name + "-#{arnum}")
-      me.set_reference_field_query field, query
+      chain = chain.then () ->
+        me.set_reference_field_query field, query
 
 
   flush_fields_for: (field_name, arnum) ->
     ###
-     * Flush dependant fields
+     * Flush dependent fields
     ###
     me = this
     field_ids = @flush_settings[field_name]
@@ -446,10 +448,10 @@ class window.AnalysisRequestAdd
     ###
     return unless field.length > 0
 
-    # restore the original search query
-    @reset_reference_field_query field
     # set emtpy value
     @set_reference_field field, ""
+    # restore the original search query
+    @reset_reference_field_query field
 
 
   reset_reference_field_query: (field) =>
@@ -469,6 +471,35 @@ class window.AnalysisRequestAdd
     search_query = JSON.stringify(query)
     field.attr("data-search_query", search_query)
     console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
+
+    # check if the target field needs to be flushed
+    target_field_name = field.closest("tr[fieldname]").attr "fieldname"
+    target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
+    target_value = @get_reference_field_value field
+    target_base_query = @get_reference_field_base_query field
+    target_query = Object.assign({}, target_base_query, query)
+    target_catalog = @get_reference_field_catalog field
+
+    # no flushing required if the field is already empty
+    if not target_value
+      return
+
+    me = this
+    data =
+      query: target_query
+      uids: target_value.split("\n")
+      catalog: target_catalog
+      label: target_field_label
+      name: target_field_name
+
+    @get_json("is_reference_value_allowed", {data: data}).then (response) ->
+      if not response.allowed
+        console.info("Reference value #{target_value} of field #{target_field_name} " +
+                     "is *not* allowed by the new query ", target_query)
+        me.flush_reference_field field
+        message = response.message
+        if message
+          site.add_notification(message.title, message.text)
 
 
   set_reference_field_records: (field, records) =>
@@ -528,6 +559,31 @@ class window.AnalysisRequestAdd
       $textarea = $field.find("textarea")
     return $textarea.val()
 
+
+  get_reference_field_base_query: (field) =>
+    ###
+     * Return the base query of a single/multi reference field
+    ###
+    data = $(field).data()
+    return data.query or {}
+
+
+  get_reference_field_catalog: (field) =>
+    ###
+     * Return the catalog of a single/multi reference field
+    ###
+    data = $(field).data()
+    catalog = data.catalog or ""
+    return JSON.parse(catalog)
+
+
+  get_metadata_for: (arnum, field_name) =>
+    ###
+     * Return the metadata for the given field name
+    ###
+    record = @records_snapshot[arnum] or {}
+    metadata_key = "#{field_name}_metadata".toLowerCase()
+    return record[metadata_key] or {}
 
   set_template: (arnum, template) =>
     ###
@@ -675,13 +731,24 @@ class window.AnalysisRequestAdd
     $el = $(el)
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+    value = event.detail.value
+    selected = if event.type is "select" then yes else no
+    deselected = not selected
+    manually_deselected = @deselected_uids[field_name] or []
+    record = @records_snapshot[arnum] or {}
+    metadata = @get_metadata_for(arnum, field_name)
+
+    # reset all dependent filter queries
+    if deselected and metadata
+      # get the applied filter queries of the current UID
+      filter_queries = metadata[value]?.filter_queries or []
+      $.each filter_queries, (target_field_name, target_field_query) ->
+        target_field = $("##{target_field_name}-#{arnum}")
+        me.reset_reference_field_query target_field
 
     # handle manually selected/deselected UIDs
-    value = event.detail.value
     if value
-      manually_deselected = @deselected_uids[field_name] or []
-      select = if event.type is "select" then yes else no
-      if select
+      if selected
         # remove UID from the manually deselected list again
         manually_deselected = manually_deselected.filter (item) -> item isnt value
         console.debug "Reference with UID #{value} was manually selected"
@@ -1183,6 +1250,52 @@ class window.AnalysisRequestAdd
       msg = _t("Sorry, an error occured: #{status}")
       window.bika.lims.portalMessage msg
       window.scroll 0, 0
+
+  get_json: (endpoint, options) ->
+    ###
+     * Fetch Ajax API resource from the server
+     * @param {string} endpoint
+     * @param {object} options
+     * @returns {Promise}
+    ###
+    options ?= {}
+
+    method = options.method or "POST"
+    data = JSON.stringify(options.data) or "{}"
+
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+
+    # Always notify Ajax end
+    me = this
+    $(me).trigger "ajax:start"
+
+    init =
+      method: method
+      headers:
+        "Content-Type": "application/json"
+        "X-CSRF-TOKEN": @get_csrf_token()
+      body: if method is "POST" then data else null
+      credentials: "include"
+    console.info "get_json:endpoint=#{endpoint} init=",init
+    request = new Request(url, init)
+    fetch(request)
+    .then (response) ->
+      $(me).trigger "ajax:end"
+      if not response.ok
+        return Promise.reject response
+      return response
+    .then (response) ->
+      return response.json()
+    .catch (response) ->
+      return response
+
+  get_csrf_token: () ->
+    ###
+     * Get the plone.protect CSRF token
+     * Note: The fields won't save w/o that token set
+    ###
+    return document.querySelector("#protect-script").dataset.token
 
 
   on_ajax_start: =>

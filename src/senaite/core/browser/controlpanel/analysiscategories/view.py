@@ -21,7 +21,7 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
 from senaite.core.catalog import SETUP_CATALOG
@@ -58,15 +58,8 @@ class AnalysisCategoriesView(ListingView):
             "listing_analysiscategories_title",
             default="Analysis Categories")
         )
-        self.description = ""
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/category_big.png"
-        )
-
-        self.show_select_row = False
+        self.icon = api.get_icon("AnalysisCategories", html_tag=False)
         self.show_select_column = True
-        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -128,17 +121,10 @@ class AnalysisCategoriesView(ListingView):
         ]
 
     def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
         obj = api.get_object(obj)
 
         item["replace"]["Title"] = get_link_for(obj)
-        item["Description"] = obj.Description()
+        item["Description"] = api.get_description(obj)
         item["SortKey"] = obj.getSortKey()
 
         department = obj.getDepartment()

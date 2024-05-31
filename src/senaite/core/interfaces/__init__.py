@@ -285,6 +285,16 @@ class ISubGroups(Interface):
     """
 
 
+class ISamplingDeviation(Interface):
+    """Sampling Deviation
+    """
+
+
+class ISamplingDeviations(Interface):
+    """Sampling Deviations
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """

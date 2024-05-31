@@ -22,8 +22,6 @@ import logging
 import os
 import traceback
 
-from six import string_types
-
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
 from DateTime import DateTime
@@ -32,9 +30,9 @@ from plone.app.blob.interfaces import IBlobbable
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from senaite.core import logger
+from senaite.core.exportimport.instruments import get_automatic_importer
 from senaite.core.exportimport.instruments import get_automatic_parser
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter
+from six import string_types
 from zope.component import adapter
 from zope.interface import Interface
 from zope.interface import alsoProvides
@@ -135,13 +133,11 @@ class AutoImportResultsView(BrowserView):
                 return False
             self.log("Parsing file %s" % resultsfile,
                      instrument=instrument, interface=interface)
-            importer = AnalysisResultsImporter(
-                parser=parser,
-                context=self.context,
-                override=[False, False],
-                instrument_uid=api.get_uid(instrument))
 
             tb = None
+
+            # lookup automatic importer
+            importer = get_automatic_importer(interface, instrument, parser)
             try:
                 importer.process()
             except Exception:

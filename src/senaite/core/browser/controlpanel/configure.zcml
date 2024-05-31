@@ -37,5 +37,6 @@
   <include package=".sampletemplates" />
   <include package=".subgroups" />
   <include package=".storagelocations" />
+  <include package=".samplingdeviations" />
 
 </configure>
