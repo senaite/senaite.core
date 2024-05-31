@@ -10,7 +10,6 @@ bika_labcontacts,LabContacts
 bika_labproducts,LabProducts
 bika_referencedefinitions,ReferenceDefinitions
 bika_sampletypes,SampleTypes
-bika_samplingdeviations,SamplingDeviations
 bika_suppliers,Suppliers
 bika_worksheettemplates,WorksheetTemplates
 instrumentlocations,InstrumentLocations

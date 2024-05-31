@@ -257,6 +257,7 @@ def add_senaite_setup_items(portal):
         ("subgroups", "SubGroups", "SubGroups"),
         ("storagelocations", "Storage Locations", "StorageLocations"),
         ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
+        ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

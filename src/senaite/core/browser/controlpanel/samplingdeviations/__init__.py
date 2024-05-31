@@ -17,25 +17,3 @@
 #
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISamplingDeviations
-from plone.app.folder.folder import ATFolder, ATFolderSchema
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
-
-
-schema = ATFolderSchema.copy()
-
-
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2552
-class SamplingDeviations(ATFolder):
-    implements(ISamplingDeviations, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(SamplingDeviations, PROJECTNAME)

@@ -45,14 +45,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISamplingDeviations"
-      name="folder_view"
-      class=".bika_samplingdeviations.SamplingDeviationsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisSpecs"
       name="folder_view"
       class=".bika_analysisspecs.AnalysisSpecsView"
