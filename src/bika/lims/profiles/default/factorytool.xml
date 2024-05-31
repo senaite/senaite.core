@@ -21,7 +21,6 @@
   <type portal_type="InstrumentCertification"/>
   <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentScheduledTask"/>
-  <type portal_type="InstrumentType"/>
   <type portal_type="InstrumentValidation"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
@@ -29,10 +28,7 @@
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>
-  <type portal_type="StorageLocation"/>
   <type portal_type="SampleType"/>
-  <type portal_type="SamplingDeviation"/>
-  <type portal_type="SubGroup"/>
   <type portal_type="Supplier"/>
   <type portal_type="SupplierContact"/>
   <type portal_type="WorksheetTemplate"/>

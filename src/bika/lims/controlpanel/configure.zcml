@@ -37,25 +37,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IStorageLocations"
-      name="folder_view"
-      class=".bika_storagelocations.StorageLocationsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISampleTypes"
       name="folder_view"
       class=".bika_sampletypes.SampleTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISamplingDeviations"
-      name="folder_view"
-      class=".bika_samplingdeviations.SamplingDeviationsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -72,14 +56,6 @@
       for="bika.lims.interfaces.IInstruments"
       name="folder_view"
       class=".bika_instruments.InstrumentsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IInstrumentTypes"
-      name="folder_view"
-      class=".bika_instrumenttypes.InstrumentTypesView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -128,14 +104,6 @@
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISubGroups"
-      name="folder_view"
-      class=".bika_subgroups.SubGroupsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

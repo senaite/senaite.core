@@ -27,6 +27,7 @@
             class="senaite-ajax-form"
             ajax-submit="1"
             method="POST" enctype="multipart/form-data">
+
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>
         <input type="hidden" name="form_adapter_name" value="data_import_form"/>
@@ -70,6 +71,16 @@
                class="tab-pane fade show active"
                role="tabpanel">
 
+            <p class="small" i18n:translate="">
+              If the system doesn't find any match (Sample, Reference Analysis
+              or Duplicate), it will use the record's identifier to find matches
+              for Reference Sample IDs.
+              <br/>
+              If a Reference Sample ID is found, the system will automatically
+              create a Calibration Test (Reference Analysis) and will link it to
+              the selected Instrument.
+            </p>
+
             <!-- Active instruments -->
             <select name="instrument"
                     class="custom-select"
@@ -81,17 +92,12 @@
                   tal:content="python:instruments.getValue(option)"/>
               </tal:options>
             </select>
+            <div class="text-secondary small" i18n:translate="">
+              Only instruments that have an import interface configured are displayed
+            </div>
 
-            <p class="form-text text-muted" i18n:translate="">
-              If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
-              it will use the record's identifier to find matches with Reference Sample IDs.
-              If a Reference Sample ID is found, the system will automatically create a
-              Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br/>
-              If no instrument selected, no Calibration Test will be created for orphan IDs.
-            </p>
-
-            <div class="field">
-              <label for="exim" i18n:translate="">Import Interface</label>
+            <div class="field mt-3">
+              <label for="exim" i18n:translate="">Select Import Interface</label>
               <select name="exim" id="exim" class="custom-select">
               </select>
             </div>

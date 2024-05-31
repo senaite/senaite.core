@@ -62,8 +62,8 @@ Variables::
     >>> analysisservices = setup.bika_analysisservices
     >>> labcontacts = setup.bika_labcontacts
     >>> worksheets = setup.worksheets
-    >>> storagelocations = setup.bika_storagelocations
-    >>> samplingdeviations = setup.bika_samplingdeviations
+    >>> storagelocations = portal.setup.storagelocations
+    >>> samplingdeviations = portal.setup.samplingdeviations
     >>> portal_url = portal.absolute_url()
     >>> setup_url = portal_url + "/bika_setup"
 

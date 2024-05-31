@@ -23,17 +23,18 @@
 import csv
 import json
 import traceback
-from six import StringIO
+import types
 import xml.etree.ElementTree as ET
 
-import types
-from openpyxl import load_workbook
-
 from bika.lims import bikaMessageFactory as _
+from openpyxl import load_workbook
 from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
-from senaite.core.exportimport.instruments.instrument import format_keyword
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.resultsimport import \
+    InstrumentResultsFileParser
+from senaite.core.exportimport.instruments.utils import format_keyword
 from senaite.core.i18n import translate as t
+from six import StringIO
 
 title = "Nuclisens EasyQ"
 

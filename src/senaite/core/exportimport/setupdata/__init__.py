@@ -317,16 +317,15 @@ class WorksheetImporter:
 class Sub_Groups(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_subgroups
+
+        container = self.context.setup.subgroups
         for row in self.get_rows(3):
-            if 'title' in row and row['title']:
-                obj = _createObjectByType("SubGroup", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row['description'],
-                         SortKey=row['SortKey'])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "SubGroup",
+                       title=title, description=row.get("description"),
+                       SortKey=row.get("SortKey"))
 
 
 class Lab_Information(WorksheetImporter):
@@ -759,15 +758,13 @@ class Manufacturers(WorksheetImporter):
 class Instrument_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_instrumenttypes
+        container = self.context.setup.instrumenttypes
         for row in self.get_rows(3):
-                obj = _createObjectByType("InstrumentType", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''))
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "InstrumentType",
+                       title=title, description=row.get("description"))
 
 
 class Instruments(WorksheetImporter):
@@ -1206,28 +1203,24 @@ class Sample_Point_Sample_Types(WorksheetImporter):
 class Storage_Locations(WorksheetImporter):
 
     def Import(self):
-        setup_folder = self.context.bika_setup.bika_storagelocations
+        container = self.context.setup.storagelocations
         for row in self.get_rows(3):
-            if not row['Address']:
+            address = row.get('Address')
+            if not address:
                 continue
 
-            obj = _createObjectByType("StorageLocation", setup_folder, tmpID())
-            obj.edit(
-                title=row['Address'],
-                SiteTitle=row['SiteTitle'],
-                SiteCode=row['SiteCode'],
-                SiteDescription=row['SiteDescription'],
-                LocationTitle=row['LocationTitle'],
-                LocationCode=row['LocationCode'],
-                LocationDescription=row['LocationDescription'],
-                LocationType=row['LocationType'],
-                ShelfTitle=row['ShelfTitle'],
-                ShelfCode=row['ShelfCode'],
-                ShelfDescription=row['ShelfDescription'],
-            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            api.create(container, "StorageLocation",
+                       title=address,
+                       SiteTitle=row.get('SiteTitle'),
+                       SiteCode=row.get('SiteCode'),
+                       SiteDescription=row.get('SiteDescription'),
+                       LocationTitle=row.get('LocationTitle'),
+                       LocationCode=row.get('LocationCode'),
+                       LocationDescription=row.get('LocationDescription'),
+                       LocationType=row.get('LocationType'),
+                       ShelfTitle=row.get('ShelfTitle'),
+                       ShelfCode=row.get('ShelfCode'),
+                       ShelfDescription=row.get('ShelfDescription'))
 
 
 class Sample_Conditions(WorksheetImporter):
@@ -1318,17 +1311,13 @@ class Methods(WorksheetImporter):
 class Sampling_Deviations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_samplingdeviations
+        container = self.context.setup.samplingdeviations
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("SamplingDeviation", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', '')
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "SamplingDeviation",
+                       title=title, description=row.get("description"))
 
 
 class Calculations(WorksheetImporter):
