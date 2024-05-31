@@ -4,6 +4,8 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2553 Migrate BatchLabels to Dexterity
+- #2566 Migrate SamplePoint Latitude and Longitude fields to Location
 - #2552 Migrate SamplingDeviations to Dexterity
 - #2564 Flush dependent fields in sample add form only if the current value is not allowed
 - #2565 Added GPSCoordinates widget and field

@@ -306,3 +306,57 @@ The system rises an error if the longitude is out of range:
     Traceback (most recent call last):
     ...
     ValueError: Longitude must be within -180 and 180 degrees
+
+
+Converting geographical coordinate in DMS to DD
+...............................................
+
+Is possible to convert a geographical coordinate as dict with degrees, minutes
+and seconds (DMS) to decimal degrees (DD):
+
+    >>> dms = {"degrees": 41, "minutes": 29, "seconds": 0.6144}
+    >>> geo.to_decimal_degrees(dms)
+    41.483504
+
+We can also decrease the number of decimals by means of precision:
+
+    >>> geo.to_decimal_degrees(dms, precision=2)
+    41.48
+
+If the value passed in is not from the valid type, the system rises an error:
+
+    >>> geo.to_decimal_degrees("yummi")
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected dms to be a dict, but got 'yummi'
+
+We can use a default value as a fallback though:
+
+    >>> geo.to_decimal_degrees("yummi", default=None) is None
+    True
+
+The system rises an error if the precision is not valid:
+
+    >>> geo.to_decimal_degrees(dms, precision=None)
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected precision to be an `int`, but got <type 'NoneType'>
+
+Even if we use a default as a fallback:
+
+    >>> geo.to_decimal_degrees(dms, precision=None, default=None)
+    Traceback (most recent call last):
+    ...
+    TypeError: Expected precision to be an `int`, but got <type 'NoneType'>
+
+It also handles bearing properly:
+
+    >>> dms = {"degrees": 41, "minutes": 29, "seconds": 0.6144, "bearing": "S"}
+    >>> geo.to_decimal_degrees(dms)
+    -41.483504
+
+It also handles bearing properly:
+
+    >>> dms = {"degrees": 2, "minutes": 3, "seconds": 6.7572, "bearing": "W"}
+    >>> geo.to_decimal_degrees(dms)
+    -2.051877
