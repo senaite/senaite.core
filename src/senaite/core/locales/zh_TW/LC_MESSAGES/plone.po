@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-05-22 08:59+0000\n"
+"POT-Creation-Date: 2024-05-31 21:18+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: ZZZ, 2024\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/senaite/teams/87045/zh_TW/)\n"
