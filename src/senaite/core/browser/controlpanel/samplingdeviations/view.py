@@ -86,7 +86,6 @@ class SamplingDeviationsView(ListingView):
                     default="All",
                 ),
                 "contentFilter": {},
-                "transitions": [{"id": "empty"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "active",
@@ -95,7 +94,6 @@ class SamplingDeviationsView(ListingView):
                     default="Active",
                 ),
                 "contentFilter": {"is_active": True},
-                "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
@@ -104,7 +102,6 @@ class SamplingDeviationsView(ListingView):
                     default="Inactive",
                 ),
                 "contentFilter": {'is_active': False},
-                "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }
         ]
