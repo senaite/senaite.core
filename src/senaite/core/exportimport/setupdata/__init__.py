@@ -1313,17 +1313,13 @@ class Methods(WorksheetImporter):
 class Sampling_Deviations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_samplingdeviations
+        container = self.context.setup.samplingdeviations
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("SamplingDeviation", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', '')
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "SamplingDeviation",
+                       title=title, description=row.get("description"))
 
 
 class Calculations(WorksheetImporter):
