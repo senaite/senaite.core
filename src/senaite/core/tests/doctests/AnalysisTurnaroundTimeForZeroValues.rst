@@ -161,7 +161,7 @@ We manually force a receive date 2d before so we can test:
     >>> new_received == received == start_process
     True
 
-Analyses Au and Fe are not late, but Cu is late:
+Analyses Cu is not late because the Turnaround Time is zero:
 
     >>> map(lambda an: an.isLateAnalysis(), analyses)
     [False]
@@ -180,18 +180,17 @@ And duration:
     >>> expected == durations
     True
 
-Earliness in minutes. Note the value for Cu is negative (is late), and the value
-for Mg is 0 (no Turnaround Time) set:
+Earliness in minutes. Note the value for Cu is 0 (Turnaround Time set to 0 days, 0 hours, 0 minutes):
 
     >>> map(lambda an: int(round(an.getEarliness())), analyses)
     [0]
 
-Lateness in minutes. Note that all values are negative except for Cu:
+Lateness in minutes. Note that Cu has a value of 0:
 
     >>> map(lambda an: int(round(an.getLateness())), analyses)
     [0]
 
-Because one of the analyses (Cu) is late, the Analysis Request is late too:
+Because the analyses (Cu) is not late, the Analysis Request is not late:
 
     >>> ar.getLate()
     False
