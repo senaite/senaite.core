@@ -70,15 +70,15 @@ class ISamplePointSchema(model.Schema):
 
     location = GPSCoordinatesField(
         title=_(
-            "title_samplepoint_location",
-            default="Location",
+            u"title_samplepoint_location",
+            default=u"Location",
         ),
         description=_(
-            "description_samplepoint_location",
-            default="The geographical point or area from which samples are "
-                    "taken for further analysis. It plays a pivotal role in "
-                    "research as it can significantly influence the results "
-                    "and conclusions drawn from the study."
+            u"description_samplepoint_location",
+            default=u"The geographical point or area from which samples are "
+                    u"taken for further analysis. It plays a pivotal role in "
+                    u"research as it can significantly influence the results "
+                    u"and conclusions drawn from the study."
         ),
         required=False,
     )
