@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="name       python:view.name;
+                   value      python:view.value;
+                   latitude   python:value.get('latitude', '');
+                   longitude  python:value.get('longitude', '');
+                   step       python:view.step;
+                   klass      python:view.klass;
+                   mode_klass python:'{}-input'.format(klass);
+                   klass      python:' '.join([klass, mode_klass]);"
+       tal:attributes="class klass">
+
+    <div class="form-row">
+      <div class='col-auto'
+           tal:define="id string:${name}.latitude:record:float:ignore_empty;">
+        <label i18n:translate="gps_coordinates_widget_label_latitude"
+               tal:attributes="for id">Latitude</label>
+        <input type="number"
+               tal:attributes="id id;
+                               name id;
+                               value latitude;
+                               step step;
+                               size python:len(step)+2;"/>
+      </div>
+      <div class='col-auto'
+           tal:define="id string:${name}.longitude:record:float:ignore_empty;">
+        <label i18n:translate="gps_coordinates_widget_label_longitude"
+               tal:attributes="for id">Longitude</label>
+        <input type="number"
+               tal:attributes="id id;
+                               name id;
+                               value longitude;
+                               step step;
+                               size python:len(step)+2;"/>
+      </div>
+    </div>
+  </div>
+
+</html>

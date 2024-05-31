@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2552 Migrate SamplingDeviations to Dexterity
+- #2564 Flush dependent fields in sample add form only if the current value is not allowed
+- #2565 Added GPSCoordinates widget and field
+- #2562 Increased field size and allowed input length for instrument import folder path
+- #2555 Instrument Results Importer/Parser improvements and fixtures
 - #2551 Migrate InstrumentTypes to Dexterity
 - #2560 Fix no profiles in add form on sample type and/or client change
 - #2559 Fix line breaks are not displayed for text-like results
