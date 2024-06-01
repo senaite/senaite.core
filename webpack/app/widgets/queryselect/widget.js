@@ -499,7 +499,7 @@ class QuerySelectWidgetController extends React.Component {
    *
    * @param {Array} values: The values to be set
    */
-  set_values(values) {
+  set_values(values, { silent = false } = {}) {
     // get the current set values
     let current_values = this.state.values;
 
@@ -528,14 +528,14 @@ class QuerySelectWidgetController extends React.Component {
         // value not changed -> continue
         continue;
       }
-      if (current_values.indexOf(value) == -1) {
+      if (!silent && current_values.indexOf(value) == -1) {
         // value added -> trigger select event
         this.trigger_custom_event("select", {value: value});
       }
     }
 
     for (const value of current_values) {
-      if (values.indexOf(value) == -1) {
+      if (!silent && values.indexOf(value) == -1) {
         // value removed -> trigger deselect event
         this.trigger_custom_event("deselect", {value: value});
       }
