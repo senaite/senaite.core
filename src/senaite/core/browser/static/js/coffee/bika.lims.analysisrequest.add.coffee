@@ -562,12 +562,10 @@ class window.AnalysisRequestAdd
     ###
      * Return the value of a single/multi reference field
     ###
-    $field = $(field)
-    if $field.type is "textarea"
-      $textarea = $field
-    else
-      $textarea = $field.find("textarea")
-    return $textarea.val()
+    controller = @get_widget_controller(field)
+    values = controller.get_values()
+    # BBB: provide the values in the same way as the textarea
+    return values.join("\n")
 
 
   get_reference_field_base_query: (field) =>

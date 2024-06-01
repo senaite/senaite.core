@@ -504,6 +504,17 @@ class QuerySelectWidgetController extends React.Component {
     return values;
   }
 
+
+  /*
+   * Return the current set values
+   *
+   * @returns {Array} List of current values
+   */
+  get_values() {
+    return this.state.values;
+  }
+
+
   /*
    * Set *all* values
    *
