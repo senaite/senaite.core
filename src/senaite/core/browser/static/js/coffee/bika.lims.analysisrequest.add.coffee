@@ -531,15 +531,10 @@ class window.AnalysisRequestAdd
     ###
     return unless field.length > 0
 
-    controller = @get_controller(field)
-    if controller
-      controller.set_values([uid])
-    else
-      debugger
-      fieldname = JSON.parse field.data("name")
-      console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
-      textarea = field.find("textarea")
-      this.native_set_value(textarea[0], uid)
+    fieldname = JSON.parse field.data("name")
+    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
+    textarea = field.find("textarea")
+    this.native_set_value(textarea[0], uid)
 
 
   set_multi_reference_field: (field, uids, append=true) ->
