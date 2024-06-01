@@ -6,33 +6,48 @@ import {
   render_uidreference_widget,
 } from "./widgets/renderer.js"
 
+// Provide widget controllers in a global namespace
+window.senaite = window.senaite || {};
+window.senaite.core = window.senaite.core || {};
+window.senaite.core.widgets = window.senaite.core.widgets || {};
+
 
 // Widget Renderers
 const WIDGETS = [
   // Query Select Widget
   {
     selector: ".senaite-queryselect-widget-input",
-    renderer: (el) => render_queryselect_widget(el),
+    renderer: (el) => {
+      return render_queryselect_widget(el);
+    },
   },
   // UID Reference Widget
   {
     selector: ".senaite-uidreference-widget-input",
-    renderer: (el) => render_uidreference_widget(el),
+    renderer: (el) => {
+      return render_uidreference_widget(el);
+    },
   },
   // Address Widget
   {
     selector: ".senaite-address-widget-input",
-    renderer: (el) => render_address_widget(el),
+    renderer: (el) => {
+      return render_address_widget(el);
+    },
   },
   // Phone Widget
   {
     selector: ".senaite-phone-widget-input",
-    renderer: (el) => render_phone_widget(el),
+    renderer: (el) => {
+      return render_phone_widget(el);
+    },
   },
   // TinyMCE Widget
   {
     selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text'],textarea.richTextWidget",
-    renderer: (el) => render_tinymce_widget(el),
+    renderer: (el) => {
+      return render_tinymce_widget(el);
+    },
   }
 ]
 
@@ -45,7 +60,12 @@ const render_all_widgets = (root_element) => {
     let renderer = cfg.renderer;
     elements.forEach((element) => {
       if (renderer) {
-        renderer(element);
+        let controller = renderer(element);
+        if (element.id) {
+          window.senaite.core.widgets[element.id] = controller;
+        } else {
+          console.warn("Element has no ID set! Controller can not be accessed for ", element)
+        }
       } else {
         throw new Error("Widget renderer required");
       }
