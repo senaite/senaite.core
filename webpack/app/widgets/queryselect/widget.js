@@ -210,6 +210,27 @@ class QuerySelectWidgetController extends React.Component {
     }
   }
 
+
+  /*
+   * Checks if two arrays are equal
+   *
+   * @param {Array} arr1: First array
+   * @param {Array} arr2: Second array
+   */
+  arrays_equal(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   /*
    * Checks if the field should be rendered as disabled
    *
@@ -520,12 +541,12 @@ class QuerySelectWidgetController extends React.Component {
    *
    * @param {Array} values: The values to be set
    */
-  set_values(values, { silent = false } = {}) {
+  set_values(values, { silent = false, sync = true } = {}) {
     // get the current set values
     let current_values = this.state.values;
 
-    if (!current_values && !values) {
-      // nothing to do
+    if (this.arrays_equal(current_values, values)) {
+      // values are the same, return immediately
       return;
     }
 
@@ -563,7 +584,7 @@ class QuerySelectWidgetController extends React.Component {
     }
 
     // ensure we have valid records and set the values
-    if (to_sync.length > 0) {
+    if (sync && to_sync.length > 0) {
       this.sync_records(to_sync).then(() => {
         this.setState({values: values});
       });

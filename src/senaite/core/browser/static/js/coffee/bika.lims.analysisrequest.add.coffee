@@ -531,10 +531,10 @@ class window.AnalysisRequestAdd
     ###
     return unless field.length > 0
 
+    controller = @get_widget_controller(field)
     fieldname = JSON.parse field.data("name")
     console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
-    textarea = field.find("textarea")
-    this.native_set_value(textarea[0], uid)
+    controller.set_values([uid])
 
 
   set_multi_reference_field: (field, uids, append=true) ->
