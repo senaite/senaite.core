@@ -452,15 +452,27 @@
       return false;
     };
 
+    AnalysisRequestAdd.prototype.get_controller = function(field) {
+
+      /*
+       * Returns the ReactJS controller for the given field
+       */
+      var id, ns, ref, ref1;
+      id = $(field).prop("id");
+      ns = (typeof window !== "undefined" && window !== null ? (ref = window.senaite) != null ? (ref1 = ref.core) != null ? ref1.widgets : void 0 : void 0 : void 0) || {};
+      return ns[id];
+    };
+
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
 
       /*
        * Empty the reference field and restore the search query
        */
+      var controller;
       if (!(field.length > 0)) {
         return;
       }
-      this.set_reference_field(field, "");
+      controller = this.set_reference_field(field, "");
       return this.reset_reference_field_query(field);
     };
 
@@ -540,14 +552,20 @@
        * Set the UID of a reference field
        * NOTE: This method overrides any existing value!
        */
-      var fieldname, textarea;
+      var controller, fieldname, textarea;
       if (!(field.length > 0)) {
         return;
       }
-      fieldname = JSON.parse(field.data("name"));
-      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
-      textarea = field.find("textarea");
-      return this.native_set_value(textarea[0], uid);
+      controller = this.get_controller(field);
+      if (controller) {
+        return controller.set_values([uid]);
+      } else {
+        debugger;
+        fieldname = JSON.parse(field.data("name"));
+        console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
+        textarea = field.find("textarea");
+        return this.native_set_value(textarea[0], uid);
+      }
     };
 
     AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids, append) {
