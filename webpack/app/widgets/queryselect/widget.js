@@ -259,6 +259,16 @@ class QuerySelectWidgetController extends React.Component {
 
 
   /*
+   * Returns the base catalog query
+   *
+   * @returns {Object} Catalog query
+   */
+  get_query() {
+    return this.state.query;
+  }
+
+
+  /*
    * Create a query object for the API
    *
    * This method prepares a query from the current state variables,

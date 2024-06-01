@@ -574,8 +574,8 @@ class window.AnalysisRequestAdd
     ###
      * Return the base query of a single/multi reference field
     ###
-    data = $(field).data()
-    return data.query or {}
+    controller = @get_widget_controller(field)
+    return controller.get_query()
 
 
   get_reference_field_catalog: (field) =>
