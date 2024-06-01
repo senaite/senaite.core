@@ -247,6 +247,17 @@ class QuerySelectWidgetController extends React.Component {
     return true;
   }
 
+
+  /*
+   * Returns the current search catalog
+   *
+   * @returns {String} Catalog name
+   */
+  get_catalog() {
+    return this.state.catalog;
+  }
+
+
   /*
    * Create a query object for the API
    *

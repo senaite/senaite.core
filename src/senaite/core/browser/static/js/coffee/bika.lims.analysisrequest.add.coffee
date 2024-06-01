@@ -586,9 +586,8 @@ class window.AnalysisRequestAdd
     ###
      * Return the catalog of a single/multi reference field
     ###
-    data = $(field).data()
-    catalog = data.catalog or ""
-    return JSON.parse(catalog)
+    controller = @get_widget_controller(field)
+    return controller.get_catalog()
 
 
   get_metadata_for: (arnum, field_name) =>
