@@ -442,9 +442,9 @@ class window.AnalysisRequestAdd
     return no
 
 
-  get_controller: (field) ->
+  get_widget_controller: (field) ->
     ###
-     * Returns the ReactJS controller for the given field
+     * Returns the ReactJS widget controller for the given field
     ###
     id = $(field).prop("id")
     ns = window?.senaite?.core?.widgets or {}
@@ -476,10 +476,11 @@ class window.AnalysisRequestAdd
      * Set the catalog search query for the given reference field
     ###
     return unless field.length > 0
+
+    controller = @get_widget_controller(field)
     # set the new query
-    search_query = JSON.stringify(query)
-    field.attr("data-search_query", search_query)
-    console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
+    controller.set_search_query(query)
+    console.info("----------> Set search query for field #{field.selector} -> #{JSON.stringify(query)}")
 
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"

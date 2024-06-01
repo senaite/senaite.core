@@ -316,6 +316,15 @@ class QuerySelectWidgetController extends React.Component {
   }
 
   /*
+   * Set custom search query on the root element
+   *
+   * This allows external code to set a custom search query to the field for filtering
+   */
+  set_search_query(query) {
+    this.root_el.setAttribute("data-search_query", JSON.stringify(query))
+  }
+
+  /*
    * Get the column configuration from the state
    *
    * @returns {Array} column configuration
