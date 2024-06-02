@@ -232,6 +232,26 @@ class QuerySelectWidgetController extends React.Component {
 
 
   /*
+   * Returns if the field accepts single values only
+   *
+   * @returns {Boolean} true/false if  values are allowed
+   */
+  is_single_valued() {
+    return this.state.multi_valued == false;
+  }
+
+
+  /*
+   * Returns if the field accepts multiple values
+   *
+   * @returns {Boolean} true/false if multiple values are allowed
+   */
+  is_multi_valued() {
+    return this.state.multi_valued == true;
+  }
+
+
+  /*
    * Checks if the field should be rendered as disabled
    *
    * @returns {Boolean} true/false if the widget is disabled
@@ -243,7 +263,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return true;
     }
-    if (!this.state.multi_valued && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.state.values.length > 0) {
       return true;
     }
     return false;
@@ -262,7 +282,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return false;
     }
-    if (!this.state.multi_valued && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.state.values.length > 0) {
       return false;
     }
     return true;
@@ -472,7 +492,7 @@ class QuerySelectWidgetController extends React.Component {
       // manually trigger a select event when the state is set
       this.trigger_custom_event("select", {value: value});
     });
-    if (values.length > 0 && !this.state.multi_valued || this.state.clear_results_after_select) {
+    if (values.length > 0 && this.is_single_valued() || this.state.clear_results_after_select) {
       this.clear_results();
     }
     return values;
