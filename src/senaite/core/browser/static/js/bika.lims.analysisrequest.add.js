@@ -444,8 +444,8 @@
      *
      * This method also checks if the current value is allowed by the new search query.
      *
-     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
-     * @param record {Object} The data record object containing the filter_queries
+     * @param field {Object} jQuery field
+     * @param query {Object} The catalog query to apply to the base query
      */
 
     AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
@@ -486,6 +486,20 @@
           }
         }
       });
+    };
+
+
+    /**
+     * Reset the custom filter query of a reference field
+     *
+     * @param field {Object} jQuery field
+     */
+
+    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
+      if (!(field.length > 0)) {
+        return;
+      }
+      return this.set_reference_field_query(field, {});
     };
 
     AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
@@ -540,17 +554,6 @@
       }
       this.set_reference_field(field, "");
       return this.reset_reference_field_query(field);
-    };
-
-    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
-
-      /*
-       * Restores the catalog search query for the given reference field
-       */
-      if (!(field.length > 0)) {
-        return;
-      }
-      return this.set_reference_field_query(field, {});
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {

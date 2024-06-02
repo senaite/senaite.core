@@ -435,8 +435,8 @@ class window.AnalysisRequestAdd
    *
    * This method also checks if the current value is allowed by the new search query.
    *
-   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
-   * @param record {Object} The data record object containing the filter_queries
+   * @param field {Object} jQuery field
+   * @param query {Object} The catalog query to apply to the base query
   ###
   set_reference_field_query: (field, query) =>
     return unless field.length > 0
@@ -475,6 +475,16 @@ class window.AnalysisRequestAdd
         message = response.message
         if message
           site.add_notification(message.title, message.text)
+
+
+  ###*
+   * Reset the custom filter query of a reference field
+   *
+   * @param field {Object} jQuery field
+  ###
+  reset_reference_field_query: (field) =>
+    return unless field.length > 0
+    this.set_reference_field_query(field, {})
 
 
   flush_fields_for: (field_name, arnum) ->
@@ -520,16 +530,6 @@ class window.AnalysisRequestAdd
     @set_reference_field field, ""
     # restore the original search query
     @reset_reference_field_query field
-
-
-  reset_reference_field_query: (field) =>
-    ###
-     * Restores the catalog search query for the given reference field
-    ###
-    return unless field.length > 0
-    this.set_reference_field_query(field, {})
-
-
 
 
   set_reference_field_records: (field, records) =>
@@ -602,6 +602,7 @@ class window.AnalysisRequestAdd
     record = @records_snapshot[arnum] or {}
     metadata_key = "#{field_name}_metadata".toLowerCase()
     return record[metadata_key] or {}
+
 
   set_template: (arnum, template) =>
     ###
