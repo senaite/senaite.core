@@ -331,6 +331,18 @@ class window.AnalysisRequestAdd
 
 
   ###*
+   * Returns the ReactJS widget controller for the given field
+   *
+   * @param field {Object} jQuery field
+   * @returns {Object} ReactJS widget controller
+  ###
+  get_widget_controller: (field) ->
+    id = $(field).prop("id")
+    ns = window?.senaite?.core?.widgets or {}
+    return ns[id]
+
+
+  ###*
    * Apply the field value to set dependent fields and set dependent filter queries
    *
    * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
@@ -449,19 +461,19 @@ class window.AnalysisRequestAdd
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"
     target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
-    target_value = @get_reference_field_value field
-    target_base_query = @get_reference_field_base_query field
+    target_value = controller.get_values()
+    target_base_query = controller.get_query()
     target_query = Object.assign({}, target_base_query, query)
-    target_catalog = @get_reference_field_catalog field
+    target_catalog = controller.get_catalog()
 
     # no flushing required if the field is already empty
-    if not target_value
+    if target_value.length == 0
       return
 
     me = this
     data =
       query: target_query
-      uids: target_value.split("\n")
+      uids: target_value
       catalog: target_catalog
       label: target_field_label
       name: target_field_name
@@ -487,6 +499,24 @@ class window.AnalysisRequestAdd
     this.set_reference_field_query(field, {})
 
 
+  ###*
+   * Get the current value of the reference field
+   *
+   * NOTE: This method
+   *
+   * @param field {Object} jQuery field
+   * @returns {String} UIDs joined with \n
+  ###
+  get_reference_field_value: (field) =>
+    ###
+     * Return the value of a single/multi reference field
+    ###
+    controller = @get_widget_controller(field)
+    values = controller.get_values()
+    # BBB: provide the values in the same way as the textarea
+    return values.join("\n")
+
+
   flush_fields_for: (field_name, arnum) ->
     ###
      * Flush dependent fields
@@ -509,15 +539,6 @@ class window.AnalysisRequestAdd
     if field.hasClass("ArchetypesReferenceWidget")
       return yes
     return no
-
-
-  get_widget_controller: (field) ->
-    ###
-     * Returns the ReactJS widget controller for the given field
-    ###
-    id = $(field).prop("id")
-    ns = window?.senaite?.core?.widgets or {}
-    return ns[id]
 
 
   flush_reference_field: (field) ->
@@ -567,32 +588,6 @@ class window.AnalysisRequestAdd
     fieldname = controller.get_name()
     console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
     controller.set_values(uids)
-
-
-  get_reference_field_value: (field) =>
-    ###
-     * Return the value of a single/multi reference field
-    ###
-    controller = @get_widget_controller(field)
-    values = controller.get_values()
-    # BBB: provide the values in the same way as the textarea
-    return values.join("\n")
-
-
-  get_reference_field_base_query: (field) =>
-    ###
-     * Return the base query of a single/multi reference field
-    ###
-    controller = @get_widget_controller(field)
-    return controller.get_query()
-
-
-  get_reference_field_catalog: (field) =>
-    ###
-     * Return the catalog of a single/multi reference field
-    ###
-    controller = @get_widget_controller(field)
-    return controller.get_catalog()
 
 
   get_metadata_for: (arnum, field_name) =>

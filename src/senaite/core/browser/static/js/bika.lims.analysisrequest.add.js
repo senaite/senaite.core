@@ -37,10 +37,8 @@
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
       this.get_metadata_for = bind(this.get_metadata_for, this);
-      this.get_reference_field_catalog = bind(this.get_reference_field_catalog, this);
-      this.get_reference_field_base_query = bind(this.get_reference_field_base_query, this);
-      this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field_records = bind(this.set_reference_field_records, this);
+      this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_base_url = bind(this.get_base_url, this);
@@ -329,6 +327,21 @@
 
 
     /**
+     * Returns the ReactJS widget controller for the given field
+     *
+     * @param field {Object} jQuery field
+     * @returns {Object} ReactJS widget controller
+     */
+
+    AnalysisRequestAdd.prototype.get_widget_controller = function(field) {
+      var id, ns, ref, ref1;
+      id = $(field).prop("id");
+      ns = (typeof window !== "undefined" && window !== null ? (ref = window.senaite) != null ? (ref1 = ref.core) != null ? ref1.widgets : void 0 : void 0 : void 0) || {};
+      return ns[id];
+    };
+
+
+    /**
      * Apply the field value to set dependent fields and set dependent filter queries
      *
      * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
@@ -458,17 +471,17 @@
       console.debug("Set custom search query for field " + field.selector + ": " + (JSON.stringify(query)));
       target_field_name = field.closest("tr[fieldname]").attr("fieldname");
       target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
-      target_value = this.get_reference_field_value(field);
-      target_base_query = this.get_reference_field_base_query(field);
+      target_value = controller.get_values();
+      target_base_query = controller.get_query();
       target_query = Object.assign({}, target_base_query, query);
-      target_catalog = this.get_reference_field_catalog(field);
-      if (!target_value) {
+      target_catalog = controller.get_catalog();
+      if (target_value.length === 0) {
         return;
       }
       me = this;
       data = {
         query: target_query,
-        uids: target_value.split("\n"),
+        uids: target_value,
         catalog: target_catalog,
         label: target_field_label,
         name: target_field_name
@@ -502,6 +515,27 @@
       return this.set_reference_field_query(field, {});
     };
 
+
+    /**
+     * Get the current value of the reference field
+     *
+     * NOTE: This method
+     *
+     * @param field {Object} jQuery field
+     * @returns {String} UIDs joined with \n
+     */
+
+    AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
+
+      /*
+       * Return the value of a single/multi reference field
+       */
+      var controller, values;
+      controller = this.get_widget_controller(field);
+      values = controller.get_values();
+      return values.join("\n");
+    };
+
     AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
 
       /*
@@ -531,17 +565,6 @@
         return true;
       }
       return false;
-    };
-
-    AnalysisRequestAdd.prototype.get_widget_controller = function(field) {
-
-      /*
-       * Returns the ReactJS widget controller for the given field
-       */
-      var id, ns, ref, ref1;
-      id = $(field).prop("id");
-      ns = (typeof window !== "undefined" && window !== null ? (ref = window.senaite) != null ? (ref1 = ref.core) != null ? ref1.widgets : void 0 : void 0 : void 0) || {};
-      return ns[id];
     };
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
@@ -600,37 +623,6 @@
       fieldname = controller.get_name();
       console.debug("set_multi_reference_field:: field=" + fieldname + " uids=" + uids);
       return controller.set_values(uids);
-    };
-
-    AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
-
-      /*
-       * Return the value of a single/multi reference field
-       */
-      var controller, values;
-      controller = this.get_widget_controller(field);
-      values = controller.get_values();
-      return values.join("\n");
-    };
-
-    AnalysisRequestAdd.prototype.get_reference_field_base_query = function(field) {
-
-      /*
-       * Return the base query of a single/multi reference field
-       */
-      var controller;
-      controller = this.get_widget_controller(field);
-      return controller.get_query();
-    };
-
-    AnalysisRequestAdd.prototype.get_reference_field_catalog = function(field) {
-
-      /*
-       * Return the catalog of a single/multi reference field
-       */
-      var controller;
-      controller = this.get_widget_controller(field);
-      return controller.get_catalog();
     };
 
     AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
