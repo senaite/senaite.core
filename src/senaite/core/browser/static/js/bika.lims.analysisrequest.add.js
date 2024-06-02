@@ -41,8 +41,8 @@
       this.get_reference_field_base_query = bind(this.get_reference_field_base_query, this);
       this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field_records = bind(this.set_reference_field_records, this);
-      this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
+      this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
       this.update_form = bind(this.update_form, this);
@@ -327,25 +327,28 @@
       return base_url.split("/ar_add")[0];
     };
 
-    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
 
-      /*
-       * Applies the value for the given record, by setting values and applying
-       * search filters to dependent fields
-       */
-      var me, title;
-      me = this;
-      title = record.title;
-      console.debug("apply_field_value: arnum=" + arnum + " record=" + title);
-      me.apply_dependent_values(arnum, record);
-      return me.apply_dependent_filter_queries(record, arnum);
+    /**
+     * Apply the field value to set dependent fields and set dependent filter queries
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the value and metadata
+     */
+
+    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
+      this.apply_dependent_values(arnum, record);
+      return this.apply_dependent_filter_queries(arnum, record);
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
 
-      /*
-       * Set default field values to dependents
-       */
+    /**
+     * Apply dependent field values
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the value and metadata
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
       var me;
       me = this;
       return $.each(record.field_values, function(field_name, values) {
@@ -353,11 +356,16 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
 
-      /*
-       * Set values on field
-       */
+    /**
+     * Apply the actual value on the dependent field
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param field_name {String} Name of the dependent field, e.g. 'CCContact'
+     * @param values {Object, Array} The value to be set
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
       var controller, field, manually_deselected, me, uid, uids, values_json;
       if (!Array.isArray(values)) {
         values = [values];
@@ -405,11 +413,19 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(record, arnum) {
 
-      /*
-       * Apply search filters to dependents
-       */
+    /**
+     * Apply filter queries of dependent reference fields to restrict the allowed searches
+     *
+     * NOTE: This method is chained to set dependent filter queries sequentially,
+     *       because a new Ajax request is done for each field to check if the
+     *       current value is allowed or must be flushed.
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the filter_queries
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(arnum, record) {
       var chain, me;
       me = this;
       chain = Promise.resolve();
@@ -419,6 +435,56 @@
         return chain = chain.then(function() {
           return me.set_reference_field_query(field, query);
         });
+      });
+    };
+
+
+    /**
+     * Set a custom filter query of a reference field
+     *
+     * This method also checks if the current value is allowed by the new search query.
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the filter_queries
+     */
+
+    AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
+      var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
+      if (!(field.length > 0)) {
+        return;
+      }
+      controller = this.get_widget_controller(field);
+      controller.set_search_query(query);
+      console.debug("Set custom search query for field " + field.selector + ": " + (JSON.stringify(query)));
+      target_field_name = field.closest("tr[fieldname]").attr("fieldname");
+      target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
+      target_value = this.get_reference_field_value(field);
+      target_base_query = this.get_reference_field_base_query(field);
+      target_query = Object.assign({}, target_base_query, query);
+      target_catalog = this.get_reference_field_catalog(field);
+      if (!target_value) {
+        return;
+      }
+      me = this;
+      data = {
+        query: target_query,
+        uids: target_value.split("\n"),
+        catalog: target_catalog,
+        label: target_field_label,
+        name: target_field_name
+      };
+      return this.get_json("is_reference_value_allowed", {
+        data: data
+      }).then(function(response) {
+        var message;
+        if (!response.allowed) {
+          console.info(("Reference value " + target_value + " of field " + target_field_name + " ") + "is *not* allowed by the new query ", target_query);
+          me.flush_reference_field(field);
+          message = response.message;
+          if (message) {
+            return site.add_notification(message.title, message.text);
+          }
+        }
       });
     };
 
@@ -485,53 +551,6 @@
         return;
       }
       return this.set_reference_field_query(field, {});
-    };
-
-    AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
-
-      /*
-       * Set the catalog search query for the given reference field
-       *
-       * This method also checks if the current value is allowed by the new search query.
-       *
-       */
-      var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
-      if (!(field.length > 0)) {
-        return;
-      }
-      controller = this.get_widget_controller(field);
-      controller.set_search_query(query);
-      console.info("----------> Set search query for field " + field.selector + " -> " + (JSON.stringify(query)));
-      target_field_name = field.closest("tr[fieldname]").attr("fieldname");
-      target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
-      target_value = this.get_reference_field_value(field);
-      target_base_query = this.get_reference_field_base_query(field);
-      target_query = Object.assign({}, target_base_query, query);
-      target_catalog = this.get_reference_field_catalog(field);
-      if (!target_value) {
-        return;
-      }
-      me = this;
-      data = {
-        query: target_query,
-        uids: target_value.split("\n"),
-        catalog: target_catalog,
-        label: target_field_label,
-        name: target_field_name
-      };
-      return this.get_json("is_reference_value_allowed", {
-        data: data
-      }).then(function(response) {
-        var message;
-        if (!response.allowed) {
-          console.info(("Reference value " + target_value + " of field " + target_field_name + " ") + "is *not* allowed by the new query ", target_query);
-          me.flush_reference_field(field);
-          message = response.message;
-          if (message) {
-            return site.add_notification(message.title, message.text);
-          }
-        }
-      });
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {

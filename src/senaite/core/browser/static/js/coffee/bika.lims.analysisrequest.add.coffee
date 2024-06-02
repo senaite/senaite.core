@@ -330,36 +330,39 @@ class window.AnalysisRequestAdd
     return base_url.split("/ar_add")[0]
 
 
+  ###*
+   * Apply the field value to set dependent fields and set dependent filter queries
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the value and metadata
+  ###
   apply_field_value: (arnum, record) ->
-    ###
-     * Applies the value for the given record, by setting values and applying
-     * search filters to dependent fields
-    ###
-    me = this
-    title = record.title
-    console.debug "apply_field_value: arnum=#{arnum} record=#{title}"
-
     # Set default values to dependents
-    me.apply_dependent_values arnum, record
-
+    @apply_dependent_values arnum, record
     # Apply search filters to other fields
-    me.apply_dependent_filter_queries record, arnum
+    @apply_dependent_filter_queries arnum, record
 
 
+  ###*
+   * Apply dependent field values
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the value and metadata
+  ###
   apply_dependent_values: (arnum, record) ->
-    ###
-     * Set default field values to dependents
-    ###
     me = this
     $.each record.field_values, (field_name, values) ->
       me.apply_dependent_value arnum, field_name, values
 
 
+  ###*
+   * Apply the actual value on the dependent field
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param field_name {String} Name of the dependent field, e.g. 'CCContact'
+   * @param values {Object, Array} The value to be set
+  ###
   apply_dependent_value: (arnum, field_name, values) ->
-    ###
-     * Set values on field
-    ###
-
     # always handle values as array internally
     if not Array.isArray values
       values = [values]
@@ -408,16 +411,70 @@ class window.AnalysisRequestAdd
             field.val value.value
 
 
-  apply_dependent_filter_queries: (record, arnum) ->
-    ###
-     * Apply search filters to dependents
-    ###
+  ###*
+   * Apply filter queries of dependent reference fields to restrict the allowed searches
+   *
+   * NOTE: This method is chained to set dependent filter queries sequentially,
+   *       because a new Ajax request is done for each field to check if the
+   *       current value is allowed or must be flushed.
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the filter_queries
+  ###
+  apply_dependent_filter_queries: (arnum, record) ->
     me = this
     chain = Promise.resolve()
     $.each record.filter_queries, (field_name, query) ->
       field = $("#" + field_name + "-#{arnum}")
       chain = chain.then () ->
         me.set_reference_field_query field, query
+
+
+  ###*
+   * Set a custom filter query of a reference field
+   *
+   * This method also checks if the current value is allowed by the new search query.
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the filter_queries
+  ###
+  set_reference_field_query: (field, query) =>
+    return unless field.length > 0
+
+    controller = @get_widget_controller(field)
+    # set the new query
+    controller.set_search_query(query)
+    console.debug("Set custom search query for field #{field.selector}: #{JSON.stringify(query)}")
+
+    # check if the target field needs to be flushed
+    target_field_name = field.closest("tr[fieldname]").attr "fieldname"
+    target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
+    target_value = @get_reference_field_value field
+    target_base_query = @get_reference_field_base_query field
+    target_query = Object.assign({}, target_base_query, query)
+    target_catalog = @get_reference_field_catalog field
+
+    # no flushing required if the field is already empty
+    if not target_value
+      return
+
+    me = this
+    data =
+      query: target_query
+      uids: target_value.split("\n")
+      catalog: target_catalog
+      label: target_field_label
+      name: target_field_name
+
+    # Ask the server if the value is allowed by the new query
+    @get_json("is_reference_value_allowed", {data: data}).then (response) ->
+      if not response.allowed
+        console.info("Reference value #{target_value} of field #{target_field_name} " +
+                     "is *not* allowed by the new query ", target_query)
+        me.flush_reference_field field
+        message = response.message
+        if message
+          site.add_notification(message.title, message.text)
 
 
   flush_fields_for: (field_name, arnum) ->
@@ -473,49 +530,6 @@ class window.AnalysisRequestAdd
     this.set_reference_field_query(field, {})
 
 
-  set_reference_field_query: (field, query) =>
-    ###
-     * Set the catalog search query for the given reference field
-     *
-     * This method also checks if the current value is allowed by the new search query.
-     *
-    ###
-    return unless field.length > 0
-
-    controller = @get_widget_controller(field)
-    # set the new query
-    controller.set_search_query(query)
-    console.info("----------> Set search query for field #{field.selector} -> #{JSON.stringify(query)}")
-
-    # check if the target field needs to be flushed
-    target_field_name = field.closest("tr[fieldname]").attr "fieldname"
-    target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
-    target_value = @get_reference_field_value field
-    target_base_query = @get_reference_field_base_query field
-    target_query = Object.assign({}, target_base_query, query)
-    target_catalog = @get_reference_field_catalog field
-
-    # no flushing required if the field is already empty
-    if not target_value
-      return
-
-    me = this
-    data =
-      query: target_query
-      uids: target_value.split("\n")
-      catalog: target_catalog
-      label: target_field_label
-      name: target_field_name
-
-    # Ask the server if the value is allowed by the new query
-    @get_json("is_reference_value_allowed", {data: data}).then (response) ->
-      if not response.allowed
-        console.info("Reference value #{target_value} of field #{target_field_name} " +
-                     "is *not* allowed by the new query ", target_query)
-        me.flush_reference_field field
-        message = response.message
-        if message
-          site.add_notification(message.title, message.text)
 
 
   set_reference_field_records: (field, records) =>
