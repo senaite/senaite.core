@@ -522,12 +522,12 @@ class window.AnalysisRequestAdd
     ###
      * Set data-records to display the UID of a reference field
     ###
-    records ?= {}
-    $field = $(field)
+    return unless records and typeof records is "object"
 
-    existing_records = JSON.parse($field.attr("data-records") or '{}')
+    controller = @get_widget_controller(field)
+    existing_records = controller.get_data_records()
     new_records = Object.assign(existing_records, records)
-    $field.attr("data-records", JSON.stringify(new_records))
+    controller.set_data_records(new_records)
 
 
   set_reference_field: (field, uid) ->

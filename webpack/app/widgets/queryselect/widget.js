@@ -370,9 +370,43 @@ class QuerySelectWidgetController extends React.Component {
    * Set custom search query on the root element
    *
    * This allows external code to set a custom search query to the field for filtering
+   *
+   * NOTE: The reason why we store the value directly on the DOM node as a data
+   *       attribute is for backwards compatibility and mainly used in the
+   *       Sample Add Form.
+   *       It might be perfectly possible in the future to store it directly in
+   *       the internal state object instead!
    */
   set_search_query(query) {
     this.root_el.setAttribute("data-search_query", JSON.stringify(query))
+  }
+
+  /*
+   * Get data records
+   *
+   * @returns {Object} The search query object
+   */
+  get_data_records() {
+    let records = this.root_el.dataset.records;
+    if (records == null) {
+      return {};
+    }
+    return JSON.parse(records);
+  }
+
+  /*
+   * Set data records
+   *
+   * This allows external code to set custom data records
+   *
+   * NOTE: The reason why we store the value directly on the DOM node as a data
+   *       attribute is for backwards compatibility and mainly used in the
+   *       Sample Add Form.
+   *       It might be perfectly possible in the future to store it directly in
+   *       the internal state object instead!
+   */
+  set_data_records(records) {
+    this.root_el.setAttribute("data-records", JSON.stringify(records))
   }
 
   /*
