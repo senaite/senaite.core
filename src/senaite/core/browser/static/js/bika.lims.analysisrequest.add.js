@@ -560,40 +560,24 @@
         return;
       }
       controller = this.get_widget_controller(field);
-      fieldname = JSON.parse(field.data("name"));
+      fieldname = controller.get_name();
       console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
       return controller.set_values([uid]);
     };
 
-    AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids, append) {
-      var existing, fieldname, textarea;
-      if (append == null) {
-        append = true;
-      }
+    AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids) {
 
       /*
        * Set multiple UIDs of a reference field
        */
-      if (!(field.length > 0)) {
+      var controller, fieldname;
+      if (!(uids && field.length > 0)) {
         return;
       }
-      if (uids == null) {
-        uids = [];
-      }
-      fieldname = JSON.parse(field.data("name"));
+      controller = this.get_widget_controller(field);
+      fieldname = controller.get_name();
       console.debug("set_multi_reference_field:: field=" + fieldname + " uids=" + uids);
-      textarea = field.find("textarea");
-      if (!append) {
-        return this.native_set_value(textarea[0], uids.join("\n"));
-      } else {
-        existing = textarea.val().split("\n");
-        uids.forEach(function(uid) {
-          if (indexOf.call(existing, uid) < 0) {
-            return existing = existing.concat(uid);
-          }
-        });
-        return this.native_set_value(textarea[0], existing.join("\n"));
-      }
+      return controller.set_values(uids);
     };
 
     AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
