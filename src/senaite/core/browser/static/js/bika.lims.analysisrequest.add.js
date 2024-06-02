@@ -539,14 +539,14 @@
       /*
        * Set data-records to display the UID of a reference field
        */
-      var $field, existing_records, new_records;
-      if (records == null) {
-        records = {};
+      var controller, existing_records, new_records;
+      if (!(records && typeof records === "object")) {
+        return;
       }
-      $field = $(field);
-      existing_records = JSON.parse($field.attr("data-records") || '{}');
+      controller = this.get_widget_controller(field);
+      existing_records = controller.get_data_records();
       new_records = Object.assign(existing_records, records);
-      return $field.attr("data-records", JSON.stringify(new_records));
+      return controller.set_data_records(new_records);
     };
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, uid) {
