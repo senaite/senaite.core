@@ -538,30 +538,21 @@ class window.AnalysisRequestAdd
     return unless uid and field.length > 0
 
     controller = @get_widget_controller(field)
-    fieldname = JSON.parse field.data("name")
+    fieldname = controller.get_name()
     console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
     controller.set_values([uid])
 
 
-  set_multi_reference_field: (field, uids, append=true) ->
+  set_multi_reference_field: (field, uids) ->
     ###
      * Set multiple UIDs of a reference field
     ###
-    return unless field.length > 0
+    return unless uids and field.length > 0
 
-    uids ?= []
-    fieldname = JSON.parse field.data("name")
+    controller = @get_widget_controller(field)
+    fieldname = controller.get_name()
     console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
-    textarea = field.find("textarea")
-
-    if not append
-      this.native_set_value(textarea[0], uids.join("\n"))
-    else
-      existing = textarea.val().split("\n")
-      uids.forEach (uid) ->
-        if uid not in existing
-          existing = existing.concat(uid)
-      this.native_set_value(textarea[0], existing.join("\n"))
+    controller.set_values(uids)
 
 
   get_reference_field_value: (field) =>

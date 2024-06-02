@@ -232,6 +232,16 @@ class QuerySelectWidgetController extends React.Component {
 
 
   /*
+   * Returns the name of the input field
+   *
+   * @returns {String} name
+   */
+  get_name() {
+    return this.state.name;
+  }
+
+
+  /*
    * Returns if the field accepts single values only
    *
    * @returns {Boolean} true/false if  values are allowed
