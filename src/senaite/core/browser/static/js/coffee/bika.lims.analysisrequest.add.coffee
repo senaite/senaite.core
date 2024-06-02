@@ -333,7 +333,7 @@ class window.AnalysisRequestAdd
   apply_field_value: (arnum, record) ->
     ###
      * Applies the value for the given record, by setting values and applying
-     * search filters to dependents
+     * search filters to dependent fields
     ###
     me = this
     title = record.title
@@ -367,6 +367,7 @@ class window.AnalysisRequestAdd
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
+    controller = @get_widget_controller(field)
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
@@ -384,7 +385,8 @@ class window.AnalysisRequestAdd
       values.forEach (value) =>
         @set_reference_field_records field, value
 
-      if field.data("multi_valued") is 1
+      if controller.is_multi_valued()
+        # set multi values
         @set_multi_reference_field field, uids
       else
         uid = if uids.length > 0 then uids[0] else ""
@@ -474,6 +476,9 @@ class window.AnalysisRequestAdd
   set_reference_field_query: (field, query) =>
     ###
      * Set the catalog search query for the given reference field
+     *
+     * This method also checks if the current value is allowed by the new search query.
+     *
     ###
     return unless field.length > 0
 
@@ -502,6 +507,7 @@ class window.AnalysisRequestAdd
       label: target_field_label
       name: target_field_name
 
+    # Ask the server if the value is allowed by the new query
     @get_json("is_reference_value_allowed", {data: data}).then (response) ->
       if not response.allowed
         console.info("Reference value #{target_value} of field #{target_field_name} " +
@@ -529,7 +535,7 @@ class window.AnalysisRequestAdd
      * Set the UID of a reference field
      * NOTE: This method overrides any existing value!
     ###
-    return unless field.length > 0
+    return unless uid and field.length > 0
 
     controller = @get_widget_controller(field)
     fieldname = JSON.parse field.data("name")
