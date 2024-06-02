@@ -652,10 +652,9 @@
       }
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      $.each(template.service_uids, function(index, uid) {
+      return $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
       });
-      return this.set_reference_field(template_field, template_uid);
     };
 
     AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {

@@ -631,10 +631,6 @@ class window.AnalysisRequestAdd
       # select the service
       me.set_service arnum, uid, yes
 
-    # set the template field again
-    # XXX how to avoid that setting the sample types flushes the template field?
-    @set_reference_field template_field, template_uid
-
 
   set_service: (arnum, uid, checked) =>
     ###
