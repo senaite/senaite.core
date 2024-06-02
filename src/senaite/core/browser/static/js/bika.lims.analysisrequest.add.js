@@ -331,7 +331,7 @@
 
       /*
        * Applies the value for the given record, by setting values and applying
-       * search filters to dependents
+       * search filters to dependent fields
        */
       var me, title;
       me = this;
@@ -358,13 +358,14 @@
       /*
        * Set values on field
        */
-      var field, manually_deselected, me, uid, uids, values_json;
+      var controller, field, manually_deselected, me, uid, uids, values_json;
       if (!Array.isArray(values)) {
         values = [values];
       }
       me = this;
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));
+      controller = this.get_widget_controller(field);
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if (this.is_reference_field(field)) {
         manually_deselected = this.deselected_uids[field_name] || [];
@@ -380,7 +381,7 @@
             return _this.set_reference_field_records(field, value);
           };
         })(this));
-        if (field.data("multi_valued") === 1) {
+        if (controller.is_multi_valued()) {
           return this.set_multi_reference_field(field, uids);
         } else {
           uid = uids.length > 0 ? uids[0] : "";
@@ -452,10 +453,10 @@
       return false;
     };
 
-    AnalysisRequestAdd.prototype.get_controller = function(field) {
+    AnalysisRequestAdd.prototype.get_widget_controller = function(field) {
 
       /*
-       * Returns the ReactJS controller for the given field
+       * Returns the ReactJS widget controller for the given field
        */
       var id, ns, ref, ref1;
       id = $(field).prop("id");
@@ -468,11 +469,10 @@
       /*
        * Empty the reference field and restore the search query
        */
-      var controller;
       if (!(field.length > 0)) {
         return;
       }
-      controller = this.set_reference_field(field, "");
+      this.set_reference_field(field, "");
       return this.reset_reference_field_query(field);
     };
 
@@ -491,14 +491,17 @@
 
       /*
        * Set the catalog search query for the given reference field
+       *
+       * This method also checks if the current value is allowed by the new search query.
+       *
        */
-      var data, me, search_query, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
+      var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
       if (!(field.length > 0)) {
         return;
       }
-      search_query = JSON.stringify(query);
-      field.attr("data-search_query", search_query);
-      console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
+      controller = this.get_widget_controller(field);
+      controller.set_search_query(query);
+      console.info("----------> Set search query for field " + field.selector + " -> " + (JSON.stringify(query)));
       target_field_name = field.closest("tr[fieldname]").attr("fieldname");
       target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
       target_value = this.get_reference_field_value(field);
@@ -552,20 +555,14 @@
        * Set the UID of a reference field
        * NOTE: This method overrides any existing value!
        */
-      var controller, fieldname, textarea;
-      if (!(field.length > 0)) {
+      var controller, fieldname;
+      if (!(uid && field.length > 0)) {
         return;
       }
-      controller = this.get_controller(field);
-      if (controller) {
-        return controller.set_values([uid]);
-      } else {
-        debugger;
-        fieldname = JSON.parse(field.data("name"));
-        console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
-        textarea = field.find("textarea");
-        return this.native_set_value(textarea[0], uid);
-      }
+      controller = this.get_widget_controller(field);
+      fieldname = JSON.parse(field.data("name"));
+      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
+      return controller.set_values([uid]);
     };
 
     AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids, append) {
@@ -604,14 +601,10 @@
       /*
        * Return the value of a single/multi reference field
        */
-      var $field, $textarea;
-      $field = $(field);
-      if ($field.type === "textarea") {
-        $textarea = $field;
-      } else {
-        $textarea = $field.find("textarea");
-      }
-      return $textarea.val();
+      var controller, values;
+      controller = this.get_widget_controller(field);
+      values = controller.get_values();
+      return values.join("\n");
     };
 
     AnalysisRequestAdd.prototype.get_reference_field_base_query = function(field) {
@@ -619,9 +612,9 @@
       /*
        * Return the base query of a single/multi reference field
        */
-      var data;
-      data = $(field).data();
-      return data.query || {};
+      var controller;
+      controller = this.get_widget_controller(field);
+      return controller.get_query();
     };
 
     AnalysisRequestAdd.prototype.get_reference_field_catalog = function(field) {
@@ -629,10 +622,9 @@
       /*
        * Return the catalog of a single/multi reference field
        */
-      var catalog, data;
-      data = $(field).data();
-      catalog = data.catalog || "";
-      return JSON.parse(catalog);
+      var controller;
+      controller = this.get_widget_controller(field);
+      return controller.get_catalog();
     };
 
     AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
