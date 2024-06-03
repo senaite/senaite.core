@@ -62,7 +62,11 @@ const render_all_widgets = (root_element) => {
       if (renderer) {
         let controller = renderer(element);
         if (element.id) {
+          // use the ID attribute as the primary identifier
           window.senaite.core.widgets[element.id] = controller;
+        } else if (element.dataset.id) {
+          // check if we have a `data-id` set that we can use
+          window.senaite.core.widgets[JSON.parse(element.dataset.id)] = controller;
         } else {
           console.warn("Element has no ID set! Controller can not be accessed for ", element)
         }
