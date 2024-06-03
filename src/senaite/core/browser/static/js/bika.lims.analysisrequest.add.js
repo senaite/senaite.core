@@ -423,7 +423,7 @@
      */
 
     AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
-      var controller, field, manually_deselected, me, uid, uids, values_json;
+      var controller, field, manually_deselected, me, uids, values_json;
       if (!this.is_array(values)) {
         values = [values];
       }
@@ -446,12 +446,7 @@
             return _this.set_reference_field_records(field, value);
           };
         })(this));
-        if (controller.is_multi_valued()) {
-          return this.set_multi_reference_field(field, uids);
-        } else {
-          uid = uids.length > 0 ? uids[0] : "";
-          return this.set_reference_field(field, uid);
-        }
+        return this.set_reference_field(field, uids);
       } else {
         return values.forEach(function(value, index) {
           if ((value.if_empty != null) && value.if_empty === true) {
@@ -626,13 +621,13 @@
 
 
     /**
-      * Set the value(s) of a reference field
+      * Set UID(s) of a single/multi reference field
       *
       * NOTE: This method overrides the value of single reference fields or
       *       removes/adds the omitted/added values from multi-reference fields
       *
       * @param field {Obejct} jQuery field
-      * @param values {Array} Array of UIDs to set or [] to flush
+      * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
      */
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
@@ -650,21 +645,6 @@
       fieldname = controller.get_name();
       console.debug("set_reference_field:: field=" + fieldname + " values=" + values);
       return controller.set_values(values);
-    };
-
-    AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids) {
-
-      /*
-       * Set multiple UIDs of a reference field
-       */
-      var controller, fieldname;
-      if (!(uids && field.length > 0)) {
-        return;
-      }
-      controller = this.get_widget_controller(field);
-      fieldname = controller.get_name();
-      console.debug("set_multi_reference_field:: field=" + fieldname + " uids=" + uids);
-      return controller.set_values(uids);
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {

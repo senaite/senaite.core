@@ -435,12 +435,8 @@ class window.AnalysisRequestAdd
       values.forEach (value) =>
         @set_reference_field_records field, value
 
-      if controller.is_multi_valued()
-        # set multi values
-        @set_multi_reference_field field, uids
-      else
-        uid = if uids.length > 0 then uids[0] else ""
-        @set_reference_field field, uid
+      # update reference field values
+      @set_reference_field field, uids
 
     # other fields, e.g. default CC Emails of Client
     else
@@ -590,13 +586,13 @@ class window.AnalysisRequestAdd
 
 
   ###*
-    * Set the value(s) of a reference field
+    * Set UID(s) of a single/multi reference field
     *
     * NOTE: This method overrides the value of single reference fields or
     *       removes/adds the omitted/added values from multi-reference fields
     *
     * @param field {Obejct} jQuery field
-    * @param values {Array} Array of UIDs to set or [] to flush
+    * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
   ###
   set_reference_field: (field, values) ->
     return unless field.length > 0
@@ -604,7 +600,7 @@ class window.AnalysisRequestAdd
     if not @is_array(values)
       values = [values]
 
-    # filter out invalid values
+    # filter out invalid UIDs
     # NOTE: UIDs have always a length of 32
     values = values.filter((item) -> item and item.length == 32)
 
@@ -612,18 +608,6 @@ class window.AnalysisRequestAdd
     fieldname = controller.get_name()
     console.debug "set_reference_field:: field=#{fieldname} values=#{values}"
     controller.set_values(values)
-
-
-  set_multi_reference_field: (field, uids) ->
-    ###
-     * Set multiple UIDs of a reference field
-    ###
-    return unless uids and field.length > 0
-
-    controller = @get_widget_controller(field)
-    fieldname = controller.get_name()
-    console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
-    controller.set_values(uids)
 
 
   set_reference_field_records: (field, records) =>
