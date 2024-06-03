@@ -23,6 +23,7 @@ from Products.CMFCore import permissions
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.config.widgets import get_default_columns
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IAnalysisCategory
 from senaite.core.schema import UIDReferenceField
@@ -72,7 +73,7 @@ class IAnalysisCategorySchema(model.Schema):
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
         query="get_department_query",
-        columns="get_department_default_columns",
+        columns=get_default_columns,
         limit=5,
     )
     department = UIDReferenceField(
@@ -160,23 +161,3 @@ class AnalysisCategory(Container):
             "sort_on": "title",
             "sort_order": "ascending",
         }
-
-    @security.private
-    def get_department_default_columns(self):
-        """Returns the default columns for the reference dropdown
-        """
-        return [
-            {
-                "name": "Title",
-                "label": _(
-                    "search_result_column_title_title",
-                    default="Department Name",
-                ),
-            }, {
-                "name": "getDepartmentID",
-                "label": _(
-                    "search_result_column_title_department_id",
-                    default="Department ID",
-                ),
-            },
-        ]

@@ -22,9 +22,8 @@ from bika.lims import api
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 
 
-def before_deactivate(analysis_category):
-    """Function triggered before a 'deactivate' transition for
-    the analysis category passed in is performed.
+def guard_deactivate(analysis_category):
+    """Return whether the transition "deactivate" can be performed or not.
     """
 
     # Analysis Category can't be deactivated if it contains services
