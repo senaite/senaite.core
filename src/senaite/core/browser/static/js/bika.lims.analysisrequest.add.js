@@ -616,7 +616,7 @@
     /**
      * Empty the reference field and restore the search query
      *
-     * @param field {Obejct} jQuery field
+     * @param field {Object} jQuery field
      */
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
@@ -633,13 +633,13 @@
 
 
     /**
-      * Set UID(s) of a single/multi reference field
-      *
-      * NOTE: This method overrides the value of single reference fields or
-      *       removes/adds the omitted/added values from multi-reference fields
-      *
-      * @param field {Obejct} jQuery field
-      * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+     * Set UID(s) of a single/multi reference field
+     *
+     * NOTE: This method overrides the value of single reference fields or
+     *       removes/adds the omitted/added values from multi-reference fields
+     *
+     * @param field {Object} jQuery field
+     * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
      */
 
     AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
@@ -661,14 +661,14 @@
 
 
     /**
-      * Set data-records to display the UID of a reference field
-      *
-      * NOTE: This method if for performance reasons only.
-      *       It avoids an additional lookup of the reference widget to fetch the
-      *       required data to render the display template for the actual UID.
-      *
-      * @param field {Obejct} jQuery field
-      * @param records {Object} Records to set
+     * Set data-records to display the UID of a reference field
+     *
+     * NOTE: This method if for performance reasons only.
+     *       It avoids an additional lookup of the reference widget to fetch the
+     *       required data to render the display template for the actual UID.
+     *
+     * @param field {Object} jQuery field
+     * @param records {Object} Records to set
      */
 
     AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
@@ -682,11 +682,19 @@
       return controller.set_data_records(new_records);
     };
 
-    AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
 
-      /*
-       * Return the metadata for the given field name
-       */
+    /**
+     * Return the record metadata from the `records_snapshot` for the given field
+     *
+     * NOTE: The `records_snapshot` get updated each time `recalculate_records`
+     *       is called. It is provided by the server and contains information
+     *       about dependencies, dependent fields/queries etc.
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param records {Object} Records to set
+     */
+
+    AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
       var metadata_key, record;
       record = this.records_snapshot[arnum] || {};
       metadata_key = (field_name + "_metadata").toLowerCase();

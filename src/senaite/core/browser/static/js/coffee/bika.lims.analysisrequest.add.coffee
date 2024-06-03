@@ -581,7 +581,7 @@ class window.AnalysisRequestAdd
   ###*
    * Empty the reference field and restore the search query
    *
-   * @param field {Obejct} jQuery field
+   * @param field {Object} jQuery field
   ###
   flush_reference_field: (field) ->
     ###
@@ -596,13 +596,13 @@ class window.AnalysisRequestAdd
 
 
   ###*
-    * Set UID(s) of a single/multi reference field
-    *
-    * NOTE: This method overrides the value of single reference fields or
-    *       removes/adds the omitted/added values from multi-reference fields
-    *
-    * @param field {Obejct} jQuery field
-    * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+   * Set UID(s) of a single/multi reference field
+   *
+   * NOTE: This method overrides the value of single reference fields or
+   *       removes/adds the omitted/added values from multi-reference fields
+   *
+   * @param field {Object} jQuery field
+   * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
   ###
   set_reference_field: (field, values) ->
     return unless field.length > 0
@@ -621,14 +621,14 @@ class window.AnalysisRequestAdd
 
 
   ###*
-    * Set data-records to display the UID of a reference field
-    *
-    * NOTE: This method if for performance reasons only.
-    *       It avoids an additional lookup of the reference widget to fetch the
-    *       required data to render the display template for the actual UID.
-    *
-    * @param field {Obejct} jQuery field
-    * @param records {Object} Records to set
+   * Set data-records to display the UID of a reference field
+   *
+   * NOTE: This method if for performance reasons only.
+   *       It avoids an additional lookup of the reference widget to fetch the
+   *       required data to render the display template for the actual UID.
+   *
+   * @param field {Object} jQuery field
+   * @param records {Object} Records to set
   ###
   set_reference_field_records: (field, records) =>
     return unless records and @is_object(records)
@@ -639,10 +639,17 @@ class window.AnalysisRequestAdd
     controller.set_data_records(new_records)
 
 
+  ###*
+   * Return the record metadata from the `records_snapshot` for the given field
+   *
+   * NOTE: The `records_snapshot` get updated each time `recalculate_records`
+   *       is called. It is provided by the server and contains information
+   *       about dependencies, dependent fields/queries etc.
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param records {Object} Records to set
+  ###
   get_metadata_for: (arnum, field_name) =>
-    ###
-     * Return the metadata for the given field name
-    ###
     record = @records_snapshot[arnum] or {}
     metadata_key = "#{field_name}_metadata".toLowerCase()
     return record[metadata_key] or {}
