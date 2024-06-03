@@ -443,6 +443,9 @@
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));
       controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if (this.is_reference_field(field)) {
         manually_deselected = this.deselected_uids[field_name] || [];
@@ -514,10 +517,10 @@
 
     AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
       var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
-      if (!(field.length > 0)) {
+      controller = this.get_widget_controller(field);
+      if (!controller) {
         return;
       }
-      controller = this.get_widget_controller(field);
       controller.set_search_query(query);
       console.debug("Set custom search query for field " + field.selector + ": " + (JSON.stringify(query)));
       target_field_name = field.closest("tr[fieldname]").attr("fieldname");
@@ -560,9 +563,6 @@
      */
 
     AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
-      if (!(field.length > 0)) {
-        return;
-      }
       return this.set_reference_field_query(field, {});
     };
 
@@ -579,14 +579,41 @@
      */
 
     AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
-
-      /*
-       * Return the value of a single/multi reference field
-       */
       var controller, values;
       controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
       values = controller.get_values();
       return values.join("\n");
+    };
+
+
+    /**
+     * Set UID(s) of a single/multi reference field
+     *
+     * NOTE: This method overrides the value of single reference fields or
+     *       removes/adds the omitted/added values from multi-reference fields
+     *
+     * @param field {Object} jQuery field
+     * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+     */
+
+    AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
+      var controller, fieldname;
+      if (!this.is_array(values)) {
+        values = [values];
+      }
+      values = values.filter(function(item) {
+        return item && item.length === 32;
+      });
+      controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
+      fieldname = controller.get_name();
+      console.debug("set_reference_field:: field=" + fieldname + " values=" + values);
+      return controller.set_values(values);
     };
 
 
@@ -620,43 +647,8 @@
      */
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
-
-      /*
-       * Empty the reference field and restore the search query
-       */
-      if (!(field.length > 0)) {
-        return;
-      }
       this.set_reference_field(field, null);
       return this.reset_reference_field_query(field);
-    };
-
-
-    /**
-     * Set UID(s) of a single/multi reference field
-     *
-     * NOTE: This method overrides the value of single reference fields or
-     *       removes/adds the omitted/added values from multi-reference fields
-     *
-     * @param field {Object} jQuery field
-     * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
-     */
-
-    AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
-      var controller, fieldname;
-      if (!(field.length > 0)) {
-        return;
-      }
-      if (!this.is_array(values)) {
-        values = [values];
-      }
-      values = values.filter(function(item) {
-        return item && item.length === 32;
-      });
-      controller = this.get_widget_controller(field);
-      fieldname = controller.get_name();
-      console.debug("set_reference_field:: field=" + fieldname + " values=" + values);
-      return controller.set_values(values);
     };
 
 
@@ -677,6 +669,9 @@
         return;
       }
       controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
       existing_records = controller.get_data_records();
       new_records = Object.assign(existing_records, records);
       return controller.set_data_records(new_records);
@@ -701,11 +696,15 @@
       return record[metadata_key] || {};
     };
 
-    AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
 
-      /*
-       * Apply the template data to all fields of arnum
-       */
+    /**
+     * Apply the template values to the sample localized in the specified column
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param template {Object} Template record
+     */
+
+    AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
       var field, me, template_field, template_uid, uid, value;
       me = this;
       template_field = $("#Template-" + arnum);

@@ -427,7 +427,12 @@ class window.AnalysisRequestAdd
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
+
     controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
@@ -492,9 +497,11 @@ class window.AnalysisRequestAdd
    * @param query {Object} The catalog query to apply to the base query
   ###
   set_reference_field_query: (field, query) =>
-    return unless field.length > 0
-
     controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     # set the new query
     controller.set_search_query(query)
     console.debug("Set custom search query for field #{field.selector}: #{JSON.stringify(query)}")
@@ -536,7 +543,6 @@ class window.AnalysisRequestAdd
    * @param field {Object} jQuery field
   ###
   reset_reference_field_query: (field) =>
-    return unless field.length > 0
     this.set_reference_field_query(field, {})
 
 
@@ -551,13 +557,41 @@ class window.AnalysisRequestAdd
    * @returns {String} UIDs joined with \n
   ###
   get_reference_field_value: (field) =>
-    ###
-     * Return the value of a single/multi reference field
-    ###
     controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     values = controller.get_values()
     # BBB: provide the values in the same way as the textarea
     return values.join("\n")
+
+
+  ###*
+   * Set UID(s) of a single/multi reference field
+   *
+   * NOTE: This method overrides the value of single reference fields or
+   *       removes/adds the omitted/added values from multi-reference fields
+   *
+   * @param field {Object} jQuery field
+   * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+  ###
+  set_reference_field: (field, values) ->
+    if not @is_array(values)
+      values = [values]
+
+    # filter out invalid UIDs
+    # NOTE: UIDs have always a length of 32
+    values = values.filter((item) -> item and item.length == 32)
+
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
+    fieldname = controller.get_name()
+    console.debug "set_reference_field:: field=#{fieldname} values=#{values}"
+    controller.set_values(values)
 
 
   ###*
@@ -584,40 +618,10 @@ class window.AnalysisRequestAdd
    * @param field {Object} jQuery field
   ###
   flush_reference_field: (field) ->
-    ###
-     * Empty the reference field and restore the search query
-    ###
-    return unless field.length > 0
-
     # set emtpy value
     @set_reference_field field, null
     # restore the original search query
     @reset_reference_field_query field
-
-
-  ###*
-   * Set UID(s) of a single/multi reference field
-   *
-   * NOTE: This method overrides the value of single reference fields or
-   *       removes/adds the omitted/added values from multi-reference fields
-   *
-   * @param field {Object} jQuery field
-   * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
-  ###
-  set_reference_field: (field, values) ->
-    return unless field.length > 0
-
-    if not @is_array(values)
-      values = [values]
-
-    # filter out invalid UIDs
-    # NOTE: UIDs have always a length of 32
-    values = values.filter((item) -> item and item.length == 32)
-
-    controller = @get_widget_controller(field)
-    fieldname = controller.get_name()
-    console.debug "set_reference_field:: field=#{fieldname} values=#{values}"
-    controller.set_values(values)
 
 
   ###*
@@ -634,6 +638,10 @@ class window.AnalysisRequestAdd
     return unless records and @is_object(records)
 
     controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     existing_records = controller.get_data_records()
     new_records = Object.assign(existing_records, records)
     controller.set_data_records(new_records)
@@ -655,10 +663,13 @@ class window.AnalysisRequestAdd
     return record[metadata_key] or {}
 
 
+  ###*
+   * Apply the template values to the sample localized in the specified column
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param template {Object} Template record
+  ###
   set_template: (arnum, template) =>
-    ###
-     * Apply the template data to all fields of arnum
-    ###
     me = this
 
     # apply template only once
