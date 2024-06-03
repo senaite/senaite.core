@@ -11,16 +11,10 @@
 
   window.AnalysisRequestAdd = (function() {
     function AnalysisRequestAdd() {
-      this.init_service_conditions = bind(this.init_service_conditions, this);
-      this.copy_service_conditions = bind(this.copy_service_conditions, this);
-      this.set_service_conditions = bind(this.set_service_conditions, this);
-      this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
       this.on_cancel = bind(this.on_cancel, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
       this.on_ajax_start = bind(this.on_ajax_start, this);
-      this.ajax_post_form = bind(this.ajax_post_form, this);
-      this.native_set_value = bind(this.native_set_value, this);
       this.on_copy_button_click = bind(this.on_copy_button_click, this);
       this.on_service_category_click = bind(this.on_service_category_click, this);
       this.on_service_listing_header_click = bind(this.on_service_listing_header_click, this);
@@ -33,6 +27,8 @@
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
+      this.copy_service_conditions = bind(this.copy_service_conditions, this);
+      this.set_service_conditions = bind(this.set_service_conditions, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
       this.get_metadata_for = bind(this.get_metadata_for, this);
@@ -40,13 +36,17 @@
       this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
+      this.native_set_value = bind(this.native_set_value, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
       this.update_form = bind(this.update_form, this);
       this.debounce = bind(this.debounce, this);
+      this.init_service_conditions = bind(this.init_service_conditions, this);
+      this.init_file_fields = bind(this.init_file_fields, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
+      this.ajax_post_form = bind(this.ajax_post_form, this);
       this.recalculate_prices = bind(this.recalculate_prices, this);
       this.recalculate_records = bind(this.recalculate_records, this);
       this.get_service = bind(this.get_service, this);
@@ -75,7 +75,7 @@
     };
 
 
-    /* AJAX */
+    /* AJAX FETCHER */
 
 
     /**
@@ -146,10 +146,6 @@
      */
 
     AnalysisRequestAdd.prototype.recalculate_prices = function() {
-
-      /*
-       * Submit all form values to the server to recalculate the prices of all columns
-       */
       if (this.global_settings.show_prices === false) {
         console.debug("*** Skipping Price calculation ***");
         return;
@@ -166,6 +162,95 @@
           $("#total-" + arnum).text(prices.total);
         }
         return $(this).trigger("prices:updated", data);
+      });
+    };
+
+
+    /**
+     * Ajax POST the form data to the given endpoint
+     *
+     * NOTE: Context of callback is bound to this object
+     *
+     * @param endpoint {String} Ajax endpoint to call
+     * @param options {Object} Additional ajax options
+     */
+
+    AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
+      var ajax_options, base_url, form, form_data, me, url;
+      if (options == null) {
+        options = {};
+      }
+      console.debug("°°° ajax_post_form::Endpoint=" + endpoint + " °°°");
+      base_url = this.get_base_url();
+      url = base_url + "/ajax_ar_add/" + endpoint;
+      console.debug("Ajax POST to url " + url);
+      form = $("#analysisrequest_add_form");
+      form_data = new FormData(form[0]);
+      ajax_options = {
+        url: url,
+        type: 'POST',
+        data: form_data,
+        context: this,
+        cache: false,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        timeout: 600000
+      };
+      $.extend(ajax_options, options);
+      me = this;
+      $(me).trigger("ajax:start");
+      return $.ajax(ajax_options).always(function(data) {
+        return $(me).trigger("ajax:end");
+      }).fail(function(request, status, error) {
+        var msg;
+        msg = _t("Sorry, an error occured: " + status);
+        window.bika.lims.portalMessage(msg);
+        return window.scroll(0, 0);
+      });
+    };
+
+
+    /**
+     * Fetch Ajax API resource from the server
+     *
+     * @param endpoint {String} API endpoint
+     * @param options {Object} Fetch options and data payload
+     * @returns {Promise}
+     */
+
+    AnalysisRequestAdd.prototype.get_json = function(endpoint, options) {
+      var base_url, data, init, me, method, request, url;
+      if (options == null) {
+        options = {};
+      }
+      method = options.method || "POST";
+      data = JSON.stringify(options.data) || "{}";
+      base_url = this.get_base_url();
+      url = base_url + "/ajax_ar_add/" + endpoint;
+      me = this;
+      $(me).trigger("ajax:start");
+      init = {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": this.get_csrf_token()
+        },
+        body: method === "POST" ? data : null,
+        credentials: "include"
+      };
+      console.info("get_json:endpoint=" + endpoint + " init=", init);
+      request = new Request(url, init);
+      return fetch(request).then(function(response) {
+        $(me).trigger("ajax:end");
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response;
+      }).then(function(response) {
+        return response.json();
+      })["catch"](function(response) {
+        return response;
       });
     };
 
@@ -210,6 +295,47 @@
 
 
     /**
+     * Init file fields to allow multiple attachments
+     *
+     */
+
+    AnalysisRequestAdd.prototype.init_file_fields = function() {
+      var me;
+      me = this;
+      return $('tr[fieldname] input[type="file"]').each(function(index, element) {
+        var add_btn, add_btn_src, file_field, file_field_div;
+        file_field = $(element);
+        file_field.wrap("<div class='field'/>");
+        file_field_div = file_field.parent();
+        add_btn_src = window.portal_url + "/senaite_theme/icon/plus";
+        add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='" + add_btn_src + "' />");
+        add_btn.on("click", element, function(event) {
+          return me.file_addbtn_click(event, element);
+        });
+        return file_field_div.append(add_btn);
+      });
+    };
+
+
+    /**
+     * Updates the visibility of the conditions for the selected services
+     *
+     */
+
+    AnalysisRequestAdd.prototype.init_service_conditions = function() {
+      var me, services;
+      console.debug("init_service_conditions");
+      me = this;
+      services = $("input[type=checkbox].analysisservice-cb:checked");
+      return $(services).each(function(idx, el) {
+        var $el;
+        $el = $(el);
+        return me.set_service_conditions($el);
+      });
+    };
+
+
+    /**
      * Debounce a function call
      *
      * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
@@ -245,7 +371,7 @@
     /**
      * Update form according to the server data
      *
-      * Records provided from the server (see recalculate_records)
+     * Records provided from the server (see recalculate_records)
      *
      * @param event {Object} Event object
      * @param records {Object} Updated records
@@ -391,6 +517,24 @@
 
 
     /**
+     * Return the CSRF token
+     *
+     * NOTE: The fields won't save w/o that token set
+     *
+     * @returns {String} CSRF token
+     */
+
+    AnalysisRequestAdd.prototype.get_csrf_token = function() {
+
+      /*
+       * Get the plone.protect CSRF token
+       * Note: The fields won't save w/o that token set
+       */
+      return document.querySelector("#protect-script").dataset.token;
+    };
+
+
+    /**
      * Returns the ReactJS widget controller for the given field
      *
      * @param field {Object} jQuery field
@@ -448,6 +592,32 @@
 
     AnalysisRequestAdd.prototype.is_object = function(value) {
       return Object.prototype.toString.call(value) === "[object Object]";
+    };
+
+
+    /**
+      * Set input value with native setter to support ReactJS components
+     */
+
+    AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
+      var event, setter;
+      setter = null;
+      if (input.tagName === "TEXTAREA") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+      } else if (input.tagName === "SELECT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set;
+      } else if (input.tagName === "INPUT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+      } else {
+        input.value = value;
+      }
+      if (setter) {
+        setter.call(input, value);
+      }
+      event = new Event("input", {
+        bubbles: true
+      });
+      return input.dispatchEvent(event);
     };
 
 
@@ -815,33 +985,107 @@
       return $(this).trigger("services:changed");
     };
 
-    AnalysisRequestAdd.prototype.hide_all_service_info = function() {
 
-      /*
-       * hide all open service info boxes
-       */
+    /**
+     * Show/hide  service conditions input elements for the service
+     *
+     * @param el {Object} jQuery service checkbox
+     */
+
+    AnalysisRequestAdd.prototype.set_service_conditions = function(el) {
+      var arnum, base_info, checked, conditions, context, data, parent, template, uid;
+      checked = el.prop("checked");
+      parent = el.closest("td[uid][arnum]");
+      uid = parent.attr("uid");
+      arnum = parent.attr("arnum");
+      conditions = $("div.service-conditions", parent);
+      conditions.empty();
+      if (!checked) {
+        conditions.hide();
+        return;
+      }
+      data = conditions.data("data");
+      base_info = {
+        arnum: arnum
+      };
+      if (!data) {
+        return this.get_service(uid).done(function(data) {
+          var context, template;
+          context = $.extend({}, data, base_info);
+          if (context.conditions && context.conditions.length > 0) {
+            template = this.render_template("service-conditions", context);
+            conditions.append(template);
+            conditions.data("data", context);
+            return conditions.show();
+          }
+        });
+      } else {
+        context = $.extend({}, data, base_info);
+        if (context.conditions && context.conditions.length > 0) {
+          template = this.render_template("service-conditions", context);
+          conditions.append(template);
+          return conditions.show();
+        }
+      }
+    };
+
+
+    /**
+     * Copies the service conditions values from those set for the service with
+     * the specified uid and arnum_from column to the same analysis from the
+     * arnum_to column
+     */
+
+    AnalysisRequestAdd.prototype.copy_service_conditions = function(from, to, uid) {
+      var me, source;
+      console.debug("*** copy_service_conditions::from=" + from + " to=" + to + " UID=" + uid);
+      me = this;
+      source = "td[fieldname='Analyses-" + from + "'] div[id='" + uid + "-conditions'] input[name='ServiceConditions-" + from + ".value:records']";
+      return $(source).each(function(idx, el) {
+        var $el, dest, name, subfield;
+        $el = $(el);
+        name = $el.attr("name");
+        subfield = $el.closest("[data-subfield]").attr("data-subfield");
+        console.debug("-> Copy service condition: " + subfield);
+        dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
+        return dest.val($el.val());
+      });
+    };
+
+
+    /**
+     * Hide all open service info boxes
+     *
+     */
+
+    AnalysisRequestAdd.prototype.hide_all_service_info = function() {
       var info;
       info = $("div.service-info");
       return info.hide();
     };
 
-    AnalysisRequestAdd.prototype.is_poc_expanded = function(poc) {
 
-      /*
-       * Checks if the point of captures are visible
-       */
+    /**
+     * Checks if the point of capture is visible
+     *
+     * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+     */
+
+    AnalysisRequestAdd.prototype.is_poc_expanded = function(poc) {
       var el;
       el = $("tr.service-listing-header[poc=" + poc + "]");
       return el.hasClass("visible");
     };
 
-    AnalysisRequestAdd.prototype.toggle_poc_categories = function(poc, toggle) {
 
-      /*
-       * Toggle all categories within a point of capture (lab/service)
-       * :param poc: the point of capture (lab/field)
-       * :param toggle: services visible if true
-       */
+    /**
+     * Toggle all categories within a point of capture (lab/service)
+     *
+     * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+     * @param toggle {Boolean} True/False to show/hide categories
+     */
+
+    AnalysisRequestAdd.prototype.toggle_poc_categories = function(poc, toggle) {
       var categories, el, services, services_checked, toggle_buttons;
       if (toggle == null) {
         toggle = !this.is_poc_expanded(poc);
@@ -866,7 +1110,7 @@
     };
 
 
-    /* EVENT HANDLER */
+    /* EVENT HANDLERS */
 
     AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
 
@@ -1358,124 +1602,6 @@
       return $(me).trigger("form:changed");
     };
 
-
-    /**
-      * Set input value with native setter to support ReactJS components
-     */
-
-    AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
-      var event, setter;
-      setter = null;
-      if (input.tagName === "TEXTAREA") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-      } else if (input.tagName === "SELECT") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set;
-      } else if (input.tagName === "INPUT") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-      } else {
-        input.value = value;
-      }
-      if (setter) {
-        setter.call(input, value);
-      }
-      event = new Event("input", {
-        bubbles: true
-      });
-      return input.dispatchEvent(event);
-    };
-
-    AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
-      var ajax_options, base_url, form, form_data, me, url;
-      if (options == null) {
-        options = {};
-      }
-
-      /*
-       * Ajax POST the form data to the given endpoint
-       */
-      console.debug("°°° ajax_post_form::Endpoint=" + endpoint + " °°°");
-      base_url = this.get_base_url();
-      url = base_url + "/ajax_ar_add/" + endpoint;
-      console.debug("Ajax POST to url " + url);
-      form = $("#analysisrequest_add_form");
-      form_data = new FormData(form[0]);
-      ajax_options = {
-        url: url,
-        type: 'POST',
-        data: form_data,
-        context: this,
-        cache: false,
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        timeout: 600000
-      };
-      $.extend(ajax_options, options);
-
-      /* Execute the request */
-      me = this;
-      $(me).trigger("ajax:start");
-      return $.ajax(ajax_options).always(function(data) {
-        return $(me).trigger("ajax:end");
-      }).fail(function(request, status, error) {
-        var msg;
-        msg = _t("Sorry, an error occured: " + status);
-        window.bika.lims.portalMessage(msg);
-        return window.scroll(0, 0);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_json = function(endpoint, options) {
-
-      /*
-       * Fetch Ajax API resource from the server
-       * @param {string} endpoint
-       * @param {object} options
-       * @returns {Promise}
-       */
-      var base_url, data, init, me, method, request, url;
-      if (options == null) {
-        options = {};
-      }
-      method = options.method || "POST";
-      data = JSON.stringify(options.data) || "{}";
-      base_url = this.get_base_url();
-      url = base_url + "/ajax_ar_add/" + endpoint;
-      me = this;
-      $(me).trigger("ajax:start");
-      init = {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": this.get_csrf_token()
-        },
-        body: method === "POST" ? data : null,
-        credentials: "include"
-      };
-      console.info("get_json:endpoint=" + endpoint + " init=", init);
-      request = new Request(url, init);
-      return fetch(request).then(function(response) {
-        $(me).trigger("ajax:end");
-        if (!response.ok) {
-          return Promise.reject(response);
-        }
-        return response;
-      }).then(function(response) {
-        return response.json();
-      })["catch"](function(response) {
-        return response;
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_csrf_token = function() {
-
-      /*
-       * Get the plone.protect CSRF token
-       * Note: The fields won't save w/o that token set
-       */
-      return document.querySelector("#protect-script").dataset.token;
-    };
-
     AnalysisRequestAdd.prototype.on_ajax_start = function() {
 
       /*
@@ -1597,23 +1723,6 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.init_file_fields = function() {
-      var me;
-      me = this;
-      return $('tr[fieldname] input[type="file"]').each(function(index, element) {
-        var add_btn, add_btn_src, file_field, file_field_div;
-        file_field = $(element);
-        file_field.wrap("<div class='field'/>");
-        file_field_div = file_field.parent();
-        add_btn_src = window.portal_url + "/senaite_theme/icon/plus";
-        add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='" + add_btn_src + "' />");
-        add_btn.on("click", element, function(event) {
-          return me.file_addbtn_click(event, element);
-        });
-        return file_field_div.append(add_btn);
-      });
-    };
-
     AnalysisRequestAdd.prototype.file_addbtn_click = function(event, element) {
       var arnum, counter, del_btn, del_btn_src, existing_file_field_names, existing_file_fields, file_field, file_field_div, holding_div, name, newfieldname, ref;
       file_field = $(element).clone();
@@ -1641,86 +1750,6 @@
       });
       file_field_div.append(del_btn);
       return $(element).parent().parent().append(file_field_div);
-    };
-
-    AnalysisRequestAdd.prototype.set_service_conditions = function(el) {
-
-      /*
-       * Shows or hides the service conditions input elements for the service
-       * bound to the checkbox element passed in
-       */
-      var arnum, base_info, checked, conditions, context, data, parent, template, uid;
-      checked = el.prop("checked");
-      parent = el.closest("td[uid][arnum]");
-      uid = parent.attr("uid");
-      arnum = parent.attr("arnum");
-      conditions = $("div.service-conditions", parent);
-      conditions.empty();
-      if (!checked) {
-        conditions.hide();
-        return;
-      }
-      data = conditions.data("data");
-      base_info = {
-        arnum: arnum
-      };
-      if (!data) {
-        return this.get_service(uid).done(function(data) {
-          var context, template;
-          context = $.extend({}, data, base_info);
-          if (context.conditions && context.conditions.length > 0) {
-            template = this.render_template("service-conditions", context);
-            conditions.append(template);
-            conditions.data("data", context);
-            return conditions.show();
-          }
-        });
-      } else {
-        context = $.extend({}, data, base_info);
-        if (context.conditions && context.conditions.length > 0) {
-          template = this.render_template("service-conditions", context);
-          conditions.append(template);
-          return conditions.show();
-        }
-      }
-    };
-
-    AnalysisRequestAdd.prototype.copy_service_conditions = function(from, to, uid) {
-
-      /*
-       * Copies the service conditions values from those set for the service with
-       * the specified uid and arnum_from column to the same analysis from the
-       * arnum_to column
-       */
-      var me, source;
-      console.debug("*** copy_service_conditions::from=" + from + " to=" + to + " UID=" + uid);
-      me = this;
-      source = "td[fieldname='Analyses-" + from + "'] div[id='" + uid + "-conditions'] input[name='ServiceConditions-" + from + ".value:records']";
-      return $(source).each(function(idx, el) {
-        var $el, dest, name, subfield;
-        $el = $(el);
-        name = $el.attr("name");
-        subfield = $el.closest("[data-subfield]").attr("data-subfield");
-        console.debug("-> Copy service condition: " + subfield);
-        dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
-        return dest.val($el.val());
-      });
-    };
-
-    AnalysisRequestAdd.prototype.init_service_conditions = function() {
-
-      /*
-       * Updates the visibility of the conditions for the selected services
-       */
-      var me, services;
-      console.debug("init_service_conditions");
-      me = this;
-      services = $("input[type=checkbox].analysisservice-cb:checked");
-      return $(services).each(function(idx, el) {
-        var $el;
-        $el = $(el);
-        return me.set_service_conditions($el);
-      });
     };
 
     return AnalysisRequestAdd;

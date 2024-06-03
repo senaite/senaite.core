@@ -59,7 +59,9 @@ class window.AnalysisRequestAdd
     return @
 
 
-  ### AJAX ###
+  ####################
+  ### AJAX FETCHER ###
+  ####################
 
   ###*
    * Fetch global settings from the setup, e.g. show_prices
@@ -118,10 +120,6 @@ class window.AnalysisRequestAdd
    *
   ###
   recalculate_prices: =>
-    ###
-     * Submit all form values to the server to recalculate the prices of all columns
-    ###
-
     if @global_settings.show_prices is false
       console.debug "*** Skipping Price calculation ***"
       return
@@ -137,7 +135,99 @@ class window.AnalysisRequestAdd
       $(@).trigger "prices:updated", data
 
 
+  ###*
+   * Ajax POST the form data to the given endpoint
+   *
+   * NOTE: Context of callback is bound to this object
+   *
+   * @param endpoint {String} Ajax endpoint to call
+   * @param options {Object} Additional ajax options
+  ###
+  ajax_post_form: (endpoint, options={}) =>
+    console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
+    # calculate the right form URL
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+    console.debug "Ajax POST to url #{url}"
+
+    # extract the form data
+    form = $("#analysisrequest_add_form")
+    # form.serialize does not include file attachments
+    # form_data = form.serialize()
+    form_data = new FormData(form[0])
+
+    # jQuery Ajax options
+    ajax_options =
+      url: url
+      type: 'POST'
+      data: form_data
+      context: @
+      cache: false
+      dataType: 'json'  # data type we expect from the server
+      processData: false
+      contentType: false
+      # contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+      timeout: 600000  # 10 minutes timeout
+
+    # Update Options
+    $.extend(ajax_options, options)
+
+    # Notify Ajax start
+    me = this
+    $(me).trigger "ajax:start"
+    $.ajax(ajax_options).always (data) ->
+      # Always notify Ajax end
+      $(me).trigger "ajax:end"
+    .fail (request, status, error) ->
+      msg = _t("Sorry, an error occured: #{status}")
+      window.bika.lims.portalMessage msg
+      window.scroll 0, 0
+
+
+  ###*
+   * Fetch Ajax API resource from the server
+   *
+   * @param endpoint {String} API endpoint
+   * @param options {Object} Fetch options and data payload
+   * @returns {Promise}
+  ###
+  get_json: (endpoint, options) ->
+    options ?= {}
+
+    method = options.method or "POST"
+    data = JSON.stringify(options.data) or "{}"
+
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+
+    # Always notify Ajax end
+    me = this
+    $(me).trigger "ajax:start"
+
+    init =
+      method: method
+      headers:
+        "Content-Type": "application/json"
+        "X-CSRF-TOKEN": @get_csrf_token()
+      body: if method is "POST" then data else null
+      credentials: "include"
+    console.info "get_json:endpoint=#{endpoint} init=",init
+    request = new Request(url, init)
+    fetch(request)
+    .then (response) ->
+      $(me).trigger "ajax:end"
+      if not response.ok
+        return Promise.reject response
+      return response
+    .then (response) ->
+      return response.json()
+    .catch (response) ->
+      return response
+
+
+  ###############
   ### METHODS ###
+  ###############
 
   bind_eventhandler: =>
     ###
@@ -203,6 +293,45 @@ class window.AnalysisRequestAdd
 
 
   ###*
+   * Init file fields to allow multiple attachments
+   *
+  ###
+  init_file_fields: =>
+    me = this
+    $('tr[fieldname] input[type="file"]').each (index, element) ->
+      # Wrap the initial field into a div
+      file_field = $(element)
+      file_field.wrap "<div class='field'/>"
+      file_field_div = file_field.parent()
+      # Create and add an ADD Button on the fly
+      add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
+      add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='#{add_btn_src}' />")
+
+      # bind ADD event handler
+      add_btn.on "click", element, (event) ->
+        me.file_addbtn_click event, element
+
+      # Attach the Button into the same div container
+      file_field_div.append add_btn
+
+
+  ###*
+   * Updates the visibility of the conditions for the selected services
+   *
+  ###
+  init_service_conditions: =>
+    console.debug "init_service_conditions"
+
+    me = this
+
+    # Find out all selected services checkboxes
+    services = $("input[type=checkbox].analysisservice-cb:checked")
+    $(services).each (idx, el) ->
+      $el = $(el)
+      me.set_service_conditions $el
+
+
+  ###*
    * Debounce a function call
    *
    * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
@@ -229,7 +358,7 @@ class window.AnalysisRequestAdd
   ###*
    * Update form according to the server data
    *
-    * Records provided from the server (see recalculate_records)
+   * Records provided from the server (see recalculate_records)
    *
    * @param event {Object} Event object
    * @param records {Object} Updated records
@@ -375,6 +504,21 @@ class window.AnalysisRequestAdd
 
 
   ###*
+   * Return the CSRF token
+   *
+   * NOTE: The fields won't save w/o that token set
+   *
+   * @returns {String} CSRF token
+  ###
+  get_csrf_token: ->
+    ###
+     * Get the plone.protect CSRF token
+     * Note: The fields won't save w/o that token set
+    ###
+    return document.querySelector("#protect-script").dataset.token
+
+
+  ###*
    * Returns the ReactJS widget controller for the given field
    *
    * @param field {Object} jQuery field
@@ -422,6 +566,30 @@ class window.AnalysisRequestAdd
   ###
   is_object: (value) ->
     return Object.prototype.toString.call(value) is "[object Object]"
+
+
+  ###*
+    * Set input value with native setter to support ReactJS components
+  ###
+  native_set_value: (input, value) =>
+    # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+    # TL;DR: React library overrides input value setter
+
+    setter = null
+    if input.tagName == "TEXTAREA"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set
+    else if input.tagName == "SELECT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set
+    else if input.tagName == "INPUT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
+    else
+      input.value = value
+
+    if setter
+      setter.call(input, value)
+
+    event = new Event("input", {bubbles: true})
+    input.dispatchEvent(event)
 
 
   ###*
@@ -774,29 +942,100 @@ class window.AnalysisRequestAdd
     $(@).trigger "services:changed"
 
 
+  ###*
+   * Show/hide  service conditions input elements for the service
+   *
+   * @param el {Object} jQuery service checkbox
+  ###
+  set_service_conditions: (el) =>
+    # Check whether the checkbox is selected or not
+    checked = el.prop "checked"
+
+    # Get the uid of the analysis and the column number
+    parent = el.closest("td[uid][arnum]")
+    uid = parent.attr "uid"
+    arnum = parent.attr "arnum"
+
+    # Get the div where service conditions are rendered
+    conditions = $("div.service-conditions", parent)
+    conditions.empty()
+
+    # If the service is unchecked, remove the conditions form
+    if not checked
+      conditions.hide()
+      return
+
+    # Check if this service requires conditions
+    data = conditions.data "data"
+    base_info =
+      arnum: arnum
+
+    if not data
+      @get_service(uid).done (data) ->
+        context = $.extend({}, data, base_info)
+        if context.conditions and context.conditions.length > 0
+          template = @render_template "service-conditions", context
+          conditions.append template
+          conditions.data "data", context
+          conditions.show()
+    else
+      context = $.extend({}, data, base_info)
+      if context.conditions and context.conditions.length > 0
+        template = @render_template "service-conditions", context
+        conditions.append template
+        conditions.show()
+
+
+  ###*
+   * Copies the service conditions values from those set for the service with
+   * the specified uid and arnum_from column to the same analysis from the
+   * arnum_to column
+  ###
+  copy_service_conditions: (from, to, uid) =>
+    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
+
+    me = this
+
+    # Copy the values from all input fields to destination by name
+    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
+    $(source).each (idx, el) ->
+      # Extract the information from the field to look for
+      $el = $(el)
+      name = $el.attr "name"
+      subfield = $el.closest("[data-subfield]").attr "data-subfield"
+      console.debug "-> Copy service condition: #{subfield}"
+
+      # Set the value
+      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
+      dest.val($el.val())
+
+
+  ###*
+   * Hide all open service info boxes
+   *
+  ###
   hide_all_service_info: =>
-    ###
-     * hide all open service info boxes
-    ###
     info = $("div.service-info")
     info.hide()
 
 
+  ###*
+   * Checks if the point of capture is visible
+   *
+   * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+  ###
   is_poc_expanded: (poc) ->
-    ###
-     * Checks if the point of captures are visible
-    ###
     el = $("tr.service-listing-header[poc=#{poc}]")
     return el.hasClass "visible"
 
 
+  ###*
+   * Toggle all categories within a point of capture (lab/service)
+   *
+   * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+   * @param toggle {Boolean} True/False to show/hide categories
+  ###
   toggle_poc_categories: (poc, toggle) ->
-    ###
-     * Toggle all categories within a point of capture (lab/service)
-     * :param poc: the point of capture (lab/field)
-     * :param toggle: services visible if true
-    ###
-
     if not toggle?
       toggle = not @is_poc_expanded(poc)
 
@@ -823,7 +1062,9 @@ class window.AnalysisRequestAdd
       toggle_buttons.text("+")
 
 
-  ### EVENT HANDLER ###
+  ######################
+  ### EVENT HANDLERS ###
+  ######################
 
   on_referencefield_value_changed: (event) =>
     ###
@@ -1284,123 +1525,6 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
 
 
-  ###*
-    * Set input value with native setter to support ReactJS components
-  ###
-  native_set_value: (input, value) =>
-    # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
-    # TL;DR: React library overrides input value setter
-
-    setter = null
-    if input.tagName == "TEXTAREA"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set
-    else if input.tagName == "SELECT"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set
-    else if input.tagName == "INPUT"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
-    else
-      input.value = value
-
-    if setter
-      setter.call(input, value)
-
-    event = new Event("input", {bubbles: true})
-    input.dispatchEvent(event)
-
-
-  # Note: Context of callback bound to this object
-  ajax_post_form: (endpoint, options={}) =>
-    ###
-     * Ajax POST the form data to the given endpoint
-    ###
-    console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
-    # calculate the right form URL
-    base_url = @get_base_url()
-    url = "#{base_url}/ajax_ar_add/#{endpoint}"
-    console.debug "Ajax POST to url #{url}"
-
-    # extract the form data
-    form = $("#analysisrequest_add_form")
-    # form.serialize does not include file attachments
-    # form_data = form.serialize()
-    form_data = new FormData(form[0])
-
-    # jQuery Ajax options
-    ajax_options =
-      url: url
-      type: 'POST'
-      data: form_data
-      context: @
-      cache: false
-      dataType: 'json'  # data type we expect from the server
-      processData: false
-      contentType: false
-      # contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
-      timeout: 600000  # 10 minutes timeout
-
-    # Update Options
-    $.extend(ajax_options, options)
-
-    ### Execute the request ###
-
-    # Notify Ajax start
-    me = this
-    $(me).trigger "ajax:start"
-    $.ajax(ajax_options).always (data) ->
-      # Always notify Ajax end
-      $(me).trigger "ajax:end"
-    .fail (request, status, error) ->
-      msg = _t("Sorry, an error occured: #{status}")
-      window.bika.lims.portalMessage msg
-      window.scroll 0, 0
-
-  get_json: (endpoint, options) ->
-    ###
-     * Fetch Ajax API resource from the server
-     * @param {string} endpoint
-     * @param {object} options
-     * @returns {Promise}
-    ###
-    options ?= {}
-
-    method = options.method or "POST"
-    data = JSON.stringify(options.data) or "{}"
-
-    base_url = @get_base_url()
-    url = "#{base_url}/ajax_ar_add/#{endpoint}"
-
-    # Always notify Ajax end
-    me = this
-    $(me).trigger "ajax:start"
-
-    init =
-      method: method
-      headers:
-        "Content-Type": "application/json"
-        "X-CSRF-TOKEN": @get_csrf_token()
-      body: if method is "POST" then data else null
-      credentials: "include"
-    console.info "get_json:endpoint=#{endpoint} init=",init
-    request = new Request(url, init)
-    fetch(request)
-    .then (response) ->
-      $(me).trigger "ajax:end"
-      if not response.ok
-        return Promise.reject response
-      return response
-    .then (response) ->
-      return response.json()
-    .catch (response) ->
-      return response
-
-  get_csrf_token: () ->
-    ###
-     * Get the plone.protect CSRF token
-     * Note: The fields won't save w/o that token set
-    ###
-    return document.querySelector("#protect-script").dataset.token
-
-
   on_ajax_start: =>
     ###
      * Ajax request started
@@ -1521,24 +1645,6 @@ class window.AnalysisRequestAdd
         window.location.replace base_url
 
 
-  init_file_fields: =>
-    me = this
-    $('tr[fieldname] input[type="file"]').each (index, element) ->
-      # Wrap the initial field into a div
-      file_field = $(element)
-      file_field.wrap "<div class='field'/>"
-      file_field_div = file_field.parent()
-      # Create and add an ADD Button on the fly
-      add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
-      add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='#{add_btn_src}' />")
-
-      # bind ADD event handler
-      add_btn.on "click", element, (event) ->
-        me.file_addbtn_click event, element
-
-      # Attach the Button into the same div container
-      file_field_div.append add_btn
-
   file_addbtn_click: (event, element) ->
     # Clone the file field and wrap it into a div
     file_field = $(element).clone()
@@ -1577,86 +1683,3 @@ class window.AnalysisRequestAdd
 
     # Attach the new field to the outer div of the passed file field
     $(element).parent().parent().append file_field_div
-
-
-  set_service_conditions: (el) =>
-    ###
-     * Shows or hides the service conditions input elements for the service
-     * bound to the checkbox element passed in
-    ###
-
-    # Check whether the checkbox is selected or not
-    checked = el.prop "checked"
-
-    # Get the uid of the analysis and the column number
-    parent = el.closest("td[uid][arnum]")
-    uid = parent.attr "uid"
-    arnum = parent.attr "arnum"
-
-    # Get the div where service conditions are rendered
-    conditions = $("div.service-conditions", parent)
-    conditions.empty()
-
-    # If the service is unchecked, remove the conditions form
-    if not checked
-      conditions.hide()
-      return
-
-    # Check if this service requires conditions
-    data = conditions.data "data"
-    base_info =
-      arnum: arnum
-
-    if not data
-      @get_service(uid).done (data) ->
-        context = $.extend({}, data, base_info)
-        if context.conditions and context.conditions.length > 0
-          template = @render_template "service-conditions", context
-          conditions.append template
-          conditions.data "data", context
-          conditions.show()
-    else
-      context = $.extend({}, data, base_info)
-      if context.conditions and context.conditions.length > 0
-        template = @render_template "service-conditions", context
-        conditions.append template
-        conditions.show()
-
-
-  copy_service_conditions: (from, to, uid) =>
-    ###
-     * Copies the service conditions values from those set for the service with
-     * the specified uid and arnum_from column to the same analysis from the
-     * arnum_to column
-    ###
-    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
-
-    me = this
-
-    # Copy the values from all input fields to destination by name
-    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
-    $(source).each (idx, el) ->
-      # Extract the information from the field to look for
-      $el = $(el)
-      name = $el.attr "name"
-      subfield = $el.closest("[data-subfield]").attr "data-subfield"
-      console.debug "-> Copy service condition: #{subfield}"
-
-      # Set the value
-      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
-      dest.val($el.val())
-
-
-  init_service_conditions: =>
-    ###
-     * Updates the visibility of the conditions for the selected services
-    ###
-    console.debug "init_service_conditions"
-
-    me = this
-
-    # Find out all selected services checkboxes
-    services = $("input[type=checkbox].analysisservice-cb:checked")
-    $(services).each (idx, el) ->
-      $el = $(el)
-      me.set_service_conditions $el
