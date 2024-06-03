@@ -5,8 +5,8 @@
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    slice = [].slice,
     hasProp = {}.hasOwnProperty,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.AnalysisRequestAdd = (function() {
@@ -33,7 +33,6 @@
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
-      this.get_service = bind(this.get_service, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
       this.get_metadata_for = bind(this.get_metadata_for, this);
@@ -43,15 +42,16 @@
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
-      this.update_form = bind(this.update_form, this);
-      this.recalculate_prices = bind(this.recalculate_prices, this);
-      this.recalculate_records = bind(this.recalculate_records, this);
-      this.get_flush_settings = bind(this.get_flush_settings, this);
-      this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
+      this.update_form = bind(this.update_form, this);
       this.debounce = bind(this.debounce, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
+      this.recalculate_prices = bind(this.recalculate_prices, this);
+      this.recalculate_records = bind(this.recalculate_records, this);
+      this.get_service = bind(this.get_service, this);
+      this.get_flush_settings = bind(this.get_flush_settings, this);
+      this.get_global_settings = bind(this.get_global_settings, this);
       this.load = bind(this.load, this);
     }
 
@@ -72,6 +72,101 @@
       this.init_service_conditions();
       this.recalculate_prices();
       return this;
+    };
+
+
+    /* AJAX */
+
+
+    /**
+     * Fetch global settings from the setup, e.g. show_prices
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_global_settings = function() {
+      return this.ajax_post_form("get_global_settings").done(function(settings) {
+        console.debug("Global Settings:", settings);
+        this.global_settings = settings;
+        return $(this).trigger("settings:updated", settings);
+      });
+    };
+
+
+    /**
+     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_flush_settings = function() {
+      return this.ajax_post_form("get_flush_settings").done(function(settings) {
+        console.debug("Flush settings:", settings);
+        this.flush_settings = settings;
+        return $(this).trigger("flush_settings:updated", settings);
+      });
+    };
+
+
+    /**
+     * Fetch the service data from server by UID
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_service = function(uid) {
+      var options;
+      options = {
+        data: {
+          uid: uid
+        },
+        processData: true,
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      return this.ajax_post_form("get_service", options).done(function(data) {
+        return console.debug("get_service::data=", data);
+      });
+    };
+
+
+    /**
+     * Submit all form values to the server to recalculate the records
+     *
+     */
+
+    AnalysisRequestAdd.prototype.recalculate_records = function() {
+      return this.ajax_post_form("recalculate_records").done(function(records) {
+        console.debug("Recalculate Analyses: Records=", records);
+        this.records_snapshot = records;
+        return $(this).trigger("data:updated", records);
+      });
+    };
+
+
+    /**
+     * Submit all form values to the server to recalculate the prices of all columns
+     *
+     */
+
+    AnalysisRequestAdd.prototype.recalculate_prices = function() {
+
+      /*
+       * Submit all form values to the server to recalculate the prices of all columns
+       */
+      if (this.global_settings.show_prices === false) {
+        console.debug("*** Skipping Price calculation ***");
+        return;
+      }
+      return this.ajax_post_form("recalculate_prices").done(function(data) {
+        var arnum, prices;
+        console.debug("Recalculate Prices Data=", data);
+        for (arnum in data) {
+          if (!hasProp.call(data, arnum)) continue;
+          prices = data[arnum];
+          $("#discount-" + arnum).text(prices.discount);
+          $("#subtotal-" + arnum).text(prices.subtotal);
+          $("#vat-" + arnum).text(prices.vat);
+          $("#total-" + arnum).text(prices.total);
+        }
+        return $(this).trigger("prices:updated", data);
+      });
     };
 
 
@@ -113,12 +208,18 @@
       return $(this).on("ajax:end", this.on_ajax_end);
     };
 
-    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
 
-      /*
-       * Debounce a function call
-       * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
-       */
+    /**
+     * Debounce a function call
+     *
+     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+     *
+     * @param func {Object} Function to debounce
+     * @param threshold {Integer} Debounce time in milliseconds
+     * @param execAsap {Boolean} True/False to execute the function immediately
+     */
+
+    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
       var timeout;
       timeout = null;
       return function() {
@@ -140,119 +241,17 @@
       };
     };
 
-    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
 
-      /*
-       * Render the content of a Handlebars template in a jQuery UID dialog
-         [1] http://handlebarsjs.com/
-         [2] https://jqueryui.com/dialog/
-       */
-      var content;
-      if (buttons == null) {
-        buttons = {};
-        buttons[_t("Yes")] = function() {
-          $(this).trigger("yes");
-          return $(this).dialog("close");
-        };
-        buttons[_t("No")] = function() {
-          $(this).trigger("no");
-          return $(this).dialog("close");
-        };
-      }
-      content = this.render_template(template_id, context);
-      return $(content).dialog({
-        width: 450,
-        resizable: false,
-        closeOnEscape: false,
-        buttons: buttons,
-        open: function(event, ui) {
-          return $(".ui-dialog-titlebar-close").hide();
-        }
-      });
-    };
-
-    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
-
-      /*
-       * Render Handlebars JS template
-       */
-      var content, source, template;
-      source = $("#" + template_id).html();
-      if (!source) {
-        return;
-      }
-      template = Handlebars.compile(source);
-      content = template(context);
-      return content;
-    };
-
-    AnalysisRequestAdd.prototype.get_global_settings = function() {
-
-      /*
-       * Fetch global settings from the setup, e.g. show_prices
-       */
-      return this.ajax_post_form("get_global_settings").done(function(settings) {
-        console.debug("Global Settings:", settings);
-        this.global_settings = settings;
-        return $(this).trigger("settings:updated", settings);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_flush_settings = function() {
-
-      /*
-       * Retrieve the flush settings mapping (field name -> list of other fields to flush)
-       */
-      return this.ajax_post_form("get_flush_settings").done(function(settings) {
-        console.debug("Flush settings:", settings);
-        this.flush_settings = settings;
-        return $(this).trigger("flush_settings:updated", settings);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.recalculate_records = function() {
-
-      /*
-       * Submit all form values to the server to recalculate the records
-       */
-      return this.ajax_post_form("recalculate_records").done(function(records) {
-        console.debug("Recalculate Analyses: Records=", records);
-        this.records_snapshot = records;
-        return $(this).trigger("data:updated", records);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.recalculate_prices = function() {
-
-      /*
-       * Submit all form values to the server to recalculate the prices of all columns
-       */
-      if (this.global_settings.show_prices === false) {
-        console.debug("*** Skipping Price calculation ***");
-        return;
-      }
-      return this.ajax_post_form("recalculate_prices").done(function(data) {
-        var arnum, prices;
-        console.debug("Recalculate Prices Data=", data);
-        for (arnum in data) {
-          if (!hasProp.call(data, arnum)) continue;
-          prices = data[arnum];
-          $("#discount-" + arnum).text(prices.discount);
-          $("#subtotal-" + arnum).text(prices.subtotal);
-          $("#vat-" + arnum).text(prices.vat);
-          $("#total-" + arnum).text(prices.total);
-        }
-        return $(this).trigger("prices:updated", data);
-      });
-    };
+    /**
+     * Update form according to the server data
+     *
+      * Records provided from the server (see recalculate_records)
+     *
+     * @param event {Object} Event object
+     * @param records {Object} Updated records
+     */
 
     AnalysisRequestAdd.prototype.update_form = function(event, records) {
-
-      /*
-       * Update form according to the server data
-       *
-       * Records provided from the server (see ajax_recalculate_records)
-       */
       var me;
       console.debug("*** update_form ***");
       me = this;
@@ -300,6 +299,61 @@
           return false;
         });
       });
+    };
+
+
+    /**
+     * Render a confirmation dialog popup
+     *
+     * [1] http://handlebarsjs.com/
+     * [2] https://jqueryui.com/dialog/
+     *
+     * @param template_id {String} ID of the Handlebars template
+     * @param context {Object} Data to fill into the template
+     * @param buttons {Object} Buttons to render
+     */
+
+    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
+      var content;
+      if (buttons == null) {
+        buttons = {};
+        buttons[_t("Yes")] = function() {
+          $(this).trigger("yes");
+          return $(this).dialog("close");
+        };
+        buttons[_t("No")] = function() {
+          $(this).trigger("no");
+          return $(this).dialog("close");
+        };
+      }
+      content = this.render_template(template_id, context);
+      return $(content).dialog({
+        width: 450,
+        resizable: false,
+        closeOnEscape: false,
+        buttons: buttons,
+        open: function(event, ui) {
+          return $(".ui-dialog-titlebar-close").hide();
+        }
+      });
+    };
+
+
+    /**
+     * Render template with Handlebars
+     *
+     * @returns {String} Rendered content
+     */
+
+    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
+      var content, source, template;
+      source = $("#" + template_id).html();
+      if (!source) {
+        return;
+      }
+      template = Handlebars.compile(source);
+      content = template(context);
+      return content;
     };
 
 
@@ -698,7 +752,7 @@
 
 
     /**
-     * Apply the template values to the sample localized in the specified column
+     * Apply the template values to the sample in the specified column
      *
      * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
      * @param template {Object} Template record
@@ -735,11 +789,16 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {
 
-      /*
-       * Select the checkbox of a service by UID
-       */
+    /**
+     * Select service checkbox by UID
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param uid {String} UID of the service to select
+     * @param checked {Boolean} True/False to toggle select/delselect
+     */
+
+    AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {
       var el, me, poc;
       console.debug("*** set_service::AR=" + arnum + " UID=" + uid + " checked=" + checked);
       me = this;
@@ -754,24 +813,6 @@
       }
       me.set_service_conditions(el);
       return $(this).trigger("services:changed");
-    };
-
-    AnalysisRequestAdd.prototype.get_service = function(uid) {
-
-      /*
-       * Fetch the service data from server by UID
-       */
-      var options;
-      options = {
-        data: {
-          uid: uid
-        },
-        processData: true,
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      return this.ajax_post_form("get_service", options).done(function(data) {
-        return console.debug("get_service::data=", data);
-      });
     };
 
     AnalysisRequestAdd.prototype.hide_all_service_info = function() {

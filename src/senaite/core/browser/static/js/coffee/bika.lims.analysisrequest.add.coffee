@@ -59,6 +59,84 @@ class window.AnalysisRequestAdd
     return @
 
 
+  ### AJAX ###
+
+  ###*
+   * Fetch global settings from the setup, e.g. show_prices
+   *
+  ###
+  get_global_settings: =>
+    @ajax_post_form("get_global_settings").done (settings) ->
+      console.debug "Global Settings:", settings
+      # remember the global settings
+      @global_settings = settings
+      # trigger event for whom it might concern
+      $(@).trigger "settings:updated", settings
+
+
+  ###*
+   * Retrieve the flush settings mapping (field name -> list of other fields to flush)
+   *
+  ###
+  get_flush_settings: =>
+    @ajax_post_form("get_flush_settings").done (settings) ->
+      console.debug "Flush settings:", settings
+      @flush_settings = settings
+      $(@).trigger "flush_settings:updated", settings
+
+
+  ###*
+   * Fetch the service data from server by UID
+   *
+  ###
+  get_service: (uid) =>
+    options =
+      data:
+        uid: uid
+      processData: yes
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+
+    @ajax_post_form("get_service", options).done (data) ->
+      console.debug "get_service::data=", data
+
+
+  ###*
+   * Submit all form values to the server to recalculate the records
+   *
+  ###
+  recalculate_records: =>
+    @ajax_post_form("recalculate_records").done (records) ->
+      console.debug "Recalculate Analyses: Records=", records
+      # remember a services snapshot
+      @records_snapshot = records
+      # trigger event for whom it might concern
+      $(@).trigger "data:updated", records
+
+
+  ###*
+   * Submit all form values to the server to recalculate the prices of all columns
+   *
+  ###
+  recalculate_prices: =>
+    ###
+     * Submit all form values to the server to recalculate the prices of all columns
+    ###
+
+    if @global_settings.show_prices is false
+      console.debug "*** Skipping Price calculation ***"
+      return
+
+    @ajax_post_form("recalculate_prices").done (data) ->
+      console.debug "Recalculate Prices Data=", data
+      for own arnum, prices of data
+        $("#discount-#{arnum}").text prices.discount
+        $("#subtotal-#{arnum}").text prices.subtotal
+        $("#vat-#{arnum}").text prices.vat
+        $("#total-#{arnum}").text prices.total
+      # trigger event for whom it might concern
+      $(@).trigger "prices:updated", data
+
+
   ### METHODS ###
 
   bind_eventhandler: =>
@@ -124,11 +202,16 @@ class window.AnalysisRequestAdd
     $(this).on "ajax:end", @on_ajax_end
 
 
+  ###*
+   * Debounce a function call
+   *
+   * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+   *
+   * @param func {Object} Function to debounce
+   * @param threshold {Integer} Debounce time in milliseconds
+   * @param execAsap {Boolean} True/False to execute the function immediately
+  ###
   debounce: (func, threshold, execAsap) =>
-    ###
-     * Debounce a function call
-     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
-    ###
     timeout = null
 
     return (args...) ->
@@ -143,114 +226,15 @@ class window.AnalysisRequestAdd
       timeout = setTimeout(delayed, threshold || 300)
 
 
-  template_dialog: (template_id, context, buttons) =>
-    ###
-     * Render the content of a Handlebars template in a jQuery UID dialog
-       [1] http://handlebarsjs.com/
-       [2] https://jqueryui.com/dialog/
-    ###
-
-    # prepare the buttons
-    if not buttons?
-      buttons = {}
-      buttons[_t("Yes")] = ->
-        # trigger 'yes' event
-        $(@).trigger "yes"
-        $(@).dialog "close"
-      buttons[_t("No")] = ->
-        # trigger 'no' event
-        $(@).trigger "no"
-        $(@).dialog "close"
-
-    # render the Handlebars template
-    content = @render_template template_id, context
-
-    # render the dialog box
-    $(content).dialog
-      width: 450
-      resizable: no
-      closeOnEscape: no
-      buttons: buttons
-      open: (event, ui) ->
-        # Hide the X button on the top right border
-        $(".ui-dialog-titlebar-close").hide()
-
-
-  render_template: (template_id, context) =>
-    ###
-     * Render Handlebars JS template
-    ###
-
-    # get the template by ID
-    source = $("##{template_id}").html()
-    return unless source
-    # Compile the handlebars template
-    template = Handlebars.compile(source)
-    # Render the template with the given context
-    content = template(context)
-    return content
-
-
-  get_global_settings: =>
-    ###
-     * Fetch global settings from the setup, e.g. show_prices
-    ###
-    @ajax_post_form("get_global_settings").done (settings) ->
-      console.debug "Global Settings:", settings
-      # remember the global settings
-      @global_settings = settings
-      # trigger event for whom it might concern
-      $(@).trigger "settings:updated", settings
-
-
-  get_flush_settings: =>
-    ###
-     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
-    ###
-    @ajax_post_form("get_flush_settings").done (settings) ->
-      console.debug "Flush settings:", settings
-      @flush_settings = settings
-      $(@).trigger "flush_settings:updated", settings
-
-
-  recalculate_records: =>
-    ###
-     * Submit all form values to the server to recalculate the records
-    ###
-    @ajax_post_form("recalculate_records").done (records) ->
-      console.debug "Recalculate Analyses: Records=", records
-      # remember a services snapshot
-      @records_snapshot = records
-      # trigger event for whom it might concern
-      $(@).trigger "data:updated", records
-
-
-  recalculate_prices: =>
-    ###
-     * Submit all form values to the server to recalculate the prices of all columns
-    ###
-
-    if @global_settings.show_prices is false
-      console.debug "*** Skipping Price calculation ***"
-      return
-
-    @ajax_post_form("recalculate_prices").done (data) ->
-      console.debug "Recalculate Prices Data=", data
-      for own arnum, prices of data
-        $("#discount-#{arnum}").text prices.discount
-        $("#subtotal-#{arnum}").text prices.subtotal
-        $("#vat-#{arnum}").text prices.vat
-        $("#total-#{arnum}").text prices.total
-      # trigger event for whom it might concern
-      $(@).trigger "prices:updated", data
-
-
+  ###*
+   * Update form according to the server data
+   *
+    * Records provided from the server (see recalculate_records)
+   *
+   * @param event {Object} Event object
+   * @param records {Object} Updated records
+  ###
   update_form: (event, records) =>
-    ###
-     * Update form according to the server data
-     *
-     * Records provided from the server (see ajax_recalculate_records)
-    ###
     console.debug "*** update_form ***"
 
     me = this
@@ -310,6 +294,59 @@ class window.AnalysisRequestAdd
 
         # break the iteration after the first loop to avoid multiple dialogs.
         return false
+
+
+  ###*
+   * Render a confirmation dialog popup
+   *
+   * [1] http://handlebarsjs.com/
+   * [2] https://jqueryui.com/dialog/
+   *
+   * @param template_id {String} ID of the Handlebars template
+   * @param context {Object} Data to fill into the template
+   * @param buttons {Object} Buttons to render
+  ###
+  template_dialog: (template_id, context, buttons) =>
+    # prepare the buttons
+    if not buttons?
+      buttons = {}
+      buttons[_t("Yes")] = ->
+        # trigger 'yes' event
+        $(@).trigger "yes"
+        $(@).dialog "close"
+      buttons[_t("No")] = ->
+        # trigger 'no' event
+        $(@).trigger "no"
+        $(@).dialog "close"
+
+    # render the Handlebars template
+    content = @render_template template_id, context
+
+    # render the dialog box
+    $(content).dialog
+      width: 450
+      resizable: no
+      closeOnEscape: no
+      buttons: buttons
+      open: (event, ui) ->
+        # Hide the X button on the top right border
+        $(".ui-dialog-titlebar-close").hide()
+
+
+  ###*
+   * Render template with Handlebars
+   *
+   * @returns {String} Rendered content
+  ###
+  render_template: (template_id, context) =>
+    # get the template by ID
+    source = $("##{template_id}").html()
+    return unless source
+    # Compile the handlebars template
+    template = Handlebars.compile(source)
+    # Render the template with the given context
+    content = template(context)
+    return content
 
 
   ###*
@@ -664,7 +701,7 @@ class window.AnalysisRequestAdd
 
 
   ###*
-   * Apply the template values to the sample localized in the specified column
+   * Apply the template values to the sample in the specified column
    *
    * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
    * @param template {Object} Template record
@@ -709,10 +746,14 @@ class window.AnalysisRequestAdd
       me.set_service arnum, uid, yes
 
 
+  ###*
+   * Select service checkbox by UID
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param uid {String} UID of the service to select
+   * @param checked {Boolean} True/False to toggle select/delselect
+  ###
   set_service: (arnum, uid, checked) =>
-    ###
-     * Select the checkbox of a service by UID
-    ###
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
     me = this
     # get the service checkbox element
@@ -731,21 +772,6 @@ class window.AnalysisRequestAdd
     me.set_service_conditions el
     # trigger event for price recalculation
     $(@).trigger "services:changed"
-
-
-  get_service: (uid) =>
-    ###
-     * Fetch the service data from server by UID
-    ###
-
-    options =
-      data:
-        uid: uid
-      processData: yes
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
-
-    @ajax_post_form("get_service", options).done (data) ->
-      console.debug "get_service::data=", data
 
 
   hide_all_service_info: =>
