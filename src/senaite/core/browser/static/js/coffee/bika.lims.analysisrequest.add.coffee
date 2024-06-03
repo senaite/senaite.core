@@ -370,11 +370,21 @@ class window.AnalysisRequestAdd
   ###*
    * Checks if the given value is an Array
    *
-   * @param thing {Object} Arbitrary value
+   * @param thing {Object} value to check
    * @returns {Boolean} True if the value is an Array
   ###
   is_array: (value) ->
-    return Array.isArray value
+    return Array.isArray(value)
+
+
+  ###*
+   * Checks if the given value is a plain Object
+   *
+   * @param thing {Object} value to check
+   * @returns {Boolean} True if the value is a plain Object, i.e. `{}`
+  ###
+  is_object: (value) ->
+    return Object.prototype.toString.call(value) is "[object Object]"
 
 
   ###*
@@ -610,11 +620,18 @@ class window.AnalysisRequestAdd
     controller.set_values(values)
 
 
+  ###*
+    * Set data-records to display the UID of a reference field
+    *
+    * NOTE: This method if for performance reasons only.
+    *       It avoids an additional lookup of the reference widget to fetch the
+    *       required data to render the display template for the actual UID.
+    *
+    * @param field {Obejct} jQuery field
+    * @param records {Object} Records to set
+  ###
   set_reference_field_records: (field, records) =>
-    ###
-     * Set data-records to display the UID of a reference field
-    ###
-    return unless records and typeof records is "object"
+    return unless records and @is_object(records)
 
     controller = @get_widget_controller(field)
     existing_records = controller.get_data_records()

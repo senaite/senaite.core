@@ -376,12 +376,24 @@
     /**
      * Checks if the given value is an Array
      *
-     * @param thing {Object} Arbitrary value
+     * @param thing {Object} value to check
      * @returns {Boolean} True if the value is an Array
      */
 
     AnalysisRequestAdd.prototype.is_array = function(value) {
       return Array.isArray(value);
+    };
+
+
+    /**
+     * Checks if the given value is a plain Object
+     *
+     * @param thing {Object} value to check
+     * @returns {Boolean} True if the value is a plain Object, i.e. `{}`
+     */
+
+    AnalysisRequestAdd.prototype.is_object = function(value) {
+      return Object.prototype.toString.call(value) === "[object Object]";
     };
 
 
@@ -647,13 +659,21 @@
       return controller.set_values(values);
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
 
-      /*
-       * Set data-records to display the UID of a reference field
-       */
+    /**
+      * Set data-records to display the UID of a reference field
+      *
+      * NOTE: This method if for performance reasons only.
+      *       It avoids an additional lookup of the reference widget to fetch the
+      *       required data to render the display template for the actual UID.
+      *
+      * @param field {Obejct} jQuery field
+      * @param records {Object} Records to set
+     */
+
+    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
       var controller, existing_records, new_records;
-      if (!(records && typeof records === "object")) {
+      if (!(records && this.is_object(records))) {
         return;
       }
       controller = this.get_widget_controller(field);
