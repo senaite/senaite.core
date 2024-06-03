@@ -1066,10 +1066,12 @@ class window.AnalysisRequestAdd
   ### EVENT HANDLERS ###
   ######################
 
+  ###*
+   * Generic event handler for when a reference field value changed
+   *
+   * @param event {Object} The event object
+  ###
   on_referencefield_value_changed: (event) =>
-    ###
-     * Generic event handler for when a reference field value changed
-    ###
     me = this
     el = event.currentTarget
     $el = $(el)
@@ -1120,11 +1122,12 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
 
 
+  ###*
+   * Event handler when the user clicked on the info icon of a service.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_details_click: (event) =>
-    ###
-     * Eventhandler when the user clicked on the info icon of a service.
-    ###
-
     el = event.currentTarget
     $el = $(el)
     uid = $el.attr "uid"
@@ -1170,10 +1173,12 @@ class window.AnalysisRequestAdd
       info.fadeToggle()
 
 
+  ###*
+   * Event handler when an Analysis Profile was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_lock_button_click: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was removed.
-    ###
     console.debug "°°° on_analysis_lock_button_click °°°"
 
     me = this
@@ -1206,19 +1211,23 @@ class window.AnalysisRequestAdd
     dialog = @template_dialog "service-dependant-template", context, buttons
 
 
+  ###*
+   * Event handler when an Analysis Template was selected.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_template_selected: (event) =>
-    ###
-     * Eventhandler when an Analysis Template was selected.
-    ###
     console.debug "°°° on_analysis_template_selected °°°"
     # trigger form:changed event
     $(this).trigger "form:changed"
 
 
+  ###*
+   * Eventhandler when an Analysis Template was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_template_removed: (event) =>
-    ###
-     * Eventhandler when an Analysis Template was removed.
-    ###
     console.debug "°°° on_analysis_template_removed °°°"
 
     el = event.currentTarget
@@ -1230,20 +1239,23 @@ class window.AnalysisRequestAdd
     $(this).trigger "form:changed"
 
 
+  ###*
+   * Event handler when an Analysis Profile was selected.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_profile_selected: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was selected.
-    ###
     console.debug "°°° on_analysis_profile_selected °°°"
     # trigger form:changed event
     $(this).trigger "form:changed"
 
 
-  # Note: Context of callback bound to this object
+  ###*
+   * Event handler when an Analysis Profile was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_profile_removed: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was removed.
-    ###
     console.debug "°°° on_analysis_profile_removed °°°"
 
     me = this
@@ -1279,11 +1291,12 @@ class window.AnalysisRequestAdd
       $(me).trigger "form:changed"
 
 
+  ###*
+   * Event handler for Analysis Service Checkboxes.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_checkbox_click: (event) =>
-    ###
-     * Eventhandler for Analysis Service Checkboxes.
-    ###
-
     me = this
     el = event.currentTarget
     checked = el.checked
@@ -1300,11 +1313,14 @@ class window.AnalysisRequestAdd
     $(me).trigger "services:changed"
 
 
+  ###*
+   * Event handler for analysis service category header rows.
+   *
+   * Toggles the visibility of all categories within this poc.
+   *
+   * @param event {Object} The event object
+  ###
   on_service_listing_header_click: (event) =>
-    ###
-     * Eventhandler for analysis service category header rows.
-     * Toggles the visibility of all categories within this poc.
-    ###
     $el = $(event.currentTarget)
     poc = $el.data("poc")
     visible = $el.hasClass("visible")
@@ -1312,12 +1328,15 @@ class window.AnalysisRequestAdd
     @toggle_poc_categories poc, toggle
 
 
+  ###*
+   * Event handler for analysis service category rows.
+   *
+   * Toggles the visibility of all services within this category.
+   * NOTE: Selected services always stay visible.
+   *
+   * @param event {Object} The event object
+  ###
   on_service_category_click: (event) =>
-    ###
-     * Eventhandler for analysis service category rows.
-     * Toggles the visibility of all services within this category.
-     * Selected services always stay visible.
-    ###
     event.preventDefault()
     $el = $(event.currentTarget)
     poc = $el.attr("poc")
@@ -1343,12 +1362,16 @@ class window.AnalysisRequestAdd
       services.addClass "expanded"
 
 
+  ###*
+   * Event handler for the field copy button per row.
+   *
+   * Copies the value of the first field in this row to the remaining.
+   *
+   * XXX: Refactor this method, it is way too long
+   *
+   * @param event {Object} The event object
+  ###
   on_copy_button_click: (event) =>
-    ###
-     * Eventhandler for the field copy button per row.
-     * Copies the value of the first field in this row to the remaining.
-     * XXX Refactor
-    ###
     console.debug "°°° on_copy_button_click °°°"
 
     me = this
@@ -1525,10 +1548,12 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
 
 
+  ###*
+   * Event handler when Ajax request started
+   *
+   * @param event {Object} The event object
+  ###
   on_ajax_start: =>
-    ###
-     * Ajax request started
-    ###
     console.debug "°°° on_ajax_start °°°"
 
     # deactivate the save button
@@ -1541,10 +1566,12 @@ class window.AnalysisRequestAdd
     save_and_copy_button.prop "disabled": yes
 
 
+  ###*
+   * Event handler when Ajax request finished
+   *
+   * @param event {Object} The event object
+  ###
   on_ajax_end: =>
-    ###
-     * Ajax request finished
-    ###
     console.debug "°°° on_ajax_end °°°"
 
     # reactivate the save button
@@ -1557,6 +1584,12 @@ class window.AnalysisRequestAdd
     save_and_copy_button.prop "disabled": no
 
 
+  ###*
+   * Event handler when Ajax when cancel button was clicked
+   *
+   * @param event {Object} The event object
+   * @param callback {Function}
+  ###
   on_cancel: (event, callback) =>
     console.debug "°°° on_cancel °°°"
     event.preventDefault()
@@ -1569,12 +1602,14 @@ class window.AnalysisRequestAdd
         window.location.replace base_url
 
 
-  # Note: Context of callback bound to this object
+  ###*
+   * Event handler for the form submit button.
+   *
+   * Extracts all form data and submits them asynchronously
+   *
+   * @param event {Object} The event object
+  ###
   on_form_submit: (event, callback) =>
-    ###
-     * Eventhandler for the form submit button.
-     * Extracts and submits all form data asynchronous.
-    ###
     console.debug "°°° on_form_submit °°°"
     event.preventDefault()
     me = this
@@ -1645,6 +1680,12 @@ class window.AnalysisRequestAdd
         window.location.replace base_url
 
 
+  ###*
+   * Event handler when the file add button was clicked
+   *
+   * @param event {Object} The event object
+   * @param element {Object} jQuery file field
+  ###
   file_addbtn_click: (event, element) ->
     # Clone the file field and wrap it into a div
     file_field = $(element).clone()

@@ -1112,11 +1112,14 @@
 
     /* EVENT HANDLERS */
 
-    AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
 
-      /*
-       * Generic event handler for when a reference field value changed
-       */
+    /**
+     * Generic event handler for when a reference field value changed
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
       var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, record, ref, selected, value;
       me = this;
       el = event.currentTarget;
@@ -1165,11 +1168,14 @@
       return $(me).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_details_click = function(event) {
 
-      /*
-       * Eventhandler when the user clicked on the info icon of a service.
-       */
+    /**
+     * Event handler when the user clicked on the info icon of a service.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_details_click = function(event) {
       var $el, arnum, context, data, el, extra, info, profiles, record, template, templates, uid;
       el = event.currentTarget;
       $el = $(el);
@@ -1213,11 +1219,14 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_lock_button_click = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was removed.
-       */
+    /**
+     * Event handler when an Analysis Profile was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_lock_button_click = function(event) {
       var $el, arnum, buttons, context, dialog, el, me, profile_uid, record, template_uid, uid;
       console.debug("°°° on_analysis_lock_button_click °°°");
       me = this;
@@ -1246,20 +1255,26 @@
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_template_selected = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Template was selected.
-       */
+    /**
+     * Event handler when an Analysis Template was selected.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_template_selected = function(event) {
       console.debug("°°° on_analysis_template_selected °°°");
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_template_removed = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Template was removed.
-       */
+    /**
+     * Eventhandler when an Analysis Template was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_template_removed = function(event) {
       var $el, arnum, el;
       console.debug("°°° on_analysis_template_removed °°°");
       el = event.currentTarget;
@@ -1269,20 +1284,26 @@
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_profile_selected = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was selected.
-       */
+    /**
+     * Event handler when an Analysis Profile was selected.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_profile_selected = function(event) {
       console.debug("°°° on_analysis_profile_selected °°°");
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_profile_removed = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was removed.
-       */
+    /**
+     * Event handler when an Analysis Profile was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_profile_removed = function(event) {
       var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, profile_uid, record;
       console.debug("°°° on_analysis_profile_removed °°°");
       me = this;
@@ -1312,11 +1333,14 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_checkbox_click = function(event) {
 
-      /*
-       * Eventhandler for Analysis Service Checkboxes.
-       */
+    /**
+     * Event handler for Analysis Service Checkboxes.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_checkbox_click = function(event) {
       var $el, checked, el, me, uid;
       me = this;
       el = event.currentTarget;
@@ -1329,12 +1353,16 @@
       return $(me).trigger("services:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
 
-      /*
-       * Eventhandler for analysis service category header rows.
-       * Toggles the visibility of all categories within this poc.
-       */
+    /**
+     * Event handler for analysis service category header rows.
+     *
+     * Toggles the visibility of all categories within this poc.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
       var $el, poc, toggle, visible;
       $el = $(event.currentTarget);
       poc = $el.data("poc");
@@ -1343,13 +1371,17 @@
       return this.toggle_poc_categories(poc, toggle);
     };
 
-    AnalysisRequestAdd.prototype.on_service_category_click = function(event) {
 
-      /*
-       * Eventhandler for analysis service category rows.
-       * Toggles the visibility of all services within this category.
-       * Selected services always stay visible.
-       */
+    /**
+     * Event handler for analysis service category rows.
+     *
+     * Toggles the visibility of all services within this category.
+     * NOTE: Selected services always stay visible.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_service_category_click = function(event) {
       var $btn, $el, category, expanded, poc, services, services_checked;
       event.preventDefault();
       $el = $(event.currentTarget);
@@ -1374,13 +1406,18 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.on_copy_button_click = function(event) {
 
-      /*
-       * Eventhandler for the field copy button per row.
-       * Copies the value of the first field in this row to the remaining.
-       * XXX Refactor
-       */
+    /**
+     * Event handler for the field copy button per row.
+     *
+     * Copies the value of the first field in this row to the remaining.
+     *
+     * XXX: Refactor this method, it is way too long
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_copy_button_click = function(event) {
       var $el, $td1, $tr, ar_count, el, i, me, record_one, records, results, td1, tr, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
@@ -1602,11 +1639,14 @@
       return $(me).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_ajax_start = function() {
 
-      /*
-       * Ajax request started
-       */
+    /**
+     * Event handler when Ajax request started
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_ajax_start = function() {
       var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_start °°°");
       save_button = $("input[name=save_button]");
@@ -1620,11 +1660,14 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_ajax_end = function() {
 
-      /*
-       * Ajax request finished
-       */
+    /**
+     * Event handler when Ajax request finished
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_ajax_end = function() {
       var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_end °°°");
       save_button = $("input[name=save_button]");
@@ -1637,6 +1680,14 @@
         "disabled": false
       });
     };
+
+
+    /**
+     * Event handler when Ajax when cancel button was clicked
+     *
+     * @param event {Object} The event object
+     * @param callback {Function}
+     */
 
     AnalysisRequestAdd.prototype.on_cancel = function(event, callback) {
       var base_url;
@@ -1652,12 +1703,16 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
 
-      /*
-       * Eventhandler for the form submit button.
-       * Extracts and submits all form data asynchronous.
-       */
+    /**
+     * Event handler for the form submit button.
+     *
+     * Extracts all form data and submits them asynchronously
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
       var action, action_input, base_url, btn, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
@@ -1722,6 +1777,14 @@
         }
       });
     };
+
+
+    /**
+     * Event handler when the file add button was clicked
+     *
+     * @param event {Object} The event object
+     * @param element {Object} jQuery file field
+     */
 
     AnalysisRequestAdd.prototype.file_addbtn_click = function(event, element) {
       var arnum, counter, del_btn, del_btn_src, existing_file_field_names, existing_file_fields, file_field, file_field_div, holding_div, name, newfieldname, ref;
