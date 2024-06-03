@@ -312,6 +312,11 @@ class window.AnalysisRequestAdd
         return false
 
 
+  ###*
+   * Return the portal url (calculated in code)
+   *
+   * @returns {String} Portal URL
+  ###
   get_portal_url: =>
     ###
      * Return the portal url (calculated in code)
@@ -320,10 +325,12 @@ class window.AnalysisRequestAdd
     return url
 
 
+  ###*
+   * Return the current (relative) base url
+   *
+   * @returns {String} Base URL for Ajax Request
+  ###
   get_base_url: =>
-    ###
-     * Return the current (relative) base url
-    ###
     base_url = window.location.href
     if base_url.search("/portal_factory") >= 0
       return base_url.split("/portal_factory")[0]
@@ -340,6 +347,34 @@ class window.AnalysisRequestAdd
     id = $(field).prop("id")
     ns = window?.senaite?.core?.widgets or {}
     return ns[id]
+
+
+  ###*
+   * Checks if a given field is a reference field
+   *
+   * TODO: This check is very naive.
+   *       Maybe we can do this better with the widget controller!
+   *
+   * @param field {Object} jQuery field
+   * @returns {Boolean} True if the field is a reference field
+  ###
+  is_reference_field: (field) ->
+    field = $(field)
+    if field.hasClass("senaite-uidreference-widget-input")
+      return yes
+    if field.hasClass("ArchetypesReferenceWidget")
+      return yes
+    return no
+
+
+  ###*
+   * Checks if the given value is an Array
+   *
+   * @param thing {Object} Arbitrary value
+   * @returns {Boolean} True if the value is an Array
+  ###
+  is_array: (value) ->
+    return Array.isArray value
 
 
   ###*
@@ -376,7 +411,7 @@ class window.AnalysisRequestAdd
   ###
   apply_dependent_value: (arnum, field_name, values) ->
     # always handle values as array internally
-    if not Array.isArray values
+    if not @is_array(values)
       values = [values]
 
     me = this
@@ -502,7 +537,9 @@ class window.AnalysisRequestAdd
   ###*
    * Get the current value of the reference field
    *
-   * NOTE: This method
+   * NOTE: This method returns the values for backwards compatibility as if they
+   *       were read from the textfield (lines of UIDs)
+   *       This will be removed when all methods rely on `controller.get_values()`
    *
    * @param field {Object} jQuery field
    * @returns {String} UIDs joined with \n
@@ -517,10 +554,16 @@ class window.AnalysisRequestAdd
     return values.join("\n")
 
 
-  flush_fields_for: (field_name, arnum) ->
-    ###
-     * Flush dependent fields
-    ###
+  ###*
+   * Flush reference fields that are statically provided in the flush_settings
+   *
+   * NOTE: Since https://github.com/senaite/senaite.core/pull/2564 this makes
+   *       only sense for non-reference fields, e.g. `EnvironmentalConditions`
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param field_name {String} The name of the field where dependent fields need to be flushed
+  ###
+  flush_fields_for: (arnum, field_name) ->
     me = this
     field_ids = @flush_settings[field_name]
     $.each @flush_settings[field_name], (index, id) ->
@@ -529,18 +572,11 @@ class window.AnalysisRequestAdd
       me.flush_reference_field field
 
 
-  is_reference_field: (field) ->
-    ###
-     * Checks if the given field is a reference field
-    ###
-    field = $(field)
-    if field.hasClass("senaite-uidreference-widget-input")
-      return yes
-    if field.hasClass("ArchetypesReferenceWidget")
-      return yes
-    return no
-
-
+  ###*
+   * Empty the reference field and restore the search query
+   *
+   * @param field {Obejct} jQuery field
+  ###
   flush_reference_field: (field) ->
     ###
      * Empty the reference field and restore the search query
@@ -548,34 +584,34 @@ class window.AnalysisRequestAdd
     return unless field.length > 0
 
     # set emtpy value
-    @set_reference_field field, ""
+    @set_reference_field field, null
     # restore the original search query
     @reset_reference_field_query field
 
 
-  set_reference_field_records: (field, records) =>
-    ###
-     * Set data-records to display the UID of a reference field
-    ###
-    return unless records and typeof records is "object"
+  ###*
+    * Set the value(s) of a reference field
+    *
+    * NOTE: This method overrides the value of single reference fields or
+    *       removes/adds the omitted/added values from multi-reference fields
+    *
+    * @param field {Obejct} jQuery field
+    * @param values {Array} Array of UIDs to set or [] to flush
+  ###
+  set_reference_field: (field, values) ->
+    return unless field.length > 0
 
-    controller = @get_widget_controller(field)
-    existing_records = controller.get_data_records()
-    new_records = Object.assign(existing_records, records)
-    controller.set_data_records(new_records)
+    if not @is_array(values)
+      values = [values]
 
-
-  set_reference_field: (field, uid) ->
-    ###
-     * Set the UID of a reference field
-     * NOTE: This method overrides any existing value!
-    ###
-    return unless uid and field.length > 0
+    # filter out invalid values
+    # NOTE: UIDs have always a length of 32
+    values = values.filter((item) -> item and item.length == 32)
 
     controller = @get_widget_controller(field)
     fieldname = controller.get_name()
-    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
-    controller.set_values([uid])
+    console.debug "set_reference_field:: field=#{fieldname} values=#{values}"
+    controller.set_values(values)
 
 
   set_multi_reference_field: (field, uids) ->
@@ -588,6 +624,18 @@ class window.AnalysisRequestAdd
     fieldname = controller.get_name()
     console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
     controller.set_values(uids)
+
+
+  set_reference_field_records: (field, records) =>
+    ###
+     * Set data-records to display the UID of a reference field
+    ###
+    return unless records and typeof records is "object"
+
+    controller = @get_widget_controller(field)
+    existing_records = controller.get_data_records()
+    new_records = Object.assign(existing_records, records)
+    controller.set_data_records(new_records)
 
 
   get_metadata_for: (arnum, field_name) =>
@@ -775,7 +823,7 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_referencefield_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 
     # Flush depending fields
-    me.flush_fields_for field_name, arnum
+    me.flush_fields_for arnum, field_name
 
     # trigger custom event <field_name>:after_change
     event_data = { bubbles: true, detail: { value: el.value } }
@@ -1052,7 +1100,7 @@ class window.AnalysisRequestAdd
 
         # XXX: Needed?
         _field_name = _el.closest("tr[fieldname]").attr "fieldname"
-        me.flush_fields_for _field_name, arnum
+        me.flush_fields_for arnum, _field_name
 
         # RectJS queryselect widget provides the JSON data of the selected
         # records in the `data-records` attribute.

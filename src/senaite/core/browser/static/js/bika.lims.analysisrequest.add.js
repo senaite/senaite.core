@@ -302,6 +302,13 @@
       });
     };
 
+
+    /**
+     * Return the portal url (calculated in code)
+     *
+     * @returns {String} Portal URL
+     */
+
     AnalysisRequestAdd.prototype.get_portal_url = function() {
 
       /*
@@ -312,11 +319,14 @@
       return url;
     };
 
-    AnalysisRequestAdd.prototype.get_base_url = function() {
 
-      /*
-       * Return the current (relative) base url
-       */
+    /**
+     * Return the current (relative) base url
+     *
+     * @returns {String} Base URL for Ajax Request
+     */
+
+    AnalysisRequestAdd.prototype.get_base_url = function() {
       var base_url;
       base_url = window.location.href;
       if (base_url.search("/portal_factory") >= 0) {
@@ -338,6 +348,40 @@
       id = $(field).prop("id");
       ns = (typeof window !== "undefined" && window !== null ? (ref = window.senaite) != null ? (ref1 = ref.core) != null ? ref1.widgets : void 0 : void 0 : void 0) || {};
       return ns[id];
+    };
+
+
+    /**
+     * Checks if a given field is a reference field
+     *
+     * TODO: This check is very naive.
+     *       Maybe we can do this better with the widget controller!
+     *
+     * @param field {Object} jQuery field
+     * @returns {Boolean} True if the field is a reference field
+     */
+
+    AnalysisRequestAdd.prototype.is_reference_field = function(field) {
+      field = $(field);
+      if (field.hasClass("senaite-uidreference-widget-input")) {
+        return true;
+      }
+      if (field.hasClass("ArchetypesReferenceWidget")) {
+        return true;
+      }
+      return false;
+    };
+
+
+    /**
+     * Checks if the given value is an Array
+     *
+     * @param thing {Object} Arbitrary value
+     * @returns {Boolean} True if the value is an Array
+     */
+
+    AnalysisRequestAdd.prototype.is_array = function(value) {
+      return Array.isArray(value);
     };
 
 
@@ -380,7 +424,7 @@
 
     AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
       var controller, field, manually_deselected, me, uid, uids, values_json;
-      if (!Array.isArray(values)) {
+      if (!this.is_array(values)) {
         values = [values];
       }
       me = this;
@@ -519,7 +563,9 @@
     /**
      * Get the current value of the reference field
      *
-     * NOTE: This method
+     * NOTE: This method returns the values for backwards compatibility as if they
+     *       were read from the textfield (lines of UIDs)
+     *       This will be removed when all methods rely on `controller.get_values()`
      *
      * @param field {Object} jQuery field
      * @returns {String} UIDs joined with \n
@@ -536,11 +582,18 @@
       return values.join("\n");
     };
 
-    AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
 
-      /*
-       * Flush dependent fields
-       */
+    /**
+     * Flush reference fields that are statically provided in the flush_settings
+     *
+     * NOTE: Since https://github.com/senaite/senaite.core/pull/2564 this makes
+     *       only sense for non-reference fields, e.g. `EnvironmentalConditions`
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param field_name {String} The name of the field where dependent fields need to be flushed
+     */
+
+    AnalysisRequestAdd.prototype.flush_fields_for = function(arnum, field_name) {
       var field_ids, me;
       me = this;
       field_ids = this.flush_settings[field_name];
@@ -552,20 +605,12 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.is_reference_field = function(field) {
 
-      /*
-       * Checks if the given field is a reference field
-       */
-      field = $(field);
-      if (field.hasClass("senaite-uidreference-widget-input")) {
-        return true;
-      }
-      if (field.hasClass("ArchetypesReferenceWidget")) {
-        return true;
-      }
-      return false;
-    };
+    /**
+     * Empty the reference field and restore the search query
+     *
+     * @param field {Obejct} jQuery field
+     */
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
 
@@ -575,39 +620,36 @@
       if (!(field.length > 0)) {
         return;
       }
-      this.set_reference_field(field, "");
+      this.set_reference_field(field, null);
       return this.reset_reference_field_query(field);
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
 
-      /*
-       * Set data-records to display the UID of a reference field
-       */
-      var controller, existing_records, new_records;
-      if (!(records && typeof records === "object")) {
-        return;
-      }
-      controller = this.get_widget_controller(field);
-      existing_records = controller.get_data_records();
-      new_records = Object.assign(existing_records, records);
-      return controller.set_data_records(new_records);
-    };
+    /**
+      * Set the value(s) of a reference field
+      *
+      * NOTE: This method overrides the value of single reference fields or
+      *       removes/adds the omitted/added values from multi-reference fields
+      *
+      * @param field {Obejct} jQuery field
+      * @param values {Array} Array of UIDs to set or [] to flush
+     */
 
-    AnalysisRequestAdd.prototype.set_reference_field = function(field, uid) {
-
-      /*
-       * Set the UID of a reference field
-       * NOTE: This method overrides any existing value!
-       */
+    AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
       var controller, fieldname;
-      if (!(uid && field.length > 0)) {
+      if (!(field.length > 0)) {
         return;
       }
+      if (!this.is_array(values)) {
+        values = [values];
+      }
+      values = values.filter(function(item) {
+        return item && item.length === 32;
+      });
       controller = this.get_widget_controller(field);
       fieldname = controller.get_name();
-      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
-      return controller.set_values([uid]);
+      console.debug("set_reference_field:: field=" + fieldname + " values=" + values);
+      return controller.set_values(values);
     };
 
     AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids) {
@@ -623,6 +665,21 @@
       fieldname = controller.get_name();
       console.debug("set_multi_reference_field:: field=" + fieldname + " uids=" + uids);
       return controller.set_values(uids);
+    };
+
+    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
+
+      /*
+       * Set data-records to display the UID of a reference field
+       */
+      var controller, existing_records, new_records;
+      if (!(records && typeof records === "object")) {
+        return;
+      }
+      controller = this.get_widget_controller(field);
+      existing_records = controller.get_data_records();
+      new_records = Object.assign(existing_records, records);
+      return controller.set_data_records(new_records);
     };
 
     AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
@@ -804,7 +861,7 @@
         return;
       }
       console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
-      me.flush_fields_for(field_name, arnum);
+      me.flush_fields_for(arnum, field_name);
       event_data = {
         bubbles: true,
         detail: {
@@ -1063,7 +1120,7 @@
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
           _field_name = _el.closest("tr[fieldname]").attr("fieldname");
-          me.flush_fields_for(_field_name, arnum);
+          me.flush_fields_for(arnum, _field_name);
           me.set_reference_field_records(_el, records);
           return me.set_reference_field(_el, value);
         });
