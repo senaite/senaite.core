@@ -26,6 +26,8 @@
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
+      this.render_template = bind(this.render_template, this);
+      this.template_dialog = bind(this.template_dialog, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
       this.copy_service_conditions = bind(this.copy_service_conditions, this);
       this.set_service_conditions = bind(this.set_service_conditions, this);
@@ -39,8 +41,6 @@
       this.native_set_value = bind(this.native_set_value, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
-      this.render_template = bind(this.render_template, this);
-      this.template_dialog = bind(this.template_dialog, this);
       this.update_form = bind(this.update_form, this);
       this.debounce = bind(this.debounce, this);
       this.init_service_conditions = bind(this.init_service_conditions, this);
@@ -425,61 +425,6 @@
           return false;
         });
       });
-    };
-
-
-    /**
-     * Render a confirmation dialog popup
-     *
-     * [1] http://handlebarsjs.com/
-     * [2] https://jqueryui.com/dialog/
-     *
-     * @param template_id {String} ID of the Handlebars template
-     * @param context {Object} Data to fill into the template
-     * @param buttons {Object} Buttons to render
-     */
-
-    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
-      var content;
-      if (buttons == null) {
-        buttons = {};
-        buttons[_t("Yes")] = function() {
-          $(this).trigger("yes");
-          return $(this).dialog("close");
-        };
-        buttons[_t("No")] = function() {
-          $(this).trigger("no");
-          return $(this).dialog("close");
-        };
-      }
-      content = this.render_template(template_id, context);
-      return $(content).dialog({
-        width: 450,
-        resizable: false,
-        closeOnEscape: false,
-        buttons: buttons,
-        open: function(event, ui) {
-          return $(".ui-dialog-titlebar-close").hide();
-        }
-      });
-    };
-
-
-    /**
-     * Render template with Handlebars
-     *
-     * @returns {String} Rendered content
-     */
-
-    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
-      var content, source, template;
-      source = $("#" + template_id).html();
-      if (!source) {
-        return;
-      }
-      template = Handlebars.compile(source);
-      content = template(context);
-      return content;
     };
 
 
@@ -1107,6 +1052,61 @@
         services.removeClass("expanded");
         return toggle_buttons.text("+");
       }
+    };
+
+
+    /**
+     * Render a confirmation dialog popup
+     *
+     * [1] http://handlebarsjs.com/
+     * [2] https://jqueryui.com/dialog/
+     *
+     * @param template_id {String} ID of the Handlebars template
+     * @param context {Object} Data to fill into the template
+     * @param buttons {Object} Buttons to render
+     */
+
+    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
+      var content;
+      if (buttons == null) {
+        buttons = {};
+        buttons[_t("Yes")] = function() {
+          $(this).trigger("yes");
+          return $(this).dialog("close");
+        };
+        buttons[_t("No")] = function() {
+          $(this).trigger("no");
+          return $(this).dialog("close");
+        };
+      }
+      content = this.render_template(template_id, context);
+      return $(content).dialog({
+        width: 450,
+        resizable: false,
+        closeOnEscape: false,
+        buttons: buttons,
+        open: function(event, ui) {
+          return $(".ui-dialog-titlebar-close").hide();
+        }
+      });
+    };
+
+
+    /**
+     * Render template with Handlebars
+     *
+     * @returns {String} Rendered content
+     */
+
+    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
+      var content, source, template;
+      source = $("#" + template_id).html();
+      if (!source) {
+        return;
+      }
+      template = Handlebars.compile(source);
+      content = template(context);
+      return content;
     };
 
 

@@ -426,59 +426,6 @@ class window.AnalysisRequestAdd
 
 
   ###*
-   * Render a confirmation dialog popup
-   *
-   * [1] http://handlebarsjs.com/
-   * [2] https://jqueryui.com/dialog/
-   *
-   * @param template_id {String} ID of the Handlebars template
-   * @param context {Object} Data to fill into the template
-   * @param buttons {Object} Buttons to render
-  ###
-  template_dialog: (template_id, context, buttons) =>
-    # prepare the buttons
-    if not buttons?
-      buttons = {}
-      buttons[_t("Yes")] = ->
-        # trigger 'yes' event
-        $(@).trigger "yes"
-        $(@).dialog "close"
-      buttons[_t("No")] = ->
-        # trigger 'no' event
-        $(@).trigger "no"
-        $(@).dialog "close"
-
-    # render the Handlebars template
-    content = @render_template template_id, context
-
-    # render the dialog box
-    $(content).dialog
-      width: 450
-      resizable: no
-      closeOnEscape: no
-      buttons: buttons
-      open: (event, ui) ->
-        # Hide the X button on the top right border
-        $(".ui-dialog-titlebar-close").hide()
-
-
-  ###*
-   * Render template with Handlebars
-   *
-   * @returns {String} Rendered content
-  ###
-  render_template: (template_id, context) =>
-    # get the template by ID
-    source = $("##{template_id}").html()
-    return unless source
-    # Compile the handlebars template
-    template = Handlebars.compile(source)
-    # Render the template with the given context
-    content = template(context)
-    return content
-
-
-  ###*
    * Return the portal url (calculated in code)
    *
    * @returns {String} Portal URL
@@ -1060,6 +1007,59 @@ class window.AnalysisRequestAdd
       services.removeClass "visible"
       services.removeClass "expanded"
       toggle_buttons.text("+")
+
+
+  ###*
+   * Render a confirmation dialog popup
+   *
+   * [1] http://handlebarsjs.com/
+   * [2] https://jqueryui.com/dialog/
+   *
+   * @param template_id {String} ID of the Handlebars template
+   * @param context {Object} Data to fill into the template
+   * @param buttons {Object} Buttons to render
+  ###
+  template_dialog: (template_id, context, buttons) =>
+    # prepare the buttons
+    if not buttons?
+      buttons = {}
+      buttons[_t("Yes")] = ->
+        # trigger 'yes' event
+        $(@).trigger "yes"
+        $(@).dialog "close"
+      buttons[_t("No")] = ->
+        # trigger 'no' event
+        $(@).trigger "no"
+        $(@).dialog "close"
+
+    # render the Handlebars template
+    content = @render_template template_id, context
+
+    # render the dialog box
+    $(content).dialog
+      width: 450
+      resizable: no
+      closeOnEscape: no
+      buttons: buttons
+      open: (event, ui) ->
+        # Hide the X button on the top right border
+        $(".ui-dialog-titlebar-close").hide()
+
+
+  ###*
+   * Render template with Handlebars
+   *
+   * @returns {String} Rendered content
+  ###
+  render_template: (template_id, context) =>
+    # get the template by ID
+    source = $("##{template_id}").html()
+    return unless source
+    # Compile the handlebars template
+    template = Handlebars.compile(source)
+    # Render the template with the given context
+    content = template(context)
+    return content
 
 
   ######################
