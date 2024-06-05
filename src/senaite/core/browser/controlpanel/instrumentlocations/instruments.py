@@ -18,7 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import senaiteMessageFactory as _
+from bika.lims import api
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
 
 
@@ -30,5 +30,6 @@ class InstrumentLocationInstrumentsView(InstrumentsView):
         self.context_actions = {}
 
     def isItemAllowed(self, obj):
+        obj = api.get_object(obj)
         location = obj.getInstrumentLocation() if obj else None
         return location.UID() == self.context.UID() if location else False
