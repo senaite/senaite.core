@@ -11,7 +11,7 @@
   <property name="icon_expr">senaite_theme/icon/batchlabel</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">ContainerType</property>
+  <property name="factory">BatchLabel</property>
 
   <!-- URL TALES expression to add an item TTW -->
   <property name="add_view_expr">string:${folder_url}/++add++BatchLabel</property>
