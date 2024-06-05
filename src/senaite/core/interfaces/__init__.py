@@ -341,6 +341,16 @@ class IStorageLocation(Interface):
     """
 
 
+class IBatchLabel(Interface):
+    """Marker interface for Batch Label
+    """
+
+
+class IBatchLabels(Interface):
+    """Marker interface for Batch Labels container
+    """
+
+
 class IASTMImporter(Interface):
     """Marker interface for ASTM Wrappers
     """
