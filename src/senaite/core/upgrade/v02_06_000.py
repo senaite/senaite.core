@@ -85,6 +85,8 @@ REMOVE_AT_TYPES = [
     "InstrumentTypes",
     "SamplingDeviation",
     "SamplingDeviations",
+    "BatchLabel",
+    "BatchLabels",
     "AnalysisCategory",
     "AnalysisCategories",
 ]
@@ -1478,6 +1480,52 @@ def migrate_subgroups_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert SubGroups to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_batchlabels_to_dx(tool):
+    """Converts existing batch labels to Dexterity
+    """
+    logger.info("Convert ContainerTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_batchlabels")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("batchlabels")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("BatchLabel", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert BatchLabels to Dexterity [DONE]")
 
 
 def update_content_actions(tool):

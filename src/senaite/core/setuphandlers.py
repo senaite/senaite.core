@@ -258,6 +258,7 @@ def add_senaite_setup_items(portal):
         ("storagelocations", "Storage Locations", "StorageLocations"),
         ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
         ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
+        ("batchlabels", "Batch Labels", "BatchLabels"),
         ("analysiscategories", "Analysis Categories", "AnalysisCategories"),
     ]
     setup = api.get_senaite_setup()
