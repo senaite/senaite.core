@@ -64,29 +64,29 @@ class AnalysisCategoriesView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    "listing_analysiscategories_column_title",
-                    default="Category",
+                    u"listing_analysiscategories_column_title",
+                    default=u"Category",
                 ),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    "listing_analysiscategories_column_description",
-                    default="Description",
+                    u"listing_analysiscategories_column_description",
+                    default=u"Description",
                 ),
                 "index": "Description",
                 "toggle": True,
             }),
             ("Department", {
                 "title": _(
-                    "listing_analysiscategories_column_department",
-                    default="Department",
+                    u"listing_analysiscategories_column_department",
+                    default=u"Department",
                 ),
                 "index": "department_title",
             }),
             ("SortKey", {
                 "title": _(
-                    "listing_analysiscategories_column_sort_key",
-                    default="Sort Key",
+                    u"listing_analysiscategories_column_sort_key",
+                    default=u"Sort Key",
                 ),
                 "sortable": True
             }),
@@ -96,24 +96,24 @@ class AnalysisCategoriesView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    "listing_analysiscategories_state_active",
-                    default="Active",
+                    u"listing_analysiscategories_state_active",
+                    default=u"Active",
                 ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _(
-                    "listing_analysiscategories_state_inactive",
-                    default="Inactive",
+                    u"listing_analysiscategories_state_inactive",
+                    default=u"Inactive",
                 ),
                 "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _(
-                    "listing_analysiscategories_state_all",
-                    default="All",
+                    u"listing_analysiscategories_state_all",
+                    default=u"All",
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
