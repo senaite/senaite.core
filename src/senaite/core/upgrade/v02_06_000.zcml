@@ -6,8 +6,8 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Instrument Locations to Senaite setup"
       description="Move Instrument Locations to Senaite setup"
-      source="2633"
-      destination="2634"
+      source="2632"
+      destination="2633"
       handler=".v02_06_000.move_isntrumentlocations"
       profile="senaite.core:default"/>
 
