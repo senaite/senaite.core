@@ -331,6 +331,16 @@ class IInstrumentTypes(Interface):
     """
 
 
+class IInstrumentLocation(Interface):
+    """Marker interface for a physical place, where instruments can be located
+    """
+
+
+class IInstrumentLocations(Interface):
+    """Marker interface for instrument locations folder
+    """
+
+
 class IStorageLocations(Interface):
     """Marker interface for storage locations setup folder
     """

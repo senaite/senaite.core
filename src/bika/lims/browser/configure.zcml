@@ -17,7 +17,6 @@
   <include file="contact.zcml"/>
   <include file="dynamic_analysisspec.zcml"/>
   <include file="instrument.zcml"/>
-  <include file="instrumentlocation.zcml"/>
   <include file="invoice.zcml"/>
   <include file="methodfolder.zcml"/>
   <include file="pricelist.zcml"/>

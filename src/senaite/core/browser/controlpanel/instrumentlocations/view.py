@@ -21,8 +21,9 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
+from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddInstrumentLocation
@@ -40,29 +41,41 @@ class InstrumentLocationsView(ListingView):
         self.contentFilter = {
             "portal_type": "InstrumentLocation",
             "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            }
         }
 
         self.context_actions = {
-            _("Add"): {
+            _("listing_instrumentlocations_action_add", default="Add"): {
                 "url": "++add++InstrumentLocation",
                 "permission": AddInstrumentLocation,
-                "icon": "++resource++bika.lims.images/add.png",
+                "icon": "senaite_theme/icon/plus",
             }}
 
-        t = self.context.translate
-        self.title = t(_("Instrument Locations"))
-        self.description = t(_(
-            "The place where the instrument is located in the laboratory"))
-
+        self.title = translate(_(
+            "listing_instrumentlocations_title",
+            default="Instrument Locations")
+        )
+        self.icon = api.get_icon("InstrumentLocations", html_tag=False)
         self.show_select_column = True
-        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Location"),
-                "index": "sortable_title"}),
+                "title": _(
+                    "listing_instrumentlocations_column_title",
+                    default="Location",
+                ),
+                "index": "sortable_title",
+            }),
             ("Description", {
-                "title": _("Description"),
+                "title": _(
+                    "listing_instrumentlocations_column_description",
+                    default="Description",
+                ),
+                "index": "Description",
                 "toggle": True,
             }),
         ))
@@ -70,20 +83,29 @@ class InstrumentLocationsView(ListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    "listing_instrumentlocations_state_all",
+                    default="All",
+                ),
+                "contentFilter": {},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "active",
+                "title": _(
+                    "listing_instrumentlocations_state_active",
+                    default="Active",
+                ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    "listing_instrumentlocations_state_inactive",
+                    default="Inactive",
+                ),
                 "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
-            }, {
-                "id": "all",
-                "title": _("All"),
-                "contentFilter": {},
-                "columns": self.columns.keys(),
-            },
+            }
         ]
 
     def folderitem(self, obj, item, index):

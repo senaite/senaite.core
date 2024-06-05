@@ -1427,6 +1427,42 @@ def migrate_subgroups_to_dx(tool):
     logger.info("Convert SubGroups to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
+def move_isntrumentlocations(tool):
+    """Move instrument locations to senaite setup folder
+    """
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("instrumentlocations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("instrumentlocations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "InstrumentLocation"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Instrument Locations [DONE]")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")
