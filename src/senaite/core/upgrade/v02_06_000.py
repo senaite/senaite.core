@@ -1692,10 +1692,10 @@ def migrate_labproducts_to_dx(tool):
     schema_mapping = {
         "title": ("Title", "title", ""),
         "description": ("Description", "description", ""),
-        "labproduct_volume": ("getVolume", "labproduct_volume", ""),
-        "labproduct_unit": ("getUnit", "labproduct_unit", ""),
-        "labproduct_price": ("getPrice", "labproduct_price", ""),
-        "labproduct_vat": ("getVAT", "labproduct_vat", "0.00")
+        "Volume": ("getVolume", "labproduct_volume", ""),
+        "Unit": ("getUnit", "labproduct_unit", ""),
+        "Price": ("getPrice", "labproduct_price", ""),
+        "VAT": ("getVAT", "labproduct_vat", "")
     }
 
     # migrate the contents from the old AT container to the new one
