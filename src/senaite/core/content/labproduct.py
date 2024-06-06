@@ -18,6 +18,8 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from decimal import Decimal
+
 from AccessControl import ClassSecurityInfo
 from ComputedAttribute import ComputedAttribute
 from bika.lims import api
@@ -34,19 +36,15 @@ from z3c.form.interfaces import IEditForm
 from zope import schema
 from zope.interface import implementer
 from zope.interface import provider
-from zope.schema import Decimal
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
-
-def _to_decimal(str):
-    return Decimal().fromUnicode(str or u"0.00")
 
 @provider(IContextAwareDefaultFactory)
 def default_vat_factory(context):
     """Returns the default body text for publication emails
     """
-    defaultVAT = api.get_setup().getVAT() or u"0.00"
-    return Decimal().fromUnicode(defaultVAT)
+    defaultVAT = api.get_setup().getVAT() or "0.00"
+    return Decimal(defaultVAT)
 
 
 class ILabProductSchema(model.Schema):
@@ -171,7 +169,7 @@ class LabProduct(Item):
     def getPrice(self):
         accessor = self.accessor("labproduct_price")
         value = accessor(self) or ""
-        return api.to_utf8(str(value))
+        return api.to_utf8(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setPrice(self, value):
@@ -185,7 +183,7 @@ class LabProduct(Item):
     def getVAT(self):
         accessor = self.accessor("labproduct_vat")
         value = accessor(self) or ""
-        return api.to_utf8(str(value))
+        return api.to_utf8(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setVAT(self, value):
@@ -203,8 +201,11 @@ class LabProduct(Item):
     def getVATAmount(self):
         """ Compute VATAmount
         """
-        vatamount = self.getTotalPrice() - _to_decimal(self.getPrice())
-        return vatamount.quantize(_to_decimal(u"0.00"))
+        try:
+            vatamount = self.getTotalPrice() - Decimal(self.getPrice())
+        except Exception:
+            vatamount = Decimal('0.00')
+        return vatamount.quantize(Decimal('0.00'))
 
     labproduct_vat_amount = ComputedAttribute(getVATAmount, 1)
 
@@ -213,11 +214,12 @@ class LabProduct(Item):
 
     def getTotalPrice(self):
         """ compute total price """
-        price = Decimal().fromUnicode(self.getPrice() or u"0.00")
-        vat = Decimal().fromUnicode(self.getVAT() or u"0.00")
+        price = self.getPrice()
+        price = Decimal(price or '0.00')
+        vat = Decimal(self.getVAT())
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
-        return price.quantize(Decimal().fromUnicode(u"0.00"))
+        return price.quantize(Decimal('0.00'))
 
     labproduct_total_price = ComputedAttribute(getTotalPrice, 1)
 
