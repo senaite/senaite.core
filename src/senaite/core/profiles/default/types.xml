@@ -80,4 +80,8 @@
   <object name="BatchLabel" meta_type="Dexterity FTI" />
   <object name="BatchLabels" meta_type="Dexterity FTI" />
 
+  <!-- Lab Products -->
+  <object name="LabProduct" meta_type="Dexterity FTI" />
+  <object name="LabProducts" meta_type="Dexterity FTI" />
+
 </object>
