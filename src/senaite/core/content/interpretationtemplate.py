@@ -20,7 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.catalog import SETUP_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
