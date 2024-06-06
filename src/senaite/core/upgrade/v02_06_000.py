@@ -1695,7 +1695,7 @@ def migrate_labproducts_to_dx(tool):
         "Volume": ("getVolume", "labproduct_volume", ""),
         "Unit": ("getUnit", "labproduct_unit", ""),
         "Price": ("getPrice", "labproduct_price", ""),
-        "VAT": ("getVAT", "labproduct_vat", "")
+        "VAT": ("getVAT", "labproduct_vat", "0.00")
     }
 
     # migrate the contents from the old AT container to the new one
