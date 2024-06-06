@@ -38,6 +38,9 @@ from zope.schema import Decimal
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
 
+def _to_decimal(str):
+    return Decimal().fromUnicode(str or u"0.00")
+
 @provider(IContextAwareDefaultFactory)
 def default_vat_factory(context):
     """Returns the default body text for publication emails
@@ -200,11 +203,8 @@ class LabProduct(Item):
     def getVATAmount(self):
         """ Compute VATAmount
         """
-        try:
-            vatamount = self.getTotalPrice() - Decimal(self.getPrice())
-        except Exception:
-            vatamount = Decimal('0.00')
-        return vatamount.quantize(Decimal('0.00'))
+        vatamount = self.getTotalPrice() - _to_decimal(self.getPrice())
+        return vatamount.quantize(_to_decimal(u"0.00"))
 
     labproduct_vat_amount = ComputedAttribute(getVATAmount, 1)
 
