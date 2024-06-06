@@ -33,7 +33,16 @@ from senaite.core.interfaces import ILabProduct
 from z3c.form.interfaces import IEditForm
 from zope import schema
 from zope.interface import implementer
+from zope.interface import provider
 from zope.schema import Decimal
+from zope.schema.interfaces import IContextAwareDefaultFactory
+
+
+@provider(IContextAwareDefaultFactory)
+def default_vat_factory(context):
+    """Returns the default body text for publication emails
+    """
+    return api.get_setup().getVAT() or Decimal(0)
 
 
 class ILabProductSchema(model.Schema):
@@ -94,7 +103,7 @@ class ILabProductSchema(model.Schema):
             default="Please provide the VAT in percent that is added to the "
                     "labproduct price"
         ),
-        default='getDefaultVAT',
+        defaultFactory=default_vat_factory,
         required=False,
     )
 
