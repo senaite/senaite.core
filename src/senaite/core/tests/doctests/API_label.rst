@@ -29,6 +29,7 @@ Setup the testing environment:
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = api.get_setup()
+    >>> senaite_setup = api.get_senaite_setup()
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
     >>> user = api.get_current_user()
 
@@ -132,7 +133,7 @@ Schema extension for dexterity types works via behaviors:
 
     >>> from senaite.core.config.fields import DX_LABEL_FIELD
 
-    >>> container1 = api.create(setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
+    >>> container1 = api.create(senaite_setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
 
     >>> ICanHaveLabels.providedBy(container1)
     False
