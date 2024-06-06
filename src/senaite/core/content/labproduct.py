@@ -182,7 +182,7 @@ class LabProduct(Item):
     def getVAT(self):
         accessor = self.accessor("labproduct_vat")
         value = accessor(self) or ""
-        return api.to_utf8(value)
+        return api.to_utf8(str(value))
 
     @security.protected(permissions.ModifyPortalContent)
     def setVAT(self, value):
