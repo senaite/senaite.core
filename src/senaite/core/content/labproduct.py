@@ -213,7 +213,7 @@ class LabProduct(Item):
     def getTotalPrice(self):
         """ compute total price """
         price = self.getPrice()
-        price = Decimal(price or '0.00')
+        price = Decimal(float(price)) if price else Decimal(0)
         vat = Decimal(self.getVAT())
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
