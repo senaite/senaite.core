@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2572 Move Sample Containers to Senaite setup folder
 - #2553 Migrate BatchLabels to Dexterity
 - #2566 Migrate SamplePoint Latitude and Longitude fields to Location
 - #2552 Migrate SamplingDeviations to Dexterity
