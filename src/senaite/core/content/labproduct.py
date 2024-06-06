@@ -217,7 +217,7 @@ class LabProduct(Item):
         vat = Decimal().fromUnicode(self.getVAT() or u"0.00")
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
-        return price.quantize(Decimal(u"0.00"))
+        return price.quantize(Decimal().fromUnicode(u"0.00"))
 
     labproduct_total_price = ComputedAttribute(getTotalPrice, 1)
 
