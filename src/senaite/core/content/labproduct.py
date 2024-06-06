@@ -42,7 +42,7 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 def default_vat_factory(context):
     """Returns the default body text for publication emails
     """
-    defaultVAT = api.get_setup().getVAT() or '0.00'
+    defaultVAT = api.get_setup().getVAT() or u"0.00"
     return Decimal().fromUnicode(defaultVAT)
 
 
@@ -217,7 +217,7 @@ class LabProduct(Item):
         vat = Decimal().fromUnicode(self.getVAT() or u"0.00")
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
-        return price.quantize(Decimal('0.00'))
+        return price.quantize(Decimal(u"0.00"))
 
     labproduct_total_price = ComputedAttribute(getTotalPrice, 1)
 
