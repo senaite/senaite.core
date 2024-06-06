@@ -42,7 +42,8 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 def default_vat_factory(context):
     """Returns the default body text for publication emails
     """
-    return api.get_setup().getVAT() or Decimal(0)
+    defaultVAT = api.get_setup().getVAT() or '0.00'
+    return Decimal().fromUnicode(defaultVAT)
 
 
 class ILabProductSchema(model.Schema):
