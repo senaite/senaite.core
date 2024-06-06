@@ -29,6 +29,7 @@ Setup the testing environment:
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = api.get_setup()
+    >>> senaite_setup = api.get_senaite_setup()
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', ])
     >>> user = api.get_current_user()
 
@@ -172,7 +173,7 @@ Enable labels for **all** objects of a certain DX type:
 
     >>> enable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     True
@@ -181,7 +182,7 @@ Disable labels for **all** objects of a certain DX type:
 
     >>> disable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     False

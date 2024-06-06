@@ -211,10 +211,6 @@ def add_dexterity_setup_items(portal):
          "Dynamic Analysis Specifications",  # Title
          "DynamicAnalysisSpecs"),  # FTI
 
-        ("interpretation_templates",
-         "Interpretation Templates",
-         "InterpretationTemplates"),
-
         ("sample_containers",
          "Sample Containers",
          "SampleContainers")
@@ -259,6 +255,8 @@ def add_senaite_setup_items(portal):
         ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
         ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
         ("batchlabels", "Batch Labels", "BatchLabels"),
+        ("interpretation_templates", "Interpretation Templates",
+         "InterpretationTemplates"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

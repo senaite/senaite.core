@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
+      description="Move Interpretation Templates to Senaite setup"
+      source="2633"
+      destination="2634"
+      handler=".v02_06_000.move_interpretationtemplates"
+      profile="senaite.core:default"/>
+
     <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate BatchLabels to DX"
       description="Migrate BatchLabels to Dexterity"
