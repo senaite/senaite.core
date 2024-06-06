@@ -212,12 +212,12 @@ class LabProduct(Item):
 
     def getTotalPrice(self):
         """ compute total price """
-        price = self.getPrice()
-        price = Decimal(float(price)) if price else Decimal(0)
+        price = float(self.getPrice() or '0.00')
+        price = Decimal(price)
         vat = Decimal(self.getVAT())
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
-        return price.quantize(Decimal(0))
+        return price.quantize(Decimal(float(0)))
 
     labproduct_total_price = ComputedAttribute(getTotalPrice, 1)
 
