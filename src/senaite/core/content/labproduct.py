@@ -171,7 +171,7 @@ class LabProduct(Item):
     def getPrice(self):
         accessor = self.accessor("labproduct_price")
         value = accessor(self) or ""
-        return api.to_utf8(value)
+        return api.to_utf8(str(value))
 
     @security.protected(permissions.ModifyPortalContent)
     def setPrice(self, value):
