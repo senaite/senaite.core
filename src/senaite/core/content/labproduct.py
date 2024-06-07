@@ -38,14 +38,11 @@ from zope.interface import implementer
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
-from bika.lims import logger
-
 
 @provider(IContextAwareDefaultFactory)
 def default_vat_factory(context):
     """Returns the default body text for publication emails
     """
-    logger.info("default_vat_factory - getter")
     defaultVAT = api.get_setup().getVAT() or "0.00"
     return Decimal(defaultVAT)
 
@@ -142,7 +139,6 @@ class LabProduct(Item):
 
     @security.protected(permissions.View)
     def getVolume(self):
-        logger.info("getVolume - getter")
         accessor = self.accessor("labproduct_volume")
         value = accessor(self) or ""
         return api.to_utf8(value)
@@ -157,7 +153,6 @@ class LabProduct(Item):
 
     @security.protected(permissions.View)
     def getUnit(self):
-        logger.info("getUnit - getter")
         accessor = self.accessor("labproduct_unit")
         value = accessor(self) or ""
         return api.to_utf8(value)
@@ -172,7 +167,6 @@ class LabProduct(Item):
 
     @security.protected(permissions.View)
     def getPrice(self):
-        logger.info("getPrice - getter")
         accessor = self.accessor("labproduct_price")
         value = accessor(self) or ""
         return api.to_utf8(str(value))
@@ -187,7 +181,6 @@ class LabProduct(Item):
 
     @security.protected(permissions.View)
     def getVAT(self):
-        logger.info("getVAT - getter")
         accessor = self.accessor("labproduct_vat")
         value = accessor(self) or ""
         return api.to_utf8(str(value))
@@ -202,14 +195,12 @@ class LabProduct(Item):
 
     def getDefaultVAT(self):
         """ return default VAT from setup """
-        logger.info("getDefaultVAT - getter")
         return api.get_setup().getVAT() or "0.00"
 
     @security.protected(permissions.View)
     def getVATAmount(self):
         """ Compute VATAmount
         """
-        logger.info("getVATAmount - getter")
         try:
             vatamount = self.getTotalPrice() - Decimal(self.getPrice())
         except Exception:
@@ -223,7 +214,6 @@ class LabProduct(Item):
 
     def getTotalPrice(self):
         """ compute total price """
-        logger.info("getTotalPrice - getter")
         price = Decimal(self.getPrice() or '0.00')
         vat = Decimal(self.getVAT())
         vat = vat and vat / 100 or 0
