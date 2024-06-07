@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2570 Use reference widget API in sample add form
+- #2553 Migrate BatchLabels to Dexterity
 - #2566 Migrate SamplePoint Latitude and Longitude fields to Location
 - #2552 Migrate SamplingDeviations to Dexterity
 - #2564 Flush dependent fields in sample add form only if the current value is not allowed
