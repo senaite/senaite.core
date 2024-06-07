@@ -21,8 +21,8 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import get_link
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
@@ -60,17 +60,19 @@ class AttachmentTypesView(ListingView):
         )
         self.icon = api.get_icon("AttachmentTypes", html_tag=False)
 
+        self.show_select_column = True
+
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    "listing_attachmenttypes_column_title",
-                    default="Title"
+                    u"listing_attachmenttypes_column_title",
+                    default=u"Title"
                 ),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    "listing_attachmenttypes_column_description",
-                    default="Description"
+                    u"listing_attachmenttypes_column_description",
+                    default=u"Description"
                 ),
                 "toggle": True}),
         ))
@@ -79,24 +81,24 @@ class AttachmentTypesView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    "listing_attachmenttypes_state_active",
-                    default="Active"
+                    u"listing_attachmenttypes_state_active",
+                    default=u"Active"
                 ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _(
-                    "listing_attachmenttypes_state_inactive",
-                    default="Inactive"
+                    u"listing_attachmenttypes_state_inactive",
+                    default=u"Inactive"
                 ),
                 "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _(
-                    "listing_attachmenttypes_state_all",
-                    default="All"
+                    u"listing_attachmenttypes_state_all",
+                    default=u"All"
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
@@ -112,11 +114,7 @@ class AttachmentTypesView(ListingView):
         :index: current index of the item
         """
         obj = api.get_object(obj)
-        title = obj.Title()
         description = obj.Description()
-        url = obj.absolute_url()
-
-        item["replace"]["Title"] = get_link(url, value=title)
+        item["replace"]["Title"] = get_link_for(obj)
         item["Description"] = description
-
         return item
