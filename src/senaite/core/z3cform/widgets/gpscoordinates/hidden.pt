@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <tal:widget define="name       python:view.name;
+                      value      python:view.value;
+                      latitude   python:value.get('latitude', '');
+                      longitude  python:value.get('longitude', '');">
+
+    <input type="hidden"
+           tal:attributes="name string:${name}.latitude:record:float:ignore_empty;
+                           value latitude;"/>
+    <input type="hidden"
+           tal:attributes="name string:${name}.longitude:record:float:ignore_empty;
+                           value longitude;"/>
+
+  </tal:widget>
+
+</html>

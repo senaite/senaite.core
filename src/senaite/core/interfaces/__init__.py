@@ -258,6 +258,26 @@ class ISampleTemplate(Interface):
     """
 
 
+class ISubGroup(Interface):
+    """Marker interface for subgroup
+    """
+
+
+class ISubGroups(Interface):
+    """Marker interface for subgroups setup folder
+    """
+
+
+class ISamplingDeviation(Interface):
+    """Sampling Deviation
+    """
+
+
+class ISamplingDeviations(Interface):
+    """Sampling Deviations
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """
@@ -308,6 +328,36 @@ class IManufacturers(Interface):
 
 class IManufacturer(Interface):
     """Marker interface for manufacturers
+    """
+
+
+class IInstrumentType(Interface):
+    """Marker interface for an instrument type
+    """
+
+
+class IInstrumentTypes(Interface):
+    """Marker interface for instrument types
+    """
+
+
+class IStorageLocations(Interface):
+    """Marker interface for storage locations setup folder
+    """
+
+
+class IStorageLocation(Interface):
+    """Marker interface for storage locations
+    """
+
+
+class IBatchLabel(Interface):
+    """Marker interface for Batch Label
+    """
+
+
+class IBatchLabels(Interface):
+    """Marker interface for Batch Labels container
     """
 
 

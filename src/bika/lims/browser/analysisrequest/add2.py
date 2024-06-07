@@ -18,9 +18,11 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 from collections import OrderedDict
 from datetime import datetime
 
+import six
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -842,37 +844,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "CCEmails": {"value": obj.getCCEmails(), "if_empty": True}
         })
 
-        # UID of the client
-        uid = api.get_uid(obj)
-
-        # catalog queries for UI field filtering
-        filter_queries = {
-            "Contact": {
-                "getParentUID": [uid]
-            },
-            "CCContact": {
-                "getParentUID": [uid]
-            },
-            "SamplePoint": {
-                "getClientUID": [uid, ""],
-            },
-            "Template": {
-                "getClientUID": [uid, ""],
-            },
-            "Profiles": {
-                "getClientUID": [uid, ""],
-            },
-            "Specification": {
-                "getClientUID": [uid, ""],
-            },
-            "Sample": {
-                "getClientUID": [uid],
-            },
-            "Batch": {
-                "getClientUID": [uid, ""],
-            }
-        }
-        info["filter_queries"] = filter_queries
         return info
 
     @cache(cache_key)
@@ -1001,45 +972,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """
         info = self.get_base_info(obj)
 
-        # client
-        client = self.get_client()
-        client_uid = client and api.get_uid(client) or ""
-
         info.update({
             "prefix": obj.getPrefix(),
             "minimum_volume": obj.getMinimumVolume(),
             "hazardous": obj.getHazardous(),
             "retention_period": obj.getRetentionPeriod(),
         })
-
-        # catalog queries for UI field filtering
-        sample_type_uid = api.get_uid(obj)
-        filter_queries = {
-            # Display Sample Points that have this sample type assigned plus
-            # those that do not have a sample type assigned
-            "SamplePoint": {
-                "sampletype_uid": [sample_type_uid, ""],
-                "getClientUID": [client_uid, ""],
-            },
-            # Display Analysis Profiles that have this sample type assigned
-            # in addition to those that do not have a sample profile assigned
-            "Profiles": {
-                "sampletype_uid": [sample_type_uid, ""],
-                "getClientUID": [client_uid, ""],
-            },
-            # Display Specifications that have this sample type assigned only
-            "Specification": {
-                "sampletype_uid": sample_type_uid,
-                "getClientUID": [client_uid, ""],
-            },
-            # Display Sample Templates that have this sample type assigned plus
-            # those that do not have a sample type assigned
-            "Template": {
-                "sampletype_uid": [sample_type_uid, ""],
-                "getClientUID": [client_uid, ""],
-            }
-        }
-        info["filter_queries"] = filter_queries
 
         return info
 
@@ -1167,51 +1105,58 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         }
         return settings
 
+    def ajax_is_reference_value_allowed(self):
+        """Checks if the current reference value is allowed for the query
+        """
+        payload = self.get_json()
+
+        catalog = payload.get("catalog", "")
+        query = payload.get("query", {})
+        uids = payload.get("uids", [])
+        name = payload.get("name", "")
+        label = payload.get("label", "")
+        field = label or name
+
+        # Skip the catalog search if we can assume to be allowed
+        white_keys = ["portal_type", "sort_on", "sort_order", "is_active"]
+        if set(query.keys()).issubset(white_keys):
+            return {"allowed": True}
+
+        if all([catalog, query, uids]):
+            # check if the current value is allowed for the new query
+            brains = api.search(query, catalog=catalog)
+            allowed_uids = list(map(api.get_uid, brains))
+            if set(uids).issubset(allowed_uids):
+                return {"allowed": True}
+
+        message = {
+            "title": _("Field flushed"),
+            "text": _(u"The value of field '%s' was emptied. "
+                      u"Please select a new value." % api.safe_unicode(field)),
+        }
+
+        return {
+            "allowed": False,
+            "message": message,
+        }
+
     def ajax_get_flush_settings(self):
         """Returns the settings for fields flush
+
+        NOTE: We automatically flush fields if the current value of a dependent
+              reference field is *not* allowed by the set new query.
+              -> see self.ajax_is_reference_value_allowed()
+              Therefore, it makes only sense for non-reference fields!
         """
         flush_settings = {
             "Client": [
-                "Contact",
-                "CCContact",
-                "SamplePoint",
-                "Template",
-                "Profiles",
-                "PrimaryAnalysisRequest",
-                "Specification",
-                "Batch"
             ],
             "Contact": [
-                "CCContact"
             ],
             "SampleType": [
-                "SamplePoint",
-                "Profiles",
-                "Specification",
-                "Template",
             ],
             "PrimarySample": [
-                "Batch"
-                "Client",
-                "Contact",
-                "CCContact",
-                "CCEmails",
-                "ClientOrderNumber",
-                "ClientReference",
-                "ClientSampleID",
-                "ContainerType",
-                "DateSampled",
                 "EnvironmentalConditions",
-                "Preservation",
-                "Profiles",
-                "SampleCondition",
-                "SamplePoint",
-                "SampleType",
-                "SamplingDate",
-                "SamplingDeviation",
-                "StorageLocation",
-                "Specification",
-                "Template",
             ]
         }
 
@@ -1447,6 +1392,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # Get the info for each object
         info = callable(func) and func(obj) or self.get_base_info(obj)
 
+        # update query filters based on record values
+        func_name = "get_{}_queries".format(field_name.lower())
+        func = getattr(self, func_name, None)
+        if callable(func):
+            info["filter_queries"] = func(obj, record)
+
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
             logger.info("adapter for '{}': {}".format(field_name, name))
@@ -1454,6 +1405,92 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             self.update_object_info(info, ad_info)
 
         return info
+
+    def get_client_queries(self, obj, record=None):
+        """Returns the filter queries to be applied to other fields based on
+        both the Client object and record
+        """
+        # UID of the client
+        uid = api.get_uid(obj)
+
+        # catalog queries for UI field filtering
+        queries = {
+            "Contact": {
+                "getParentUID": [uid]
+            },
+            "CCContact": {
+                "getParentUID": [uid]
+            },
+            "SamplePoint": {
+                "getClientUID": [uid, ""],
+            },
+            "Template": {
+                "getClientUID": [uid, ""],
+            },
+            "Profiles": {
+                "getClientUID": [uid, ""],
+            },
+            "Specification": {
+                "getClientUID": [uid, ""],
+            },
+            "Sample": {
+                "getClientUID": [uid],
+            },
+            "Batch": {
+                "getClientUID": [uid, ""],
+            },
+            "PrimaryAnalysisRequest": {
+                "getClientUID": [uid, ""],
+            }
+        }
+
+        # additional filtering by sample type
+        record = record if record else {}
+        sample_type_uid = record.get("SampleType")
+        if api.is_uid(sample_type_uid):
+            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
+            for field in fields:
+                queries[field]["sampletype_uid"] = [sample_type_uid, ""]
+
+        return queries
+
+    def get_sampletype_queries(self, obj, record=None):
+        """Returns the filter queries to apply to other fields based on both
+        the SampleType object and record
+        """
+        uid = api.get_uid(obj)
+        queries = {
+            # Display Sample Points that have this sample type assigned plus
+            # those that do not have a sample type assigned
+            "SamplePoint": {
+                "sampletype_uid": [uid, ""],
+            },
+            # Display Analysis Profiles that have this sample type assigned
+            # in addition to those that do not have a sample profile assigned
+            "Profiles": {
+                "sampletype_uid": [uid, ""],
+            },
+            # Display Specifications that have this sample type assigned only
+            "Specification": {
+                "sampletype_uid": uid,
+            },
+            # Display Sample Templates that have this sample type assigned plus
+            # those that do not have a sample type assigned
+            "Template": {
+                "sampletype_uid": [uid, ""],
+            }
+        }
+
+        # additional filters by client
+        record = record if record else {}
+        client = record.get("Client") or self.get_client()
+        client_uid = api.get_uid(client) if client else None
+        if client_uid:
+            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
+            for field in fields:
+                queries[field]["getClientUID"] = [client_uid, ""]
+
+        return queries
 
     def update_object_info(self, base_info, additional_info):
         """Updates the dictionaries for keys 'field_values' and 'filter_queries'
@@ -1885,3 +1922,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "success": message,
             "redirect_to": redirect_to,
         }
+
+    def get_json(self, encoding="utf8"):
+        """Extracts the JSON from the request
+        """
+        body = self.request.get("BODY", "{}")
+
+        def encode_hook(pairs):
+            """This hook is called for dicitionaries on JSON deserialization
+
+            It is used to encode unicode strings with the given encoding,
+            because ZCatalogs have sometimes issues with unicode queries.
+            """
+            new_pairs = []
+            for key, value in pairs.iteritems():
+                # Encode the key
+                if isinstance(key, six.string_types):
+                    key = key.encode(encoding)
+                # Encode the value
+                if isinstance(value, six.string_types):
+                    value = value.encode(encoding)
+                new_pairs.append((key, value))
+            return dict(new_pairs)
+
+        return json.loads(body, object_hook=encode_hook)

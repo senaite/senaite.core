@@ -3,17 +3,12 @@ bika_analysiscategories
 bika_analysisservices
 bika_analysisspecs
 bika_artemplates
-bika_batchlabels
 bika_calculations
 bika_instruments
-bika_instrumenttypes
 bika_labcontacts
 bika_labproducts
 bika_referencedefinitions
 bika_sampletypes
-bika_samplingdeviations
-bika_storagelocations
-bika_subgroups
 bika_suppliers
 bika_worksheettemplates
 instrumentlocations

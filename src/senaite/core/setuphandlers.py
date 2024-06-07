@@ -254,6 +254,11 @@ def add_senaite_setup_items(portal):
         ("sampletemplates", "Sample Templates", "SampleTemplates"),
         ("manufacturers", "Manufacturers", "Manufacturers"),
         ("containertypes", "Container Types", "ContainerTypes"),
+        ("subgroups", "SubGroups", "SubGroups"),
+        ("storagelocations", "Storage Locations", "StorageLocations"),
+        ("instrumenttypes", "Instrument Types", "InstrumentTypes"),
+        ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
+        ("batchlabels", "Batch Labels", "BatchLabels"),
         ("attachmenttypess", "Attachment Types", "AttachmentTypes"),
     ]
     setup = api.get_senaite_setup()

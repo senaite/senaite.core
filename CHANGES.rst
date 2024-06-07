@@ -4,6 +4,23 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2553 Migrate BatchLabels to Dexterity
+- #2566 Migrate SamplePoint Latitude and Longitude fields to Location
+- #2552 Migrate SamplingDeviations to Dexterity
+- #2564 Flush dependent fields in sample add form only if the current value is not allowed
+- #2565 Added GPSCoordinates widget and field
+- #2562 Increased field size and allowed input length for instrument import folder path
+- #2555 Instrument Results Importer/Parser improvements and fixtures
+- #2551 Migrate InstrumentTypes to Dexterity
+- #2560 Fix no profiles in add form on sample type and/or client change
+- #2559 Fix line breaks are not displayed for text-like results
+- #2558 Fix ValueError when upgrading from <=2614 to >=2617
+- #2550 Migrate StorageLocations to Dexterity
+- #2545 Migrate Sub Groups to Dexterity
+- #2556 Fix adding Instrument into Manufacturer view
+- #2549 Fix contact fullname is not updated in samples listing after edition
+- #2541 Allow to change the "From" address for sample report outgoing emails
+- #2548 Remove SamplerFullName from sample and metadata
 - #2540 Migrate Container Types to Dexterity
 - #2542 Migrate Manufacturers to Dexterity
 - #2547 Add get_user_email function in the api

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-04-11 04:36+0000\n"
+"POT-Creation-Date: 2024-05-31 21:18+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -21,6 +21,10 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 "Language: zh_CN\n"
+
+#: senaite/core/browser/user/templates/account-panel.pt:16
+msgid "${action/title}"
+msgstr ""
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
@@ -701,7 +705,7 @@ msgid "label_group_members"
 msgstr "标签 组成员"
 
 #. Default: "Group Memberships"
-#: senaite/core/browser/usergroup/templates/account-configlet.pt:41
+#: senaite/core/browser/user/templates/account-configlet.pt:41
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:62
 msgid "label_group_memberships"
 msgstr "标签 组成员身份"
@@ -851,7 +855,7 @@ msgid "label_up_to_groups_overview"
 msgstr "标记组概述"
 
 #. Default: "Up to Users Overview"
-#: senaite/core/browser/usergroup/templates/account-configlet.pt:13
+#: senaite/core/browser/user/templates/account-configlet.pt:13
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:36
 msgid "label_up_to_usersoverview"
 msgstr "标签 到用户概览"
@@ -1021,7 +1025,7 @@ msgid "title_manage_contextual_portlets"
 msgstr "管理上下文的门户组件"
 
 #. Default: "Personal Information"
-#: senaite/core/browser/usergroup/templates/account-configlet.pt:33
+#: senaite/core/browser/user/templates/account-configlet.pt:33
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:58
 msgid "title_personal_information_form"
 msgstr "个人职称信息表"
