@@ -87,6 +87,8 @@ REMOVE_AT_TYPES = [
     "SamplingDeviations",
     "BatchLabel",
     "BatchLabels",
+    "Supplier",
+    "Suppliers",
 ]
 
 CONTENT_ACTIONS = [
@@ -1474,6 +1476,59 @@ def migrate_batchlabels_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert BatchLabels to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_suppliers_to_dx(tool):
+    """Converts suppliers to Dexterity
+    """
+    logger.info("Convert Suppliers to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_suppliers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("suppliers")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Remarks": ("getRemarks", "remarks", ""),
+        "Website": ("getWebsite", "website", ""),
+        "NIB": ("getNib", "nib", ""),
+        "IBN": ("getIbn", "ibn", ""),
+        "SWIFTcode": ("getSwiftCode", "swift_code", ""),
+        "LabAccountNumber": ("getLabAccountNumber", "lab_account_number", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("supplier", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Suppliers to Dexterity [DONE]")
 
 
 def update_content_actions(tool):

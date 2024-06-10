@@ -45,7 +45,7 @@ Variables:
     >>> bika_analysiscategories = bikasetup.bika_analysiscategories
     >>> bika_analysisservices = bikasetup.bika_analysisservices
     >>> bika_calculations = bikasetup.bika_calculations
-    >>> bika_suppliers = bikasetup.bika_suppliers
+    >>> suppliers = setup.suppliers
 
 We need to create some basic objects for the test:
 
@@ -53,7 +53,7 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> supplier = api.create(bika_suppliers, "Supplier", Name="Naralabs")
+    >>> supplier = api.create(suppliers, "Supplier", Name="Naralabs")
     >>> Ca = api.create(bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="15", Category=category.UID())
     >>> Mg = api.create(bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="10", Category=category.UID())
     >>> Au = api.create(bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
