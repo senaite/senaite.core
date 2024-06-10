@@ -28,6 +28,8 @@ from bika.lims.validators import _sumLists
 from senaite.core.i18n import translate
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
+from senaite.core.content.organization import IOrganizationSchema
+from senaite.core.content.organization import Organization
 from senaite.core.interfaces import ISupplier
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -37,7 +39,7 @@ from zope.interface import implementer
 from zope.interface import invariant
 
 
-class ISupplierSchema(model.Schema):
+class ISupplierSchema(IOrganizationSchema):
     """Schema interface
     """
 
@@ -161,7 +163,7 @@ class ISupplierSchema(model.Schema):
 
 
 @implementer(ISupplier, ISupplierSchema, IDeactivable)
-class Supplier(Container):
+class Supplier(Organization):
     """A container for Supplier
     """
     # Catalogs where this type will be catalogued
