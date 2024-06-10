@@ -31,7 +31,9 @@ from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from plone.autoform import directives
 from plone.supermodel import model
 from zope import schema
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
 
 
 class IAnalysisCategorySchema(model.Schema):
@@ -102,6 +104,20 @@ class IAnalysisCategorySchema(model.Schema):
         ),
         required=False,
     )
+
+    @invariant
+    def validate_sort_key(data):
+        """Checks if the department ID is unique
+        """
+        try:
+            value = float(data.sort_key)
+        except Exception:
+            msg = _("Validation failed: value must be float")
+            raise Invalid(msg)
+
+        if value < 0 or value > 1000:
+            msg = _("Validation failed: value must be between 0 and 1000")
+            raise Invalid(msg)
 
 
 @implementer(IAnalysisCategory, IAnalysisCategorySchema, IDeactivable)
