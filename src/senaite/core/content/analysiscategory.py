@@ -107,8 +107,12 @@ class IAnalysisCategorySchema(model.Schema):
 
     @invariant
     def validate_sort_key(data):
-        """Checks if the department ID is unique
+        """Checks sort_key field for float value if exist
         """
+        sort_key = getattr(data, "sort_key", None)
+        if sort_key is None:
+            return
+
         try:
             value = float(data.sort_key)
         except Exception:
