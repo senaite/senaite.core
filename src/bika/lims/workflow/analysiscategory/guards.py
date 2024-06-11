@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 
 
 def guard_deactivate(analysis_category):

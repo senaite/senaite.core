@@ -42,28 +42,28 @@ class IAnalysisCategorySchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            "title_analysiscategory_title",
-            default="Name"
+            u"title_analysiscategory_title",
+            default=u"Name"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            "title_analysiscategory_description",
-            default="Description"
+            u"title_analysiscategory_description",
+            default=u"Description"
         ),
         required=False,
     )
 
     comments = schema.Text(
         title=_(
-            "title_analysiscategory_comments",
-            default="Comments",
+            u"title_analysiscategory_comments",
+            default=u"Comments",
         ),
         description=_(
-            "description_analysiscategory_comments",
-            default="To be displayed below each Analysis Category "
+            u"description_analysiscategory_comments",
+            default=u"To be displayed below each Analysis Category "
                     "section on results reports.",
         ),
         required=False,
@@ -76,16 +76,15 @@ class IAnalysisCategorySchema(model.Schema):
         catalog=SETUP_CATALOG,
         query="get_department_query",
         columns=get_default_columns,
-        limit=5,
     )
     department = UIDReferenceField(
         title=_(
-            "title_analysiscategory_department",
-            default="Department",
+            u"title_analysiscategory_department",
+            default=u"Department",
         ),
         description=_(
-            "description_analysiscategory_department",
-            default="Select the responsible department",
+            u"description_analysiscategory_department",
+            default=u"Select the responsible department",
         ),
         allowed_types=("Department",),
         multi_valued=False,
@@ -94,13 +93,13 @@ class IAnalysisCategorySchema(model.Schema):
 
     sort_key = schema.Float(
         title=_(
-            "title_analysiscategory_sort_key",
-            default="Sort Key",
+            u"title_analysiscategory_sort_key",
+            default=u"Sort Key",
         ),
         description=_(
-            "description_analysiscategory_sort_key",
-            default="Float value from 0.0 - 1000.0 indicating the sort order. "
-                    "Duplicate values are ordered alphabetically.",
+            u"description_analysiscategory_sort_key",
+            default=u"Float value from 0.0 - 1000.0 indicating the sort order."
+                    " Duplicate values are ordered alphabetically.",
         ),
         required=False,
     )
