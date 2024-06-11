@@ -1514,6 +1514,19 @@ def migrate_suppliers_to_dx(tool):
         "IBN": ("getIbn", "ibn", ""),
         "SWIFTcode": ("getSwiftCode", "swift_code", ""),
         "LabAccountNumber": ("getLabAccountNumber", "lab_account_number", ""),
+        "Name": ("getName", "name", ""),
+        "TaxNumber": ("getTaxNumber", "tax_number", ""),
+        "Phone": ("getPhone", "phone", ""),
+        "Fax": ("getFax", "fax", ""),
+        "EmailAddress": ("getEmailAddress", "email_address", ""),
+        # "PhysicalAddress": ("getPhysicalAddress", "physical_address", ""),
+        # "PostalAddress": ("getPostalAddress", "postal_address", ""),
+        # "BillingAddress": ("getBillingAddress", "billing_address", ""),
+        "AccountType": ("getAccountType", "account_type", ""),
+        "AccountName": ("getAccountName", "account_name", ""),
+        "AccountNumber": ("getAccountNumber", "account_number", ""),
+        "BankName": ("getBankName", "bank_name", ""),
+        "BankBranch": ("getBankBranch", "bank_branch", ""),
     }
 
     # migrate the contents from the old AT container to the new one

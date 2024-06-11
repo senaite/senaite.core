@@ -27,7 +27,6 @@ from bika.lims.validators import _toIntList
 from bika.lims.validators import _sumLists
 from senaite.core.i18n import translate
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.content.base import Container
 from senaite.core.content.organization import IOrganizationSchema
 from senaite.core.content.organization import Organization
 from senaite.core.interfaces import ISupplier
