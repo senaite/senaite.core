@@ -1530,7 +1530,7 @@ def migrate_suppliers_to_dx(tool):
     }
 
     # migrate the contents from the old AT container to the new one
-    migrate_to_dx("supplier", origin, destination, schema_mapping)
+    migrate_to_dx("Supplier", origin, destination, schema_mapping)
 
     # copy snapshots for the container
     copy_snapshots(origin, destination)

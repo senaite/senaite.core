@@ -42,6 +42,14 @@ class ISupplierSchema(IOrganizationSchema):
     """Schema interface
     """
 
+    lab_account_number = schema.TextLine(
+        title=_(
+            "title_supplier_lab_contact_number",
+            default="Lab Account Number",
+        ),
+        required=False,
+    )
+
     remarks = schema.Text(
         title=_(
             "title_supplier_remarks",
@@ -95,20 +103,12 @@ class ISupplierSchema(IOrganizationSchema):
         required=False,
     )
 
-    lab_account_number = schema.TextLine(
-        title=_(
-            "title_supplier_lab_contact_number",
-            default="Lab Account Number",
-        ),
-        required=False,
-    )
-
     @invariant
     def validate_nib(data):
         """Checks NIB field for float value if exist
         """
         src_nib = getattr(data, "nib", None)
-        if src_nib is None:
+        if not src_nib:
             return
 
         LEN_NIB = 21
@@ -134,7 +134,7 @@ class ISupplierSchema(IOrganizationSchema):
         """Checks IBN field for float value if exist
         """
         ibn = getattr(data, "ibn", None)
-        if ibn is None:
+        if not ibn:
             return
 
         # remove spaces from formatted

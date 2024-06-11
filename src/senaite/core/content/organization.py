@@ -22,7 +22,9 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.content.base import Container
 from plone.supermodel import model
+from plone.schema.email import Email
 from Products.CMFCore import permissions
+from Products.CMFPlone.utils import safe_unicode
 from zope import schema
 from zope.interface import implementer
 
@@ -71,13 +73,13 @@ class IOrganizationSchema(model.Schema):
         ),
         fields=[
             "email_address",
-            "physical_address",
-            "postal_address",
-            "billing_address",
+            # "physical_address",
+            # "postal_address",
+            # "billing_address",
         ]
     )
 
-    email_address = schema.Email(
+    email_address = Email(
         title=_(
             "title_organization_email_address",
             default="Email Address"
@@ -190,7 +192,8 @@ class Organization(Container):
     def Title(self):
         """Return the name of the Organisation
         """
-        return self.getName()
+        name = self.getName()
+        return safe_unicode(name).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setTitle(self, value):
