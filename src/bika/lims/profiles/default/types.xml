@@ -6,8 +6,6 @@
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>

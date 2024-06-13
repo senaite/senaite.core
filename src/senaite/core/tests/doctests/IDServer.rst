@@ -67,7 +67,7 @@ Variables:
     >>> setup = portal.bika_setup
     >>> bika_sampletypes = setup.bika_sampletypes
     >>> samplepoints = portal.setup.samplepoints
-    >>> bika_analysiscategories = setup.bika_analysiscategories
+    >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = setup.bika_analysisservices
     >>> bika_labcontacts = setup.bika_labcontacts
     >>> storagelocations = portal.setup.storagelocations
@@ -118,7 +118,7 @@ A `SamplePoint` defines the location, where a `Sample` was taken:
 
 An `AnalysisCategory` categorizes different `AnalysisServices`:
 
-    >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
+    >>> analysiscategory = api.create(analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
     <...analysiscategory-1>
 

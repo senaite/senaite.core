@@ -33,7 +33,6 @@
     <element value="ATFile"/>
     <element value="Address"/>
     <element value="Analysis"/>
-    <element value="AnalysisCategory"/>
     <element value="AnalysisRequest"/>
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>

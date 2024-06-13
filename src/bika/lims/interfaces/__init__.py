@@ -1054,23 +1054,6 @@ class IOrganisation(Interface):
         """
 
 
-class IHaveAnalysisCategory(Interface):
-    """Marker interface for objects that have AnalysisCategory(ies) assigned
-    """
-
-    def getCategory(self):
-        """Returns the category(ies) assigned to this instance
-        """
-
-    def getCategoryUID(self):
-        """Returns the UID of the category(ies) assigned to this instance
-        """
-
-    def getCategoryTitle(self):
-        """Returns the title of the category(ies) assigned to this instance
-        """
-
-
 class IARImportFolder(Interface):
     """Marker interface for a folder that contains ARImports
     TODO: Legacy type. Remove after 1.3.3

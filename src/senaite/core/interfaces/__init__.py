@@ -178,6 +178,33 @@ class IAnalysisProfiles(Interface):
     """
 
 
+class IAnalysisCategory(Interface):
+    """Marker interface for an Analysis Category
+    """
+
+
+class IAnalysisCategories(Interface):
+    """Marker interface for Analysis Categories
+    """
+
+
+class IHaveAnalysisCategory(Interface):
+    """Marker interface for objects that have AnalysisCategory(ies) assigned
+    """
+
+    def getCategory(self):
+        """Returns the category(ies) assigned to this instance
+        """
+
+    def getCategoryUID(self):
+        """Returns the UID of the category(ies) assigned to this instance
+        """
+
+    def getCategoryTitle(self):
+        """Returns the title of the category(ies) assigned to this instance
+        """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
