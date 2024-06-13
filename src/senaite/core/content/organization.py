@@ -20,6 +20,8 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
+from senaite.core.schema import AddressField
+from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.content.base import Container
 from plone.supermodel import model
 from plone.schema.email import Email
@@ -73,9 +75,9 @@ class IOrganizationSchema(model.Schema):
         ),
         fields=[
             "email_address",
-            # "physical_address",
-            # "postal_address",
-            # "billing_address",
+            "physical_address",
+            "postal_address",
+            "billing_address",
         ]
     )
 
@@ -87,44 +89,44 @@ class IOrganizationSchema(model.Schema):
         required=False,
     )
 
-    # AddressField(
-    #     "PhysicalAddress",
-    #     schemata="Address",
-    #     widget=AddressWidget(
-    #         label=_("Physical address"),
-    #     ),
-    #     subfield_validators={
-    #         "country": "inline_field_validator",
-    #         "state": "inline_field_validator",
-    #         "district": "inline_field_validator",
-    #     },
-    # ),
-    #
-    # AddressField(
-    #     "PostalAddress",
-    #     schemata="Address",
-    #     widget=AddressWidget(
-    #         label=_("Postal address"),
-    #     ),
-    #     subfield_validators={
-    #         "country": "inline_field_validator",
-    #         "state": "inline_field_validator",
-    #         "district": "inline_field_validator",
-    #     },
-    # ),
-    #
-    # AddressField(
-    #     "BillingAddress",
-    #     schemata="Address",
-    #     widget=AddressWidget(
-    #         label=_("Billing address"),
-    #     ),
-    #     subfield_validators={
-    #         "country": "inline_field_validator",
-    #         "state": "inline_field_validator",
-    #         "district": "inline_field_validator",
-    #     },
-    # ),
+    AddressField(
+        "PhysicalAddress",
+        schemata="Address",
+        widget=AddressWidget(
+            label=_("Physical address"),
+        ),
+        subfield_validators={
+            "country": "inline_field_validator",
+            "state": "inline_field_validator",
+            "district": "inline_field_validator",
+        },
+    ),
+
+    AddressField(
+        "PostalAddress",
+        schemata="Address",
+        widget=AddressWidget(
+            label=_("Postal address"),
+        ),
+        subfield_validators={
+            "country": "inline_field_validator",
+            "state": "inline_field_validator",
+            "district": "inline_field_validator",
+        },
+    ),
+
+    AddressField(
+        "BillingAddress",
+        schemata="Address",
+        widget=AddressWidget(
+            label=_("Billing address"),
+        ),
+        subfield_validators={
+            "country": "inline_field_validator",
+            "state": "inline_field_validator",
+            "district": "inline_field_validator",
+        },
+    ),
 
     model.fieldset(
         "bank_details",

@@ -42,17 +42,6 @@ class ISupplierSchema(IOrganizationSchema):
     """Schema interface
     """
 
-    model.fieldset(
-        "default",
-        fields=[
-            "name",
-            "lab_account_number",
-            "tax_number",
-            "phone",
-            "fax",
-        ]
-    )
-
     lab_account_number = schema.TextLine(
         title=_(
             "title_supplier_lab_contact_number",
