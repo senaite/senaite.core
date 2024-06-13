@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2576 Fix analyses and services are re-indexed after modifying category
 - #2567 Migrate AnalysisCategories to Dexterity
 - #2570 Use reference widget API in sample add form
 - #2553 Migrate BatchLabels to Dexterity
