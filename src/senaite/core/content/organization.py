@@ -25,6 +25,7 @@ from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.content.base import Container
 from plone.supermodel import model
 from plone.schema.email import Email
+from plone.autoform import directives
 from Products.CMFCore import permissions
 from Products.CMFPlone.utils import safe_unicode
 from zope import schema
@@ -89,12 +90,9 @@ class IOrganizationSchema(model.Schema):
         required=False,
     )
 
-    AddressField(
-        "PhysicalAddress",
-        schemata="Address",
-        widget=AddressWidget(
-            label=_("Physical address"),
-        ),
+    directives.widget("physical_address", AddressWidget)
+    physical_address = AddressField(
+        address_types="physical",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
@@ -102,12 +100,9 @@ class IOrganizationSchema(model.Schema):
         },
     ),
 
-    AddressField(
-        "PostalAddress",
-        schemata="Address",
-        widget=AddressWidget(
-            label=_("Postal address"),
-        ),
+    directives.widget("postal_address", AddressWidget)
+    postal_address = AddressField(
+        address_types="postal",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
@@ -115,12 +110,9 @@ class IOrganizationSchema(model.Schema):
         },
     ),
 
-    AddressField(
-        "BillingAddress",
-        schemata="Address",
-        widget=AddressWidget(
-            label=_("Billing address"),
-        ),
+    directives.widget("billing_address", AddressWidget)
+    billing_address = AddressField(
+        address_types="billing",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
