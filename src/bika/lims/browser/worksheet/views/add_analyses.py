@@ -269,8 +269,6 @@ class AddAnalysesView(BikaListingView):
             the template
         :index: current index of the item
         """
-        analysis = api.get_object(obj)
-        item["getCategoryTitle"] = self.get_category_title(analysis)
 
         DueDate = obj.getDueDate
 
@@ -280,6 +278,9 @@ class AddAnalysesView(BikaListingView):
         if DueDate and DueDate < DateTime():
             item["after"]["DueDate"] = get_image(
                 "late.png", title=t(_("Late Analysis")))
+
+        # set category title
+        item["getCategoryTitle"] = self.get_category_title(obj)
 
         # Add Priority column
         priority_sort_key = obj.getPrioritySortkey
