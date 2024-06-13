@@ -884,7 +884,13 @@ class AnalysesView(ListingView):
         if not self.show_categories:
             return
 
-        cat = analysis_brain.getCategoryTitle
+        obj = self.get_object(analysis_brain)
+
+        # get the category title
+        cat_uid = obj.getRawCategory()
+        cat_obj = self.get_object(cat_uid)
+        cat = api.get_title(cat_obj)
+
         item["category"] = cat
         cat_order = self.analysis_categories_order.get(cat)
         if (cat, cat_order) not in self.categories:

@@ -54,7 +54,6 @@ INDEXES = BASE_INDEXES + [
 COLUMNS = BASE_COLUMNS + [
     # attribute name
     "getAnalysisPortalType",
-    "getCategoryTitle",
     "getClientOrderNumber",
     "getClientTitle",
     "getClientURL",
