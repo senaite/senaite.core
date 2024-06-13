@@ -92,32 +92,47 @@ class IOrganizationSchema(model.Schema):
 
     directives.widget("physical_address", AddressWidget)
     physical_address = AddressField(
+        label=_(
+            "title_organization_physical_address",
+            default=u"Physical address"
+        ),
         address_types="physical",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
             "district": "inline_field_validator",
         },
+        required=False,
     ),
 
     directives.widget("postal_address", AddressWidget)
     postal_address = AddressField(
+        label=_(
+            "title_organization_postal_address",
+            default=u"Postal address"
+        ),
         address_types="postal",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
             "district": "inline_field_validator",
         },
+        required=False,
     ),
 
     directives.widget("billing_address", AddressWidget)
     billing_address = AddressField(
+        label=_(
+            "title_organization_billing_address",
+            default=u"Billing address"
+        ),
         address_types="billing",
         subfield_validators={
             "country": "inline_field_validator",
             "state": "inline_field_validator",
             "district": "inline_field_validator",
         },
+        required=False,
     ),
 
     model.fieldset(
