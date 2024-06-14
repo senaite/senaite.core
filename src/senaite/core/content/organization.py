@@ -215,12 +215,12 @@ class Organization(Container):
         mutator(self, value)
 
     def getEmail(self):
-        accessor = self.accessor("email_address")
+        accessor = self.accessor("email")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmail(self, value):
-        mutator = self.mutator("email_address")
+        mutator = self.mutator("email")
         mutator(self, value)
 
     # for backward compatibility
