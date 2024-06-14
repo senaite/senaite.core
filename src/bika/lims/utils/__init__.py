@@ -685,13 +685,13 @@ def get_phone_link(phone, value=None):
     Returns a well-formed link to a phone number. If phone is None/empty,
     returns an empty string
     :param phone: phone number
-    :param link_text: text to be displayed. If None, the email itself is used
+    :param value: text to be displayed. If None, the phone itself is used
     :return: a well-formatted html anchor
     """
     if not phone:
         return ""
-    phone = re.sub(r"[)(\s-]", "", phone)
-    tel = "tel:{}".format(phone)
+    number = re.sub(r"[)(\s-]", "", phone)
+    tel = "tel:{}".format(number)
     link_value = value and value or phone
     return get_link(tel, link_value)
 
