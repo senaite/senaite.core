@@ -79,49 +79,25 @@ class IOrganizationSchema(model.Schema):
         ),
         fields=[
             "email_address",
-            "physical_address",
-            "postal_address",
-            "billing_address",
+            "address_list",
         ]
     )
 
-    email_address = Email(
+    email = Email(
         title=_(
-            u"title_organization_email_address",
-            default=u"Email Address"
+            u"title_organization_email",
+            default=u"Email"
         ),
         required=False,
     )
 
-    directives.widget("physical_address", AddressWidget)
-    physical_address = AddressField(
-        label=_(
-            u"title_organization_physical_address",
-            default=u"Physical address"
+    directives.widget("address_list", AddressWidget)
+    address_list = AddressField(
+        address_types=(
+            PHYSICAL_ADDRESS, POSTAL_ADDRESS, BILLING_ADDRESS,
         ),
-        address_types=PHYSICAL_ADDRESS,
         required=False,
-    ),
-
-    directives.widget("postal_address", AddressWidget)
-    postal_address = AddressField(
-        label=_(
-            u"title_organization_postal_address",
-            default=u"Postal address"
-        ),
-        address_types=POSTAL_ADDRESS,
-        required=False,
-    ),
-
-    directives.widget("billing_address", AddressWidget)
-    billing_address = AddressField(
-        label=_(
-            u"title_organization_billing_address",
-            default=u"Billing address"
-        ),
-        address_types=BILLING_ADDRESS,
-        required=False,
-    ),
+    )
 
     model.fieldset(
         "bank_details",
@@ -189,7 +165,7 @@ class Organization(Container):
     def Title(self):
         """Return the name of the Organisation
         """
-        name = self.getName()
+        name = self.getName() if self.getName() else self.title
         return safe_unicode(name).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
@@ -238,15 +214,24 @@ class Organization(Container):
         mutator = self.mutator("fax")
         mutator(self, value)
 
-    @security.protected(permissions.View)
-    def getEmailAddress(self):
+    def getEmail(self):
         accessor = self.accessor("email_address")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setEmailAddress(self, value):
+    def setEmail(self, value):
         mutator = self.mutator("email_address")
         mutator(self, value)
+
+    # for backward compatibility
+    @security.protected(permissions.View)
+    def getEmailAddress(self):
+        return self.getEmail()
+
+    # for backward compatibility
+    @security.protected(permissions.ModifyPortalContent)
+    def setEmailAddress(self, value):
+        self.setEmail(value)
 
     @security.protected(permissions.View)
     def getAccountType(self):
@@ -298,34 +283,68 @@ class Organization(Container):
         mutator = self.mutator("bank_branch")
         mutator(self, value)
 
-    # def getPossibleAddresses(self):
-    #     """Get the possible address fields
-    #     """
-    #     return ["PhysicalAddress", "PostalAddress", "BillingAddress"]
+    # @security.protected(permissions.View)
+    # def getAddressList(self):
+    #     accessor = self.accessor("address_list")
+    #     return accessor(self)
     #
-    # def getPrintAddress(self):
-    #     """Get an address for printing
-    #     """
-    #     address_lines = []
-    #
-    #     addresses = [
-    #         self.getPostalAddress(),
-    #         self.getPhysicalAddress(),
-    #         self.getBillingAddress(),
-    #     ]
-    #
-    #     for address in addresses:
-    #         city = address.get("city", "")
-    #         zip = address.get("zip", "")
-    #         state = address.get("state", "")
-    #         country = address.get("country", "")
-    #
-    #         if city:
-    #             address_lines = [
-    #                 address["address"].strip(),
-    #                 "{} {}".format(city, zip).strip(),
-    #                 "{} {}".format(state, country).strip(),
-    #             ]
-    #             break
-    #
-    #     return address_lines
+    # @security.protected(permissions.ModifyPortalContent)
+    # def setAddressList(self, value):
+    #     mutator = self.mutator("address_list")
+    #     mutator(self, value)
+
+    def getPhysicalAddress(self):
+        return self._get_address_by_type(PHYSICAL_ADDRESS)
+
+    def getPostalAddress(self):
+        return self._get_address_by_type(POSTAL_ADDRESS)
+
+    def getBillingAddress(self):
+        return self._get_address_by_type(BILLING_ADDRESS)
+
+    def _get_address_by_type(self, address_type):
+        accessor = self.accessor("address_list")
+        address_list = accessor(self)
+        result = list(filter(lambda item: item.get("type") == address_type,
+                             address_list))
+
+        return result[0] if len(result) else {}
+
+    def _format_address_line(self, address):
+        city = address.get("city", "")
+        zip = address.get("zip", "")
+        country = address.get("country", "")
+
+        address_lines = [
+            address["address"].strip(),
+            "{} {}".format(city, zip).strip(),
+            "{}".format(country).strip(),
+        ]
+
+        return address_lines
+
+    def getPrintAddress(self):
+        """Get an address for printing
+        """
+        address_lines = []
+        addresses = [
+            self._get_address_by_type(POSTAL_ADDRESS),
+            self._get_address_by_type(PHYSICAL_ADDRESS),
+            self._get_address_by_type(BILLING_ADDRESS),
+        ]
+
+        for address in addresses:
+            city = address.get("city", "")
+            zip = address.get("zip", "")
+            state = address.get("state", "")
+            country = address.get("country", "")
+
+            if city:
+                address_lines = [
+                    address["address"].strip(),
+                    "{} {}".format(city, zip).strip(),
+                    "{} {}".format(state, country).strip(),
+                ]
+                break
+
+        return address_lines
