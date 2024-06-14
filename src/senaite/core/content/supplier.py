@@ -44,24 +44,24 @@ class ISupplierSchema(IOrganizationSchema):
 
     lab_account_number = schema.TextLine(
         title=_(
-            "title_supplier_lab_contact_number",
-            default="Lab Account Number",
+            u"title_supplier_lab_contact_number",
+            default=u"Lab Account Number",
         ),
         required=False,
     )
 
     remarks = schema.Text(
         title=_(
-            "title_supplier_remarks",
-            default="Remarks",
+            u"title_supplier_remarks",
+            default=u"Remarks",
         ),
         required=False,
     )
 
     website = schema.TextLine(
         title=_(
-            "title_supplier_website",
-            default="Website",
+            u"title_supplier_website",
+            default=u"Website",
         ),
         required=False,
     )
@@ -69,8 +69,8 @@ class ISupplierSchema(IOrganizationSchema):
     model.fieldset(
         "bank_details",
         label=_(
-            "Accounting",
-            default="Bank Details"
+            u"Accounting",
+            default=u"Bank Details"
         ),
         fields=[
             "nib",
@@ -81,24 +81,24 @@ class ISupplierSchema(IOrganizationSchema):
 
     nib = schema.TextLine(
         title=_(
-            "title_supplier_nib",
-            default="NIB",
+            u"title_supplier_nib",
+            default=u"NIB",
         ),
         required=False,
     )
 
     ibn = schema.TextLine(
         title=_(
-            "title_supplier_ibn",
-            default="IBN",
+            u"title_supplier_ibn",
+            default=u"IBN",
         ),
         required=False,
     )
 
     swift_code = schema.TextLine(
         title=_(
-            "title_supplier_swift_code",
-            default="SWIFT code",
+            u"title_supplier_swift_code",
+            default=u"SWIFT code",
         ),
         required=False,
     )

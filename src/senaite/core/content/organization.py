@@ -21,6 +21,9 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.schema import AddressField
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.content.base import Container
 from plone.supermodel import model
@@ -38,32 +41,32 @@ class IOrganizationSchema(model.Schema):
 
     name = schema.TextLine(
         title=_(
-            "title_organization_name",
-            default="Name"
+            u"title_organization_name",
+            default=u"Name"
         ),
         required=True,
     )
 
     tax_number = schema.TextLine(
         title=_(
-            "title_organization_tax_number",
-            default="VAT number"
+            u"title_organization_tax_number",
+            default="uVAT number"
         ),
         required=False,
     )
 
     phone = schema.TextLine(
         title=_(
-            "title_organization_phone",
-            default="Phone"
+            u"title_organization_phone",
+            default=u"Phone"
         ),
         required=False,
     )
 
     fax = schema.TextLine(
         title=_(
-            "title_organization_fax",
-            default="Fax"
+            u"title_organization_fax",
+            default=u"Fax"
         ),
         required=False,
     )
@@ -71,8 +74,8 @@ class IOrganizationSchema(model.Schema):
     model.fieldset(
         "addresses",
         label=_(
-            "title_addresses_tab",
-            default="Address"
+            u"title_addresses_tab",
+            default=u"Address"
         ),
         fields=[
             "email_address",
@@ -84,8 +87,8 @@ class IOrganizationSchema(model.Schema):
 
     email_address = Email(
         title=_(
-            "title_organization_email_address",
-            default="Email Address"
+            u"title_organization_email_address",
+            default=u"Email Address"
         ),
         required=False,
     )
@@ -93,53 +96,38 @@ class IOrganizationSchema(model.Schema):
     directives.widget("physical_address", AddressWidget)
     physical_address = AddressField(
         label=_(
-            "title_organization_physical_address",
+            u"title_organization_physical_address",
             default=u"Physical address"
         ),
-        address_types="physical",
-        subfield_validators={
-            "country": "inline_field_validator",
-            "state": "inline_field_validator",
-            "district": "inline_field_validator",
-        },
+        address_types=PHYSICAL_ADDRESS,
         required=False,
     ),
 
     directives.widget("postal_address", AddressWidget)
     postal_address = AddressField(
         label=_(
-            "title_organization_postal_address",
+            u"title_organization_postal_address",
             default=u"Postal address"
         ),
-        address_types="postal",
-        subfield_validators={
-            "country": "inline_field_validator",
-            "state": "inline_field_validator",
-            "district": "inline_field_validator",
-        },
+        address_types=POSTAL_ADDRESS,
         required=False,
     ),
 
     directives.widget("billing_address", AddressWidget)
     billing_address = AddressField(
         label=_(
-            "title_organization_billing_address",
+            u"title_organization_billing_address",
             default=u"Billing address"
         ),
-        address_types="billing",
-        subfield_validators={
-            "country": "inline_field_validator",
-            "state": "inline_field_validator",
-            "district": "inline_field_validator",
-        },
+        address_types=BILLING_ADDRESS,
         required=False,
     ),
 
     model.fieldset(
         "bank_details",
         label=_(
-            "title_bank_details_tab",
-            default="Bank Details"
+            u"title_bank_details_tab",
+            default=u"Bank Details"
         ),
         fields=[
             "account_type",
@@ -152,40 +140,40 @@ class IOrganizationSchema(model.Schema):
 
     account_type = schema.TextLine(
         title=_(
-            "title_organization_account_type",
-            default="Account Type"
+            u"title_organization_account_type",
+            default=u"Account Type"
         ),
         required=False,
     )
 
     account_name = schema.TextLine(
         title=_(
-            "title_organization_account_name",
-            default="Account Name"
+            u"title_organization_account_name",
+            default=u"Account Name"
         ),
         required=False,
     )
 
     account_number = schema.TextLine(
         title=_(
-            "title_organization_account_number",
-            default="Account Number"
+            u"title_organization_account_number",
+            default=u"Account Number"
         ),
         required=False,
     )
 
     bank_name = schema.TextLine(
         title=_(
-            "title_organization_account_bank_name",
-            default="Bank Name"
+            u"title_organization_account_bank_name",
+            default=u"Bank Name"
         ),
         required=False,
     )
 
     bank_branch = schema.TextLine(
         title=_(
-            "title_organization_account_bank_branch",
-            default="Bank Branch"
+            u"title_organization_account_bank_branch",
+            default=u"Bank Branch"
         ),
         required=False,
     )
