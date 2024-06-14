@@ -78,7 +78,7 @@ class IOrganizationSchema(model.Schema):
             default=u"Address"
         ),
         fields=[
-            "email_address",
+            "email",
             "address_list",
         ]
     )
