@@ -23,6 +23,8 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
+from bika.lims.utils import get_email_link
+from bika.lims.utils import get_phone_link
 from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
@@ -122,11 +124,16 @@ class SuppliersView(ListingView):
 
     def folderitem(self, obj, item, index):
         obj = api.get_object(obj)
+        email = obj.getEmail()
+        phone = obj.getPhone()
 
         item["Name"] = api.get_title(obj)
-        item["Email"] = obj.getEmailAddress()
-        item["Phone"] = obj.getPhone()
         item["Fax"] = obj.getFax()
+        item["Email"] = email
+        item["Phone"] = phone
+
         item["replace"]["Name"] = get_link_for(obj)
+        item["replace"]["Email"] = get_email_link(email)
+        item["replace"]["Phone"] = get_phone_link(phone)
 
         return item
