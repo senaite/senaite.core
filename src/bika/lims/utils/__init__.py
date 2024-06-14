@@ -690,6 +690,7 @@ def get_phone_link(phone, value=None):
     """
     if not phone:
         return ""
+    phone = re.sub(r"[)(\s-]", "", phone)
     tel = "tel:{}".format(phone)
     link_value = value and value or phone
     return get_link(tel, link_value)
