@@ -720,7 +720,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
 
 Catalog queries w/o any `portal_type`, default to the `uid_catalog`::
 
-    >>> analysiscategories = bika_setup.bika_analysiscategories
+    >>> analysiscategories = senaite_setup.analysiscategories
     >>> analysiscategory1 = api.create(analysiscategories, "AnalysisCategory", title="AC-1")
     >>> analysiscategory2 = api.create(analysiscategories, "AnalysisCategory", title="AC-2")
     >>> analysiscategory3 = api.create(analysiscategories, "AnalysisCategory", title="AC-3")

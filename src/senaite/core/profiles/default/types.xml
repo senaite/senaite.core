@@ -80,6 +80,10 @@
   <object name="BatchLabel" meta_type="Dexterity FTI" />
   <object name="BatchLabels" meta_type="Dexterity FTI" />
 
+  <!-- Analysis Categories -->
+  <object name="AnalysisCategory" meta_type="Dexterity FTI" />
+  <object name="AnalysisCategories" meta_type="Dexterity FTI" />
+
   <!-- Suppliers -->
   <object name="Supplier" meta_type="Dexterity FTI" />
   <object name="Suppliers" meta_type="Dexterity FTI" />

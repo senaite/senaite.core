@@ -6,12 +6,20 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
       description="Migrate Suppliers to Dexterity"
-      source="2633"
-      destination="2634"
+      source="2634"
+      destination="2635"
       handler=".v02_06_000.migrate_suppliers_to_dx"
       profile="senaite.core:default"/>
 
-    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate AnalysisCategories to DX"
+      description="Migrate AnalysisCategories to Dexterity"
+      source="2633"
+      destination="2634"
+      handler=".v02_06_000.migrate_analysiscategories_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate BatchLabels to DX"
       description="Migrate BatchLabels to Dexterity"
       source="2632"

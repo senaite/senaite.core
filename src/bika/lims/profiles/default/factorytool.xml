@@ -4,7 +4,6 @@
   <type portal_type="ARReport"/>
   <type portal_type="ARTemplate"/>
   <type portal_type="Analysis"/>
-  <type portal_type="AnalysisCategory"/>
   <type portal_type="AnalysisRequest"/>
   <type portal_type="AnalysisService"/>
   <type portal_type="AnalysisSpec"/>

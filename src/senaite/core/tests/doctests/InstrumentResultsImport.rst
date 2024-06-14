@@ -92,7 +92,7 @@ Variables:
     >>> bikasetup = api.get_bika_setup()
     >>> setup = api.get_senaite_setup()
 
-    >>> analysiscategories = bikasetup.bika_analysiscategories
+    >>> analysiscategories = setup.analysiscategories
     >>> analysisservices = bikasetup.bika_analysisservices
     >>> calculations = bikasetup.bika_calculations
     >>> departments = setup.departments

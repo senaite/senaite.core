@@ -18,126 +18,20 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import collections
-
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisCategories
-from senaite.core.permissions import AddAnalysisCategory
-from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
-
-
-# TODO: Separate content and view into own modules!
-
-
-class AnalysisCategoriesView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
-
-    def __init__(self, context, request):
-        super(AnalysisCategoriesView, self).__init__(context, request)
-
-        self.catalog = "senaite_catalog_setup"
-
-        self.contentFilter = {
-            "portal_type": "AnalysisCategory",
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        }
-
-        self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=AnalysisCategory",
-                "permission": AddAnalysisCategory,
-                "icon": "++resource++bika.lims.images/add.png"}
-        }
-
-        self.title = self.context.translate(_("Analysis Categories"))
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/category_big.png"
-        )
-
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-
-        self.columns = collections.OrderedDict((
-            ("Title", {
-                "title": _("Category"),
-                "index": "sortable_title"}),
-            ("Description", {
-                "title": _("Description"),
-                "index": "Description",
-                "toggle": True,
-            }),
-            ("Department", {
-                "title": _("Department"),
-                "index": "department_title",
-            }),
-            ("SortKey", {
-                "title": _("Sort Key"),
-                "sortable": True
-            }),
-        ))
-
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("Active"),
-                "contentFilter": {"is_active": True},
-                "columns": self.columns.keys(),
-            }, {
-                "id": "inactive",
-                "title": _("Inactive"),
-                "contentFilter": {'is_active': False},
-                "columns": self.columns.keys(),
-            }, {
-                "id": "all",
-                "title": _("All"),
-                "contentFilter": {},
-                "columns": self.columns.keys(),
-            },
-        ]
-
-    def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
-        obj = api.get_object(obj)
-        title = obj.Title()
-        description = obj.Description()
-        url = obj.absolute_url()
-
-        item["replace"]["Title"] = get_link(url, value=title)
-        item["Description"] = description
-        item["SortKey"] = obj.getSortKey()
-
-        department = obj.getDepartment()
-        if department:
-            title = department.Title()
-            url = department.absolute_url()
-            item["replace"]["Department"] = get_link(url, value=title)
-
-        return item
 
 
 schema = ATFolderSchema.copy()
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2567
 class AnalysisCategories(ATFolder):
     implements(IAnalysisCategories, IHideActionsMenu)
     displayContentsTab = False

@@ -1241,29 +1241,35 @@ class Sample_Conditions(WorksheetImporter):
 class Analysis_Categories(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_analysiscategories
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.analysiscategories
+        setup_tool = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            department = None
-            if row.get('Department_title', None):
-                department = self.get_object(bsc, 'Department',
-                                             row.get('Department_title'))
-            if row.get('title', None) and department:
-                obj = _createObjectByType("AnalysisCategory", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''))
-                obj.setDepartment(department)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
-            elif not row.get('title', None):
-                logger.warning("Error in in " + self.sheetname + ". Missing Title field")
-            elif not row.get('Department_title', None):
-                logger.warning("Error in " + self.sheetname + ". Department field missing.")
-            else:
-                logger.warning("Error in " + self.sheetname + ". Department "
-                               + row.get('Department_title') + "is wrong.")
+            title = row.get("title")
+            if not title:
+                logger.warning("Error in in {}. Missing Title field."
+                               .format(self.sheetname))
+                continue
+
+            department_title = row.get("Department_title", None)
+            if not department_title:
+                logger.warning("Error in {}. Department field missing."
+                               .format(self.sheetname))
+                continue
+
+            department = self.get_object(setup_tool, "Department",
+                                         title=department_title)
+            if not department:
+                logger.warning("Error in {}. Department '{}' is wrong."
+                               .format(self.sheetname, department_title))
+                continue
+
+            description = row.get("description", "")
+            comments = row.get("comments", "")
+            api.create(container, "AnalysisCategory",
+                       title=title,
+                       description=description,
+                       comments=comments,
+                       department=department)
 
 
 class Methods(WorksheetImporter):
