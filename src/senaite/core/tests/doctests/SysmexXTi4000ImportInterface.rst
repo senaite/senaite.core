@@ -41,7 +41,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> bika_instruments = bika_setup.bika_instruments
     >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
+    >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
 We need certain permissions to create and access objects used in this test,

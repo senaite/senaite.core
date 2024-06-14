@@ -18,4 +18,10 @@
       handler=".client.on_client_created"
       />
 
+  <!-- Reindex Services and Analyses when modified AnalysisCategory -->
+  <subscriber
+    for="senaite.core.interfaces.IAnalysisCategory
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler=".analysiscategory.on_analysis_category_modified" />
+
 </configure>
