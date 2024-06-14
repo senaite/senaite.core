@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2577 Fix content types typo
 - #2567 Migrate AnalysisCategories to Dexterity
 - #2570 Use reference widget API in sample add form
 - #2553 Migrate BatchLabels to Dexterity
