@@ -57,7 +57,6 @@ COLUMNS = BASE_COLUMNS + [
     "Description",
     "Type",
     "description",
-    "getCategoryTitle",
     "getCategoryUID",
     "getClientUID",
     "getKeyword",

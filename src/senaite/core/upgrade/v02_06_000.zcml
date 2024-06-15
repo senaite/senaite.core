@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
       description="Migrate Suppliers to Dexterity"
+      source="2635"
+      destination="2636"
+      handler=".v02_06_000.migrate_suppliers_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getCategoryTitle from catalogs"
+      description="Remove getCategoryTitle from catalogs"
       source="2634"
       destination="2635"
-      handler=".v02_06_000.migrate_suppliers_to_dx"
+      handler=".v02_06_000.remove_category_title_metadata"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
