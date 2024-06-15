@@ -641,7 +641,7 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        container = self.context.setup.contenttypes
+        container = self.context.setup.containertypes
         for row in self.get_rows(3):
             title = row.get("title")
             if not title:
