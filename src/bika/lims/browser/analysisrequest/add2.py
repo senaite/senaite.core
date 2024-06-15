@@ -534,9 +534,9 @@ class AnalysisRequestAddView(BrowserView):
         """
         service = api.get_object(service)
         cat_uid = service.getRawCategory()
-        cat = self.get_object_by_uid(cat_uid)
-        if not cat:
+        if not cat_uid:
             return ""
+        cat = self.get_object_by_uid(cat_uid)
         return api.get_title(cat)
 
     @cache(cache_key)

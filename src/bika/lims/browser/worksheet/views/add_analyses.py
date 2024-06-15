@@ -253,10 +253,10 @@ class AddAnalysesView(BikaListingView):
         """Returns the title of the category the analysis is assigned to
         """
         obj = api.get_object(analysis)
-        cat = obj.getRawCategory()
-        cat = self.get_object_by_uid(cat)
-        if not cat:
+        cat_uid = obj.getRawCategory()
+        if not cat_uid:
             return ""
+        cat = self.get_object_by_uid(cat_uid)
         return api.get_title(cat)
 
     def folderitem(self, obj, item, index):

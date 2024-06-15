@@ -879,10 +879,10 @@ class AnalysesView(ListingView):
         """Returns the title of the category the analysis is assigned to
         """
         obj = api.get_object(analysis)
-        cat = obj.getRawCategory()
-        cat = self.get_object(cat)
-        if not cat:
+        cat_uid = obj.getRawCategory()
+        if not cat_uid:
             return ""
+        cat = self.get_object(cat_uid)
         return api.get_title(cat)
 
     def _folder_item_category(self, analysis_brain, item):
