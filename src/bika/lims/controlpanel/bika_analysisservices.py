@@ -177,7 +177,6 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": self.can_sort}),
             ("Category", {
                 "title": _("Category"),
-                "attr": "getCategoryTitle",
                 "sortable": self.can_sort}),
             ("Methods", {
                 "title": _("Methods"),
