@@ -1710,3 +1710,25 @@ def migrate_samplepoints_coordinates(tool):
         obj._p_deactivate() # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
+
+
+def set_referenceable_behavior(tool):
+    """Assigns the referenceable behavior to setup folders so they are indexed
+    in the UID Catalog
+    """
+    behavior = "plone.app.referenceablebehavior.referenceable.IReferenceable"
+    logger.info("Assigning referenceable behavior to setup folders ...")
+    pt = api.get_tool("portal_types")
+    setup = api.get_senaite_setup()
+    to_fix = [setup] + list(setup.objectValues())
+    for obj in to_fix:
+        portal_type = api.get_portal_type(obj)
+        fti = pt.get(portal_type)
+        if behavior not in fti.behaviors:
+            logger.info("Adding IReferenceable behavior: %s" % portal_type)
+            behaviors = list(fti.behaviors) + [behavior]
+            fti.behaviors = tuple(behaviors)
+
+        obj.reindexObject()
+
+    logger.info("Assigning referenceable behavior to setup folders [DONE]")
