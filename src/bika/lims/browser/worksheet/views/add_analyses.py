@@ -105,8 +105,7 @@ class AddAnalysesView(BikaListingView):
                 "replace_url": "getRequestURL",
                 "index": "getRequestID"}),
             ("getCategoryTitle", {
-                "title": _("Category"),
-                "attr": "getCategoryTitle"}),
+                "title": _("Category")}),
             ("Title", {
                 "title": _("Analysis"),
                 "index": "getId"}),
@@ -244,6 +243,22 @@ class AddAnalysesView(BikaListingView):
         """
         return self.context.plone_utils.addPortalMessage(message, level)
 
+    @view.memoize
+    def get_object_by_uid(self, uid):
+        """Returns the object for the given uid or None
+        """
+        return api.get_object_by_uid(uid, default=None)
+
+    def get_category_title(self, analysis):
+        """Returns the title of the category the analysis is assigned to
+        """
+        obj = api.get_object(analysis)
+        cat_uid = obj.getRawCategory()
+        if not cat_uid:
+            return ""
+        cat = self.get_object_by_uid(cat_uid)
+        return api.get_title(cat)
+
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 
@@ -254,6 +269,7 @@ class AddAnalysesView(BikaListingView):
             the template
         :index: current index of the item
         """
+
         DueDate = obj.getDueDate
 
         item["getDateReceived"] = self.ulocalized_time(obj.getDateReceived)
@@ -262,6 +278,9 @@ class AddAnalysesView(BikaListingView):
         if DueDate and DueDate < DateTime():
             item["after"]["DueDate"] = get_image(
                 "late.png", title=t(_("Late Analysis")))
+
+        # set category title
+        item["getCategoryTitle"] = self.get_category_title(obj)
 
         # Add Priority column
         priority_sort_key = obj.getPrioritySortkey

@@ -1746,3 +1746,14 @@ def migrate_samplepoints_coordinates(tool):
         obj._p_deactivate() # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
+
+
+def remove_category_title_metadata(tool):
+    """Remove getCategoryTitle metadata from catalogs
+    """
+    logger.info("Removing getCategoryTitle metadata from catalogs ...")
+
+    del_metadata(ANALYSIS_CATALOG, "getCategoryTitle")
+    del_metadata(SETUP_CATALOG, "getCategoryTitle")
+
+    logger.info("Removing getCategoryTitle metadata from catalogs [DONE]")
