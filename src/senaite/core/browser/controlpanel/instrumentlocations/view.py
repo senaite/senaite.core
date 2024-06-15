@@ -49,15 +49,15 @@ class InstrumentLocationsView(ListingView):
         }
 
         self.context_actions = {
-            _("listing_instrumentlocations_action_add", default="Add"): {
+            _(u"listing_instrumentlocations_action_add", default=u"Add"): {
                 "url": "++add++InstrumentLocation",
                 "permission": AddInstrumentLocation,
                 "icon": "senaite_theme/icon/plus",
             }}
 
         self.title = translate(_(
-            "listing_instrumentlocations_title",
-            default="Instrument Locations")
+            u"listing_instrumentlocations_title",
+            default=u"Instrument Locations")
         )
         self.icon = api.get_icon("InstrumentLocations", html_tag=False)
         self.show_select_column = True
@@ -65,15 +65,15 @@ class InstrumentLocationsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    "listing_instrumentlocations_column_title",
-                    default="Location",
+                    u"listing_instrumentlocations_column_title",
+                    default=u"Location",
                 ),
                 "index": "sortable_title",
             }),
             ("Description", {
                 "title": _(
-                    "listing_instrumentlocations_column_description",
-                    default="Description",
+                    u"listing_instrumentlocations_column_description",
+                    default=u"Description",
                 ),
                 "index": "Description",
                 "toggle": True,
@@ -84,24 +84,24 @@ class InstrumentLocationsView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    "listing_instrumentlocations_state_all",
-                    default="All",
+                    u"listing_instrumentlocations_state_all",
+                    default=u"All",
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             }, {
                 "id": "active",
                 "title": _(
-                    "listing_instrumentlocations_state_active",
-                    default="Active",
+                    u"listing_instrumentlocations_state_active",
+                    default=u"Active",
                 ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _(
-                    "listing_instrumentlocations_state_inactive",
-                    default="Inactive",
+                    u"listing_instrumentlocations_state_inactive",
+                    default=u"Inactive",
                 ),
                 "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
