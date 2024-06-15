@@ -50,7 +50,6 @@
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
-    <!-- Needed behavior to indexed in uid_catalog -->
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
