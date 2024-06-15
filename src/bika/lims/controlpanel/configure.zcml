@@ -29,14 +29,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisCategories"
-      name="folder_view"
-      class=".bika_analysiscategories.AnalysisCategoriesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISampleTypes"
       name="folder_view"
       class=".bika_sampletypes.SampleTypesView"
@@ -120,14 +112,6 @@
       for="bika.lims.interfaces.IWorksheetTemplates"
       name="folder_view"
       class=".bika_worksheettemplates.WorksheetTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IBatchLabels"
-      name="folder_view"
-      class=".bika_batchlabels.BatchLabelsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -6,8 +6,6 @@
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>
@@ -18,8 +16,6 @@
  <object name="AttachmentTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Batch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>

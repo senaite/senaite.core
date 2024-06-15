@@ -20,7 +20,9 @@
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
   <!-- Include controlpanel listing views -->
+  <include package=".analysiscategories" />
   <include package=".analysisprofiles" />
+  <include package=".batchlabels" />
   <include package=".containertypes" />
   <include package=".departments" />
   <include package=".instrumentlocations" />

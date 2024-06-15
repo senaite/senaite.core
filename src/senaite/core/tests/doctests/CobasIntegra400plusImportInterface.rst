@@ -36,7 +36,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> bika_instruments = bika_setup.bika_instruments
     >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
+    >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
 We need certain permissions to create and access objects used in this test,
@@ -89,9 +89,9 @@ a `SampleType`::
 Create an `AnalysisCategory` (which categorizes different `AnalysisServices`), and add to it some
 of the `AnalysisServices` that are found in the results file::
 
-    >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
+    >>> analysiscategory = api.create(analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
-    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
+    <AnalysisCategory at /plone/setup/analysiscategories/analysiscategory-1>
     >>> analysisservice_1 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="WBC",

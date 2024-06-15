@@ -12,22 +12,22 @@ import AddressWidgetController from "./addresswidget/widget.js"
 
 // Query Select Widget
 export const render_queryselect_widget = (el) => {
-  ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={el}/>, el);
+  return ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={el}/>, el);
 }
 
 // UID Reference Widget
 export const render_uidreference_widget = (el) => {
-  ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={el}/>, el);
+  return ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={el}/>, el);
 }
 
 // Address Widget
 export const render_address_widget = (el) => {
-  ReactDOM.render(<AddressWidgetController root_class="address" root_el={el}/>, el);
+  return ReactDOM.render(<AddressWidgetController root_class="address" root_el={el}/>, el);
 }
 
 // TinyMCE Widget
 export const render_tinymce_widget = (el) => {
-  tinymce.init({
+  return tinymce.init({
     height: 300,
     paste_data_images: true,
     target: el,
@@ -73,4 +73,5 @@ export const render_phone_widget = (el) => {
       hidden.value = number;
     });
   }
+  return iti;
 }
