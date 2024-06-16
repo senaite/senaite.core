@@ -68,7 +68,7 @@ We need to create some basic objects for the test:
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> samplepoint = api.create(setup.samplepoints, "SamplePoint", title="Happy Lake")
-    >>> container = api.create(setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
+    >>> container = api.create(setup.samplecontainers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
     >>> preservation = api.create(setup.samplepreservations, "SamplePreservation", title=u"Chill at 4°C")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)

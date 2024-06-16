@@ -1580,7 +1580,7 @@ def move_samplecontainers(tool):
         return
 
     # get the destination container
-    destination = get_setup_folder("sample_containers")
+    destination = get_setup_folder("samplecontainers")
 
     # un-catalog the old container
     uncatalog_object(origin)

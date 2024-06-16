@@ -133,7 +133,7 @@ Schema extension for dexterity types works via behaviors:
 
     >>> from senaite.core.config.fields import DX_LABEL_FIELD
 
-    >>> container1 = api.create(senaite_setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
+    >>> container1 = api.create(senaite_setup.samplecontainers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
 
     >>> ICanHaveLabels.providedBy(container1)
     False
