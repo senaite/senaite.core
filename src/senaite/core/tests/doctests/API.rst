@@ -2229,7 +2229,7 @@ We can even create a copy to a different type::
 It works for Dexterity types as well::
 
     >>> samplecontainers = self.portal.setup.samplecontainers
-    >>> samplecontainer = api.create(samplecontainers, "SampleContainer",
+    >>> sample_container = api.create(samplecontainers, "SampleContainer",
     ...                               title="Source Sample Container",
     ...                               description="Sample container to test",
     ...                               capacity="100 ml")
