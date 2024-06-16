@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Instrument Locations to Senaite setup"
       description="Move Instrument Locations to Senaite setup"
+      source="2636"
+      destination="2637"
+      handler=".v02_06_000.move_isntrumentlocations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix setup folders not indexed in UID catalog"
+      description="Adds the Plone's IReferenceable behavior to setup folders"
       source="2635"
       destination="2636"
-      handler=".v02_06_000.move_isntrumentlocations"
+      handler=".v02_06_000.set_referenceable_behavior"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
