@@ -1529,7 +1529,7 @@ def migrate_batchlabels_to_dx(tool):
 
 
 @upgradestep(product, version)
-def move_isntrumentlocations(tool):
+def move_instrumentlocations(tool):
     """Move instrument locations to senaite setup folder
     """
 
