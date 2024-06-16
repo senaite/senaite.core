@@ -18,18 +18,38 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.catalog import SETUP_CATALOG
-from plone.dexterity.content import Item
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.interfaces import IInstrumentLocation
+from senaite.core.content.base import Item
+from bika.lims.interfaces import IDeactivable
+from bika.lims import senaiteMessageFactory as _
 from plone.supermodel import model
+from zope import schema
 from zope.interface import implementer
 
 
-class IInstrumentLocation(model.Schema):
-    """Schema and marker interface
+class IInstrumentLocationSchema(model.Schema):
+    """Schema interface
     """
 
+    title = schema.TextLine(
+        title=_(
+            "title_instrumentlocation_title",
+            default="Name"
+        ),
+        required=True,
+    )
 
-@implementer(IInstrumentLocation)
+    description = schema.Text(
+        title=_(
+            "title_instrumentlocation_description",
+            default="Description"
+        ),
+        required=False,
+    )
+
+
+@implementer(IInstrumentLocation, IInstrumentLocationSchema, IDeactivable)
 class InstrumentLocation(Item):
     """Holds information about an instrument location
     """

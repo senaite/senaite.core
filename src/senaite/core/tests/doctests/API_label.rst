@@ -133,7 +133,7 @@ Schema extension for dexterity types works via behaviors:
 
     >>> from senaite.core.config.fields import DX_LABEL_FIELD
 
-    >>> container1 = api.create(setup.sample_containers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
+    >>> container1 = api.create(senaite_setup.samplecontainers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
 
     >>> ICanHaveLabels.providedBy(container1)
     False
@@ -173,7 +173,7 @@ Enable labels for **all** objects of a certain DX type:
 
     >>> enable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(senaite_setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretationtemplates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     True
@@ -182,7 +182,7 @@ Disable labels for **all** objects of a certain DX type:
 
     >>> disable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(senaite_setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretationtemplates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     False

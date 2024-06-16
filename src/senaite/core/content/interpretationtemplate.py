@@ -20,11 +20,11 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
-from senaite.core.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IInterpretationTemplate
 from senaite.core.schema import UIDReferenceField

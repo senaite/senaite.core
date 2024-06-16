@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser">
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <!-- Contact/LabContact *modified* event handler
-       This subscriber updates the properties of the linked user.
-  -->
+       This subscriber updates the properties of the linked user.  -->
   <subscriber
     for="bika.lims.interfaces.IContact
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-    handler=".contact.on_contact_modified" />
+    handler=".contact.on_contact_modified"/>
 
   <!-- Client *created* event handler -->
   <subscriber
-      for="bika.lims.interfaces.IClient
+    for="bika.lims.interfaces.IClient
            Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler=".client.on_client_created"
-      />
+    handler=".client.on_client_created"/>
 
 </configure>

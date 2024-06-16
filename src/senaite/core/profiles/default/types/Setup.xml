@@ -50,7 +50,6 @@
   <property name="behaviors">
     <!-- Don't show item in navigation -->
     <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"/>
-    <!-- Needed behavior to indexed in uid_catalog -->
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
