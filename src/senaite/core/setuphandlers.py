@@ -214,10 +214,6 @@ def add_dexterity_setup_items(portal):
         ("interpretation_templates",
          "Interpretation Templates",
          "InterpretationTemplates"),
-
-        ("sample_containers",
-         "Sample Containers",
-         "SampleContainers")
     ]
     setup = api.get_setup()
     add_dexterity_items(setup, items)
@@ -261,6 +257,7 @@ def add_senaite_setup_items(portal):
         ("batchlabels", "Batch Labels", "BatchLabels"),
         ("analysiscategories", "Analysis Categories", "AnalysisCategories"),
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
+        ("samplecontainers", "Sample Containers", "SampleContainers"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

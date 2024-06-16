@@ -2109,7 +2109,7 @@ Check with a step-by-step DX content type:
 The DX object is no longer temporary when is assigned to the parent folder and
 the the definitive id is set:
 
-    >>> folder = api.get_setup().sample_containers
+    >>> folder = senaite_setup.samplecontainers
     >>> uid = folder._setObject(tmp_obj_id, tmp_obj)
     >>> api.is_temporary(tmp_obj)
     True
@@ -2134,7 +2134,7 @@ folder:
     >>> api.is_temporary(tmp_obj)
     True
 
-    >>> folder = api.get_setup().sample_containers
+    >>> folder = senaite_setup.samplecontainers
     >>> uid = folder._setObject(tmp_obj_id, tmp_obj)
     >>> api.is_temporary(tmp_obj)
     True
@@ -2151,7 +2151,7 @@ On the other hand, an object with a UID id is always considered as temporary:
 
 If we use `api.create`, the object returned is not temporary:
 
-    >>> obj = api.create(setup.sample_containers, "SampleContainer", title="Another sample container")
+    >>> obj = api.create(senaite_setup.samplecontainers, "SampleContainer", title="Another sample container")
     >>> api.is_temporary(obj)
     False
 
@@ -2228,8 +2228,8 @@ We can even create a copy to a different type::
 
 It works for Dexterity types as well::
 
-    >>> sample_containers = self.portal.bika_setup.sample_containers
-    >>> sample_container = api.create(sample_containers, "SampleContainer",
+    >>> samplecontainers = self.portal.setup.samplecontainers
+    >>> sample_container = api.create(samplecontainers, "SampleContainer",
     ...                               title="Source Sample Container",
     ...                               description="Sample container to test",
     ...                               capacity="100 ml")

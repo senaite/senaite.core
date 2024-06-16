@@ -1564,6 +1564,42 @@ def move_instrumentlocations(tool):
     logger.info("Move Instrument Locations [DONE]")
 
 
+@upgradestep(product, version)
+def move_samplecontainers(tool):
+    """Move sample containers to senaite setup folder
+    """
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("sample_containers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("samplecontainers")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "SampleContainer"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Sample Containers [DONE]")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")

@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
+from senaite.core.i18n import translate
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 
@@ -39,57 +40,94 @@ class SampleContainersView(ListingView):
         self.contentFilter = {
             "portal_type": "SampleContainer",
             "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            },
         }
 
         self.context_actions = {
-            _("Add"): {
+            _("listing_sampleconatiners_action_add", default="Add"): {
                 "url": "++add++SampleContainer",
-                "icon": "++resource++bika.lims.images/add.png",
+                "icon": "senaite_theme/icon/plus",
             }}
 
-        t = self.context.translate
-        self.title = t(_("Sample Containers"))
-        self.description = t(_(""))
-
+        self.title = translate(_(
+            "listing_sampleconatiners_title",
+            default="Sample Containers")
+        )
+        self.icon = api.get_icon("SampleContainers", html_tag=False)
         self.show_select_column = True
-        self.pagesize = 25
 
         self.columns = collections.OrderedDict((
             ("title", {
-                "title": _("Container"),
-                "index": "sortable_title"}),
+                "title": _(
+                    u"listing_sampleconatiners_column_title",
+                    default=u"Container"
+                ),
+                "index": "sortable_title",
+            }),
             ("description", {
-                "title": _("Description"),
+                "title": _(
+                    u"listing_sampleconatiners_column_description",
+                    default=u"Description"
+                ),
                 "toggle": True,
             }),
             ("containertype", {
-                "title": _("Container Type"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_sampleconatiners_column_containertype",
+                    default=u"Container Type"
+                ),
+                "toggle": True,
+            }),
             ("capacity", {
-                "title": _("Capacity"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_sampleconatiners_column_capacity",
+                    default=u"Capacity"
+                ),
+                "toggle": True,
+            }),
             ("pre_preserved", {
-                "title": _("Pre-preserved"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_sampleconatiners_column_pre_preserved",
+                    default=u"Pre-preserved"
+                ),
+                "toggle": True,
+            }),
             ("security_seal_intact", {
-                "title": _("Security seal intact"),
-                "toggle": True}),
+                "title": _(
+                    u"listing_sampleconatiners_column_security_seal_intact",
+                    default=u"Security seal intact"
+                ),
+                "toggle": True,
+            }),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_sampleconatiners_state_active",
+                    default=u"Active"
+                ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    u"listing_sampleconatiners_state_inactive",
+                    default=u"Inactive"
+                ),
                 "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_sampleconatiners_state_all",
+                    default=u"All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
