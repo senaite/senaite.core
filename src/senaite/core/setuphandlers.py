@@ -260,6 +260,7 @@ def add_senaite_setup_items(portal):
         ("samplingdeviations", "Sampling Deviations", "SamplingDeviations"),
         ("batchlabels", "Batch Labels", "BatchLabels"),
         ("analysiscategories", "Analysis Categories", "AnalysisCategories"),
+        ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

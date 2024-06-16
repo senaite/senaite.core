@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2571 Move InstrumentLocations to Senaite setup folder
 - #2578 Fix setup DX folders are not indexed in `uid_catalog`
 - #2576 Fix analyses and services are re-indexed after modifying category
 - #2577 Fix content types typo

@@ -4,10 +4,17 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <browser:page
-      for="senaite.core.content.instrumentlocations.IInstrumentLocations"
+      for="senaite.core.interfaces.IInstrumentLocations"
       name="view"
       class=".view.InstrumentLocationsView"
       permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <browser:page
+      for="senaite.core.interfaces.IInstrumentLocation"
+      name="instruments"
+      class=".instruments.InstrumentLocationInstrumentsView"
+      permission="zope.Public"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
 </configure>
