@@ -18,19 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
-from plone.supermodel import model
+from senaite.core.interfaces import IInstrumentLocations
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.content.base import Container
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.supermodel import model
 from zope.interface import implementer
 
 
-class IInstrumentLocations(model.Schema):
+class IInstrumentLocationsSchema(model.Schema):
     """Schema and marker interface
     """
 
 
-@implementer(IInstrumentLocations, IDoNotSupportSnapshots, IHideActionsMenu)
+@implementer(IInstrumentLocations, IInstrumentLocationsSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
 class InstrumentLocations(Container):
     """A container for instrument locations
     """

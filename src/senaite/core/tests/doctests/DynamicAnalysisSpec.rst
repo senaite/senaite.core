@@ -134,7 +134,7 @@ First we build some basic setup structure:
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
 
     >>> method_a = api.create(portal.methods, "Method", title="Method A")
     >>> method_b = api.create(portal.methods, "Method", title="Method B")

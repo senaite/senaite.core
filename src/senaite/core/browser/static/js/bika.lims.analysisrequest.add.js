@@ -5,22 +5,16 @@
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    slice = [].slice,
     hasProp = {}.hasOwnProperty,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.AnalysisRequestAdd = (function() {
     function AnalysisRequestAdd() {
-      this.init_service_conditions = bind(this.init_service_conditions, this);
-      this.copy_service_conditions = bind(this.copy_service_conditions, this);
-      this.set_service_conditions = bind(this.set_service_conditions, this);
-      this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
       this.on_cancel = bind(this.on_cancel, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
       this.on_ajax_start = bind(this.on_ajax_start, this);
-      this.ajax_post_form = bind(this.ajax_post_form, this);
-      this.native_set_value = bind(this.native_set_value, this);
       this.on_copy_button_click = bind(this.on_copy_button_click, this);
       this.on_service_category_click = bind(this.on_service_category_click, this);
       this.on_service_listing_header_click = bind(this.on_service_listing_header_click, this);
@@ -32,28 +26,32 @@
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
+      this.render_template = bind(this.render_template, this);
+      this.template_dialog = bind(this.template_dialog, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
-      this.get_service = bind(this.get_service, this);
+      this.copy_service_conditions = bind(this.copy_service_conditions, this);
+      this.set_service_conditions = bind(this.set_service_conditions, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
       this.get_metadata_for = bind(this.get_metadata_for, this);
-      this.get_reference_field_catalog = bind(this.get_reference_field_catalog, this);
-      this.get_reference_field_base_query = bind(this.get_reference_field_base_query, this);
-      this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field_records = bind(this.set_reference_field_records, this);
-      this.set_reference_field_query = bind(this.set_reference_field_query, this);
+      this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
+      this.set_reference_field_query = bind(this.set_reference_field_query, this);
+      this.native_set_value = bind(this.native_set_value, this);
       this.get_base_url = bind(this.get_base_url, this);
       this.get_portal_url = bind(this.get_portal_url, this);
       this.update_form = bind(this.update_form, this);
+      this.debounce = bind(this.debounce, this);
+      this.init_service_conditions = bind(this.init_service_conditions, this);
+      this.init_file_fields = bind(this.init_file_fields, this);
+      this.bind_eventhandler = bind(this.bind_eventhandler, this);
+      this.ajax_post_form = bind(this.ajax_post_form, this);
       this.recalculate_prices = bind(this.recalculate_prices, this);
       this.recalculate_records = bind(this.recalculate_records, this);
+      this.get_service = bind(this.get_service, this);
       this.get_flush_settings = bind(this.get_flush_settings, this);
       this.get_global_settings = bind(this.get_global_settings, this);
-      this.render_template = bind(this.render_template, this);
-      this.template_dialog = bind(this.template_dialog, this);
-      this.debounce = bind(this.debounce, this);
-      this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
 
@@ -74,6 +72,186 @@
       this.init_service_conditions();
       this.recalculate_prices();
       return this;
+    };
+
+
+    /* AJAX FETCHER */
+
+
+    /**
+     * Fetch global settings from the setup, e.g. show_prices
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_global_settings = function() {
+      return this.ajax_post_form("get_global_settings").done(function(settings) {
+        console.debug("Global Settings:", settings);
+        this.global_settings = settings;
+        return $(this).trigger("settings:updated", settings);
+      });
+    };
+
+
+    /**
+     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_flush_settings = function() {
+      return this.ajax_post_form("get_flush_settings").done(function(settings) {
+        console.debug("Flush settings:", settings);
+        this.flush_settings = settings;
+        return $(this).trigger("flush_settings:updated", settings);
+      });
+    };
+
+
+    /**
+     * Fetch the service data from server by UID
+     *
+     */
+
+    AnalysisRequestAdd.prototype.get_service = function(uid) {
+      var options;
+      options = {
+        data: {
+          uid: uid
+        },
+        processData: true,
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      return this.ajax_post_form("get_service", options).done(function(data) {
+        return console.debug("get_service::data=", data);
+      });
+    };
+
+
+    /**
+     * Submit all form values to the server to recalculate the records
+     *
+     */
+
+    AnalysisRequestAdd.prototype.recalculate_records = function() {
+      return this.ajax_post_form("recalculate_records").done(function(records) {
+        console.debug("Recalculate Analyses: Records=", records);
+        this.records_snapshot = records;
+        return $(this).trigger("data:updated", records);
+      });
+    };
+
+
+    /**
+     * Submit all form values to the server to recalculate the prices of all columns
+     *
+     */
+
+    AnalysisRequestAdd.prototype.recalculate_prices = function() {
+      if (this.global_settings.show_prices === false) {
+        console.debug("*** Skipping Price calculation ***");
+        return;
+      }
+      return this.ajax_post_form("recalculate_prices").done(function(data) {
+        var arnum, prices;
+        console.debug("Recalculate Prices Data=", data);
+        for (arnum in data) {
+          if (!hasProp.call(data, arnum)) continue;
+          prices = data[arnum];
+          $("#discount-" + arnum).text(prices.discount);
+          $("#subtotal-" + arnum).text(prices.subtotal);
+          $("#vat-" + arnum).text(prices.vat);
+          $("#total-" + arnum).text(prices.total);
+        }
+        return $(this).trigger("prices:updated", data);
+      });
+    };
+
+
+    /**
+     * Ajax POST the form data to the given endpoint
+     *
+     * NOTE: Context of callback is bound to this object
+     *
+     * @param endpoint {String} Ajax endpoint to call
+     * @param options {Object} Additional ajax options
+     */
+
+    AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
+      var ajax_options, base_url, form, form_data, me, url;
+      if (options == null) {
+        options = {};
+      }
+      console.debug("°°° ajax_post_form::Endpoint=" + endpoint + " °°°");
+      base_url = this.get_base_url();
+      url = base_url + "/ajax_ar_add/" + endpoint;
+      console.debug("Ajax POST to url " + url);
+      form = $("#analysisrequest_add_form");
+      form_data = new FormData(form[0]);
+      ajax_options = {
+        url: url,
+        type: 'POST',
+        data: form_data,
+        context: this,
+        cache: false,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        timeout: 600000
+      };
+      $.extend(ajax_options, options);
+      me = this;
+      $(me).trigger("ajax:start");
+      return $.ajax(ajax_options).always(function(data) {
+        return $(me).trigger("ajax:end");
+      }).fail(function(request, status, error) {
+        var msg;
+        msg = _t("Sorry, an error occured: " + status);
+        window.bika.lims.portalMessage(msg);
+        return window.scroll(0, 0);
+      });
+    };
+
+
+    /**
+     * Fetch Ajax API resource from the server
+     *
+     * @param endpoint {String} API endpoint
+     * @param options {Object} Fetch options and data payload
+     * @returns {Promise}
+     */
+
+    AnalysisRequestAdd.prototype.get_json = function(endpoint, options) {
+      var base_url, data, init, me, method, request, url;
+      if (options == null) {
+        options = {};
+      }
+      method = options.method || "POST";
+      data = JSON.stringify(options.data) || "{}";
+      base_url = this.get_base_url();
+      url = base_url + "/ajax_ar_add/" + endpoint;
+      me = this;
+      $(me).trigger("ajax:start");
+      init = {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": this.get_csrf_token()
+        },
+        body: method === "POST" ? data : null,
+        credentials: "include"
+      };
+      console.info("get_json:endpoint=" + endpoint + " init=", init);
+      request = new Request(url, init);
+      return fetch(request).then(function(response) {
+        $(me).trigger("ajax:end");
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response;
+      }).then(function(response) {
+        return response.json();
+      })["catch"](function(response) {
+        return response;
+      });
     };
 
 
@@ -115,12 +293,59 @@
       return $(this).on("ajax:end", this.on_ajax_end);
     };
 
-    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
 
-      /*
-       * Debounce a function call
-       * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
-       */
+    /**
+     * Init file fields to allow multiple attachments
+     *
+     */
+
+    AnalysisRequestAdd.prototype.init_file_fields = function() {
+      var me;
+      me = this;
+      return $('tr[fieldname] input[type="file"]').each(function(index, element) {
+        var add_btn, add_btn_src, file_field, file_field_div;
+        file_field = $(element);
+        file_field.wrap("<div class='field'/>");
+        file_field_div = file_field.parent();
+        add_btn_src = window.portal_url + "/senaite_theme/icon/plus";
+        add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='" + add_btn_src + "' />");
+        add_btn.on("click", element, function(event) {
+          return me.file_addbtn_click(event, element);
+        });
+        return file_field_div.append(add_btn);
+      });
+    };
+
+
+    /**
+     * Updates the visibility of the conditions for the selected services
+     *
+     */
+
+    AnalysisRequestAdd.prototype.init_service_conditions = function() {
+      var me, services;
+      console.debug("init_service_conditions");
+      me = this;
+      services = $("input[type=checkbox].analysisservice-cb:checked");
+      return $(services).each(function(idx, el) {
+        var $el;
+        $el = $(el);
+        return me.set_service_conditions($el);
+      });
+    };
+
+
+    /**
+     * Debounce a function call
+     *
+     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+     *
+     * @param func {Object} Function to debounce
+     * @param threshold {Integer} Debounce time in milliseconds
+     * @param execAsap {Boolean} True/False to execute the function immediately
+     */
+
+    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
       var timeout;
       timeout = null;
       return function() {
@@ -142,119 +367,17 @@
       };
     };
 
-    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
 
-      /*
-       * Render the content of a Handlebars template in a jQuery UID dialog
-         [1] http://handlebarsjs.com/
-         [2] https://jqueryui.com/dialog/
-       */
-      var content;
-      if (buttons == null) {
-        buttons = {};
-        buttons[_t("Yes")] = function() {
-          $(this).trigger("yes");
-          return $(this).dialog("close");
-        };
-        buttons[_t("No")] = function() {
-          $(this).trigger("no");
-          return $(this).dialog("close");
-        };
-      }
-      content = this.render_template(template_id, context);
-      return $(content).dialog({
-        width: 450,
-        resizable: false,
-        closeOnEscape: false,
-        buttons: buttons,
-        open: function(event, ui) {
-          return $(".ui-dialog-titlebar-close").hide();
-        }
-      });
-    };
-
-    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
-
-      /*
-       * Render Handlebars JS template
-       */
-      var content, source, template;
-      source = $("#" + template_id).html();
-      if (!source) {
-        return;
-      }
-      template = Handlebars.compile(source);
-      content = template(context);
-      return content;
-    };
-
-    AnalysisRequestAdd.prototype.get_global_settings = function() {
-
-      /*
-       * Fetch global settings from the setup, e.g. show_prices
-       */
-      return this.ajax_post_form("get_global_settings").done(function(settings) {
-        console.debug("Global Settings:", settings);
-        this.global_settings = settings;
-        return $(this).trigger("settings:updated", settings);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_flush_settings = function() {
-
-      /*
-       * Retrieve the flush settings mapping (field name -> list of other fields to flush)
-       */
-      return this.ajax_post_form("get_flush_settings").done(function(settings) {
-        console.debug("Flush settings:", settings);
-        this.flush_settings = settings;
-        return $(this).trigger("flush_settings:updated", settings);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.recalculate_records = function() {
-
-      /*
-       * Submit all form values to the server to recalculate the records
-       */
-      return this.ajax_post_form("recalculate_records").done(function(records) {
-        console.debug("Recalculate Analyses: Records=", records);
-        this.records_snapshot = records;
-        return $(this).trigger("data:updated", records);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.recalculate_prices = function() {
-
-      /*
-       * Submit all form values to the server to recalculate the prices of all columns
-       */
-      if (this.global_settings.show_prices === false) {
-        console.debug("*** Skipping Price calculation ***");
-        return;
-      }
-      return this.ajax_post_form("recalculate_prices").done(function(data) {
-        var arnum, prices;
-        console.debug("Recalculate Prices Data=", data);
-        for (arnum in data) {
-          if (!hasProp.call(data, arnum)) continue;
-          prices = data[arnum];
-          $("#discount-" + arnum).text(prices.discount);
-          $("#subtotal-" + arnum).text(prices.subtotal);
-          $("#vat-" + arnum).text(prices.vat);
-          $("#total-" + arnum).text(prices.total);
-        }
-        return $(this).trigger("prices:updated", data);
-      });
-    };
+    /**
+     * Update form according to the server data
+     *
+     * Records provided from the server (see recalculate_records)
+     *
+     * @param event {Object} Event object
+     * @param records {Object} Updated records
+     */
 
     AnalysisRequestAdd.prototype.update_form = function(event, records) {
-
-      /*
-       * Update form according to the server data
-       *
-       * Records provided from the server (see ajax_recalculate_records)
-       */
       var me;
       console.debug("*** update_form ***");
       me = this;
@@ -304,6 +427,13 @@
       });
     };
 
+
+    /**
+     * Return the portal url (calculated in code)
+     *
+     * @returns {String} Portal URL
+     */
+
     AnalysisRequestAdd.prototype.get_portal_url = function() {
 
       /*
@@ -314,11 +444,14 @@
       return url;
     };
 
-    AnalysisRequestAdd.prototype.get_base_url = function() {
 
-      /*
-       * Return the current (relative) base url
-       */
+    /**
+     * Return the current (relative) base url
+     *
+     * @returns {String} Base URL for Ajax Request
+     */
+
+    AnalysisRequestAdd.prototype.get_base_url = function() {
       var base_url;
       base_url = window.location.href;
       if (base_url.search("/portal_factory") >= 0) {
@@ -327,25 +460,133 @@
       return base_url.split("/ar_add")[0];
     };
 
-    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
+
+    /**
+     * Return the CSRF token
+     *
+     * NOTE: The fields won't save w/o that token set
+     *
+     * @returns {String} CSRF token
+     */
+
+    AnalysisRequestAdd.prototype.get_csrf_token = function() {
 
       /*
-       * Applies the value for the given record, by setting values and applying
-       * search filters to dependents
+       * Get the plone.protect CSRF token
+       * Note: The fields won't save w/o that token set
        */
-      var me, title;
-      me = this;
-      title = record.title;
-      console.debug("apply_field_value: arnum=" + arnum + " record=" + title);
-      me.apply_dependent_values(arnum, record);
-      return me.apply_dependent_filter_queries(record, arnum);
+      return document.querySelector("#protect-script").dataset.token;
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
 
-      /*
-       * Set default field values to dependents
-       */
+    /**
+     * Returns the ReactJS widget controller for the given field
+     *
+     * @param field {Object} jQuery field
+     * @returns {Object} ReactJS widget controller
+     */
+
+    AnalysisRequestAdd.prototype.get_widget_controller = function(field) {
+      var id, ns, ref, ref1;
+      id = $(field).prop("id");
+      ns = (typeof window !== "undefined" && window !== null ? (ref = window.senaite) != null ? (ref1 = ref.core) != null ? ref1.widgets : void 0 : void 0 : void 0) || {};
+      return ns[id];
+    };
+
+
+    /**
+     * Checks if a given field is a reference field
+     *
+     * TODO: This check is very naive.
+     *       Maybe we can do this better with the widget controller!
+     *
+     * @param field {Object} jQuery field
+     * @returns {Boolean} True if the field is a reference field
+     */
+
+    AnalysisRequestAdd.prototype.is_reference_field = function(field) {
+      field = $(field);
+      if (field.hasClass("senaite-uidreference-widget-input")) {
+        return true;
+      }
+      if (field.hasClass("ArchetypesReferenceWidget")) {
+        return true;
+      }
+      return false;
+    };
+
+
+    /**
+     * Checks if the given value is an Array
+     *
+     * @param thing {Object} value to check
+     * @returns {Boolean} True if the value is an Array
+     */
+
+    AnalysisRequestAdd.prototype.is_array = function(value) {
+      return Array.isArray(value);
+    };
+
+
+    /**
+     * Checks if the given value is a plain Object
+     *
+     * @param thing {Object} value to check
+     * @returns {Boolean} True if the value is a plain Object, i.e. `{}`
+     */
+
+    AnalysisRequestAdd.prototype.is_object = function(value) {
+      return Object.prototype.toString.call(value) === "[object Object]";
+    };
+
+
+    /**
+      * Set input value with native setter to support ReactJS components
+     */
+
+    AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
+      var event, setter;
+      setter = null;
+      if (input.tagName === "TEXTAREA") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+      } else if (input.tagName === "SELECT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set;
+      } else if (input.tagName === "INPUT") {
+        setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+      } else {
+        input.value = value;
+      }
+      if (setter) {
+        setter.call(input, value);
+      }
+      event = new Event("input", {
+        bubbles: true
+      });
+      return input.dispatchEvent(event);
+    };
+
+
+    /**
+     * Apply the field value to set dependent fields and set dependent filter queries
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the value and metadata
+     */
+
+    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
+      this.apply_dependent_values(arnum, record);
+      return this.apply_dependent_filter_queries(arnum, record);
+    };
+
+
+    /**
+     * Apply dependent field values
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the value and metadata
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
       var me;
       me = this;
       return $.each(record.field_values, function(field_name, values) {
@@ -353,18 +594,27 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
 
-      /*
-       * Set values on field
-       */
-      var field, manually_deselected, me, uid, uids, values_json;
-      if (!Array.isArray(values)) {
+    /**
+     * Apply the actual value on the dependent field
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param field_name {String} Name of the dependent field, e.g. 'CCContact'
+     * @param values {Object, Array} The value to be set
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
+      var controller, field, manually_deselected, me, uids, values_json;
+      if (!this.is_array(values)) {
         values = [values];
       }
       me = this;
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));
+      controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if (this.is_reference_field(field)) {
         manually_deselected = this.deselected_uids[field_name] || [];
@@ -380,12 +630,7 @@
             return _this.set_reference_field_records(field, value);
           };
         })(this));
-        if (field.data("multi_valued") === 1) {
-          return this.set_multi_reference_field(field, uids);
-        } else {
-          uid = uids.length > 0 ? uids[0] : "";
-          return this.set_reference_field(field, uid);
-        }
+        return this.set_reference_field(field, uids);
       } else {
         return values.forEach(function(value, index) {
           if ((value.if_empty != null) && value.if_empty === true) {
@@ -404,11 +649,19 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(record, arnum) {
 
-      /*
-       * Apply search filters to dependents
-       */
+    /**
+     * Apply filter queries of dependent reference fields to restrict the allowed searches
+     *
+     * NOTE: This method is chained to set dependent filter queries sequentially,
+     *       because a new Ajax request is done for each field to check if the
+     *       current value is allowed or must be flushed.
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param record {Object} The data record object containing the filter_queries
+     */
+
+    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(arnum, record) {
       var chain, me;
       me = this;
       chain = Promise.resolve();
@@ -421,85 +674,37 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
 
-      /*
-       * Flush dependent fields
-       */
-      var field_ids, me;
-      me = this;
-      field_ids = this.flush_settings[field_name];
-      return $.each(this.flush_settings[field_name], function(index, id) {
-        var field;
-        console.debug("flushing: id=" + id);
-        field = $("#" + id + "-" + arnum);
-        return me.flush_reference_field(field);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.is_reference_field = function(field) {
-
-      /*
-       * Checks if the given field is a reference field
-       */
-      field = $(field);
-      if (field.hasClass("senaite-uidreference-widget-input")) {
-        return true;
-      }
-      if (field.hasClass("ArchetypesReferenceWidget")) {
-        return true;
-      }
-      return false;
-    };
-
-    AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
-
-      /*
-       * Empty the reference field and restore the search query
-       */
-      if (!(field.length > 0)) {
-        return;
-      }
-      this.set_reference_field(field, "");
-      return this.reset_reference_field_query(field);
-    };
-
-    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
-
-      /*
-       * Restores the catalog search query for the given reference field
-       */
-      if (!(field.length > 0)) {
-        return;
-      }
-      return this.set_reference_field_query(field, {});
-    };
+    /**
+     * Set a custom filter query of a reference field
+     *
+     * This method also checks if the current value is allowed by the new search query.
+     *
+     * @param field {Object} jQuery field
+     * @param query {Object} The catalog query to apply to the base query
+     */
 
     AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query) {
-
-      /*
-       * Set the catalog search query for the given reference field
-       */
-      var data, me, search_query, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
-      if (!(field.length > 0)) {
+      var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
+      controller = this.get_widget_controller(field);
+      if (!controller) {
         return;
       }
-      search_query = JSON.stringify(query);
-      field.attr("data-search_query", search_query);
-      console.info("----------> Set search query for field " + field.selector + " -> " + search_query);
+      controller.set_search_query(query);
+      console.debug("Set custom search query for field " + field.selector + ": " + (JSON.stringify(query)));
       target_field_name = field.closest("tr[fieldname]").attr("fieldname");
       target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
-      target_value = this.get_reference_field_value(field);
-      target_base_query = this.get_reference_field_base_query(field);
+      target_value = controller.get_values();
+      target_base_query = controller.get_query();
       target_query = Object.assign({}, target_base_query, query);
-      target_catalog = this.get_reference_field_catalog(field);
-      if (!target_value) {
+      target_catalog = controller.get_catalog();
+      if (target_value.length === 0) {
         return;
       }
       me = this;
       data = {
         query: target_query,
-        uids: target_value.split("\n"),
+        uids: target_value,
         catalog: target_catalog,
         label: target_field_label,
         name: target_field_name
@@ -519,120 +724,156 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
 
-      /*
-       * Set data-records to display the UID of a reference field
-       */
-      var $field, existing_records, new_records;
-      if (records == null) {
-        records = {};
-      }
-      $field = $(field);
-      existing_records = JSON.parse($field.attr("data-records") || '{}');
-      new_records = Object.assign(existing_records, records);
-      return $field.attr("data-records", JSON.stringify(new_records));
+    /**
+     * Reset the custom filter query of a reference field
+     *
+     * @param field {Object} jQuery field
+     */
+
+    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
+      return this.set_reference_field_query(field, {});
     };
 
-    AnalysisRequestAdd.prototype.set_reference_field = function(field, uid) {
 
-      /*
-       * Set the UID of a reference field
-       * NOTE: This method overrides any existing value!
-       */
-      var fieldname, textarea;
-      if (!(field.length > 0)) {
-        return;
-      }
-      fieldname = JSON.parse(field.data("name"));
-      console.debug("set_reference_field:: field=" + fieldname + " uid=" + uid);
-      textarea = field.find("textarea");
-      return this.native_set_value(textarea[0], uid);
-    };
-
-    AnalysisRequestAdd.prototype.set_multi_reference_field = function(field, uids, append) {
-      var existing, fieldname, textarea;
-      if (append == null) {
-        append = true;
-      }
-
-      /*
-       * Set multiple UIDs of a reference field
-       */
-      if (!(field.length > 0)) {
-        return;
-      }
-      if (uids == null) {
-        uids = [];
-      }
-      fieldname = JSON.parse(field.data("name"));
-      console.debug("set_multi_reference_field:: field=" + fieldname + " uids=" + uids);
-      textarea = field.find("textarea");
-      if (!append) {
-        return this.native_set_value(textarea[0], uids.join("\n"));
-      } else {
-        existing = textarea.val().split("\n");
-        uids.forEach(function(uid) {
-          if (indexOf.call(existing, uid) < 0) {
-            return existing = existing.concat(uid);
-          }
-        });
-        return this.native_set_value(textarea[0], existing.join("\n"));
-      }
-    };
+    /**
+     * Get the current value of the reference field
+     *
+     * NOTE: This method returns the values for backwards compatibility as if they
+     *       were read from the textfield (lines of UIDs)
+     *       This will be removed when all methods rely on `controller.get_values()`
+     *
+     * @param field {Object} jQuery field
+     * @returns {String} UIDs joined with \n
+     */
 
     AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
-
-      /*
-       * Return the value of a single/multi reference field
-       */
-      var $field, $textarea;
-      $field = $(field);
-      if ($field.type === "textarea") {
-        $textarea = $field;
-      } else {
-        $textarea = $field.find("textarea");
+      var controller, values;
+      controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
       }
-      return $textarea.val();
+      values = controller.get_values();
+      return values.join("\n");
     };
 
-    AnalysisRequestAdd.prototype.get_reference_field_base_query = function(field) {
 
-      /*
-       * Return the base query of a single/multi reference field
-       */
-      var data;
-      data = $(field).data();
-      return data.query || {};
+    /**
+     * Set UID(s) of a single/multi reference field
+     *
+     * NOTE: This method overrides the value of single reference fields or
+     *       removes/adds the omitted/added values from multi-reference fields
+     *
+     * @param field {Object} jQuery field
+     * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+     */
+
+    AnalysisRequestAdd.prototype.set_reference_field = function(field, values) {
+      var controller, fieldname;
+      if (!this.is_array(values)) {
+        values = [values];
+      }
+      values = values.filter(function(item) {
+        return item && item.length === 32;
+      });
+      controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
+      fieldname = controller.get_name();
+      console.debug("set_reference_field:: field=" + fieldname + " values=" + values);
+      return controller.set_values(values);
     };
 
-    AnalysisRequestAdd.prototype.get_reference_field_catalog = function(field) {
 
-      /*
-       * Return the catalog of a single/multi reference field
-       */
-      var catalog, data;
-      data = $(field).data();
-      catalog = data.catalog || "";
-      return JSON.parse(catalog);
+    /**
+     * Flush reference fields that are statically provided in the flush_settings
+     *
+     * NOTE: Since https://github.com/senaite/senaite.core/pull/2564 this makes
+     *       only sense for non-reference fields, e.g. `EnvironmentalConditions`
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param field_name {String} The name of the field where dependent fields need to be flushed
+     */
+
+    AnalysisRequestAdd.prototype.flush_fields_for = function(arnum, field_name) {
+      var field_ids, me;
+      me = this;
+      field_ids = this.flush_settings[field_name];
+      return $.each(this.flush_settings[field_name], function(index, id) {
+        var field;
+        console.debug("flushing: id=" + id);
+        field = $("#" + id + "-" + arnum);
+        return me.flush_reference_field(field);
+      });
     };
+
+
+    /**
+     * Empty the reference field and restore the search query
+     *
+     * @param field {Object} jQuery field
+     */
+
+    AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
+      this.set_reference_field(field, null);
+      return this.reset_reference_field_query(field);
+    };
+
+
+    /**
+     * Set data-records to display the UID of a reference field
+     *
+     * NOTE: This method if for performance reasons only.
+     *       It avoids an additional lookup of the reference widget to fetch the
+     *       required data to render the display template for the actual UID.
+     *
+     * @param field {Object} jQuery field
+     * @param records {Object} Records to set
+     */
+
+    AnalysisRequestAdd.prototype.set_reference_field_records = function(field, records) {
+      var controller, existing_records, new_records;
+      if (!(records && this.is_object(records))) {
+        return;
+      }
+      controller = this.get_widget_controller(field);
+      if (!controller) {
+        return;
+      }
+      existing_records = controller.get_data_records();
+      new_records = Object.assign(existing_records, records);
+      return controller.set_data_records(new_records);
+    };
+
+
+    /**
+     * Return the record metadata from the `records_snapshot` for the given field
+     *
+     * NOTE: The `records_snapshot` get updated each time `recalculate_records`
+     *       is called. It is provided by the server and contains information
+     *       about dependencies, dependent fields/queries etc.
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param records {Object} Records to set
+     */
 
     AnalysisRequestAdd.prototype.get_metadata_for = function(arnum, field_name) {
-
-      /*
-       * Return the metadata for the given field name
-       */
       var metadata_key, record;
       record = this.records_snapshot[arnum] || {};
       metadata_key = (field_name + "_metadata").toLowerCase();
       return record[metadata_key] || {};
     };
 
-    AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
 
-      /*
-       * Apply the template data to all fields of arnum
-       */
+    /**
+     * Apply the template values to the sample in the specified column
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param template {Object} Template record
+     */
+
+    AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
       var field, me, template_field, template_uid, uid, value;
       me = this;
       template_field = $("#Template-" + arnum);
@@ -658,17 +899,21 @@
       }
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      $.each(template.service_uids, function(index, uid) {
+      return $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
       });
-      return this.set_reference_field(template_field, template_uid);
     };
 
-    AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {
 
-      /*
-       * Select the checkbox of a service by UID
-       */
+    /**
+     * Select service checkbox by UID
+     *
+     * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+     * @param uid {String} UID of the service to select
+     * @param checked {Boolean} True/False to toggle select/delselect
+     */
+
+    AnalysisRequestAdd.prototype.set_service = function(arnum, uid, checked) {
       var el, me, poc;
       console.debug("*** set_service::AR=" + arnum + " UID=" + uid + " checked=" + checked);
       me = this;
@@ -685,51 +930,107 @@
       return $(this).trigger("services:changed");
     };
 
-    AnalysisRequestAdd.prototype.get_service = function(uid) {
 
-      /*
-       * Fetch the service data from server by UID
-       */
-      var options;
-      options = {
-        data: {
-          uid: uid
-        },
-        processData: true,
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+    /**
+     * Show/hide  service conditions input elements for the service
+     *
+     * @param el {Object} jQuery service checkbox
+     */
+
+    AnalysisRequestAdd.prototype.set_service_conditions = function(el) {
+      var arnum, base_info, checked, conditions, context, data, parent, template, uid;
+      checked = el.prop("checked");
+      parent = el.closest("td[uid][arnum]");
+      uid = parent.attr("uid");
+      arnum = parent.attr("arnum");
+      conditions = $("div.service-conditions", parent);
+      conditions.empty();
+      if (!checked) {
+        conditions.hide();
+        return;
+      }
+      data = conditions.data("data");
+      base_info = {
+        arnum: arnum
       };
-      return this.ajax_post_form("get_service", options).done(function(data) {
-        return console.debug("get_service::data=", data);
+      if (!data) {
+        return this.get_service(uid).done(function(data) {
+          var context, template;
+          context = $.extend({}, data, base_info);
+          if (context.conditions && context.conditions.length > 0) {
+            template = this.render_template("service-conditions", context);
+            conditions.append(template);
+            conditions.data("data", context);
+            return conditions.show();
+          }
+        });
+      } else {
+        context = $.extend({}, data, base_info);
+        if (context.conditions && context.conditions.length > 0) {
+          template = this.render_template("service-conditions", context);
+          conditions.append(template);
+          return conditions.show();
+        }
+      }
+    };
+
+
+    /**
+     * Copies the service conditions values from those set for the service with
+     * the specified uid and arnum_from column to the same analysis from the
+     * arnum_to column
+     */
+
+    AnalysisRequestAdd.prototype.copy_service_conditions = function(from, to, uid) {
+      var me, source;
+      console.debug("*** copy_service_conditions::from=" + from + " to=" + to + " UID=" + uid);
+      me = this;
+      source = "td[fieldname='Analyses-" + from + "'] div[id='" + uid + "-conditions'] input[name='ServiceConditions-" + from + ".value:records']";
+      return $(source).each(function(idx, el) {
+        var $el, dest, name, subfield;
+        $el = $(el);
+        name = $el.attr("name");
+        subfield = $el.closest("[data-subfield]").attr("data-subfield");
+        console.debug("-> Copy service condition: " + subfield);
+        dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
+        return dest.val($el.val());
       });
     };
 
-    AnalysisRequestAdd.prototype.hide_all_service_info = function() {
 
-      /*
-       * hide all open service info boxes
-       */
+    /**
+     * Hide all open service info boxes
+     *
+     */
+
+    AnalysisRequestAdd.prototype.hide_all_service_info = function() {
       var info;
       info = $("div.service-info");
       return info.hide();
     };
 
-    AnalysisRequestAdd.prototype.is_poc_expanded = function(poc) {
 
-      /*
-       * Checks if the point of captures are visible
-       */
+    /**
+     * Checks if the point of capture is visible
+     *
+     * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+     */
+
+    AnalysisRequestAdd.prototype.is_poc_expanded = function(poc) {
       var el;
       el = $("tr.service-listing-header[poc=" + poc + "]");
       return el.hasClass("visible");
     };
 
-    AnalysisRequestAdd.prototype.toggle_poc_categories = function(poc, toggle) {
 
-      /*
-       * Toggle all categories within a point of capture (lab/service)
-       * :param poc: the point of capture (lab/field)
-       * :param toggle: services visible if true
-       */
+    /**
+     * Toggle all categories within a point of capture (lab/service)
+     *
+     * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+     * @param toggle {Boolean} True/False to show/hide categories
+     */
+
+    AnalysisRequestAdd.prototype.toggle_poc_categories = function(poc, toggle) {
       var categories, el, services, services_checked, toggle_buttons;
       if (toggle == null) {
         toggle = !this.is_poc_expanded(poc);
@@ -754,13 +1055,71 @@
     };
 
 
-    /* EVENT HANDLER */
+    /**
+     * Render a confirmation dialog popup
+     *
+     * [1] http://handlebarsjs.com/
+     * [2] https://jqueryui.com/dialog/
+     *
+     * @param template_id {String} ID of the Handlebars template
+     * @param context {Object} Data to fill into the template
+     * @param buttons {Object} Buttons to render
+     */
+
+    AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
+      var content;
+      if (buttons == null) {
+        buttons = {};
+        buttons[_t("Yes")] = function() {
+          $(this).trigger("yes");
+          return $(this).dialog("close");
+        };
+        buttons[_t("No")] = function() {
+          $(this).trigger("no");
+          return $(this).dialog("close");
+        };
+      }
+      content = this.render_template(template_id, context);
+      return $(content).dialog({
+        width: 450,
+        resizable: false,
+        closeOnEscape: false,
+        buttons: buttons,
+        open: function(event, ui) {
+          return $(".ui-dialog-titlebar-close").hide();
+        }
+      });
+    };
+
+
+    /**
+     * Render template with Handlebars
+     *
+     * @returns {String} Rendered content
+     */
+
+    AnalysisRequestAdd.prototype.render_template = function(template_id, context) {
+      var content, source, template;
+      source = $("#" + template_id).html();
+      if (!source) {
+        return;
+      }
+      template = Handlebars.compile(source);
+      content = template(context);
+      return content;
+    };
+
+
+    /* EVENT HANDLERS */
+
+
+    /**
+     * Generic event handler for when a reference field value changed
+     *
+     * @param event {Object} The event object
+     */
 
     AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
-
-      /*
-       * Generic event handler for when a reference field value changed
-       */
       var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, record, ref, selected, value;
       me = this;
       el = event.currentTarget;
@@ -797,7 +1156,7 @@
         return;
       }
       console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
-      me.flush_fields_for(field_name, arnum);
+      me.flush_fields_for(arnum, field_name);
       event_data = {
         bubbles: true,
         detail: {
@@ -809,11 +1168,14 @@
       return $(me).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_details_click = function(event) {
 
-      /*
-       * Eventhandler when the user clicked on the info icon of a service.
-       */
+    /**
+     * Event handler when the user clicked on the info icon of a service.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_details_click = function(event) {
       var $el, arnum, context, data, el, extra, info, profiles, record, template, templates, uid;
       el = event.currentTarget;
       $el = $(el);
@@ -857,11 +1219,14 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_lock_button_click = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was removed.
-       */
+    /**
+     * Event handler when an Analysis Profile was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_lock_button_click = function(event) {
       var $el, arnum, buttons, context, dialog, el, me, profile_uid, record, template_uid, uid;
       console.debug("°°° on_analysis_lock_button_click °°°");
       me = this;
@@ -890,20 +1255,26 @@
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_template_selected = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Template was selected.
-       */
+    /**
+     * Event handler when an Analysis Template was selected.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_template_selected = function(event) {
       console.debug("°°° on_analysis_template_selected °°°");
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_template_removed = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Template was removed.
-       */
+    /**
+     * Eventhandler when an Analysis Template was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_template_removed = function(event) {
       var $el, arnum, el;
       console.debug("°°° on_analysis_template_removed °°°");
       el = event.currentTarget;
@@ -913,20 +1284,26 @@
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_profile_selected = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was selected.
-       */
+    /**
+     * Event handler when an Analysis Profile was selected.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_profile_selected = function(event) {
       console.debug("°°° on_analysis_profile_selected °°°");
       return $(this).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_profile_removed = function(event) {
 
-      /*
-       * Eventhandler when an Analysis Profile was removed.
-       */
+    /**
+     * Event handler when an Analysis Profile was removed.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_profile_removed = function(event) {
       var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, profile_uid, record;
       console.debug("°°° on_analysis_profile_removed °°°");
       me = this;
@@ -956,11 +1333,14 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_checkbox_click = function(event) {
 
-      /*
-       * Eventhandler for Analysis Service Checkboxes.
-       */
+    /**
+     * Event handler for Analysis Service Checkboxes.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_analysis_checkbox_click = function(event) {
       var $el, checked, el, me, uid;
       me = this;
       el = event.currentTarget;
@@ -973,12 +1353,16 @@
       return $(me).trigger("services:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
 
-      /*
-       * Eventhandler for analysis service category header rows.
-       * Toggles the visibility of all categories within this poc.
-       */
+    /**
+     * Event handler for analysis service category header rows.
+     *
+     * Toggles the visibility of all categories within this poc.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
       var $el, poc, toggle, visible;
       $el = $(event.currentTarget);
       poc = $el.data("poc");
@@ -987,13 +1371,17 @@
       return this.toggle_poc_categories(poc, toggle);
     };
 
-    AnalysisRequestAdd.prototype.on_service_category_click = function(event) {
 
-      /*
-       * Eventhandler for analysis service category rows.
-       * Toggles the visibility of all services within this category.
-       * Selected services always stay visible.
-       */
+    /**
+     * Event handler for analysis service category rows.
+     *
+     * Toggles the visibility of all services within this category.
+     * NOTE: Selected services always stay visible.
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_service_category_click = function(event) {
       var $btn, $el, category, expanded, poc, services, services_checked;
       event.preventDefault();
       $el = $(event.currentTarget);
@@ -1018,13 +1406,18 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.on_copy_button_click = function(event) {
 
-      /*
-       * Eventhandler for the field copy button per row.
-       * Copies the value of the first field in this row to the remaining.
-       * XXX Refactor
-       */
+    /**
+     * Event handler for the field copy button per row.
+     *
+     * Copies the value of the first field in this row to the remaining.
+     *
+     * XXX: Refactor this method, it is way too long
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_copy_button_click = function(event) {
       var $el, $td1, $tr, ar_count, el, i, me, record_one, records, results, td1, tr, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
@@ -1056,7 +1449,7 @@
           _td = $tr.find("td[arnum=" + arnum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
           _field_name = _el.closest("tr[fieldname]").attr("fieldname");
-          me.flush_fields_for(_field_name, arnum);
+          me.flush_fields_for(arnum, _field_name);
           me.set_reference_field_records(_el, records);
           return me.set_reference_field(_el, value);
         });
@@ -1248,127 +1641,12 @@
 
 
     /**
-      * Set input value with native setter to support ReactJS components
+     * Event handler when Ajax request started
+     *
+     * @param event {Object} The event object
      */
 
-    AnalysisRequestAdd.prototype.native_set_value = function(input, value) {
-      var event, setter;
-      setter = null;
-      if (input.tagName === "TEXTAREA") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-      } else if (input.tagName === "SELECT") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set;
-      } else if (input.tagName === "INPUT") {
-        setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-      } else {
-        input.value = value;
-      }
-      if (setter) {
-        setter.call(input, value);
-      }
-      event = new Event("input", {
-        bubbles: true
-      });
-      return input.dispatchEvent(event);
-    };
-
-    AnalysisRequestAdd.prototype.ajax_post_form = function(endpoint, options) {
-      var ajax_options, base_url, form, form_data, me, url;
-      if (options == null) {
-        options = {};
-      }
-
-      /*
-       * Ajax POST the form data to the given endpoint
-       */
-      console.debug("°°° ajax_post_form::Endpoint=" + endpoint + " °°°");
-      base_url = this.get_base_url();
-      url = base_url + "/ajax_ar_add/" + endpoint;
-      console.debug("Ajax POST to url " + url);
-      form = $("#analysisrequest_add_form");
-      form_data = new FormData(form[0]);
-      ajax_options = {
-        url: url,
-        type: 'POST',
-        data: form_data,
-        context: this,
-        cache: false,
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        timeout: 600000
-      };
-      $.extend(ajax_options, options);
-
-      /* Execute the request */
-      me = this;
-      $(me).trigger("ajax:start");
-      return $.ajax(ajax_options).always(function(data) {
-        return $(me).trigger("ajax:end");
-      }).fail(function(request, status, error) {
-        var msg;
-        msg = _t("Sorry, an error occured: " + status);
-        window.bika.lims.portalMessage(msg);
-        return window.scroll(0, 0);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_json = function(endpoint, options) {
-
-      /*
-       * Fetch Ajax API resource from the server
-       * @param {string} endpoint
-       * @param {object} options
-       * @returns {Promise}
-       */
-      var base_url, data, init, me, method, request, url;
-      if (options == null) {
-        options = {};
-      }
-      method = options.method || "POST";
-      data = JSON.stringify(options.data) || "{}";
-      base_url = this.get_base_url();
-      url = base_url + "/ajax_ar_add/" + endpoint;
-      me = this;
-      $(me).trigger("ajax:start");
-      init = {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": this.get_csrf_token()
-        },
-        body: method === "POST" ? data : null,
-        credentials: "include"
-      };
-      console.info("get_json:endpoint=" + endpoint + " init=", init);
-      request = new Request(url, init);
-      return fetch(request).then(function(response) {
-        $(me).trigger("ajax:end");
-        if (!response.ok) {
-          return Promise.reject(response);
-        }
-        return response;
-      }).then(function(response) {
-        return response.json();
-      })["catch"](function(response) {
-        return response;
-      });
-    };
-
-    AnalysisRequestAdd.prototype.get_csrf_token = function() {
-
-      /*
-       * Get the plone.protect CSRF token
-       * Note: The fields won't save w/o that token set
-       */
-      return document.querySelector("#protect-script").dataset.token;
-    };
-
     AnalysisRequestAdd.prototype.on_ajax_start = function() {
-
-      /*
-       * Ajax request started
-       */
       var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_start °°°");
       save_button = $("input[name=save_button]");
@@ -1382,11 +1660,14 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_ajax_end = function() {
 
-      /*
-       * Ajax request finished
-       */
+    /**
+     * Event handler when Ajax request finished
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_ajax_end = function() {
       var save_and_copy_button, save_button;
       console.debug("°°° on_ajax_end °°°");
       save_button = $("input[name=save_button]");
@@ -1399,6 +1680,14 @@
         "disabled": false
       });
     };
+
+
+    /**
+     * Event handler when Ajax when cancel button was clicked
+     *
+     * @param event {Object} The event object
+     * @param callback {Function}
+     */
 
     AnalysisRequestAdd.prototype.on_cancel = function(event, callback) {
       var base_url;
@@ -1414,12 +1703,16 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
 
-      /*
-       * Eventhandler for the form submit button.
-       * Extracts and submits all form data asynchronous.
-       */
+    /**
+     * Event handler for the form submit button.
+     *
+     * Extracts all form data and submits them asynchronously
+     *
+     * @param event {Object} The event object
+     */
+
+    AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
       var action, action_input, base_url, btn, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
@@ -1485,22 +1778,13 @@
       });
     };
 
-    AnalysisRequestAdd.prototype.init_file_fields = function() {
-      var me;
-      me = this;
-      return $('tr[fieldname] input[type="file"]').each(function(index, element) {
-        var add_btn, add_btn_src, file_field, file_field_div;
-        file_field = $(element);
-        file_field.wrap("<div class='field'/>");
-        file_field_div = file_field.parent();
-        add_btn_src = window.portal_url + "/senaite_theme/icon/plus";
-        add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='" + add_btn_src + "' />");
-        add_btn.on("click", element, function(event) {
-          return me.file_addbtn_click(event, element);
-        });
-        return file_field_div.append(add_btn);
-      });
-    };
+
+    /**
+     * Event handler when the file add button was clicked
+     *
+     * @param event {Object} The event object
+     * @param element {Object} jQuery file field
+     */
 
     AnalysisRequestAdd.prototype.file_addbtn_click = function(event, element) {
       var arnum, counter, del_btn, del_btn_src, existing_file_field_names, existing_file_fields, file_field, file_field_div, holding_div, name, newfieldname, ref;
@@ -1529,86 +1813,6 @@
       });
       file_field_div.append(del_btn);
       return $(element).parent().parent().append(file_field_div);
-    };
-
-    AnalysisRequestAdd.prototype.set_service_conditions = function(el) {
-
-      /*
-       * Shows or hides the service conditions input elements for the service
-       * bound to the checkbox element passed in
-       */
-      var arnum, base_info, checked, conditions, context, data, parent, template, uid;
-      checked = el.prop("checked");
-      parent = el.closest("td[uid][arnum]");
-      uid = parent.attr("uid");
-      arnum = parent.attr("arnum");
-      conditions = $("div.service-conditions", parent);
-      conditions.empty();
-      if (!checked) {
-        conditions.hide();
-        return;
-      }
-      data = conditions.data("data");
-      base_info = {
-        arnum: arnum
-      };
-      if (!data) {
-        return this.get_service(uid).done(function(data) {
-          var context, template;
-          context = $.extend({}, data, base_info);
-          if (context.conditions && context.conditions.length > 0) {
-            template = this.render_template("service-conditions", context);
-            conditions.append(template);
-            conditions.data("data", context);
-            return conditions.show();
-          }
-        });
-      } else {
-        context = $.extend({}, data, base_info);
-        if (context.conditions && context.conditions.length > 0) {
-          template = this.render_template("service-conditions", context);
-          conditions.append(template);
-          return conditions.show();
-        }
-      }
-    };
-
-    AnalysisRequestAdd.prototype.copy_service_conditions = function(from, to, uid) {
-
-      /*
-       * Copies the service conditions values from those set for the service with
-       * the specified uid and arnum_from column to the same analysis from the
-       * arnum_to column
-       */
-      var me, source;
-      console.debug("*** copy_service_conditions::from=" + from + " to=" + to + " UID=" + uid);
-      me = this;
-      source = "td[fieldname='Analyses-" + from + "'] div[id='" + uid + "-conditions'] input[name='ServiceConditions-" + from + ".value:records']";
-      return $(source).each(function(idx, el) {
-        var $el, dest, name, subfield;
-        $el = $(el);
-        name = $el.attr("name");
-        subfield = $el.closest("[data-subfield]").attr("data-subfield");
-        console.debug("-> Copy service condition: " + subfield);
-        dest = $("td[fieldname='Analyses-" + to + "'] tr[data-subfield='" + subfield + "'] input[name='ServiceConditions-" + to + ".value:records']");
-        return dest.val($el.val());
-      });
-    };
-
-    AnalysisRequestAdd.prototype.init_service_conditions = function() {
-
-      /*
-       * Updates the visibility of the conditions for the selected services
-       */
-      var me, services;
-      console.debug("init_service_conditions");
-      me = this;
-      services = $("input[type=checkbox].analysisservice-cb:checked");
-      return $(services).each(function(idx, el) {
-        var $el;
-        $el = $(el);
-        return me.set_service_conditions($el);
-      });
     };
 
     return AnalysisRequestAdd;

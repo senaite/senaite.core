@@ -1,5 +1,4 @@
 auditlog
-bika_analysiscategories
 bika_analysisservices
 bika_analysisspecs
 bika_artemplates
@@ -12,5 +11,4 @@ bika_referencedefinitions
 bika_sampletypes
 bika_suppliers
 bika_worksheettemplates
-instrumentlocations
 laboratory

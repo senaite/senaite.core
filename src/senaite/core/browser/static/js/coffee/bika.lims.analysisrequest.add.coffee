@@ -59,7 +59,175 @@ class window.AnalysisRequestAdd
     return @
 
 
+  ####################
+  ### AJAX FETCHER ###
+  ####################
+
+  ###*
+   * Fetch global settings from the setup, e.g. show_prices
+   *
+  ###
+  get_global_settings: =>
+    @ajax_post_form("get_global_settings").done (settings) ->
+      console.debug "Global Settings:", settings
+      # remember the global settings
+      @global_settings = settings
+      # trigger event for whom it might concern
+      $(@).trigger "settings:updated", settings
+
+
+  ###*
+   * Retrieve the flush settings mapping (field name -> list of other fields to flush)
+   *
+  ###
+  get_flush_settings: =>
+    @ajax_post_form("get_flush_settings").done (settings) ->
+      console.debug "Flush settings:", settings
+      @flush_settings = settings
+      $(@).trigger "flush_settings:updated", settings
+
+
+  ###*
+   * Fetch the service data from server by UID
+   *
+  ###
+  get_service: (uid) =>
+    options =
+      data:
+        uid: uid
+      processData: yes
+      contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+
+    @ajax_post_form("get_service", options).done (data) ->
+      console.debug "get_service::data=", data
+
+
+  ###*
+   * Submit all form values to the server to recalculate the records
+   *
+  ###
+  recalculate_records: =>
+    @ajax_post_form("recalculate_records").done (records) ->
+      console.debug "Recalculate Analyses: Records=", records
+      # remember a services snapshot
+      @records_snapshot = records
+      # trigger event for whom it might concern
+      $(@).trigger "data:updated", records
+
+
+  ###*
+   * Submit all form values to the server to recalculate the prices of all columns
+   *
+  ###
+  recalculate_prices: =>
+    if @global_settings.show_prices is false
+      console.debug "*** Skipping Price calculation ***"
+      return
+
+    @ajax_post_form("recalculate_prices").done (data) ->
+      console.debug "Recalculate Prices Data=", data
+      for own arnum, prices of data
+        $("#discount-#{arnum}").text prices.discount
+        $("#subtotal-#{arnum}").text prices.subtotal
+        $("#vat-#{arnum}").text prices.vat
+        $("#total-#{arnum}").text prices.total
+      # trigger event for whom it might concern
+      $(@).trigger "prices:updated", data
+
+
+  ###*
+   * Ajax POST the form data to the given endpoint
+   *
+   * NOTE: Context of callback is bound to this object
+   *
+   * @param endpoint {String} Ajax endpoint to call
+   * @param options {Object} Additional ajax options
+  ###
+  ajax_post_form: (endpoint, options={}) =>
+    console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
+    # calculate the right form URL
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+    console.debug "Ajax POST to url #{url}"
+
+    # extract the form data
+    form = $("#analysisrequest_add_form")
+    # form.serialize does not include file attachments
+    # form_data = form.serialize()
+    form_data = new FormData(form[0])
+
+    # jQuery Ajax options
+    ajax_options =
+      url: url
+      type: 'POST'
+      data: form_data
+      context: @
+      cache: false
+      dataType: 'json'  # data type we expect from the server
+      processData: false
+      contentType: false
+      # contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+      timeout: 600000  # 10 minutes timeout
+
+    # Update Options
+    $.extend(ajax_options, options)
+
+    # Notify Ajax start
+    me = this
+    $(me).trigger "ajax:start"
+    $.ajax(ajax_options).always (data) ->
+      # Always notify Ajax end
+      $(me).trigger "ajax:end"
+    .fail (request, status, error) ->
+      msg = _t("Sorry, an error occured: #{status}")
+      window.bika.lims.portalMessage msg
+      window.scroll 0, 0
+
+
+  ###*
+   * Fetch Ajax API resource from the server
+   *
+   * @param endpoint {String} API endpoint
+   * @param options {Object} Fetch options and data payload
+   * @returns {Promise}
+  ###
+  get_json: (endpoint, options) ->
+    options ?= {}
+
+    method = options.method or "POST"
+    data = JSON.stringify(options.data) or "{}"
+
+    base_url = @get_base_url()
+    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+
+    # Always notify Ajax end
+    me = this
+    $(me).trigger "ajax:start"
+
+    init =
+      method: method
+      headers:
+        "Content-Type": "application/json"
+        "X-CSRF-TOKEN": @get_csrf_token()
+      body: if method is "POST" then data else null
+      credentials: "include"
+    console.info "get_json:endpoint=#{endpoint} init=",init
+    request = new Request(url, init)
+    fetch(request)
+    .then (response) ->
+      $(me).trigger "ajax:end"
+      if not response.ok
+        return Promise.reject response
+      return response
+    .then (response) ->
+      return response.json()
+    .catch (response) ->
+      return response
+
+
+  ###############
   ### METHODS ###
+  ###############
 
   bind_eventhandler: =>
     ###
@@ -124,11 +292,55 @@ class window.AnalysisRequestAdd
     $(this).on "ajax:end", @on_ajax_end
 
 
+  ###*
+   * Init file fields to allow multiple attachments
+   *
+  ###
+  init_file_fields: =>
+    me = this
+    $('tr[fieldname] input[type="file"]').each (index, element) ->
+      # Wrap the initial field into a div
+      file_field = $(element)
+      file_field.wrap "<div class='field'/>"
+      file_field_div = file_field.parent()
+      # Create and add an ADD Button on the fly
+      add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
+      add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='#{add_btn_src}' />")
+
+      # bind ADD event handler
+      add_btn.on "click", element, (event) ->
+        me.file_addbtn_click event, element
+
+      # Attach the Button into the same div container
+      file_field_div.append add_btn
+
+
+  ###*
+   * Updates the visibility of the conditions for the selected services
+   *
+  ###
+  init_service_conditions: =>
+    console.debug "init_service_conditions"
+
+    me = this
+
+    # Find out all selected services checkboxes
+    services = $("input[type=checkbox].analysisservice-cb:checked")
+    $(services).each (idx, el) ->
+      $el = $(el)
+      me.set_service_conditions $el
+
+
+  ###*
+   * Debounce a function call
+   *
+   * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+   *
+   * @param func {Object} Function to debounce
+   * @param threshold {Integer} Debounce time in milliseconds
+   * @param execAsap {Boolean} True/False to execute the function immediately
+  ###
   debounce: (func, threshold, execAsap) =>
-    ###
-     * Debounce a function call
-     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
-    ###
     timeout = null
 
     return (args...) ->
@@ -143,114 +355,15 @@ class window.AnalysisRequestAdd
       timeout = setTimeout(delayed, threshold || 300)
 
 
-  template_dialog: (template_id, context, buttons) =>
-    ###
-     * Render the content of a Handlebars template in a jQuery UID dialog
-       [1] http://handlebarsjs.com/
-       [2] https://jqueryui.com/dialog/
-    ###
-
-    # prepare the buttons
-    if not buttons?
-      buttons = {}
-      buttons[_t("Yes")] = ->
-        # trigger 'yes' event
-        $(@).trigger "yes"
-        $(@).dialog "close"
-      buttons[_t("No")] = ->
-        # trigger 'no' event
-        $(@).trigger "no"
-        $(@).dialog "close"
-
-    # render the Handlebars template
-    content = @render_template template_id, context
-
-    # render the dialog box
-    $(content).dialog
-      width: 450
-      resizable: no
-      closeOnEscape: no
-      buttons: buttons
-      open: (event, ui) ->
-        # Hide the X button on the top right border
-        $(".ui-dialog-titlebar-close").hide()
-
-
-  render_template: (template_id, context) =>
-    ###
-     * Render Handlebars JS template
-    ###
-
-    # get the template by ID
-    source = $("##{template_id}").html()
-    return unless source
-    # Compile the handlebars template
-    template = Handlebars.compile(source)
-    # Render the template with the given context
-    content = template(context)
-    return content
-
-
-  get_global_settings: =>
-    ###
-     * Fetch global settings from the setup, e.g. show_prices
-    ###
-    @ajax_post_form("get_global_settings").done (settings) ->
-      console.debug "Global Settings:", settings
-      # remember the global settings
-      @global_settings = settings
-      # trigger event for whom it might concern
-      $(@).trigger "settings:updated", settings
-
-
-  get_flush_settings: =>
-    ###
-     * Retrieve the flush settings mapping (field name -> list of other fields to flush)
-    ###
-    @ajax_post_form("get_flush_settings").done (settings) ->
-      console.debug "Flush settings:", settings
-      @flush_settings = settings
-      $(@).trigger "flush_settings:updated", settings
-
-
-  recalculate_records: =>
-    ###
-     * Submit all form values to the server to recalculate the records
-    ###
-    @ajax_post_form("recalculate_records").done (records) ->
-      console.debug "Recalculate Analyses: Records=", records
-      # remember a services snapshot
-      @records_snapshot = records
-      # trigger event for whom it might concern
-      $(@).trigger "data:updated", records
-
-
-  recalculate_prices: =>
-    ###
-     * Submit all form values to the server to recalculate the prices of all columns
-    ###
-
-    if @global_settings.show_prices is false
-      console.debug "*** Skipping Price calculation ***"
-      return
-
-    @ajax_post_form("recalculate_prices").done (data) ->
-      console.debug "Recalculate Prices Data=", data
-      for own arnum, prices of data
-        $("#discount-#{arnum}").text prices.discount
-        $("#subtotal-#{arnum}").text prices.subtotal
-        $("#vat-#{arnum}").text prices.vat
-        $("#total-#{arnum}").text prices.total
-      # trigger event for whom it might concern
-      $(@).trigger "prices:updated", data
-
-
+  ###*
+   * Update form according to the server data
+   *
+   * Records provided from the server (see recalculate_records)
+   *
+   * @param event {Object} Event object
+   * @param records {Object} Updated records
+  ###
   update_form: (event, records) =>
-    ###
-     * Update form according to the server data
-     *
-     * Records provided from the server (see ajax_recalculate_records)
-    ###
     console.debug "*** update_form ***"
 
     me = this
@@ -312,6 +425,11 @@ class window.AnalysisRequestAdd
         return false
 
 
+  ###*
+   * Return the portal url (calculated in code)
+   *
+   * @returns {String} Portal URL
+  ###
   get_portal_url: =>
     ###
      * Return the portal url (calculated in code)
@@ -320,53 +438,153 @@ class window.AnalysisRequestAdd
     return url
 
 
+  ###*
+   * Return the current (relative) base url
+   *
+   * @returns {String} Base URL for Ajax Request
+  ###
   get_base_url: =>
-    ###
-     * Return the current (relative) base url
-    ###
     base_url = window.location.href
     if base_url.search("/portal_factory") >= 0
       return base_url.split("/portal_factory")[0]
     return base_url.split("/ar_add")[0]
 
 
+  ###*
+   * Return the CSRF token
+   *
+   * NOTE: The fields won't save w/o that token set
+   *
+   * @returns {String} CSRF token
+  ###
+  get_csrf_token: ->
+    ###
+     * Get the plone.protect CSRF token
+     * Note: The fields won't save w/o that token set
+    ###
+    return document.querySelector("#protect-script").dataset.token
+
+
+  ###*
+   * Returns the ReactJS widget controller for the given field
+   *
+   * @param field {Object} jQuery field
+   * @returns {Object} ReactJS widget controller
+  ###
+  get_widget_controller: (field) ->
+    id = $(field).prop("id")
+    ns = window?.senaite?.core?.widgets or {}
+    return ns[id]
+
+
+  ###*
+   * Checks if a given field is a reference field
+   *
+   * TODO: This check is very naive.
+   *       Maybe we can do this better with the widget controller!
+   *
+   * @param field {Object} jQuery field
+   * @returns {Boolean} True if the field is a reference field
+  ###
+  is_reference_field: (field) ->
+    field = $(field)
+    if field.hasClass("senaite-uidreference-widget-input")
+      return yes
+    if field.hasClass("ArchetypesReferenceWidget")
+      return yes
+    return no
+
+
+  ###*
+   * Checks if the given value is an Array
+   *
+   * @param thing {Object} value to check
+   * @returns {Boolean} True if the value is an Array
+  ###
+  is_array: (value) ->
+    return Array.isArray(value)
+
+
+  ###*
+   * Checks if the given value is a plain Object
+   *
+   * @param thing {Object} value to check
+   * @returns {Boolean} True if the value is a plain Object, i.e. `{}`
+  ###
+  is_object: (value) ->
+    return Object.prototype.toString.call(value) is "[object Object]"
+
+
+  ###*
+    * Set input value with native setter to support ReactJS components
+  ###
+  native_set_value: (input, value) =>
+    # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+    # TL;DR: React library overrides input value setter
+
+    setter = null
+    if input.tagName == "TEXTAREA"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set
+    else if input.tagName == "SELECT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set
+    else if input.tagName == "INPUT"
+      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
+    else
+      input.value = value
+
+    if setter
+      setter.call(input, value)
+
+    event = new Event("input", {bubbles: true})
+    input.dispatchEvent(event)
+
+
+  ###*
+   * Apply the field value to set dependent fields and set dependent filter queries
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the value and metadata
+  ###
   apply_field_value: (arnum, record) ->
-    ###
-     * Applies the value for the given record, by setting values and applying
-     * search filters to dependents
-    ###
-    me = this
-    title = record.title
-    console.debug "apply_field_value: arnum=#{arnum} record=#{title}"
-
     # Set default values to dependents
-    me.apply_dependent_values arnum, record
-
+    @apply_dependent_values arnum, record
     # Apply search filters to other fields
-    me.apply_dependent_filter_queries record, arnum
+    @apply_dependent_filter_queries arnum, record
 
 
+  ###*
+   * Apply dependent field values
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the value and metadata
+  ###
   apply_dependent_values: (arnum, record) ->
-    ###
-     * Set default field values to dependents
-    ###
     me = this
     $.each record.field_values, (field_name, values) ->
       me.apply_dependent_value arnum, field_name, values
 
 
+  ###*
+   * Apply the actual value on the dependent field
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param field_name {String} Name of the dependent field, e.g. 'CCContact'
+   * @param values {Object, Array} The value to be set
+  ###
   apply_dependent_value: (arnum, field_name, values) ->
-    ###
-     * Set values on field
-    ###
-
     # always handle values as array internally
-    if not Array.isArray values
+    if not @is_array(values)
       values = [values]
 
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
+
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
@@ -384,11 +602,8 @@ class window.AnalysisRequestAdd
       values.forEach (value) =>
         @set_reference_field_records field, value
 
-      if field.data("multi_valued") is 1
-        @set_multi_reference_field field, uids
-      else
-        uid = if uids.length > 0 then uids[0] else ""
-        @set_reference_field field, uid
+      # update reference field values
+      @set_reference_field field, uids
 
     # other fields, e.g. default CC Emails of Client
     else
@@ -406,10 +621,17 @@ class window.AnalysisRequestAdd
             field.val value.value
 
 
-  apply_dependent_filter_queries: (record, arnum) ->
-    ###
-     * Apply search filters to dependents
-    ###
+  ###*
+   * Apply filter queries of dependent reference fields to restrict the allowed searches
+   *
+   * NOTE: This method is chained to set dependent filter queries sequentially,
+   *       because a new Ajax request is done for each field to check if the
+   *       current value is allowed or must be flushed.
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param record {Object} The data record object containing the filter_queries
+  ###
+  apply_dependent_filter_queries: (arnum, record) ->
     me = this
     chain = Promise.resolve()
     $.each record.filter_queries, (field_name, query) ->
@@ -418,80 +640,45 @@ class window.AnalysisRequestAdd
         me.set_reference_field_query field, query
 
 
-  flush_fields_for: (field_name, arnum) ->
-    ###
-     * Flush dependent fields
-    ###
-    me = this
-    field_ids = @flush_settings[field_name]
-    $.each @flush_settings[field_name], (index, id) ->
-      console.debug "flushing: id=#{id}"
-      field = $("##{id}-#{arnum}")
-      me.flush_reference_field field
-
-
-  is_reference_field: (field) ->
-    ###
-     * Checks if the given field is a reference field
-    ###
-    field = $(field)
-    if field.hasClass("senaite-uidreference-widget-input")
-      return yes
-    if field.hasClass("ArchetypesReferenceWidget")
-      return yes
-    return no
-
-
-  flush_reference_field: (field) ->
-    ###
-     * Empty the reference field and restore the search query
-    ###
-    return unless field.length > 0
-
-    # set emtpy value
-    @set_reference_field field, ""
-    # restore the original search query
-    @reset_reference_field_query field
-
-
-  reset_reference_field_query: (field) =>
-    ###
-     * Restores the catalog search query for the given reference field
-    ###
-    return unless field.length > 0
-    this.set_reference_field_query(field, {})
-
-
+  ###*
+   * Set a custom filter query of a reference field
+   *
+   * This method also checks if the current value is allowed by the new search query.
+   *
+   * @param field {Object} jQuery field
+   * @param query {Object} The catalog query to apply to the base query
+  ###
   set_reference_field_query: (field, query) =>
-    ###
-     * Set the catalog search query for the given reference field
-    ###
-    return unless field.length > 0
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
     # set the new query
-    search_query = JSON.stringify(query)
-    field.attr("data-search_query", search_query)
-    console.info("----------> Set search query for field #{field.selector} -> #{search_query}")
+    controller.set_search_query(query)
+    console.debug("Set custom search query for field #{field.selector}: #{JSON.stringify(query)}")
 
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"
     target_field_label = field.closest("tr[fieldlabel]").attr "fieldlabel"
-    target_value = @get_reference_field_value field
-    target_base_query = @get_reference_field_base_query field
+    target_value = controller.get_values()
+    target_base_query = controller.get_query()
     target_query = Object.assign({}, target_base_query, query)
-    target_catalog = @get_reference_field_catalog field
+    target_catalog = controller.get_catalog()
 
     # no flushing required if the field is already empty
-    if not target_value
+    if target_value.length == 0
       return
 
     me = this
     data =
       query: target_query
-      uids: target_value.split("\n")
+      uids: target_value
       catalog: target_catalog
       label: target_field_label
       name: target_field_name
 
+    # Ask the server if the value is allowed by the new query
     @get_json("is_reference_value_allowed", {data: data}).then (response) ->
       if not response.allowed
         console.info("Reference value #{target_value} of field #{target_field_name} " +
@@ -502,93 +689,139 @@ class window.AnalysisRequestAdd
           site.add_notification(message.title, message.text)
 
 
-  set_reference_field_records: (field, records) =>
-    ###
-     * Set data-records to display the UID of a reference field
-    ###
-    records ?= {}
-    $field = $(field)
-
-    existing_records = JSON.parse($field.attr("data-records") or '{}')
-    new_records = Object.assign(existing_records, records)
-    $field.attr("data-records", JSON.stringify(new_records))
+  ###*
+   * Reset the custom filter query of a reference field
+   *
+   * @param field {Object} jQuery field
+  ###
+  reset_reference_field_query: (field) =>
+    this.set_reference_field_query(field, {})
 
 
-  set_reference_field: (field, uid) ->
-    ###
-     * Set the UID of a reference field
-     * NOTE: This method overrides any existing value!
-    ###
-    return unless field.length > 0
-
-    fieldname = JSON.parse field.data("name")
-    console.debug "set_reference_field:: field=#{fieldname} uid=#{uid}"
-    textarea = field.find("textarea")
-    this.native_set_value(textarea[0], uid)
-
-
-  set_multi_reference_field: (field, uids, append=true) ->
-    ###
-     * Set multiple UIDs of a reference field
-    ###
-    return unless field.length > 0
-
-    uids ?= []
-    fieldname = JSON.parse field.data("name")
-    console.debug "set_multi_reference_field:: field=#{fieldname} uids=#{uids}"
-    textarea = field.find("textarea")
-
-    if not append
-      this.native_set_value(textarea[0], uids.join("\n"))
-    else
-      existing = textarea.val().split("\n")
-      uids.forEach (uid) ->
-        if uid not in existing
-          existing = existing.concat(uid)
-      this.native_set_value(textarea[0], existing.join("\n"))
-
-
+  ###*
+   * Get the current value of the reference field
+   *
+   * NOTE: This method returns the values for backwards compatibility as if they
+   *       were read from the textfield (lines of UIDs)
+   *       This will be removed when all methods rely on `controller.get_values()`
+   *
+   * @param field {Object} jQuery field
+   * @returns {String} UIDs joined with \n
+  ###
   get_reference_field_value: (field) =>
-    ###
-     * Return the value of a single/multi reference field
-    ###
-    $field = $(field)
-    if $field.type is "textarea"
-      $textarea = $field
-    else
-      $textarea = $field.find("textarea")
-    return $textarea.val()
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
+    values = controller.get_values()
+    # BBB: provide the values in the same way as the textarea
+    return values.join("\n")
 
 
-  get_reference_field_base_query: (field) =>
-    ###
-     * Return the base query of a single/multi reference field
-    ###
-    data = $(field).data()
-    return data.query or {}
+  ###*
+   * Set UID(s) of a single/multi reference field
+   *
+   * NOTE: This method overrides the value of single reference fields or
+   *       removes/adds the omitted/added values from multi-reference fields
+   *
+   * @param field {Object} jQuery field
+   * @param values {String,Array} UID(s) to set. A falsy value flushes the field.
+  ###
+  set_reference_field: (field, values) ->
+    if not @is_array(values)
+      values = [values]
+
+    # filter out invalid UIDs
+    # NOTE: UIDs have always a length of 32
+    values = values.filter((item) -> item and item.length == 32)
+
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
+    fieldname = controller.get_name()
+    console.debug "set_reference_field:: field=#{fieldname} values=#{values}"
+    controller.set_values(values)
 
 
-  get_reference_field_catalog: (field) =>
-    ###
-     * Return the catalog of a single/multi reference field
-    ###
-    data = $(field).data()
-    catalog = data.catalog or ""
-    return JSON.parse(catalog)
+  ###*
+   * Flush reference fields that are statically provided in the flush_settings
+   *
+   * NOTE: Since https://github.com/senaite/senaite.core/pull/2564 this makes
+   *       only sense for non-reference fields, e.g. `EnvironmentalConditions`
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param field_name {String} The name of the field where dependent fields need to be flushed
+  ###
+  flush_fields_for: (arnum, field_name) ->
+    me = this
+    field_ids = @flush_settings[field_name]
+    $.each @flush_settings[field_name], (index, id) ->
+      console.debug "flushing: id=#{id}"
+      field = $("##{id}-#{arnum}")
+      me.flush_reference_field field
 
 
+  ###*
+   * Empty the reference field and restore the search query
+   *
+   * @param field {Object} jQuery field
+  ###
+  flush_reference_field: (field) ->
+    # set emtpy value
+    @set_reference_field field, null
+    # restore the original search query
+    @reset_reference_field_query field
+
+
+  ###*
+   * Set data-records to display the UID of a reference field
+   *
+   * NOTE: This method if for performance reasons only.
+   *       It avoids an additional lookup of the reference widget to fetch the
+   *       required data to render the display template for the actual UID.
+   *
+   * @param field {Object} jQuery field
+   * @param records {Object} Records to set
+  ###
+  set_reference_field_records: (field, records) =>
+    return unless records and @is_object(records)
+
+    controller = @get_widget_controller(field)
+    # No controller found, return immediately
+    # -> happens when the field is hidden or absent
+    return unless controller
+
+    existing_records = controller.get_data_records()
+    new_records = Object.assign(existing_records, records)
+    controller.set_data_records(new_records)
+
+
+  ###*
+   * Return the record metadata from the `records_snapshot` for the given field
+   *
+   * NOTE: The `records_snapshot` get updated each time `recalculate_records`
+   *       is called. It is provided by the server and contains information
+   *       about dependencies, dependent fields/queries etc.
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param records {Object} Records to set
+  ###
   get_metadata_for: (arnum, field_name) =>
-    ###
-     * Return the metadata for the given field name
-    ###
     record = @records_snapshot[arnum] or {}
     metadata_key = "#{field_name}_metadata".toLowerCase()
     return record[metadata_key] or {}
 
+
+  ###*
+   * Apply the template values to the sample in the specified column
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param template {Object} Template record
+  ###
   set_template: (arnum, template) =>
-    ###
-     * Apply the template data to all fields of arnum
-    ###
     me = this
 
     # apply template only once
@@ -627,15 +860,15 @@ class window.AnalysisRequestAdd
       # select the service
       me.set_service arnum, uid, yes
 
-    # set the template field again
-    # XXX how to avoid that setting the sample types flushes the template field?
-    @set_reference_field template_field, template_uid
 
-
+  ###*
+   * Select service checkbox by UID
+   *
+   * @param arnum {String} Sample column number, e.g. '0' for a field of the first column
+   * @param uid {String} UID of the service to select
+   * @param checked {Boolean} True/False to toggle select/delselect
+  ###
   set_service: (arnum, uid, checked) =>
-    ###
-     * Select the checkbox of a service by UID
-    ###
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
     me = this
     # get the service checkbox element
@@ -656,44 +889,100 @@ class window.AnalysisRequestAdd
     $(@).trigger "services:changed"
 
 
-  get_service: (uid) =>
-    ###
-     * Fetch the service data from server by UID
-    ###
+  ###*
+   * Show/hide  service conditions input elements for the service
+   *
+   * @param el {Object} jQuery service checkbox
+  ###
+  set_service_conditions: (el) =>
+    # Check whether the checkbox is selected or not
+    checked = el.prop "checked"
 
-    options =
-      data:
-        uid: uid
-      processData: yes
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+    # Get the uid of the analysis and the column number
+    parent = el.closest("td[uid][arnum]")
+    uid = parent.attr "uid"
+    arnum = parent.attr "arnum"
 
-    @ajax_post_form("get_service", options).done (data) ->
-      console.debug "get_service::data=", data
+    # Get the div where service conditions are rendered
+    conditions = $("div.service-conditions", parent)
+    conditions.empty()
+
+    # If the service is unchecked, remove the conditions form
+    if not checked
+      conditions.hide()
+      return
+
+    # Check if this service requires conditions
+    data = conditions.data "data"
+    base_info =
+      arnum: arnum
+
+    if not data
+      @get_service(uid).done (data) ->
+        context = $.extend({}, data, base_info)
+        if context.conditions and context.conditions.length > 0
+          template = @render_template "service-conditions", context
+          conditions.append template
+          conditions.data "data", context
+          conditions.show()
+    else
+      context = $.extend({}, data, base_info)
+      if context.conditions and context.conditions.length > 0
+        template = @render_template "service-conditions", context
+        conditions.append template
+        conditions.show()
 
 
+  ###*
+   * Copies the service conditions values from those set for the service with
+   * the specified uid and arnum_from column to the same analysis from the
+   * arnum_to column
+  ###
+  copy_service_conditions: (from, to, uid) =>
+    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
+
+    me = this
+
+    # Copy the values from all input fields to destination by name
+    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
+    $(source).each (idx, el) ->
+      # Extract the information from the field to look for
+      $el = $(el)
+      name = $el.attr "name"
+      subfield = $el.closest("[data-subfield]").attr "data-subfield"
+      console.debug "-> Copy service condition: #{subfield}"
+
+      # Set the value
+      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
+      dest.val($el.val())
+
+
+  ###*
+   * Hide all open service info boxes
+   *
+  ###
   hide_all_service_info: =>
-    ###
-     * hide all open service info boxes
-    ###
     info = $("div.service-info")
     info.hide()
 
 
+  ###*
+   * Checks if the point of capture is visible
+   *
+   * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+  ###
   is_poc_expanded: (poc) ->
-    ###
-     * Checks if the point of captures are visible
-    ###
     el = $("tr.service-listing-header[poc=#{poc}]")
     return el.hasClass "visible"
 
 
+  ###*
+   * Toggle all categories within a point of capture (lab/service)
+   *
+   * @param poc {String} Point of Capture, i.e. 'lab' or 'field'
+   * @param toggle {Boolean} True/False to show/hide categories
+  ###
   toggle_poc_categories: (poc, toggle) ->
-    ###
-     * Toggle all categories within a point of capture (lab/service)
-     * :param poc: the point of capture (lab/field)
-     * :param toggle: services visible if true
-    ###
-
     if not toggle?
       toggle = not @is_poc_expanded(poc)
 
@@ -720,12 +1009,69 @@ class window.AnalysisRequestAdd
       toggle_buttons.text("+")
 
 
-  ### EVENT HANDLER ###
+  ###*
+   * Render a confirmation dialog popup
+   *
+   * [1] http://handlebarsjs.com/
+   * [2] https://jqueryui.com/dialog/
+   *
+   * @param template_id {String} ID of the Handlebars template
+   * @param context {Object} Data to fill into the template
+   * @param buttons {Object} Buttons to render
+  ###
+  template_dialog: (template_id, context, buttons) =>
+    # prepare the buttons
+    if not buttons?
+      buttons = {}
+      buttons[_t("Yes")] = ->
+        # trigger 'yes' event
+        $(@).trigger "yes"
+        $(@).dialog "close"
+      buttons[_t("No")] = ->
+        # trigger 'no' event
+        $(@).trigger "no"
+        $(@).dialog "close"
 
+    # render the Handlebars template
+    content = @render_template template_id, context
+
+    # render the dialog box
+    $(content).dialog
+      width: 450
+      resizable: no
+      closeOnEscape: no
+      buttons: buttons
+      open: (event, ui) ->
+        # Hide the X button on the top right border
+        $(".ui-dialog-titlebar-close").hide()
+
+
+  ###*
+   * Render template with Handlebars
+   *
+   * @returns {String} Rendered content
+  ###
+  render_template: (template_id, context) =>
+    # get the template by ID
+    source = $("##{template_id}").html()
+    return unless source
+    # Compile the handlebars template
+    template = Handlebars.compile(source)
+    # Render the template with the given context
+    content = template(context)
+    return content
+
+
+  ######################
+  ### EVENT HANDLERS ###
+  ######################
+
+  ###*
+   * Generic event handler for when a reference field value changed
+   *
+   * @param event {Object} The event object
+  ###
   on_referencefield_value_changed: (event) =>
-    ###
-     * Generic event handler for when a reference field value changed
-    ###
     me = this
     el = event.currentTarget
     $el = $(el)
@@ -765,7 +1111,7 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_referencefield_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 
     # Flush depending fields
-    me.flush_fields_for field_name, arnum
+    me.flush_fields_for arnum, field_name
 
     # trigger custom event <field_name>:after_change
     event_data = { bubbles: true, detail: { value: el.value } }
@@ -776,11 +1122,12 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
 
 
+  ###*
+   * Event handler when the user clicked on the info icon of a service.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_details_click: (event) =>
-    ###
-     * Eventhandler when the user clicked on the info icon of a service.
-    ###
-
     el = event.currentTarget
     $el = $(el)
     uid = $el.attr "uid"
@@ -826,10 +1173,12 @@ class window.AnalysisRequestAdd
       info.fadeToggle()
 
 
+  ###*
+   * Event handler when an Analysis Profile was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_lock_button_click: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was removed.
-    ###
     console.debug "°°° on_analysis_lock_button_click °°°"
 
     me = this
@@ -862,19 +1211,23 @@ class window.AnalysisRequestAdd
     dialog = @template_dialog "service-dependant-template", context, buttons
 
 
+  ###*
+   * Event handler when an Analysis Template was selected.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_template_selected: (event) =>
-    ###
-     * Eventhandler when an Analysis Template was selected.
-    ###
     console.debug "°°° on_analysis_template_selected °°°"
     # trigger form:changed event
     $(this).trigger "form:changed"
 
 
+  ###*
+   * Eventhandler when an Analysis Template was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_template_removed: (event) =>
-    ###
-     * Eventhandler when an Analysis Template was removed.
-    ###
     console.debug "°°° on_analysis_template_removed °°°"
 
     el = event.currentTarget
@@ -886,20 +1239,23 @@ class window.AnalysisRequestAdd
     $(this).trigger "form:changed"
 
 
+  ###*
+   * Event handler when an Analysis Profile was selected.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_profile_selected: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was selected.
-    ###
     console.debug "°°° on_analysis_profile_selected °°°"
     # trigger form:changed event
     $(this).trigger "form:changed"
 
 
-  # Note: Context of callback bound to this object
+  ###*
+   * Event handler when an Analysis Profile was removed.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_profile_removed: (event) =>
-    ###
-     * Eventhandler when an Analysis Profile was removed.
-    ###
     console.debug "°°° on_analysis_profile_removed °°°"
 
     me = this
@@ -935,11 +1291,12 @@ class window.AnalysisRequestAdd
       $(me).trigger "form:changed"
 
 
+  ###*
+   * Event handler for Analysis Service Checkboxes.
+   *
+   * @param event {Object} The event object
+  ###
   on_analysis_checkbox_click: (event) =>
-    ###
-     * Eventhandler for Analysis Service Checkboxes.
-    ###
-
     me = this
     el = event.currentTarget
     checked = el.checked
@@ -956,11 +1313,14 @@ class window.AnalysisRequestAdd
     $(me).trigger "services:changed"
 
 
+  ###*
+   * Event handler for analysis service category header rows.
+   *
+   * Toggles the visibility of all categories within this poc.
+   *
+   * @param event {Object} The event object
+  ###
   on_service_listing_header_click: (event) =>
-    ###
-     * Eventhandler for analysis service category header rows.
-     * Toggles the visibility of all categories within this poc.
-    ###
     $el = $(event.currentTarget)
     poc = $el.data("poc")
     visible = $el.hasClass("visible")
@@ -968,12 +1328,15 @@ class window.AnalysisRequestAdd
     @toggle_poc_categories poc, toggle
 
 
+  ###*
+   * Event handler for analysis service category rows.
+   *
+   * Toggles the visibility of all services within this category.
+   * NOTE: Selected services always stay visible.
+   *
+   * @param event {Object} The event object
+  ###
   on_service_category_click: (event) =>
-    ###
-     * Eventhandler for analysis service category rows.
-     * Toggles the visibility of all services within this category.
-     * Selected services always stay visible.
-    ###
     event.preventDefault()
     $el = $(event.currentTarget)
     poc = $el.attr("poc")
@@ -999,12 +1362,16 @@ class window.AnalysisRequestAdd
       services.addClass "expanded"
 
 
+  ###*
+   * Event handler for the field copy button per row.
+   *
+   * Copies the value of the first field in this row to the remaining.
+   *
+   * XXX: Refactor this method, it is way too long
+   *
+   * @param event {Object} The event object
+  ###
   on_copy_button_click: (event) =>
-    ###
-     * Eventhandler for the field copy button per row.
-     * Copies the value of the first field in this row to the remaining.
-     * XXX Refactor
-    ###
     console.debug "°°° on_copy_button_click °°°"
 
     me = this
@@ -1042,7 +1409,7 @@ class window.AnalysisRequestAdd
 
         # XXX: Needed?
         _field_name = _el.closest("tr[fieldname]").attr "fieldname"
-        me.flush_fields_for _field_name, arnum
+        me.flush_fields_for arnum, _field_name
 
         # RectJS queryselect widget provides the JSON data of the selected
         # records in the `data-records` attribute.
@@ -1182,126 +1549,11 @@ class window.AnalysisRequestAdd
 
 
   ###*
-    * Set input value with native setter to support ReactJS components
+   * Event handler when Ajax request started
+   *
+   * @param event {Object} The event object
   ###
-  native_set_value: (input, value) =>
-    # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
-    # TL;DR: React library overrides input value setter
-
-    setter = null
-    if input.tagName == "TEXTAREA"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set
-    else if input.tagName == "SELECT"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set
-    else if input.tagName == "INPUT"
-      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
-    else
-      input.value = value
-
-    if setter
-      setter.call(input, value)
-
-    event = new Event("input", {bubbles: true})
-    input.dispatchEvent(event)
-
-
-  # Note: Context of callback bound to this object
-  ajax_post_form: (endpoint, options={}) =>
-    ###
-     * Ajax POST the form data to the given endpoint
-    ###
-    console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
-    # calculate the right form URL
-    base_url = @get_base_url()
-    url = "#{base_url}/ajax_ar_add/#{endpoint}"
-    console.debug "Ajax POST to url #{url}"
-
-    # extract the form data
-    form = $("#analysisrequest_add_form")
-    # form.serialize does not include file attachments
-    # form_data = form.serialize()
-    form_data = new FormData(form[0])
-
-    # jQuery Ajax options
-    ajax_options =
-      url: url
-      type: 'POST'
-      data: form_data
-      context: @
-      cache: false
-      dataType: 'json'  # data type we expect from the server
-      processData: false
-      contentType: false
-      # contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
-      timeout: 600000  # 10 minutes timeout
-
-    # Update Options
-    $.extend(ajax_options, options)
-
-    ### Execute the request ###
-
-    # Notify Ajax start
-    me = this
-    $(me).trigger "ajax:start"
-    $.ajax(ajax_options).always (data) ->
-      # Always notify Ajax end
-      $(me).trigger "ajax:end"
-    .fail (request, status, error) ->
-      msg = _t("Sorry, an error occured: #{status}")
-      window.bika.lims.portalMessage msg
-      window.scroll 0, 0
-
-  get_json: (endpoint, options) ->
-    ###
-     * Fetch Ajax API resource from the server
-     * @param {string} endpoint
-     * @param {object} options
-     * @returns {Promise}
-    ###
-    options ?= {}
-
-    method = options.method or "POST"
-    data = JSON.stringify(options.data) or "{}"
-
-    base_url = @get_base_url()
-    url = "#{base_url}/ajax_ar_add/#{endpoint}"
-
-    # Always notify Ajax end
-    me = this
-    $(me).trigger "ajax:start"
-
-    init =
-      method: method
-      headers:
-        "Content-Type": "application/json"
-        "X-CSRF-TOKEN": @get_csrf_token()
-      body: if method is "POST" then data else null
-      credentials: "include"
-    console.info "get_json:endpoint=#{endpoint} init=",init
-    request = new Request(url, init)
-    fetch(request)
-    .then (response) ->
-      $(me).trigger "ajax:end"
-      if not response.ok
-        return Promise.reject response
-      return response
-    .then (response) ->
-      return response.json()
-    .catch (response) ->
-      return response
-
-  get_csrf_token: () ->
-    ###
-     * Get the plone.protect CSRF token
-     * Note: The fields won't save w/o that token set
-    ###
-    return document.querySelector("#protect-script").dataset.token
-
-
   on_ajax_start: =>
-    ###
-     * Ajax request started
-    ###
     console.debug "°°° on_ajax_start °°°"
 
     # deactivate the save button
@@ -1314,10 +1566,12 @@ class window.AnalysisRequestAdd
     save_and_copy_button.prop "disabled": yes
 
 
+  ###*
+   * Event handler when Ajax request finished
+   *
+   * @param event {Object} The event object
+  ###
   on_ajax_end: =>
-    ###
-     * Ajax request finished
-    ###
     console.debug "°°° on_ajax_end °°°"
 
     # reactivate the save button
@@ -1330,6 +1584,12 @@ class window.AnalysisRequestAdd
     save_and_copy_button.prop "disabled": no
 
 
+  ###*
+   * Event handler when Ajax when cancel button was clicked
+   *
+   * @param event {Object} The event object
+   * @param callback {Function}
+  ###
   on_cancel: (event, callback) =>
     console.debug "°°° on_cancel °°°"
     event.preventDefault()
@@ -1342,12 +1602,14 @@ class window.AnalysisRequestAdd
         window.location.replace base_url
 
 
-  # Note: Context of callback bound to this object
+  ###*
+   * Event handler for the form submit button.
+   *
+   * Extracts all form data and submits them asynchronously
+   *
+   * @param event {Object} The event object
+  ###
   on_form_submit: (event, callback) =>
-    ###
-     * Eventhandler for the form submit button.
-     * Extracts and submits all form data asynchronous.
-    ###
     console.debug "°°° on_form_submit °°°"
     event.preventDefault()
     me = this
@@ -1418,24 +1680,12 @@ class window.AnalysisRequestAdd
         window.location.replace base_url
 
 
-  init_file_fields: =>
-    me = this
-    $('tr[fieldname] input[type="file"]').each (index, element) ->
-      # Wrap the initial field into a div
-      file_field = $(element)
-      file_field.wrap "<div class='field'/>"
-      file_field_div = file_field.parent()
-      # Create and add an ADD Button on the fly
-      add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
-      add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='#{add_btn_src}' />")
-
-      # bind ADD event handler
-      add_btn.on "click", element, (event) ->
-        me.file_addbtn_click event, element
-
-      # Attach the Button into the same div container
-      file_field_div.append add_btn
-
+  ###*
+   * Event handler when the file add button was clicked
+   *
+   * @param event {Object} The event object
+   * @param element {Object} jQuery file field
+  ###
   file_addbtn_click: (event, element) ->
     # Clone the file field and wrap it into a div
     file_field = $(element).clone()
@@ -1474,86 +1724,3 @@ class window.AnalysisRequestAdd
 
     # Attach the new field to the outer div of the passed file field
     $(element).parent().parent().append file_field_div
-
-
-  set_service_conditions: (el) =>
-    ###
-     * Shows or hides the service conditions input elements for the service
-     * bound to the checkbox element passed in
-    ###
-
-    # Check whether the checkbox is selected or not
-    checked = el.prop "checked"
-
-    # Get the uid of the analysis and the column number
-    parent = el.closest("td[uid][arnum]")
-    uid = parent.attr "uid"
-    arnum = parent.attr "arnum"
-
-    # Get the div where service conditions are rendered
-    conditions = $("div.service-conditions", parent)
-    conditions.empty()
-
-    # If the service is unchecked, remove the conditions form
-    if not checked
-      conditions.hide()
-      return
-
-    # Check if this service requires conditions
-    data = conditions.data "data"
-    base_info =
-      arnum: arnum
-
-    if not data
-      @get_service(uid).done (data) ->
-        context = $.extend({}, data, base_info)
-        if context.conditions and context.conditions.length > 0
-          template = @render_template "service-conditions", context
-          conditions.append template
-          conditions.data "data", context
-          conditions.show()
-    else
-      context = $.extend({}, data, base_info)
-      if context.conditions and context.conditions.length > 0
-        template = @render_template "service-conditions", context
-        conditions.append template
-        conditions.show()
-
-
-  copy_service_conditions: (from, to, uid) =>
-    ###
-     * Copies the service conditions values from those set for the service with
-     * the specified uid and arnum_from column to the same analysis from the
-     * arnum_to column
-    ###
-    console.debug "*** copy_service_conditions::from=#{from} to=#{to} UID=#{uid}"
-
-    me = this
-
-    # Copy the values from all input fields to destination by name
-    source = "td[fieldname='Analyses-#{from}'] div[id='#{uid}-conditions'] input[name='ServiceConditions-#{from}.value:records']"
-    $(source).each (idx, el) ->
-      # Extract the information from the field to look for
-      $el = $(el)
-      name = $el.attr "name"
-      subfield = $el.closest("[data-subfield]").attr "data-subfield"
-      console.debug "-> Copy service condition: #{subfield}"
-
-      # Set the value
-      dest = $("td[fieldname='Analyses-#{to}'] tr[data-subfield='#{subfield}'] input[name='ServiceConditions-#{to}.value:records']")
-      dest.val($el.val())
-
-
-  init_service_conditions: =>
-    ###
-     * Updates the visibility of the conditions for the selected services
-    ###
-    console.debug "init_service_conditions"
-
-    me = this
-
-    # Find out all selected services checkboxes
-    services = $("input[type=checkbox].analysisservice-cb:checked")
-    $(services).each (idx, el) ->
-      $el = $(el)
-      me.set_service_conditions $el

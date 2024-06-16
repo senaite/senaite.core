@@ -6,9 +6,41 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Sample Containers to Senaite setup"
       description="Move Sample Containers to Senaite setup"
+      source="2637"
+      destination="2638"
+      handler=".v02_06_000.move_samplecontainers"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Instrument Locations to Senaite setup"
+      description="Move Instrument Locations to Senaite setup"
+      source="2636"
+      destination="2637"
+      handler=".v02_06_000.move_instrumentlocations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix setup folders not indexed in UID catalog"
+      description="Adds the Plone's IReferenceable behavior to setup folders"
+      source="2635"
+      destination="2636"
+      handler=".v02_06_000.set_referenceable_behavior"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getCategoryTitle from catalogs"
+      description="Remove getCategoryTitle from catalogs"
+      source="2634"
+      destination="2635"
+      handler=".v02_06_000.remove_category_title_metadata"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate AnalysisCategories to DX"
+      description="Migrate AnalysisCategories to Dexterity"
       source="2633"
       destination="2634"
-      handler=".v02_06_000.move_samplecontainers"
+      handler=".v02_06_000.migrate_analysiscategories_to_dx"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
