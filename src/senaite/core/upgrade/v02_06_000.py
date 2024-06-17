@@ -1616,7 +1616,7 @@ def migrate_attachmenttypes_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
-    origin = api.get_setup().get("bika_attachmnenttypes")
+    origin = api.get_setup().get("bika_attachmenttypes")
     if not origin:
         # old container is already gone
         return
