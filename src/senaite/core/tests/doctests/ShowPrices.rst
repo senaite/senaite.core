@@ -64,7 +64,7 @@ Now we need to create some basic content for our tests:
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="409.17", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="208.20", Category=category.UID())
     >>> profile = api.create(setup.analysisprofiles, "AnalysisProfile", title="Profile")

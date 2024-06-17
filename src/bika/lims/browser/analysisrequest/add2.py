@@ -524,10 +524,20 @@ class AnalysisRequestAddView(BrowserView):
         analyses[""] = []
 
         for brain in services:
-            category = brain.getCategoryTitle
+            category = self.get_category_title(brain)
             if category in analyses:
                 analyses[category].append(brain)
         return analyses
+
+    def get_category_title(self, service):
+        """Return the title of the category the service is assigned to
+        """
+        service = api.get_object(service)
+        cat_uid = service.getRawCategory()
+        if not cat_uid:
+            return ""
+        cat = self.get_object_by_uid(cat_uid)
+        return api.get_title(cat)
 
     @cache(cache_key)
     def get_service_uid_from(self, analysis):

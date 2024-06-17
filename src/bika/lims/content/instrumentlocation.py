@@ -35,7 +35,6 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/####
 class InstrumentLocation(BaseContent):
     """A physical place, where an Instrument is located
     """
