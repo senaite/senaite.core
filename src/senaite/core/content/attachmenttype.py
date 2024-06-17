@@ -35,7 +35,7 @@ class IAttachmentTypeSchema(model.Schema):
     title = schema.TextLine(
         title=_(
             u"title_attachmenttype_title",
-            default=u"Title"
+            default=u"Name"
         ),
         required=True,
     )
