@@ -258,7 +258,7 @@ def add_senaite_setup_items(portal):
         ("analysiscategories", "Analysis Categories", "AnalysisCategories"),
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
         ("samplecontainers", "Sample Containers", "SampleContainers"),
-        ("attachmenttypess", "Attachment Types", "AttachmentTypes"),
+        ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

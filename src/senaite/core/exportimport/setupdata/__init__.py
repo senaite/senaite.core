@@ -2072,7 +2072,7 @@ class Attachment_Types(WorksheetImporter):
             if not title:
                 continue
 
-            api.create(container, "ContainerType",
+            api.create(container, "AttachmentType",
                        title=title, description=row.get("description"))
 
 
