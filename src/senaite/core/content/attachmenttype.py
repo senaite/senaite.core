@@ -34,16 +34,16 @@ class IAttachmentTypeSchema(model.Schema):
 
     title = schema.TextLine(
         title=_(
-            "title_attachmenttype_title",
-            default="Title"
+            u"title_attachmenttype_title",
+            default=u"Title"
         ),
         required=True,
     )
 
     description = schema.Text(
         title=_(
-            "title_attachmenttype_description",
-            default="Description"
+            u"title_attachmenttype_description",
+            default=u"Description"
         ),
         required=False,
     )
