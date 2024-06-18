@@ -1535,10 +1535,6 @@ def move_instrumentlocations(tool):
     """Move instrument locations to senaite setup folder
     """
 
-    # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
-    tool.runImportStepFromProfile(profile, "workflow")
-
     # get the old container
     origin = api.get_setup().get("instrumentlocations")
     if not origin:
@@ -1570,10 +1566,6 @@ def move_instrumentlocations(tool):
 def move_samplecontainers(tool):
     """Move sample containers to senaite setup folder
     """
-
-    # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
-    tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
     origin = api.get_setup().get("sample_containers")
