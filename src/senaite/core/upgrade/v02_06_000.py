@@ -1846,6 +1846,9 @@ def set_referenceable_behavior(tool):
     setup = api.get_senaite_setup()
     to_fix = [setup] + list(setup.objectValues())
     for obj in to_fix:
+        if not api.is_dexterity_content(obj):
+            logger.warn("Not a DX folder: %r [SKIP]" % obj)
+            continue
         portal_type = api.get_portal_type(obj)
         fti = pt.get(portal_type)
         if behavior not in fti.behaviors:
