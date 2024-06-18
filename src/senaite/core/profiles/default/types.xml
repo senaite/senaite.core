@@ -9,6 +9,10 @@
   <object name="AnalysisProfile" meta_type="Dexterity FTI" />
   <object name="AnalysisProfiles" meta_type="Dexterity FTI" />
 
+  <!-- Attachment Types -->
+  <object name="AttachmentType" meta_type="Dexterity FTI" />
+  <object name="AttachmentTypes" meta_type="Dexterity FTI" />
+
   <!-- Departments -->
   <object name="Department" meta_type="Dexterity FTI" />
   <object name="Departments" meta_type="Dexterity FTI" />

@@ -2060,21 +2060,20 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        #self.context.bika_setup.setIDFormatting(prefixes)
+        # self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_attachmenttypes
+        container = self.context.setup.attachmenttypes
         for row in self.get_rows(3):
-            obj = _createObjectByType("AttachmentType", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            api.create(container, "AttachmentType",
+                       title=title, description=row.get("description"))
 
 
 class Reference_Samples(WorksheetImporter):

@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate AttachmentTypes to DX"
+      description="Migrate AttachmentTypes to Dexterity"
+      source="2638"
+      destination="2639"
+      handler=".v02_06_000.migrate_attachmenttypes_to_dx"
+      profile="senaite.core:default"/>
+  
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Sample Containers to Senaite setup"
       description="Move Sample Containers to Senaite setup"
       source="2637"

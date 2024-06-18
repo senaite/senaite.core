@@ -205,6 +205,16 @@ class IHaveAnalysisCategory(Interface):
         """
 
 
+class IAttachmentType(Interface):
+    """Marker interface for attachment type
+    """
+
+
+class IAttachmentTypes(Interface):
+    """Marker interface for attachment types setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
