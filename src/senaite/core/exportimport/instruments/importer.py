@@ -739,7 +739,7 @@ class AnalysisResultsImporter(Logger):
                        mapping={
                            "sid": sid,
                            "field": key,
-                           "value": field_value,
+                           "value": value,
                        }))
 
         return updated
