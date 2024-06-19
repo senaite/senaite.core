@@ -101,7 +101,7 @@ Then we create the data according to the example given above:
 
 Now we can create a Dynamic Analysis Specification Object:
 
-    >>> ds = api.create(setup.dynamic_analysisspecs, "DynamicAnalysisSpec")
+    >>> ds = api.create(setup.dynamicanalysisspecs, "DynamicAnalysisSpec")
     >>> ds.specs_file = to_excel(data)
 
 We can get now directly the parsed header:
