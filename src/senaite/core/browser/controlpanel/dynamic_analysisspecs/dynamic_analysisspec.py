@@ -42,8 +42,8 @@ class DynamicAnalysisSpecView(ListingView):
         if self.context.specs_file:
             self.description = "{} {}".format(
                  _(
-                    "dynamic_analysisspec_description",
-                    default="Contents of the file"
+                    u"dynamic_analysisspec_description",
+                    default=u"Contents of the file"
                  ), self.context.specs_file.filename)
 
         self.specs = self.context.get_specs()
@@ -59,8 +59,8 @@ class DynamicAnalysisSpecView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    "listing_dynamic_analysisspec_state_all",
-                    default="All"
+                    u"listing_dynamic_analysisspec_state_all",
+                    default=u"All"
                 ),
                 "contentFilter": {},
                 "transitions": [],

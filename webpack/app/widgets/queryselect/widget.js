@@ -210,6 +210,57 @@ class QuerySelectWidgetController extends React.Component {
     }
   }
 
+
+  /*
+   * Checks if two arrays are equal
+   *
+   * @param {Array} arr1: First array
+   * @param {Array} arr2: Second array
+   */
+  arrays_equal(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  /*
+   * Returns the name of the input field
+   *
+   * @returns {String} name
+   */
+  get_name() {
+    return this.state.name;
+  }
+
+
+  /*
+   * Returns if the field accepts single values only
+   *
+   * @returns {Boolean} true/false if  values are allowed
+   */
+  is_single_valued() {
+    return this.state.multi_valued == false;
+  }
+
+
+  /*
+   * Returns if the field accepts multiple values
+   *
+   * @returns {Boolean} true/false if multiple values are allowed
+   */
+  is_multi_valued() {
+    return this.state.multi_valued == true;
+  }
+
+
   /*
    * Checks if the field should be rendered as disabled
    *
@@ -222,7 +273,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return true;
     }
-    if (!this.state.multi_valued && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.state.values.length > 0) {
       return true;
     }
     return false;
@@ -241,11 +292,32 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return false;
     }
-    if (!this.state.multi_valued && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.state.values.length > 0) {
       return false;
     }
     return true;
   }
+
+
+  /*
+   * Returns the current search catalog
+   *
+   * @returns {String} Catalog name
+   */
+  get_catalog() {
+    return this.state.catalog;
+  }
+
+
+  /*
+   * Returns the base catalog query
+   *
+   * @returns {Object} Catalog query
+   */
+  get_query() {
+    return this.state.query;
+  }
+
 
   /*
    * Create a query object for the API
@@ -302,6 +374,49 @@ class QuerySelectWidgetController extends React.Component {
       return {};
     }
     return JSON.parse(query);
+  }
+
+  /*
+   * Set custom search query on the root element
+   *
+   * This allows external code to set a custom search query to the field for filtering
+   *
+   * NOTE: The reason why we store the value directly on the DOM node as a data
+   *       attribute is for backwards compatibility and mainly used in the
+   *       Sample Add Form.
+   *       It might be perfectly possible in the future to store it directly in
+   *       the internal state object instead!
+   */
+  set_search_query(query) {
+    this.root_el.setAttribute("data-search_query", JSON.stringify(query))
+  }
+
+  /*
+   * Get data records
+   *
+   * @returns {Object} The search query object
+   */
+  get_data_records() {
+    let records = this.root_el.dataset.records;
+    if (records == null) {
+      return {};
+    }
+    return JSON.parse(records);
+  }
+
+  /*
+   * Set data records
+   *
+   * This allows external code to set custom data records
+   *
+   * NOTE: The reason why we store the value directly on the DOM node as a data
+   *       attribute is for backwards compatibility and mainly used in the
+   *       Sample Add Form.
+   *       It might be perfectly possible in the future to store it directly in
+   *       the internal state object instead!
+   */
+  set_data_records(records) {
+    this.root_el.setAttribute("data-records", JSON.stringify(records))
   }
 
   /*
@@ -421,7 +536,7 @@ class QuerySelectWidgetController extends React.Component {
       // manually trigger a select event when the state is set
       this.trigger_custom_event("select", {value: value});
     });
-    if (values.length > 0 && !this.state.multi_valued || this.state.clear_results_after_select) {
+    if (values.length > 0 && this.is_single_valued() || this.state.clear_results_after_select) {
       this.clear_results();
     }
     return values;
@@ -474,17 +589,28 @@ class QuerySelectWidgetController extends React.Component {
     return values;
   }
 
+
+  /*
+   * Return the current set values
+   *
+   * @returns {Array} List of current values
+   */
+  get_values() {
+    return this.state.values;
+  }
+
+
   /*
    * Set *all* values
    *
    * @param {Array} values: The values to be set
    */
-  set_values(values) {
+  set_values(values, { silent = false, sync = true } = {}) {
     // get the current set values
     let current_values = this.state.values;
 
-    if (!current_values && !values) {
-      // nothing to do
+    if (this.arrays_equal(current_values, values)) {
+      // values are the same, return immediately
       return;
     }
 
@@ -508,21 +634,21 @@ class QuerySelectWidgetController extends React.Component {
         // value not changed -> continue
         continue;
       }
-      if (current_values.indexOf(value) == -1) {
+      if (!silent && current_values.indexOf(value) == -1) {
         // value added -> trigger select event
         this.trigger_custom_event("select", {value: value});
       }
     }
 
     for (const value of current_values) {
-      if (values.indexOf(value) == -1) {
+      if (!silent && values.indexOf(value) == -1) {
         // value removed -> trigger deselect event
         this.trigger_custom_event("deselect", {value: value});
       }
     }
 
     // ensure we have valid records and set the values
-    if (to_sync.length > 0) {
+    if (sync && to_sync.length > 0) {
       this.sync_records(to_sync).then(() => {
         this.setState({values: values});
       });

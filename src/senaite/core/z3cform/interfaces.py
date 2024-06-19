@@ -68,6 +68,11 @@ class ICoordinateWidget(IWidget):
     """
 
 
+class IGPSCoordinatesWidget(IWidget):
+    """Allows to set GPS Coordinates with latitude and longitude
+    """
+
+
 class IDurationWidget(IWidget):
     """Allows to set a duration period in days, hours and minutes
     """

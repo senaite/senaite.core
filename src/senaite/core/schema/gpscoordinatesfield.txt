@@ -1,0 +1,68 @@
+GPS Coordinates field
+=====================
+
+The GPS coordinates field stores latitude and longitude coordinates
+
+Running this test from the buildout directory:
+
+bin/test test_schema_fields -t gpscoordinatesfield
+
+
+Test preparation
+----------------
+
+    >>> import sys
+    >>> from bika.lims import api
+    >>> from collections import OrderedDict
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+
+Using the field
+---------------
+
+Create a content schema that uses the field:
+
+    >>> from zope.interface import Interface, implementer
+    >>> from senaite.core.schema import GPSCoordinatesField
+
+    >>> class IContent(Interface):
+    ...     location = GPSCoordinatesField(title=u"Location")
+
+
+Get the field from the schema interface:
+
+    >>> location = IContent["location"]
+    >>> location
+    <senaite.core.schema.gpscoordinatesfield.GPSCoordinatesField object at ...>
+
+Construct the content:
+
+    >>> from persistent import Persistent
+    >>> @implementer(IContent)
+    ... class Content(Persistent):
+    ...     pass
+
+
+Set a coordinate value through the fields:
+
+    >>> value = {"latitude": 41.4840060, "longitude": 2.0515110}
+    >>> content = Content()
+    >>> location.set(content, value)
+    >>> coordinates = location.get(content)
+    >>> [coordinates.get(key) for key in sorted(coordinates.keys())]
+    ['41.4840060', '2.0515110']
+
+By default, the field uses a precision of 7 (resolution of 1cm), but we can
+use our own:
+
+    >>> location.precision
+    7
+
+    >>> location.precision = 4
+    >>> location.set(content, value)
+    >>> coordinates = location.get(content)
+    >>> [coordinates.get(key) for key in sorted(coordinates.keys())]
+    ['41.4840', '2.0515']

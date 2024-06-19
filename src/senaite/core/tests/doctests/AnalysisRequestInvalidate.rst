@@ -39,11 +39,11 @@ Variables:
     >>> setup = portal.setup
     >>> bika_setup = portal.bika_setup
     >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
+    >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_labcontacts = bika_setup.bika_labcontacts
     >>> storagelocations = setup.storagelocations
-    >>> bika_samplingdeviations = bika_setup.bika_samplingdeviations
+    >>> samplingdeviations = setup.samplingdeviations
     >>> portal_url = portal.absolute_url()
     >>> bika_setup_url = portal_url + "/bika_setup"
 
@@ -88,9 +88,9 @@ A `SamplePoint` defines the location, where a `Sample` was taken:
 
 An `AnalysisCategory` categorizes different `AnalysisServices`:
 
-    >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
+    >>> analysiscategory = api.create(analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
-    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
+    <AnalysisCategory at /plone/setup/analysiscategories/analysiscategory-1>
 
 An `AnalysisService` defines a analysis service offered by the laboratory:
 

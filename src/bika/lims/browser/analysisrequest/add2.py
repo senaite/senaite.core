@@ -18,9 +18,11 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 from collections import OrderedDict
 from datetime import datetime
 
+import six
 import transaction
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -522,10 +524,20 @@ class AnalysisRequestAddView(BrowserView):
         analyses[""] = []
 
         for brain in services:
-            category = brain.getCategoryTitle
+            category = self.get_category_title(brain)
             if category in analyses:
                 analyses[category].append(brain)
         return analyses
+
+    def get_category_title(self, service):
+        """Return the title of the category the service is assigned to
+        """
+        service = api.get_object(service)
+        cat_uid = service.getRawCategory()
+        if not cat_uid:
+            return ""
+        cat = self.get_object_by_uid(cat_uid)
+        return api.get_title(cat)
 
     @cache(cache_key)
     def get_service_uid_from(self, analysis):
@@ -1103,51 +1115,58 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         }
         return settings
 
+    def ajax_is_reference_value_allowed(self):
+        """Checks if the current reference value is allowed for the query
+        """
+        payload = self.get_json()
+
+        catalog = payload.get("catalog", "")
+        query = payload.get("query", {})
+        uids = payload.get("uids", [])
+        name = payload.get("name", "")
+        label = payload.get("label", "")
+        field = label or name
+
+        # Skip the catalog search if we can assume to be allowed
+        white_keys = ["portal_type", "sort_on", "sort_order", "is_active"]
+        if set(query.keys()).issubset(white_keys):
+            return {"allowed": True}
+
+        if all([catalog, query, uids]):
+            # check if the current value is allowed for the new query
+            brains = api.search(query, catalog=catalog)
+            allowed_uids = list(map(api.get_uid, brains))
+            if set(uids).issubset(allowed_uids):
+                return {"allowed": True}
+
+        message = {
+            "title": _("Field flushed"),
+            "text": _(u"The value of field '%s' was emptied. "
+                      u"Please select a new value." % api.safe_unicode(field)),
+        }
+
+        return {
+            "allowed": False,
+            "message": message,
+        }
+
     def ajax_get_flush_settings(self):
         """Returns the settings for fields flush
+
+        NOTE: We automatically flush fields if the current value of a dependent
+              reference field is *not* allowed by the set new query.
+              -> see self.ajax_is_reference_value_allowed()
+              Therefore, it makes only sense for non-reference fields!
         """
         flush_settings = {
             "Client": [
-                "Contact",
-                "CCContact",
-                "SamplePoint",
-                "Template",
-                "Profiles",
-                "PrimaryAnalysisRequest",
-                "Specification",
-                "Batch"
             ],
             "Contact": [
-                "CCContact"
             ],
             "SampleType": [
-                "SamplePoint",
-                "Profiles",
-                "Specification",
-                "Template",
             ],
             "PrimarySample": [
-                "Batch"
-                "Client",
-                "Contact",
-                "CCContact",
-                "CCEmails",
-                "ClientOrderNumber",
-                "ClientReference",
-                "ClientSampleID",
-                "ContainerType",
-                "DateSampled",
                 "EnvironmentalConditions",
-                "Preservation",
-                "Profiles",
-                "SampleCondition",
-                "SamplePoint",
-                "SampleType",
-                "SamplingDate",
-                "SamplingDeviation",
-                "StorageLocation",
-                "Specification",
-                "Template",
             ]
         }
 
@@ -1428,6 +1447,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "getClientUID": [uid],
             },
             "Batch": {
+                "getClientUID": [uid, ""],
+            },
+            "PrimaryAnalysisRequest": {
                 "getClientUID": [uid, ""],
             }
         }
@@ -1910,3 +1932,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "success": message,
             "redirect_to": redirect_to,
         }
+
+    def get_json(self, encoding="utf8"):
+        """Extracts the JSON from the request
+        """
+        body = self.request.get("BODY", "{}")
+
+        def encode_hook(pairs):
+            """This hook is called for dicitionaries on JSON deserialization
+
+            It is used to encode unicode strings with the given encoding,
+            because ZCatalogs have sometimes issues with unicode queries.
+            """
+            new_pairs = []
+            for key, value in pairs.iteritems():
+                # Encode the key
+                if isinstance(key, six.string_types):
+                    key = key.encode(encoding)
+                # Encode the value
+                if isinstance(value, six.string_types):
+                    value = value.encode(encoding)
+                new_pairs.append((key, value))
+            return dict(new_pairs)
+
+        return json.loads(body, object_hook=encode_hook)

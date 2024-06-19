@@ -9,6 +9,10 @@
   <object name="AnalysisProfile" meta_type="Dexterity FTI" />
   <object name="AnalysisProfiles" meta_type="Dexterity FTI" />
 
+  <!-- Attachment Types -->
+  <object name="AttachmentType" meta_type="Dexterity FTI" />
+  <object name="AttachmentTypes" meta_type="Dexterity FTI" />
+
   <!-- Departments -->
   <object name="Department" meta_type="Dexterity FTI" />
   <object name="Departments" meta_type="Dexterity FTI" />
@@ -71,6 +75,18 @@
   <!-- Instrument Types -->
   <object name="InstrumentType" meta_type="Dexterity FTI" />
   <object name="InstrumentTypes" meta_type="Dexterity FTI" />
+
+  <!-- Sampling Deviations -->
+  <object name="SamplingDeviation" meta_type="Dexterity FTI" />
+  <object name="SamplingDeviations" meta_type="Dexterity FTI" />
+
+  <!-- Batch Labels -->
+  <object name="BatchLabel" meta_type="Dexterity FTI" />
+  <object name="BatchLabels" meta_type="Dexterity FTI" />
+
+  <!-- Analysis Categories -->
+  <object name="AnalysisCategory" meta_type="Dexterity FTI" />
+  <object name="AnalysisCategories" meta_type="Dexterity FTI" />
 
   <!-- Dynamic Analysis specifications -->
   <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />

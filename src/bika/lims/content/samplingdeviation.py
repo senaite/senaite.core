@@ -19,7 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import BaseFolder
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -32,15 +34,18 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
+
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2552
 class SamplingDeviation(BaseFolder):
     implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 registerType(SamplingDeviation, PROJECTNAME)

@@ -82,3 +82,8 @@ class IPhoneField(INativeString):
 class IDurationField(ITimedelta):
     """Senaite Duration field
     """
+
+
+class IGPSCoordinatesField(IDict):
+    """Senaite GPS Coordinated field
+    """

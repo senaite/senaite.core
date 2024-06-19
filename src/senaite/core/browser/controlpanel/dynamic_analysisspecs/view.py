@@ -59,8 +59,8 @@ class DynamicAnalysisSpecsView(ListingView):
         self.icon = api.get_icon("DynamicAnalysisSpecs", html_tag=False)
 
         self.title = translate(_(
-            "listing_dynamic_analysisspecs_title",
-            default="Dynamic Analysis Specifications")
+            u"listing_dynamic_analysisspecs_title",
+            default=u"Dynamic Analysis Specifications")
         )
         self.description = self.context.Description()
         self.show_select_column = True
@@ -68,14 +68,14 @@ class DynamicAnalysisSpecsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    "listing_dynamic_analysisspecs_column_title",
-                    default="Title"
+                    u"listing_dynamic_analysisspecs_column_title",
+                    default=u"Title"
                 ),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    "listing_dynamic_analysisspecs_column_description",
-                    default="Description"
+                    u"listing_dynamic_analysisspecs_column_description",
+                    default=u"Description"
                 ),
                 "toggle": True}),
         ))
@@ -84,24 +84,24 @@ class DynamicAnalysisSpecsView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    "listing_dynamic_analysisspecs_state_active",
-                    default="Active"
+                    u"listing_dynamic_analysisspecs_state_active",
+                    default=u"Active"
                 ),
                 "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _(
-                    "listing_dynamic_analysisspecs_state_inactive",
-                    default="Inactive"
+                    u"listing_dynamic_analysisspecs_state_inactive",
+                    default=u"Inactive"
                 ),
                 "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _(
-                    "listing_dynamic_analysisspecs_state_all",
-                    default="All"
+                    u"listing_dynamic_analysisspecs_state_all",
+                    default=u"All"
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),

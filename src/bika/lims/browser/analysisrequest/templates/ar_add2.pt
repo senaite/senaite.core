@@ -391,7 +391,9 @@
                              widget python:field.widget;
                              errors python:{};
                              mode python:'edit';">
-              <tr class="ar-table-row" tal:attributes="fieldName python:fieldName;">
+              <tr class="ar-table-row"
+                  tal:attributes="fieldName python:fieldName;
+                                  fieldLabel python:widget.Label(context)">
                 <td class="field-label">
                   <label class="formQuestion">
                     <span
