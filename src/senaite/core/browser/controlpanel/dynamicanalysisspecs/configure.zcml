@@ -7,7 +7,7 @@
     <browser:page
       name="view"
       for="senaite.core.interfaces.IDynamicAnalysisSpec"
-      class=".dynamic_analysisspec.DynamicAnalysisSpecView"
+      class=".dynamicanalysisspec.DynamicAnalysisSpecView"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />

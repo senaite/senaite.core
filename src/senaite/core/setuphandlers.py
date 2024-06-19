@@ -255,7 +255,7 @@ def add_senaite_setup_items(portal):
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
         ("samplecontainers", "Sample Containers", "SampleContainers"),
         ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
-        ("dynamic_analysisspecs", "Dynamic Analysis Specifications",
+        ("dynamicanalysisspecs", "Dynamic Analysis Specifications",
          "DynamicAnalysisSpecs"),
     ]
     setup = api.get_senaite_setup()

@@ -1646,10 +1646,6 @@ def move_dynamicanalysisspecs(tool):
     """Move dynamic analysis specs to senaite package
     """
 
-    # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
-    tool.runImportStepFromProfile(profile, "workflow")
-
     # get the old container
     origin = api.get_setup().get("dynamic_analysisspecs")
     if not origin:
@@ -1657,7 +1653,7 @@ def move_dynamicanalysisspecs(tool):
         return
 
     # get the destination container
-    destination = get_setup_folder("dynamic_analysisspecs")
+    destination = get_setup_folder("dynamicanalysisspecs")
 
     # un-catalog the old container
     uncatalog_object(origin)
