@@ -1535,6 +1535,12 @@ def move_instrumentlocations(tool):
     """Move instrument locations to senaite setup folder
     """
 
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
     # get the old container
     origin = api.get_setup().get("instrumentlocations")
     if not origin:
@@ -1566,6 +1572,12 @@ def move_instrumentlocations(tool):
 def move_samplecontainers(tool):
     """Move sample containers to senaite setup folder
     """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
 
     # get the old container
     origin = api.get_setup().get("sample_containers")
@@ -1645,6 +1657,12 @@ def migrate_attachmenttypes_to_dx(tool):
 def move_dynamicanalysisspecs(tool):
     """Move dynamic analysis specs to senaite package
     """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
 
     # get the old container
     origin = api.get_setup().get("dynamic_analysisspecs")
