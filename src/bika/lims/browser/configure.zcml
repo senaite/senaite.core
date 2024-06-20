@@ -15,7 +15,6 @@
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
-  <include file="dynamic_analysisspec.zcml"/>
   <include file="instrument.zcml"/>
   <include file="invoice.zcml"/>
   <include file="methodfolder.zcml"/>

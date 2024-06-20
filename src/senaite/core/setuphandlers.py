@@ -207,10 +207,6 @@ def add_dexterity_setup_items(portal):
     """
     # Tuples of ID, Title, FTI
     items = [
-        ("dynamic_analysisspecs",  # ID
-         "Dynamic Analysis Specifications",  # Title
-         "DynamicAnalysisSpecs"),  # FTI
-
         ("interpretation_templates",
          "Interpretation Templates",
          "InterpretationTemplates"),
@@ -259,6 +255,8 @@ def add_senaite_setup_items(portal):
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
         ("samplecontainers", "Sample Containers", "SampleContainers"),
         ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
+        ("dynamicanalysisspecs", "Dynamic Analysis Specifications",
+         "DynamicAnalysisSpecs"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
