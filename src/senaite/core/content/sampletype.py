@@ -32,8 +32,8 @@ from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import implementer
+from zope.interface import Invalid
 from zope.interface import invariant
-from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
 
@@ -41,12 +41,22 @@ SMALL_DEFAULT_STICKER = "small_default"
 LARGE_DEFAULT_STICKER = "large_default"
 
 
-@provider(IContextAwareDefaultFactory)
-def default_retention_period(context):
+def default_retention_period():
     """Returns the default retention period
     """
-    defaultVAT = api.get_setup().getVAT() or "0.00"
+    defaultVAT = api.get_setup().getDefaultSampleLifetime()
     return Decimal(defaultVAT)
+
+
+def prefix_whitespaces_constraint(value):
+    """Check that the prefix does not contain whitespaces
+    """
+    if ' ' in value:
+        raise Invalid(_(
+            u"sampletype_prefix_whitespace_validator_message",
+            default=u'No whitespaces in prefix allowed'
+        ))
+    return True
 
 
 class ISampleTypeSchema(model.Schema):
@@ -110,25 +120,47 @@ class ISampleTypeSchema(model.Schema):
             u"description_sampletype_prefix",
             default=u"Please provide a unique profile keyword"
         ),
+        constraint=prefix_whitespaces_constraint,
         required=True,
     )
 
-    @invariant
-    def validate_prefix(data):
-        """Checks if the profile keyword is unique
-        """
-        profile_key = data.profile_key
-        if not profile_key:
-            # no further checks required
-            return
-        context = getattr(data, "__context__", None)
-        if context and context.profile_key == profile_key:
-            # nothing changed
-            return
-        query = {
-            "portal_type": "AnalysisProfile",
-            "profile_key": profile_key,
-        }
-        results = api.search(query, catalog=SETUP_CATALOG)
-        if len(results) > 0:
-            raise Invalid(_("Profile keyword must be unique"))
+    min_volume = schema.TextLine(
+        title=_(
+            u"title_sampletype_min_volume",
+            default=u"Minimum Volume"
+        ),
+        description=_(
+            u"description_sampletype_min_volume",
+            default=u"he minimum sample volume required for analysis "
+                    u"eg. '10 ml' or '1 kg'."
+        ),
+        constraint=prefix_whitespaces_constraint,
+        required=True,
+    )
+
+    directives.widget(
+        "container_type",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "is_active": True,
+            "sort_on": "title",
+            "sort_order": "ascending",
+        },
+    )
+    container_type = UIDReferenceField(
+        title=_(
+            u"label_sampletype_containertype",
+            default=u"Default Container Type"
+        ),
+        description=_(
+            u"description_sampletype_containertype",
+            default=u"The default container type. New sample partitions "
+                    u"are automatically assigned a container of this "
+                    u"type, unless it has been specified in more details "
+                    u"per analysis service"
+        ),
+        allowed_types=("ContainerType", ),
+        multi_valued=False,
+        required=False,
+    )
