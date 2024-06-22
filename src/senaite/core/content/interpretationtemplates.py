@@ -19,24 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
 from plone.supermodel import model
-
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IInterpretationTemplates
 from senaite.core.interfaces import IHideActionsMenu
-
 from zope.interface import implementer
 
 
-class IInterpretationTemplates(model.Schema):
+class IInterpretationTemplatesSchema(model.Schema):
     """Results Interpretation Templates folder interface
     """
-    # Implements IBasic behavior (title + description)
-    pass
 
 
-@implementer(IInterpretationTemplates, IDoNotSupportSnapshots,
-             IHideActionsMenu)
+@implementer(IInterpretationTemplates, IInterpretationTemplatesSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
 class InterpretationTemplates(Container):
     """Results Interpretation Templates folder
     """
-    pass

@@ -1698,7 +1698,6 @@ def move_interpretationtemplates(tool):
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
-    tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
     origin = api.get_setup().get("interpretation_templates")
