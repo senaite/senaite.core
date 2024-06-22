@@ -4,7 +4,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <browser:page
-      for="senaite.core.interface.IInterpretationTemplates"
+      for="senaite.core.interfaces.IInterpretationTemplates"
       name="view"
       class=".view.InterpretationTemplatesView"
       permission="senaite.core.permissions.ManageBika"
