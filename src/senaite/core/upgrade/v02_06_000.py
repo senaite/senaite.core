@@ -1696,6 +1696,9 @@ def move_interpretationtemplates(tool):
     """Move sample interpretation templates to senaite setup folder
     """
 
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
 
