@@ -49,4 +49,5 @@ class InstrumentLocation(BaseContent):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+
 atapi.registerType(InstrumentLocation, PROJECTNAME)

@@ -61,14 +61,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAttachmentTypes"
-      name="folder_view"
-      class=".bika_attachmenttypes.AttachmentTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
       name="folder_view"
       class=".bika_analysisservices.AnalysisServicesView"
@@ -112,15 +104,6 @@
       for="bika.lims.interfaces.IWorksheetTemplates"
       name="folder_view"
       class=".bika_worksheettemplates.WorksheetTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Dynamic Analysis Specifications -->
-    <browser:page
-      for="bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs"
-      name="view"
-      class=".dynamic_analysisspecs.DynamicAnalysisSpecsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

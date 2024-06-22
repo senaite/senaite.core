@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2573 Move Interpretation Templates to Senaite setup folder
+- #2563 Move Dynamic Analysis Specs to Setup folder
+- #2554 Migrate AttachmentTypes to Dexterity
 - #2572 Move Sample Containers to Senaite setup folder
 - #2571 Move InstrumentLocations to Senaite setup folder
 - #2578 Fix setup DX folders are not indexed in `uid_catalog`

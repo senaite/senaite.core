@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      name="view"
+      for="senaite.core.interfaces.IDynamicAnalysisSpec"
+      class=".dynamicanalysisspec.DynamicAnalysisSpecView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+    <browser:page
+      for="senaite.core.interfaces.IDynamicAnalysisSpecs"
+      name="view"
+      class=".view.DynamicAnalysisSpecsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+    />
+
+</configure>

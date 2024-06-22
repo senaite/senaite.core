@@ -205,6 +205,16 @@ class IHaveAnalysisCategory(Interface):
         """
 
 
+class IAttachmentType(Interface):
+    """Marker interface for attachment type
+    """
+
+
+class IAttachmentTypes(Interface):
+    """Marker interface for attachment types setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
@@ -419,4 +429,14 @@ class IContainerTypes(Interface):
 
 class IContainerType(Interface):
     """Marker interface for container type
+    """
+
+
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
     """

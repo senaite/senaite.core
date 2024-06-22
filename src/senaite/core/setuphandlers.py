@@ -206,11 +206,7 @@ def add_dexterity_setup_items(portal):
           `profiles/default/structure` flushes the contents on every import.
     """
     # Tuples of ID, Title, FTI
-    items = [
-        ("dynamic_analysisspecs",  # ID
-         "Dynamic Analysis Specifications",  # Title
-         "DynamicAnalysisSpecs"),  # FTI
-    ]
+    items = []
     setup = api.get_setup()
     add_dexterity_items(setup, items)
 
@@ -254,6 +250,9 @@ def add_senaite_setup_items(portal):
         ("analysiscategories", "Analysis Categories", "AnalysisCategories"),
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
         ("samplecontainers", "Sample Containers", "SampleContainers"),
+        ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
+        ("dynamicanalysisspecs", "Dynamic Analysis Specifications",
+         "DynamicAnalysisSpecs"),
         ("interpretationtemplates", "Interpretation Templates",
          "InterpretationTemplates"),
     ]
