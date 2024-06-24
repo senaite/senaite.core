@@ -656,7 +656,7 @@ Create a new Instrument:
 
     >>> instr_type = api.create(setup.instrumenttypes, "InstrumentType", title="Temp instrument type")
     >>> manufacturer = api.create(setup.manufacturers, "Manufacturer", title="Temp manufacturer")
-    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", title="Temp supplier")
+    >>> supplier = api.create(setup.suppliers, "Supplier", title="Temp supplier")
     >>> instrument = api.create(bikasetup.bika_instruments,
     ...                         "Instrument",
     ...                         title="Temp Instrument",

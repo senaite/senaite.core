@@ -695,28 +695,28 @@ class Containers(WorksheetImporter):
 class Suppliers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_suppliers
+        container = self.context.setup.suppliers
         for row in self.get_rows(3):
-            obj = _createObjectByType("Supplier", folder, tmpID())
-            if row['Name']:
-                obj.edit(
-                    Name=row.get('Name', ''),
-                    TaxNumber=row.get('TaxNumber', ''),
-                    AccountType=row.get('AccountType', {}),
-                    AccountName=row.get('AccountName', {}),
-                    AccountNumber=row.get('AccountNumber', ''),
-                    BankName=row.get('BankName', ''),
-                    BankBranch=row.get('BankBranch', ''),
-                    SWIFTcode=row.get('SWIFTcode', ''),
-                    IBN=row.get('IBN', ''),
-                    NIB=row.get('NIB', ''),
-                    Website=row.get('Website', ''),
-                )
-                self.fill_contactfields(row, obj)
-                self.fill_addressfields(row, obj)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("Name")
+            if not title:
+                continue
+
+            api.create(container, "Supplier",
+                       title=title,
+                       description=row.get("description"),
+                       TaxNumber=row.get("TaxNumber"),
+                       AccountType=row.get("AccountType", {}),
+                       AccountName=row.get("AccountName", {}),
+                       AccountNumber=row.get("AccountNumber", ''),
+                       BankName=row.get("BankName", ""),
+                       BankBranch=row.get("BankBranch", ""),
+                       SWIFTcode=row.get("SWIFTcode", ""),
+                       IBN=row.get("IBN", ""),
+                       NIB=row.get("NIB", ""),
+                       Website=row.get("'Website", ""),)
+            # todo: solving that..
+            # self.fill_contactfields(row, obj)
+            # self.fill_addressfields(row, obj)
 
 
 class Supplier_Contacts(WorksheetImporter):
