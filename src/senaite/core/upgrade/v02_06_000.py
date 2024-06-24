@@ -1691,6 +1691,44 @@ def move_dynamicanalysisspecs(tool):
     logger.info("Move Dynamic Analysis Specs [DONE]")
 
 
+@upgradestep(product, version)
+def move_interpretationtemplates(tool):
+    """Move sample interpretation templates to senaite setup folder
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("interpretation_templates")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("interpretationtemplates")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "InterpretationTemplate"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Interpretation Templates [DONE]")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")

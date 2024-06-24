@@ -20,12 +20,13 @@
 
 import collections
 
-from bika.lims import _
 from bika.lims import api
-from bika.lims.catalog import SETUP_CATALOG
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
-from plone.app.textfield import RichTextValue
+from senaite.core.i18n import translate
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.app.listing import ListingView
+from plone.app.textfield import RichTextValue
 
 
 class InterpretationTemplatesView(ListingView):
@@ -39,48 +40,82 @@ class InterpretationTemplatesView(ListingView):
 
         self.contentFilter = {
             "portal_type": "InterpretationTemplate",
-            "sort_on": "created",
-            "sort_order": "descending",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            },
         }
 
         self.context_actions = {
-            _("Add"): {
+            _("listing_interpretationtemplates_action_add", default="Add"): {
                 "url": "++add++InterpretationTemplate",
-                "icon": "add.png"}
+                "icon": "senaite_theme/icon/plus"
             }
+        }
 
+        self.title = translate(_(
+            "listing_interpretationtemplates_title",
+            default="Interpretation Templates")
+        )
+        self.icon = api.get_icon("InterpretationTemplates",
+                                 html_tag=False)
         self.show_select_column = True
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Title"),
-                "index": "sortable_title"}),
+                "title": _(
+                    u"listing_interpretationtemplates_column_title",
+                    default=u"Title"
+                ),
+                "index": "sortable_title",
+            }),
             ("Description", {
-                "title": _("Description")}),
+                "title": _(
+                    u"listing_interpretationtemplates_column_description",
+                    default=u"Description"
+                ),
+            }),
             ("SampleTypes", {
-                "title": _("Sample Types"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_interpretationtemplates_column_sampletypes",
+                    default=u"Sample Types"
+                ),
+                "sortable": False,
+            }),
             ("Text", {
-                "title": _("Text"),
-                "sortable": False}),
+                "title": _(
+                    u"listing_interpretationtemplates_column_text",
+                    default=u"Text"
+                ),
+                "sortable": False,
+            }),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "title": _("Active"),
+                "title": _(
+                    u"listing_interpretationtemplates_state_active",
+                    default=u"Active"
+                ),
                 "contentFilter": {"is_active": True},
-                "transitions": [],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Inactive"),
+                "title": _(
+                    u"listing_interpretationtemplates_state_inactive",
+                    default=u"Inactive"
+                ),
                 "contentFilter": {'is_active': False},
-                "transitions": [],
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
-                "title": _("All"),
+                "title": _(
+                    u"listing_interpretationtemplates_state_all",
+                    default=u"All"
+                ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
@@ -107,6 +142,7 @@ class InterpretationTemplatesView(ListingView):
         obj = api.get_object(obj)
 
         item["replace"]["Title"] = get_link_for(obj)
+        item["Description"] = api.get_description(obj)
 
         # List all linked sampletypes
         sampletypes = obj.getSampleTypes()
