@@ -36,7 +36,6 @@ from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
-from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.setuphandlers import setup_markup_schema
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -175,8 +174,6 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1730
     _run_import_step(
         portal, "componentregistry", profile="profile-bika.lims:default")
-
-    add_dexterity_setup_items(portal)
 
     # Published results tab is not displayed to client contacts
     # https://github.com/senaite/senaite.core/pull/1638

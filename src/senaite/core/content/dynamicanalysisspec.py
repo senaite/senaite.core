@@ -20,12 +20,13 @@
 
 from collections import defaultdict
 
-from bika.lims import _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims import api
-from bika.lims.catalog import SETUP_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IDynamicAnalysisSpec
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
-from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
 from six import StringIO
@@ -41,7 +42,7 @@ REQUIRED_COLUMNS = [
 ]
 
 
-class IDynamicAnalysisSpec(model.Schema):
+class IDynamicAnalysisSpecSchema(model.Schema):
     """Dynamic Analysis Specification
     """
 
@@ -77,8 +78,8 @@ class IDynamicAnalysisSpec(model.Schema):
                 raise Invalid(_("Column '{}' is missing".format(col)))
 
 
-@implementer(IDynamicAnalysisSpec)
-class DynamicAnalysisSpec(Item):
+@implementer(IDynamicAnalysisSpec, IDynamicAnalysisSpecSchema)
+class DynamicAnalysisSpec(Container):
     """Dynamic Analysis Specification
     """
     _catalogs = [SETUP_CATALOG]

@@ -205,6 +205,16 @@ class IHaveAnalysisCategory(Interface):
         """
 
 
+class IAttachmentType(Interface):
+    """Marker interface for attachment type
+    """
+
+
+class IAttachmentTypes(Interface):
+    """Marker interface for attachment types setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
@@ -315,6 +325,11 @@ class IInterpretationTemplate(Interface):
     """
 
 
+class IInterpretationTemplates(Interface):
+    """Marker interface for interpretation templates objects
+    """
+
+
 class ILabels(Interface):
     """Marker interface for labels container
     """
@@ -355,6 +370,16 @@ class IInstrumentType(Interface):
 
 class IInstrumentTypes(Interface):
     """Marker interface for instrument types
+    """
+
+
+class IInstrumentLocation(Interface):
+    """Marker interface for a physical place, where instruments can be located
+    """
+
+
+class IInstrumentLocations(Interface):
+    """Marker interface for instrument locations folder
     """
 
 
@@ -419,4 +444,14 @@ class IContainerTypes(Interface):
 
 class IContainerType(Interface):
     """Marker interface for container type
+    """
+
+
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
     """

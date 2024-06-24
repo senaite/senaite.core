@@ -6,9 +6,57 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
       description="Migrate Suppliers to Dexterity"
+      source="2641"
+      destination="2642"
+      handler=".v02_06_000.migrate_suppliers_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
+      description="Move Interpretation Templates to Senaite setup"
+      source="2640"
+      destination="2641"
+      handler=".v02_06_000.move_interpretationtemplates"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Dynamic Analysis Specs to Senaite core"
+      description="Move Dynamic Analysis Specs to Senaite core"
+      source="2639"
+      destination="2640"
+      handler=".v02_06_000.move_dynamicanalysisspecs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate AttachmentTypes to DX"
+      description="Migrate AttachmentTypes to Dexterity"
+      source="2638"
+      destination="2639"
+      handler=".v02_06_000.migrate_attachmenttypes_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Sample Containers to Senaite setup"
+      description="Move Sample Containers to Senaite setup"
+      source="2637"
+      destination="2638"
+      handler=".v02_06_000.move_samplecontainers"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Instrument Locations to Senaite setup"
+      description="Move Instrument Locations to Senaite setup"
+      source="2636"
+      destination="2637"
+      handler=".v02_06_000.move_instrumentlocations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix setup folders not indexed in UID catalog"
+      description="Adds the Plone's IReferenceable behavior to setup folders"
       source="2635"
       destination="2636"
-      handler=".v02_06_000.migrate_suppliers_to_dx"
+      handler=".v02_06_000.set_referenceable_behavior"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

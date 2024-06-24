@@ -1,34 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="AnalysisProfiles" meta_type="Dexterity FTI"
+<object name="AttachmentType" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Title and Description -->
-  <property name="title"
-            i18n:translate="">AnalysisProfiles</property>
-  <property name="description"
-            i18n:translate=""></property>
+  <property name="title" i18n:translate="">Attachment Type</property>
+  <property name="description" i18n:translate=""/>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/analysisprofile</property>
+  <property name="icon_expr">senaite_theme/icon/attachment</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">AnalysisProfiles</property>
+  <property name="factory">AttachmentType</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr">string:${folder_url}/++add++AnalysisProfiles</property>
+  <property name="add_view_expr">string:${folder_url}/++add++AttachmentType</property>
 
   <property name="link_target"/>
   <property name="immediate_view">view</property>
 
   <!-- Is this item addable globally, or is it restricted? -->
-  <property name="global_allow">True</property>
+  <property name="global_allow">False</property>
 
   <!-- If we're a container, should we filter addable content types? -->
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="AnalysisProfile" />
   </property>
 
   <property name="allow_discussion">False</property>
@@ -45,13 +42,13 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.analysisprofiles.IAnalysisProfilesSchema</property>
-  <property name="klass">senaite.core.content.analysisprofiles.AnalysisProfiles</property>
+  <property name="schema">senaite.core.content.attachmenttype.IAttachmentTypeSchema</property>
+  <property name="klass">senaite.core.content.attachmenttype.AttachmentType</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
-    <element value="plone.app.content.interfaces.INameFromTitle"/>
-    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <element value="bika.lims.interfaces.IAutoGenerateID"/>
+    <element value="bika.lims.interfaces.IMultiCatalogBehavior"/>
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
@@ -82,8 +79,7 @@
           description=""
           icon_expr=""
           link_target=""
-          url_expr="string:${object_url}/edit"
-          visible="False">
+          url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
 

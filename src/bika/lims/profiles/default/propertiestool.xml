@@ -54,7 +54,6 @@
     <element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
-    <element value="InstrumentLocation"/>
     <element value="InstrumentValidation"/>
     <element value="Invoice"/>
     <element value="LabContact"/>

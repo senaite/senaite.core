@@ -667,26 +667,29 @@ class Preservations(WorksheetImporter):
 class Containers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.sample_containers
         bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.samplecontainers
         for row in self.get_rows(3):
-            if not row["title"]:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = api.create(folder, "SampleContainer")
-            obj.setTitle(row["title"])
-            obj.setDescription(row.get("description", ""))
-            obj.setCapacity(row.get("Capacity", 0))
-            obj.setPrePreserved(self.to_bool(row["PrePreserved"]))
-            if row["ContainerType_title"]:
-                ct = self.get_object(
-                    bsc, "ContainerType", row.get("ContainerType_title", ""))
-                if ct:
-                    obj.setContainerType(ct)
-            if row["Preservation_title"]:
-                pres = self.get_object(bsc, "SamplePreservation",
-                                       row.get("Preservation_title", ""))
-                if pres:
-                    obj.setPreservation(pres)
+
+            description = row.get("description", "")
+            capacity = row.get("Capacity", 0)
+            pre_preserved = self.to_bool(row["PrePreserved"])
+            containertype = None
+            container_type_title = row.get("ContainerType_title", "")
+
+            if container_type_title:
+                containertype = self.get_object(
+                    bsc, "ContainerType", container_type_title)
+
+            api.create(container, "SampleContainer",
+                       title=title,
+                       description=description,
+                       capacity=capacity,
+                       pre_preserved=pre_preserved,
+                       containertype=containertype)
 
 
 class Suppliers(WorksheetImporter):
@@ -2057,21 +2060,20 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        #self.context.bika_setup.setIDFormatting(prefixes)
+        # self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_attachmenttypes
+        container = self.context.setup.attachmenttypes
         for row in self.get_rows(3):
-            obj = _createObjectByType("AttachmentType", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            api.create(container, "AttachmentType",
+                       title=title, description=row.get("description"))
 
 
 class Reference_Samples(WorksheetImporter):

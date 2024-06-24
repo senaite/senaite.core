@@ -18,25 +18,40 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
-from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
-from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IAttachmentType
 from zope import schema
-from zope.interface import implements
+from zope.interface import implementer
 
 
-class IDynamicAnalysisSpecs(model.Schema):
-    """Dynamic Analysis Specifications
+class IAttachmentTypeSchema(model.Schema):
+    """Schema interface
     """
+
     title = schema.TextLine(
-        title=_(u"Title"),
-        description=_(u"Title of the Folder"),
-        required=True)
+        title=_(
+            u"title_attachmenttype_title",
+            default=u"Name"
+        ),
+        required=True,
+    )
+
+    description = schema.Text(
+        title=_(
+            u"title_attachmenttype_description",
+            default=u"Description"
+        ),
+        required=False,
+    )
 
 
-class DynamicAnalysisSpecs(Container):
-    """Dynamic Analysis Specifications Folder
+@implementer(IAttachmentType, IAttachmentTypeSchema, IDeactivable)
+class AttachmentType(Container):
+    """Attachment type
     """
-    implements(IDynamicAnalysisSpecs, IDoNotSupportSnapshots, IHideActionsMenu)
+    # Catalogs where this type will be catalogued
+    _catalogs = [SETUP_CATALOG]

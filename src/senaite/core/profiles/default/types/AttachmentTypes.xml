@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="AnalysisProfiles" meta_type="Dexterity FTI"
+<object name="AttachmentTypes" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Title and Description -->
-  <property name="title"
-            i18n:translate="">AnalysisProfiles</property>
-  <property name="description"
-            i18n:translate=""></property>
+  <property name="title" i18n:translate="">Attachment Types</property>
+  <property name="description" i18n:translate=""/>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/analysisprofile</property>
+  <property name="icon_expr">senaite_theme/icon/attachment</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">AnalysisProfiles</property>
+  <property name="factory">AttachmentTypes</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr">string:${folder_url}/++add++AnalysisProfiles</property>
+  <property name="add_view_expr">string:${folder_url}/++add++AttachmentTypes</property>
 
   <property name="link_target"/>
   <property name="immediate_view">view</property>
@@ -28,7 +26,7 @@
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="AnalysisProfile" />
+    <element value="AttachmentType" />
   </property>
 
   <property name="allow_discussion">False</property>
@@ -45,8 +43,8 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.analysisprofiles.IAnalysisProfilesSchema</property>
-  <property name="klass">senaite.core.content.analysisprofiles.AnalysisProfiles</property>
+  <property name="schema">senaite.core.content.attachmenttypes.IAttachmentTypesSchema</property>
+  <property name="klass">senaite.core.content.attachmenttypes.AttachmentTypes</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">

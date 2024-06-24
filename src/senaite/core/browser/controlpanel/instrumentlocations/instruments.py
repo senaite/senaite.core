@@ -18,25 +18,18 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
-from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
-from plone.supermodel import model
-from senaite.core.interfaces import IHideActionsMenu
-from zope import schema
-from zope.interface import implements
+from bika.lims import api
+from bika.lims.controlpanel.bika_instruments import InstrumentsView
 
 
-class IDynamicAnalysisSpecs(model.Schema):
-    """Dynamic Analysis Specifications
-    """
-    title = schema.TextLine(
-        title=_(u"Title"),
-        description=_(u"Title of the Folder"),
-        required=True)
+class InstrumentLocationInstrumentsView(InstrumentsView):
 
+    def __init__(self, context, request):
+        super(InstrumentLocationInstrumentsView, self).__init__(context,
+                                                                request)
+        self.context_actions = {}
 
-class DynamicAnalysisSpecs(Container):
-    """Dynamic Analysis Specifications Folder
-    """
-    implements(IDynamicAnalysisSpecs, IDoNotSupportSnapshots, IHideActionsMenu)
+    def isItemAllowed(self, obj):
+        obj = api.get_object(obj)
+        location = obj.getInstrumentLocation() if obj else None
+        return location.UID() == self.context.UID() if location else False
