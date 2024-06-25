@@ -608,6 +608,9 @@
       if (!this.is_array(values)) {
         values = [values];
       }
+      if (!(values.length > 0)) {
+        return;
+      }
       me = this;
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));

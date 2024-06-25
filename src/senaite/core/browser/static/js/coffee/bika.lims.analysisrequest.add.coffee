@@ -576,6 +576,9 @@ class window.AnalysisRequestAdd
     if not @is_array(values)
       values = [values]
 
+    # avoid flushing the field with empty values
+    return unless values.length > 0
+
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
