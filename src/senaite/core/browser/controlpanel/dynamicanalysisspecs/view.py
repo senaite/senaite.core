@@ -23,25 +23,25 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
-from senaite.core.i18n import translate
-from senaite.core.catalog import SETUP_CATALOG
 from senaite.app.listing import ListingView
-from plone.app.textfield import RichTextValue
+from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import translate
+from senaite.core.permissions import AddAnalysisSpec
 
 
-class InterpretationTemplatesView(ListingView):
-    """Results Interpretation Templates listing view
+class DynamicAnalysisSpecsView(ListingView):
+    """Displays all system's dynamic analysis specifications
     """
 
     def __init__(self, context, request):
-        super(InterpretationTemplatesView, self).__init__(context, request)
+        super(DynamicAnalysisSpecsView, self).__init__(context, request)
 
         self.catalog = SETUP_CATALOG
 
         self.contentFilter = {
-            "portal_type": "InterpretationTemplate",
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
+            "portal_type": "DynamicAnalysisSpec",
+            "sort_on": "created",
+            "sort_order": "descending",
             "path": {
                 "query": api.get_path(self.context),
                 "depth": 1,
@@ -49,55 +49,42 @@ class InterpretationTemplatesView(ListingView):
         }
 
         self.context_actions = {
-            _("listing_interpretationtemplates_action_add", default="Add"): {
-                "url": "++add++InterpretationTemplate",
+            _("listing_dynamic_analysisspec_action_add", default="Add"): {
+                "url": "++add++DynamicAnalysisSpec",
+                "permission": AddAnalysisSpec,
                 "icon": "senaite_theme/icon/plus"
             }
         }
 
+        self.icon = api.get_icon("DynamicAnalysisSpecs", html_tag=False)
+
         self.title = translate(_(
-            "listing_interpretationtemplates_title",
-            default="Interpretation Templates")
+            u"listing_dynamic_analysisspecs_title",
+            default=u"Dynamic Analysis Specifications")
         )
-        self.icon = api.get_icon("InterpretationTemplates",
-                                 html_tag=False)
+        self.description = self.context.Description()
         self.show_select_column = True
 
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _(
-                    u"listing_interpretationtemplates_column_title",
+                    u"listing_dynamic_analysisspecs_column_title",
                     default=u"Title"
                 ),
-                "index": "sortable_title",
-            }),
+                "index": "sortable_title"}),
             ("Description", {
                 "title": _(
-                    u"listing_interpretationtemplates_column_description",
+                    u"listing_dynamic_analysisspecs_column_description",
                     default=u"Description"
                 ),
-            }),
-            ("SampleTypes", {
-                "title": _(
-                    u"listing_interpretationtemplates_column_sampletypes",
-                    default=u"Sample Types"
-                ),
-                "sortable": False,
-            }),
-            ("Text", {
-                "title": _(
-                    u"listing_interpretationtemplates_column_text",
-                    default=u"Text"
-                ),
-                "sortable": False,
-            }),
+                "toggle": True}),
         ))
 
         self.review_states = [
             {
                 "id": "default",
                 "title": _(
-                    u"listing_interpretationtemplates_state_active",
+                    u"listing_dynamic_analysisspecs_state_active",
                     default=u"Active"
                 ),
                 "contentFilter": {"is_active": True},
@@ -105,31 +92,21 @@ class InterpretationTemplatesView(ListingView):
             }, {
                 "id": "inactive",
                 "title": _(
-                    u"listing_interpretationtemplates_state_inactive",
+                    u"listing_dynamic_analysisspecs_state_inactive",
                     default=u"Inactive"
                 ),
-                "contentFilter": {'is_active': False},
+                "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _(
-                    u"listing_interpretationtemplates_state_all",
+                    u"listing_dynamic_analysisspecs_state_all",
                     default=u"All"
                 ),
                 "contentFilter": {},
                 "columns": self.columns.keys(),
             },
         ]
-
-    def update(self):
-        """Update hook
-        """
-        super(InterpretationTemplatesView, self).update()
-
-    def before_render(self):
-        """Before template render hook
-        """
-        super(InterpretationTemplatesView, self).before_render()
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -139,24 +116,5 @@ class InterpretationTemplatesView(ListingView):
             the template
         :index: current index of the item
         """
-        obj = api.get_object(obj)
-
         item["replace"]["Title"] = get_link_for(obj)
-        item["Description"] = api.get_description(obj)
-
-        # List all linked sampletypes
-        sampletypes = obj.getSampleTypes()
-        if sampletypes:
-            titles = map(api.get_title, sampletypes)
-            item["SampleTypes"] = ", ".join(titles)
-            item["replace"]["SampleTypes"] = ", ".join(
-                map(get_link_for, sampletypes))
-
-        text = obj.text
-        if isinstance(text, RichTextValue):
-            # convert output to plain text
-            text._outputMimeType = "text/plain"
-            text = text.output
-        item["Text"] = text
-
         return item

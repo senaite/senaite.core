@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI"
+<object name="DynamicAnalysisSpec" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Title and Description -->
   <property name="title"
-            i18n:translate="">Dynamic Analysis Specifications</property>
+            i18n:translate="">Dynamic Analysis Specification</property>
   <property name="description"
             i18n:translate=""></property>
 
@@ -13,22 +13,21 @@
   <property name="icon_expr">senaite_theme/icon/analysisspec</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">DynamicAnalysisSpecs</property>
+  <property name="factory">DynamicAnalysisSpec</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr">string:${folder_url}/++add++DynamicAnalysisSpecs</property>
+  <property name="add_view_expr">string:${folder_url}/++add++DynamicAnalysisSpec</property>
 
   <property name="link_target"></property>
   <property name="immediate_view">view</property>
 
   <!-- Is this item addable globally, or is it restricted? -->
-  <property name="global_allow">True</property>
+  <property name="global_allow">False</property>
 
   <!-- If we're a container, should we filter addable content types? -->
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="DynamicAnalysisSpec" />
   </property>
 
   <property name="allow_discussion">False</property>
@@ -45,13 +44,15 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs</property>
-  <property name="klass">bika.lims.controlpanel.dynamic_analysisspecs.DynamicAnalysisSpecs</property>
+  <property name="schema">senaite.core.content.dynamicanalysisspec.IDynamicAnalysisSpecSchema</property>
+  <property name="klass">senaite.core.content.dynamicanalysisspec.DynamicAnalysisSpec</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
-    <element value="plone.app.content.interfaces.INameFromTitle"/>
+    <element value="bika.lims.interfaces.IAutoGenerateID"/>
+    <element value="bika.lims.interfaces.IMultiCatalogBehavior"/>
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
   <!-- Action aliases -->

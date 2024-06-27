@@ -4,6 +4,9 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2582 Do not override dependent values with empties
+- #2573 Move Interpretation Templates to Senaite setup folder
+- #2563 Move Dynamic Analysis Specs to Setup folder
 - #2554 Migrate AttachmentTypes to Dexterity
 - #2572 Move Sample Containers to Senaite setup folder
 - #2571 Move InstrumentLocations to Senaite setup folder

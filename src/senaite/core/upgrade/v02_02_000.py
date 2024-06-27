@@ -27,7 +27,6 @@ from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import _run_import_step
-from senaite.core.setuphandlers import add_dexterity_setup_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
@@ -69,9 +68,6 @@ def upgrade(tool):
 
     # Preserve all information from service conditions in Sample
     update_analysis_conditions(portal)
-
-    # Add sample containers folder
-    add_dexterity_setup_items(portal)
 
     # Migrate containes
     migrate_containers_to_dx(portal)

@@ -88,6 +88,10 @@
   <object name="AnalysisCategory" meta_type="Dexterity FTI" />
   <object name="AnalysisCategories" meta_type="Dexterity FTI" />
 
+  <!-- Dynamic Analysis specifications -->
+  <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
+  <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
+  
   <!-- Sample types -->
   <object name="SampleType" meta_type="Dexterity FTI" />
   <object name="SampleTypes" meta_type="Dexterity FTI" />

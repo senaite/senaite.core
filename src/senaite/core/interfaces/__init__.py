@@ -325,6 +325,11 @@ class IInterpretationTemplate(Interface):
     """
 
 
+class IInterpretationTemplates(Interface):
+    """Marker interface for interpretation templates objects
+    """
+
+
 class ILabels(Interface):
     """Marker interface for labels container
     """
@@ -429,6 +434,16 @@ class IContainerTypes(Interface):
 
 class IContainerType(Interface):
     """Marker interface for container type
+    """
+
+
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
     """
 
 

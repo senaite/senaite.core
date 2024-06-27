@@ -1537,6 +1537,12 @@ def move_instrumentlocations(tool):
     """Move instrument locations to senaite setup folder
     """
 
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
     # get the old container
     origin = api.get_setup().get("instrumentlocations")
     if not origin:
@@ -1568,6 +1574,12 @@ def move_instrumentlocations(tool):
 def move_samplecontainers(tool):
     """Move sample containers to senaite setup folder
     """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
 
     # get the old container
     origin = api.get_setup().get("sample_containers")
@@ -1641,6 +1653,82 @@ def migrate_attachmenttypes_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert AttachmentTypes to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def move_dynamicanalysisspecs(tool):
+    """Move dynamic analysis specs to senaite package
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("dynamic_analysisspecs")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("dynamicanalysisspecs")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "DynamicAnalysisSpec"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Dynamic Analysis Specs [DONE]")
+
+
+@upgradestep(product, version)
+def move_interpretationtemplates(tool):
+    """Move sample interpretation templates to senaite setup folder
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("interpretation_templates")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("interpretationtemplates")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "InterpretationTemplate"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Interpretation Templates [DONE]")
 
 
 def migrate_sampletype_to_dx(src, destination=None):

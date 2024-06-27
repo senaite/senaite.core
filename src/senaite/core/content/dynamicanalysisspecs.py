@@ -18,25 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
 from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
 from plone.supermodel import model
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
-from zope import schema
-from zope.interface import implements
+from senaite.core.interfaces import IDynamicAnalysisSpecs
+from zope.interface import implementer
 
 
-class IDynamicAnalysisSpecs(model.Schema):
+class IDynamicAnalysisSpecsSchema(model.Schema):
     """Dynamic Analysis Specifications
     """
-    title = schema.TextLine(
-        title=_(u"Title"),
-        description=_(u"Title of the Folder"),
-        required=True)
 
 
+@implementer(IDynamicAnalysisSpecs, IDynamicAnalysisSpecsSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
 class DynamicAnalysisSpecs(Container):
     """Dynamic Analysis Specifications Folder
     """
-    implements(IDynamicAnalysisSpecs, IDoNotSupportSnapshots, IHideActionsMenu)
