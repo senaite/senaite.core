@@ -91,6 +91,8 @@ REMOVE_AT_TYPES = [
     "AnalysisCategories",
     "AttachmentType",
     "AttachmentTypes",
+    "SampleType",
+    "SampleTypes",
 ]
 
 CONTENT_ACTIONS = [
@@ -1639,6 +1641,153 @@ def migrate_attachmenttypes_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert AttachmentTypes to Dexterity [DONE]")
+
+
+def migrate_sampletype_to_dx(src, destination=None):
+    """Migrates a Sample Type to DX in destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent("SampleType", id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+
+    # we set the fields with our custom setters
+    target.setRetentionPeriod(src.getRetentionPeriod())
+    target.setHazardous(src.getHazardous())
+    target.setSampleMatrix(src.getSampleMatrix())
+    target.setPrefix(src.getPrefix())
+    target.setMinimumVolume(src.getMinimumVolume())
+    target.setContainerType(src.getContainerType())
+    target.setAdmittedStickerTemplates(src.getAdmittedStickerTemplates())
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    return target
+
+
+@upgradestep(product, version)
+def migrate_sampletypes_to_dx(tool):
+    """Converts existing Sample Types to Dexterity
+    """
+    logger.info("Convert SampleTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "rolemap")
+
+    # update content actions
+    update_content_actions(tool)
+
+    # get the old container
+    old_setup = api.get_setup().get("bika_sampletypes")
+    if not old_setup:
+        # old container is already gone
+        return
+
+    # get the destination container
+    new_setup = get_setup_folder("sampletypes")
+
+    # NOTE: Sample Points can be created in setup and client context!
+    query = {"portal_type": "SampleType"}
+    # search all AT based sample points
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+
+    # get all objects first
+    objects = map(api.get_object, brains)
+    for num, obj in enumerate(objects):
+        if api.is_dexterity_content(obj):
+            # migrated already
+            continue
+
+        # get the current parent of the object
+        origin = api.get_parent(obj)
+
+        # get the destination container
+        if origin == new_setup:
+            # migrated already
+            continue
+
+        # migrate the object to dexterity
+        if origin == old_setup:
+            migrate_sampletype_to_dx(obj, new_setup)
+        else:
+            migrate_sampletype_to_dx(obj)
+
+        logger.info("Migrated sample type {0}/{1}: {2} -> {3}".format(
+            num, total, api.get_path(obj), api.get_path(obj)))
+
+    if old_setup:
+        # remove old AT folder
+        if len(old_setup) == 0:
+            delete_object(old_setup)
+        else:
+            logger.warn("Cannot remove {}. Is not empty".format(old_setup))
+
+    logger.info("Convert SampleTypes to Dexterity [DONE]")
 
 
 def update_content_actions(tool):
