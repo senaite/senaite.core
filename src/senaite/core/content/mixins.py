@@ -24,6 +24,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.utils import chain
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IClientAwareMixin
+from senaite.core.interfaces import ISampleType
 from senaite.core.interfaces import ISampleTypeAwareMixin
 from zope.interface import implementer
 
