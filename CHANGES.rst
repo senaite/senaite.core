@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2583 Make SampleContainer DX type inherit from core's DX Container
 - #2582 Do not override dependent values with empties
 - #2573 Move Interpretation Templates to Senaite setup folder
 - #2563 Move Dynamic Analysis Specs to Setup folder
