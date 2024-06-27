@@ -109,7 +109,7 @@ class ISampleTypeSchema(model.Schema):
         ),
         description=_(
             u"description_sampletype_duration_period",
-            default=u"The period for which un-preserved samples of "
+            default=u"The period for which unpreserved samples of "
                     u"this type can be kept before they expire "
                     u"and cannot be analysed any further"
         ),
