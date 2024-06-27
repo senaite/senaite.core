@@ -214,6 +214,7 @@ class Organization(Container):
         mutator = self.mutator("fax")
         mutator(self, value)
 
+    @security.protected(permissions.View)
     def getEmail(self):
         accessor = self.accessor("email")
         return accessor(self)
