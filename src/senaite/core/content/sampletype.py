@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from magnitude import mg
 from plone.autoform import directives
 from plone.supermodel import model
@@ -72,7 +73,7 @@ class IStickersRecord(Interface):
             default=u'Admitted stickers for the sample type'
         ),
         value_type=schema.Choice(
-            vocabulary='plone.app.vocabularies.PortalTypes',
+            vocabulary=_getStickerTemplates,
         ),
         required=True,
         missing_value={},
@@ -83,7 +84,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_small_default",
             default=u'Default small sticker'
         ),
-        vocabulary='plone.app.vocabularies.PortalTypes',
+        vocabulary=_getStickerTemplates,
         required=True,
     )
 
@@ -92,7 +93,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_large_default",
             default=u'Default large sticker'
         ),
-        vocabulary='plone.app.vocabularies.PortalTypes',
+        vocabulary=_getStickerTemplates,
         required=True,
     )
 
@@ -282,7 +283,7 @@ class SampleType(Container, SampleTypeAwareMixin):
     def getPrefix(self):
         accessor = self.accessor("prefix")
         value = accessor(self) or ""
-        return api.to_utf8(value)
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setPrefix(self, value):
@@ -296,7 +297,7 @@ class SampleType(Container, SampleTypeAwareMixin):
     def getMinimumVolume(self):
         accessor = self.accessor("min_volume")
         value = accessor(self) or ""
-        return api.to_utf8(value)
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setMinimumVolume(self, value):
@@ -344,4 +345,18 @@ class SampleType(Container, SampleTypeAwareMixin):
         mutator(self, value)
 
     # BBB: AT schema field property
-    SampleMatrix = property(getContainerType, setContainerType)
+    ContainerType = property(getContainerType, setContainerType)
+
+    @security.protected(permissions.View)
+    def getAdmittedStickerTemplates(self):
+        accessor = self.accessor("admitted_sticker_templates")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAdmittedStickerTemplates(self, value):
+        mutator = self.mutator("admitted_sticker_templates")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    AdmittedStickerTemplates = property(getAdmittedStickerTemplates,
+                                        setAdmittedStickerTemplates)
