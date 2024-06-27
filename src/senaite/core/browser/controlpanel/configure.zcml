@@ -37,8 +37,9 @@
   <include package=".samplepoints" />
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
-  <include package=".subgroups" />
-  <include package=".storagelocations" />
+  <include package=".sampletypes" />
   <include package=".samplingdeviations" />
+  <include package=".storagelocations" />
+  <include package=".subgroups" />
 
 </configure>

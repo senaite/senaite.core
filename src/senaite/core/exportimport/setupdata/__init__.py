@@ -83,7 +83,8 @@ def read_file(path):
         out = '%s.%s' % (path, e)
         if os.path.isfile(out):
             return open(out, "rb").read()
-    raise IOError("File not found: %s. Allowed extensions: %s" % (path, ','.join(allowed_ext)))
+    raise IOError("File not found: %s. Allowed extensions: %s" %
+                  (path, ','.join(allowed_ext)))
 
 
 class SetupDataSetList(SDL):
@@ -170,7 +171,8 @@ class WorksheetImporter:
                 row[add_type] = {}
                 if add_type + "_Address" in row:
                     for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
-                        row[add_type][key] = str(row.get("%s_%s" % (add_type, key), ''))
+                        row[add_type][key] = str(
+                            row.get("%s_%s" % (add_type, key), ''))
 
             yield row
 
@@ -247,10 +249,11 @@ class WorksheetImporter:
         for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
             addresses[add_type] = {}
             for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
-                addresses[add_type][key.lower()] = str(row.get("%s_%s" % (add_type, key), ''))
+                addresses[add_type][key.lower()] = str(
+                    row.get("%s_%s" % (add_type, key), ''))
 
         if addresses['CountryState']['country'] == '' \
-            and addresses['CountryState']['state'] == '':
+                and addresses['CountryState']['state'] == '':
             addresses['CountryState']['country'] = addresses['Physical']['country']
             addresses['CountryState']['state'] = addresses['Physical']['state']
 
@@ -283,7 +286,8 @@ class WorksheetImporter:
                 field = fields[fieldname]
             except Exception:
                 if fieldname in row:
-                    logger.info("Address field %s not found on %s"%(fieldname,obj))
+                    logger.info("Address field %s not found on %s" %
+                                (fieldname, obj))
                 continue
             value = row.get(fieldname, '')
             field.set(obj, value)
@@ -375,19 +379,22 @@ class Lab_Contacts(WorksheetImporter):
             self.context, 'portal_registration')
         rownum = 2
         for row in self.get_rows(3):
-            rownum+=1
-            if not row.get('Firstname',None):
+            rownum += 1
+            if not row.get('Firstname', None):
                 continue
 
             # Username already exists?
-            username = row.get('Username','')
-            fullname = ('%s %s' % (row['Firstname'], row.get('Surname', ''))).strip()
+            username = row.get('Username', '')
+            fullname = ('%s %s' %
+                        (row['Firstname'], row.get('Surname', ''))).strip()
             if username:
                 username = safe_unicode(username).encode('utf-8')
                 bsc = getToolByName(self.context, SETUP_CATALOG)
-                exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                exists = [o.getObject() for o in bsc(
+                    portal_type="LabContact") if o.getObject().getUsername() == username]
                 if exists:
-                    error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(username, str(rownum))
+                    error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(
+                        username, str(rownum))
                     logger.error(error)
                     continue
 
@@ -396,7 +403,8 @@ class Lab_Contacts(WorksheetImporter):
             if row.get('Signature'):
                 signature = self.get_file_data(row['Signature'])
                 if not signature:
-                    warning = "Lab Contact: Cannot load the signature file '{0}' for user '{1}'. The contact will be created, but without a signature image".format(row['Signature'], username)
+                    warning = "Lab Contact: Cannot load the signature file '{0}' for user '{1}'. The contact will be created, but without a signature image".format(
+                        row['Signature'], username)
                     logger.warning(warning)
 
             obj = _createObjectByType("LabContact", folder, tmpID())
@@ -425,13 +433,15 @@ class Lab_Contacts(WorksheetImporter):
 
             # Create Plone user
             if not row['Username']:
-                warn = "Lab Contact: No username defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                warn = "Lab Contact: No username defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(
+                    fullname, str(rownum))
                 logger.warning(warn)
             if not row.get('EmailAddress', ''):
-                warn = "Lab Contact: No Email defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                warn = "Lab Contact: No Email defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(
+                    fullname, str(rownum))
                 logger.warning(warn)
 
-            if(row['Username'] and row.get('EmailAddress','')):
+            if (row['Username'] and row.get('EmailAddress', '')):
                 username = safe_unicode(row['Username']).encode('utf-8')
                 passw = row['Password']
                 if not passw:
@@ -450,12 +460,14 @@ class Lab_Contacts(WorksheetImporter):
                             'fullname': fullname}
                     )
                 except Exception as msg:
-                    logger.error("Client Contact: Error adding user (%s): %s" % (msg, username))
+                    logger.error(
+                        "Client Contact: Error adding user (%s): %s" % (msg, username))
                     continue
 
                 groups = row.get('Groups', '')
                 if not groups:
-                    warn = "Lab Contact: No groups defined for user '{0}' in row {1}. Group established automatically to 'Analysts'".format(username, str(rownum))
+                    warn = "Lab Contact: No groups defined for user '{0}' in row {1}. Group established automatically to 'Analysts'".format(
+                        username, str(rownum))
                     logger.warning(warn)
                     groups = 'Analysts'
 
@@ -485,8 +497,10 @@ class Lab_Contacts(WorksheetImporter):
             if row['title'] and row['LabContact_Username']:
                 dept = self.get_object(bsc, "Department", row.get('title'))
                 if dept and not dept.getManager():
-                    username = safe_unicode(row['LabContact_Username']).encode('utf-8')
-                    exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                    username = safe_unicode(
+                        row['LabContact_Username']).encode('utf-8')
+                    exists = [o.getObject() for o in bsc(
+                        portal_type="LabContact") if o.getObject().getUsername() == username]
                     if exists:
                         dept.setManager(exists[0].UID())
 
@@ -494,6 +508,7 @@ class Lab_Contacts(WorksheetImporter):
 class Lab_Departments(WorksheetImporter):
     """Import Lab Departments
     """
+
     def Import(self):
         setup = api.get_senaite_setup()
         container = setup.departments
@@ -521,7 +536,7 @@ class Lab_Departments(WorksheetImporter):
                 obj.setManager(manager.UID())
             else:
                 message = "Department: lookup of '%s' in LabContacts" \
-                            "/Username failed." % username
+                    "/Username failed." % username
                 logger.info(message)
 
 
@@ -616,10 +631,10 @@ class Client_Contacts(WorksheetImporter):
                                dest_query={'portal_type': 'Contact',
                                            'getFullname': _fullname}
                                )
-            ## Create Plone user
+            # Create Plone user
             username = safe_unicode(row['Username']).encode('utf-8')
             password = safe_unicode(row['Password']).encode('utf-8')
-            if(username):
+            if (username):
                 try:
                     self.context.portal_registration.addMember(
                         username,
@@ -628,10 +643,11 @@ class Client_Contacts(WorksheetImporter):
                             'username': username,
                             'email': row['EmailAddress'],
                             'fullname': fullname}
-                        )
+                    )
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
-                contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner', ])
+                contact.aq_parent.manage_setLocalRoles(
+                    row['Username'], ['Owner', ])
                 contact.reindexObject()
                 # add user to Clients group
                 group = portal_groups.getGroupById('Clients')
@@ -778,8 +794,9 @@ class Instruments(WorksheetImporter):
         for row in self.get_rows(3):
             if ('Type' not in row
                 or 'Supplier' not in row
-                or 'Brand' not in row):
-                logger.info("Unable to import '%s'. Missing supplier, manufacturer or type" % row.get('title',''))
+                    or 'Brand' not in row):
+                logger.info(
+                    "Unable to import '%s'. Missing supplier, manufacturer or type" % row.get('title', ''))
                 continue
 
             obj = _createObjectByType("Instrument", folder, tmpID())
@@ -797,9 +814,12 @@ class Instruments(WorksheetImporter):
                 InstallationDate=row.get('Instalationdate', ''),
                 UserManualID=row.get('UserManualID', ''),
             )
-            instrumenttype = self.get_object(bsc, 'InstrumentType', title=row.get('Type'))
-            manufacturer = self.get_object(bsc, 'Manufacturer', title=row.get('Brand'))
-            supplier = self.get_object(bsc, 'Supplier', title=row.get('Supplier', ''))
+            instrumenttype = self.get_object(
+                bsc, 'InstrumentType', title=row.get('Type'))
+            manufacturer = self.get_object(
+                bsc, 'Manufacturer', title=row.get('Brand'))
+            supplier = self.get_object(
+                bsc, 'Supplier', title=row.get('Supplier', ''))
             method = self.get_object(bsc, 'Method', title=row.get('Method'))
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
@@ -820,7 +840,8 @@ class Instruments(WorksheetImporter):
                     obj.setPhoto(file_data)
                 except Exception as msg:
                     file_data = None
-                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+                    logger.warning(
+                        msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Installation Certificate if exists
             if row.get('InstalationCertificate', None):
@@ -833,7 +854,8 @@ class Instruments(WorksheetImporter):
                     file_data = read_file(path)
                     obj.setInstallationCertificate(file_data)
                 except Exception as msg:
-                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+                    logger.warning(
+                        msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Instrument's manual if exists
             if row.get('UserManualFile', None):
@@ -859,7 +881,8 @@ class Instrument_Validations(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                obj = _createObjectByType("InstrumentValidation", folder, tmpID())
+                obj = _createObjectByType(
+                    "InstrumentValidation", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     DownFrom=row.get('downfrom', ''),
@@ -873,7 +896,8 @@ class Instrument_Validations(WorksheetImporter):
                 )
                 # Getting lab contacts
                 bsc = getToolByName(self.context, SETUP_CATALOG)
-                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", is_active=True)]
+                lab_contacts = [o.getObject() for o in bsc(
+                    portal_type="LabContact", is_active=True)]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
                         obj.setWorker(contact.UID())
@@ -892,7 +916,8 @@ class Instrument_Calibrations(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                obj = _createObjectByType("InstrumentCalibration", folder, tmpID())
+                obj = _createObjectByType(
+                    "InstrumentCalibration", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     DownFrom=row.get('downfrom', ''),
@@ -906,7 +931,8 @@ class Instrument_Calibrations(WorksheetImporter):
                 )
                 # Gettinginstrument lab contacts
                 bsc = getToolByName(self.context, SETUP_CATALOG)
-                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
+                lab_contacts = [o.getObject() for o in bsc(
+                    portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
                         obj.setWorker(contact.UID())
@@ -923,9 +949,11 @@ class Instrument_Certifications(WorksheetImporter):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = self.get_object(bsc, 'Instrument', row.get('instrument',''))
+            folder = self.get_object(
+                bsc, 'Instrument', row.get('instrument', ''))
             if folder:
-                obj = _createObjectByType("InstrumentCertification", folder, tmpID())
+                obj = _createObjectByType(
+                    "InstrumentCertification", folder, tmpID())
                 today = datetime.date.today()
                 certificate_expire_date = today.strftime('%d/%m') + '/' + str(today.year+1) \
                     if row.get('validto', '') == '' else row.get('validto')
@@ -952,11 +980,13 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setDocument(file_data)
                     except Exception as msg:
                         file_data = None
-                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+                        logger.warning(
+                            msg[0] + " Error on sheet: " + self.sheetname)
 
                 # Getting lab contacts
                 bsc = getToolByName(self.context, SETUP_CATALOG)
-                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
+                lab_contacts = [o.getObject() for o in bsc(
+                    portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('preparedby', ''):
                         obj.setPreparator(contact.UID())
@@ -974,8 +1004,10 @@ class Instrument_Documents(WorksheetImporter):
         for row in self.get_rows(3):
             if not row.get('instrument', ''):
                 continue
-            folder = self.get_object(bsc, 'Instrument', row.get('instrument', ''))
+            folder = self.get_object(
+                bsc, 'Instrument', row.get('instrument', ''))
             addDocument(self, row, folder)
+
 
 def addDocument(self, row_dict, folder):
     """
@@ -999,13 +1031,15 @@ def addDocument(self, row_dict, folder):
 
             # Obtain all created instrument documents content type
             catalog = getToolByName(self.context, SETUP_CATALOG)
-            documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
+            documents_brains = catalog.searchResults(
+                {'portal_type': 'Multifile'})
             # If a the new document has the same DocumentID as a created document, this object won't be created.
             idAlreadyInUse = False
             for item in documents_brains:
                 if item.getObject().getDocumentID() == row_dict.get('DocumentID', ''):
                     warning = "The ID '%s' used for this document is already in use on instrument '%s', consequently " \
-                              "the file hasn't been upload." % (row_dict.get('DocumentID', ''), row_dict.get('instrument', ''))
+                              "the file hasn't been upload." % (row_dict.get(
+                                  'DocumentID', ''), row_dict.get('instrument', ''))
                     self.context.plone_utils.addPortalMessage(warning)
                     idAlreadyInUse = True
             if not idAlreadyInUse:
@@ -1030,9 +1064,10 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
 
-            folder = self.get_object(bsc, 'Instrument',row.get('instrument'))
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                obj = _createObjectByType("InstrumentMaintenanceTask", folder, tmpID())
+                obj = _createObjectByType(
+                    "InstrumentMaintenanceTask", folder, tmpID())
                 try:
                     cost = "%.2f" % (row.get('cost', 0))
                 except Exception:
@@ -1065,7 +1100,8 @@ class Instrument_Schedule(WorksheetImporter):
                 continue
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                obj = _createObjectByType("InstrumentScheduledTask", folder, tmpID())
+                obj = _createObjectByType(
+                    "InstrumentScheduledTask", folder, tmpID())
                 criteria = [
                     {'fromenabled': row.get('date', None) is not None,
                      'fromdate': row.get('date', ''),
@@ -1116,37 +1152,40 @@ class Batch_Labels(WorksheetImporter):
 class Sample_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_sampletypes
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.sampletypes
+        sc = api.get_tool(SETUP_CATALOG)
+
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("SampleType", folder, tmpID())
-            samplematrix = self.get_object(bsc, 'SampleMatrix',
-                                           row.get('SampleMatrix_title'))
-            containertype = self.get_object(bsc, 'ContainerType',
-                                            row.get('ContainerType_title'))
-            retentionperiod = {
-                'days': row['RetentionPeriod'] if row['RetentionPeriod'] else 0,
+
+            obj = api.create(container, "SampleType", title=title,
+                             description=row.get("description"))
+
+            samplematrix = self.get_object(
+                sc, 'SampleMatrix', row.get('SampleMatrix_title'))
+            containertype = self.get_object(
+                sc, 'ContainerType', row.get('ContainerType_title'))
+
+            if samplematrix:
+                obj.setSampleMatrix(samplematrix)
+            if containertype:
+                obj.setContainerType(containertype)
+
+            obj.setHazardous(self.to_bool(row['Hazardous']))
+            obj.setPrefix(row['Prefix'])
+            obj.setMinimumVolume(row['MinimumVolume'])
+            obj.setRetentionPeriod({
+                'days': row['RetentionPeriod'] or 0,
                 'hours': 0,
-                'minutes': 0}
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''),
-                RetentionPeriod=retentionperiod,
-                Hazardous=self.to_bool(row['Hazardous']),
-                SampleMatrix=samplematrix,
-                Prefix=row['Prefix'],
-                MinimumVolume=row['MinimumVolume'],
-                ContainerType=containertype
-            )
-            samplepoint = self.get_object(bsc, 'SamplePoint',
+                'minutes': 0})
+
+            samplepoint = self.get_object(sc, 'SamplePoint',
                                           row.get('SamplePoint_title'))
             if samplepoint:
-                samplepoint.setSampleType([obj, ])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+                samplepoint.setSampleTypes([obj, ])
+            obj.reindexObject()
 
 
 class Sample_Points(WorksheetImporter):
@@ -1282,7 +1321,8 @@ class Methods(WorksheetImporter):
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
             if row['title']:
-                calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+                calculation = self.get_object(
+                    bsc, 'Calculation', row.get('Calculation_title'))
                 obj = _createObjectByType("Method", folder, tmpID())
                 obj.edit(
                     title=row['title'],
@@ -1310,7 +1350,8 @@ class Methods(WorksheetImporter):
                         file_data = read_file(path)
                         obj.setMethodDocument(file_data)
                     except Exception as msg:
-                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+                        logger.warning(
+                            msg[0] + " Error on sheet: " + self.sheetname)
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
@@ -1392,7 +1433,8 @@ class Calculations(WorksheetImporter):
             if row.get('title', '') and row.get('Calculation_title', ''):
                 meth = self.get_object(bsc, "Method", row.get('title'))
                 if meth and not meth.getCalculation():
-                    calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
+                    calctit = safe_unicode(
+                        row['Calculation_title']).encode('utf-8')
                     calc = self.get_object(bsc, "Calculation", calctit)
                     if calc:
                         meth.setCalculation(calc.UID())
@@ -1449,7 +1491,8 @@ class Analysis_Services(WorksheetImporter):
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
             if not service:
-                warning = "Unable to load an Analysis Service uncertainty. Service '%s' not found." % row.get('Service_title')
+                warning = "Unable to load an Analysis Service uncertainty. Service '%s' not found." % row.get(
+                    'Service_title')
                 logger.warning(warning)
                 continue
             service_uid = service.UID()
@@ -1536,14 +1579,18 @@ class Analysis_Services(WorksheetImporter):
 
             obj = _createObjectByType("AnalysisService", folder, tmpID())
             MTA = {
-                'days': self.to_int(row.get('MaxTimeAllowed_days',0),0),
-                'hours': self.to_int(row.get('MaxTimeAllowed_hours',0),0),
-                'minutes': self.to_int(row.get('MaxTimeAllowed_minutes',0),0),
+                'days': self.to_int(row.get('MaxTimeAllowed_days', 0), 0),
+                'hours': self.to_int(row.get('MaxTimeAllowed_hours', 0), 0),
+                'minutes': self.to_int(row.get('MaxTimeAllowed_minutes', 0), 0),
             }
-            category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
-            department = self.get_object(bsc, 'Department', row.get('Department_title'))
-            container = self.get_object(bsc, 'SampleContainer', row.get('Container_title'))
-            preservation = self.get_object(bsc, 'SamplePreservation', row.get('Preservation_title'))
+            category = self.get_object(
+                bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
+            department = self.get_object(
+                bsc, 'Department', row.get('Department_title'))
+            container = self.get_object(
+                bsc, 'SampleContainer', row.get('Container_title'))
+            preservation = self.get_object(
+                bsc, 'SamplePreservation', row.get('Preservation_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1557,7 +1604,8 @@ class Analysis_Services(WorksheetImporter):
             # associated in the Analysis_Service_Methods spreadsheet, then make
             # the assumption that the DefaultMethod set in the former has to be
             # associated to the AS although the relation is missing.
-            defaultmethod = self.get_object(bsc, 'Method', row.get('DefaultMethod_title'))
+            defaultmethod = self.get_object(
+                bsc, 'Method', row.get('DefaultMethod_title'))
             methods = self.get_methods(row['title'], defaultmethod)
             if not defaultmethod and methods:
                 defaultmethod = methods[0]
@@ -1580,7 +1628,8 @@ class Analysis_Services(WorksheetImporter):
             # make the assumption the DefaultInstrument set in the former has
             # to be associated to the AS although the relation is missing and
             # the option AllowInstrumentEntryOfResults will be set to True.
-            defaultinstrument = self.get_object(bsc, 'Instrument', row.get('DefaultInstrument_title'))
+            defaultinstrument = self.get_object(
+                bsc, 'Instrument', row.get('DefaultInstrument_title'))
             instruments = self.get_instruments(row['title'], defaultinstrument)
             allowinstrentry = True if instruments else False
             if not defaultinstrument and instruments:
@@ -1588,7 +1637,8 @@ class Analysis_Services(WorksheetImporter):
 
             # The manual entry of results can only be set to false if the value
             # for the attribute "InstrumentEntryOfResults" is False.
-            allowmanualentry = True if not allowinstrentry else row.get('ManualEntryOfResults', True)
+            allowmanualentry = True if not allowinstrentry else row.get(
+                'ManualEntryOfResults', True)
 
             # Analysis Service - Calculation considerations:
             # By default, the AnalysisService will use the Calculation associated
@@ -1601,10 +1651,11 @@ class Analysis_Services(WorksheetImporter):
             # To make it easier, if a Calculation is set by default in the
             # spreadsheet, then assume the UseDefaultCalculation has to be set
             # to False.
-            deferredcalculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            deferredcalculation = self.get_object(
+                bsc, 'Calculation', row.get('Calculation_title'))
             usedefaultcalculation = False if deferredcalculation else True
             _calculation = deferredcalculation if deferredcalculation else \
-                            (defaultmethod.getCalculation() if defaultmethod else None)
+                (defaultmethod.getCalculation() if defaultmethod else None)
 
             obj.edit(
                 title=row['title'],
@@ -1616,10 +1667,14 @@ class Analysis_Services(WorksheetImporter):
                 Department=department,
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
-                ExponentialFormatPrecision=str(self.to_int(row.get('ExponentialFormatPrecision',7),7)),
-                LowerDetectionLimit='%06f' % self.to_float(row.get('LowerDetectionLimit', '0.0'), 0),
-                UpperDetectionLimit='%06f' % self.to_float(row.get('UpperDetectionLimit', '1000000000.0'), 1000000000.0),
-                DetectionLimitSelector=self.to_bool(row.get('DetectionLimitSelector',0)),
+                ExponentialFormatPrecision=str(self.to_int(
+                    row.get('ExponentialFormatPrecision', 7), 7)),
+                LowerDetectionLimit='%06f' % self.to_float(
+                    row.get('LowerDetectionLimit', '0.0'), 0),
+                UpperDetectionLimit='%06f' % self.to_float(
+                    row.get('UpperDetectionLimit', '1000000000.0'), 1000000000.0),
+                DetectionLimitSelector=self.to_bool(
+                    row.get('DetectionLimitSelector', 0)),
                 MaxTimeAllowed=MTA,
                 Price="%02f" % Float(row['Price']),
                 BulkPrice="%02f" % Float(row['BulkPrice']),
@@ -1722,13 +1777,14 @@ class Analysis_Profiles(WorksheetImporter):
             return
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3, worksheet=worksheet):
-            if not row.get('Profile','') or not row.get('Service',''):
+            if not row.get('Profile', '') or not row.get('Service', ''):
                 continue
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
             # XXX We need a utility for this kind of thing.
-            service = self.get_object(bsc, 'AnalysisService', row.get('Service'))
+            service = self.get_object(
+                bsc, 'AnalysisService', row.get('Service'))
             if not service:
                 service = bsc(portal_type='AnalysisService',
                               getKeyword=row['Service'])[0].getObject()
@@ -1800,7 +1856,8 @@ class Sample_Templates(WorksheetImporter):
             if title not in self.partitions:
                 self.partitions[title] = []
             container = self.get_object(sc, "SampleContainer", container)
-            preservation = self.get_object(sc, "SamplePreservation", preservation)
+            preservation = self.get_object(
+                sc, "SamplePreservation", preservation)
             sampletype = self.get_object(sc, "SampleType", sampletype)
             self.partitions[title].append({
                 "part_id": part_id,
@@ -1944,7 +2001,6 @@ class Worksheet_Templates(WorksheetImporter):
 
 
 class Setup(WorksheetImporter):
-
 
     def get_field_value(self, field, value):
         if value is None:
@@ -2097,10 +2153,10 @@ class Reference_Samples(WorksheetImporter):
                 logger.warning(warning, sheetname)
                 continue
             results.append({
-                    'uid': service.UID(),
-                    'result': row['result'],
-                    'min': row['min'],
-                    'max': row['max']})
+                'uid': service.UID(),
+                'result': row['result'],
+                'min': row['min'],
+                'max': row['max']})
         sample.setReferenceResults(results)
 
     def load_reference_analyses(self, sample):
@@ -2145,11 +2201,11 @@ class Reference_Samples(WorksheetImporter):
             if row['ReferenceAnalysis_id'] != analysis.getId():
                 continue
             interims.append({
-                    'keyword': row['keyword'],
-                    'title': row['title'],
-                    'value': row['value'],
-                    'unit': row['unit'],
-                    'hidden': row['hidden']})
+                'keyword': row['keyword'],
+                'title': row['title'],
+                'value': row['value'],
+                'unit': row['unit'],
+                'hidden': row['hidden']})
         analysis.setInterimFields(interims)
 
     def Import(self):
@@ -2185,6 +2241,7 @@ class Reference_Samples(WorksheetImporter):
             self.load_reference_sample_results(obj)
             self.load_reference_analyses(obj)
 
+
 class Analysis_Requests(WorksheetImporter):
 
     def load_analyses(self, sample):
@@ -2200,7 +2257,8 @@ class Analysis_Requests(WorksheetImporter):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
             # analyses are keyed/named by keyword
-            ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
+            ar = bc(portal_type='AnalysisRequest',
+                    id=row['AnalysisRequest_id'])[0].getObject()
             obj = create_analysis(
                 ar, service,
                 Result=row['Result'],
@@ -2235,11 +2293,11 @@ class Analysis_Requests(WorksheetImporter):
             if row['ReferenceAnalysis_id'] != analysis.getId():
                 continue
             interims.append({
-                    'keyword': row['keyword'],
-                    'title': row['title'],
-                    'value': row['value'],
-                    'unit': row['unit'],
-                    'hidden': row['hidden']})
+                'keyword': row['keyword'],
+                'title': row['title'],
+                'value': row['value'],
+                'unit': row['unit'],
+                'hidden': row['hidden']})
         analysis.setInterimFields(interims)
 
     def Import(self):
