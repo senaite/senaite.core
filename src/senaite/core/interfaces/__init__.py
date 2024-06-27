@@ -325,6 +325,11 @@ class IInterpretationTemplate(Interface):
     """
 
 
+class IInterpretationTemplates(Interface):
+    """Marker interface for interpretation templates objects
+    """
+
+
 class ILabels(Interface):
     """Marker interface for labels container
     """

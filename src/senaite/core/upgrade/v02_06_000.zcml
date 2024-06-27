@@ -3,15 +3,23 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate LabProducts to DX"
       description="Migrate LabProducts to Dexterity"
-      source="2640"
-      destination="2641"
+      source="2641"
+      destination="2642"
       handler=".v02_06_000.migrate_labproducts_to_dx"
       profile="senaite.core:default"/>
 
-   <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
+      description="Move Interpretation Templates to Senaite setup"
+      source="2640"
+      destination="2641"
+      handler=".v02_06_000.move_interpretationtemplates"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Dynamic Analysis Specs to Senaite core"
       description="Move Dynamic Analysis Specs to Senaite core"
       source="2639"
@@ -26,7 +34,7 @@
       destination="2639"
       handler=".v02_06_000.migrate_attachmenttypes_to_dx"
       profile="senaite.core:default"/>
-  
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Sample Containers to Senaite setup"
       description="Move Sample Containers to Senaite setup"

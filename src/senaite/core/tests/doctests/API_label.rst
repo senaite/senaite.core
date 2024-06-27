@@ -173,7 +173,7 @@ Enable labels for **all** objects of a certain DX type:
 
     >>> enable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretationtemplates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     True
@@ -182,7 +182,7 @@ Disable labels for **all** objects of a certain DX type:
 
     >>> disable_labels_for_type("InterpretationTemplate")
 
-    >>> dx_type = api.create(setup.interpretation_templates, "InterpretationTemplate", title="New Interpretation Template")
+    >>> dx_type = api.create(senaite_setup.interpretationtemplates, "InterpretationTemplate", title="New Interpretation Template")
 
     >>> ICanHaveLabels.providedBy(dx_type)
     False

@@ -187,7 +187,6 @@ def install(context):
     add_senaite_setup(portal)
     add_senaite_setup_items(portal)
     add_dexterity_portal_items(portal)
-    add_dexterity_setup_items(portal)
 
     # Set CMF Form actions
     setup_form_controller_actions(portal)
@@ -197,22 +196,6 @@ def install(context):
     setup_markup_schema(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
-
-
-def add_dexterity_setup_items(portal):
-    """Adds the Dexterity Container in the Setup Folder
-
-    N.B.: We do this in code, because adding this as Generic Setup Profile in
-          `profiles/default/structure` flushes the contents on every import.
-    """
-    # Tuples of ID, Title, FTI
-    items = [
-        ("interpretation_templates",
-         "Interpretation Templates",
-         "InterpretationTemplates"),
-    ]
-    setup = api.get_setup()
-    add_dexterity_items(setup, items)
 
 
 def add_senaite_setup(portal):
@@ -257,6 +240,8 @@ def add_senaite_setup_items(portal):
         ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
         ("dynamicanalysisspecs", "Dynamic Analysis Specifications",
          "DynamicAnalysisSpecs"),
+        ("interpretationtemplates", "Interpretation Templates",
+         "InterpretationTemplates"),
         ("labproducts", "Lab Products", "LabProducts"),
     ]
     setup = api.get_senaite_setup()
