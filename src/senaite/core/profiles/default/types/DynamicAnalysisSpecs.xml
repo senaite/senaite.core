@@ -45,13 +45,14 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs</property>
-  <property name="klass">bika.lims.controlpanel.dynamic_analysisspecs.DynamicAnalysisSpecs</property>
+  <property name="schema">senaite.core.content.dynamicanalysisspecs.IDynamicAnalysisSpecsSchema</property>
+  <property name="klass">senaite.core.content.dynamicanalysisspecs.DynamicAnalysisSpecs</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
     <element value="plone.app.content.interfaces.INameFromTitle"/>
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
   <!-- Action aliases -->

@@ -39,9 +39,10 @@ Variables:
     >>> portal = self.portal
     >>> request = self.request
     >>> bika_setup = portal.bika_setup
+    >>> senaite_setup = portal.setup
     >>> bika_instruments = bika_setup.bika_instruments
     >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
+    >>> analysiscategories = senaite_setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_calculations = bika_setup.bika_calculations
 
@@ -106,9 +107,9 @@ This service matches the service specified in the file from which the import wil
 
 ~~ code::
 
-    >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
+    >>> analysiscategory = api.create(analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
-    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
+    <AnalysisCategory at /plone/setup/analysiscategories/analysiscategory-1>
     >>> analysisservice = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="HIV06ml",

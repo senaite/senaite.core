@@ -633,7 +633,7 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        container = self.context.setup.contenttypes
+        container = self.context.setup.containertypes
         for row in self.get_rows(3):
             title = row.get("title")
             if not title:
@@ -659,26 +659,29 @@ class Preservations(WorksheetImporter):
 class Containers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.sample_containers
         bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.samplecontainers
         for row in self.get_rows(3):
-            if not row["title"]:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = api.create(folder, "SampleContainer")
-            obj.setTitle(row["title"])
-            obj.setDescription(row.get("description", ""))
-            obj.setCapacity(row.get("Capacity", 0))
-            obj.setPrePreserved(self.to_bool(row["PrePreserved"]))
-            if row["ContainerType_title"]:
-                ct = self.get_object(
-                    bsc, "ContainerType", row.get("ContainerType_title", ""))
-                if ct:
-                    obj.setContainerType(ct)
-            if row["Preservation_title"]:
-                pres = self.get_object(bsc, "SamplePreservation",
-                                       row.get("Preservation_title", ""))
-                if pres:
-                    obj.setPreservation(pres)
+
+            description = row.get("description", "")
+            capacity = row.get("Capacity", 0)
+            pre_preserved = self.to_bool(row["PrePreserved"])
+            containertype = None
+            container_type_title = row.get("ContainerType_title", "")
+
+            if container_type_title:
+                containertype = self.get_object(
+                    bsc, "ContainerType", container_type_title)
+
+            api.create(container, "SampleContainer",
+                       title=title,
+                       description=description,
+                       capacity=capacity,
+                       pre_preserved=pre_preserved,
+                       containertype=containertype)
 
 
 class Suppliers(WorksheetImporter):
@@ -1233,29 +1236,35 @@ class Sample_Conditions(WorksheetImporter):
 class Analysis_Categories(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_analysiscategories
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.analysiscategories
+        setup_tool = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            department = None
-            if row.get('Department_title', None):
-                department = self.get_object(bsc, 'Department',
-                                             row.get('Department_title'))
-            if row.get('title', None) and department:
-                obj = _createObjectByType("AnalysisCategory", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''))
-                obj.setDepartment(department)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
-            elif not row.get('title', None):
-                logger.warning("Error in in " + self.sheetname + ". Missing Title field")
-            elif not row.get('Department_title', None):
-                logger.warning("Error in " + self.sheetname + ". Department field missing.")
-            else:
-                logger.warning("Error in " + self.sheetname + ". Department "
-                               + row.get('Department_title') + "is wrong.")
+            title = row.get("title")
+            if not title:
+                logger.warning("Error in in {}. Missing Title field."
+                               .format(self.sheetname))
+                continue
+
+            department_title = row.get("Department_title", None)
+            if not department_title:
+                logger.warning("Error in {}. Department field missing."
+                               .format(self.sheetname))
+                continue
+
+            department = self.get_object(setup_tool, "Department",
+                                         title=department_title)
+            if not department:
+                logger.warning("Error in {}. Department '{}' is wrong."
+                               .format(self.sheetname, department_title))
+                continue
+
+            description = row.get("description", "")
+            comments = row.get("comments", "")
+            api.create(container, "AnalysisCategory",
+                       title=title,
+                       description=description,
+                       comments=comments,
+                       department=department)
 
 
 class Methods(WorksheetImporter):
@@ -2043,21 +2052,20 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        #self.context.bika_setup.setIDFormatting(prefixes)
+        # self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_attachmenttypes
+        container = self.context.setup.attachmenttypes
         for row in self.get_rows(3):
-            obj = _createObjectByType("AttachmentType", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            api.create(container, "AttachmentType",
+                       title=title, description=row.get("description"))
 
 
 class Reference_Samples(WorksheetImporter):

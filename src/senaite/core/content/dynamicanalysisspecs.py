@@ -18,20 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.controlpanel.bika_instruments import InstrumentsView
-from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.supermodel import model
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import IDynamicAnalysisSpecs
+from zope.interface import implementer
 
 
-class InstrumentLocationInstrumentsView(InstrumentsView):
+class IDynamicAnalysisSpecsSchema(model.Schema):
+    """Dynamic Analysis Specifications
+    """
 
-    def __init__(self, context, request):
-        super(InstrumentLocationInstrumentsView, self).__init__(context, request)
-        url = self.portal.absolute_url()
-        url += "/bika_setup/bika_instruments/"
-        self.context_actions = {_('Add'):
-                                {'url': url + 'createObject?type_name=Instrument',
-                                'icon': '++resource++bika.lims.images/add.png'}}
 
-    def isItemAllowed(self, obj):
-        location = obj.getInstrumentLocation() if obj else None
-        return location.UID() == self.context.UID() if location else False
+@implementer(IDynamicAnalysisSpecs, IDynamicAnalysisSpecsSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
+class DynamicAnalysisSpecs(Container):
+    """Dynamic Analysis Specifications Folder
+    """

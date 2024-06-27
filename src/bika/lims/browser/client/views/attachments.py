@@ -79,7 +79,6 @@ class ClientAttachmentsView(BikaListingView):
         file = obj.getAttachmentFile()
         item['AttachmentFile'] = file.filename()
         item['AttachmentType'] = obj.getAttachmentType().Title()
-        item['AttachmentType'] = obj.getAttachmentType().Title()
         item['ContentType'] = self.lookupMime(file.getContentType())
         item['FileSize'] = '%sKb' % (file.get_size() / 1024)
         item['DateLoaded'] = obj.getDateLoaded()

@@ -87,6 +87,10 @@ REMOVE_AT_TYPES = [
     "SamplingDeviations",
     "BatchLabel",
     "BatchLabels",
+    "AnalysisCategory",
+    "AnalysisCategories",
+    "AttachmentType",
+    "AttachmentTypes",
     "LabProduct",
     "LabProducts"
 ]
@@ -1236,6 +1240,57 @@ def migrate_samplingdeviations_to_dx(tool):
     logger.info("Convert Sampling Deviations to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
+def migrate_analysiscategories_to_dx(tool):
+    """Converts existing analysis categories to Dexterity
+    """
+    logger.info("Convert Analysis Categories to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_analysiscategories")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("analysiscategories")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Comments": ("Comments", "comments", ""),
+        "Department": ("Department", "department", ""),
+        "SortKey": ("SortKey", "sort_key", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("AnalysisCategory",
+                  origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Analysis Categories to Dexterity [DONE]")
+
+
 def migrate_samplepoint_to_dx(src, destination=None):
     """Migrates a Sample Point to DX in destination folder
 
@@ -1325,7 +1380,6 @@ def migrate_samplepoint_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     return target
-
 
 
 @upgradestep(product, version)
@@ -1476,6 +1530,167 @@ def migrate_batchlabels_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert BatchLabels to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def move_instrumentlocations(tool):
+    """Move instrument locations to senaite setup folder
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("instrumentlocations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("instrumentlocations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "InstrumentLocation"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Instrument Locations [DONE]")
+
+
+@upgradestep(product, version)
+def move_samplecontainers(tool):
+    """Move sample containers to senaite setup folder
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("sample_containers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("samplecontainers")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "SampleContainer"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Sample Containers [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_attachmenttypes_to_dx(tool):
+    """Converts existing attachment types to Dexterity
+    """
+    logger.info("Convert AttachmentTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_attachmenttypes")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("attachmenttypes")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("AttachmentType", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert AttachmentTypes to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def move_dynamicanalysisspecs(tool):
+    """Move dynamic analysis specs to senaite package
+    """
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # get the old container
+    origin = api.get_setup().get("dynamic_analysisspecs")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("dynamicanalysisspecs")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "DynamicAnalysisSpec"}
+
+    brains = api.search(query, SETUP_CATALOG)
+
+    for brain in brains:
+        api.move_object(brain, destination, check_constraints=False)
+
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Move Dynamic Analysis Specs [DONE]")
 
 
 def update_content_actions(tool):
@@ -1660,6 +1875,42 @@ def migrate_samplepoints_coordinates(tool):
         obj._p_deactivate() # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
+
+
+def remove_category_title_metadata(tool):
+    """Remove getCategoryTitle metadata from catalogs
+    """
+    logger.info("Removing getCategoryTitle metadata from catalogs ...")
+
+    del_metadata(ANALYSIS_CATALOG, "getCategoryTitle")
+    del_metadata(SETUP_CATALOG, "getCategoryTitle")
+
+    logger.info("Removing getCategoryTitle metadata from catalogs [DONE]")
+
+
+def set_referenceable_behavior(tool):
+    """Assigns the referenceable behavior to setup folders so they are indexed
+    in the UID Catalog
+    """
+    behavior = "plone.app.referenceablebehavior.referenceable.IReferenceable"
+    logger.info("Assigning referenceable behavior to setup folders ...")
+    pt = api.get_tool("portal_types")
+    setup = api.get_senaite_setup()
+    to_fix = [setup] + list(setup.objectValues())
+    for obj in to_fix:
+        if not api.is_dexterity_content(obj):
+            logger.warn("Not a DX folder: %r [SKIP]" % obj)
+            continue
+        portal_type = api.get_portal_type(obj)
+        fti = pt.get(portal_type)
+        if behavior not in fti.behaviors:
+            logger.info("Adding IReferenceable behavior: %s" % portal_type)
+            behaviors = list(fti.behaviors) + [behavior]
+            fti.behaviors = tuple(behaviors)
+
+        obj.reindexObject()
+
+    logger.info("Assigning referenceable behavior to setup folders [DONE]")
 
 
 @upgradestep(product, version)

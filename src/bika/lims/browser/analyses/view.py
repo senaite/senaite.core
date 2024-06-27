@@ -875,6 +875,16 @@ class AnalysesView(ListingView):
         return "<span class='{css_class}'>{unit}</span>".format(
             unit=unit, css_class=css_class)
 
+    def get_category_title(self, analysis):
+        """Returns the title of the category the analysis is assigned to
+        """
+        obj = api.get_object(analysis)
+        cat_uid = obj.getRawCategory()
+        if not cat_uid:
+            return ""
+        cat = self.get_object(cat_uid)
+        return api.get_title(cat)
+
     def _folder_item_category(self, analysis_brain, item):
         """Sets the category to the item passed in
 
@@ -884,7 +894,9 @@ class AnalysesView(ListingView):
         if not self.show_categories:
             return
 
-        cat = analysis_brain.getCategoryTitle
+        # get the category title
+        cat = self.get_category_title(analysis_brain)
+
         item["category"] = cat
         cat_order = self.analysis_categories_order.get(cat)
         if (cat, cat_order) not in self.categories:
