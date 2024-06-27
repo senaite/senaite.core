@@ -73,7 +73,7 @@ class IStickersRecord(Interface):
             default=u'Admitted stickers for the sample type'
         ),
         value_type=schema.Choice(
-            vocabulary=_getStickerTemplates,
+            values=_getStickerTemplates,
         ),
         required=True,
         missing_value={},
@@ -84,7 +84,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_small_default",
             default=u'Default small sticker'
         ),
-        vocabulary=_getStickerTemplates,
+        values=_getStickerTemplates,
         required=True,
     )
 
@@ -93,7 +93,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_large_default",
             default=u'Default large sticker'
         ),
-        vocabulary=_getStickerTemplates,
+        values=_getStickerTemplates,
         required=True,
     )
 
