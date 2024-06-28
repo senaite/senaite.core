@@ -22,7 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
-from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
+from bika.lims.vocabularies import StickerTemplatesVocabulary
 from magnitude import mg
 from plone.autoform import directives
 from plone.supermodel import model
@@ -44,6 +44,7 @@ from zope.interface import Invalid
 
 SMALL_DEFAULT_STICKER = "small_default"
 LARGE_DEFAULT_STICKER = "large_default"
+StickersTemplatesVocabularyFactory = StickerTemplatesVocabulary()
 
 
 def default_retention_period():
@@ -73,7 +74,7 @@ class IStickersRecord(Interface):
             default=u'Admitted stickers for the sample type'
         ),
         value_type=schema.Choice(
-            values=_getStickerTemplates,
+            vocabulary=StickersTemplatesVocabularyFactory,
         ),
         required=True,
         missing_value={},
@@ -84,7 +85,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_small_default",
             default=u'Default small sticker'
         ),
-        values=_getStickerTemplates,
+        vocabulary=StickersTemplatesVocabularyFactory,
         required=True,
     )
 
@@ -93,7 +94,7 @@ class IStickersRecord(Interface):
             u"label_sampletype_large_default",
             default=u'Default large sticker'
         ),
-        values=_getStickerTemplates,
+        vocabulary=StickersTemplatesVocabularyFactory,
         required=True,
     )
 
