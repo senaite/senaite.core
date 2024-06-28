@@ -29,22 +29,18 @@ from plone.supermodel import model
 from plone.autoform import directives
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.content.base import Item
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IHavePrice
 from senaite.core.interfaces import ILabProduct
 from z3c.form.interfaces import IEditForm
 from zope import schema
 from zope.interface import implementer
-from zope.interface import provider
-from zope.schema.interfaces import IContextAwareDefaultFactory
 
 
-@provider(IContextAwareDefaultFactory)
-def default_vat_factory(context):
-    """Returns the default body text for publication emails
+def default_vat_factory():
+    """Returns the default VAT value
     """
-    defaultVAT = api.get_setup().getVAT() or "0.00"
-    return Decimal(defaultVAT)
+    return api.get_setup().getVAT() or "0.00"
 
 
 class ILabProductSchema(model.Schema):
@@ -83,7 +79,8 @@ class ILabProductSchema(model.Schema):
         required=False,
     )
 
-    labproduct_price = schema.Decimal(
+    directives.widget("labproduct_price", klass="numeric")
+    labproduct_price = schema.TextLine(
         title=_(
             "title_labproduct_price",
             default="Price (excluding VAT)"
@@ -95,7 +92,8 @@ class ILabProductSchema(model.Schema):
         required=True,
     )
 
-    labproduct_vat = schema.Decimal(
+    directives.widget("labproduct_vat", klass="numeric")
+    labproduct_vat = schema.TextLine(
         title=_(
             "title_labproduct_vat",
             default="VAT %"
@@ -129,7 +127,7 @@ class ILabProductSchema(model.Schema):
 
 
 @implementer(ILabProduct, ILabProductSchema, IHavePrice, IDeactivable)
-class LabProduct(Item):
+class LabProduct(Container):
     """LabProduct content
     """
     # Catalogs where this type will be catalogued
