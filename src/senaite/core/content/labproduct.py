@@ -38,9 +38,10 @@ from zope.interface import implementer
 
 
 def default_vat_factory():
-    """Returns the default VAT value
+    """Returns the default VAT value if any
     """
-    return str(api.get_setup().getVAT()) or "0.00"
+    setup_vat = api.get_setup().getVAT() or "0.00"
+    return api.safe_unicode(setup_vat)
 
 
 class ILabProductSchema(model.Schema):
