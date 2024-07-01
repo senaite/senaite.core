@@ -192,10 +192,6 @@ class LabProduct(Container):
     # BBB: AT schema field property
     VAT = property(getVAT, setVAT)
 
-    def getDefaultVAT(self):
-        """ return default VAT from setup """
-        return api.get_setup().getVAT() or "0.00"
-
     @security.protected(permissions.View)
     def getVATAmount(self):
         """ Compute VATAmount
