@@ -77,14 +77,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ILabProducts"
-      name="folder_view"
-      class=".bika_labproducts.LabProductsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"

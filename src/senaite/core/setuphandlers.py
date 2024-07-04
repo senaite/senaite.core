@@ -242,6 +242,7 @@ def add_senaite_setup_items(portal):
          "DynamicAnalysisSpecs"),
         ("interpretationtemplates", "Interpretation Templates",
          "InterpretationTemplates"),
+        ("labproducts", "Lab Products", "LabProducts"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)
