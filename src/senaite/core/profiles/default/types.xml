@@ -92,6 +92,10 @@
   <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
   <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
 
+  <!-- Lab Products -->
+  <object name="LabProduct" meta_type="Dexterity FTI" />
+  <object name="LabProducts" meta_type="Dexterity FTI" />
+
   <!-- Suppliers -->
   <object name="Supplier" meta_type="Dexterity FTI" />
   <object name="Suppliers" meta_type="Dexterity FTI" />

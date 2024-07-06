@@ -91,6 +91,8 @@ REMOVE_AT_TYPES = [
     "AnalysisCategories",
     "AttachmentType",
     "AttachmentTypes",
+    "LabProduct",
+    "LabProducts"
     "Supplier",
     "Suppliers",
 ]
@@ -2015,3 +2017,123 @@ def set_referenceable_behavior(tool):
         obj.reindexObject()
 
     logger.info("Assigning referenceable behavior to setup folders [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_labproducts_to_dx(tool):
+    """Converts existing lab products to Dexterity
+    """
+    logger.info("Convert Lab Products to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_labproducts")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("labproducts")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        migrate_labproduct_to_dx(src, destination)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Lab Products to Dexterity [DONE]")
+
+
+def migrate_labproduct_to_dx(src, destination=None):
+    """Migrate an AT profile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "LabProduct"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.labproduct_volume = api.safe_unicode(src.getVAT() or "")
+    target.labproduct_unit = api.safe_unicode(src.getUnit() or "")
+    target.labproduct_price = api.to_float(src.getPrice(), 0.0)
+    target.labproduct_vat = api.to_float(src.getVAT(), 0.0)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated LabProduct from %s -> %s" % (src, target))
