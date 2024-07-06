@@ -184,6 +184,9 @@ class Organization(Container):
         mutator = self.mutator("name")
         mutator(self, value)
 
+    # BBB: AT schema field property
+    Name = property(getName, setName)
+
     @security.protected(permissions.View)
     def getTaxNumber(self):
         accessor = self.accessor("tax_number")
@@ -193,6 +196,9 @@ class Organization(Container):
     def setTaxNumber(self, value):
         mutator = self.mutator("tax_number")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    TaxNumber = property(getTaxNumber, setTaxNumber)
 
     @security.protected(permissions.View)
     def getPhone(self):
@@ -204,6 +210,9 @@ class Organization(Container):
         mutator = self.mutator("phone")
         mutator(self, value)
 
+    # BBB: AT schema field property
+    Phone = property(getPhone, setPhone)
+
     @security.protected(permissions.View)
     def getFax(self):
         accessor = self.accessor("fax")
@@ -213,6 +222,9 @@ class Organization(Container):
     def setFax(self, value):
         mutator = self.mutator("fax")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    Fax = property(getFax, setFax)
 
     @security.protected(permissions.View)
     def getEmail(self):
@@ -234,6 +246,9 @@ class Organization(Container):
     def setEmailAddress(self, value):
         self.setEmail(value)
 
+    # BBB: AT schema field property
+    EmailAddress = property(getEmailAddress, setEmailAddress)
+
     @security.protected(permissions.View)
     def getAccountType(self):
         accessor = self.accessor("account_type")
@@ -243,6 +258,9 @@ class Organization(Container):
     def setAccountType(self, value):
         mutator = self.mutator("account_type")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    AccountType = property(getAccountType, setAccountType)
 
     @security.protected(permissions.View)
     def getAccountName(self):
@@ -254,6 +272,9 @@ class Organization(Container):
         mutator = self.mutator("account_name")
         mutator(self, value)
 
+    # BBB: AT schema field property
+    AccountName = property(getAccountName, setAccountName)
+
     @security.protected(permissions.View)
     def getAccountNumber(self):
         accessor = self.accessor("account_number")
@@ -263,6 +284,9 @@ class Organization(Container):
     def setAccountNumber(self, value):
         mutator = self.mutator("account_number")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    AccountNumber = property(getAccountNumber, setAccountNumber)
 
     @security.protected(permissions.View)
     def getBankName(self):
@@ -274,6 +298,9 @@ class Organization(Container):
         mutator = self.mutator("bank_name")
         mutator(self, value)
 
+    # BBB: AT schema field property
+    BankName = property(getBankName, setBankName)
+
     @security.protected(permissions.View)
     def getBankBranch(self):
         accessor = self.accessor("bank_branch")
@@ -283,6 +310,9 @@ class Organization(Container):
     def setBankBranch(self, value):
         mutator = self.mutator("bank_branch")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    BankBranch = property(getBankBranch, setBankBranch)
 
     # @security.protected(permissions.View)
     # def getAddressList(self):
