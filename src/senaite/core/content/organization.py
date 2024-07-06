@@ -39,7 +39,7 @@ class IOrganizationSchema(model.Schema):
     """Base schema for Supplier schema and etc.
     """
 
-    name = schema.TextLine(
+    title = schema.TextLine(
         title=_(
             u"title_organization_name",
             default=u"Name"
@@ -162,26 +162,16 @@ class Organization(Container):
 
     security = ClassSecurityInfo()
 
-    def Title(self):
-        """Return the name of the Organisation
-        """
-        name = self.getName() if self.getName() else self.title
-        return safe_unicode(name).encode("utf-8")
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setTitle(self, value):
-        """Set the name of the Organisation
-        """
-        self.setName(value)
-
+    # for backward compatibility: title -> name
     @security.protected(permissions.View)
     def getName(self):
-        accessor = self.accessor("name")
+        accessor = self.accessor("title")
         return accessor(self)
 
+    # for backward compatibility: name -> title
     @security.protected(permissions.ModifyPortalContent)
     def setName(self, value):
-        mutator = self.mutator("name")
+        mutator = self.mutator("title")
         mutator(self, value)
 
     # BBB: AT schema field property
