@@ -166,13 +166,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getName(self):
         accessor = self.accessor("title")
-        return accessor(self)
+        return accessor(self).encode("utf-8")
 
     # for backward compatibility: name -> title
     @security.protected(permissions.ModifyPortalContent)
     def setName(self, value):
         mutator = self.mutator("title")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     Name = property(getName, setName)
@@ -255,12 +255,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getAccountName(self):
         accessor = self.accessor("account_name")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setAccountName(self, value):
         mutator = self.mutator("account_name")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     AccountName = property(getAccountName, setAccountName)
@@ -281,12 +282,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getBankName(self):
         accessor = self.accessor("bank_name")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setBankName(self, value):
         mutator = self.mutator("bank_name")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     BankName = property(getBankName, setBankName)
@@ -294,12 +296,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getBankBranch(self):
         accessor = self.accessor("bank_branch")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setBankBranch(self, value):
         mutator = self.mutator("bank_branch")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     BankBranch = property(getBankBranch, setBankBranch)
