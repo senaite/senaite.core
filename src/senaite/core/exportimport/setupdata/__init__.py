@@ -44,6 +44,9 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.event import notify
 from zope.interface import implements
 
@@ -239,6 +242,39 @@ class WorksheetImporter:
         XXX Simple generic sheet importer
         """
 
+    def fill_addressfields_for_dx(self, row, obj, setter):
+        """ Fills the address fields for the specified object if allowed:
+            PhysicalAddress, PostalAddress, CountryState, BillingAddress
+        """
+        types = [PHYSICAL_ADDRESS, POSTAL_ADDRESS, BILLING_ADDRESS]
+        keys = ["Address", "City", "Zip", "Country"]
+
+        address_list = []
+        for address_type in types:
+            address_item = {"type": address_type}
+            for key in keys:
+                field_name = "%s_%s" % (address_type.capitalize(), key)
+                value = str(row.get(field_name, ""))
+                if value:
+                    address_item.update({key.lower(): value})
+            if len(address_item.keys()) > 1:
+                address_list.append(address_item)
+
+        if not len(address_list):
+            logger.info("Addresses not found for allowed fields")
+            return
+
+        if hasattr(obj, setter):
+            setter = getattr(obj, setter)
+            if callable(setter):
+                setter(address_list)
+            else:
+                logger.info("Can't invoke '{}' for object {}".format(
+                    setter, obj))
+        else:
+            logger.info("Setter '{}' not found for object {}".format(
+                setter, obj))
+
     def fill_addressfields(self, row, obj):
         """ Fills the address fields for the specified object if allowed:
             PhysicalAddress, PostalAddress, CountryState, BillingAddress
@@ -262,6 +298,34 @@ class WorksheetImporter:
             obj.setCountryState(addresses['CountryState'])
         if hasattr(obj, 'setBillingAddress'):
             obj.setBillingAddress(addresses['Billing'])
+
+    def fill_contactfields_for_dx(self, row, obj):
+        """Fills the contact fields for the specified object if allowed:
+        EmailAddress, Phone, Fax, BusinessPhone, BusinessFax, HomePhone,
+        MobilePhone using setter with 'set' prefix
+        """
+        fieldnames = ['EmailAddress',
+                      'Phone',
+                      'Fax',
+                      'BusinessPhone',
+                      'BusinessFax',
+                      'HomePhone',
+                      'MobilePhone',
+                      ]
+        for field_name in fieldnames:
+            setter_name = "set{}".format(field_name)
+            if hasattr(obj, setter_name):
+                setter = getattr(obj, setter_name)
+                if callable(setter):
+                    value = row.get(field_name, "")
+                    setter(value)
+                else:
+                    logger.info("Can't invoke '{}' for object {}".format(
+                        setter, obj
+                    ))
+            else:
+                logger.info("Setter for '{}' field not found for object {}"
+                            .format(field_name, obj))
 
     def fill_contactfields(self, row, obj):
         """ Fills the contact fields for the specified object if allowed:
@@ -693,22 +757,21 @@ class Suppliers(WorksheetImporter):
             if not title:
                 continue
 
-            api.create(container, "Supplier",
-                       title=title,
-                       description=row.get("description"),
-                       tax_number=row.get("TaxNumber"),
-                       account_type=row.get("AccountType", {}),
-                       account_name=row.get("AccountName", {}),
-                       account_number=row.get("AccountNumber", ''),
-                       bank_name=row.get("BankName", ""),
-                       bank_branch=row.get("BankBranch", ""),
-                       swift_code=row.get("SWIFTcode", ""),
-                       ibn=row.get("IBN", ""),
-                       nib=row.get("NIB", ""),
-                       website=row.get("'Website", ""),)
-            # todo: solving that..
-            # self.fill_contactfields(row, obj)
-            # self.fill_addressfields(row, obj)
+            obj = api.create(container, "Supplier",
+                             title=title,
+                             description=row.get("description"),
+                             tax_number=row.get("TaxNumber"),
+                             account_type=row.get("AccountType", {}),
+                             account_name=row.get("AccountName", {}),
+                             account_number=row.get("AccountNumber", ''),
+                             bank_name=row.get("BankName", ""),
+                             bank_branch=row.get("BankBranch", ""),
+                             swift_code=row.get("SWIFTcode", ""),
+                             ibn=row.get("IBN", ""),
+                             nib=row.get("NIB", ""),
+                             website=row.get("Website", ""),)
+            self.fill_contactfields_for_dx(row, obj)
+            self.fill_addressfields_for_dx(row, obj, "setAddressList")
 
 
 class Supplier_Contacts(WorksheetImporter):
