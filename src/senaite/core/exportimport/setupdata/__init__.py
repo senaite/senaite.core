@@ -696,16 +696,16 @@ class Suppliers(WorksheetImporter):
             api.create(container, "Supplier",
                        title=title,
                        description=row.get("description"),
-                       TaxNumber=row.get("TaxNumber"),
-                       AccountType=row.get("AccountType", {}),
-                       AccountName=row.get("AccountName", {}),
-                       AccountNumber=row.get("AccountNumber", ''),
-                       BankName=row.get("BankName", ""),
-                       BankBranch=row.get("BankBranch", ""),
-                       SWIFTcode=row.get("SWIFTcode", ""),
-                       IBN=row.get("IBN", ""),
-                       NIB=row.get("NIB", ""),
-                       Website=row.get("'Website", ""),)
+                       tax_number=row.get("TaxNumber"),
+                       account_type=row.get("AccountType", {}),
+                       account_name=row.get("AccountName", {}),
+                       account_number=row.get("AccountNumber", ''),
+                       bank_name=row.get("BankName", ""),
+                       bank_branch=row.get("BankBranch", ""),
+                       swift_code=row.get("SWIFTcode", ""),
+                       ibn=row.get("IBN", ""),
+                       nib=row.get("NIB", ""),
+                       website=row.get("'Website", ""),)
             # todo: solving that..
             # self.fill_contactfields(row, obj)
             # self.fill_addressfields(row, obj)
