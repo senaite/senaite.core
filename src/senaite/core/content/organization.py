@@ -50,7 +50,7 @@ class IOrganizationSchema(model.Schema):
     tax_number = schema.TextLine(
         title=_(
             u"title_organization_tax_number",
-            default="uVAT number"
+            default=u"VAT number"
         ),
         required=False,
     )
