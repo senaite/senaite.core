@@ -307,15 +307,15 @@ class Organization(Container):
     # BBB: AT schema field property
     BankBranch = property(getBankBranch, setBankBranch)
 
-    # @security.protected(permissions.View)
-    # def getAddressList(self):
-    #     accessor = self.accessor("address_list")
-    #     return accessor(self)
-    #
-    # @security.protected(permissions.ModifyPortalContent)
-    # def setAddressList(self, value):
-    #     mutator = self.mutator("address_list")
-    #     mutator(self, value)
+    @security.protected(permissions.View)
+    def getAddressList(self):
+        accessor = self.accessor("address_list")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAddressList(self, value):
+        mutator = self.mutator("address_list")
+        mutator(self, value)
 
     def getPhysicalAddress(self):
         return self._get_address_by_type(PHYSICAL_ADDRESS)

@@ -31,7 +31,7 @@ from zope.interface.declarations import implements
 schema = ATFolderSchema.copy()
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2581
 class Suppliers(ATFolder):
     implements(ISuppliers, IHideActionsMenu)
     displayContentsTab = False
