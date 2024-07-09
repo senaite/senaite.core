@@ -54,7 +54,7 @@ Prepare Test Environment
 Setupitems:
 
     >>> clients = portal.clients
-    >>> sampletypes = setup.bika_sampletypes
+    >>> sampletypes = setup.sampletypes
     >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = portal.setup.analysiscategories
     >>> analysisservices = setup.bika_analysisservices

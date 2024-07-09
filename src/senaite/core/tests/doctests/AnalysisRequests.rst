@@ -42,7 +42,7 @@ Variables::
     >>> request = self.request
     >>> setup = portal.setup
     >>> bika_setup = portal.bika_setup
-    >>> bika_sampletypes = bika_setup.bika_sampletypes
+    >>> sampletypes = setup.sampletypes
     >>> samplepoints = setup.samplepoints
     >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices

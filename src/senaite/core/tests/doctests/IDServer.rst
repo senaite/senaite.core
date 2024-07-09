@@ -65,7 +65,7 @@ Variables:
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.bika_setup
-    >>> bika_sampletypes = setup.bika_sampletypes
+    >>> sampletypes = setup.sampletypes
     >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = setup.bika_analysisservices
@@ -234,7 +234,7 @@ Re-seed and create a new `Batch`:
 
 Change ID formats and use alphanumeric ids:
 
-    >>> sampletype2 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
+    >>> sampletype2 = api.create(sampletypes, "SampleType", Prefix="WB")
     >>> sampletype2
     <...sampletype-2>
 
