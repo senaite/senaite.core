@@ -17,24 +17,22 @@
 #
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ILabProducts
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
+
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.dexterity.content import Container
+from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from senaite.core.interfaces import ILabProducts
+from zope.interface import implementer
 
 
-schema = ATFolderSchema.copy()
+class ILabProductsSchema(model.Schema):
+    """Schema interface
+    """
 
 
-class LabProducts(ATFolder):
-    implements(ILabProducts, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(LabProducts, PROJECTNAME)
+@implementer(ILabProducts, ILabProductsSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class LabProducts(Container):
+    """A container for lab products
+    """

@@ -447,6 +447,29 @@ class IDynamicAnalysisSpecs(Interface):
     """
 
 
+class ILabProduct(Interface):
+    """Marker interface for lab product
+    """
+
+
+class ILabProducts(Interface):
+    """Marker interface for lab products folder
+    """
+
+
+class IHavePrice(Interface):
+    """Marker interface for objects that have a Price
+    """
+
+    def getPrice(self):
+        """Returns the price of the instance
+        """
+
+    def getTotalPrice(self):
+        """Returns the total price of the instance
+        """
+
+
 class ISampleType(Interface):
     """Marker interface for Sample Type
     """

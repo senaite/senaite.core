@@ -31,6 +31,7 @@
   <include package=".instrumenttypes" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
+  <include package=".labproducts" />
   <include package=".manufacturers" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />

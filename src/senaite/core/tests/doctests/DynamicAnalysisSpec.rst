@@ -146,7 +146,7 @@ Then we create a default Analysis Specification:
 
     >>> rr1 = {"keyword": "Ca", "min": 10, "max": 20, "warn_min": 9, "warn_max": 21}
     >>> rr2 = {"keyword": "Mg", "min": 10, "max": 20, "warn_min": 9, "warn_max": 21}
-    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="H2O")
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="H2O")
     >>> specification = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype.UID(), ResultsRange=[rr1, rr2])
 
 And create a new sample with the given Analyses and the Specification:

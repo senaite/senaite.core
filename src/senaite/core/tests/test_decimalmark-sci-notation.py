@@ -118,7 +118,7 @@ class TestDecimalMarkWithSciNotation(DataTestCase):
                 self.assertEqual(s.getExponentialFormatPrecision(), m[1])
                 self.assertEqual(s.Schema().getField('ExponentialFormatPrecision').get(s), m[1])
                 client = self.portal.clients['client-1']
-                sampletype = bs.bika_sampletypes['sampletype-1']
+                sampletype = self.portal.setup.sampletypes['sampletype-1']
                 values = {'Client': client.UID(),
                           'Contact': client.getContacts()[0].UID(),
                           'SamplingDate': '2015-01-01',

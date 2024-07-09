@@ -544,22 +544,14 @@ class Lab_Products(WorksheetImporter):
 
     def Import(self):
         # Refer to the default folder
-        folder = self.context.bika_setup.bika_labproducts
+        container = self.context.setup.labproducts
         # Iterate through the rows
         for row in self.get_rows(3):
-            # Create the LabProduct object
-            obj = _createObjectByType('LabProduct', folder, tmpID())
-            # Apply the row values
-            obj.edit(
-                title=row.get('title', 'Unknown'),
-                description=row.get('description', ''),
-                Volume=row.get('volume', 0),
-                Unit=str(row.get('unit', 0)),
-                Price=str(row.get('price', 0)),
-            )
-            # Rename the new object
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "LabProduct",
+                       title=title, description=row.get("description"))
 
 
 class Clients(WorksheetImporter):

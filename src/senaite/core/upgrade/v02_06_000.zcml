@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate LabProducts to DX"
+      description="Migrate LabProducts to Dexterity"
+      source="2641"
+      destination="2642"
+      handler=".v02_06_000.migrate_labproducts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
       source="2641"

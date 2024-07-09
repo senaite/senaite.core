@@ -242,6 +242,7 @@ def add_senaite_setup_items(portal):
          "DynamicAnalysisSpecs"),
         ("interpretationtemplates", "Interpretation Templates",
          "InterpretationTemplates"),
+        ("labproducts", "Lab Products", "LabProducts"),
         ("sampletypes", "Sample Types", "SampleTypes"),
     ]
     setup = api.get_senaite_setup()

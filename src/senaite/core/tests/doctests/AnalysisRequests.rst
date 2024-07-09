@@ -81,9 +81,9 @@ To create a new AR, a `Contact` is needed::
 A `SampleType` defines how long the sample can be retained, the minimum volume
 needed, if it is hazardous or not, the point where the sample was taken etc.::
 
-    >>> sampletype = api.create(bika_sampletypes, "SampleType", Prefix="water", MinimumVolume="100 ml")
+    >>> sampletype = api.create(sampletypes, "SampleType", Prefix="water", MinimumVolume="100 ml")
     >>> sampletype
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+    <SampleType at /plone/setup/sampletypes/sampletype-1>
 
 A `SamplePoint` defines the location, where a `Sample` was taken::
 

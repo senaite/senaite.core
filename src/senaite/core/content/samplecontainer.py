@@ -23,10 +23,10 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
-from plone.dexterity.content import Container
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.base import Container
 from senaite.core.interfaces import ISampleContainer
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -134,24 +134,6 @@ class SampleContainer(Container):
 
     security = ClassSecurityInfo()
 
-    @security.private
-    def accessor(self, fieldname):
-        """Return the field accessor for the fieldname
-        """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
-            return None
-        return schema[fieldname].get
-
-    @security.private
-    def mutator(self, fieldname):
-        """Return the field mutator for the fieldname
-        """
-        schema = api.get_schema(self)
-        if fieldname not in schema:
-            return None
-        return schema[fieldname].set
-
     @security.protected(permissions.View)
     def getContainerType(self):
         accessor = self.accessor("containertype")
@@ -165,7 +147,8 @@ class SampleContainer(Container):
     @security.protected(permissions.View)
     def getCapacity(self):
         accessor = self.accessor("capacity")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setCapacity(self, value):
