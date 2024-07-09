@@ -39,7 +39,8 @@ Variables::
     >>> date_now = timestamp()
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.bika_setup
+    >>> bikasetup = portal.bika_setup
+    >>> setup = portal.setup
 
 Test User:
 
@@ -55,10 +56,10 @@ Setupitems:
 
     >>> clients = portal.clients
     >>> sampletypes = setup.sampletypes
-    >>> samplepoints = portal.setup.samplepoints
-    >>> analysiscategories = portal.setup.analysiscategories
-    >>> analysisservices = setup.bika_analysisservices
-    >>> setup.setSamplingWorkflowEnabled(True)
+    >>> samplepoints = setup.samplepoints
+    >>> analysiscategories = setup.analysiscategories
+    >>> analysisservices = bikasetup.bika_analysisservices
+    >>> bikasetup.setSamplingWorkflowEnabled(True)
 
 Create Clients:
 

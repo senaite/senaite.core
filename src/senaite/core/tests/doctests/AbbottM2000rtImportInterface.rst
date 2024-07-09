@@ -41,7 +41,7 @@ Variables:
     >>> bika_setup = portal.bika_setup
     >>> senaite_setup = portal.setup
     >>> bika_instruments = bika_setup.bika_instruments
-    >>> sampletypes = setup.sampletypes
+    >>> sampletypes = senaite_setup.sampletypes
     >>> analysiscategories = senaite_setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_calculations = bika_setup.bika_calculations
