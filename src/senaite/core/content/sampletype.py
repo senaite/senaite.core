@@ -306,7 +306,7 @@ class SampleType(Container, SampleTypeAwareMixin):
         mutator(self, api.safe_unicode(value))
 
     # BBB: AT schema field property
-    Prefix = property(getMinimumVolume, setMinimumVolume)
+    MinimumVolume = property(getMinimumVolume, setMinimumVolume)
 
     def getJSMinimumVolume(self, **kw):
         """Try convert the MinimumVolume to 'ml' or 'g' so that JS has an
