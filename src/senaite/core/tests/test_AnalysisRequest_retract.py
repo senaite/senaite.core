@@ -50,7 +50,7 @@ class TestAnalysisRequestRetract(DataTestCase):
         client = self.portal.clients["client-1"]
         contacts = client.getContacts()
         contact = contacts[0]
-        sampletype = self.portal.setup.sampletypes["sampletype-1"]
+        sampletype = api.get_senaite_setup().sampletypes["sampletype-1"]
         values = {
             "Client": api.get_uid(client),
             "Contact": api.get_uid(contact),
