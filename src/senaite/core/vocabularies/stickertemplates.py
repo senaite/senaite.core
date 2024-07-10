@@ -18,26 +18,17 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
+from senaite.core.config.vocabularies import STICKER_TEMPLATES_LIST
+from senaite.core.schema.vocabulary import to_simple_vocabulary
+from zope.interface import implementer
+from zope.schema.interfaces import IVocabularyFactory
 
-SAMPLE_PRESERVATION_CATEGORIES = (
-    ("field", _(
-        u"sample_preservation_category_vocab_field",
-        default=u"Field Preservation"
-    )),
-    ("lab", _(
-        u"sample_preservation_category_vocab_lab",
-        default=u"Lab Preservation"
-    )),
-)
 
-STICKER_TEMPLATES_LIST = (
-    ("sticker_1", _(
-        u"sticker_1",
-        default=u"STICKER 1"
-    )),
-    ("sticker_2", _(
-        u"sticker_1",
-        default=u"STICKER 2"
-    )),
-)
+@implementer(IVocabularyFactory)
+class StickerTemplatesVocabulary(object):
+
+    def __call__(self, context):
+        return to_simple_vocabulary(STICKER_TEMPLATES_LIST)
+
+
+StickerTemplatesVocabularyFactory = StickerTemplatesVocabulary()
