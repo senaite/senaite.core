@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
+from datetime import timedelta
 from magnitude import mg
 from plone.autoform import directives
 from plone.supermodel import model
@@ -34,6 +35,7 @@ from senaite.core.schema import DurationField
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
+from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import implementer
@@ -44,7 +46,8 @@ from zope.interface import Invalid
 def default_retention_period():
     """Returns the default retention period
     """
-    return api.get_setup().getDefaultSampleLifetime()
+    # return api.get_setup().getDefaultSampleLifetime()
+    return timedelta()
 
 
 def prefix_whitespaces_constraint(value):
@@ -97,6 +100,7 @@ class ISampleTypeSchema(model.Schema):
     """SampleType Schema
     """
 
+    directives.widget("retention_period", DurationWidgetFactory)
     retention_period = DurationField(
         title=_(
             u"title_sampletype_duration_period",
