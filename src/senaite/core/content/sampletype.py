@@ -46,8 +46,14 @@ from zope.interface import Invalid
 def default_retention_period():
     """Returns the default retention period
     """
-    # return api.get_setup().getDefaultSampleLifetime()
-    return timedelta()
+    rp = api.get_setup().getDefaultSampleLifetime()
+    if isinstance(rp, timedelta):
+        return rp
+    elif isinstance(rp, dict):
+        return timedelta(days=int(rp['days']),
+                         hours=int(rp['hours']),
+                         minutes=int(rp['minutes']))
+    return timedelta(0)
 
 
 def prefix_whitespaces_constraint(value):
@@ -99,6 +105,22 @@ class IStickersRecord(Interface):
 class ISampleTypeSchema(model.Schema):
     """SampleType Schema
     """
+
+    title = schema.TextLine(
+        title=_(
+            u"label_sampletype_title",
+            default=u"Name"
+        ),
+        required=True,
+    )
+
+    description = schema.Text(
+        title=_(
+            u"label_sampletype_description",
+            default=u"Description"
+        ),
+        required=False,
+    )
 
     directives.widget("retention_period", DurationWidgetFactory)
     retention_period = DurationField(

@@ -98,13 +98,13 @@ class SampleTypesView(ListingView):
                     default=u"Retention Period"
                 ),
                 "toggle": True}),
-            ("sample_matrix", {
+            ("samplematrix", {
                 "title": _(
                     u"listing_sampletypes_column_sample_matrix",
                     default=u"SampleMatrix"
                 ),
                 "toggle": True}),
-            ("container_type", {
+            ("containertype", {
                 "title": _(
                     u"listing_sampletypes_column_default_container",
                     default=u"Default Container"
@@ -156,28 +156,28 @@ class SampleTypesView(ListingView):
 
         retention_period = obj.getRetentionPeriod()
         if retention_period:
-            hours = retention_period.get("hours", "0")
-            minutes = retention_period.get("minutes", "0")
-            days = retention_period.get("days", "0")
-            item["RetentionPeriod"] = _("hours: {} minutes: {} days: {}"
-                                        .format(hours, minutes, days))
+            days = retention_period.days
+            hours = retention_period.seconds // (60*60)
+            minutes = (retention_period.seconds % (60*60)) // 60
+            item["retention_period"] = \
+                "days: {} hours: {} minutes: {}".format(days, hours, minutes)
 
         sample_matrix = obj.getSampleMatrix()
-        item["replace"]["SampleMatrix"] = get_link_for(sample_matrix)
+        item["replace"]["samplematrix"] = get_link_for(sample_matrix)
 
         container_type = obj.getContainerType()
-        item["replace"]["ContainerType"] = get_link_for(container_type)
+        item["replace"]["containertype"] = get_link_for(container_type)
 
         # Hazardous
         hazardous = obj.getHazardous()
-        item["getHazardous"] = hazardous
+        item["hazardous"] = hazardous
 
         # Prefix
         prefix = obj.getPrefix()
-        item["getPrefix"] = prefix
+        item["prefix"] = prefix
 
         # Minimum Volume
         vol = obj.getMinimumVolume()
-        item["getMinimumVolume"] = vol
+        item["min_volume"] = vol
 
         return item
