@@ -171,7 +171,7 @@ class ISampleTypeSchema(model.Schema):
         ),
         description=_(
             u"description_sampletype_min_volume",
-            default=u"he minimum sample volume required for analysis "
+            default=u"The minimum sample volume required for analysis "
                     u"eg. '10 ml' or '1 kg'."
         ),
         required=True,
@@ -267,7 +267,7 @@ class SampleType(Container, SampleTypeAwareMixin):
 
     @security.protected(permissions.View)
     def getSampleMatrix(self):
-        samplematrix = self.getRawSamplePoint()
+        samplematrix = self.getRawSampleMatrix()
         if not samplematrix:
             return None
         return api.get_object(samplematrix)
@@ -335,7 +335,7 @@ class SampleType(Container, SampleTypeAwareMixin):
 
     @security.protected(permissions.View)
     def getContainerType(self):
-        containertype = self.getRawSamplePoint()
+        containertype = self.getRawContainerType()
         if not containertype:
             return None
         return api.get_object(containertype)

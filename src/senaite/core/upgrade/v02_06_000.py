@@ -92,7 +92,7 @@ REMOVE_AT_TYPES = [
     "AttachmentType",
     "AttachmentTypes",
     "LabProduct",
-    "LabProducts"
+    "LabProducts",
     "SampleType",
     "SampleTypes",
 ]
