@@ -1,7 +1,17 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="z3c.form">
+
+
+  <browser:page
+      name="download"
+      for="zope.schema.interfaces.IList"
+      class=".datagrid.Download"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
 
   <!-- DataGrid Widget -->
   <adapter
