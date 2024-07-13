@@ -3,7 +3,7 @@ Changelog
 
 2.6.0 (unreleased)
 ------------------
-
+- #2585 Fix Progress string missing i18n
 - #2574 Migrate LabProducts to Dexterity
 - #2583 Make SampleContainer DX type inherit from core's DX Container
 - #2582 Do not override dependent values with empties
