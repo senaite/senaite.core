@@ -40,10 +40,9 @@
 
         <input type="hidden"
                tal:condition="python:allow_nochange"
-               tal:attributes="
-                     name string:${view/name}-filedata;
-                     id string:${view/id}-filedata;
-                     value python:view.filedata"/>
+               tal:attributes="name string:${view/name}-filedata;
+                               id string:${view/id}-filedata;
+                               value python:view.filedata"/>
     </span>
 
     <div tal:omit-tag="not:allow_nochange" tal:condition="python:not exists" style="padding-left: 1.5em; padding-top: 0.5em;">
@@ -52,11 +51,6 @@
             tal:attributes="id string:${view/id}-input;
                             name view/name;
                             size view/size;
-                            disabled view/disabled;
-                            maxlength view/maxlength;"
-            />
-        <script tal:condition="python:allow_nochange and action != 'replace'" type="text/javascript"
-            tal:content="string:document.getElementById('${view/id}-input').disabled=true;">
-        </script>
+                            disabled view/disabled;"/>
     </div>
 </span>
