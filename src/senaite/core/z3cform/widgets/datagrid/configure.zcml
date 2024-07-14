@@ -4,10 +4,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="z3c.form">
 
-
+  <!-- Allow to download files located in data grid rows -->
   <browser:page
       name="download"
-      for="zope.schema.interfaces.IList"
+      for="senaite.core.schema.interfaces.IDataGridField"
       class=".datagrid.Download"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
