@@ -318,7 +318,7 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getAddress(self):
         accessor = self.accessor("address")
-        value = accessor(self) or {}
+        value = accessor(self) or []
         return value
 
     @security.protected(permissions.ModifyPortalContent)
@@ -335,9 +335,11 @@ class Organization(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setPhysicalAddress(self, value):
-        address = self.getAddress()
-        address[PHYSICAL_ADDRESS] = value
-        self.setAddress(address)
+        addresses = self.getAddress()
+        for address in addresses:
+            if address.get("type") == PHYSICAL_ADDRESS:
+                address.update(value)
+        self.setAddress(addresses)
 
     # BBB: AT schema field property
     PhysicalAddress = property(getPhysicalAddress, setPhysicalAddress)
@@ -351,9 +353,11 @@ class Organization(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setPostalAddress(self, value):
-        address = self.getAddress()
-        address[POSTAL_ADDRESS] = value
-        self.setAddress(address)
+        addresses = self.getAddress()
+        for address in addresses:
+            if address.get("type") == POSTAL_ADDRESS:
+                address.update(value)
+        self.setAddress(addresses)
 
     # BBB: AT schema field property
     PostalAddress = property(getPostalAddress, setPostalAddress)
@@ -367,9 +371,11 @@ class Organization(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setBillingAddress(self, value):
-        address = self.getAddress()
-        address[BILLING_ADDRESS] = value
-        self.setAddress(address)
+        addresses = self.getAddress()
+        for address in addresses:
+            if address.get("type") == BILLING_ADDRESS:
+                address.update(value)
+        self.setAddress(addresses)
 
     # BBB: AT schema field property
     BillingAddress = property(getBillingAddress, setBillingAddress)
