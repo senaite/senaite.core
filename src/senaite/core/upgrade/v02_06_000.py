@@ -54,6 +54,9 @@ from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import LABCONTACT_WORKFLOW
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
@@ -1818,10 +1821,28 @@ def migrate_supplier_to_dx(src_supplier, destination):
     target.setAccountNumber(src_supplier.getAccountNumber())
     target.setBankName(src_supplier.getBankName())
     target.setBankBranch(src_supplier.getBankBranch())
-    # copy address
-    target.setPostalAddress(src_supplier.getPostalAddress())
-    target.setPhysicalAddress(src_supplier.getPhysicalAddress())
-    target.setBillingAddress(src_supplier.getBillingAddress())
+
+    # copy addresses: migrate state and district to subdivision's
+    postal_address = src_supplier.getPostalAddress()
+    if postal_address:
+        postal_address["type"] = POSTAL_ADDRESS
+        postal_address["subdivision1"] = postal_address.pop("state", "")
+        postal_address["subdivision2"] = postal_address.pop("district", "")
+        target.setPostalAddress(postal_address)
+
+    physical_address = src_supplier.getPhysicalAddress()
+    if physical_address:
+        physical_address["type"] = PHYSICAL_ADDRESS
+        physical_address["subdivision1"] = physical_address.pop("state", "")
+        physical_address["subdivision2"] = physical_address.pop("district", "")
+        target.setPhysicalAddress(physical_address)
+
+    billing_address = src_supplier.getBillingAddress()
+    if billing_address:
+        billing_address["type"] = BILLING_ADDRESS
+        billing_address["subdivision1"] = billing_address.pop("state", "")
+        billing_address["subdivision2"] = billing_address.pop("district", "")
+        target.setBillingAddress(billing_address)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(

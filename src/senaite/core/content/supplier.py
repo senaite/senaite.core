@@ -83,6 +83,10 @@ class ISupplierSchema(IOrganizationSchema):
     nib = schema.TextLine(
         title=_(
             u"title_supplier_nib",
+            default=u"NIB",
+        ),
+        description=_(
+            u"description_supplier_nib",
             default=u"National Identification Bank Account Number",
         ),
         required=False,
@@ -91,6 +95,10 @@ class ISupplierSchema(IOrganizationSchema):
     iban = schema.TextLine(
         title=_(
             u"title_supplier_iban",
+            default=u"IBAN",
+        ),
+        description=_(
+            u"description_supplier_iban",
             default=u"International Bank Account Number",
         ),
         required=False,
