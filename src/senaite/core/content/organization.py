@@ -379,29 +379,3 @@ class Organization(Container):
 
     # BBB: AT schema field property
     BillingAddress = property(getBillingAddress, setBillingAddress)
-
-    def getPrintAddress(self):
-        """Get an address for printing
-        """
-        address_lines = []
-        addresses = [
-            self.getPostalAddress(),
-            self.getPhysicalAddress(),
-            self.getBillingAddress(),
-        ]
-
-        for address in addresses:
-            city = address.get("city", "")
-            zip = address.get("zip", "")
-            state = address.get("state", "")
-            country = address.get("country", "")
-
-            if city:
-                address_lines = [
-                    address["address"].strip(),
-                    "{} {}".format(city, zip).strip(),
-                    "{} {}".format(state, country).strip(),
-                ]
-                break
-
-        return address_lines
