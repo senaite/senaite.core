@@ -54,9 +54,6 @@ from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import LABCONTACT_WORKFLOW
-from senaite.core.schema.addressfield import BILLING_ADDRESS
-from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
-from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
