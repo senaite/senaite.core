@@ -44,10 +44,33 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.event import notify
 from zope.interface import implements
 
 UID_CATALOG = "uid_catalog"
+
+
+def get_addresses_from_row(row):
+    """Fills the address fields for the specified object if allowed:
+    PhysicalAddress, PostalAddress, CountryState, BillingAddress
+    """
+    types = [PHYSICAL_ADDRESS, POSTAL_ADDRESS, BILLING_ADDRESS]
+    keys = ["Address", "City", "Zip", "Country"]
+
+    address_list = []
+    for address_type in types:
+        address_item = {"type": address_type}
+        for key in keys:
+            field_name = "%s_%s" % (address_type.capitalize(), key)
+            value = str(row.get(field_name, ""))
+            if value:
+                address_item.update({key.lower(): value})
+        if len(address_item.keys()) > 1:
+            address_list.append(address_item)
+    return address_list
 
 
 def lookup(context, portal_type, **kwargs):
@@ -687,28 +710,29 @@ class Containers(WorksheetImporter):
 class Suppliers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_suppliers
+        container = self.context.setup.suppliers
         for row in self.get_rows(3):
-            obj = _createObjectByType("Supplier", folder, tmpID())
-            if row['Name']:
-                obj.edit(
-                    Name=row.get('Name', ''),
-                    TaxNumber=row.get('TaxNumber', ''),
-                    AccountType=row.get('AccountType', {}),
-                    AccountName=row.get('AccountName', {}),
-                    AccountNumber=row.get('AccountNumber', ''),
-                    BankName=row.get('BankName', ''),
-                    BankBranch=row.get('BankBranch', ''),
-                    SWIFTcode=row.get('SWIFTcode', ''),
-                    IBN=row.get('IBN', ''),
-                    NIB=row.get('NIB', ''),
-                    Website=row.get('Website', ''),
-                )
-                self.fill_contactfields(row, obj)
-                self.fill_addressfields(row, obj)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("Name")
+            if not title:
+                continue
+
+            api.create(container, "Supplier",
+                       title=title,
+                       description=row.get("description"),
+                       tax_number=row.get("TaxNumber"),
+                       phone=row.get("Phone", ""),
+                       fax=row.get("Fax", ""),
+                       email=row.get("EmailAddress", ""),
+                       account_type=row.get("AccountType", {}),
+                       account_name=row.get("AccountName", {}),
+                       account_number=row.get("AccountNumber", ''),
+                       bank_name=row.get("BankName", ""),
+                       bank_branch=row.get("BankBranch", ""),
+                       swift_code=row.get("SWIFTcode", ""),
+                       iban=row.get("IBN", ""),
+                       nib=row.get("NIB", ""),
+                       website=row.get("Website", ""),
+                       address=get_addresses_from_row(row))
 
 
 class Supplier_Contacts(WorksheetImporter):

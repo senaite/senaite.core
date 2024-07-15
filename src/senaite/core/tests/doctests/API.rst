@@ -2211,11 +2211,11 @@ We can create a copy in a container other than source's::
 
 We can even create a copy to a different type::
 
-    >>> suppliers = self.portal.bika_setup.bika_suppliers
+    >>> suppliers = self.portal.setup.suppliers
     >>> supplier = api.copy_object(client, container=suppliers,
     ...                            portal_type="Supplier", title="Supplier 1")
     >>> supplier
-    <Supplier at /plone/bika_setup/bika_suppliers/supplier-1>
+    <Supplier at /plone/setup/suppliers/supplier-1>
 
     >>> supplier.Title()
     'Supplier 1'
