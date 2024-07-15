@@ -18,6 +18,8 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.schema import AddressField
@@ -79,7 +81,7 @@ class IOrganizationSchema(model.Schema):
         ),
         fields=[
             "email",
-            "address_list",
+            "address",
         ]
     )
 
@@ -91,8 +93,8 @@ class IOrganizationSchema(model.Schema):
         required=False,
     )
 
-    directives.widget("address_list", AddressWidget)
-    address_list = AddressField(
+    directives.widget("address", AddressWidget)
+    address = AddressField(
         address_types=(
             PHYSICAL_ADDRESS, POSTAL_ADDRESS, BILLING_ADDRESS,
         ),
@@ -180,12 +182,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getTaxNumber(self):
         accessor = self.accessor("tax_number")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setTaxNumber(self, value):
         mutator = self.mutator("tax_number")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     TaxNumber = property(getTaxNumber, setTaxNumber)
@@ -193,12 +196,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getPhone(self):
         accessor = self.accessor("phone")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setPhone(self, value):
         mutator = self.mutator("phone")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     Phone = property(getPhone, setPhone)
@@ -206,12 +210,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getFax(self):
         accessor = self.accessor("fax")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setFax(self, value):
         mutator = self.mutator("fax")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     Fax = property(getFax, setFax)
@@ -219,12 +224,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getEmail(self):
         accessor = self.accessor("email")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmail(self, value):
         mutator = self.mutator("email")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # for backward compatibility
     @security.protected(permissions.View)
@@ -242,12 +248,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getAccountType(self):
         accessor = self.accessor("account_type")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setAccountType(self, value):
         mutator = self.mutator("account_type")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     AccountType = property(getAccountType, setAccountType)
@@ -269,12 +276,13 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getAccountNumber(self):
         accessor = self.accessor("account_number")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setAccountNumber(self, value):
         mutator = self.mutator("account_number")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     AccountNumber = property(getAccountNumber, setAccountNumber)
@@ -308,53 +316,71 @@ class Organization(Container):
     BankBranch = property(getBankBranch, setBankBranch)
 
     @security.protected(permissions.View)
-    def getAddressList(self):
-        accessor = self.accessor("address_list")
+    def getAddress(self):
+        accessor = self.accessor("address")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setAddressList(self, value):
-        mutator = self.mutator("address_list")
+    def setAddress(self, value):
+        mutator = self.mutator("address")
         mutator(self, value)
 
+    @security.protected(permissions.View)
     def getPhysicalAddress(self):
-        return self._get_address_by_type(PHYSICAL_ADDRESS)
+        for address in self.getAddress():
+            if address.get("type") == PHYSICAL_ADDRESS:
+                return copy.deepcopy(address)
+        return {}
 
+    @security.protected(permissions.ModifyPortalContent)
+    def setPhysicalAddress(self, value):
+        address = self.getAddress()
+        address[PHYSICAL_ADDRESS] = value
+        self.setAddress(address)
+
+    # BBB: AT schema field property
+    PhysicalAddress = property(getPhysicalAddress, setPhysicalAddress)
+
+    @security.protected(permissions.View)
     def getPostalAddress(self):
-        return self._get_address_by_type(POSTAL_ADDRESS)
+        for address in self.getAddress():
+            if address.get("type") == POSTAL_ADDRESS:
+                return copy.deepcopy(address)
+        return {}
 
+    @security.protected(permissions.ModifyPortalContent)
+    def setPostalAddress(self, value):
+        address = self.getAddress()
+        address[POSTAL_ADDRESS] = value
+        self.setAddress(address)
+
+    # BBB: AT schema field property
+    PostalAddress = property(getPostalAddress, setPostalAddress)
+
+    @security.protected(permissions.View)
     def getBillingAddress(self):
-        return self._get_address_by_type(BILLING_ADDRESS)
+        for address in self.getAddress():
+            if address.get("type") == BILLING_ADDRESS:
+                return copy.deepcopy(address)
+        return {}
 
-    def _get_address_by_type(self, address_type):
-        accessor = self.accessor("address_list")
-        address_list = accessor(self)
-        result = list(filter(lambda item: item.get("type") == address_type,
-                             address_list))
+    @security.protected(permissions.ModifyPortalContent)
+    def setBillingAddress(self, value):
+        address = self.getAddress()
+        address[BILLING_ADDRESS] = value
+        self.setAddress(address)
 
-        return result[0] if len(result) else {}
-
-    def _format_address_line(self, address):
-        city = address.get("city", "")
-        zip = address.get("zip", "")
-        country = address.get("country", "")
-
-        address_lines = [
-            address["address"].strip(),
-            "{} {}".format(city, zip).strip(),
-            "{}".format(country).strip(),
-        ]
-
-        return address_lines
+    # BBB: AT schema field property
+    BillingAddress = property(getBillingAddress, setBillingAddress)
 
     def getPrintAddress(self):
         """Get an address for printing
         """
         address_lines = []
         addresses = [
-            self._get_address_by_type(POSTAL_ADDRESS),
-            self._get_address_by_type(PHYSICAL_ADDRESS),
-            self._get_address_by_type(BILLING_ADDRESS),
+            self.getPostalAddress(),
+            self.getPhysicalAddress(),
+            self.getBillingAddress(),
         ]
 
         for address in addresses:

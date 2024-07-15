@@ -1756,7 +1756,6 @@ def migrate_suppliers_to_dx(tool):
     # un-catalog the old container
     uncatalog_object(origin)
 
-    # NOTE: Sample Points can be created in setup and client context!
     query = {"portal_type": "Supplier"}
     # search all AT based suppliers
     brains = api.search(query, SETUP_CATALOG)
@@ -1809,8 +1808,8 @@ def migrate_supplier_to_dx(src_supplier, destination):
     # we set the fields with our custom setters
     target.setRemarks(src_supplier.getRemarks())
     target.setWebsite(src_supplier.getWebsite())
-    target.setNib(src_supplier.getNIB())
-    target.setIbn(src_supplier.getIBN())
+    target.setNIB(src_supplier.getNIB())
+    target.setIBAN(src_supplier.getIBN())
     target.setSwiftCode(src_supplier.getSWIFTcode())
     target.setLabAccountNumber(src_supplier.getLabAccountNumber())
     target.setTaxNumber(src_supplier.getTaxNumber())
@@ -1822,27 +1821,10 @@ def migrate_supplier_to_dx(src_supplier, destination):
     target.setAccountNumber(src_supplier.getAccountNumber())
     target.setBankName(src_supplier.getBankName())
     target.setBankBranch(src_supplier.getBankBranch())
-
-    address_list = []
-    physical_address = src_supplier.getPhysicalAddress() or None
-    if physical_address:
-        address = physical_address
-        address.update({"type": PHYSICAL_ADDRESS})
-        address_list.append(address)
-
-    postal_address = src_supplier.getPostalAddress() or None
-    if postal_address:
-        address = postal_address
-        address.update({"type": POSTAL_ADDRESS})
-        address_list.append(address)
-
-    billing_address = src_supplier.getBillingAddress() or None
-    if billing_address:
-        address = billing_address
-        address.update({"type": BILLING_ADDRESS})
-        address_list.append(address)
-
-    target.setAddressList(address_list)
+    # copy address
+    target.setPostalAddress(src_supplier.getPostalAddress())
+    target.setPhysicalAddress(src_supplier.getPhysicalAddress())
+    target.setBillingAddress(src_supplier.getBillingAddress())
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(

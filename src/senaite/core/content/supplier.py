@@ -32,6 +32,7 @@ from senaite.core.content.organization import Organization
 from senaite.core.interfaces import ISupplier
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from Products.CMFPlone.utils import safe_unicode
 from zope import schema
 from zope.interface import Invalid
 from zope.interface import implementer
@@ -74,7 +75,7 @@ class ISupplierSchema(IOrganizationSchema):
         ),
         fields=[
             "nib",
-            "ibn",
+            "iban",
             "swift_code",
         ]
     )
@@ -82,15 +83,15 @@ class ISupplierSchema(IOrganizationSchema):
     nib = schema.TextLine(
         title=_(
             u"title_supplier_nib",
-            default=u"NIB",
+            default=u"National Identification Bank Account Number",
         ),
         required=False,
     )
 
-    ibn = schema.TextLine(
+    iban = schema.TextLine(
         title=_(
-            u"title_supplier_ibn",
-            default=u"IBN",
+            u"title_supplier_iban",
+            default=u"International Bank Account Number",
         ),
         required=False,
     )
@@ -130,15 +131,15 @@ class ISupplierSchema(IOrganizationSchema):
             raise Invalid("Invalid NIB number")
 
     @invariant
-    def validate_ibn(data):
-        """Checks IBN field for float value if exist
+    def validate_iban(data):
+        """Checks IBAN field for float value if exist
         """
-        ibn = getattr(data, "ibn", None)
-        if not ibn:
+        iban = getattr(data, "iban", None)
+        if not iban:
             return
 
         # remove spaces from formatted
-        IBAN = ''.join(c for c in ibn if c.isalnum())
+        IBAN = ''.join(c for c in iban if c.isalnum())
 
         IBAN = IBAN[4:] + IBAN[:4]
         country = IBAN[-4:-2]
@@ -153,11 +154,12 @@ class ISupplierSchema(IOrganizationSchema):
             diff = len(IBAN) - length_c
             warn_len = ('short by %i' % -diff) if diff < 0 \
                 else ('too long by %i' % diff)
-            msg = translate(_('Wrong IBAN length by %s: %s' % (warn_len, ibn)))
+            msg = translate(
+                _('Wrong IBAN length by %s: %s' % (warn_len, iban)))
             raise Invalid(msg)
         # Validating procedure
         elif int("".join(str(letter_dic[x]) for x in IBAN)) % 97 != 1:
-            msg = translate(_('Incorrect IBAN number: %s' % ibn))
+            msg = translate(_('Incorrect IBAN number: %s' % iban))
             raise Invalid(msg)
 
 
@@ -173,12 +175,13 @@ class Supplier(Organization):
     @security.protected(permissions.View)
     def getRemarks(self):
         accessor = self.accessor("remarks")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setRemarks(self, value):
         mutator = self.mutator("remarks")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     Remarks = property(getRemarks, setRemarks)
@@ -186,51 +189,55 @@ class Supplier(Organization):
     @security.protected(permissions.View)
     def getWebsite(self):
         accessor = self.accessor("website")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setWebsite(self, value):
         mutator = self.mutator("website")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     Website = property(getWebsite, setWebsite)
 
     @security.protected(permissions.View)
-    def getNib(self):
+    def getNIB(self):
         accessor = self.accessor("nib")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
-    def setNib(self, value):
+    def setNIB(self, value):
         mutator = self.mutator("nib")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
-    NIB = property(getNib, setNib)
+    NIB = property(getNIB, setNIB)
 
     @security.protected(permissions.View)
-    def getIbn(self):
-        accessor = self.accessor("ibn")
-        return accessor(self)
+    def getIBAN(self):
+        accessor = self.accessor("iban")
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
-    def setIbn(self, value):
-        mutator = self.mutator("ibn")
-        mutator(self, value)
+    def setIBAN(self, value):
+        mutator = self.mutator("iban")
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
-    IBN = property(getIbn, setIbn)
+    IBAN = property(getIBAN, setIBAN)
 
     @security.protected(permissions.View)
     def getSwiftCode(self):
         accessor = self.accessor("swift_code")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setSwiftCode(self, value):
         mutator = self.mutator("swift_code")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     SWIFTcode = property(getSwiftCode, setSwiftCode)
@@ -238,12 +245,13 @@ class Supplier(Organization):
     @security.protected(permissions.View)
     def getLabAccountNumber(self):
         accessor = self.accessor("lab_account_number")
-        return accessor(self)
+        value = accessor(self) or ""
+        return value.encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setLabAccountNumber(self, value):
         mutator = self.mutator("lab_account_number")
-        mutator(self, value)
+        mutator(self, safe_unicode(value))
 
     # BBB: AT schema field property
     LabAccountNumber = property(getLabAccountNumber, setLabAccountNumber)
