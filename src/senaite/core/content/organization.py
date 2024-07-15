@@ -318,7 +318,8 @@ class Organization(Container):
     @security.protected(permissions.View)
     def getAddress(self):
         accessor = self.accessor("address")
-        return accessor(self)
+        value = accessor(self) or {}
+        return value
 
     @security.protected(permissions.ModifyPortalContent)
     def setAddress(self, value):
