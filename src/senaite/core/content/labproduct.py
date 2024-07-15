@@ -210,7 +210,7 @@ class LabProduct(Container):
     def getTotalPrice(self):
         """ compute total price """
         price = Decimal(self.getPrice() or '0.00')
-        vat = Decimal(self.getVAT())
+        vat = Decimal(self.getVAT() or "0.00")
         vat = vat and vat / 100 or 0
         price = price + (price * vat)
         return price.quantize(Decimal('0.00'))
