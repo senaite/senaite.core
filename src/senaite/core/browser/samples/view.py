@@ -110,7 +110,7 @@ class SamplesView(ListingView):
                 "index": "getPrioritySortkey",
                 "sortable": True, }),
             ("Progress", {
-                "title": "Progress",
+                "title": _("Progress"),
                 "index": "getProgress",
                 "sortable": True,
                 "toggle": True}),
