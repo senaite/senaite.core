@@ -77,11 +77,17 @@ class SenaiteRenderWidget(RenderWidget):
         return not self.is_input_mode()
 
     def get_prepend_text(self):
+        omit_mode = getattr(self.context, "before_text_omit_mode", "")
+        if omit_mode and self.context.mode in omit_mode.split():
+            return
         before_text = getattr(self.context, "before_text", None)
         before_css_class = getattr(self.context, "before_css_class", None)
         return self.format_text(before_text, css_class=before_css_class)
 
     def get_append_text(self):
+        omit_mode = getattr(self.context, "after_text_omit_mode", "")
+        if omit_mode and self.context.mode in omit_mode.split():
+            return
         after_text = getattr(self.context, "after_text", None)
         after_css_class = getattr(self.context, "after_css_class", None)
         return self.format_text(after_text, css_class=after_css_class)
