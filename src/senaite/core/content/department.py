@@ -66,12 +66,10 @@ class IDepartmentSchema(model.Schema):
 
     # Department ID
     directives.widget("department_id",
-                      before_text="ID",
-                      before_css_class="text-secondary",
-                      before_text_omit_mode=DISPLAY_MODE,
-                      after_text="<i class='fas fa-id-card'></i>",
-                      after_css_class="text-primary",
-                      after_text_omit_mode=DISPLAY_MODE)
+                      before_text_edit="ID",
+                      before_css_class_edit="text-secondary",
+                      after_text_edit="<i class='fas fa-id-card'></i>",
+                      after_css_class_edit="text-primary")
     department_id = schema.TextLine(
         title=_(
             u"title_department_id",

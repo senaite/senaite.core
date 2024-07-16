@@ -77,19 +77,67 @@ class SenaiteRenderWidget(RenderWidget):
         return not self.is_input_mode()
 
     def get_prepend_text(self):
-        omit_mode = getattr(self.context, "before_text_omit_mode", "")
-        if omit_mode and self.context.mode in omit_mode.split():
+        """Get the text/style to prepend to the input field
+
+
+        Example:
+
+            directives.widget("department_id",
+                            before_text_edit="ID",
+                            before_css_class_edit="text-secondary",
+                            before_text_display="ID:",
+                            before_css_class_display="font-weight-bold")
+            department_id = schema.TextLine(...)
+        """
+        mode = self.context.mode
+        widget = self.context
+
+        # omit the text in the current mode
+        omit = getattr(widget, "before_text_omit_%s" % mode, False)
+        if omit:
             return
-        before_text = getattr(self.context, "before_text", None)
-        before_css_class = getattr(self.context, "before_css_class", None)
+
+        # get the append text
+        before_text = getattr(widget, "before_text_%s" % mode, None)
+        if not before_text:
+            before_text = getattr(widget, "before_text", None)
+
+        # get the CSS classes for the append text
+        before_css_class = getattr(widget, "before_css_class_%s" % mode, None)
+        if not before_css_class:
+            before_css_class = getattr(widget, "before_css_class", None)
+
         return self.format_text(before_text, css_class=before_css_class)
 
     def get_append_text(self):
-        omit_mode = getattr(self.context, "after_text_omit_mode", "")
-        if omit_mode and self.context.mode in omit_mode.split():
+        """Get the text/style to append to the input field
+
+        Example:
+
+            directives.widget("department_id",
+                              after_text="<i class='fas fa-id-card'></i>",
+                              after_css_class="text-primary",
+                              after_text_omit_display=True)
+            department_id = schema.TextLine(...)
+        """
+        mode = self.context.mode
+        widget = self.context
+
+        # omit the text in the current mode
+        omit = getattr(widget, "after_text_omit_%s" % mode, False)
+        if omit:
             return
-        after_text = getattr(self.context, "after_text", None)
-        after_css_class = getattr(self.context, "after_css_class", None)
+
+        # get the append text
+        after_text = getattr(widget, "after_text_%s" % mode, None)
+        if not after_text:
+            after_text = getattr(widget, "after_text", None)
+
+        # get the CSS classes for the append text
+        after_css_class = getattr(widget, "after_css_class_%s" % mode, None)
+        if not after_css_class:
+            after_css_class = getattr(widget, "after_css_class", None)
+
         return self.format_text(after_text, css_class=after_css_class)
 
     def format_text(self, text, css_class=None):
