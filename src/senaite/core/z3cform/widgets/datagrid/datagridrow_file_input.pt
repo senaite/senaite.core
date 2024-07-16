@@ -32,10 +32,8 @@
           Filename
         </a>
         <span class="discreet"> &mdash;<tal:doc_type condition="doc_type">
-            <span tal:replace="doc_type"
-                  i18n:translate="">ContentType</span>,</tal:doc_type>
-            <span tal:define="sizekb view/file_size" tal:replace="sizekb"
-                  i18n:translate="">100</span>
+            <span tal:replace="doc_type">ContentType</span>,</tal:doc_type>
+            <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span>
         </span>
 
         <input type="hidden"
