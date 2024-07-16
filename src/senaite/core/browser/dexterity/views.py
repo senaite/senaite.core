@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import os
+from string import Template
 
 import plone.app.z3cform
 import plone.app.z3cform.interfaces
@@ -31,7 +32,13 @@ from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
 from plone.dexterity.browser.view import DefaultView
 from senaite.core.interfaces import ISenaiteFormLayer
+from z3c.form.interfaces import INPUT_MODE
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+
+FORMAT_TPL = Template("""<span class="$css_class">
+  $text
+</span>
+""")
 
 
 def path(filepart):
@@ -58,6 +65,40 @@ class SenaiteRenderWidget(RenderWidget):
         super(SenaiteRenderWidget, self).__init__(context, request)
         self.context = context
         self.request = request
+
+    def is_input_mode(self):
+        """Check if we are in INPUT mode currently
+        """
+        return self.context.mode == INPUT_MODE
+
+    def is_view_mode(self):
+        """Check if we are in view mode currently
+        """
+        return not self.is_input_mode()
+
+    def get_prepend_text(self):
+        before_text = getattr(self.context, "before_text", None)
+        before_css_class = getattr(self.context, "before_css_class", None)
+        return self.format_text(before_text, css_class=before_css_class)
+
+    def get_append_text(self):
+        after_text = getattr(self.context, "after_text", None)
+        after_css_class = getattr(self.context, "after_css_class", None)
+        return self.format_text(after_text, css_class=after_css_class)
+
+    def format_text(self, text, css_class=None):
+        """HTML format the text
+        """
+        if not text:
+            return ""
+        if css_class is None:
+            css_class = ""
+        context = {
+            "text": text,
+            "css_class": css_class,
+
+        }
+        return FORMAT_TPL.safe_substitute(context)
 
 
 class SenaiteDefaultView(DefaultView):

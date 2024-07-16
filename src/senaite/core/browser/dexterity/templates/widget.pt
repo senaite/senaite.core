@@ -36,7 +36,34 @@
     field description
   </span>
 
-  <input type="text"
-         tal:replace="structure widget/render"
-         metal:define-slot="widget" />
+  <!-- widget insert mode -->
+  <div class="input-group input-group-sm d-flex"
+       style="width:auto"
+       tal:define="prefix python:view.get_prepend_text();
+                   appendix python:view.get_append_text()"
+       tal:condition="python:view.is_input_mode()">
+    <div tal:condition="python:prefix" class="input-group-prepend">
+      <span class="input-group-text" tal:content="structure python:prefix"/>
+    </div>
+    <input type="text"
+           tal:replace="structure widget/render"
+           metal:define-slot="widget" />
+    <div tal:condition="python:appendix" class="input-group-append">
+      <span class="input-group-text" tal:content="structure python:appendix"/>
+    </div>
+  </div>
+
+  <!-- widget view mode -->
+  <div tal:define="prefix python:view.get_prepend_text();
+                   appendix python:view.get_append_text()"
+       tal:condition="python:view.is_view_mode()">
+    <!-- field prefix -->
+    <span tal:content="structure python:prefix" class="field-prefix"></span>
+    <input type="text"
+           tal:replace="structure widget/render"
+           metal:define-slot="widget" />
+    <!-- field appendix -->
+    <span tal:content="structure python:appendix" class="field-prefix"></span>
+  </div>
+
 </div>
