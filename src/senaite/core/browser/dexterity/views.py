@@ -67,12 +67,12 @@ class SenaiteRenderWidget(RenderWidget):
         self.request = request
 
     def is_input_mode(self):
-        """Check if we are in INPUT mode currently
+        """Check if we are in INPUT mode
         """
         return self.context.mode == INPUT_MODE
 
     def is_view_mode(self):
-        """Check if we are in view mode currently
+        """Checks if we are in view (DISPLAY/HIDDEN) mode
         """
         return not self.is_input_mode()
 
