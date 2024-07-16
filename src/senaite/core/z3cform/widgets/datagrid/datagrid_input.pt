@@ -14,8 +14,7 @@
               tal:define="cssclass string:header cell-${repeat/column/number};
                      cssclass python: cssclass + (column['mode'] == 'hidden' and ' datagridwidget-hidden-data' or '')"
               tal:attributes="class cssclass">
-            <span i18n:translate=""
-                  tal:content="column/label">title</span>
+            <span tal:content="column/label">title</span>
             <span class="required"
                   tal:condition="column/required" title="Required" i18n:domain="plone" i18n:attributes="title title_required">&nbsp;</span>
             <span class="formHelp" tal:condition="column/description" tal:content="column/description">Description</span>

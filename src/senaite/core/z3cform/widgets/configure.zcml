@@ -4,14 +4,14 @@
 
   <!-- package includes -->
   <include package=".coordinate" />
+  <include package=".datagrid" />
   <include package=".duration" />
   <include package=".gpscoordinates" />
   <include package=".listing" />
-  <include package=".uidreference" />
   <include package=".queryselect" />
+  <include package=".uidreference" />
 
   <include file="address.zcml" />
-  <include file="datagrid.zcml" />
   <include file="datetimewidget.zcml" />
   <include file="number.zcml" />
   <include file="phone.zcml" />
