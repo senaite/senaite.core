@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-05-31 21:18+0000\n"
+"POT-Creation-Date: 2024-07-16 10:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -436,6 +436,11 @@ msgstr "Zugriff für Benutzer oder Gruppen gewähren <div class=\\\"font-italic\
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
 msgstr "Cookies sind nicht aktiviert. Sie müssen Cookies aktivieren, um sich einzuloggen."
+
+#. Default: "File already uploaded:"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
+msgid "file_already_uploaded"
+msgstr ""
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
@@ -914,6 +919,11 @@ msgstr "Benutzername"
 #: senaite/core/browser/login/templates/login.pt:109
 msgid "need_an_account"
 msgstr "Brauchen Sie einen Account?"
+
+#. Default: "No file"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
+msgid "no_file"
+msgstr ""
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61

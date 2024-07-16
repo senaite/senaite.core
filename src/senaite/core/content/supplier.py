@@ -70,7 +70,7 @@ class ISupplierSchema(IOrganizationSchema):
     model.fieldset(
         "bank_details",
         label=_(
-            u"Accounting",
+            u"label_fieldset_supplier_bank_details",
             default=u"Bank Details"
         ),
         fields=[
