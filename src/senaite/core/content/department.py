@@ -48,6 +48,10 @@ class IDepartmentSchema(model.Schema):
             u"title_department_title",
             default=u"Name"
         ),
+        description=_(
+            u"description_department_title",
+            default=u"Name of the department"
+        ),
         required=True,
     )
 
@@ -60,6 +64,13 @@ class IDepartmentSchema(model.Schema):
     )
 
     # Department ID
+    directives.widget("department_id",
+                      before_text_edit="ID",
+                      before_css_input="text-secondary",
+                      widget_css_display="text-primary text-monospace",
+                      widget_css_input="text-primary text-monospace",
+                      after_text_input="<i class='fas fa-id-card'></i>",
+                      after_css_input="text-primary")
     department_id = schema.TextLine(
         title=_(
             u"title_department_id",
@@ -113,7 +124,6 @@ class IDepartmentSchema(model.Schema):
         if context and context.department_id == dpt_id:
             # nothing changed
             return
-        # TODO: Catalog query for same ID
         query = {
             "portal_type": "Department",
             "department_id": dpt_id,
