@@ -403,6 +403,16 @@ class IBatchLabels(Interface):
     """
 
 
+class ISupplier(Interface):
+    """Marker interface for a Supplier
+    """
+
+
+class ISuppliers(Interface):
+    """Marker interface for Suplliers
+    """
+
+
 class IASTMImporter(Interface):
     """Marker interface for ASTM Wrappers
     """

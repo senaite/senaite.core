@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="senaite.core.interfaces.ISuppliers"
+      name="view"
+      class=".view.SuppliersView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <browser:page
+      for="senaite.core.interfaces.ISupplier"
+      name="contacts"
+      class=".contacts.ContactsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+    <browser:page
+      for="senaite.core.interfaces.ISupplier"
+      name="reference_samples"
+      class=".referencesamples.SupplierReferenceSamplesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+    <browser:page
+      for="senaite.core.interfaces.ISupplier"
+      name="instruments"
+      class=".instruments.SupplierInstrumentsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+</configure>

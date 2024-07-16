@@ -39,6 +39,7 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
@@ -53,6 +54,9 @@ from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import LABCONTACT_WORKFLOW
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.component import getMultiAdapter
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
@@ -92,7 +96,9 @@ REMOVE_AT_TYPES = [
     "AttachmentType",
     "AttachmentTypes",
     "LabProduct",
-    "LabProducts"
+    "LabProducts",
+    "Supplier",
+    "Suppliers",
 ]
 
 CONTENT_ACTIONS = [
@@ -1729,6 +1735,180 @@ def move_interpretationtemplates(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Move Interpretation Templates [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_suppliers_to_dx(tool):
+    """Converts suppliers to Dexterity
+    """
+    logger.info("Convert Suppliers to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    origin = api.get_setup().get("bika_suppliers")
+    destination = get_setup_folder("suppliers")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "Supplier"}
+    # search all AT based suppliers
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+
+    # get all objects first
+    objects = map(api.get_object, brains)
+    for num, obj in enumerate(objects):
+        migrate_supplier_to_dx(obj, destination)
+
+        logger.info("Migrated supplier {0}/{1}: {2} -> {3}".format(
+            num, total, api.get_path(obj), api.get_path(obj)))
+
+    if origin:
+        # remove old AT folder
+        if len(origin) == 0:
+            delete_object(origin)
+        else:
+            logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Suppliers to Dexterity [DONE]")
+
+
+def migrate_supplier_to_dx(src_supplier, destination):
+    """Migrates a Supplier to DX in destination folder
+
+    :param src_supplier: The source AT object
+    :param destination: The destination folder
+    """
+
+    # Create the object if it does not exist yet
+    src_id = src_supplier.getId()
+    target_id = src_id
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent("Supplier", id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src_supplier.getName() or "")
+
+    move_reference_samples(src_supplier, target)
+
+    move_contacts(src_supplier, target)
+
+    # we set the fields with our custom setters
+    target.setRemarks(src_supplier.getRemarks())
+    target.setWebsite(src_supplier.getWebsite())
+    target.setNIB(src_supplier.getNIB())
+    target.setIBAN(src_supplier.getIBN())
+    target.setSwiftCode(src_supplier.getSWIFTcode())
+    target.setLabAccountNumber(src_supplier.getLabAccountNumber())
+    target.setTaxNumber(src_supplier.getTaxNumber())
+    target.setPhone(src_supplier.getPhone())
+    target.setFax(src_supplier.getFax())
+    target.setEmail(src_supplier.getEmailAddress())
+    target.setAccountType(src_supplier.getAccountType())
+    target.setAccountName(src_supplier.getAccountName())
+    target.setAccountNumber(src_supplier.getAccountNumber())
+    target.setBankName(src_supplier.getBankName())
+    target.setBankBranch(src_supplier.getBankBranch())
+
+    # copy addresses: migrate state and district to subdivision's
+    postal_address = src_supplier.getPostalAddress()
+    if postal_address:
+        postal_address["type"] = POSTAL_ADDRESS
+        postal_address["subdivision1"] = postal_address.pop("state", "")
+        postal_address["subdivision2"] = postal_address.pop("district", "")
+        target.setPostalAddress(postal_address)
+
+    physical_address = src_supplier.getPhysicalAddress()
+    if physical_address:
+        physical_address["type"] = PHYSICAL_ADDRESS
+        physical_address["subdivision1"] = physical_address.pop("state", "")
+        physical_address["subdivision2"] = physical_address.pop("district", "")
+        target.setPhysicalAddress(physical_address)
+
+    billing_address = src_supplier.getBillingAddress()
+    if billing_address:
+        billing_address["type"] = BILLING_ADDRESS
+        billing_address["subdivision1"] = billing_address.pop("state", "")
+        billing_address["subdivision2"] = billing_address.pop("district", "")
+        target.setBillingAddress(billing_address)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src_supplier, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src_supplier, target)
+
+    # copy the UID
+    migrator.copy_uid(src_supplier, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src_supplier, target)
+
+    # copy creators
+    migrator.copy_creators(src_supplier, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src_supplier, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src_supplier, target)
+
+    # copy dates
+    migrator.copy_dates(src_supplier, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src_supplier)
+
+    # delete the old object
+    migrator.delete_object(src_supplier)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src_supplier, target)
+
+    return target
+
+
+def move_reference_samples(source_supplier, target_supplier):
+    """
+    """
+    # search for all reference samples located Supplier
+    query_supplier_contacts = {
+        "portal_type": "ReferenceSample",
+        "path": {
+            "query": api.get_path(source_supplier),
+        }
+    }
+    reference_brains = api.search(query_supplier_contacts, SENAITE_CATALOG)
+    for brain in reference_brains:
+        api.move_object(brain, target_supplier, check_constraints=False)
+
+
+def move_contacts(source_supplier, target_supplier):
+    """
+    """
+    # search for all contacts located Supplier
+    query_supplier_contacts = {
+        "portal_type": "SupplierContact",
+        "path": {
+            "query": api.get_path(source_supplier),
+        }
+    }
+    contact_brains = api.search(query_supplier_contacts, CONTACT_CATALOG)
+    for brain in contact_brains:
+        api.move_object(brain, target_supplier, check_constraints=False)
 
 
 def update_content_actions(tool):

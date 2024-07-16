@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2586 Support multiple files for datagrid fields
+- #2581 Migrate Suppliers to Dexterity
 - #2587 Fix InvalidOperation: Invalid literal for Decimal: ''
 - #2585 Fix Progress string missing i18n
 - #2574 Migrate LabProducts to Dexterity

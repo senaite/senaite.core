@@ -40,6 +40,7 @@
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
   <include package=".subgroups" />
+  <include package=".suppliers" />
   <include package=".storagelocations" />
   <include package=".samplingdeviations" />
 
