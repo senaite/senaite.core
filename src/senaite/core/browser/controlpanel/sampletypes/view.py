@@ -156,9 +156,9 @@ class SampleTypesView(ListingView):
 
         retention_period = obj.getRetentionPeriod()
         if retention_period:
-            days = retention_period.days
-            hours = retention_period.seconds // (60*60)
-            minutes = (retention_period.seconds % (60*60)) // 60
+            days = retention_period.get("days", "0")
+            hours = retention_period.get("hours", "0")
+            minutes = retention_period.get("minutes", "0")
             item["retention_period"] = \
                 "days: {} hours: {} minutes: {}".format(days, hours, minutes)
 

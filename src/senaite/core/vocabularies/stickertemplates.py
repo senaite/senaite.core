@@ -18,7 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.config.vocabularies import STICKER_TEMPLATES_LIST
+from bika.lims.vocabularies import getStickerTemplates
 from senaite.core.schema.vocabulary import to_simple_vocabulary
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
@@ -27,8 +27,9 @@ from zope.schema.interfaces import IVocabularyFactory
 @implementer(IVocabularyFactory)
 class StickerTemplatesVocabulary(object):
 
-    def __call__(self, context):
-        return to_simple_vocabulary(STICKER_TEMPLATES_LIST)
+    def __call__(self, context, filter_by_type=False):
+        sticker_templates = getStickerTemplates(filter_by_type=filter_by_type)
+        return to_simple_vocabulary(sticker_templates)
 
 
 StickerTemplatesVocabularyFactory = StickerTemplatesVocabulary()

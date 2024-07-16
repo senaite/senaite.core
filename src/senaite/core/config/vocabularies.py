@@ -30,14 +30,3 @@ SAMPLE_PRESERVATION_CATEGORIES = (
         default=u"Lab Preservation"
     )),
 )
-
-STICKER_TEMPLATES_LIST = (
-    ("sticker_1", _(
-        u"sticker_1",
-        default=u"STICKER 1"
-    )),
-    ("sticker_2", _(
-        u"sticker_1",
-        default=u"STICKER 2"
-    )),
-)

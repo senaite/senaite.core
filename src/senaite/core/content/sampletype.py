@@ -33,6 +33,7 @@ from senaite.core.content.mixins import SampleTypeAwareMixin
 from senaite.core.interfaces import ISampleType
 from senaite.core.schema import DurationField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
@@ -41,6 +42,9 @@ from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import Invalid
+
+
+STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
 
 
 def default_retention_period():
@@ -67,7 +71,7 @@ def prefix_whitespaces_constraint(value):
     return True
 
 
-class IStickersRecord(Interface):
+class IStickersRecordSchema(Interface):
     """DataGrid Row for Selecting Stickers Settings
     """
 
@@ -77,10 +81,9 @@ class IStickersRecord(Interface):
             default=u'Admitted stickers for the sample type'
         ),
         value_type=schema.Choice(
-            vocabulary='senaite.core.vocabularies.stickertemplates',
+            vocabulary=STICKERS_VOCABULARY,
         ),
-        required=True,
-        missing_value={},
+        required=False,
     )
 
     small_default = schema.Choice(
@@ -88,8 +91,8 @@ class IStickersRecord(Interface):
             u"label_sampletype_small_default",
             default=u'Default small sticker'
         ),
-        vocabulary='senaite.core.vocabularies.stickertemplates',
-        required=True,
+        vocabulary=STICKERS_VOCABULARY,
+        required=False,
     )
 
     large_default = schema.Choice(
@@ -97,8 +100,8 @@ class IStickersRecord(Interface):
             u"label_sampletype_large_default",
             default=u'Default large sticker'
         ),
-        vocabulary='senaite.core.vocabularies.stickertemplates',
-        required=True,
+        vocabulary=STICKERS_VOCABULARY,
+        required=False,
     )
 
 
@@ -232,17 +235,20 @@ class ISampleTypeSchema(model.Schema):
         allow_delete=False,
         allow_reorder=False,
         auto_append=False)
-    admitted_sticker_templates = schema.List(
+    admitted_sticker_templates = DataGridField(
         title=_(u"label_sampletype_admitted_stickers_templates",
                 default=u"Admitted sticker templates"),
         description=_(u"description_sampletype_admitted_stickers_templates",
                       default=u"Defines the stickers to use for "
                               u"this sample type."),
-        value_type=DataGridRow(
-            title=u"Stickers Schema",
-            schema=IStickersRecord),
+        value_type=DataGridRow(schema=IStickersRecordSchema),
         required=True,
-        default=[])
+        default=[{
+                  'admitted': set(),
+                  'small_default': None,
+                  'large_default': None
+                }]
+        )
 
 
 @implementer(ISampleType, ISampleTypeSchema, IDeactivable)
@@ -255,9 +261,21 @@ class SampleType(Container, SampleTypeAwareMixin):
     security = ClassSecurityInfo()
 
     @security.protected(permissions.View)
-    def getRetentionPeriod(self):
+    def getRawRetentionPeriod(self):
         accessor = self.accessor("retention_period")
         return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRetentionPeriod(self, raw=False):
+        rp = self.getRawRetentionPeriod()
+        if raw:
+            return rp
+        ret_val = {
+            'days': rp.days,
+            'hours': rp.seconds // (60*60),
+            'minutes': (rp.seconds % (60*60)) // 60,
+        }
+        return ret_val
 
     @security.protected(permissions.ModifyPortalContent)
     def setRetentionPeriod(self, value):
