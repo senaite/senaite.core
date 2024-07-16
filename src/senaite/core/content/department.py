@@ -33,6 +33,7 @@ from senaite.core.content.base import Container
 from senaite.core.interfaces import IDepartment
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
+from z3c.form.interfaces import DISPLAY_MODE
 from zope import schema
 from zope.interface import Invalid
 from zope.interface import implementer
@@ -48,6 +49,10 @@ class IDepartmentSchema(model.Schema):
             u"title_department_title",
             default=u"Name"
         ),
+        description=_(
+            u"description_department_title",
+            default=u"Name of the department"
+        ),
         required=True,
     )
 
@@ -60,6 +65,13 @@ class IDepartmentSchema(model.Schema):
     )
 
     # Department ID
+    directives.widget("department_id",
+                      before_text="ID",
+                      before_css_class="text-secondary",
+                      before_text_omit_mode=DISPLAY_MODE,
+                      after_text="<i class='fas fa-id-card'></i>",
+                      after_css_class="text-primary",
+                      after_text_omit_mode=DISPLAY_MODE)
     department_id = schema.TextLine(
         title=_(
             u"title_department_id",
@@ -113,7 +125,6 @@ class IDepartmentSchema(model.Schema):
         if context and context.department_id == dpt_id:
             # nothing changed
             return
-        # TODO: Catalog query for same ID
         query = {
             "portal_type": "Department",
             "department_id": dpt_id,
