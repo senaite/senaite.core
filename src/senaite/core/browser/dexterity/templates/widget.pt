@@ -6,9 +6,8 @@
                  error_class python:error and ' error' or '';
                  empty_values python: (None, '', [], ('', '', '', '00', '00', ''), ('', '', ''));
                  empty_class python: (widget.value in empty_values) and ' empty' or '';
-	               wrapper_css_class  widget/wrapper_css_class|nothing;
+                 wrapper_css_class  widget/wrapper_css_class|nothing;
                  fieldname_class string:kssattr-fieldname-${widget/name};"
-     data-pat-inlinevalidation='{"type":"z3c.form"}'
      tal:attributes="class string:field pat-inlinevalidation ${fieldname_class}${error_class}${empty_class} ${wrapper_css_class};
                      data-fieldname widget/name;
                      id string:formfield-${widget/id};">
