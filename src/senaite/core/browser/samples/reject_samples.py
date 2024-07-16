@@ -19,16 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 import six
-
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims import workflow as wf
-from bika.lims.browser import BrowserView
-from bika.lims.browser import ulocalized_time
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils.analysisrequest import do_rejection
 from plone.memoize import view
+from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core import logger
+from senaite.core.api import workflow as wapi
+from senaite.core.api.dtime import to_localized_time
 from senaite.core.catalog import SAMPLE_CATALOG
 
 
@@ -67,8 +66,8 @@ class RejectSamplesView(BrowserView):
 
         # Is Rejection Workflow Enabled
         if not self.is_rejection_workflow_enabled:
-            return self.redirect(message=_("Rejection workflow is not enabled"),
-                                 level="warning")
+            message = _("Rejection workflow is not enabled")
+            return self.redirect(message=message, level="warning")
 
         # Get the objects from request
         samples = self.get_samples_from_request()
@@ -135,10 +134,14 @@ class RejectSamplesView(BrowserView):
             return []
 
         # Filter those analysis requests "reject" transition is allowed
+        samples = []
         query = dict(portal_type="AnalysisRequest", UID=uids)
-        brains = api.search(query, SAMPLE_CATALOG)
-        samples = map(api.get_object, brains)
-        return filter(lambda ob: wf.isTransitionAllowed(ob, "reject"), samples)
+        for brain in api.search(query, SAMPLE_CATALOG):
+            sample = api.get_object(brain)
+            if wapi.is_transition_allowed(sample, "reject"):
+                samples.append(sample)
+
+        return samples
 
     @view.memoize
     def get_rejection_reasons(self):
@@ -159,7 +162,7 @@ class RejectSamplesView(BrowserView):
                 "url": api.get_url(obj),
                 "sample_type": obj.getSampleTypeTitle(),
                 "client_title": obj.getClientTitle(),
-                "date": ulocalized_time(obj.created(), long_format=True),
+                "date": to_localized_time(obj.created(), long_format=True),
             }
 
     def redirect(self, redirect_url=None, message=None, level="info"):
