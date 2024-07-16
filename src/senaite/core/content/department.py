@@ -65,7 +65,7 @@ class IDepartmentSchema(model.Schema):
 
     # Department ID
     directives.widget("department_id",
-                      before_text_edit="ID",
+                      before_text_input="ID",
                       before_css_input="text-secondary",
                       widget_css_display="text-primary text-monospace",
                       widget_css_input="text-primary text-monospace",
