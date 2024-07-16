@@ -103,6 +103,7 @@ schema = Organisation.schema.copy() + ManagedSchema((
 schema.moveField('LabAccountNumber', before='TaxNumber')
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2581
 class Supplier(Organisation):
     """Supplier content
     """

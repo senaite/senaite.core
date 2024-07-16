@@ -22,7 +22,6 @@
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="stickers.zcml"/>
-  <include file="supplier.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
