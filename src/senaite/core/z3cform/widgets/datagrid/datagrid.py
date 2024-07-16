@@ -34,6 +34,7 @@ from senaite.core.schema.interfaces import IDataGridRow
 from senaite.core.z3cform.interfaces import IDataGridRowWidget
 from senaite.core.z3cform.interfaces import IDataGridWidget
 from z3c.form.interfaces import INPUT_MODE
+from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.interfaces import NO_VALUE
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
@@ -89,6 +90,9 @@ class DataGridRowFileWidget(NamedFileWidget):
         if self.mode == INPUT_MODE:
             # render a custom input template
             return ViewPageTemplateFile("datagridrow_file_input.pt")(self)
+        elif self.mode == DISPLAY_MODE:
+            # render a custom display template
+            return ViewPageTemplateFile("datagridrow_file_display.pt")(self)
         return super(DataGridRowFileWidget, self).render()
 
     @property
