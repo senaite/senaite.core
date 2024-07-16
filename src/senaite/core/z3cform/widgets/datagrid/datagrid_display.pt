@@ -14,10 +14,7 @@
           <tal:block repeat="column view/columns">
             <th class="header"
                 tal:condition="python:column['mode'] != 'hidden'">
-              <span tal:content="column/label"
-                    i18n:translate="">
-                title
-              </span>
+              <span tal:content="column/label"/>
               <span class="required"
                     title="Required"
                     tal:condition="column/required"

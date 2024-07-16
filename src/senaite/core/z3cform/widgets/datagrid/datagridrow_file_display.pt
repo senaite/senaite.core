@@ -19,10 +19,9 @@
         <a tal:content="filename"
            tal:attributes="href python:download_url">Filename</a>
         <span class="discreet"> &mdash;<tal:doc_type condition="doc_type">
-            <span tal:replace="doc_type"
-                  i18n:translate="">ContentType</span>,</tal:doc_type>
+            <span tal:replace="doc_type">ContentType</span>,</tal:doc_type>
             <span tal:define="sizekb view/file_size"
-                  tal:replace="sizekb" i18n:translate="">100</span>
+                  tal:replace="sizekb">100</span>
         </span>
     </span>
     <span tal:condition="not:exists" class="discreet" i18n:translate="no_file">
