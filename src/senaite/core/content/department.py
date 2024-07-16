@@ -33,7 +33,6 @@ from senaite.core.content.base import Container
 from senaite.core.interfaces import IDepartment
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
-from z3c.form.interfaces import DISPLAY_MODE
 from zope import schema
 from zope.interface import Invalid
 from zope.interface import implementer
