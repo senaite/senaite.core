@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import os
+from string import Template
 
 import plone.app.z3cform
 import plone.app.z3cform.interfaces
@@ -31,7 +32,13 @@ from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
 from plone.dexterity.browser.view import DefaultView
 from senaite.core.interfaces import ISenaiteFormLayer
+from z3c.form.interfaces import INPUT_MODE
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+
+FORMAT_TPL = Template("""<span class="$css">
+  $text
+</span>
+""")
 
 
 def path(filepart):
@@ -58,6 +65,130 @@ class SenaiteRenderWidget(RenderWidget):
         super(SenaiteRenderWidget, self).__init__(context, request)
         self.context = context
         self.request = request
+        # allow per mode styling
+        if context:
+            context.klass = self.get_widget_mode_css(context)
+
+    def get_mode(self):
+        """Get the current widget mode
+
+        returns either input, display or hidden
+        """
+        return self.context.mode
+
+    def is_input_mode(self):
+        """Check if we are in INPUT mode
+        """
+        return self.get_mode() == INPUT_MODE
+
+    def is_view_mode(self):
+        """Checks if we are in view (DISPLAY/HIDDEN) mode
+        """
+        return not self.is_input_mode()
+
+    def get_widget_mode_css(self, widget):
+        """Allows mode specific css styling for the widget itself
+
+        Example:
+
+            directives.widget("department_id",
+                              widget_css_display="text-danger text-monospace",
+                              widget_css_input="text-primary")
+            department_id = schema.TextLine(...)
+        """
+        mode = self.get_mode()
+
+        widget_css = getattr(widget, "widget_css_%s" % mode, None)
+        if not widget_css:
+            widget_css = getattr(widget, "widget_css", None)
+
+        if not widget_css:
+            return widget.klass
+
+        # append the mode specific widget css classes
+        current_css = widget.klass.split()
+        for cls in widget_css.split():
+            if cls not in current_css:
+                current_css.append(cls)
+        return " ".join(current_css)
+
+    def get_prepend_text(self):
+        """Get the text/style to prepend to the input field
+
+
+        Example:
+
+            directives.widget("department_id",
+                              before_text_input="ID",
+                              before_css_input="text-secondary",
+                              before_text_display="ID:",
+                              before_css_display="font-weight-bold")
+            department_id = schema.TextLine(...)
+        """
+        mode = self.get_mode()
+        widget = self.context
+
+        # omit the text in the current mode
+        omit = getattr(widget, "before_text_omit_%s" % mode, False)
+        if omit:
+            return
+
+        # get the append text
+        before_text = getattr(widget, "before_text_%s" % mode, None)
+        if not before_text:
+            before_text = getattr(widget, "before_text", None)
+
+        # get the CSS classes for the append text
+        before_css = getattr(widget, "before_css_%s" % mode, None)
+        if not before_css:
+            before_css = getattr(widget, "before_css", None)
+
+        return self.format_text(before_text, css=before_css)
+
+    def get_append_text(self):
+        """Get the text/style to append to the input field
+
+        Example:
+
+            directives.widget("department_id",
+                              after_text="<i class='fas fa-id-card'></i>",
+                              after_css="text-primary",
+                              after_text_omit_display=True)
+            department_id = schema.TextLine(...)
+        """
+        mode = self.get_mode()
+        widget = self.context
+
+        # omit the text in the current mode
+        omit = getattr(widget, "after_text_omit_%s" % mode, False)
+        if omit:
+            return
+
+        # get the append text
+        after_text = getattr(widget, "after_text_%s" % mode, None)
+        if not after_text:
+            after_text = getattr(widget, "after_text", None)
+
+        # get the CSS classes for the append text
+        after_css = getattr(widget, "after_css_%s" % mode, None)
+        if not after_css:
+            after_css = getattr(widget, "after_css", None)
+
+        return self.format_text(after_text, css=after_css)
+
+    def format_text(self, text, css=None):
+        """HTML format the text
+        """
+        if not text:
+            return ""
+        if css is None:
+            css = ""
+        context = {
+            "text": text,
+            "css": css,
+
+        }
+        return FORMAT_TPL.safe_substitute(context)
 
 
 class SenaiteDefaultView(DefaultView):

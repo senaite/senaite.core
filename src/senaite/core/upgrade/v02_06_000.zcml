@@ -3,12 +3,20 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-  <genericsetup:upgradeStep
+   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
+      source="2643"
+      destination="2644"
+      handler=".v02_06_000.migrate_sampletypes_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
+      description="Migrate Suppliers to Dexterity"
       source="2642"
       destination="2643"
-      handler=".v02_06_000.migrate_sampletypes_to_dx"
+      handler=".v02_06_000.migrate_suppliers_to_dx"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

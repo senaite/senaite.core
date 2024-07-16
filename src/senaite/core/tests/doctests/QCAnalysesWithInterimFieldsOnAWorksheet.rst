@@ -51,7 +51,7 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
+    >>> supplier = api.create(setup.suppliers, "Supplier", Name="Naralabs")
 
     >>> interim_calc = api.create(bika_calculations, 'Calculation', title='Test-Total-Pest')
     >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 12.3, 'type': 'int', 'hidden': False, 'unit': ''}

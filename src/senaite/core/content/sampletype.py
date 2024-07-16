@@ -39,6 +39,7 @@ from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
+from z3c.form import validator
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import Invalid
@@ -244,11 +245,33 @@ class ISampleTypeSchema(model.Schema):
         value_type=DataGridRow(schema=IStickersRecordSchema),
         required=True,
         default=[{
-                  'admitted': set(),
-                  'small_default': None,
-                  'large_default': None
-                }]
-        )
+            'admitted': set(),
+            'small_default': None,
+            'large_default': None
+        }]
+    )
+
+
+class StickersFieldValidator(validator.SimpleFieldValidator):
+    """Custom validator for DGF 
+    (https://community.plone.org/t/how-do-i-validate-in-datagridfield/17717)
+    """
+
+    def validate(self, value):
+        if value is None:
+            value = []
+
+        _valid = True if len(value) == 1 else False
+        _msg = _("Invalid data")
+
+        if not _valid:
+            raise Invalid(_msg)
+
+
+validator.WidgetValidatorDiscriminators(
+    StickersFieldValidator,
+    field=ISampleTypeSchema["admitted_sticker_templates"],
+)
 
 
 @implementer(ISampleType, ISampleTypeSchema, IDeactivable)

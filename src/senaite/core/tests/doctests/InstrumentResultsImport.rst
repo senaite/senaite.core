@@ -100,7 +100,7 @@ Variables:
     >>> labcontacts = bikasetup.bika_labcontacts
     >>> sampletypes = setup.sampletypes
     >>> referencedefinitions = bikasetup.bika_referencedefinitions
-    >>> suppliers = bikasetup.bika_suppliers
+    >>> suppliers = setup.suppliers
 
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
