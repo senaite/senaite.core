@@ -421,4 +421,6 @@ def is_transition_allowed(obj, transition_id):
     """
     obj = api.get_object(obj)
     wf = get_workflow(obj)
-    return wf.isActionSupported(obj, transition_id)
+    if wf.isActionSupported(obj, transition_id):
+        return True
+    return False

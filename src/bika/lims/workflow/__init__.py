@@ -227,13 +227,13 @@ def isTransitionAllowed(instance, transition_id):
     :returns: True if transition can be performed
     :rtype: bool
     """
-    wf_tool = getToolByName(instance, "portal_workflow")
-    for wf_id in wf_tool.getChainFor(instance):
-        wf = wf_tool.getWorkflowById(wf_id)
-        if wf and wf.isActionSupported(instance, transition_id):
-            return True
-
-    return False
+    # prevent circular dependencies
+    from senaite.core.api.workflow import is_transition_allowed
+    import warnings
+    warnings.simplefilter("always", DeprecationWarning)
+    warn = "Deprecated: use senaite.core.api.workflow.is_transition_allowed"
+    warnings.warn(warn, category=DeprecationWarning, stacklevel=2)
+    return is_transition_allowed(instance, transition_id)
 
 
 def getAllowedTransitions(instance):
