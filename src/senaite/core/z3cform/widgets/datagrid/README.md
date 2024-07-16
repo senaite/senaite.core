@@ -28,6 +28,8 @@ from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridRowFileWidget
 from senaite.core.z3cform.widgets.datagrid import DataGridWidget
+from zope import schema
+from zope.interface import Interface
 
 
 class ICertificateRecord(Interface):
