@@ -152,7 +152,7 @@ class RejectionReport(BrowserView):
             # skip duplicates
             authorized_by[contact_uid] = properties
 
-        return authorized_by.values()
+        return list(authorized_by.values())
 
     def get_rejection_reasons(self, keyword):
         """
