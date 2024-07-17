@@ -107,8 +107,7 @@
                     Rejection reasons
                   </label>
                   <textarea rows="5" class="form-control"
-                            tal:attributes="name string:samples.other_reasons:records">
-                  </textarea>
+                            tal:attributes="name string:samples.other_reasons:records"></textarea>
                 </div>
 
                 <!-- Send email notification -->

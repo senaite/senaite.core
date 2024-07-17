@@ -584,11 +584,10 @@ def get_rejection_pdf(sample):
     """Generates a pdf with sample rejection reasons
     """
     # Avoid circular dependencies
-    from bika.lims.browser.analysisrequest.reject import \
-        AnalysisRequestRejectPdfView
+    from senaite.core.browser.samples.rejection.report import RejectionReport
 
     # Render the html's rejection document
-    tpl = AnalysisRequestRejectPdfView(sample, api.get_request())
+    tpl = RejectionReport(sample, api.get_request())
     html = tpl.template()
     html = safe_unicode(html).encode("utf-8")
 

@@ -2,6 +2,9 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Package includes -->
+  <include package=".rejection"/>
+
   <!-- main site/samples view -->
   <browser:page
       for="senaite.core.interfaces.ISamples"
@@ -69,14 +72,6 @@
       name="manage-sample-fields"
       class=".manage_sample_fields.ManageSampleFieldsView"
       permission="senaite.core.permissions.ManageBika"
-      layer="senaite.core.interfaces.ISenaiteCore" />
-
-  <!-- Reject Samples View -->
-  <browser:page
-      for="*"
-      name="reject_samples"
-      class=".reject_samples.RejectSamplesView"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>
