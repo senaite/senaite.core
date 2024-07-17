@@ -92,6 +92,68 @@ class RejectionReport(BrowserView):
         """
         return dtime.to_localized_time(date, long_format=True)
 
+    def get_contact_properties(self, contact):
+        """Returns a dictionary with information about the contact
+        """
+        if not contact:
+            return {}
+
+        # fill properties with contact additional info
+        contact_url = api.get_url(contact)
+        signature = contact.getSignature()
+        signature = "{}/Signature".format(contact_url) if signature else ""
+        department = contact.getDefaultDepartment()
+        department = api.get_title(department) if department else ""
+
+        return {
+            "fullname": api.to_utf8(contact.getFullname()),
+            "salutation": api.to_utf8(contact.getSalutation()),
+            "signature": signature,
+            "job_title": api.to_utf8(contact.getJobTitle()),
+            "phone": contact.getBusinessPhone(),
+            "department": api.to_utf8(department),
+            "email": contact.getEmailAddress(),
+            "uid": api.get_uid(contact),
+        }
+
+    def get_rejected_by(self):
+        """Returns a dict with information about the rejecter, giving priority
+        to the contact over the user
+        """
+        user = api.get_current_user()
+        properties = api.get_user_properties(user)
+
+        # overwrite with contact info
+        contact = api.get_user_contact(user)
+        contact_properties = self.get_contact_properties(contact)
+        properties.update(contact_properties)
+
+        return properties
+
+    def get_authorized_by(self):
+        """Returns a list of dicts with the information about the laboratory
+        contacts that are in charge of this samples as responsibles of the
+        departments from its tests
+        """
+        rejecter = self.get_rejected_by()
+        rejecter_uid = rejecter.get("uid")
+        authorized_by = {}
+        for department in self.context.getDepartments():
+            manager = department.getManager()
+            properties = self.get_contact_properties(manager)
+            if not properties:
+                continue
+
+            # skip rejecter
+            contact_uid = api.get_uid(manager)
+            if rejecter_uid == contact_uid:
+                continue
+
+            # skip duplicates
+            authorized_by[contact_uid] = properties
+
+        return authorized_by.values()
+
     def get_rejection_reasons(self, keyword=None):
         """
         Returns a list with the rejection reasons as strings
@@ -103,7 +165,7 @@ class RejectionReport(BrowserView):
             - None: Get all rejection reasons
         :return: list of rejection reasons as strings or an empty list
         """
-        keys = ['selected', 'other']
+        keys = ["selected", "other"]
         if keyword is None:
             return sum(map(self.get_rejection_reasons, keys), [])
         if keyword not in keys:

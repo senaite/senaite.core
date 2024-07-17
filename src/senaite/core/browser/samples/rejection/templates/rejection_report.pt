@@ -21,48 +21,26 @@
   <style type="text/css" tal:content="structure python:view.layout_css"></style>
 
   <style type="text/css">
-      body {
-          font-family: Arial, Verdana, serif;
-          font-size:9pt;
-      }
-      h1 { font-size:12pt; }
-      h2 { font-size:11pt; }
-      h3 { font-size:10pt; }
-      .header {
-          text-align: center;
-          text-transform: uppercase;
-          padding:0 0 30pt;
-      }
-      .client, .sample, .reasons {
-          padding:0 0 15pt;
-      }
-      .client table,
-      .sample table,
-      .reasons table {
-          width:100%;
-          font-size:9pt;
-      }
-      .client table tr td,
-      .sample table tr td,
-      .reasons table tr td {
-          vertical-align:top;
-          padding:5pt;
-      }
-      .label {
-          font-weight:bold;
-      }
-      div.reasons-list {
-          padding:0 0 0 15pt;
-          line-height:20pt;
-      }
+
+      .report { font-size: 9pt; }
+      .report h1 { font-size: 140%; }
+      .report h2 { font-size: 120%; }
+      .report h3 { font-size: 110%; }
+      .report table { font-size: 9pt; }
+      .report .header { text-align: center; text-transform: uppercase; }
+      .report table.table-sm th, .report table.table-sm td { padding:.4rem; }
+      .report table.noborder td, .report table.noborder th { border: none; }
+
       .check {
+          font-weight: bold;
           border: 1px solid black;
           margin: 0 4pt;
           padding: 0 5pt;
+          font-size: 85%;
       }
       .check.checked {
-          font-weight: bold;
           padding: 0 2pt;
+          margin: 0 2pt 0 4pt;
       }
 
   </style>
@@ -80,92 +58,195 @@
     otherreas   python: view.get_rejection_reasons('other');">
 
 <div class="report">
-  <div class="header">
-    <h1 tal:content="lab/Title"></h1>
-    <h2 i18n:translate="">Samples rejection reporting form</h2>
-  </div>
 
-  <div class="client">
-    <table cellpadding="0" cellspacing="0" border="0">
-      <tr>
-        <td class="label" i18n:translate="">Client</td>
-        <td tal:content="python: client.Title()"></td>
-      </tr>
-      <tr>
-        <td class="label" i18n:translate="">Client ID</td>
-        <td tal:content="python: client.getClientID()"></td>
-      </tr>
-      <tr>
-        <td class="label" i18n:translate="">Physical address</td>
-        <td tal:define="
-                    addrkeys python:['address', 'city', 'state', 'zip', 'country'];
-                    addrs python:client.getPhysicalAddress() or client.getPostalAddress() or client.getBillingAddress();
-                    addrlist python:[addrs.get(v) for v in addrkeys if addrs.get(v)];">
-          <tal:addresslines repeat="line addrlist">
-            <span tal:replace="line"></span><br/>
-          </tal:addresslines>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="sample">
-    <table cellpadding="0" cellspacing="0" border="0">
-      <tr>
-        <td class="label" i18n:translate="">Sample type</td>
-        <td tal:content="python: ar.getSampleType().Title()"></td>
-        <td class="label" i18n:translate="">Date collected</td>
-        <td
-          tal:content="python:view.long_date(ar.getDateSampled())"></td>
-        <td class="label" i18n:translate="">Date received</td>
-        <td
-          tal:content="python:view.long_date(ar.getDateReceived())"></td>
-      </tr>
-      <tr>
-        <td class="label" i18n:translate="">Sample ID</td>
-        <td tal:condition="python: ar.getClientSampleID()"
-            tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getId())"
-            colspan="5"></td>
-        <td tal:condition="python: not ar.getClientSampleID()"
-            tal:content="python:ar.getId()" colspan="5"></td>
-      </tr>
-      <tr>
-        <td class="label" i18n:translate="">Analyses requested</td>
-        <td colspan="5" tal:define="analyses python:ar.getAnalyses();
-                                            analyses python:[an.getObject() for an in analyses];
-                                            analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
-          <span tal:replace="python: ', '.join(analyses)"></span>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="reasons">
-    <h3 i18n:translate="">Reasons for rejection</h3>
-    <div class="reasons-list">
-      <tal:reason repeat="reason labreasons">
-            <span
-              tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
-              tal:content="python: 'X' if reason in reasons else '  '">&nbsp;</span>&nbsp;<span
-        tal:replace="reason"></span><br/>
-      </tal:reason>
-      <span
-        tal:condition="python:otherreas"
-        tal:attributes="class python: 'check checked' if otherreas else 'check'"
-        tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span
-      tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
+  <div class="row header pb-4">
+    <div class="col-sm-12">
+      <h1 tal:content="lab/Title"></h1>
+      <h2 i18n:translate="">Samples rejection reporting form</h2>
     </div>
   </div>
 
-  <div class="responsability" tal:define="rejecter python:ar.portal_membership.getAuthenticatedMember();
-                                            rejfulln python:rejecter.getProperty('fullname');
-                                            authoriz python:ar.getResponsible();
-                                            authorid python:[authoriz['dict'][au]['name'] for au in authoriz['ids']]">
-    <p><span class="label" i18n:translate="">Reviewed by</span>: <span
-      tal:content="python: rejfulln if rejfulln else rejecter"></span></p>
-    <p><span class="label" i18n:translate="">Authorized by</span>: <span
-      tal:content="python: ', '.join(authorid)"></span></p>
+  <div class="row client mb-2">
+    <div class="col-sm-12">
+      <table class="table table-sm table-condensed noborder">
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Client</td>
+          <td tal:content="python: client.Title()"></td>
+        </tr>
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Client ID</td>
+          <td tal:content="python: client.getClientID()"></td>
+        </tr>
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Physical address</td>
+          <td tal:define="
+                      addrkeys python:['address', 'city', 'state', 'zip', 'country'];
+                      addrs python:client.getPhysicalAddress() or client.getPostalAddress() or client.getBillingAddress();
+                      addrlist python:[addrs.get(v) for v in addrkeys if addrs.get(v)];">
+            <tal:addresslines repeat="line addrlist">
+              <span tal:replace="line"></span><br/>
+            </tal:addresslines>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
+
+  <div class="row sample pb-3">
+    <div class="col-sm-12">
+      <table class="table table-sm table-condensed noborder">
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Sample type</td>
+          <td tal:content="python: ar.getSampleType().Title()"></td>
+          <td class="font-weight-bold" i18n:translate="">Date collected</td>
+          <td
+            tal:content="python:view.long_date(ar.getDateSampled())"></td>
+          <td class="font-weight-bold" i18n:translate="">Date received</td>
+          <td
+            tal:content="python:view.long_date(ar.getDateReceived())"></td>
+        </tr>
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Sample ID</td>
+          <td tal:condition="python: ar.getClientSampleID()"
+              tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getId())"
+              colspan="5"></td>
+          <td tal:condition="python: not ar.getClientSampleID()"
+              tal:content="python:ar.getId()" colspan="5"></td>
+        </tr>
+        <tr>
+          <td class="font-weight-bold" i18n:translate="">Analyses requested</td>
+          <td colspan="5" tal:define="analyses python:ar.getAnalyses();
+                                      analyses python:[an.getObject() for an in analyses];
+                                      analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
+            <span tal:replace="python: ', '.join(analyses)"></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row reasons pb-3">
+    <div class="col-sm-12">
+      <h3 i18n:translate="">Reasons for rejection</h3>
+      <div class="reason mb-1" tal:repeat="reason labreasons">
+        <span tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
+              tal:content="python: 'X' if reason in reasons else ''"></span>
+        <span tal:replace="reason"></span>
+      </div>
+      <span
+        tal:condition="python:otherreas"
+        tal:attributes="class python: 'check checked' if otherreas else 'check'"
+        tal:content="python: 'X' if otherreas else ''">&nbsp;</span>&nbsp;<span
+        tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
+    </div>
+  </div>
+
+  <!-- SIGNATURES -->
+  <tal:render condition="python:True">
+    <div class="row signatures">
+      <div class="col-sm-12">
+
+        <table class="table table-sm table-condensed noborder"
+               tal:define="member      python:view.get_rejected_by();
+                           authorizers python:view.get_authorized_by();">
+          <tr>
+            <!-- Reviewed by -->
+            <td class="reviewed-by">
+              <span class="font-weight-bold" i18n:translate="">
+                Reviewed by
+              </span>
+
+              <!-- Signature image -->
+              <div class="signature" tal:condition="member/signature">
+                <img tal:attributes="src member/signature|nothing"
+                     style="height:75px"/>
+              </div>
+
+              <!-- Fullname -->
+              <div class="signature-name"
+                   tal:condition="member/fullname">
+                <span tal:replace="member/salutation|nothing"></span>
+                <span tal:replace="member/fullname"></span>
+              </div>
+
+              <!-- Job title -->
+              <div class="signature-job-title"
+                   tal:condition="member/job_title"
+                   tal:content="member/job_title">
+              </div>
+
+              <!-- Email -->
+              <div class="signature-email"
+                   tal:condition="member/email">
+                <a tal:attributes="href string:mailto:${member/email}"
+                   tal:content="member/email"></a>
+              </div>
+
+              <!-- Business phone -->
+              <div class="signature-phone"
+                   tal:condition="member/phone">
+                <a tal:attributes="href string:tel:${member/phone}"
+                   tal:content="member/phone"></a>
+              </div>
+
+              <!-- Department -->
+              <div class="signature-department"
+                   tal:condition="member/department"
+                   tal:content="member/department">
+              </div>
+            </td>
+
+            <!-- Authorized by -->
+            <td class="authorized-by" tal:repeat="member authorizers">
+              <span class="font-weight-bold" i18n:translate="">
+                Authorized by
+              </span>
+
+              <!-- Signature image -->
+              <div class="signature" tal:condition="member/signature">
+                <img tal:attributes="src member/signature|nothing"
+                     style="height:75px"/>
+              </div>
+
+              <!-- Fullname -->
+              <div class="signature-name"
+                   tal:condition="member/fullname">
+                <span tal:replace="member/salutation|nothing"></span>
+                <span tal:replace="member/fullname"></span>
+              </div>
+
+              <!-- Job title -->
+              <div class="signature-job-title"
+                   tal:condition="member/job_title"
+                   tal:content="member/job_title">
+              </div>
+
+              <!-- Email -->
+              <div class="signature-email"
+                   tal:condition="member/email">
+                <a tal:attributes="href string:mailto:${member/email}"
+                   tal:content="member/email"></a>
+              </div>
+
+              <!-- Business phone -->
+              <div class="signature-phone"
+                   tal:condition="member/phone">
+                <a tal:attributes="href string:tel:${member/phone}"
+                   tal:content="member/phone"></a>
+              </div>
+
+              <!-- Department -->
+              <div class="signature-department"
+                   tal:condition="member/department"
+                   tal:content="member/department">
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+  </tal:render>
 </div>
 </body>
 </html>
