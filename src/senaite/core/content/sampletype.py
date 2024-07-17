@@ -441,3 +441,30 @@ class SampleType(Container, SampleTypeAwareMixin):
     # BBB: AT schema field property
     AdmittedStickerTemplates = property(getAdmittedStickerTemplates,
                                         setAdmittedStickerTemplates)
+
+    def getAdmittedStickers(self):
+        """
+        Returns the admitted sticker IDs defined.
+
+        :return: An array of sticker IDs
+        """
+        admitted = self.getAdmittedStickerTemplates()[0].get('admitted')
+        if admitted:
+            return admitted
+        return []
+
+    def getDefaultSmallSticker(self):
+        """
+        Returns the small sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        return self.getAdmittedStickerTemplates()[0].get('small_default')
+
+    def getDefaultLargeSticker(self):
+        """
+        Returns the large sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        return self.getAdmittedStickerTemplates()[0].get('large_default')
