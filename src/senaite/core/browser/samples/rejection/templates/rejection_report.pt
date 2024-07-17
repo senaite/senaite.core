@@ -49,10 +49,10 @@
 <body tal:define="
     portal_url  nocall:context/portal_url;
     portal      portal_url/getPortalObject;
+    lab         python:view.laboratory;
     ar          python:view.context;
-    lab         python:ar.bika_setup.laboratory;
-    alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
-    labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
+    reasons     python:view.available_reasons;
+    labreasons  python:[reasons[key] for key in reasons.keys() if key != 'checkbox'];
     client      python:ar.getClient();
     reasons     python: view.get_rejection_reasons('selected');
     otherreas   python: view.get_rejection_reasons('other');">

@@ -82,6 +82,22 @@ class RejectionReport(BrowserView):
         return publisher.write_pdf(html)
 
     @property
+    def laboratory(self):
+        """Returns the laboratory object
+        """
+        setup = api.get_setup()
+        return setup.laboratory
+
+    @property
+    def available_reasons(self):
+        """Returns available rejection reasons
+        """
+        setup = api.get_setup()
+        reasons = setup.getRejectionReasons()
+        # XXX getRejectionReasons returns a list with a single dict
+        return reasons[0] if reasons else []
+
+    @property
     def layout_css(self):
         """Returns the CSS for the page and content layout
         """
