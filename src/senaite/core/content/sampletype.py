@@ -302,8 +302,15 @@ class SampleType(Container, SampleTypeAwareMixin):
 
     @security.protected(permissions.ModifyPortalContent)
     def setRetentionPeriod(self, value):
+        set_value = None
+        if isinstance(value, timedelta):
+            set_value = value
+        elif isinstance(value, dict):
+            set_value = timedelta(days=int(value.get('days', 0)),
+                                  hours=int(value.get('hours', 0)),
+                                  minutes=int(value.get('minutes', 0)))
         mutator = self.mutator("retention_period")
-        mutator(self, value)
+        mutator(self, set_value)
 
     # BBB: AT schema field property
     RetentionPeriod = property(getRetentionPeriod, setRetentionPeriod)
