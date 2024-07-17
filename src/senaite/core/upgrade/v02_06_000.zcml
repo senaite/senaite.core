@@ -4,7 +4,7 @@
     i18n_domain="senaite.core">
 
    <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.6.0: Move Interpretation Templates to Senaite setup"
+      title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
       source="2643"
       destination="2644"

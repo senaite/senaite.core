@@ -253,7 +253,7 @@ class ISampleTypeSchema(model.Schema):
 
 
 class StickersFieldValidator(validator.SimpleFieldValidator):
-    """Custom validator for DGF 
+    """Custom validator for DGF
     (https://community.plone.org/t/how-do-i-validate-in-datagridfield/17717)
     """
 
