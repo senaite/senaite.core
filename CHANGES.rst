@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2584 Migrate SampleTypes to Dexterity
 - #2588 Widget text extensions
 - #2586 Support multiple files for datagrid fields
 - #2581 Migrate Suppliers to Dexterity

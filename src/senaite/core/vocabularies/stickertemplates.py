@@ -28,8 +28,8 @@ from zope.schema.interfaces import IVocabularyFactory
 class StickerTemplatesVocabulary(object):
 
     def __call__(self, context, filter_by_type=False):
-        sticker_templates = getStickerTemplates(filter_by_type=filter_by_type)
-        return to_simple_vocabulary(sticker_templates)
+        templates = getStickerTemplates(filter_by_type=filter_by_type)
+        return to_simple_vocabulary([(t['id'], t['title']) for t in templates])
 
 
 StickerTemplatesVocabularyFactory = StickerTemplatesVocabulary()

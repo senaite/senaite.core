@@ -48,17 +48,22 @@ from zope.interface import Invalid
 STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
 
 
+def convert_to_timedelta(value):
+    if isinstance(value, timedelta):
+        return value
+    elif isinstance(value, dict):
+        return timedelta(days=int(value.get('days', 0)),
+                         hours=int(value.get('hours', 0)),
+                         minutes=int(value.get('minutes', 0)))
+    else:
+        return timedelta(0)
+
+
 def default_retention_period():
     """Returns the default retention period
     """
-    rp = api.get_setup().getDefaultSampleLifetime()
-    if isinstance(rp, timedelta):
-        return rp
-    elif isinstance(rp, dict):
-        return timedelta(days=int(rp['days']),
-                         hours=int(rp['hours']),
-                         minutes=int(rp['minutes']))
-    return timedelta(0)
+    def_rp = api.get_setup().getDefaultSampleLifetime()
+    return convert_to_timedelta(def_rp)
 
 
 def prefix_whitespaces_constraint(value):
@@ -254,15 +259,29 @@ class ISampleTypeSchema(model.Schema):
 
 class StickersFieldValidator(validator.SimpleFieldValidator):
     """Custom validator for DGF
-    (https://community.plone.org/t/how-do-i-validate-in-datagridfield/17717)
     """
 
     def validate(self, value):
         if value is None:
             value = []
 
-        _valid = True if len(value) == 1 else False
-        _msg = _("Invalid data")
+        _valid = False
+        _msg = _(u"Invalid sticker object format")
+
+        if len(value) == 1:
+            _valid = True
+            _errors = []
+            if not len(value[0]['admitted']):
+                _valid = False
+                _errors.append(
+                    _(u'at least one admitted sticker must be chosen'))
+            if not value[0]['small_default']:
+                _valid = False
+                _errors.append(_(u'select small default sticker'))
+            if not value[0]['large_default']:
+                _valid = False
+                _errors.append(_(u'select large default sticker'))
+            _msg = _(u"ERRORS: ") + ", ".join(_errors)
 
         if not _valid:
             raise Invalid(_msg)
@@ -302,15 +321,8 @@ class SampleType(Container, SampleTypeAwareMixin):
 
     @security.protected(permissions.ModifyPortalContent)
     def setRetentionPeriod(self, value):
-        set_value = None
-        if isinstance(value, timedelta):
-            set_value = value
-        elif isinstance(value, dict):
-            set_value = timedelta(days=int(value.get('days', 0)),
-                                  hours=int(value.get('hours', 0)),
-                                  minutes=int(value.get('minutes', 0)))
         mutator = self.mutator("retention_period")
-        mutator(self, set_value)
+        mutator(self, convert_to_timedelta(value))
 
     # BBB: AT schema field property
     RetentionPeriod = property(getRetentionPeriod, setRetentionPeriod)
