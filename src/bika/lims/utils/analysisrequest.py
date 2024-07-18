@@ -37,7 +37,6 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import copy_field_values
-from bika.lims.utils import createPdf
 from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
@@ -47,7 +46,6 @@ from DateTime import DateTime
 from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
@@ -588,11 +586,7 @@ def get_rejection_pdf(sample):
 
     # Render the html's rejection document
     tpl = RejectionReport(sample, api.get_request())
-    html = tpl.template()
-    html = safe_unicode(html).encode("utf-8")
-
-    # Generate the pdf
-    return createPdf(htmlreport=html)
+    return tpl.to_pdf()
 
 
 def get_rejection_mail(sample, rejection_pdf=None):
