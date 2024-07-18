@@ -22,7 +22,6 @@ import collections
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
 from senaite.core.permissions import AddWorksheetTemplate
 from senaite.core.i18n import translate
@@ -138,20 +137,14 @@ class WorksheetTemplatesView(ListingView):
 
         instrument = obj.getInstrument()
         if instrument:
-            instrument_url = api.get_url(instrument)
             instrument_title = api.get_title(instrument)
             item["Instrument"] = instrument_title
-            item["replace"]["Instrument"] = get_link(
-                instrument_url, value=instrument_title)
+            item["replace"]["Instrument"] = get_link_for(instrument)
 
-        # Method
-        method_uid = obj.getMethodUID()
-        if method_uid:
-            method = api.get_object_by_uid(method_uid)
-            method_url = api.get_url(method)
+        method = obj.getMethod()
+        if method:
             method_title = api.get_title(method)
             item["Method"] = method_title
-            item["replace"]["Method"] = get_link(
-                method_url, value=method_title)
+            item["replace"]["Method"] = get_link_for(method)
 
         return item

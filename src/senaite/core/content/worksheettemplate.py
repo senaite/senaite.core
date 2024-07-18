@@ -20,17 +20,68 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore import permissions
+from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
 from plone.autoform import directives
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridRow
 from senaite.core.content.base import Container
+from senaite.core.config.widgets import get_default_columns
 from senaite.core.interfaces import IWorksheetTemplate
+from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
+from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from zope import schema
+from zope.interface import Interface
 from zope.interface import implementer
+
+
+class IServiceRecord(Interface):
+    """Record schema for selected services
+    """
+    uid = schema.TextLine(
+        title=_(u"title_service_uid", default=u"Service UID")
+    )
+
+
+class ILayoutRecord(Interface):
+    """Record schema for layout worksheet
+    """
+
+    directives.widget("pos", style=u"width:20px!important")
+    pos = schema.TextLine(
+        title=_(
+            u"title_layout_record_pos",
+            default=u"Position"
+        ),
+    )
+    type = schema.Choice(
+        title=_(
+            u"title_layout_record_type",
+            default=u"Analysis Type"
+        ),
+    )
+    blank_ref = schema.Choice(
+        title=_(
+            u"title_layout_record_blank_ref",
+            default=u"Reference"
+        ),
+    )
+    control_ref = schema.Choice(
+        title=_(
+            u"title_layout_record_control_ref",
+            default=u"Reference"
+        ),
+    )
+    dup = schema.Choice(
+        title=_(
+            u"title_layout_record_dup",
+            default=u"Duplicate Of"
+        ),
+    )
 
 
 class IWorksheetTemplateSchema(model.Schema):
@@ -64,8 +115,8 @@ class IWorksheetTemplateSchema(model.Schema):
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         },
-        display_template="<a href='${url}'>${getFullname}</a>",
-        columns=get_labcontact_columns,
+        display_template="<a href='${url}'>${title}</a>",
+        columns=get_default_columns,
         limit=5,
     )
     restrict_to_method = UIDReferenceField(
@@ -89,9 +140,9 @@ class IWorksheetTemplateSchema(model.Schema):
         "instrument",
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
-        query="get_widget_instrument_query",
-        display_template="<a href='${url}'>${getFullname}</a>",
-        columns=get_labcontact_columns,
+        query="get_instrument_query",
+        display_template="<a href='${url}'>${title}</a>",
+        columns=get_default_columns,
         limit=5,
     )
     instrument = UIDReferenceField(
@@ -131,61 +182,62 @@ class IWorksheetTemplateSchema(model.Schema):
         ]
     )
 
-    layout = schema.TextLine()
-
-    # RecordsField(
-    #     "Layout",
-    #     schemata="Layout",
-    #     required=1,
-    #     type="templateposition",
-    #     subfields=("pos", "type", "blank_ref", "control_ref", "dup"),
-    #     required_subfields=("pos", "type"),
-    #     subfield_labels={
-    #         "pos": _("Position"),
-    #         "type": _("Analysis Type"),
-    #         "blank_ref": _("Reference"),
-    #         "control_ref": _("Reference"),
-    #         "dup": _("Duplicate Of")
-    #     },
-    #     widget=WorksheetTemplateLayoutWidget(
-    #         label=_("Worksheet Layout"),
-    #         description=_(
-    #             "Specify the size of the Worksheet, e.g. corresponding to a "
-    #             "specific instrument's tray size. "
-    #             "Then select an Analysis 'type' per Worksheet position."
-    #             "Where QC samples are selected, also select which Reference "
-    #             "Sample should be used."
-    #             "If a duplicate analysis is selected, indicate which sample "
-    #             "position it should be a duplicate of"),
-    #     )
-    # ),
+    directives.widget(
+        "layout",
+        DataGridWidgetFactory,
+        allow_insert=False,  # only auto append
+        allow_delete=True,
+        allow_reorder=True,
+        auto_append=True)
+    layout = schema.List(
+        title=_(
+            u"title_worksheettemplate_layout",
+            default=u"Worksheet Layout"
+        ),
+        description=_(
+            u"description_worksheettemplate_layout",
+            default=u"Specify the size of the Worksheet, e.g. corresponding "
+                    u"to a specific instrument's tray size. "
+                    u"Then select an Analysis 'type' per Worksheet position. "
+                    u"Where QC samples are selected, also select which "
+                    u"Reference Sample should be used. "
+                    u"If a duplicate analysis is selected, indicate which "
+                    u"sample position it should be a duplicate of"
+        ),
+        value_type=DataGridRow(schema=ILayoutRecord),
+        default=[],
+        required=True,
+    )
 
     model.fieldset(
         "analyses",
-        label=_(
-            u"label_fieldset_worksheettemplate_analyses",
-            default=u"Analyses"
-        ),
+        label=_(u"label_fieldset_worksheettemplate_analyses",
+                default=u"Analyses"),
         fields=[
-            "service",
+            "services",
         ]
     )
 
-    service = schema.TextLine()
-
-    # UIDReferenceField(
-    #     "Service",
-    #     schemata="Analyses",
-    #     required=0,
-    #     multiValued=1,
-    #     allowed_types=("AnalysisService",),
-    #     widget=ServicesWidget(
-    #         label=_("Analysis Service"),
-    #         description=_(
-    #             "Select which Analyses should be included on the Worksheet"
-    #         ),
-    #     )
-    # ),
+    # Services
+    directives.widget(
+        "services",
+        ListingWidgetFactory,
+        listing_view="worksheettemplate_services_widget"
+    )
+    services = schema.List(
+        title=_(
+            u"title_worksheettemplate_services",
+            default=u"Analysis Services"
+        ),
+        description=_(
+            u"description_worksheettemplate_services",
+            default=u"Select which Analyses should be included on the "
+                    u"Worksheet"
+        ),
+        value_type=DataGridRow(schema=IServiceRecord),
+        default=[],
+        required=False,
+    )
 
 
 @implementer(IWorksheetTemplate, IWorksheetTemplateSchema, IDeactivable)
@@ -196,3 +248,147 @@ class WorksheetTemplates(Container):
     _catalogs = [SETUP_CATALOG]
 
     security = ClassSecurityInfo()
+
+    @security.protected(permissions.View)
+    def getRestrictToMethod(self):
+        accessor = self.accessor("restrict_to_method")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setRestrictToMethod(self, value):
+        mutator = self.mutator("restrict_to_method")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    RestrictToMethod = property(getRestrictToMethod, setRestrictToMethod)
+
+    @security.protected(permissions.View)
+    def getInstrument(self):
+        accessor = self.accessor("instrument")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setInstrument(self, value):
+        mutator = self.mutator("instrument")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Instrument = property(getInstrument, setInstrument)
+
+    @security.protected(permissions.View)
+    def getEnableMultipleUseOfInstrument(self):
+        accessor = self.accessor("enable_multiple_use_of_instrument")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setEnableMultipleUseOfInstrument(self, value):
+        mutator = self.mutator("enable_multiple_use_of_instrument")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    EnableMultipleUseOfInstrument = property(getEnableMultipleUseOfInstrument,
+                                             setEnableMultipleUseOfInstrument)
+
+    @security.protected(permissions.View)
+    def getLayout(self):
+        accessor = self.accessor("layout")
+        return accessor(self) or []
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setLayout(self, value):
+        mutator = self.mutator("layout")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Layout = property(getLayout, setLayout)
+
+    @security.protected(permissions.View)
+    def getRawServices(self):
+        """Return the raw value of the services field
+
+        >>> self.getRawServices()
+        [{'uid': '...', ...]
+
+        :returns: List of dicts including `uid`
+        """
+        accessor = self.accessor("services")
+        return accessor(self) or []
+
+    @security.protected(permissions.View)
+    def getServices(self):
+        """Returns a list of service objects
+
+        >>> self.getServices()
+        [<AnalysisService at ...>,  <AnalysisService at ...>, ...]
+
+        :returns: List of analysis service objects
+        """
+        records = self.getRawServices()
+        service_uids = map(lambda r: r.get("uid"), records)
+        return list(map(api.get_object, service_uids))
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setServices(self, value):
+        """Set services for the template
+
+        This method accepts either a list of analysis service objects, a list
+        of analysis service UIDs or a list of analysis profile service records
+        containing the key `uid`:
+
+        >>> self.setServices([<AnalysisService at ...>, ...])
+        >>> self.setServices(['353e1d9bd45d45dbabc837114a9c41e6', '...', ...])
+        >>> self.setServices([{'uid': '...'}, ...])
+
+        Raises a TypeError if the value does not match any allowed type.
+        """
+        if not isinstance(value, list):
+            value = [value]
+
+        records = []
+        for v in value:
+            uid = ""
+            if isinstance(v, dict):
+                uid = api.get_uid(v.get("uid"))
+            elif api.is_object(v):
+                uid = api.get_uid(v)
+            elif api.is_uid(v):
+                obj = api.get_object(v)
+                uid = v
+            else:
+                raise TypeError(
+                    "Expected object, uid or record, got %r" % type(v))
+            records.append({
+                "uid": uid,
+            })
+
+        mutator = self.mutator("services")
+        mutator(self, records)
+
+    # BBB: AT schema field property
+    Services = property(getServices, setServices)
+
+    @security.private
+    def get_instrument_query(self):
+        """Return the preferred instruments
+        """
+        query = {
+            "portal_type": "Instrument",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+
+        # Restrict available instruments to those with the selected method
+        method_uid = self.getRawRestrictToMethod()
+        if method_uid:
+            # prepare subquery
+            uids = []
+            brains = api.search(query, SETUP_CATALOG)
+            for brain in brains:
+                uid = api.get_uid(brain)
+                instrument = api.get_object(brain)
+                if method_uid in instrument.getRawMethods():
+                    uids.append(uid)
+            # create a simple UID query
+            query = {"UID": uids}
+        return query
