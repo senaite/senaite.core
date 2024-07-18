@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate WorksheetTemplates to DX"
+      description="Migrate WorksheetTemplates to Dexterity"
+      source="2643"
+      destination="2644"
+      handler=".v02_06_000.migrate_worksheettemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
       description="Migrate Suppliers to Dexterity"
       source="2642"

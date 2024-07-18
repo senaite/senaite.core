@@ -135,7 +135,7 @@ layout with 7 slots:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Test", Layout=layout, Service=service_uids)
+    >>> template = api.create(setup.worksheettemplates, "WorksheetTemplate", title="WS Template Test", Layout=layout, Service=service_uids)
 
 
 Apply Worksheet Template to a Worksheet
@@ -627,7 +627,7 @@ Create a Worksheet Template without services assigned:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> empty_template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Service=service_uids)
+    >>> empty_template = api.create(setup.worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Service=service_uids)
 
 Create and receive 2 samples:
 
@@ -677,7 +677,7 @@ Create a Worksheet Template and assign the instrument:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> instr_template = api.create(bikasetup.bika_worksheettemplates,
+    >>> instr_template = api.create(setup.worksheettemplates,
     ...                             "WorksheetTemplate",
     ...                             title="WS Template with instrument",
     ...                             Layout=layout,
@@ -754,7 +754,7 @@ Create a Worksheet Template and assign the method:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> method_template = api.create(bikasetup.bika_worksheettemplates,
+    >>> method_template = api.create(setup.worksheettemplates,
     ...                              "WorksheetTemplate",
     ...                              title="WS Template with instrument",
     ...                              Layout=layout,

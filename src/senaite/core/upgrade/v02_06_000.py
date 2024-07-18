@@ -99,6 +99,8 @@ REMOVE_AT_TYPES = [
     "LabProducts",
     "Supplier",
     "Suppliers",
+    "WorksheetTemplate",
+    "WorksheetTemplates",
 ]
 
 CONTENT_ACTIONS = [
@@ -2249,3 +2251,51 @@ def migrate_labproduct_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated LabProduct from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
+def migrate_worksheettemplates_to_dx(tool):
+    """Convert existing worksheet templates to Dexterity
+    """
+    logger.info("Convert Worksheet Templates to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_worksheettemplates")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("worksheettemplates")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+    }
+
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("WorksheetTemplate",
+                  origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Worksheet Templates to Dexterity [DONE]")

@@ -68,7 +68,6 @@
     <element value="SampleType"/>
     <element value="BatchLabel"/>
     <element value="Worksheet"/>
-    <element value="WorksheetTemplate"/>
     <element value="ATBooleanCriterion"/>
     <element value="ATDateCriteria"/>
     <element value="ATDateRangeCriterion"/>

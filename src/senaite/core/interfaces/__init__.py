@@ -478,3 +478,13 @@ class IHavePrice(Interface):
     def getTotalPrice(self):
         """Returns the total price of the instance
         """
+
+
+class IWorksheetTemplates(Interface):
+    """Marker interface for Worksheet Templates
+    """
+
+
+class IWorksheetTemplate(Interface):
+    """Marker interface for Worksheet Template
+    """
