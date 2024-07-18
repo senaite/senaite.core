@@ -478,3 +478,13 @@ class IHavePrice(Interface):
     def getTotalPrice(self):
         """Returns the total price of the instance
         """
+
+
+class ICalculation(Interface):
+    """Marker interface for calculation
+    """
+
+
+class ICalculations(Interface):
+    """Marker interface for calculations folder
+    """
