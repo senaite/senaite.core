@@ -28,9 +28,10 @@
       .report h2 { font-size: 120%; }
       .report h3 { font-size: 110%; }
       .report table { font-size: 9pt; }
-      .report .header { text-align: center; text-transform: uppercase; }
-      .report table.table-sm th, .report table.table-sm td { padding:.4rem; }
+      .report .section-header { text-align: center; text-transform: uppercase; }
       .report table.noborder td, .report table.noborder th { border: none; }
+      .report .label { font-weight: bold; }
+      .report table td { padding: 4pt 2pt; margin: 0px; }
 
       .check {
           font-weight: bold;
@@ -61,26 +62,26 @@
 
   <div class="report">
 
-    <div class="row header pb-4">
+    <div class="row section-header pb-4">
       <div class="col-sm-12">
         <h1 tal:content="lab/Title"></h1>
         <h2 i18n:translate="">Samples rejection reporting form</h2>
       </div>
     </div>
 
-    <div class="row client mb-2">
+    <div class="row section-client pb-2">
       <div class="col-sm-12">
         <table class="table table-sm table-condensed noborder">
           <tr>
-            <td class="font-weight-bold" i18n:translate="">Client</td>
+            <td class="label" i18n:translate="">Client</td>
             <td tal:content="python: client.Title()"></td>
           </tr>
           <tr>
-            <td class="font-weight-bold" i18n:translate="">Client ID</td>
+            <td class="label" i18n:translate="">Client ID</td>
             <td tal:content="python: client.getClientID()"></td>
           </tr>
           <tr>
-            <td class="font-weight-bold" i18n:translate="">Physical address</td>
+            <td class="label" i18n:translate="">Physical address</td>
             <td tal:define="
                         addrkeys python:['address', 'city', 'state', 'zip', 'country'];
                         addrs python:client.getPhysicalAddress() or client.getPostalAddress() or client.getBillingAddress();
@@ -94,29 +95,31 @@
       </div>
     </div>
 
-    <div class="row sample pb-3">
+    <div class="row section-sample pb-3">
       <div class="col-sm-12">
         <table class="table table-sm table-condensed noborder">
           <tr>
-            <td class="font-weight-bold" i18n:translate="">Sample type</td>
-            <td tal:content="python: ar.getSampleType().Title()"></td>
-            <td class="font-weight-bold" i18n:translate="">Date collected</td>
-            <td
-              tal:content="python:view.long_date(ar.getDateSampled())"></td>
-            <td class="font-weight-bold" i18n:translate="">Date received</td>
-            <td
-              tal:content="python:view.long_date(ar.getDateReceived())"></td>
+            <td class="label" i18n:translate="">Sample ID</td>
+            <td tal:define="csid python: ar.getClientSampleID();
+                            sid  python: ar.getId();
+                            id   python: list(filter(None, [sid, csid]));
+                            id   python: ' / '.join(id);"
+                tal:content="id"></td>
+            <td class="label" i18n:translate="">Sample type</td>
+            <td colspan="3" tal:content="python: ar.getSampleTypeTitle()"></td>
+          </tr>
+          <tr tal:define="collected python: ar.getDateSampled();
+                          received  python: ar.getDateReceived();
+                          rejected  python: view.rejection_date;">
+            <td class="label" i18n:translate="">Collected</td>
+            <td tal:content="python:view.long_date(collected)"></td>
+            <td class="label" i18n:translate="">Received</td>
+            <td tal:content="python:view.long_date(received)"></td>
+            <td class="label" i18n:translate="">Rejected</td>
+            <td tal:content="python: view.long_date(rejected)"></td>
           </tr>
           <tr>
-            <td class="font-weight-bold" i18n:translate="">Sample ID</td>
-            <td tal:condition="python: ar.getClientSampleID()"
-                tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getId())"
-                colspan="5"></td>
-            <td tal:condition="python: not ar.getClientSampleID()"
-                tal:content="python:ar.getId()" colspan="5"></td>
-          </tr>
-          <tr>
-            <td class="font-weight-bold" i18n:translate="">Analyses requested
+            <td class="label" i18n:translate="">Analyses requested
             </td>
             <td colspan="5" tal:define="analyses python:ar.getAnalyses();
                                         analyses python:[an.getObject() for an in analyses];
@@ -128,7 +131,7 @@
       </div>
     </div>
 
-    <div class="row reasons pb-3">
+    <div class="row section-reasons pb-3">
       <div class="col-sm-12">
         <h3 i18n:translate="">Reasons for rejection</h3>
         <div class="reason mb-1" tal:repeat="reason labreasons">
@@ -147,7 +150,7 @@
 
     <!-- SIGNATURES -->
     <tal:render condition="python:True">
-      <div class="row signatures">
+      <div class="row section-signatures">
         <div class="col-sm-12 pt-3">
 
           <table class="table table-sm table-condensed noborder"
@@ -181,16 +184,14 @@
 
                 <!-- Email -->
                 <div class="signature-email"
-                     tal:condition="member/email">
-                  <a tal:attributes="href string:mailto:${member/email}"
-                     tal:content="member/email"></a>
+                     tal:condition="member/email"
+                     tal:content="member/email">
                 </div>
 
                 <!-- Business phone -->
                 <div class="signature-phone"
-                     tal:condition="member/phone">
-                  <a tal:attributes="href string:tel:${member/phone}"
-                     tal:content="member/phone"></a>
+                     tal:condition="member/phone"
+                     tal:content="member/phone">
                 </div>
 
                 <!-- Department -->
@@ -227,16 +228,14 @@
 
                 <!-- Email -->
                 <div class="signature-email"
-                     tal:condition="member/email">
-                  <a tal:attributes="href string:mailto:${member/email}"
-                     tal:content="member/email"></a>
+                     tal:condition="member/email"
+                     tal:content="member/email">
                 </div>
 
                 <!-- Business phone -->
                 <div class="signature-phone"
-                     tal:condition="member/phone">
-                  <a tal:attributes="href string:tel:${member/phone}"
-                     tal:content="member/phone"></a>
+                     tal:condition="member/phone"
+                     tal:content="member/phone">
                 </div>
 
                 <!-- Department -->

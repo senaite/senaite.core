@@ -2061,6 +2061,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         departments = list()
         for analysis in self.getAnalyses(full_objects=True):
             department = analysis.getDepartment()
+            if not department:
+                department = analysis.getAnalysisService().getDepartment()
             if department and department not in departments:
                 departments.append(department)
         return departments

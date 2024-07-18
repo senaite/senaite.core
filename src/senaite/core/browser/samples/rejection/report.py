@@ -18,6 +18,8 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from datetime import datetime
+
 from bika.lims import api
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -103,10 +105,21 @@ class RejectionReport(BrowserView):
         """
         return DIN_A4_PORTRAIT
 
+    @property
+    def rejection_date(self):
+        """Returns the current date
+        """
+        return datetime.now()
+
     def long_date(self, date):
         """Returns the date localized in long format
         """
         return dtime.to_localized_time(date, long_format=True)
+
+    def verbose_date(self, date):
+        """Returns the date localized in verbose format
+        """
+        return dtime.to_localized_time(date)
 
     def get_contact_properties(self, contact):
         """Returns a dictionary with information about the contact
