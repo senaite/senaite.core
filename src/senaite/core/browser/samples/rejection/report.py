@@ -116,6 +116,20 @@ class RejectionReport(BrowserView):
         """
         return dtime.to_localized_time(date, long_format=True)
 
+    def get_contact_base_properties(self):
+        """Returns a dict with the basic information about a contact
+        """
+        return {
+            "fullname": "",
+            "salutation": "",
+            "signature": "",
+            "job_title": "",
+            "phone": "",
+            "department": "",
+            "email": "",
+            "uid": "",
+        }
+
     def get_contact_properties(self, contact):
         """Returns a dictionary with information about the contact
         """
@@ -129,7 +143,8 @@ class RejectionReport(BrowserView):
         department = contact.getDefaultDepartment()
         department = api.get_title(department) if department else ""
 
-        return {
+        properties = self.get_contact_base_properties()
+        properties.update({
             "fullname": api.to_utf8(contact.getFullname()),
             "salutation": api.to_utf8(contact.getSalutation()),
             "signature": signature,
@@ -138,14 +153,19 @@ class RejectionReport(BrowserView):
             "department": api.to_utf8(department),
             "email": contact.getEmailAddress(),
             "uid": api.get_uid(contact),
-        }
+        })
+        return properties
 
     def get_rejected_by(self):
         """Returns a dict with information about the rejecter, giving priority
         to the contact over the user
         """
+        properties = self.get_contact_base_properties()
+
+        # overwrite with user info
         user = api.get_current_user()
-        properties = api.get_user_properties(user)
+        user_properties = api.get_user_properties(user)
+        properties.update(user_properties)
 
         # overwrite with contact info
         contact = api.get_user_contact(user)
