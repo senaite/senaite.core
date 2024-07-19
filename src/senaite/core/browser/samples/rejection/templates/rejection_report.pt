@@ -165,14 +165,14 @@
 
                 <!-- Signature image -->
                 <div class="signature" tal:condition="member/signature">
-                  <img tal:attributes="src member/signature|nothing"
+                  <img tal:attributes="src member/signature"
                        style="height:75px"/>
                 </div>
 
                 <!-- Fullname -->
                 <div class="signature-name"
                      tal:condition="member/fullname">
-                  <span tal:replace="member/salutation|nothing"></span>
+                  <span tal:replace="member/salutation"></span>
                   <span tal:replace="member/fullname"></span>
                 </div>
 
@@ -209,14 +209,14 @@
 
                 <!-- Signature image -->
                 <div class="signature" tal:condition="member/signature">
-                  <img tal:attributes="src member/signature|nothing"
+                  <img tal:attributes="src member/signature"
                        style="height:75px"/>
                 </div>
 
                 <!-- Fullname -->
                 <div class="signature-name"
                      tal:condition="member/fullname">
-                  <span tal:replace="member/salutation|nothing"></span>
+                  <span tal:replace="member/salutation"></span>
                   <span tal:replace="member/fullname"></span>
                 </div>
 
