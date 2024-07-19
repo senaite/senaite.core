@@ -31,6 +31,7 @@
       .report .section-header { text-align: center; text-transform: uppercase; }
       .report table.noborder td, .report table.noborder th { border: none; }
       .report .label { font-weight: bold; }
+      .report .label:after { content: ":"; }
       .report table td { padding: 4pt 2pt; margin: 0px; }
 
       .check {
@@ -44,7 +45,6 @@
           padding: 0 2pt;
           margin: 0 2pt 0 4pt;
       }
-
 
   </style>
 </head>
@@ -71,6 +71,10 @@
     <div class="row section-client pb-2">
       <div class="col-sm-12">
         <table class="table table-sm table-condensed noborder">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 75%">
+          </colgroup>
           <tr>
             <td class="label" i18n:translate="">Client</td>
             <td tal:content="python: client.Title()"></td>
@@ -117,12 +121,18 @@
             <td class="label" i18n:translate="">Rejected</td>
             <td tal:content="python: view.long_date(rejected)"></td>
           </tr>
+        </table>
+
+        <table class="table table-sm table-condensed noborder pt-3">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 75%">
+          </colgroup>
           <tr>
-            <td class="label" i18n:translate="">Analyses requested
-            </td>
-            <td colspan="5" tal:define="analyses python:ar.getAnalyses();
-                                        analyses python:[an.getObject() for an in analyses];
-                                        analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
+            <td class="label" i18n:translate="">Analyses requested</td>
+            <td tal:define="analyses python:ar.getAnalyses();
+                            analyses python:[an.getObject() for an in analyses];
+                            analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
               <span tal:replace="python: ', '.join(analyses)"></span>
             </td>
           </tr>
