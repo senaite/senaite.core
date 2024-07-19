@@ -112,15 +112,18 @@
 
                 <!-- Send email notification -->
                 <div class="form-group field">
-                  <input type="checkbox" name="samples.notify:records"
-                         tal:attributes="checked python:view.is_notification_enabled">
-                  <label  class="font-weight-bold" i18n:translate="">
+                  <input type="checkbox"
+                         name="samples.notify:records"
+                         id="input-email-notification"
+                         tal:attributes="checked python:view.is_notification_enabled"/>
+                  <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
                     Email notification
-                  </label><br/>
-                  <span i18n:translate="">
+                  </label>
+                  <div class="text-secondary form-text small" i18n:translate="">
                     Send an email notification to client contact
-                  </span>
+                  </div>
                 </div>
+
               </div>
             </div>
           </tal:samples>
@@ -128,13 +131,13 @@
           <!-- Form Controls -->
           <div>
             <!-- Cancel -->
-            <input class="btn btn-default btn-sm"
+            <input class="btn btn-secondary btn-sm"
                    type="submit"
                    name="button_cancel"
                    i18n:attributes="value"
                    value="Cancel"/>
             <!-- Continue -->
-            <input class="btn btn-success btn-sm"
+            <input class="btn btn-danger btn-sm"
                    type="submit"
                    name="button_continue"
                    i18n:attributes="value"
