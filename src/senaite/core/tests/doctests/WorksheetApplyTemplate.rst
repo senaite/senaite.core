@@ -237,7 +237,7 @@ Modify the Worksheet Template to allow `Au` analysis and apply the template to t
 same Worksheet again:
 
     >>> service_uids = [Cu.UID(), Fe.UID(), Au.UID()]
-    >>> template.setService(service_uids)
+    >>> template.setServices(service_uids)
     >>> worksheet.applyWorksheetTemplate(template)
 
 Now, slot 2 is filled again:
@@ -376,7 +376,7 @@ Apply the blank and control to the Worksheet Template layout:
     ...              'blank_ref': blankdef.UID(),
     ...              'control_ref': '',
     ...              'dup': ''}
-    >>> template.setLayout(layout)
+    >>> template.setTemplateLayout(layout)
 
 Apply the worksheet template again:
 

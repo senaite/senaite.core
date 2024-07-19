@@ -60,30 +60,35 @@ class ILayoutRecord(Interface):
         required=True,
         default=u"1",
     )
-    # type = schema.Choice(
-    #     title=_(
-    #         u"title_layout_record_type",
-    #         default=u"Analysis Type"
-    #     ),
-    # )
-    # blank_ref = schema.Choice(
-    #     title=_(
-    #         u"title_layout_record_blank_ref",
-    #         default=u"Reference"
-    #     ),
-    # )
-    # control_ref = schema.Choice(
-    #     title=_(
-    #         u"title_layout_record_control_ref",
-    #         default=u"Reference"
-    #     ),
-    # )
-    # dup = schema.Choice(
-    #     title=_(
-    #         u"title_layout_record_dup",
-    #         default=u"Duplicate Of"
-    #     ),
-    # )
+    type = schema.TextLine(
+        title=_(
+            u"title_layout_record_type",
+            default=u"Analysis Type"
+        ),
+        required=True,
+        default=u"a",
+    )
+    blank_ref = schema.TextLine(
+        title=_(
+            u"title_layout_record_blank_ref",
+            default=u"Reference"
+        ),
+        required=False,
+    )
+    control_ref = schema.TextLine(
+        title=_(
+            u"title_layout_record_control_ref",
+            default=u"Reference"
+        ),
+        required=False,
+    )
+    dup = schema.TextLine(
+        title=_(
+            u"title_layout_record_dup",
+            default=u"Duplicate Of"
+        ),
+        required=False,
+    )
 
 
 class IWorksheetTemplateSchema(model.Schema):
@@ -330,7 +335,7 @@ class WorksheetTemplate(Container):
         accessor = self.accessor("services")
         services = accessor(self)
         if services:
-            return list(map(lambda item: item.get("uid"), services))
+            return [s.get("uid") for s in services]
         return []
 
     @security.protected(permissions.View)
@@ -342,9 +347,8 @@ class WorksheetTemplate(Container):
 
         :returns: List of analysis service objects
         """
-        records = self.getRawServices()
-        service_uids = map(lambda r: r.get("uid"), records)
-        return list(map(api.get_object, service_uids))
+        services_uids = self.getRawServices()
+        return list(map(api.get_object, services_uids))
 
     @security.protected(permissions.ModifyPortalContent)
     def setServices(self, value):

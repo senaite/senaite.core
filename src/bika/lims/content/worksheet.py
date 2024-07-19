@@ -805,7 +805,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return list()
 
         ws_slots = self.get_slot_positions(type)
-        layout = worksheet_template.getLayout()
+        layout = worksheet_template.getTemplateLayout()
         slots = list()
 
         for row in layout:
@@ -1025,7 +1025,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # We only want the reference samples that fit better with the type
             # and with the analyses defined in the Template
-            services = wst.getService()
+            services = wst.getServices()
             services = [s.UID() for s in services]
             candidates = list()
             for sample in samples:

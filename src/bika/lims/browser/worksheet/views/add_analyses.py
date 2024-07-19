@@ -223,8 +223,8 @@ class AddAnalysesView(BikaListingView):
     def worksheet_template_setup_url(self):
         """Returns the Worksheet Template Setup URL
         """
-        setup = api.get_setup()
-        return "{}/{}".format(api.get_url(setup), "bika_worksheettemplates")
+        setup = api.get_senaite_setup()
+        return "{}/{}".format(api.get_url(setup), "worksheettemplates")
 
     @view.memoize
     def is_edit_allowed(self):
