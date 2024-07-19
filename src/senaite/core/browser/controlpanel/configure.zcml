@@ -43,6 +43,6 @@
   <include package=".suppliers" />
   <include package=".storagelocations" />
   <include package=".samplingdeviations" />
-  <include pachege=".worksheettemplates" />
+  <include package=".worksheettemplates" />
 
 </configure>

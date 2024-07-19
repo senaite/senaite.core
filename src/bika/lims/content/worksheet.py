@@ -842,7 +842,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :returns: None
         """
         # Get the services from the Worksheet Template
-        service_uids = wst.getRawService()
+        service_uids = wst.getRawServices()
         if not service_uids:
             # No service uids assigned to this Worksheet Template, skip
             logger.warn("Worksheet Template {} has no services assigned"

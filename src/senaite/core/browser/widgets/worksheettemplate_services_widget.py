@@ -27,52 +27,46 @@ from .services_widget import ServicesWidget
 
 
 class WorksheetTemplateServicesWidget(ServicesWidget):
-    """Listing widget for Sample Template Services
+    """Listing widget for Worksheet Template Services
     """
 
-    def __init__(self, field, request):
-        super(WorksheetTemplateServicesWidget, self).__init__(field, request)
-
-        if self.context.getRestrictToMethod():
-            method = self.context.getMethod()
-            if method:
-                self.contentFilter.update({
-                    "method_available_uid": method.UID()
-                })
-        self.columns = collections.OrderedDict((
-            ("Title", {
-                "title": _(
-                    u"listing_services_column_title",
-                    default=u"Service"
-                ),
-                "index": "sortable_title",
-                "sortable": False
-            }),
-            ("Keyword", {
-                "title": _(
-                    u"listing_services_column_keyword",
-                    default=u"Keyword"
-                ),
-                "sortable": False
-            }),
-            ("Methods", {
-                "title": _(
-                    u"listing_services_column_methods",
-                    default=u"Methods"
-                ),
-                "sortable": False
-            }),
-            ("Calculation", {
-                "title": _(
-                    u"listing_services_column_calculation",
-                    default=u"Calculation"
-                ),
-                "sortable": False
-            }),
-        ))
-
-    @view.memoize
-    def get_editable_columns(self):
-        """Return editable fields
-        """
-        return []
+    # def __init__(self, field, request):
+    #     super(WorksheetTemplateServicesWidget, self).__init__(field, request)
+    #
+    #     if self.context.getRestrictToMethod():
+    #         method = self.context.getMethod()
+    #         if method:
+    #             self.contentFilter.update({
+    #                 "method_available_uid": method.UID()
+    #             })
+    #     self.columns = collections.OrderedDict((
+    #         ("Title", {
+    #             "title": _(
+    #                 u"listing_services_column_title",
+    #                 default=u"Service"
+    #             ),
+    #             "index": "sortable_title",
+    #             "sortable": False
+    #         }),
+    #         ("Keyword", {
+    #             "title": _(
+    #                 u"listing_services_column_keyword",
+    #                 default=u"Keyword"
+    #             ),
+    #             "sortable": False
+    #         }),
+    #         ("Methods", {
+    #             "title": _(
+    #                 u"listing_services_column_methods",
+    #                 default=u"Methods"
+    #             ),
+    #             "sortable": False
+    #         }),
+    #         ("Calculation", {
+    #             "title": _(
+    #                 u"listing_services_column_calculation",
+    #                 default=u"Calculation"
+    #             ),
+    #             "sortable": False
+    #         }),
+    #     ))

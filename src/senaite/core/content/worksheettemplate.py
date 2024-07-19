@@ -39,7 +39,7 @@ from zope.interface import Interface
 from zope.interface import implementer
 
 
-class IServiceRecord(Interface):
+class IWorksheetTemplateServiceRecord(Interface):
     """Record schema for selected services
     """
     uid = schema.TextLine(
@@ -51,37 +51,39 @@ class ILayoutRecord(Interface):
     """Record schema for layout worksheet
     """
 
-    directives.widget("pos", style=u"width:20px!important")
+    directives.widget("pos", style=u"width:50px!important")
     pos = schema.TextLine(
         title=_(
             u"title_layout_record_pos",
             default=u"Position"
         ),
+        required=True,
+        default=u"1",
     )
-    type = schema.Choice(
-        title=_(
-            u"title_layout_record_type",
-            default=u"Analysis Type"
-        ),
-    )
-    blank_ref = schema.Choice(
-        title=_(
-            u"title_layout_record_blank_ref",
-            default=u"Reference"
-        ),
-    )
-    control_ref = schema.Choice(
-        title=_(
-            u"title_layout_record_control_ref",
-            default=u"Reference"
-        ),
-    )
-    dup = schema.Choice(
-        title=_(
-            u"title_layout_record_dup",
-            default=u"Duplicate Of"
-        ),
-    )
+    # type = schema.Choice(
+    #     title=_(
+    #         u"title_layout_record_type",
+    #         default=u"Analysis Type"
+    #     ),
+    # )
+    # blank_ref = schema.Choice(
+    #     title=_(
+    #         u"title_layout_record_blank_ref",
+    #         default=u"Reference"
+    #     ),
+    # )
+    # control_ref = schema.Choice(
+    #     title=_(
+    #         u"title_layout_record_control_ref",
+    #         default=u"Reference"
+    #     ),
+    # )
+    # dup = schema.Choice(
+    #     title=_(
+    #         u"title_layout_record_dup",
+    #         default=u"Duplicate Of"
+    #     ),
+    # )
 
 
 class IWorksheetTemplateSchema(model.Schema):
@@ -178,24 +180,24 @@ class IWorksheetTemplateSchema(model.Schema):
             default=u"Layout"
         ),
         fields=[
-            "layout",
+            "template_layout",
         ]
     )
 
     directives.widget(
-        "layout",
+        "template_layout",
         DataGridWidgetFactory,
         allow_insert=False,  # only auto append
         allow_delete=True,
-        allow_reorder=True,
+        allow_reorder=False,
         auto_append=True)
-    layout = schema.List(
+    template_layout = schema.List(
         title=_(
-            u"title_worksheettemplate_layout",
+            u"title_worksheettemplate_template_layout",
             default=u"Worksheet Layout"
         ),
         description=_(
-            u"description_worksheettemplate_layout",
+            u"description_worksheettemplate_template_layout",
             default=u"Specify the size of the Worksheet, e.g. corresponding "
                     u"to a specific instrument's tray size. "
                     u"Then select an Analysis 'type' per Worksheet position. "
@@ -234,14 +236,14 @@ class IWorksheetTemplateSchema(model.Schema):
             default=u"Select which Analyses should be included on the "
                     u"Worksheet"
         ),
-        value_type=DataGridRow(schema=IServiceRecord),
+        value_type=DataGridRow(schema=IWorksheetTemplateServiceRecord),
         default=[],
         required=False,
     )
 
 
 @implementer(IWorksheetTemplate, IWorksheetTemplateSchema, IDeactivable)
-class WorksheetTemplates(Container):
+class WorksheetTemplate(Container):
     """Worksheet Template type
     """
     # Catalogs where this type will be catalogued
@@ -290,17 +292,17 @@ class WorksheetTemplates(Container):
                                              setEnableMultipleUseOfInstrument)
 
     @security.protected(permissions.View)
-    def getLayout(self):
-        accessor = self.accessor("layout")
+    def getTemplateLayout(self):
+        accessor = self.accessor("template_layout")
         return accessor(self) or []
 
     @security.protected(permissions.ModifyPortalContent)
-    def setLayout(self, value):
-        mutator = self.mutator("layout")
+    def setTemplateLayout(self, value):
+        mutator = self.mutator("template_layout")
         mutator(self, value)
 
     # BBB: AT schema field property
-    Layout = property(getLayout, setLayout)
+    Layout = property(getTemplateLayout, setTemplateLayout)
 
     @security.protected(permissions.View)
     def getRawServices(self):
@@ -379,9 +381,10 @@ class WorksheetTemplates(Container):
         }
 
         # Restrict available instruments to those with the selected method
-        method_uid = self.getRawRestrictToMethod()
-        if method_uid:
+        method = self.getRestrictToMethod()
+        if method:
             # prepare subquery
+            method_uid = method.UID()
             uids = []
             brains = api.search(query, SETUP_CATALOG)
             for brain in brains:

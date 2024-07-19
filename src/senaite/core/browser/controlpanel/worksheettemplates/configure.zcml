@@ -3,7 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <browser:page
-      for="senate.core.interfaces.IWorksheetTemplates"
+      for="senaite.core.interfaces.IWorksheetTemplates"
       name="view"
       class=".view.WorksheetTemplatesView"
       permission="senaite.core.permissions.ManageBika"

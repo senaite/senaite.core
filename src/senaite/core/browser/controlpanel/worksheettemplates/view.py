@@ -141,7 +141,7 @@ class WorksheetTemplatesView(ListingView):
             item["Instrument"] = instrument_title
             item["replace"]["Instrument"] = get_link_for(instrument)
 
-        method = obj.getMethod()
+        method = obj.getRestrictToMethod()
         if method:
             method_title = api.get_title(method)
             item["Method"] = method_title

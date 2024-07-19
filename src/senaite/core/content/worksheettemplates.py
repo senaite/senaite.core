@@ -33,6 +33,6 @@ class IWorksheetTemplatesSchema(model.Schema):
 
 @implementer(IWorksheetTemplates, IWorksheetTemplatesSchema,
              IDoNotSupportSnapshots, IHideActionsMenu)
-class WorksheetTemplate(Container):
+class WorksheetTemplates(Container):
     """A container for worksheet templates type
     """
