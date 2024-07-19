@@ -577,7 +577,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # If there is a match with the layout defined in the Worksheet
         # Template, use that slot instead of adding a new one at the end of
         # the worksheet
-        layout = wst.getLayout()
+        layout = wst.getTemplateLayout()
         for pos in layout:
             if pos['type'] != 'd' or to_int(pos['dup']) != slot_from:
                 continue
@@ -622,7 +622,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # If there is a match with the layout defined in the Worksheet Template,
         # use that slot instead of adding a new one at the end of the worksheet
         slot_type = reference.getBlank() and 'b' or 'c'
-        layout = wst.getLayout()
+        layout = wst.getTemplateLayout()
 
         for pos in layout:
             if pos['type'] != slot_type:
@@ -930,7 +930,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :param wst: worksheet template used as the layout
         :returns: None
         """
-        wst_layout = wst.getLayout()
+        wst_layout = wst.getTemplateLayout()
 
         for row in wst_layout:
             if row['type'] != 'd':
@@ -1006,7 +1006,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         slots_sample = list()
         available_slots = self.resolve_available_slots(wst, type)
-        wst_layout = wst.getLayout()
+        wst_layout = wst.getTemplateLayout()
         for row in wst_layout:
             slot = int(row['pos'])
             if slot not in available_slots:

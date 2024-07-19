@@ -252,6 +252,13 @@ class WorksheetTemplate(Container):
     security = ClassSecurityInfo()
 
     @security.protected(permissions.View)
+    def getRawRestrictToMethod(self):
+        method = self.getRestrictToMethod()
+        if method:
+            return method.UID()
+        return None
+
+    @security.protected(permissions.View)
     def getRestrictToMethod(self):
         accessor = self.accessor("restrict_to_method")
         return accessor(self)
@@ -263,6 +270,13 @@ class WorksheetTemplate(Container):
 
     # BBB: AT schema field property
     RestrictToMethod = property(getRestrictToMethod, setRestrictToMethod)
+
+    @security.protected(permissions.View)
+    def getRawInstrument(self):
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.UID()
+        return None
 
     @security.protected(permissions.View)
     def getInstrument(self):
@@ -309,12 +323,15 @@ class WorksheetTemplate(Container):
         """Return the raw value of the services field
 
         >>> self.getRawServices()
-        [{'uid': '...', ...]
+        ['<uid>', ...]
 
-        :returns: List of dicts including `uid`
+        :returns: List of uid's
         """
         accessor = self.accessor("services")
-        return accessor(self) or []
+        services = accessor(self)
+        if services:
+            return list(map(lambda item: item.get("uid"), services))
+        return []
 
     @security.protected(permissions.View)
     def getServices(self):
