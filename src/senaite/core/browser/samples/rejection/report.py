@@ -116,11 +116,6 @@ class RejectionReport(BrowserView):
         """
         return dtime.to_localized_time(date, long_format=True)
 
-    def verbose_date(self, date):
-        """Returns the date localized in verbose format
-        """
-        return dtime.to_localized_time(date)
-
     def get_contact_properties(self, contact):
         """Returns a dictionary with information about the contact
         """
