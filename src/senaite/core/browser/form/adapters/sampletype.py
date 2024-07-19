@@ -19,12 +19,18 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.interfaces import ISampleType
 from bika.lims.vocabularies import getStickerTemplates
+
+_DGF_WIDGET_PREFIX = "form.widgets.admitted_sticker_templates.0.widgets."
 
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for Sample Type
     """
+
+    def __init__(self, context, request):
+        super(EditForm, self).__init__(context, request)
 
     def initialized(self, data):
         return self.data
@@ -34,7 +40,7 @@ class EditForm(EditFormAdapterBase):
         value = data.get("value")
 
         # filter default small/large sticker
-        if name == "AdmittedStickerTemplates.admitted":
+        if name == _DGF_WIDGET_PREFIX + "admitted":
             # get the sticker
             templates = filter(
                 lambda t: t.get("id") in value, getStickerTemplates())
@@ -43,15 +49,19 @@ class EditForm(EditFormAdapterBase):
             opts = map(lambda t: dict(
                 title=t.get("title"), value=t.get("id")), templates)
 
+            if ISampleType.providedBy(self.context):
+                default_small = self.context.getDefaultSmallSticker()
+                default_large = self.context.getDefaultLargeSticker()
+            else:
+                default_small = default_large = None
+
             # set default small sticker
-            default_small = self.context.getDefaultSmallSticker()
-            self.add_update_field("AdmittedStickerTemplates.small_default", {
+            self.add_update_field(_DGF_WIDGET_PREFIX + "small_default", {
                 "selected": [default_small] if default_small else [],
                 "options": opts})
 
             # set default large sticker
-            default_large = self.context.getDefaultLargeSticker()
-            self.add_update_field("AdmittedStickerTemplates.large_default", {
+            self.add_update_field(_DGF_WIDGET_PREFIX + "large_default", {
                 "selected": [default_large] if default_large else [],
                 "options": opts})
 
