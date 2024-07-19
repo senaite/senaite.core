@@ -97,7 +97,10 @@ class RejectionReport(BrowserView):
         setup = api.get_setup()
         reasons = setup.getRejectionReasons()
         # XXX getRejectionReasons returns a list with a single dict
-        return reasons[0] if reasons else []
+        reasons = reasons[0] if reasons else {}
+        # XXX Exclude 'checkbox' (used to toggle reasons in setup)
+        reasons = [reasons[key] for key in reasons.keys() if key != 'checkbox']
+        return sorted(reasons)
 
     @property
     def layout_css(self):

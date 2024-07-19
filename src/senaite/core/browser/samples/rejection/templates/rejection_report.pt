@@ -54,8 +54,7 @@
     portal      portal_url/getPortalObject;
     lab         python:view.laboratory;
     ar          python:view.context;
-    reasons     python:view.available_reasons;
-    labreasons  python:[reasons[key] for key in reasons.keys() if key != 'checkbox'];
+    labreasons  python:view.available_reasons;
     client      python:ar.getClient();
     reasons     python: view.get_rejection_reasons('selected');
     otherreas   python: view.get_rejection_reasons('other');">
