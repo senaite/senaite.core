@@ -2,6 +2,9 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Package includes -->
+  <include package=".rejection"/>
+
   <!-- main site/samples view -->
   <browser:page
       for="senaite.core.interfaces.ISamples"

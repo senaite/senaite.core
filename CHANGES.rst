@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2584 Migrate SampleTypes to Dexterity
+- #2589 Fix reject report to fully conform with the ISO standard
 - #2588 Widget text extensions
 - #2586 Support multiple files for datagrid fields
 - #2581 Migrate Suppliers to Dexterity

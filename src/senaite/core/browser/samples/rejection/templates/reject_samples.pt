@@ -1,0 +1,165 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <head>
+    <metal:block fill-slot="senaite_legacy_resources"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h2 i18n:translate="" class="d-inline align-middle">
+        Reject samples
+      </h2>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+
+      <div class="d-flex mb-3">
+        <a href="#" class="btn btn-outline-secondary"
+           tal:attributes="href python:context.absolute_url()"
+           i18n:translate="">
+            &larr; Go back</a>
+      </div>
+
+      <div id="reject-samples-view"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <form class="form"
+              id="reject_samples_form"
+              name="reject_samples_form"
+              method="POST">
+
+          <!-- Hidden Fields -->
+          <input type="hidden" name="submitted" value="1"/>
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <tal:samples repeat="sample view/get_samples_data">
+
+            <!-- Remember the initial UIDs coming in -->
+            <input type="hidden" name="uids:list"
+                   tal:attributes="value sample/uid"/>
+
+            <div class="card mb-3">
+
+              <div class="card-header">
+                <!-- Client -->
+                <div class="d-flex">
+                  <div tal:content="sample/client_title"></div>
+                </div>
+                <!-- Sample ID -->
+                <div class="d-inline-flex">
+                  <a href="#"
+                     class="font-weight-bold text-decoration-none"
+                     target="_blank"
+                     tal:content="sample/title"
+                     tal:attributes="href sample/url">
+                  </a>
+                </div>
+                <!-- Sample Type -->
+                <div class="d-inline-flex">
+                  <div tal:content="sample/sample_type"></div>
+                </div>
+              </div>
+
+              <div class="card-body"
+                   tal:define="reasons python: view.get_rejection_reasons()">
+
+                <input type="hidden" name="samples.uid:records"
+                       tal:attributes="value sample/uid"/>
+
+                <!-- Pre-defined rejection reasons -->
+                <div class="form-group field">
+                  <label class="font-weight-bold" i18n:translate="">
+                    Rejection reasons
+                  </label>
+                  <div tal:condition="reasons" tal:repeat="reason reasons">
+                    <input type="checkbox"
+                           tal:attributes="name string:samples.reasons:records:list;
+                                           value reason"/>
+                    <span tal:content="reason"></span>
+                  </div>
+                  <div tal:condition="python: not reasons" i18n:translate="">
+                    There are no pre-defined conditions set
+                  </div>
+                </div>
+
+                <!-- Other rejection reasons -->
+                <div class="form-group">
+                  <label class="font-weight-bold"
+                         tal:condition="reasons" i18n:translate="">
+                    Other reasons
+                  </label>
+                  <label class="font-weight-bold"
+                         tal:condition="python: not reasons"
+                         i18n:translate="">
+                    Rejection reasons
+                  </label>
+                  <textarea rows="5" class="form-control"
+                            tal:attributes="name string:samples.other_reasons:records"></textarea>
+                </div>
+
+                <!-- Send email notification -->
+                <div class="form-group field"
+                  tal:define="recipients sample/recipients">
+                  <input type="checkbox"
+                         name="samples.notify:records"
+                         id="input-email-notification"
+                         tal:condition="recipients"
+                         tal:attributes="checked python:view.is_notification_enabled;"/>
+                  <input type="checkbox"
+                         name="samples.notify:records"
+                         id="input-email-notification"
+                         tal:condition="not:recipients"
+                         disabled="disabled"/>
+                  <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
+                    Email notification
+                  </label>
+                  <div class="text-secondary form-text small"
+                       i18n:translate="" tal:condition="recipients">
+                    Send an email notification to
+                    <span i18n:name="recipients"
+                          tal:replace="python: ', '.join(recipients)"></span>
+                  </div>
+                  <div class="text-secondary form-text small"
+                       tal:condition="not:recipients"
+                       i18n:translate="">
+                    No email recipients available for this sample
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </tal:samples>
+
+          <!-- Form Controls -->
+          <div>
+            <!-- Cancel -->
+            <input class="btn btn-secondary btn-sm"
+                   type="submit"
+                   name="button_cancel"
+                   i18n:attributes="value"
+                   value="Cancel"/>
+            <!-- Continue -->
+            <input class="btn btn-danger btn-sm"
+                   type="submit"
+                   name="button_continue"
+                   i18n:attributes="value"
+                   value="Reject"/>
+          </div>
+        </form>
+      </div>
+    </metal:core>
+  </body>
+</html>
