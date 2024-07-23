@@ -22,6 +22,7 @@ import six
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils.analysisrequest import do_rejection
+from bika.lims.utils.analysisrequest import get_rejection_email_recipients
 from plone.memoize import view
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -153,6 +154,7 @@ class RejectSamplesView(BrowserView):
         """Returns a list of Samples data (dictionary)
         """
         for obj in self.get_samples_from_request():
+            emails = get_rejection_email_recipients(obj)
             yield {
                 "obj": obj,
                 "id": api.get_id(obj),
@@ -163,6 +165,7 @@ class RejectSamplesView(BrowserView):
                 "sample_type": obj.getSampleTypeTitle(),
                 "client_title": obj.getClientTitle(),
                 "date": to_localized_time(obj.created(), long_format=True),
+                "recipients": emails,
             }
 
     def redirect(self, redirect_url=None, message=None, level="info"):

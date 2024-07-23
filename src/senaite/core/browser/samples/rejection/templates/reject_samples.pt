@@ -111,16 +111,31 @@
                 </div>
 
                 <!-- Send email notification -->
-                <div class="form-group field">
+                <div class="form-group field"
+                  tal:define="recipients sample/recipients">
                   <input type="checkbox"
                          name="samples.notify:records"
                          id="input-email-notification"
-                         tal:attributes="checked python:view.is_notification_enabled"/>
+                         tal:condition="recipients"
+                         tal:attributes="checked python:view.is_notification_enabled;"/>
+                  <input type="checkbox"
+                         name="samples.notify:records"
+                         id="input-email-notification"
+                         tal:condition="not:recipients"
+                         disabled="disabled"/>
                   <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
                     Email notification
                   </label>
-                  <div class="text-secondary form-text small" i18n:translate="">
-                    Send an email notification to client contact
+                  <div class="text-secondary form-text small"
+                       i18n:translate="" tal:condition="recipients">
+                    Send an email notification to
+                    <span i18n:name="recipients"
+                          tal:replace="python: ', '.join(recipients)"></span>
+                  </div>
+                  <div class="text-secondary form-text small"
+                       tal:condition="not:recipients"
+                       i18n:translate="">
+                    No email recipients available for this sample
                   </div>
                 </div>
 
